@@ -15,6 +15,10 @@ export default abstract class ControllerBase implements vscode.Disposable {
 		this._context = context;
 	}
 
+	public get extensionContext(): vscode.ExtensionContext {
+        return this._context;
+    }
+
 	abstract activate(): Promise<boolean>;
 
 	abstract deactivate(): void;
