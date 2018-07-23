@@ -1,5 +1,4 @@
 {
-
   "name": "import",
   "displayName": "SQL Server Import",
   "description": "Imports data from a flat file.",
@@ -64,10 +63,15 @@
     ]
   },
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
+    "vscode-languageclient": "^4.3.0",
+    "vscode-nls": "^3.2.1",
+    "opener": "^1.4.3",
+    "vscode-extension-telemetry": "^0.0.5"
   },
   "devDependencies": {
-		"mocha-junit-reporter": "^1.17.0",
-		"mocha-multi-reporters": "^1.1.7"
-	}
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7"
+  }
 }
