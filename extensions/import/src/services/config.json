@@ -8,7 +8,7 @@
         "OSX": "osx.zip",
         "Linux_64": "linux-x64.tar.gz"
     },
-    "installDirectory": "scaleoutdataservice/{#platform#}/{#version#}",
+    "installDirectory": "flatfileimportservice/{#platform#}/{#version#}",
     "executableFiles": [
         "MicrosoftSqlToolsFlatFileImport",
         "MicrosoftSqlToolsFlatFileImport.exe"

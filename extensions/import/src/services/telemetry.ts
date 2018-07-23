@@ -151,7 +151,7 @@ export class Telemetry {
                 this.disable();
                 return;
             }
-            let packageInfo = vscode.extensions.getExtension('Microsoft.data-management').packageJSON;
+            let packageInfo = vscode.extensions.getExtension('Microsoft.import').packageJSON;
             this.reporter = new TelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
         }
     }
