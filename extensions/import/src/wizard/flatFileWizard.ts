@@ -31,13 +31,13 @@ export function flatFileWizard(provider: FlatFileProvider) {
 		page3.registerContent(async (view) => {
 			await modifyColumns(view);
 		});
-
 		page4.registerContent(async (view) => {
 			await summary(view, importInfo);
 		});
 
 		let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 		importAnotherFileButton.onClick(() => {
+			//TODO replace this with proper cleanup for all the pages
 			importInfo = null;
 			wizard.close();
 			flatFileWizard(provider);

@@ -376,7 +376,6 @@ declare module 'sqlops' {
 		data: any[][];
 		columns: string[] | TableColumn[];
 		fontSize?: number | string;
-		rowHeight?: number;
 		selectedRows?: number[];
 	}
 
