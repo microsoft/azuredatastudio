@@ -91,7 +91,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			icon: () => { return 'saveCsv'; },
 			hoverText: () => { return LocalizedConstants.saveCSVLabel; },
 			functionality: (batchId, resultId, index) => {
-				let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+				let selection = this.getSelection(index);
 				if (selection.length <= 1) {
 					this.handleContextClick({ type: 'savecsv', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
@@ -104,7 +104,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			icon: () => { return 'saveJson'; },
 			hoverText: () => { return LocalizedConstants.saveJSONLabel; },
 			functionality: (batchId, resultId, index) => {
-				let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+				let selection = this.getSelection(index);
 				if (selection.length <= 1) {
 					this.handleContextClick({ type: 'savejson', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
@@ -117,7 +117,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			icon: () => { return 'saveExcel'; },
 			hoverText: () => { return LocalizedConstants.saveExcelLabel; },
 			functionality: (batchId, resultId, index) => {
-				let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+				let selection = this.getSelection(index);
 				if (selection.length <= 1) {
 					this.handleContextClick({ type: 'saveexcel', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
