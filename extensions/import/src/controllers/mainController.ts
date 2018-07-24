@@ -29,13 +29,21 @@ export default class MainController extends ControllerBase {
 
 	public activate(): Promise<boolean> {
 		const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-        new ServiceClient(outputChannel).startService(this._context);
+		new ServiceClient(outputChannel).startService(this._context);
 
 		managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
 			this.initializeFlatFileProvider(provider);
 		});
 
 		sqlops.tasks.registerTask('flatFileImport.start', e => flatFileWizard());
+
+		sqlops.tasks.registerTask('flatFileImport.listDatabases', async () => {
+			let activeConnections = await sqlops.connection.getActiveConnections();
+			let selection = await vscode.window.showQuickPick(activeConnections.map(c => c.options.server));
+			let chosenConnection = activeConnections.find(c => c.options.server === selection);
+			let databases = await sqlops.connection.listDatabases(chosenConnection.connectionId);
+			vscode.window.showQuickPick(databases);
+		});
 
 		return Promise.resolve(true);
 	}
