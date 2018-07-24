@@ -34,8 +34,16 @@
         }
       },
       {
+        "command": "flatFileImport.importFlatFile",
+        "title": "FlatFileImport: Preview data from file."
+      },
+      {
         "command": "flatFileImport.helloWorld",
         "title": "FlatFileImport: Hello world"
+      },
+      {
+        "command": "flatFileImport.listDatabases",
+        "title": "FlatFileImport: Test list databases"
       }
     ],
     "dashboard.tabs": [
@@ -69,6 +77,7 @@
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
+    "vscode-languageclient": "^4.3.0",
     "vscode-nls": "^3.2.1",
     "opener": "^1.4.3",
     "vscode-extension-telemetry": "^0.0.5"

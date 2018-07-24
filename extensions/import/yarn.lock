@@ -431,7 +431,13 @@ vscode-languageclient@3.5.0:
   dependencies:
     vscode-languageserver-protocol "^3.5.0"
 
-vscode-languageserver-protocol@3.5.0, vscode-languageserver-protocol@^3.5.0:
+vscode-languageclient@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-4.3.0.tgz#48dde358fee9dcf26c19c912ecf897c5c92d9e54"
+  dependencies:
+    vscode-languageserver-protocol "^3.9.0"
+
+vscode-languageserver-protocol@3.5.0, vscode-languageserver-protocol@^3.5.0, vscode-languageserver-protocol@^3.9.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.5.0.tgz#067c5cbe27709795398d119692c97ebba1452209"
   dependencies:

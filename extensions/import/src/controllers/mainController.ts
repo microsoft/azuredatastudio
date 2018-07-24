@@ -29,18 +29,36 @@ export default class MainController extends ControllerBase {
 
 	public activate(): Promise<boolean> {
 		const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-        new ServiceClient(outputChannel).startService(this._context);
+		new ServiceClient(outputChannel).startService(this._context);
 
 		managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
 			this.initializeFlatFileProvider(provider);
 		});
 
-		sqlops.tasks.registerTask('flatFileImport.start', e => flatFileWizard());
-
 		return Promise.resolve(true);
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
+		sqlops.tasks.registerTask('flatFileImport.start', e => flatFileWizard(provider));
+
+		sqlops.tasks.registerTask('flatFileImport.listDatabases', async () => {
+			let activeConnections = await sqlops.connection.getActiveConnections();
+			let selection = await vscode.window.showQuickPick(activeConnections.map(c => c.options.server));
+			let chosenConnection = activeConnections.find(c => c.options.server === selection);
+			let databases = await sqlops.connection.listDatabases(chosenConnection.connectionId);
+			vscode.window.showQuickPick(databases);
+		});
+
+		sqlops.tasks.registerTask('flatFileImport.importFlatFile', () => {
+			vscode.window.showInputBox({
+				prompt: 'Flat file path?'
+			}).then(filePath => {
+				provider.sendDataPreviewRequest({ filePath: filePath }).then(response => {
+					vscode.window.showInformationMessage('Response: ' + response.dataPreview);
+				});
+			});
+		});
+
 		sqlops.tasks.registerTask('flatFileImport.helloWorld', () => {
 			vscode.window.showInputBox({
 				prompt: 'What is your name?'
