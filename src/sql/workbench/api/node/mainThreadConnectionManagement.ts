@@ -56,6 +56,11 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return result.databaseNames;
 	}
 
+	public $getUriForConnection(connectionId: string): Thenable<string> {
+		let connection = this._connectionManagementService.getActiveConnections().find(profile => profile.id === connectionId);
+		return Promise.resolve(this._connectionManagementService.getConnectionId(connection));
+	}
+
 	private convertConnection(profile: IConnectionProfile): sqlops.connection.Connection {
 		if (!profile) {
 			return undefined;
