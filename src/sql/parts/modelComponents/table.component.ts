@@ -156,9 +156,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
-		this._table.grid.setOptions({
-			rowHeight: properties.get('rowHeight')
-		});
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}

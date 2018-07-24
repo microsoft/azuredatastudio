@@ -16,9 +16,8 @@ export async function summary(view: sqlops.ModelView, importInfo: Map<string, an
 				['Table schema', importInfo.get('Table schema')],
 				['File to be imported', importInfo.get('File path')]],
 			columns: ['Object type', 'Name'],
-			height: 300,
-			width: 1000,
-			fontSize: '40px'
+			width: 400,
+			height: 150
 		})
 		.component();
 
