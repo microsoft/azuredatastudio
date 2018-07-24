@@ -34,6 +34,10 @@
         }
       },
       {
+        "command": "flatFileImport.importFlatFile",
+        "title": "FlatFileImport: Preview data from file."
+      },
+      {
         "command": "flatFileImport.helloWorld",
         "title": "FlatFileImport: Hello world"
       }
@@ -77,5 +81,11 @@
   "devDependencies": {
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7"
+  },
+  "resolutions": {
+    "vscode-jsonrpc": "3.5.0",
+    "vscode-languageclient": "3.5.0",
+    "vscode-languageserver-protocol": "3.5.0",
+    "vscode-languageserver-types": "3.5.0"
   }
 }
