@@ -6,7 +6,8 @@
 
 import { IWordAtPosition } from 'vs/editor/common/model';
 
-export const USUAL_WORD_SEPARATORS = '`~!@#$%^&*()-=+[{]}\\|;:\'",.<>/?';
+// {{SQL CARBON EDIT}}
+export const USUAL_WORD_SEPARATORS = '`~!#$%^&*()-=+[{]}\\|;:\'",.<>/?';
 
 /**
  * Create a word definition regular expression based on default word separators.
