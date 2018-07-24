@@ -35,18 +35,28 @@ export default class MainController extends ControllerBase {
 			this.initializeFlatFileProvider(provider);
 		});
 
-		sqlops.tasks.registerTask('flatFileImport.start', e => flatFileWizard());
-
 		return Promise.resolve(true);
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
+		sqlops.tasks.registerTask('flatFileImport.start', e => flatFileWizard(provider));
+
 		sqlops.tasks.registerTask('flatFileImport.helloWorld', () => {
 			vscode.window.showInputBox({
 				prompt: 'What is your name?'
 			}).then(name => {
 				provider.sendHelloWorldRequest({ name: name }).then(response => {
 					vscode.window.showInformationMessage('Response: ' + response.response);
+				});
+			});
+		});
+
+		sqlops.tasks.registerTask('flatFileImport.importFlatFile', () => {
+			vscode.window.showInputBox({
+				prompt: 'Flat file path?'
+			}).then(filePath => {
+				provider.sendDataPreviewRequest({ filePath: filePath }).then(response => {
+					vscode.window.showInformationMessage('Response: ' + response.dataPreview);
 				});
 			});
 		});

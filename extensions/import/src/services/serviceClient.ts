@@ -74,7 +74,6 @@ export class ServiceClient {
         });
     }
 
-
     private createClientOptions(): ClientOptions {
         return {
             providerId: Constants.providerId,
