@@ -42,6 +42,10 @@ export function flatFileWizard() {
 				op.updateStatus(sqlops.TaskStatus.Succeeded);
 			}, 5000);
 		}});
+
+		//not needed for this wizard
+		wizard.generateScriptButton.hidden = true;
+
 		wizard.pages = [page1, page2, page3, page4];
 		wizard.open();
 }
