@@ -11,7 +11,6 @@ import { create } from 'domain';
 
 var fileDelimiter = ',';
 
-
 export async function prosePreview(view: sqlops.ModelView) : Promise<void> {
 	//from services sample placeholder code
 	//let formWrapper = view.modelBuilder.loadingComponent().component();
@@ -22,12 +21,12 @@ export async function prosePreview(view: sqlops.ModelView) : Promise<void> {
 			[
 			{
 				component : table,
-				title : 'Preview'
+				title : "This operation analyzed the input file structure to generate the preview below for up to the first 50 rows"
 			}
-		]).component();
+		]
+	).component();
 	let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 	formWrapper.loading = false;
-
 	await view.initializeModel(formWrapper);
 }
 
@@ -35,8 +34,8 @@ async function createTable(view: sqlops.ModelView) : Promise<sqlops.TableCompone
 	let table = view.modelBuilder.table().withProperties({
 			data: data.rows,
 			columns: data.columns,
-			height: 250,
-			width: 750,
+			height: 700,
+			width: 700,
             selectedRows: [0]
         }).component();
 
@@ -59,7 +58,7 @@ class DataObject implements IDataObject{
 }
 
 var data = new DataObject(
-	['created_utc','score','domain','id','title'],
+	['created_utc','score','domain','id'],
 	[
 		['1370264768.0','674','twitter.com','1fktz4'],
 		['1370264798.0','675','twitter.com','2gatz4'],
