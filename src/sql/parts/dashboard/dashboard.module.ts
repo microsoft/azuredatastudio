@@ -57,13 +57,14 @@ import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsV
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
+import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
 	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
-	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, SelectBox, InputBox,];
+	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox,];
 
 /* Panel */
 import { PanelModule } from 'sql/base/browser/ui/panel/panel.module';
