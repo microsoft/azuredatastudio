@@ -375,6 +375,8 @@ declare module 'sqlops' {
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
+		fontSize?: number | string;
+		rowHeight?: number;
 		selectedRows?: number[];
 	}
 

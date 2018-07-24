@@ -8,16 +8,17 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
 
-export async function summary(view: sqlops.ModelView) : Promise<void> {
+export async function summary(view: sqlops.ModelView, importInfo: Map<string, any>) : Promise<void> {
 
 	let table = view.modelBuilder.table()
 		.withProperties({
-			data: [['Database name', 'test'],
-				['Table schema','dbo'],
-				['File to be imported', 'test file']],
+			data: [['Database name', importInfo.get('Database name')],
+				['Table schema', importInfo.get('Table schema')],
+				['File to be imported', importInfo.get('File path')]],
 			columns: ['Object type', 'Name'],
-			height: 250,
-			width: 500
+			height: 300,
+			width: 1000,
+			fontSize: '40px'
 		})
 		.component();
 
@@ -27,20 +28,29 @@ export async function summary(view: sqlops.ModelView) : Promise<void> {
 		})
 		.component();
 
-	let formModel = view.modelBuilder.formContainer()
-		.withFormItems(
-			[
-				{
-					component: table,
-					title: 'Import information'
-				},
-				{
-					component: statusText,
-					title: 'Status'
-				}
-			]
-		).component();
-	let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
-	formWrapper.loading = false;
-	await view.initializeModel(formWrapper);
+	let statusLoader = view.modelBuilder.loadingComponent().withItem(statusText).component();
+
+	let importPromise = importInfo.get('importData') as Promise<string>;
+	if (importPromise) {
+		importPromise.then(result => {
+			statusText.updateProperties({
+				value: result
+			});
+			statusLoader.loading = false;
+		});
+	}
+
+	let formModel = view.modelBuilder.formContainer().withFormItems(
+		[
+			{
+				component: table,
+				title: 'Import information'
+			},
+			{
+				component: statusLoader,
+				title: 'Import Status'
+			}
+		]
+	);
+	await view.initializeModel(formModel.component());
 }

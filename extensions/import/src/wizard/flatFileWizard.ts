@@ -13,6 +13,8 @@ import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
 
 export function flatFileWizard() {
+	let importInfo = new Map<string, any>();
+
 	let wizard = sqlops.window.modelviewdialog.createWizard('Flat file import wizard');
 		let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
 		let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
@@ -27,9 +29,19 @@ export function flatFileWizard() {
 		page3.registerContent(async (view) => {
 			await modifyColumns(view);
 		});
+		let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import another file');
+		importAnotherFileButton.onClick(() => wizard.setCurrentPage(0));
+		page4.customButtons = [importAnotherFileButton];
 		page4.registerContent(async (view) => {
-			await summary(view);
+			await summary(view, importInfo);
 		});
+
+		wizard.onPageChanged(e => {
+			if (e.lastPage === 2 && e.newPage === 3) {
+				importInfo.set('importResult', importData());
+			}
+		});
+
 		wizard.registerOperation({
 			displayName: 'test task',
 			description: 'task description',
@@ -44,6 +56,15 @@ export function flatFileWizard() {
 		}});
 		wizard.pages = [page1, page2, page3, page4];
 		wizard.open();
+}
+
+async function importData() : Promise<boolean> {
+	return new Promise<boolean>(resolve =>
+		setTimeout(() => {
+			console.log('hi');
+			resolve(true);
+		},
+		2000));
 }
 
 //pageonecontent()
