@@ -261,7 +261,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	}
 
 	handleComplete(self: QueryComponent, event: any): void {
-		self.totalElapsedTimeSpan = self.totalElapsedTimeSpan ?  self.totalElapsedTimeSpan += event.data : event.data;
+		self.totalElapsedTimeSpan = event.data;
 		self.complete = true;
 	}
 
