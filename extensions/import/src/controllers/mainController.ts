@@ -42,7 +42,13 @@ export default class MainController extends ControllerBase {
 			let selection = await vscode.window.showQuickPick(activeConnections.map(c => c.options.server));
 			let chosenConnection = activeConnections.find(c => c.options.server === selection);
 			let databases = await sqlops.connection.listDatabases(chosenConnection.connectionId);
-			vscode.window.showQuickPick(databases);
+			let databaseName = await vscode.window.showQuickPick(databases);
+			let connectionUri = await sqlops.connection.getUriForConnection(chosenConnection.connectionId);
+			let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(chosenConnection.providerName, sqlops.DataProviderType.QueryProvider);
+			let query = `USE ${databaseName}; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
+			let results = await queryProvider.runQueryAndReturn(connectionUri, query);
+			let tableNames = results.rows.map(row => row[0].displayValue);
+			vscode.window.showQuickPick(tableNames);
 		});
 
 		return Promise.resolve(true);
