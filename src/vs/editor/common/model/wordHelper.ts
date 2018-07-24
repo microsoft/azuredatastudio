@@ -6,6 +6,7 @@
 
 import { IWordAtPosition } from 'vs/editor/common/model';
 
+// {{SQL CARBON EDIT}}
 export const USUAL_WORD_SEPARATORS = '`~!#$%^&*()-=+[{]}\\|;:\'",.<>/?';
 
 /**
