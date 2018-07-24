@@ -58,8 +58,21 @@ export namespace HelloWorldRequest {
     export const type = new RequestType<HelloWorldParam, HelloWorldResponse, void, void>('flatfile/helloworld');
 }
 
+export interface DataPreviewParam {
+    filePath: string;
+}
+
+export interface DataPreviewResponse {
+    dataPreview: string[][];
+}
+
+export namespace DataPreviewRequest {
+    export const type = new RequestType<DataPreviewParam, DataPreviewResponse, void, void>('flatfile/datapreview');
+}
+
 export interface FlatFileProvider {
     providerId?: string;
 
     sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
+    sendDataPreviewRequest(params: DataPreviewParam): Thenable<DataPreviewResponse>;
 }

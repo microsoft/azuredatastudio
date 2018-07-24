@@ -15,6 +15,7 @@ import * as serviceUtils from './serviceUtils';
 import * as Contracts from './contracts';
 import { IServiceApi, managerInstance, ApiType } from './serviceApiManager';
 import { ConnectionDetails } from 'dataprotocol-client/lib/types';
+
 export class TelemetryFeature implements StaticFeature {
 
     constructor(private _client: SqlOpsDataClient) { }
@@ -53,6 +54,7 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
     protected registerProvider(options: undefined): Disposable {
         console.log('Flat file import registering provider');
         const client = this._client;
+
         let sendHelloWorldRequest = (params: Contracts.HelloWorldParam): Thenable<Contracts.HelloWorldResponse> => {
             return client.sendRequest(Contracts.HelloWorldRequest.type, params).then(
                 r => r,
@@ -63,9 +65,20 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
             );
         };
 
+        let sendDataPreviewRequest = (params: Contracts.DataPreviewParam): Thenable<Contracts.DataPreviewResponse> => {
+            return client.sendRequest(Contracts.DataPreviewRequest.type, params).then(
+                r => r,
+                e => {
+                    client.logFailedRequest(Contracts.DataPreviewRequest.type, e);
+                    return Promise.reject(e);
+                }
+            );
+        };
+
         return managerInstance.registerApi<Contracts.FlatFileProvider>(ApiType.FlatFileProvider, {
             providerId: client.providerId,
-            sendHelloWorldRequest
+            sendHelloWorldRequest,
+            sendDataPreviewRequest
         });
     }
 }
