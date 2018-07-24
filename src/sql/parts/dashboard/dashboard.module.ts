@@ -57,7 +57,7 @@ import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsV
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
+import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editabledropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 
 let baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
