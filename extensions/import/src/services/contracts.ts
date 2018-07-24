@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -46,33 +46,40 @@ export interface ITelemetryEventMeasures {
 
 // ------------------------------- < Flat File Methods > ------------------------------------
 
-export interface HelloWorldParam {
-    name: string;
-}
+// export interface HelloWorldParam {
+//     name: string;
+// }
 
-export interface HelloWorldResponse {
-    response: string;
-}
+// export interface HelloWorldResponse {
+//     response: string;
+// }
 
-export namespace HelloWorldRequest {
-    export const type = new RequestType<HelloWorldParam, HelloWorldResponse, void, void>('flatfile/helloworld');
-}
+// export namespace HelloWorldRequest {
+//     export const type = new RequestType<HelloWorldParam, HelloWorldResponse, void, void>('flatfile/helloworld');
+// }
 
-export interface DataPreviewParam {
+export interface PROSEDiscoveryParam {
     filePath: string;
 }
 
-export interface DataPreviewResponse {
-    dataPreview: string[][];
+export interface ColumnInfo
+{
+    name: string;
+    sqlType: string;
 }
 
-export namespace DataPreviewRequest {
-    export const type = new RequestType<DataPreviewParam, DataPreviewResponse, void, void>('flatfile/datapreview');
+export interface PROSEDiscoveryResponse {
+    dataPreview: string[][];
+    columnsInfo: ColumnInfo[];
+}
+
+export namespace PROSEDiscoveryRequest {
+    export const type = new RequestType<PROSEDiscoveryParam, PROSEDiscoveryResponse, void, void>('flatfile/prosediscovery');
 }
 
 export interface FlatFileProvider {
     providerId?: string;
 
-    sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
-    sendDataPreviewRequest(params: DataPreviewParam): Thenable<DataPreviewResponse>;
+    //sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
+    sendPROSEDiscoveryRequest(params: PROSEDiscoveryParam): Thenable<PROSEDiscoveryResponse>;
 }

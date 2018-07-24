@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
@@ -33,7 +33,7 @@ export class TelemetryFeature implements StaticFeature {
 
 export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
     private static readonly messagesTypes: RPCMessageType[] = [
-        Contracts.HelloWorldRequest.type
+        Contracts.PROSEDiscoveryRequest.type
     ];
 
     constructor(client: SqlOpsDataClient) {
@@ -55,21 +55,21 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
         console.log('Flat file import registering provider');
         const client = this._client;
 
-        let sendHelloWorldRequest = (params: Contracts.HelloWorldParam): Thenable<Contracts.HelloWorldResponse> => {
-            return client.sendRequest(Contracts.HelloWorldRequest.type, params).then(
-                r => r,
-                e => {
-                    client.logFailedRequest(Contracts.HelloWorldRequest.type, e);
-                    return Promise.reject(e);
-                }
-            );
-        };
+        // let sendHelloWorldRequest = (params: Contracts.HelloWorldParam): Thenable<Contracts.HelloWorldResponse> => {
+        //     return client.sendRequest(Contracts.HelloWorldRequest.type, params).then(
+        //         r => r,
+        //         e => {
+        //             client.logFailedRequest(Contracts.HelloWorldRequest.type, e);
+        //             return Promise.reject(e);
+        //         }
+        //     );
+        // };
 
-        let sendDataPreviewRequest = (params: Contracts.DataPreviewParam): Thenable<Contracts.DataPreviewResponse> => {
-            return client.sendRequest(Contracts.DataPreviewRequest.type, params).then(
+        let sendPROSEDiscoveryRequest = (params: Contracts.PROSEDiscoveryParam): Thenable<Contracts.PROSEDiscoveryResponse> => {
+            return client.sendRequest(Contracts.PROSEDiscoveryRequest.type, params).then(
                 r => r,
                 e => {
-                    client.logFailedRequest(Contracts.DataPreviewRequest.type, e);
+                    client.logFailedRequest(Contracts.PROSEDiscoveryRequest.type, e);
                     return Promise.reject(e);
                 }
             );
@@ -77,8 +77,8 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
 
         return managerInstance.registerApi<Contracts.FlatFileProvider>(ApiType.FlatFileProvider, {
             providerId: client.providerId,
-            sendHelloWorldRequest,
-            sendDataPreviewRequest
+            //sendHelloWorldRequest,
+            sendPROSEDiscoveryRequest
         });
     }
 }
