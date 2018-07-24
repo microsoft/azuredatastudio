@@ -30,11 +30,17 @@ export async function summary(view: sqlops.ModelView, importInfo: Map<string, an
 
 	let statusLoader = view.modelBuilder.loadingComponent().withItem(statusText).component();
 
-	let importPromise = importInfo.get('importData') as Promise<string>;
+	let importPromise = importInfo.get('importDataStatus').promise as Promise<boolean>;
 	if (importPromise) {
 		importPromise.then(result => {
 			statusText.updateProperties({
-				value: result
+				value: '✔ Awesome! You have successfully inserted the data into a table.'
+			});
+			statusLoader.loading = false;
+		})
+		.catch((error) => {
+			statusText.updateProperties({
+				value: 'Error'
 			});
 			statusLoader.loading = false;
 		});

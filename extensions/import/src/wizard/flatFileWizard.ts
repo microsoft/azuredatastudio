@@ -15,6 +15,7 @@ import { FlatFileProvider } from '../services/contracts';
 
 export function flatFileWizard(provider: FlatFileProvider) {
 	let importInfo = new Map<string, any>();
+	importInfo.set('importDataStatus', importDataStatus());
 
 	let wizard = sqlops.window.modelviewdialog.createWizard('Flat file import wizard');
 		let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
@@ -30,16 +31,28 @@ export function flatFileWizard(provider: FlatFileProvider) {
 		page3.registerContent(async (view) => {
 			await modifyColumns(view);
 		});
-		let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import another file');
+		let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 		importAnotherFileButton.onClick(() => wizard.setCurrentPage(0));
-		page4.customButtons = [importAnotherFileButton];
+		importAnotherFileButton.hidden = true;
+		wizard.customButtons = [importAnotherFileButton];
 		page4.registerContent(async (view) => {
 			await summary(view, importInfo);
 		});
 
 		wizard.onPageChanged(e => {
 			if (e.lastPage === 2 && e.newPage === 3) {
-				importInfo.set('importResult', importData());
+				new Promise(() => {
+					setTimeout(() => importInfo.get('importDataStatus').resolve(true), 3000);
+				});
+
+			}
+
+			if (e.newPage === 3) {
+				importAnotherFileButton.hidden = false;
+			}
+
+			if (e.lastPage === 3 && e.newPage !== 3) {
+				importAnotherFileButton.hidden = true;
 			}
 		});
 
@@ -63,13 +76,19 @@ export function flatFileWizard(provider: FlatFileProvider) {
 		wizard.open();
 }
 
-async function importData() : Promise<boolean> {
-	return new Promise<boolean>(resolve =>
-		setTimeout(() => {
-			console.log('hi');
-			resolve(true);
-		},
-		2000));
+function importDataStatus() : { promise: Promise<boolean>,
+						 resolve: (value: boolean | PromiseLike<boolean>) => void
+						 reject: (reason?: any) => void
+						} {
+	let outResolve, outReject;
+	return {
+		promise: new Promise<boolean>((resolve, reject) => {
+			outResolve = resolve;
+			outReject = reject;
+		}),
+		resolve: outResolve,
+		reject: outReject
+	};
 }
 
 //pageonecontent()
