@@ -29,7 +29,7 @@ export default class MainController extends ControllerBase {
 
 	public activate(): Promise<boolean> {
 		const outputChannel = vscode.window.createOutputChannel(constants.serviceName);
-        new ServiceClient(outputChannel).startService(this._context);
+		new ServiceClient(outputChannel).startService(this._context);
 
 		managerInstance.onRegisteredApi<FlatFileProvider>(ApiType.FlatFileProvider)(provider => {
 			this.initializeFlatFileProvider(provider);
