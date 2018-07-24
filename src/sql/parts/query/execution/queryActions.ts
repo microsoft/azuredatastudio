@@ -456,6 +456,11 @@ export class ParseSyntaxAction extends QueryTaskbarAction {
 
 					}
 				});
+			} else {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('queryActions.notConnected', 'Please connect to a server')
+				});
 			}
 		}
 		return TPromise.as(null);
