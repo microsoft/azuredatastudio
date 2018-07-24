@@ -31,13 +31,19 @@ export function flatFileWizard(provider: FlatFileProvider) {
 		page3.registerContent(async (view) => {
 			await modifyColumns(view);
 		});
-		let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
-		importAnotherFileButton.onClick(() => wizard.setCurrentPage(0));
-		importAnotherFileButton.hidden = true;
-		wizard.customButtons = [importAnotherFileButton];
+
 		page4.registerContent(async (view) => {
 			await summary(view, importInfo);
 		});
+
+		let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
+		importAnotherFileButton.onClick(() => {
+			importInfo = null;
+			wizard.close();
+			flatFileWizard(provider);
+		});
+		importAnotherFileButton.hidden = true;
+		wizard.customButtons = [importAnotherFileButton];
 
 		wizard.onPageChanged(e => {
 			if (e.lastPage === 2 && e.newPage === 3) {
@@ -90,5 +96,3 @@ function importDataStatus() : { promise: Promise<boolean>,
 		reject: outReject
 	};
 }
-
-//pageonecontent()
