@@ -45,5 +45,3 @@ export function flatFileWizard() {
 		wizard.pages = [page1, page2, page3, page4];
 		wizard.open();
 }
-
-//pageonecontent()
