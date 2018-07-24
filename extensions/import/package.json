@@ -27,7 +27,7 @@
     "commands": [
       {
         "command": "flatFileImport.start",
-        "title": "FlatFileImport: Start the wizard.",
+        "title": "FlatFileImport: Start the wizard",
         "icon": {
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
@@ -35,11 +35,7 @@
       },
       {
         "command": "flatFileImport.importFlatFile",
-        "title": "FlatFileImport: Preview data from file."
-      },
-      {
-        "command": "flatFileImport.helloWorld",
-        "title": "FlatFileImport: Hello world"
+        "title": "FlatFileImport: Preview data from file"
       },
       {
         "command": "flatFileImport.listDatabases",
