@@ -1078,4 +1078,13 @@ declare module 'sqlops' {
 		export function startBackgroundOperation(operationInfo: BackgroundOperationInfo): void;
 
 	}
+
+	export namespace connection {
+		/**
+		 * List the databases that can be accessed from the given connection
+		 * @param {string} connectionId The id of the connection
+		 * @returns {string[]} An list of names of databases
+		 */
+		export function listDatabases(connectionId: string): Thenable<string[]>;
+	}
 }
