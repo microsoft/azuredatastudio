@@ -13,9 +13,15 @@ import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
 import { FlatFileProvider } from '../services/contracts';
 
-export function flatFileWizard(provider: FlatFileProvider) {
+export async function flatFileWizard(provider: FlatFileProvider) {
 	let importInfo = new Map<string, any>();
 	importInfo.set('importDataStatus', importDataStatus());
+	// TODO localize this
+	let connections = await sqlops.connection.getActiveConnections();
+	if (!connections || connections.length === 0) {
+		vscode.window.showErrorMessage('Please connect to a server before using this wizard.');
+		return;
+	}
 
 	let wizard = sqlops.window.modelviewdialog.createWizard('Flat file import wizard');
 	let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
