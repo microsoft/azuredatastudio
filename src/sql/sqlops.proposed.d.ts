@@ -1079,4 +1079,14 @@ declare module 'sqlops' {
 		export function startBackgroundOperation(operationInfo: BackgroundOperationInfo): void;
 
 	}
+
+	export namespace connection {
+		/**
+		 * Get a URI corresponding to the given connection so that it can be used with data
+		 * providers and other APIs that require a connection API.
+		 * Note: If the given connection corresponds to multiple URIs this may return any of them
+		 * @param connectionId The ID of the connection
+		 */
+		export function getUriForConnection(connectionId: string): Thenable<string>;
+	}
 }
