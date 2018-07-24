@@ -54,6 +54,8 @@ export interface IProductConfiguration {
 	releaseNotesUrl: string;
 	// {SQL CARBON EDIT}
 	gettingStartedUrl: string;
+	// {SQL CARBON EDIT}
+	vscodeVersion: string;
 	keyboardShortcutsUrlMac: string;
 	keyboardShortcutsUrlLinux: string;
 	keyboardShortcutsUrlWin: string;
