@@ -11,22 +11,29 @@ import * as sqlops from 'sqlops';
 
 export async function fileConfig(view: sqlops.ModelView): Promise<void> {
 	//from services sample placeholder code
-	let server: sqlops.connection.Connection;
+	let server: sqlops.connection.Connection = null;
 
 	let serverDropdown = await createServerDropdown(view);
+	let databaseDropdown = await createDatabaseDropdown(view, server);
 
 	serverDropdown.onValueChanged((params) => {
+		console.log('Params:' + params);
+
 		server = (serverDropdown.value as ConnectionDropdownValue).connection;
-		vscode.window.showInformationMessage(server.connectionId);
+		populateDatabaseDropdown(server, databaseDropdown);
 	});
 
-	let databaseDropdown = view.modelBuilder.dropDown().withProperties({});
+
 	let formModel = view.modelBuilder.formContainer()
 		.withFormItems(
 			[
 				{
 					component: serverDropdown,
 					title: 'Server'
+				},
+				{
+					component: databaseDropdown,
+					title: 'Database'
 				}
 			]).component();
 	let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
@@ -41,23 +48,41 @@ async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.Drop
 		return;
 	}
 	let serverDropdown = view.modelBuilder.dropDown().withProperties({
-		value: {
-			connection: cons[0],
-			displayName: cons[0].connectionId,
-			name: cons[0].options.serverName
-		},
 		values: cons.map(c => {
 			return {
 				connection: c,
-				displayName: c.connectionId,
+				displayName: c.options.server,
 				name: c.connectionId
 			};
 		})
 	}).component();
 	return Promise.resolve(serverDropdown);
 }
+async function createDatabaseDropdown(view: sqlops.ModelView, server: sqlops.connection.Connection): Promise<sqlops.DropDownComponent>{
+	let dbDropdown=view.modelBuilder.dropDown().component();
+	populateDatabaseDropdown(server, dbDropdown);
+
+	return Promise.resolve(dbDropdown);
+}
+
+async function populateDatabaseDropdown(server: sqlops.connection.Connection, dbDropdown: sqlops.DropDownComponent){
+	if(server === null){
+		return;
+	}
+
+	let connectionProvider = sqlops.dataprotocol.getProvider<sqlops.ConnectionProvider>(server.providerName, sqlops.DataProviderType.ConnectionProvider);
+	let databases = await connectionProvider.listDatabases(server.connectionId);
+
+	dbDropdown.updateProperties({
+		values: databases.databaseNames.map(db=>{
+			return {
+				displayName: db,
+				name: db
+			};
+		})
+	})
+}
 
 interface ConnectionDropdownValue extends sqlops.CategoryValue {
-
 	connection: sqlops.connection.Connection;
 }
