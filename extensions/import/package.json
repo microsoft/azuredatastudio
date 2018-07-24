@@ -69,7 +69,6 @@
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
-    "vscode-languageclient": "^4.3.0",
     "vscode-nls": "^3.2.1",
     "opener": "^1.4.3",
     "vscode-extension-telemetry": "^0.0.5"
@@ -77,5 +76,11 @@
   "devDependencies": {
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7"
+  },
+  "resolutions": {
+    "vscode-jsonrpc": "3.5.0",
+    "vscode-languageclient": "3.5.0",
+    "vscode-languageserver-protocol": "3.5.0",
+    "vscode-languageserver-types": "3.5.0"
   }
 }
