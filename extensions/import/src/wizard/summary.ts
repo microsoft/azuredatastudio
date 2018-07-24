@@ -22,9 +22,6 @@ export async function summary(view: sqlops.ModelView, importInfo: Map<string, an
 		.component();
 
 	let statusText = view.modelBuilder.text()
-		.withProperties({
-			value: '✔ Awesome! You have successfully inserted the data into a table.'
-		})
 		.component();
 
 	let statusLoader = view.modelBuilder.loadingComponent().withItem(statusText).component();

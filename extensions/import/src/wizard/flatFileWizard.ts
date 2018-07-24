@@ -47,14 +47,11 @@ export function flatFileWizard(provider: FlatFileProvider) {
 
 		wizard.onPageChanged(e => {
 			if (e.lastPage === 2 && e.newPage === 3) {
-				new Promise(() => {
+				provider.sendHelloWorldRequest({ name: 'hackathon' }).then(() => {
+					importAnotherFileButton.hidden = false;
 					setTimeout(() => importInfo.get('importDataStatus').resolve(true), 3000);
 				});
 
-			}
-
-			if (e.newPage === 3) {
-				importAnotherFileButton.hidden = false;
 			}
 
 			if (e.lastPage === 3 && e.newPage !== 3) {
