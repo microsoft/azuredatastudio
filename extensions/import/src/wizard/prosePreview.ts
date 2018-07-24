@@ -15,13 +15,13 @@ export async function prosePreview(view: sqlops.ModelView) : Promise<void> {
 	//from services sample placeholder code
 	//let formWrapper = view.modelBuilder.loadingComponent().component();
 
-	let table = await createTable(view);
+	let table = await createTable(view, data);
 	let formModel = view.modelBuilder.formContainer()
 		.withFormItems(
 			[
 			{
 				component : table,
-				title : "This operation analyzed the input file structure to generate the preview below for up to the first 50 rows"
+				title : 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows'
 			}
 		]
 	).component();
@@ -30,13 +30,26 @@ export async function prosePreview(view: sqlops.ModelView) : Promise<void> {
 	await view.initializeModel(formWrapper);
 }
 
-async function createTable(view: sqlops.ModelView) : Promise<sqlops.TableComponent> {
+async function createTable(view: sqlops.ModelView, tableData: IDataObject) : Promise<sqlops.TableComponent> {
+
+	let validData = true;
+
+	let columns = tableData.columns;
+
+	let rows;
+	let rowsLength = tableData.rows.length;
+	if(rowsLength > 100){
+		rows = tableData.rows.slice(0,100);
+	}
+	else{
+		rows = tableData.rows;
+	}
+
 	let table = view.modelBuilder.table().withProperties({
-			data: data.rows,
-			columns: data.columns,
+			data: rows,
+			columns: columns,
 			height: 700,
 			width: 700,
-            selectedRows: [0]
         }).component();
 
 	return Promise.resolve(table);
