@@ -53,20 +53,20 @@ export default class MainController extends ControllerBase {
 			vscode.window.showInputBox({
 				prompt: 'Flat file path?'
 			}).then(filePath => {
-				provider.sendDataPreviewRequest({ filePath: filePath }).then(response => {
+				provider.sendPROSEDiscoveryRequest({ filePath: filePath }).then(response => {
 					vscode.window.showInformationMessage('Response: ' + response.dataPreview);
 				});
 			});
 		});
 
-		sqlops.tasks.registerTask('flatFileImport.helloWorld', () => {
-			vscode.window.showInputBox({
-				prompt: 'What is your name?'
-			}).then(name => {
-				provider.sendHelloWorldRequest({ name: name }).then(response => {
-					vscode.window.showInformationMessage('Response: ' + response.response);
-				});
-			});
-		});
+		// sqlops.tasks.registerTask('flatFileImport.helloWorld', () => {
+		// 	vscode.window.showInputBox({
+		// 		prompt: 'What is your name?'
+		// 	}).then(name => {
+		// 		provider.sendHelloWorldRequest({ name: name }).then(response => {
+		// 			vscode.window.showInformationMessage('Response: ' + response.response);
+		// 		});
+		// 	});
+		// });
 	}
 }
