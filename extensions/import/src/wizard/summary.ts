@@ -8,13 +8,13 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
 
-export async function summary(view: sqlops.ModelView, importInfo: Map<string, any>) : Promise<void> {
+export async function summary(view: sqlops.ModelView, importInfo: Map<string, any>): Promise<void> {
 
 	let table = view.modelBuilder.table()
 		.withProperties({
 			data: [['Database name', importInfo.get('Database name')],
-				['Table schema', importInfo.get('Table schema')],
-				['File to be imported', importInfo.get('File path')]],
+			['Table schema', importInfo.get('Table schema')],
+			['File to be imported', importInfo.get('File path')]],
 			columns: ['Object type', 'Name'],
 			width: 400,
 			height: 150
@@ -34,12 +34,12 @@ export async function summary(view: sqlops.ModelView, importInfo: Map<string, an
 			});
 			statusLoader.loading = false;
 		})
-		.catch((error) => {
-			statusText.updateProperties({
-				value: 'Error'
+			.catch((error) => {
+				statusText.updateProperties({
+					value: 'Error'
+				});
+				statusLoader.loading = false;
 			});
-			statusLoader.loading = false;
-		});
 	}
 
 	let formModel = view.modelBuilder.formContainer().withFormItems(
