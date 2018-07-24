@@ -30,4 +30,8 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string}> {
 		return this._proxy.$getCredentials(connectionId);
 	}
+
+	public $listDatabases(connectionId: string): Thenable<string[]> {
+		return this._proxy.$listDatabases(connectionId);
+	}
 }

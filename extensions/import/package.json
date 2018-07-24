@@ -36,6 +36,10 @@
       {
         "command": "flatFileImport.helloWorld",
         "title": "FlatFileImport: Hello world"
+      },
+      {
+        "command": "flatFileImport.listDatabases",
+        "title": "FlatFileImport: Test list databases"
       }
     ],
     "dashboard.tabs": [
