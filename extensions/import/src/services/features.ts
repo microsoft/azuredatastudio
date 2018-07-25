@@ -87,7 +87,7 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
             return requestSender(Contracts.GetColumnInfoRequest.type, params);
         };
 
-        let sendChangeColumnSettingsRequest = (params: Contracts.ChangeColumnSettingsParams): Thenable<Contracts.ChangeColumnNameResponse> => {
+        let sendChangeColumnSettingsRequest = (params: Contracts.ChangeColumnSettingsParams): Thenable<Contracts.ChangeColumnSettingsResponse> => {
             return requestSender(Contracts.ChangeColumnSettingsRequest.type, params);
         };
 
