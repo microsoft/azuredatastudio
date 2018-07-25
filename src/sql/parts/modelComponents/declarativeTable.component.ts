@@ -36,10 +36,7 @@ export enum DeclarativeDataType {
 	<thead>
         <tr style="display:block;">
 		<ng-container *ngFor="let column of columns;let h = index">
-
             <td class="declarative-table-header" tabindex="-1" [style.width]="getColumnWidth(h)" role="button" aria-sort="none">{{column.displayName}}</td>
-
-
 		</ng-container>
 		</tr>
     </thead>

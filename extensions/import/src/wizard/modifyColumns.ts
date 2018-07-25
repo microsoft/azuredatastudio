@@ -83,6 +83,7 @@ export async function modifyColumns(view: sqlops.ModelView, data: ImportDataMode
 		}
 		let declarativeTable = view.modelBuilder.declarativeTable()
 				.withProperties({
+					height: 800,
 					columns: [{
 						displayName: 'Column Name',
 						valueType: sqlops.DeclarativeDataType.string,
