@@ -26,17 +26,22 @@ export async function summary(view: sqlops.ModelView, m: ImportDataModel, wizard
 	let importPromise = importDataStatusPromise.promise;
 	if (importPromise) {
 		importPromise.then(result => {
+			let updateText: string;
 			if (result.result.success) {
-				statusText.updateProperties({
-					value: '✔ Awesome! You have successfully inserted the data into a table.'
-				});
+				let numRowsInserted = getCountRowsInserted();
+				if (numRowsInserted > 0) {
+					updateText = `✔ Awesome! You have successfully inserted ${numRowsInserted} rows.`;
+				} else {
+					updateText = '✔ Awesome! You have successfully inserted the data into a table.';
+				}
+
 			} else {
-				statusText.updateProperties({
-					value: '✗ ' + result.result.errorMessage
-				});
+				updateText = '✗ ' + result.result.errorMessage;
 			}
 
-
+			statusText.updateProperties({
+				value: updateText
+			});
 			statusLoader.loading = false;
 		})
 			.catch((error) => {
@@ -78,7 +83,33 @@ function populateTable(tableComponent: sqlops.TableComponent) {
 			['Table schema', model.schema],
 			['File to be imported', model.filePath]],
 		columns: ['Object type', 'Name'],
-		width: 400,
-		height: 150
+		width: 600,
+		height: 200
 	});
+}
+
+function getCountRowsInserted() : number {
+	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(model.server.providerName, sqlops.DataProviderType.QueryProvider);
+	let results: sqlops.SimpleExecuteResult;
+
+	try {
+		console.log(model.database);
+
+		let query = `USE ${model.database}; SELECT COUNT(*) FROM ${model.table}`;
+		queryProvider.runQueryAndReturn(model.server.connectionId, query).then((r) => {
+			results = r;
+		});
+		let cell =  results.rows[0][0];
+		if (!cell || cell.isNull) {
+			return -1;
+		}
+		let numericCell = Number(cell.displayValue);
+		if (numericCell === NaN) {
+			return -1;
+		}
+		return numericCell;
+	} catch (e) {
+		console.log('we ded');
+		return -1;
+	}
 }

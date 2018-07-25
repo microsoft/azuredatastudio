@@ -6,16 +6,32 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
-import { create } from 'domain';
-//import { FlatFileProvider } from '../../out/services/contracts';
 import { ImportDataModel } from './dataModel';
-
-var fileDelimiter = ',';
+const localize = nls.loadMessageBundle();
 
 export async function prosePreview(view: sqlops.ModelView, model: ImportDataModel) : Promise<void> {
-	//from services sample placeholder code
-	//let formWrapper = view.modelBuilder.loadingComponent().component();
+	if(!model.proseDataPreview || model.proseDataPreview.length === 0){
+		let errorMsg = view.modelBuilder.text()
+			.withProperties({
+				value: localize('flatFileImport.dataModelError',"No data available for preview")
+			}).component();
+		let formModel = view.modelBuilder.formContainer()
+			.withFormItems([
+				{
+				component: errorMsg,
+				title: 'Error'
+			}], {
+				horizontal: false,
+				componentWidth: 400
+			}).component();
+
+		let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
+		formWrapper.loading = false;
+		return await view.initializeModel(formWrapper);
+	}
+
 	let table = await createTable(view, model.proseDataPreview);
 	let formModel = view.modelBuilder.formContainer()
 		.withFormItems(
