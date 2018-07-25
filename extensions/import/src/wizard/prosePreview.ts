@@ -13,14 +13,10 @@ import { ImportDataModel } from './dataModel';
 
 var fileDelimiter = ',';
 
-export async function prosePreview(view: sqlops.ModelView, provider : FlatFileProvider, model: ImportDataModel) : Promise<void> {
+export async function prosePreview(view: sqlops.ModelView, model: ImportDataModel) : Promise<void> {
 	//from services sample placeholder code
 	//let formWrapper = view.modelBuilder.loadingComponent().component();
 	let data;
-	provider.sendDataPreviewRequest({ filePath: 'Hello World' }).then(response => {
-		data = new DataObject(response.dataPreview[0], response.dataPreview.slice(1,response.dataPreview.length));
-		//vscode.window.showInformationMessage('Response: ' + response.dataPreview);
-	});
 	let table = await createTable(view, data);
 	let formModel = view.modelBuilder.formContainer()
 		.withFormItems(

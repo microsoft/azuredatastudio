@@ -26,7 +26,7 @@ export async function summary(view: sqlops.ModelView, model: ImportDataModel) : 
 
 	let statusLoader = view.modelBuilder.loadingComponent().withItem(statusText).component();
 
-	let importPromise = importInfo.get('importDataStatus').promise as Promise<boolean>;
+	let importPromise = null;
 	if (importPromise) {
 		importPromise.then(result => {
 			statusText.updateProperties({

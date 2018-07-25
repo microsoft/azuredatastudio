@@ -30,7 +30,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
 	let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
 	let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
-  
+
 		page1.registerContent(async (view) => {
 			await fileConfig(view, model);
 		});
@@ -54,19 +54,19 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	importAnotherFileButton.hidden = true;
 	wizard.customButtons = [importAnotherFileButton];
 
-	wizard.onPageChanged(e => {
-		if (e.lastPage === 2 && e.newPage === 3) {
-			provider.sendHelloWorldRequest({ name: 'hackathon' }).then(() => {
-				importAnotherFileButton.hidden = false;
-				setTimeout(() => importInfo.get('importDataStatus').resolve(true), 3000);
-			});
-
-		}
-
-		if (e.lastPage === 3 && e.newPage !== 3) {
-			importAnotherFileButton.hidden = true;
-		}
-	});
+	// wizard.onPageChanged(e => {
+	// 	if (e.lastPage === 2 && e.newPage === 3) {
+	// 		provider.sendHelloWorldRequest({ name: 'hackathon' }).then(() => {
+	// 			importAnotherFileButton.hidden = false;
+	// 			setTimeout(() => importInfo.get('importDataStatus').resolve(true), 3000);
+	// 		});
+    //
+	// 	}
+    //
+	// 	if (e.lastPage === 3 && e.newPage !== 3) {
+	// 		importAnotherFileButton.hidden = true;
+	// 	}
+	// });
 
 	wizard.registerOperation({
 		displayName: 'test task',
