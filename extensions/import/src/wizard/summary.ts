@@ -8,11 +8,12 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
 import { ImportDataModel } from './dataModel';
-import { ImportDataStatusPromise } from './flatFileWizard';
+import { DeferredPromise } from './flatFileWizard';
+import { InsertDataResponse } from '../services/contracts';
 
 let model : ImportDataModel;
 
-export async function summary(view: sqlops.ModelView, m: ImportDataModel, wizard: sqlops.window.modelviewdialog.Wizard, importDataStatusPromise: ImportDataStatusPromise) : Promise<void> {
+export async function summary(view: sqlops.ModelView, m: ImportDataModel, wizard: sqlops.window.modelviewdialog.Wizard, importDataStatusPromise: DeferredPromise<InsertDataResponse>) : Promise<void> {
 	model = m;
 
 	let table = view.modelBuilder.table()

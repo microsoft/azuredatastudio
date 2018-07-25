@@ -13,10 +13,12 @@ import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
 import { FlatFileProvider, InsertDataResponse } from '../services/contracts';
 import {ImportDataModel} from './dataModel';
+import { PROSEDiscoveryResponse } from '../../out/services/contracts';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
   	let model = <ImportDataModel>{};
-	let importDataStatusPromise = importDataStatus();
+	let importDataStatusPromise = deferredPromise<InsertDataResponse>();
+	let previewReadyPromise = deferredPromise<PROSEDiscoveryResponse>();
 	// TODO localize this
 	let connections = await sqlops.connection.getActiveConnections();
 	if (!connections || connections.length === 0) {
@@ -34,7 +36,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 			await fileConfig(view, model);
 		});
 		page2.registerContent(async (view) => {
-			await prosePreview(view, model);
+			await prosePreview(view, model, previewReadyPromise);
 		});
 		page3.registerContent(async (view) => {
 			await modifyColumns(view, model);
@@ -54,7 +56,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.customButtons = [importAnotherFileButton];
 
 	wizard.onPageChanged(e => {
-		if(e.newPage === 0) {
+		if(e.lastPage === 0 && e.newPage === 1) {
 			provider.sendPROSEDiscoveryRequest({
 				filePath: model.filePath,
 				tableName: model.table,
@@ -71,6 +73,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 					};
 					model.proseColumns.push(columnData);
 				});
+				previewReadyPromise.resolve(result as any);
 			});
 		} else if(e.lastPage === 2 && e.newPage === 3) {
 			let changeColumnResults = [];
@@ -128,16 +131,16 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 }
 
 //TODO put in a different file with other interfaces
-export interface ImportDataStatusPromise {
-	promise: Promise<InsertDataResponse>;
-	resolve: (value: InsertDataResponse | PromiseLike<InsertDataResponse>) => void;
+export interface DeferredPromise<T> {
+	promise: Promise<T>;
+	resolve: (value: T | PromiseLike<T>) => void;
 	reject: (reason?: any) => void;
 }
 
-function importDataStatus(): ImportDataStatusPromise {
+function deferredPromise<T>(): DeferredPromise<T> {
 	let outResolve, outReject;
 	return {
-		promise: new Promise<InsertDataResponse>((resolve, reject) => {
+		promise: new Promise<T>((resolve, reject) => {
 			outResolve = resolve;
 			outReject = reject;
 		}),
