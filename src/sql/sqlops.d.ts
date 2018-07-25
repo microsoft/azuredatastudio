@@ -1733,7 +1733,7 @@ declare module 'sqlops' {
 		/**
 		 * TSQL for creating a session
 		 */
-		createStatement: {};
+		createStatement: string;
 	}
 
 	export interface ProfilerSessionEvents {

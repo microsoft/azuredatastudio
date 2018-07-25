@@ -189,11 +189,16 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
-		let templates = this.getSessionTemplates().reduce<Map<string, string>>((p, e) => {
-			p[e.name] = e.createStatement;
+		let templates = this.getSessionTemplates().reduce<Map<string, sqlops.ProfilerSessionTemplate>>((p, e) => {
+			let template: sqlops.ProfilerSessionTemplate = {
+				name: e.name,
+				defaultView: e.defaultView,
+				createStatement: e.createStatement
+			};
+			p[e.name] = template;
 			return p;
-		}, new Map<string, string>());
+		}, new Map<string, sqlops.ProfilerSessionTemplate>());
 
-		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, templates);
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, this.getSessionTemplates());
 	}
 }
