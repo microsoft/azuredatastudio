@@ -54,12 +54,14 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.customButtons = [importAnotherFileButton];
 
 	wizard.onPageChanged(e => {
-		if(e.newPage === 0) {
+		if(e.newPage === 1) {
+			console.log("Sending PROSE discovery request");
 			provider.sendPROSEDiscoveryRequest({
 				filePath: model.filePath,
 				tableName: model.table,
 				schemaName: model.schema
 			}).then((result)=>{
+				console.log("Recieved PROSE results");
 				model.proseDataPreview = result.dataPreview;
 				model.proseColumns = [];
 				result.columnInfo.forEach((column) => {
@@ -71,6 +73,10 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 					};
 					model.proseColumns.push(columnData);
 				});
+				// update all pages with new model
+				console.log("Updating pages with new model");
+				prosePreview(page2.modelView, model);
+				modifyColumns(page3.modelView, model);
 			});
 		} else if(e.lastPage === 2 && e.newPage === 3) {
 			let changeColumnResults = [];
