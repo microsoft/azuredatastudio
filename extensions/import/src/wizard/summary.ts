@@ -94,7 +94,6 @@ function getCountRowsInserted() : number {
 	let results: sqlops.SimpleExecuteResult;
 
 	try {
-		console.log(model.database);
 
 		let query = `USE ${model.database}; SELECT COUNT(*) FROM ${model.table}`;
 		queryProvider.runQueryAndReturn(model.server.connectionId, query).then((r) => {
@@ -110,7 +109,6 @@ function getCountRowsInserted() : number {
 		}
 		return numericCell;
 	} catch (e) {
-		console.log('we ded');
 		return -1;
 	}
 }

@@ -30,8 +30,6 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 
 	// Handle server changes
 	serverDropdown.onValueChanged(async (params) => {
-		console.log(params);
-
 		server = (serverDropdown.value as ConnectionDropdownValue).connection;
 
 		model.server = server;
@@ -76,12 +74,10 @@ async function populateTableNames(): Promise<boolean> {
 	let results: sqlops.SimpleExecuteResult;
 
 	try {
-		console.log(databaseName);
 
 		let query = `USE ${databaseName}; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
 		results = await queryProvider.runQueryAndReturn(connectionUri, query);
 	} catch (e) {
-		console.log('we ded');
 		return false;
 	}
 
@@ -89,33 +85,10 @@ async function populateTableNames(): Promise<boolean> {
 		return row[0].displayValue;
 	});
 
-	console.log(tableNames);
 	return true;
 }
 
-async function populateDatabaseDropdown(): Promise<boolean> {
-	if (!server) {
-		console.log('server was undefined');
-		return false;
-	}
-	let first = true;
-	databaseDropdown.updateProperties({
-		values: (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
 
-			if (first) {
-				first = false;
-				model.database = db;
-			}
-
-			return {
-				displayName: db,
-				name: db
-			};
-		})
-	});
-
-	return true;
-}
 
 async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	schemaDropdown = view.modelBuilder.dropDown().component();
@@ -123,7 +96,7 @@ async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 	schemaDropdown.onValueChanged(() => {
 		model.schema = (<sqlops.CategoryValue>schemaDropdown.value).name;
 	});
-	await populateSchemaDropdown();
+	populateSchemaDropdown();
 
 	return {
 		component: schemaDropdown,
@@ -219,6 +192,7 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 		}
 
 		tableNameTextBox.value = fileUri.fsPath.substring(nameStart + 1, nameEnd);
+		model.table = tableNameTextBox.value;
 		tableNameTextBox.validate();
 
 		// Let then model know about the file path
@@ -233,6 +207,18 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 }
 
 async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+
+
+	serverDropdown = view.modelBuilder.dropDown().component();
+	populateServerDropdown();
+
+	return {
+		component: serverDropdown,
+		title: 'Server the database is in',
+	};
+}
+
+async function populateServerDropdown() {
 	let cons = await sqlops.connection.getActiveConnections();
 	// This user has no active connections ABORT MISSION
 	if (!cons || cons.length === 0) {
@@ -242,7 +228,7 @@ async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 	server = cons[0];
 	model.server = server;
 
-	serverDropdown = view.modelBuilder.dropDown().withProperties({
+	serverDropdown.updateProperties({
 		values: cons.map(c => {
 			return {
 				connection: c,
@@ -250,17 +236,13 @@ async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 				name: c.connectionId
 			};
 		})
-	}).component();
+	});
 
-	return {
-		component: serverDropdown,
-		title: 'Server the database is in',
-	};
 }
 
 async function createDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	databaseDropdown = view.modelBuilder.dropDown().component();
-	await populateDatabaseDropdown();
+	populateDatabaseDropdown();
 
 	return {
 		component: databaseDropdown,
@@ -268,6 +250,29 @@ async function createDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.Fo
 	};
 }
 
+async function populateDatabaseDropdown(): Promise<boolean> {
+	if (!server) {
+		return false;
+	}
+
+	let first = true;
+	databaseDropdown.updateProperties({
+		values: (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
+
+			if (first) {
+				first = false;
+				model.database = db;
+			}
+
+			return {
+				displayName: db,
+				name: db
+			};
+		})
+	});
+
+	return true;
+}
 
 interface ConnectionDropdownValue extends sqlops.CategoryValue {
 	connection: sqlops.connection.Connection;

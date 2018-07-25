@@ -113,7 +113,6 @@ export async function modifyColumns(view: sqlops.ModelView, data: ImportDataMode
 		data.proseColumns.forEach((v) => {declarativeTable.data.push(MetadataConverter(v));});
 
 		declarativeTable.onDataChanged((e) => {
-			console.log('beep');
 			data.proseColumns = [];
 			declarativeTable.data.forEach((row) => {
 				data.proseColumns.push({

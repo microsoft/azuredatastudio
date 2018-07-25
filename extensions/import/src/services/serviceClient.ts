@@ -144,10 +144,8 @@ export class ServiceClient {
 class CustomOutputChannel implements vscode.OutputChannel {
     name: string;
     append(value: string): void {
-        console.log(value);
     }
     appendLine(value: string): void {
-        console.log(value);
     }
     // tslint:disable-next-line:no-empty
     clear(): void {
