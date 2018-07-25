@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import { ImportDataModel } from './dataModel';
+import {ImportDataModel} from './dataModel';
 
 let server: sqlops.connection.Connection;
 
@@ -20,7 +20,11 @@ let schemaDropdown: sqlops.DropDownComponent;
 
 let tableNames: string[] = [];
 
-export async function fileConfig(view: sqlops.ModelView, model: ImportDataModel): Promise<void> {
+let model: ImportDataModel;
+
+export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): Promise<void> {
+	model = dm;
+
 	let serverComponent = await createServerDropdown(view);
 	let databaseComponent = await createDatabaseDropdown(view);
 
@@ -29,12 +33,16 @@ export async function fileConfig(view: sqlops.ModelView, model: ImportDataModel)
 		console.log(params);
 
 		server = (serverDropdown.value as ConnectionDropdownValue).connection;
-		console.log('Server name: ' + server.connectionId);
+
+		model.server = server;
 		await populateDatabaseDropdown().then(() => populateSchemaDropdown());
 	});
 
 	// Handle database changes
-	databaseDropdown.onValueChanged(async (databaseName) => {
+	databaseDropdown.onValueChanged(async (db) => {
+
+		model.database = (<sqlops.CategoryValue>databaseDropdown.value).name;
+		;
 		await populateTableNames();
 	});
 
@@ -106,6 +114,10 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 
 async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	schemaDropdown = view.modelBuilder.dropDown().component();
+
+	schemaDropdown.onValueChanged(()=>{
+		model.schema = (<sqlops.CategoryValue>schemaDropdown.value).name;
+	});
 	await populateSchemaDropdown();
 
 	return {
@@ -147,6 +159,10 @@ async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormCo
 
 		return true;
 	}).component();
+
+	tableNameTextBox.onTextChanged((tableName) => {
+		model.table = tableName;
+	});
 
 	return {
 		component: tableNameTextBox,
