@@ -5,7 +5,7 @@
 'use strict';
 
 import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
-import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
+import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities, RequestType } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
 import * as sqlops from 'sqlops';
@@ -65,20 +65,43 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
         //     );
         // };
 
-        let sendPROSEDiscoveryRequest = (params: Contracts.PROSEDiscoveryParam): Thenable<Contracts.PROSEDiscoveryResponse> => {
-            return client.sendRequest(Contracts.PROSEDiscoveryRequest.type, params).then(
-                r => r,
+        let requestSender = (requestType, params) => {
+            return client.sendRequest(requestType, params).then(
+                r => r as any,
                 e => {
-                    client.logFailedRequest(Contracts.PROSEDiscoveryRequest.type, e);
+                    client.logFailedRequest(requestType, e);
                     return Promise.reject(e);
                 }
             );
         };
 
+        let sendPROSEDiscoveryRequest = (params: Contracts.PROSEDiscoveryParams): Thenable<Contracts.PROSEDiscoveryResponse> => {
+            return requestSender(Contracts.PROSEDiscoveryRequest.type, params);
+        };
+
+        let sendInsertDataRequest = (params: Contracts.InsertDataParams): Thenable<Contracts.InsertDataResponse> => {
+            return requestSender(Contracts.InsertDataRequest.type, params);
+        };
+
+        let sendGetColumnInfoRequest = (params: Contracts.GetColumnInfoParams): Thenable<Contracts.GetColumnInfoResponse> => {
+            return requestSender(Contracts.GetColumnInfoRequest.type, params);
+        };
+
+        let sendChangeColumnNameRequest = (params: Contracts.ChangeColumnNameParams): Thenable<Contracts.ChangeColumnNameResponse> => {
+            return requestSender(Contracts.ChangeColumnNameRequest.type, params);
+        };
+
+        let sendChangeDataTypeRequest = (params: Contracts.ChangeDataTypeParams): Thenable<Contracts.ChangeDataTypeResponse> => {
+            return requestSender(Contracts.ChangeDataTypeRequest.type, params);
+        };
+
         return managerInstance.registerApi<Contracts.FlatFileProvider>(ApiType.FlatFileProvider, {
             providerId: client.providerId,
-            //sendHelloWorldRequest,
-            sendPROSEDiscoveryRequest
+            sendPROSEDiscoveryRequest,
+            sendChangeColumnNameRequest,
+            sendChangeDataTypeRequest,
+            sendGetColumnInfoRequest,
+            sendInsertDataRequest
         });
     }
 }
