@@ -8,9 +8,12 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IBootstrapParams } from './bootstrapService';
+import { Event } from 'vs/base/common/event';
 
 export interface IQueryComponentParams extends IBootstrapParams {
 	dataService: DataService;
+	saveViewStateEvent: Event<void>;
+	restoreViewStateEvent: Event<void>;
 }
 
 export interface IEditDataComponentParams extends IBootstrapParams {

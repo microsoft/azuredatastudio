@@ -15,7 +15,7 @@ import {
 	ElementRef, QueryList, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject,
 	ViewChildren, forwardRef, EventEmitter, Input, ViewChild
 } from '@angular/core';
-import { IGridDataRow, SlickGrid, VirtualizedCollection } from 'angular2-slickgrid';
+import { IGridDataRow, SlickGrid, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
 
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -225,6 +225,10 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			}
 			self._cd.detectChanges();
 		});
+
+		this.queryParameters.saveViewStateEvent(() => this.saveViewState());
+		this.queryParameters.restoreViewStateEvent(() => this.restoreViewState());
+
 		this.dataService.onAngularLoaded();
 	}
 
@@ -649,6 +653,26 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		} else if (pane === 'results') {
 			this.toggleResultPane();
 		}
+	}
+
+	// TODO: Selection and message scroll are working, results scroll is not. Also add scroll for each grid
+	// resultsElement.parentElement.children[1] has a scrolltop set (i think this is the results pane scroll)
+	// resultsElement.parentElement.children[1].children[0].children[0].children[0].children[3] also has scroll top
+	private _gridSelections: ISlickRange[][] = [];
+	private _resultsPaneScroll: number;
+	private _messagePaneScroll: number;
+
+	private saveViewState(): void {
+		this._gridSelections = this.slickgrids.map(grid => grid.getSelectedRanges());
+		let resultsElement = (this._resultsPane.nativeElement as HTMLElement);
+		this._resultsPaneScroll = resultsElement.scrollTop;
+		this._messagePaneScroll = (this._messagesContainer.nativeElement as HTMLElement).scrollTop;
+	}
+
+	private restoreViewState(): void {
+		this.slickgrids.forEach((grid, index) => grid.selection = this._gridSelections[index]);
+		(this._resultsPane.nativeElement as HTMLElement).scrollTop = this._resultsPaneScroll;
+		(this._messagesContainer.nativeElement as HTMLElement).scrollTop = this._messagePaneScroll;
 	}
 
 	layout() {
