@@ -382,7 +382,7 @@ export class QueryEditor extends BaseEditor {
 				}
 			}
 		}
-		return null;
+		return undefined;
 	}
 
 	public getSelectionText(): string {

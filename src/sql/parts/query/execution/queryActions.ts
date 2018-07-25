@@ -434,7 +434,7 @@ export class ParseSyntaxAction extends QueryTaskbarAction {
 	) {
 		super(connectionManagementService, editor, ParseSyntaxAction.ID, ParseSyntaxAction.EnabledClass);
 		this.enabled = true;
-		this.label = nls.localize('parseSyntaxLabel', 'Parse');
+		this.label = nls.localize('parseSyntaxLabel', 'Parse Query');
 	}
 
 	public run(): TPromise<void> {
