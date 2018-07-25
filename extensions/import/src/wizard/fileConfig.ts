@@ -30,8 +30,6 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 
 	// Handle server changes
 	serverDropdown.onValueChanged(async (params) => {
-		console.log(params);
-
 		server = (serverDropdown.value as ConnectionDropdownValue).connection;
 
 		model.server = server;
@@ -76,12 +74,10 @@ async function populateTableNames(): Promise<boolean> {
 	let results: sqlops.SimpleExecuteResult;
 
 	try {
-		console.log(databaseName);
 
 		let query = `USE ${databaseName}; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
 		results = await queryProvider.runQueryAndReturn(connectionUri, query);
 	} catch (e) {
-		console.log('we ded');
 		return false;
 	}
 
@@ -89,13 +85,11 @@ async function populateTableNames(): Promise<boolean> {
 		return row[0].displayValue;
 	});
 
-	console.log(tableNames);
 	return true;
 }
 
 async function populateDatabaseDropdown(): Promise<boolean> {
 	if (!server) {
-		console.log('server was undefined');
 		return false;
 	}
 	let first = true;
