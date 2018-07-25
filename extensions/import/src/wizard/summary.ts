@@ -8,8 +8,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
 import { ImportDataModel } from './dataModel';
+import { ImportDataStatusPromise } from './flatFileWizard';
 
-export async function summary(view: sqlops.ModelView, model: ImportDataModel) : Promise<void> {
+export async function summary(view: sqlops.ModelView, model: ImportDataModel, importDataStatusPromise: ImportDataStatusPromise) : Promise<void> {
 	let table = view.modelBuilder.table()
 		.withProperties({
 			data: [['Database name', ''],
@@ -26,12 +27,20 @@ export async function summary(view: sqlops.ModelView, model: ImportDataModel) : 
 
 	let statusLoader = view.modelBuilder.loadingComponent().withItem(statusText).component();
 
-	let importPromise = null;
+	let importPromise = importDataStatusPromise.promise;
 	if (importPromise) {
 		importPromise.then(result => {
-			statusText.updateProperties({
-				value: '✔ Awesome! You have successfully inserted the data into a table.'
-			});
+			if (result.result.success) {
+				statusText.updateProperties({
+					value: '✔ Awesome! You have successfully inserted the data into a table.'
+				});
+			} else {
+				statusText.updateProperties({
+					value: '✗ ' + result.result.errorMessage
+				});
+			}
+
+
 			statusLoader.loading = false;
 		})
 			.catch((error) => {

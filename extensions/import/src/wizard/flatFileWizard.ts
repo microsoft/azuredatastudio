@@ -11,13 +11,12 @@ import { fileConfig } from './fileConfig';
 import { prosePreview } from './prosePreview';
 import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
-import { FlatFileProvider } from '../services/contracts';
+import { FlatFileProvider, InsertDataResponse } from '../services/contracts';
 import {ImportDataModel} from './dataModel';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
   let model = <ImportDataModel>{};
-	let importInfo = new Map<string, any>();
-	importInfo.set('importDataStatus', importDataStatus());
+	let importDataStatusPromise = importDataStatus();
 	// TODO localize this
 	let connections = await sqlops.connection.getActiveConnections();
 	if (!connections || connections.length === 0) {
@@ -41,32 +40,36 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 			await modifyColumns(view, model);
 		});
 		page4.registerContent(async (view) => {
-			await summary(view,model);
+			await summary(view,model, importDataStatusPromise);
 		});
 
 	let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 	importAnotherFileButton.onClick(() => {
 		//TODO replace this with proper cleanup for all the pages
-		importInfo = null;
 		wizard.close();
 		flatFileWizard(provider);
 	});
 	importAnotherFileButton.hidden = true;
 	wizard.customButtons = [importAnotherFileButton];
 
-	// wizard.onPageChanged(e => {
-	// 	if (e.lastPage === 2 && e.newPage === 3) {
-	// 		provider.sendHelloWorldRequest({ name: 'hackathon' }).then(() => {
-	// 			importAnotherFileButton.hidden = false;
-	// 			setTimeout(() => importInfo.get('importDataStatus').resolve(true), 3000);
-	// 		});
-    //
-	// 	}
-    //
-	// 	if (e.lastPage === 3 && e.newPage !== 3) {
-	// 		importAnotherFileButton.hidden = true;
-	// 	}
-	// });
+	wizard.onPageChanged(e => {
+		if (e.lastPage === 2 && e.newPage === 3) {
+			provider.sendInsertDataRequest({
+				//is this actually the connection string?
+				connectionString: model.server.connectionId,
+				//where do I get this from?
+				batchSize: 1
+			}).then((response) => {
+				importAnotherFileButton.hidden = false;
+				setTimeout(() => importDataStatusPromise.resolve(response), 3000);
+			});
+
+		}
+
+		if (e.lastPage === 3 && e.newPage !== 3) {
+			importAnotherFileButton.hidden = true;
+		}
+	});
 
 	wizard.registerOperation({
 		displayName: 'test task',
@@ -89,14 +92,17 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.open();
 }
 
-function importDataStatus(): {
-	promise: Promise<boolean>,
-	resolve: (value: boolean | PromiseLike<boolean>) => void
-	reject: (reason?: any) => void
-} {
+//TODO put in a different file with other interfaces
+export interface ImportDataStatusPromise {
+	promise: Promise<InsertDataResponse>;
+	resolve: (value: InsertDataResponse | PromiseLike<InsertDataResponse>) => void;
+	reject: (reason?: any) => void;
+}
+
+function importDataStatus(): ImportDataStatusPromise {
 	let outResolve, outReject;
 	return {
-		promise: new Promise<boolean>((resolve, reject) => {
+		promise: new Promise<InsertDataResponse>((resolve, reject) => {
 			outResolve = resolve;
 			outReject = reject;
 		}),
