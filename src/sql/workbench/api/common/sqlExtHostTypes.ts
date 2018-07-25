@@ -146,6 +146,7 @@ export enum ModelComponentTypes {
 	Group,
 	Toolbar,
 	LoadingComponent,
+	TreeComponent,
 	FileBrowserTree
 }
 

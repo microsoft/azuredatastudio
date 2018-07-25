@@ -66,6 +66,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	tree(): sqlops.ComponentBuilder<sqlops.TreeComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TreeComponent> = this.getComponentBuilder(new TreeComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.InputBoxComponent> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
@@ -993,6 +1000,20 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops
 
 	public set ownerUri(value: string) {
 		this.setProperty('ownerUri', value);
+	}
+
+	public get onDidChange(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+}
+
+ class TreeComponentWrapper extends ComponentWrapper implements sqlops.TreeComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.TreeComponent, id);
+		this.properties = {};
+		//this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
 	public get onDidChange(): vscode.Event<any> {

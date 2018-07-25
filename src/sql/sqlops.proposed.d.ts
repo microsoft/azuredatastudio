@@ -26,6 +26,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		tree(): ComponentBuilder<TreeComponent>;
 		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
@@ -36,6 +37,13 @@ declare module 'sqlops' {
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
+	}
+
+	export interface TreeComponentDataModel {
+		data: any;
+		children?: TreeComponentDataModel[];
+		parent?: TreeComponentDataModel;
+		id: string;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -369,7 +377,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TableColumn {
-		value: string
+		value: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -495,6 +503,10 @@ declare module 'sqlops' {
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
 		onDidChange: vscode.Event<any>;
+	}
+
+	export interface TreeComponent extends Component {
+
 	}
 
 	export interface WebViewComponent extends Component {
