@@ -42,7 +42,6 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 	databaseDropdown.onValueChanged(async (db) => {
 
 		model.database = (<sqlops.CategoryValue>databaseDropdown.value).name;
-		;
 		await populateTableNames();
 	});
 
