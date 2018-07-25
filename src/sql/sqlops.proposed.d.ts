@@ -391,7 +391,8 @@ declare module 'sqlops' {
 	export enum DeclarativeDataType {
 		string = 'string',
 		category = 'category',
-		boolean = 'boolean'
+		boolean = 'boolean',
+		editableCategory = 'editableCategory'
 	}
 
 	export interface RadioButtonProperties {

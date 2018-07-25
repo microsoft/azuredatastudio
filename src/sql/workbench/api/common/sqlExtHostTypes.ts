@@ -272,7 +272,8 @@ export enum DataProviderType {
 export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
-	boolean = 'boolean'
+	boolean = 'boolean',
+	editableCategory = 'editableCategory'
 }
 
 export enum CardType {
