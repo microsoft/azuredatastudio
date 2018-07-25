@@ -29,7 +29,7 @@ export async function prosePreview(view: sqlops.ModelView, model: ImportDataMode
 					title: 'Error'
 				}], {
 					horizontal: false,
-					componentWidth: 400
+					componentWidth: '100%'
 				}).component();
 
 			formWrapper.component = formModel;
@@ -68,7 +68,7 @@ async function createTable(view: sqlops.ModelView, tableData: string[][], column
 			data: rows,
 			columns: columnHeaders,
 			height: 400,
-			width: 700,
+			width: '700',
         }).component();
 
 	return Promise.resolve(table);

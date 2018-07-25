@@ -183,7 +183,13 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		let cellData = this.data[row][cell];
 		if (cellData && column.categoryValues) {
 			let category = column.categoryValues.find(v => v.name === cellData);
-			return category.displayName;
+			if (category) {
+				return category.displayName;
+			} else if (this.isEditableSelectBox(cell)) {
+				return cellData;
+			} else {
+				return undefined;
+			}
 		} else {
 			return '';
 		}

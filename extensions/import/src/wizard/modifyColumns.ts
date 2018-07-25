@@ -86,24 +86,24 @@ export async function modifyColumns(view: sqlops.ModelView, data: ImportDataMode
 					columns: [{
 						displayName: 'Column Name',
 						valueType: sqlops.DeclarativeDataType.string,
-						width: '450px',
+						width: '150px',
 						isReadOnly: false
 					}, {
 						displayName: 'Data Type',
 						valueType: sqlops.DeclarativeDataType.editableCategory,
-						width: '450px',
+						width: '150px',
 						isReadOnly: false,
 						categoryValues: categoryValues
 					}, {
 						displayName: 'Primary Key',
 						valueType: sqlops.DeclarativeDataType.boolean,
-						width: '400px',
+						width: '100px',
 						isReadOnly: false
 					}, {
 						displayName: 'Allow Null',
 						valueType: sqlops.DeclarativeDataType.boolean,
 						isReadOnly: false,
-						width: '400px'
+						width: '100px'
 					}
 					],
 					data: []
@@ -132,7 +132,7 @@ export async function modifyColumns(view: sqlops.ModelView, data: ImportDataMode
 				title: ''
 			}], {
 					horizontal: false,
-					componentWidth: 400
+					componentWidth: '100%'
 				}).component();
 		formWrapper.component = formModel;
 		formWrapper.loading = false;
