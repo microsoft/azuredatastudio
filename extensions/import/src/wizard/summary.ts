@@ -78,7 +78,7 @@ function populateTable(tableComponent: sqlops.TableComponent) {
 			['Table schema', model.schema],
 			['File to be imported', model.filePath]],
 		columns: ['Object type', 'Name'],
-		width: 400,
-		height: 150
+		width: 600,
+		height: 200
 	});
 }
