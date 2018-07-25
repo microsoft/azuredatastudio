@@ -98,9 +98,15 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 		console.log('server was undefined');
 		return false;
 	}
-
+	let first = true;
 	databaseDropdown.updateProperties({
 		values: (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
+
+			if (first) {
+				first = false;
+				model.database = db;
+			}
+
 			return {
 				displayName: db,
 				name: db
@@ -114,7 +120,7 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	schemaDropdown = view.modelBuilder.dropDown().component();
 
-	schemaDropdown.onValueChanged(()=>{
+	schemaDropdown.onValueChanged(() => {
 		model.schema = (<sqlops.CategoryValue>schemaDropdown.value).name;
 	});
 	await populateSchemaDropdown();
@@ -134,7 +140,14 @@ async function populateSchemaDropdown(): Promise<Boolean> {
 
 	let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
+	let first = true;
 	let schemas = results.rows.map(row => {
+		let schemaName = row[0].displayValue;
+		if (first) {
+			first = false;
+			model.schema = schemaName;
+		}
+
 		return row[0].displayValue;
 	});
 
@@ -188,6 +201,7 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 				}
 			}
 		);
+
 		if (!fileUris || fileUris.length === 0) {
 			return;
 		}
@@ -206,6 +220,9 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 
 		tableNameTextBox.value = fileUri.fsPath.substring(nameStart + 1, nameEnd);
 		tableNameTextBox.validate();
+
+		// Let then model know about the file path
+		model.filePath = fileUri.fsPath;
 	});
 
 	return {
@@ -223,6 +240,7 @@ async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 	}
 
 	server = cons[0];
+	model.server = server;
 
 	serverDropdown = view.modelBuilder.dropDown().withProperties({
 		values: cons.map(c => {
