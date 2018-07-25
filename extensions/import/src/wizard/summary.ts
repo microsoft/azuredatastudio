@@ -45,7 +45,7 @@ export async function summary(view: sqlops.ModelView, model: ImportDataModel, im
 		})
 			.catch((error) => {
 				statusText.updateProperties({
-					value: 'Error'
+					value: '✗ Error'
 				});
 				statusLoader.loading = false;
 			});

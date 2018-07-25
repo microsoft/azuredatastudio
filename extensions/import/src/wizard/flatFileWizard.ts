@@ -55,10 +55,10 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.onPageChanged(e => {
 		if (e.lastPage === 2 && e.newPage === 3) {
 			provider.sendInsertDataRequest({
-				//is this actually the connection string?
-				connectionString: model.server.connectionId,
-				//where do I get this from?
-				batchSize: 1
+				//TODO find a way to get the connection string
+				connectionString: '',
+				//TODO check what SSMS uses as batch size
+				batchSize: 500
 			}).then((response) => {
 				importAnotherFileButton.hidden = false;
 				setTimeout(() => importDataStatusPromise.resolve(response), 3000);
