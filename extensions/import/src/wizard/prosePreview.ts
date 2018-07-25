@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { ImportDataModel } from './dataModel';
 import { DeferredPromise } from './flatFileWizard';
-import { PROSEDiscoveryResponse } from '../../out/services/contracts';
+import { PROSEDiscoveryResponse } from '../services/contracts';
 const localize = nls.loadMessageBundle();
 
 export async function prosePreview(view: sqlops.ModelView, model: ImportDataModel, previewReadyPromise: DeferredPromise<PROSEDiscoveryResponse>) : Promise<void> {
@@ -37,7 +37,7 @@ export async function prosePreview(view: sqlops.ModelView, model: ImportDataMode
 			return await view.initializeModel(formWrapper);
 		}
 
-		let table = await createTable(view, model.proseDataPreview);
+		let table = await createTable(view, model.proseDataPreview, model.proseColumns.map(c => c.columnName));
 		let formModel = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -53,8 +53,7 @@ export async function prosePreview(view: sqlops.ModelView, model: ImportDataMode
 	await view.initializeModel(formWrapper);
 }
 
-async function createTable(view: sqlops.ModelView, tableData: string[][]) : Promise<sqlops.TableComponent> {
-	let columns = tableData[0];
+async function createTable(view: sqlops.ModelView, tableData: string[][], columnHeaders: string[]) : Promise<sqlops.TableComponent> {
 	let rows;
 	let rowsLength = tableData.length;
 
@@ -67,7 +66,7 @@ async function createTable(view: sqlops.ModelView, tableData: string[][]) : Prom
 
 	let table = view.modelBuilder.table().withProperties({
 			data: rows,
-			columns: columns,
+			columns: columnHeaders,
 			height: 700,
 			width: 700,
         }).component();

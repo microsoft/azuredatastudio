@@ -11,9 +11,8 @@ import { fileConfig } from './fileConfig';
 import { prosePreview } from './prosePreview';
 import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
-import { FlatFileProvider, InsertDataResponse } from '../services/contracts';
+import { FlatFileProvider, InsertDataResponse, PROSEDiscoveryResponse } from '../services/contracts';
 import {ImportDataModel} from './dataModel';
-import { PROSEDiscoveryResponse } from '../../out/services/contracts';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
   	let model = <ImportDataModel>{};

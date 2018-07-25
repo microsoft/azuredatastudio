@@ -9,7 +9,7 @@ import * as path from 'path';
 import * as sqlops from 'sqlops';
 import { ImportDataModel, ColumnMetadata } from './dataModel';
 import { DeferredPromise } from './flatFileWizard';
-import { PROSEDiscoveryResponse } from '../../out/services/contracts';
+import { PROSEDiscoveryResponse } from '../services/contracts';
 const localize = nls.loadMessageBundle();
 
 export async function modifyColumns(view: sqlops.ModelView, data: ImportDataModel, previewReadyPromise: DeferredPromise<PROSEDiscoveryResponse>) : Promise<void> {
