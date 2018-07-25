@@ -54,23 +54,51 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.customButtons = [importAnotherFileButton];
 
 	wizard.onPageChanged(e => {
-		if (e.lastPage === 2 && e.newPage === 3) {
-			let connectionString: string;
-			let options = model.server.options;
-			if (options.authenticationType === 'Integrated') {
-				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=True`;
-			} else {
-				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=False;User Id=${options.user};Password=${options.password}`;
-			}
-			provider.sendInsertDataRequest({
-				connectionString: connectionString,
-				//TODO check what SSMS uses as batch size
-				batchSize: 500
-			}).then((response) => {
-				importAnotherFileButton.hidden = false;
-				importDataStatusPromise.resolve(response);
+		if(e.newPage === 0) {
+			provider.sendPROSEDiscoveryRequest({
+				filePath: model.filePath,
+				tableName: model.table,
+				schemaName: model.schema
+			}).then((result)=>{
+				model.proseDataPreview = result.dataPreview;
+				model.proseColumns = [];
+				result.columnInfo.forEach((column) => {
+					let columnData = {
+						columnName: column.name,
+						dataType: column.sqlType,
+						primaryKey: false,
+						nullable: column.isNullable
+					};
+					model.proseColumns.push(columnData);
+				});
 			});
-
+		} else if(e.lastPage === 2 && e.newPage === 3) {
+			let changeColumnResults = [];
+			model.proseColumns.forEach((val, i, arr) => {
+				let columnChangeParams = {
+					index: i,
+					newName: val.columnName,
+					newDataType: val.dataType,
+					newNullable: val.nullable,
+					newInPrimaryKey: val.primaryKey
+				};
+				changeColumnResults.push(provider.sendChangeColumnSettingsRequest(columnChangeParams));
+			});
+    let connectionString: string;
+          let options = model.server.options;
+          if (options.authenticationType === 'Integrated') {
+            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=True`;
+          } else {
+            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=False;User Id=${options.user};Password=${options.password}`;
+          }
+          provider.sendInsertDataRequest({
+            connectionString: connectionString,
+            //TODO check what SSMS uses as batch size
+            batchSize: 500
+          }).then((response) => {
+            importAnotherFileButton.hidden = false;
+            importDataStatusPromise.resolve(response);
+			});
 		}
 
 		if (e.lastPage === 3 && e.newPage !== 3) {
