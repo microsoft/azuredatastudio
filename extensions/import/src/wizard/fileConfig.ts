@@ -183,7 +183,10 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
-				openLabel: 'Open'
+				openLabel: 'Open',
+				filters: {
+					'Files': ['csv', 'txt']
+				}
 			}
 		);
 		if (!fileUris || fileUris.length === 0) {
