@@ -90,9 +90,9 @@ export async function flatFileWizard(provider: FlatFileProvider) {
     let connectionString: string;
           let options = model.server.options;
           if (options.authenticationType === 'Integrated') {
-            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=True`;
+            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=True`;
           } else {
-            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=False;User Id=${options.user};Password=${options.password}`;
+            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=False;User Id=${options.user};Password=${options.password}`;
           }
           provider.sendInsertDataRequest({
             connectionString: connectionString,
