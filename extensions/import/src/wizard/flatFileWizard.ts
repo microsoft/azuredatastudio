@@ -15,7 +15,7 @@ import { FlatFileProvider, InsertDataResponse } from '../services/contracts';
 import {ImportDataModel} from './dataModel';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
-  let model = <ImportDataModel>{};
+  	let model = <ImportDataModel>{};
 	let importDataStatusPromise = importDataStatus();
 	// TODO localize this
 	let connections = await sqlops.connection.getActiveConnections();
@@ -55,14 +55,20 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 
 	wizard.onPageChanged(e => {
 		if (e.lastPage === 2 && e.newPage === 3) {
+			let connectionString: string;
+			let options = model.server.options;
+			if (options.authenticationType === 'Integrated') {
+				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=True`;
+			} else {
+				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${options.database};Integrated Security=False;User Id=${options.user};Password=${options.password}`;
+			}
 			provider.sendInsertDataRequest({
-				//TODO find a way to get the connection string
-				connectionString: '',
+				connectionString: connectionString,
 				//TODO check what SSMS uses as batch size
 				batchSize: 500
 			}).then((response) => {
 				importAnotherFileButton.hidden = false;
-				setTimeout(() => importDataStatusPromise.resolve(response), 3000);
+				importDataStatusPromise.resolve(response);
 			});
 
 		}
