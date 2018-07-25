@@ -58,10 +58,10 @@ async function createTable(view: sqlops.ModelView, tableData: string[][], column
 	let rowsLength = tableData.length;
 
 	if(rowsLength > 50){
-		rows = tableData.slice(1,50);
+		rows = tableData;
 	}
 	else{
-		rows = tableData.slice(1, rowsLength);
+		rows = tableData.slice(0, rowsLength);
 	}
 
 	let table = view.modelBuilder.table().withProperties({
