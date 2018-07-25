@@ -119,31 +119,19 @@ export interface GetColumnInfoResponse {
 
 
 /**
- * ChangeColumnNameRequest
+ * ChangeColumnSettingsRequest
  */
-const changeColumnNameRequestName = 'flatfile/changeColumnName';
+const changeColumnSettingsRequestName = 'flatfile/changeColumnSettings';
 
-export interface ChangeColumnNameParams {
+export interface ChangeColumnSettingsParams {
     index: number;
-    newName: string;
+    newName?: string;
+    newDataType?: string;
+    newNullable?: boolean;
+    newInPrimaryKey?: boolean;
 }
 
-export interface ChangeColumnNameResponse {
-    result: Result;
-}
-
-
-/**
- * ChangeDataTypeRequest
- */
-const changeDataTypeRequestName = 'flatfile/changeDataType';
-
-export interface ChangeDataTypeParams {
-    index: number;
-    newDataType: string;
-}
-
-export interface ChangeDataTypeResponse {
+export interface ChangeColumnSettingsResponse {
     result: Result;
 }
 
@@ -162,12 +150,8 @@ export namespace GetColumnInfoRequest {
     export const type = new RequestType<GetColumnInfoParams, GetColumnInfoResponse, void, void>(getColumnInfoRequestName);
 }
 
-export namespace ChangeColumnNameRequest {
-    export const type = new RequestType<ChangeColumnNameParams, ChangeColumnNameResponse, void, void>(changeColumnNameRequestName);
-}
-
-export namespace ChangeDataTypeRequest {
-    export const type = new RequestType<ChangeDataTypeParams, ChangeDataTypeResponse, void, void>(changeDataTypeRequestName);
+export namespace ChangeColumnSettingsRequest {
+    export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
 export interface FlatFileProvider {
@@ -177,6 +161,5 @@ export interface FlatFileProvider {
     sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<PROSEDiscoveryResponse>;
     sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
     sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
-    sendChangeColumnNameRequest(params: ChangeColumnNameParams): Thenable<ChangeColumnNameResponse>;
-    sendChangeDataTypeRequest(params: ChangeDataTypeParams): Thenable<ChangeDataTypeResponse>;
+    sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
 }
