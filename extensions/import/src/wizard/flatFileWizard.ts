@@ -54,17 +54,47 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.customButtons = [importAnotherFileButton];
 
 	wizard.onPageChanged(e => {
-		if (e.lastPage === 2 && e.newPage === 3) {
-			provider.sendInsertDataRequest({
-				//TODO find a way to get the connection string
-				connectionString: '',
-				//TODO check what SSMS uses as batch size
-				batchSize: 500
-			}).then((response) => {
-				importAnotherFileButton.hidden = false;
-				setTimeout(() => importDataStatusPromise.resolve(response), 3000);
+		if(e.newPage === 0) {
+			provider.sendPROSEDiscoveryRequest({
+				filePath: model.filePath,
+				tableName: model.table,
+				schemaName: model.schema
+			}).then((result)=>{
+				model.proseDataPreview = result.dataPreview;
+				model.proseColumns = [];
+				result.columnInfo.forEach((column) => {
+					let columnData = {
+						columnName: column.name,
+						dataType: column.sqlType,
+						primaryKey: false,
+						nullable: column.isNullable
+					};
+					model.proseColumns.push(columnData);
+				});
 			});
-
+		} else if(e.lastPage === 2 && e.newPage === 3) {
+			let changeColumnResults = [];
+			model.proseColumns.forEach((val, i, arr) => {
+				let columnChangeParams = {
+					index: i,
+					newName: val.columnName,
+					newDataType: val.dataType,
+					newNullable: val.nullable,
+					newInPrimaryKey: val.primaryKey
+				};
+				changeColumnResults.push(provider.sendChangeColumnSettingsRequest(columnChangeParams));
+			});
+			Promise.all(changeColumnResults).then(() =>{
+				provider.sendInsertDataRequest({
+					//TODO find a way to get the connection string
+					connectionString: '',
+					//TODO check what SSMS uses as batch size
+					batchSize: 500
+				}).then((response) => {
+					importAnotherFileButton.hidden = false;
+					setTimeout(() => importDataStatusPromise.resolve(response), 3000);
+				});
+			});
 		}
 
 		if (e.lastPage === 3 && e.newPage !== 3) {
