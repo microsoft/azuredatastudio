@@ -12,11 +12,17 @@ import { PROSEDiscoveryResponse, ColumnInfo } from '../services/contracts';
 export interface ImportDataModel {
 	ownerUri: string;
 	fileConfigData: Map<string, string>;
-	proseColumns: ColumnInfo[];
+	proseColumns: ColumnMetadata[];
 	proseDataPreview: string[][];
 	server: sqlops.connection.Connection;
 	database: string;
 	table: string;
 	schema: string;
 	filePath: string;
+}
+export interface ColumnMetadata {
+	columnName: string;
+	dataType: string;
+	primaryKey: boolean;
+	nullable: boolean;
 }
