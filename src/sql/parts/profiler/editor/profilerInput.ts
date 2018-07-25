@@ -203,9 +203,14 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			let sessionTemplate = this._profilerService.getSessionTemplates().find((template) => {
 				return template.name === params.templateName;
 			});
-			let newView = this._profilerService.getViewTemplates().find((view) => {
-				return view.name === sessionTemplate.defaultView;
-			});
+			if (!types.isUndefinedOrNull(sessionTemplate)) {
+				let newView = this._profilerService.getViewTemplates().find((view) => {
+					return view.name === sessionTemplate.defaultView;
+				});
+				if (!types.isUndefinedOrNull(newView)) {
+					this._viewTemplate = newView;
+				}
+			}
 
 			this.data.clear();
 			this.state.change({

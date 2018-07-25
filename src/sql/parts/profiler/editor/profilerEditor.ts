@@ -438,7 +438,7 @@ export class ProfilerEditor extends BaseEditor {
 			this._connectAction.connected = this.input.state.isConnected;
 
 			if (this.input.state.isConnected) {
-				this._updateToolbarButtons();
+				this._updateToolbar();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
 					this._sessionSelector.setOptions(r);
@@ -458,17 +458,19 @@ export class ProfilerEditor extends BaseEditor {
 
 		if (e.isPaused) {
 			this._pauseAction.paused = this.input.state.isPaused;
-			this._updateToolbarButtons();
+			this._updateToolbar();
 		}
 
 		if (e.isStopped || e.isRunning) {
 			if (this.input.state.isRunning) {
-				this._updateToolbarButtons();
+				this._updateToolbar();
+				this._sessionSelector.setOptions([this.input.sessionName]);
 				this._sessionSelector.selectWithOptionName(this.input.sessionName);
 				this._sessionSelector.disable();
 			}
 			if (this.input.state.isStopped) {
-				this._updateToolbarButtons();
+				this._updateToolbar();
+				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
 					this._sessionSelector.setOptions(r);
 					if (this.input.sessionName === undefined){
@@ -479,7 +481,7 @@ export class ProfilerEditor extends BaseEditor {
 		}
 	}
 
-	private _updateToolbarButtons(): void {
+	private _updateToolbar(): void {
 		this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
 		this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused) && this.input.state.isConnected;
 		this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused && this.input.state.isConnected);

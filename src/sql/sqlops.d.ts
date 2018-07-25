@@ -1669,7 +1669,7 @@ declare module 'sqlops' {
 	}
 
 	export interface ProfilerProvider extends DataProvider {
-		createSession(sessionId: string, createStatement: string, sessionName: string): Thenable<boolean>;
+		createSession(sessionId: string, sessionName: string, template: ProfilerSessionTemplate): Thenable<boolean>;
 		startSession(sessionId: string, sessionName: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
@@ -1714,6 +1714,26 @@ declare module 'sqlops' {
 		 * Event values
 		 */
 		values: {};
+	}
+
+	/**
+	 * Profiler Session Template
+	 */
+	export interface ProfilerSessionTemplate {
+		/**
+		 * Template name
+		 */
+		name: string;
+
+		/**
+		 * Default view for template
+		 */
+		defaultView: string;
+
+		/**
+		 * TSQL for creating a session
+		 */
+		createStatement: {};
 	}
 
 	export interface ProfilerSessionEvents {
