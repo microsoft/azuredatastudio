@@ -2,7 +2,7 @@
 .declarative-table {
 	padding: 5px 30px 0px 30px;
 	box-sizing: border-box;
-	width:100%;
+
 	border-collapse: collapse;
 }
 
@@ -13,6 +13,7 @@
 	padding: 5px;
 	border: 1px solid gray;
 	background-color: #F5F5F5;
+	vertical-align: top;
 }
 
 .vs-dark .declarative-table-header {

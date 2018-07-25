@@ -39,7 +39,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 			await prosePreview(view, model, previewReadyPromise);
 		});
 		page3.registerContent(async (view) => {
-			await modifyColumns(view, model);
+			await modifyColumns(view, model, previewReadyPromise);
 		});
 		page4.registerContent(async (view) => {
 			await summary(view,model, wizard, importDataStatusPromise);
@@ -62,6 +62,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 				tableName: model.table,
 				schemaName: model.schema
 			}).then((result)=>{
+				console.log("Recieved PROSE results");
 				model.proseDataPreview = result.dataPreview;
 				model.proseColumns = [];
 				result.columnInfo.forEach((column) => {
