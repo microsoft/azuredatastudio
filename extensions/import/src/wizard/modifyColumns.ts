@@ -7,9 +7,10 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
+import { ImportDataModel } from './dataModel';
 const localize = nls.loadMessageBundle();
 
-export async function modifyColumns(view: sqlops.ModelView) : Promise<void> {
+export async function modifyColumns(view: sqlops.ModelView, data: ImportDataModel) : Promise<void> {
 	let description = view.modelBuilder.text()
 		.withProperties({
 			value: localize('flatFileImport.verifySchemaMessage', "Please verify that the table schema generated is accurate, and if not, please make any changes.")

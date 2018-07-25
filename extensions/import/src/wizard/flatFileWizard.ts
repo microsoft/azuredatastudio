@@ -12,8 +12,10 @@ import { prosePreview } from './prosePreview';
 import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
 import { FlatFileProvider } from '../services/contracts';
+import {ImportDataModel} from './dataModel';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
+  let model = <ImportDataModel>{};
 	let importInfo = new Map<string, any>();
 	importInfo.set('importDataStatus', importDataStatus());
 	// TODO localize this
@@ -28,18 +30,19 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
 	let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
 	let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
-	page1.registerContent(async (view) => {
-		await fileConfig(view);
-	});
-	page2.registerContent(async (view) => {
-		await prosePreview(view);
-	});
-	page3.registerContent(async (view) => {
-		await modifyColumns(view);
-	});
-	page4.registerContent(async (view) => {
-		await summary(view, importInfo);
-	});
+  
+		page1.registerContent(async (view) => {
+			await fileConfig(view, model);
+		});
+		page2.registerContent(async (view) => {
+			await prosePreview(view, model);
+		});
+		page3.registerContent(async (view) => {
+			await modifyColumns(view, model);
+		});
+		page4.registerContent(async (view) => {
+			await summary(view,model);
+		});
 
 	let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 	importAnotherFileButton.onClick(() => {

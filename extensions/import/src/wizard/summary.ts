@@ -7,14 +7,14 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
+import { ImportDataModel } from './dataModel';
 
-export async function summary(view: sqlops.ModelView, importInfo: Map<string, any>): Promise<void> {
-
+export async function summary(view: sqlops.ModelView, model: ImportDataModel) : Promise<void> {
 	let table = view.modelBuilder.table()
 		.withProperties({
-			data: [['Database name', importInfo.get('Database name')],
-			['Table schema', importInfo.get('Table schema')],
-			['File to be imported', importInfo.get('File path')]],
+			data: [['Database name', ''],
+			['Table schema', ''],
+			['File to be imported', '']],
 			columns: ['Object type', 'Name'],
 			width: 400,
 			height: 150

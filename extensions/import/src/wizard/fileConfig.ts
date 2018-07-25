@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import { ImportDataModel } from './dataModel';
 
 let server: sqlops.connection.Connection;
 
