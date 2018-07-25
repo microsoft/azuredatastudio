@@ -66,6 +66,7 @@ export interface ColumnInfo
 {
     name: string;
     sqlType: string;
+    isNullable: boolean;
 }
 
 export interface PROSEDiscoveryResponse {
