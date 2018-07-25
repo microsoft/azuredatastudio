@@ -95,7 +95,6 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 				let credentials = await sqlops.connection.getCredentials(model.server.connectionId);
 				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
 			}
-			console.log('Using connection string ' + connectionString);
 			provider.sendInsertDataRequest({
 			connectionString: connectionString,
 			//TODO check what SSMS uses as batch size
