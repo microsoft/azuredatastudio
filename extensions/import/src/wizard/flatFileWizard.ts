@@ -11,11 +11,12 @@ import { fileConfig } from './fileConfig';
 import { prosePreview } from './prosePreview';
 import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
-import { FlatFileProvider } from '../services/contracts';
+import { FlatFileProvider, InsertDataResponse } from '../services/contracts';
+import {ImportDataModel} from './dataModel';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
-	let importInfo = new Map<string, any>();
-	importInfo.set('importDataStatus', importDataStatus());
+  let model = <ImportDataModel>{};
+	let importDataStatusPromise = importDataStatus();
 	// TODO localize this
 	let connections = await sqlops.connection.getActiveConnections();
 	if (!connections || connections.length === 0) {
@@ -28,23 +29,24 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
 	let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
 	let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
-	page1.registerContent(async (view) => {
-		await fileConfig(view);
-	});
-	page2.registerContent(async (view) => {
-		await prosePreview(view);
-	});
-	page3.registerContent(async (view) => {
-		await modifyColumns(view);
-	});
-	page4.registerContent(async (view) => {
-		await summary(view, importInfo);
-	});
+
+		page1.registerContent(async (view) => {
+			await fileConfig(view, model);
+		});
+		page2.registerContent(async (view) => {
+			await prosePreview(view, model);
+		});
+		page3.registerContent(async (view) => {
+			await modifyColumns(view, model);
+		});
+		page4.registerContent(async (view) => {
+			await summary(view,model, wizard, importDataStatusPromise);
+		});
+
 
 	let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 	importAnotherFileButton.onClick(() => {
 		//TODO replace this with proper cleanup for all the pages
-		importInfo = null;
 		wizard.close();
 		flatFileWizard(provider);
 	});
@@ -53,9 +55,14 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 
 	wizard.onPageChanged(e => {
 		if (e.lastPage === 2 && e.newPage === 3) {
-			provider.sendHelloWorldRequest({ name: 'hackathon' }).then(() => {
+			provider.sendInsertDataRequest({
+				//TODO find a way to get the connection string
+				connectionString: '',
+				//TODO check what SSMS uses as batch size
+				batchSize: 500
+			}).then((response) => {
 				importAnotherFileButton.hidden = false;
-				setTimeout(() => importInfo.get('importDataStatus').resolve(true), 3000);
+				setTimeout(() => importDataStatusPromise.resolve(response), 3000);
 			});
 
 		}
@@ -86,14 +93,17 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	wizard.open();
 }
 
-function importDataStatus(): {
-	promise: Promise<boolean>,
-	resolve: (value: boolean | PromiseLike<boolean>) => void
-	reject: (reason?: any) => void
-} {
+//TODO put in a different file with other interfaces
+export interface ImportDataStatusPromise {
+	promise: Promise<InsertDataResponse>;
+	resolve: (value: InsertDataResponse | PromiseLike<InsertDataResponse>) => void;
+	reject: (reason?: any) => void;
+}
+
+function importDataStatus(): ImportDataStatusPromise {
 	let outResolve, outReject;
 	return {
-		promise: new Promise<boolean>((resolve, reject) => {
+		promise: new Promise<InsertDataResponse>((resolve, reject) => {
 			outResolve = resolve;
 			outReject = reject;
 		}),

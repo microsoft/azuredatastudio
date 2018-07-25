@@ -58,29 +58,108 @@ export interface ITelemetryEventMeasures {
 //     export const type = new RequestType<HelloWorldParam, HelloWorldResponse, void, void>('flatfile/helloworld');
 // }
 
-export interface PROSEDiscoveryParam {
-    filePath: string;
+/**
+ * Contract Classes
+ */
+export interface Result {
+    success: boolean;
+    errorMessage: string;
 }
 
-export interface ColumnInfo
-{
+export interface ColumnInfo {
     name: string;
     sqlType: string;
     isNullable: boolean;
 }
 
-export interface PROSEDiscoveryResponse {
-    dataPreview: string[][];
-    columnsInfo: ColumnInfo[];
+
+/**
+ * PROSEDiscoveryRequest
+ * Send this request to create a new PROSE session with a new file and preview it
+ */
+const proseDiscoveryRequestName = 'flatfile/proseDiscovery';
+
+export interface PROSEDiscoveryParams {
+    filePath: string;
+    tableName: string;
+    schemaName?: string;
 }
 
+export interface PROSEDiscoveryResponse {
+    dataPreview: string[][];
+    columnInfo: ColumnInfo[];
+}
+
+/**
+ * InsertDataRequest
+ */
+const insertDataRequestName = 'flatfile/insertData';
+
+export interface InsertDataParams {
+    connectionString: string;
+    batchSize: number;
+}
+
+export interface InsertDataResponse {
+    result: Result;
+}
+
+
+/**
+ * GetColumnInfoRequest
+ */
+const getColumnInfoRequestName = 'flatfile/getColumnInfo';
+
+export interface GetColumnInfoParams {
+}
+
+export interface GetColumnInfoResponse {
+    columnInfo: ColumnInfo[];
+}
+
+
+/**
+ * ChangeColumnSettingsRequest
+ */
+const changeColumnSettingsRequestName = 'flatfile/changeColumnSettings';
+
+export interface ChangeColumnSettingsParams {
+    index: number;
+    newName?: string;
+    newDataType?: string;
+    newNullable?: boolean;
+    newInPrimaryKey?: boolean;
+}
+
+export interface ChangeColumnSettingsResponse {
+    result: Result;
+}
+
+/**
+ * Requests
+ */
 export namespace PROSEDiscoveryRequest {
-    export const type = new RequestType<PROSEDiscoveryParam, PROSEDiscoveryResponse, void, void>('flatfile/prosediscovery');
+    export const type = new RequestType<PROSEDiscoveryParams, PROSEDiscoveryResponse, void, void>(proseDiscoveryRequestName);
+}
+
+export namespace InsertDataRequest {
+    export const type = new RequestType<InsertDataParams, InsertDataResponse, void, void>(insertDataRequestName);
+}
+
+export namespace GetColumnInfoRequest {
+    export const type = new RequestType<GetColumnInfoParams, GetColumnInfoResponse, void, void>(getColumnInfoRequestName);
+}
+
+export namespace ChangeColumnSettingsRequest {
+    export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
 export interface FlatFileProvider {
     providerId?: string;
 
     //sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
-    sendPROSEDiscoveryRequest(params: PROSEDiscoveryParam): Thenable<PROSEDiscoveryResponse>;
+    sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<PROSEDiscoveryResponse>;
+    sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
+    sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
+    sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
 }

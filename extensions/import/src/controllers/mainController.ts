@@ -59,8 +59,8 @@ export default class MainController extends ControllerBase {
 			vscode.window.showInputBox({
 				prompt: 'Flat file path?'
 			}).then(filePath => {
-				provider.sendPROSEDiscoveryRequest({ filePath: filePath }).then(response => {
-					vscode.window.showInformationMessage('Metadata: ' + response.columnsInfo[0].name);
+				provider.sendPROSEDiscoveryRequest({ filePath: filePath, tableName: 'test' }).then(response => {
+					vscode.window.showInformationMessage('Metadata: ' + response.columnInfo[0].name);
 					vscode.window.showInformationMessage('Data: ' + response.dataPreview);
 				});
 			});

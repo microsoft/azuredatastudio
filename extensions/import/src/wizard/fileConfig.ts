@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import {ImportDataModel} from './dataModel';
 
 let server: sqlops.connection.Connection;
 
@@ -19,7 +20,11 @@ let schemaDropdown: sqlops.DropDownComponent;
 
 let tableNames: string[] = [];
 
-export async function fileConfig(view: sqlops.ModelView): Promise<void> {
+let model: ImportDataModel;
+
+export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): Promise<void> {
+	model = dm;
+
 	let serverComponent = await createServerDropdown(view);
 	let databaseComponent = await createDatabaseDropdown(view);
 
@@ -28,12 +33,15 @@ export async function fileConfig(view: sqlops.ModelView): Promise<void> {
 		console.log(params);
 
 		server = (serverDropdown.value as ConnectionDropdownValue).connection;
-		console.log('Server name: ' + server.connectionId);
+
+		model.server = server;
 		await populateDatabaseDropdown().then(() => populateSchemaDropdown());
 	});
 
 	// Handle database changes
-	databaseDropdown.onValueChanged(async (databaseName) => {
+	databaseDropdown.onValueChanged(async (db) => {
+
+		model.database = (<sqlops.CategoryValue>databaseDropdown.value).name;
 		await populateTableNames();
 	});
 
@@ -90,9 +98,15 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 		console.log('server was undefined');
 		return false;
 	}
-
+	let first = true;
 	databaseDropdown.updateProperties({
 		values: (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
+
+			if (first) {
+				first = false;
+				model.database = db;
+			}
+
 			return {
 				displayName: db,
 				name: db
@@ -105,6 +119,10 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 
 async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	schemaDropdown = view.modelBuilder.dropDown().component();
+
+	schemaDropdown.onValueChanged(() => {
+		model.schema = (<sqlops.CategoryValue>schemaDropdown.value).name;
+	});
 	await populateSchemaDropdown();
 
 	return {
@@ -122,7 +140,14 @@ async function populateSchemaDropdown(): Promise<Boolean> {
 
 	let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
+	let first = true;
 	let schemas = results.rows.map(row => {
+		let schemaName = row[0].displayValue;
+		if (first) {
+			first = false;
+			model.schema = schemaName;
+		}
+
 		return row[0].displayValue;
 	});
 
@@ -147,6 +172,10 @@ async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormCo
 		return true;
 	}).component();
 
+	tableNameTextBox.onTextChanged((tableName) => {
+		model.table = tableName;
+	});
+
 	return {
 		component: tableNameTextBox,
 		title: 'New table name',
@@ -166,9 +195,13 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 				canSelectFiles: true,
 				canSelectFolders: false,
 				canSelectMany: false,
-				openLabel: 'Open'
+				openLabel: 'Open',
+				filters: {
+					'Files': ['csv', 'txt']
+				}
 			}
 		);
+
 		if (!fileUris || fileUris.length === 0) {
 			return;
 		}
@@ -187,6 +220,9 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 
 		tableNameTextBox.value = fileUri.fsPath.substring(nameStart + 1, nameEnd);
 		tableNameTextBox.validate();
+
+		// Let then model know about the file path
+		model.filePath = fileUri.fsPath;
 	});
 
 	return {
@@ -204,6 +240,7 @@ async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 	}
 
 	server = cons[0];
+	model.server = server;
 
 	serverDropdown = view.modelBuilder.dropDown().withProperties({
 		values: cons.map(c => {
