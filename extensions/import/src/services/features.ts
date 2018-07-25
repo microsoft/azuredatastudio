@@ -87,19 +87,14 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
             return requestSender(Contracts.GetColumnInfoRequest.type, params);
         };
 
-        let sendChangeColumnNameRequest = (params: Contracts.ChangeColumnNameParams): Thenable<Contracts.ChangeColumnNameResponse> => {
-            return requestSender(Contracts.ChangeColumnNameRequest.type, params);
-        };
-
-        let sendChangeDataTypeRequest = (params: Contracts.ChangeDataTypeParams): Thenable<Contracts.ChangeDataTypeResponse> => {
-            return requestSender(Contracts.ChangeDataTypeRequest.type, params);
+        let sendChangeColumnSettingsRequest = (params: Contracts.ChangeColumnSettingsParams): Thenable<Contracts.ChangeColumnNameResponse> => {
+            return requestSender(Contracts.ChangeColumnSettingsRequest.type, params);
         };
 
         return managerInstance.registerApi<Contracts.FlatFileProvider>(ApiType.FlatFileProvider, {
             providerId: client.providerId,
             sendPROSEDiscoveryRequest,
-            sendChangeColumnNameRequest,
-            sendChangeDataTypeRequest,
+            sendChangeColumnSettingsRequest,
             sendGetColumnInfoRequest,
             sendInsertDataRequest
         });
