@@ -54,7 +54,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	importAnotherFileButton.hidden = true;
 	wizard.customButtons = [importAnotherFileButton];
 
-	wizard.onPageChanged(e => {
+	wizard.onPageChanged(async e => {
 		if(e.lastPage === 0 && e.newPage === 1) {
 			provider.sendPROSEDiscoveryRequest({
 				filePath: model.filePath,
@@ -87,41 +87,51 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 				};
 				changeColumnResults.push(provider.sendChangeColumnSettingsRequest(columnChangeParams));
 			});
-    let connectionString: string;
-          let options = model.server.options;
-          if (options.authenticationType === 'Integrated') {
-            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=True`;
-          } else {
-            connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=False;User Id=${options.user};Password=${options.password}`;
-          }
-          provider.sendInsertDataRequest({
-            connectionString: connectionString,
-            //TODO check what SSMS uses as batch size
-            batchSize: 500
-          }).then((response) => {
-            importAnotherFileButton.hidden = false;
-            importDataStatusPromise.resolve(response);
+			let connectionString: string;
+			let options = model.server.options;
+			if (options.authenticationType === 'Integrated') {
+				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=True`;
+			} else {
+				let credentials = await sqlops.connection.getCredentials(model.server.connectionId);
+				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
+			}
+			console.log('Using connection string ' + connectionString);
+			provider.sendInsertDataRequest({
+			connectionString: connectionString,
+			//TODO check what SSMS uses as batch size
+			batchSize: 500
+        }).then((response) => {
+        	importAnotherFileButton.hidden = false;
+        	importDataStatusPromise.resolve(response);
 			});
 		}
 
 		if (e.lastPage === 3 && e.newPage !== 3) {
 			importAnotherFileButton.hidden = true;
 		}
-	});
 
-	wizard.registerOperation({
-		displayName: 'test task',
-		description: 'task description',
-		connection: null,
-		isCancelable: true,
-		operation: (op) => {
-			op.updateStatus(sqlops.TaskStatus.InProgress);
-			op.updateStatus(sqlops.TaskStatus.InProgress, 'Task is running');
-			setTimeout(() => {
-				op.updateStatus(sqlops.TaskStatus.Succeeded);
-			}, 5000);
+		let oldLabel: string;
+		if (e.newPage === 2) {
+			oldLabel = wizard.nextButton.label;
+			wizard.nextButton.label = 'Import data';
+		} else if (oldLabel) {
+			wizard.nextButton.label = oldLabel;
 		}
 	});
+
+	// wizard.registerOperation({
+	// 	displayName: 'test task',
+	// 	description: 'task description',
+	// 	connection: null,
+	// 	isCancelable: true,
+	// 	operation: (op) => {
+	// 		op.updateStatus(sqlops.TaskStatus.InProgress);
+	// 		op.updateStatus(sqlops.TaskStatus.InProgress, 'Task is running');
+	// 		setTimeout(() => {
+	// 			op.updateStatus(sqlops.TaskStatus.Succeeded);
+	// 		}, 5000);
+	// 	}
+	// });
 
 	//not needed for this wizard
 	wizard.generateScriptButton.hidden = true;

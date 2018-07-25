@@ -67,7 +67,7 @@ async function createTable(view: sqlops.ModelView, tableData: string[][], column
 	let table = view.modelBuilder.table().withProperties({
 			data: rows,
 			columns: columnHeaders,
-			height: 700,
+			height: 400,
 			width: 700,
         }).component();
 
