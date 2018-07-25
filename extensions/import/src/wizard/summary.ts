@@ -8,17 +8,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
 import { ImportDataModel } from './dataModel';
+import { ImportDataStatusPromise } from './flatFileWizard';
 
-export async function summary(view: sqlops.ModelView, model: ImportDataModel) : Promise<void> {
+let model : ImportDataModel;
+
+export async function summary(view: sqlops.ModelView, m: ImportDataModel, wizard: sqlops.window.modelviewdialog.Wizard, importDataStatusPromise: ImportDataStatusPromise) : Promise<void> {
+	model = m;
+
 	let table = view.modelBuilder.table()
-		.withProperties({
-			data: [['Database name', ''],
-			['Table schema', ''],
-			['File to be imported', '']],
-			columns: ['Object type', 'Name'],
-			width: 400,
-			height: 150
-		})
 		.component();
 
 	let statusText = view.modelBuilder.text()
@@ -26,17 +23,25 @@ export async function summary(view: sqlops.ModelView, model: ImportDataModel) : 
 
 	let statusLoader = view.modelBuilder.loadingComponent().withItem(statusText).component();
 
-	let importPromise = null;
+	let importPromise = importDataStatusPromise.promise;
 	if (importPromise) {
 		importPromise.then(result => {
-			statusText.updateProperties({
-				value: '✔ Awesome! You have successfully inserted the data into a table.'
-			});
+			if (result.result.success) {
+				statusText.updateProperties({
+					value: '✔ Awesome! You have successfully inserted the data into a table.'
+				});
+			} else {
+				statusText.updateProperties({
+					value: '✗ ' + result.result.errorMessage
+				});
+			}
+
+
 			statusLoader.loading = false;
 		})
 			.catch((error) => {
 				statusText.updateProperties({
-					value: 'Error'
+					value: '✗ Error'
 				});
 				statusLoader.loading = false;
 			});
@@ -54,5 +59,26 @@ export async function summary(view: sqlops.ModelView, model: ImportDataModel) : 
 			}
 		]
 	);
+
+	wizard.onPageChanged(e => {
+		if (e.lastPage === 2 && e.newPage === 3) {
+			populateTable(table);
+		}
+	});
+
 	await view.initializeModel(formModel.component());
+}
+
+function populateTable(tableComponent: sqlops.TableComponent) {
+	tableComponent.updateProperties({
+		data: [
+			['Server name', model.server.providerName],
+			['Database name', model.database],
+			['Table name', model.table],
+			['Table schema', model.schema],
+			['File to be imported', model.filePath]],
+		columns: ['Object type', 'Name'],
+		width: 400,
+		height: 150
+	});
 }
