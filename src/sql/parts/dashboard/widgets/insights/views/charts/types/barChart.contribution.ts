@@ -16,7 +16,7 @@ const properties: IJSONSchema = {
 	properties: {
 		yAxisMin: {
 			type: 'number',
-			description: nls.localize('yAxisMin', "Minumum value of the y axis")
+			description: nls.localize('yAxisMin', "Minimum value of the y axis")
 		},
 		yAxisMax: {
 			type: 'number',
@@ -28,7 +28,7 @@ const properties: IJSONSchema = {
 		},
 		xAxisMin: {
 			type: 'number',
-			description: nls.localize('xAxisMin', "Minumum value of the x axis")
+			description: nls.localize('xAxisMin', "Minimum value of the x axis")
 		},
 		xAxisMax: {
 			type: 'number',

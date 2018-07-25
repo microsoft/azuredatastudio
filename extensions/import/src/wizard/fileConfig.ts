@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import { ImportDataModel } from './dataModel';
 
 let server: sqlops.connection.Connection;
 
@@ -19,7 +20,7 @@ let schemaDropdown: sqlops.DropDownComponent;
 
 let tableNames: string[] = [];
 
-export async function fileConfig(view: sqlops.ModelView): Promise<void> {
+export async function fileConfig(view: sqlops.ModelView, model: ImportDataModel): Promise<void> {
 	let serverComponent = await createServerDropdown(view);
 	let databaseComponent = await createDatabaseDropdown(view);
 
