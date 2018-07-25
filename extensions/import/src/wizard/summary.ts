@@ -10,16 +10,12 @@ import * as sqlops from 'sqlops';
 import { ImportDataModel } from './dataModel';
 import { ImportDataStatusPromise } from './flatFileWizard';
 
-export async function summary(view: sqlops.ModelView, model: ImportDataModel, importDataStatusPromise: ImportDataStatusPromise) : Promise<void> {
+let model : ImportDataModel;
+
+export async function summary(view: sqlops.ModelView, m: ImportDataModel, wizard: sqlops.window.modelviewdialog.Wizard, importDataStatusPromise: ImportDataStatusPromise) : Promise<void> {
+	model = m;
+
 	let table = view.modelBuilder.table()
-		.withProperties({
-			data: [['Database name', ''],
-			['Table schema', ''],
-			['File to be imported', '']],
-			columns: ['Object type', 'Name'],
-			width: 400,
-			height: 150
-		})
 		.component();
 
 	let statusText = view.modelBuilder.text()
@@ -63,5 +59,26 @@ export async function summary(view: sqlops.ModelView, model: ImportDataModel, im
 			}
 		]
 	);
+
+	wizard.onPageChanged(e => {
+		if (e.lastPage === 2 && e.newPage === 3) {
+			populateTable(table);
+		}
+	});
+
 	await view.initializeModel(formModel.component());
+}
+
+function populateTable(tableComponent: sqlops.TableComponent) {
+	tableComponent.updateProperties({
+		data: [
+			['Server name', model.server.providerName],
+			['Database name', model.database],
+			['Table name', model.table],
+			['Table schema', model.schema],
+			['File to be imported', model.filePath]],
+		columns: ['Object type', 'Name'],
+		width: 400,
+		height: 150
+	});
 }

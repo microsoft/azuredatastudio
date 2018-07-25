@@ -40,8 +40,9 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 			await modifyColumns(view, model);
 		});
 		page4.registerContent(async (view) => {
-			await summary(view,model, importDataStatusPromise);
+			await summary(view,model, wizard, importDataStatusPromise);
 		});
+
 
 	let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 	importAnotherFileButton.onClick(() => {
