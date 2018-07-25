@@ -9,10 +9,11 @@ import * as path from 'path';
 import * as sqlops from 'sqlops';
 import { create } from 'domain';
 import { FlatFileProvider } from '../../out/services/contracts';
+import { ImportDataModel } from './dataModel';
 
 var fileDelimiter = ',';
 
-export async function prosePreview(view: sqlops.ModelView, provider : FlatFileProvider) : Promise<void> {
+export async function prosePreview(view: sqlops.ModelView, provider : FlatFileProvider, model: ImportDataModel) : Promise<void> {
 	//from services sample placeholder code
 	//let formWrapper = view.modelBuilder.loadingComponent().component();
 	let data;

@@ -12,24 +12,28 @@ import { prosePreview } from './prosePreview';
 import { modifyColumns } from './modifyColumns';
 import { summary } from './summary';
 import { FlatFileProvider } from '../services/contracts';
+import {ImportDataModel} from './dataModel';
 
 export function flatFileWizard(provider: FlatFileProvider) {
+	let model = <ImportDataModel>{};
+
 	let wizard = sqlops.window.modelviewdialog.createWizard('Flat file import wizard');
 		let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
 		let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
 		let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
 		let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
+
 		page1.registerContent(async (view) => {
-			await fileConfig(view);
+			await fileConfig(view, model);
 		});
 		page2.registerContent(async (view) => {
-			await prosePreview(view);
+			await prosePreview(view, null, model);
 		});
 		page3.registerContent(async (view) => {
-			await modifyColumns(view);
+			await modifyColumns(view, model);
 		});
 		page4.registerContent(async (view) => {
-			await summary(view);
+			await summary(view,model);
 		});
 		wizard.registerOperation({
 			displayName: 'test task',

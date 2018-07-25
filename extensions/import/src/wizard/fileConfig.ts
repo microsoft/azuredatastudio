@@ -7,8 +7,9 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
+import { ImportDataModel } from './dataModel';
 
-export async function fileConfig(view: sqlops.ModelView) : Promise<void> {
+export async function fileConfig(view: sqlops.ModelView, model: ImportDataModel) : Promise<void> {
 	//from services sample placeholder code
 	let formWrapper = view.modelBuilder.loadingComponent().component();
 	formWrapper.loading = false;
