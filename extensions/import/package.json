@@ -27,21 +27,25 @@
     "commands": [
       {
         "command": "flatFileImport.start",
-        "title": "FlatFileImport: Start the wizard",
+        "title": "Import wizard",
+        "category": "Flat File Import",
         "icon": {
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
       },
       {
-        "command": "flatFileImport.importFlatFile",
-        "title": "FlatFileImport: Preview data from file"
+        "command": "flatFileImport.importFlatFile"
       },
       {
-        "command": "flatFileImport.listDatabases",
-        "title": "FlatFileImport: Test list databases"
+        "command": "flatFileImport.listDatabases"
       }
     ],
+    "keybindings": [{
+      "command": "flatFileImport.start",
+      "key": "ctrl+i",
+      "mac": "ctrl+i"
+    }],
     "dashboard.tabs": [
       {
         "id": "flat-file-import",
