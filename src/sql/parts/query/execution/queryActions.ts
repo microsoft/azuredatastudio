@@ -448,10 +448,10 @@ export class ParseSyntaxAction extends QueryTaskbarAction {
 					if (result && result.parseable) {
 						this._notificationService.notify({
 							severity: Severity.Info,
-							message: nls.localize('queryActions.parseSyntaxSuccess', 'Command successfully parsed')
+							message: nls.localize('queryActions.parseSyntaxSuccess', 'Commands completed successfully')
 						});
 					} else if (result && result.errors.length > 0) {
-						let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command parse failed: ');
+						let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command failed: ');
 						this._notificationService.error(`${errorMessage}${result.errors[0]}`);
 
 					}
