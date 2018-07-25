@@ -22,7 +22,7 @@
 	border-top-color: transparent;
 	height: calc(100% - 350px);
 	display: block;
-	min-width: 100px;
+	min-height: 120px;
 }
 
 .connection-recent, .connection-saved {
