@@ -572,6 +572,7 @@
                         ],
                         "properties": [
                           { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						  { "key": "Microsoft.VisualStudio.Services.Links.Source", "value": "https://github.com/dzsquared/sqlops-firstresponderkit"},
                           { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
                         ]
                       }
