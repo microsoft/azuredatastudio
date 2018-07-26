@@ -63,7 +63,7 @@ export class ConnectionController implements IConnectionComponentController {
 		tempProfile.password = password;
 		tempProfile.groupFullName = '';
 		tempProfile.saveProfile = false;
-		let uri = this._connectionManagementService.getConnectionId(tempProfile);
+		let uri = this._connectionManagementService.getConnectionUri(tempProfile);
 		return new Promise<string[]>((resolve, reject) => {
 			if (this._databaseCache.has(uri)) {
 				let cachedDatabases: string[] = this._databaseCache.get(uri);

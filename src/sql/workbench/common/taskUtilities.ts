@@ -108,7 +108,7 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 
 export function connectIfNotAlreadyConnected(connectionProfile: IConnectionProfile, connectionService: IConnectionManagementService): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		let connectionID = connectionService.getConnectionId(connectionProfile);
+		let connectionID = connectionService.getConnectionUri(connectionProfile);
 		let uri: string = connectionService.getFormattedUri(connectionID, connectionProfile);
 		if (!connectionService.isConnected(uri)) {
 			let options: IConnectionCompletionOptions = {

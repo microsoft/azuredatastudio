@@ -185,7 +185,7 @@ export class OEScriptSelectAction extends ScriptSelectAction {
 		}
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(this._objectExplorerTreeNode);
-		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		var ownerUri = this._connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 		var metadata = this._objectExplorerTreeNode.metadata;
 
@@ -255,7 +255,7 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
-		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		var ownerUri = this._connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
 		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
@@ -291,7 +291,7 @@ export class OEScriptExecuteAction extends ScriptExecuteAction {
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
-		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		var ownerUri = this._connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
 		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
@@ -327,7 +327,7 @@ export class OEScriptAlterAction extends ScriptAlterAction {
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
-		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		var ownerUri = this._connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
 		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {
@@ -363,7 +363,7 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		var connectionProfile = TreeUpdateUtils.getConnectionProfile(<TreeNode>this._objectExplorerTreeNode);
 		var metadata = (<TreeNode>this._objectExplorerTreeNode).metadata;
-		var ownerUri = this._connectionManagementService.getConnectionId(connectionProfile);
+		var ownerUri = this._connectionManagementService.getConnectionUri(connectionProfile);
 		ownerUri = this._connectionManagementService.getFormattedUri(ownerUri, connectionProfile);
 
 		return super.run({ profile: connectionProfile, object: metadata }).then((result) => {

@@ -115,11 +115,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return [];
 	}
 
-	getConnectionId(connectionProfile: ConnectionProfile): string {
+	getConnectionUri(connectionProfile: ConnectionProfile): string {
 		return undefined;
 	}
 
 	getFormattedUri(uri: string, connectionProfile: ConnectionProfile): string {
+		return undefined;
+	}
+
+	getConnectionUriFromId(connectionId: string): string {
 		return undefined;
 	}
 
