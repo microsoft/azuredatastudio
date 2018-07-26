@@ -436,8 +436,17 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
+	/**
+	 * Editor properties for the editor component
+	 */
 	export interface EditorProperties {
+		/**
+		 * The content inside the text editor
+		 */
 		content?: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
 		languageMode?: string
 	}
 
@@ -509,8 +518,17 @@ declare module 'sqlops' {
 		onMessage: vscode.Event<any>;
 	}
 
+	/**
+	 * Editor component for displaying the text code editor
+	 */
 	export interface EditorComponent extends Component {
+		/**
+		 * The content inside the text editor
+		 */
 		content: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
 		languageMode: string;
 	}
 
