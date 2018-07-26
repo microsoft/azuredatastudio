@@ -71,15 +71,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
-	public onActiveCellChanged: (event: { row: number, column: number }) => void;
-	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
-	public onCellEditBegin: (event: { row: number, column: number }) => void;
-	public onRowEditBegin: (event: { row: number }) => void;
-	public onRowEditEnd: (event: { row: number }) => void;
-	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
-	public onIsColumnEditable: (column: number) => boolean;
-	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
-	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
+	// public onActiveCellChanged: (event: { row: number, column: number }) => void;
+	// public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
+	// public onCellEditBegin: (event: { row: number, column: number }) => void;
+	// public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
+	// public onIsColumnEditable: (column: number) => boolean;
+
+	protected overrideCellFn: (rowNumber, columnId, value?, data?) => string;
+	protected loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -151,25 +150,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.totalElapsedTimeSpan = undefined;
 		self.complete = false;
 
-		// Hooking up edit functions
-		this.onIsCellEditValid = (row, column, value): boolean => {
-			// TODO can only run sync code
-			return true;
-		};
-
-		this.onActiveCellChanged = this.onCellSelect;
-
-		this.onCellEditEnd = (event: { row: number, column: number, newValue: any }): void => {
-			// Store the value that was set
-			self.currentEditCellValue = event.newValue;
-		};
-
-		this.onCellEditBegin = (event: { row: number, column: number }): void => { };
-
-		this.onRowEditBegin = (event: { row: number }): void => { };
-
-		this.onRowEditEnd = (event: { row: number }): void => { };
-
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
 			if (Services.DBCellValue.isDBCellValue(value)) {
@@ -223,96 +203,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		return (): void => {
 			self.revertCurrentRow();
 		};
-	}
-
-	onCellSelect(event: { row: number, column: number }): void {
-		let self = this;
-		let row = event.row;
-		let column = event.column;
-
-		// Skip processing if the newly selected cell is undefined or we don't have column
-		// definition for the column (ie, the selection was reset)
-		if (row === undefined || column === undefined) {
-			return;
-		}
-
-		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
-		if (this.currentCell.row === row && this.currentCell.column === column) {
-			return;
-		}
-
-		let cellSelectTasks: Promise<void> = Promise.resolve();
-
-		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
-			// We're exiting a read/write cell after having changed the value, update the cell value in the service
-			cellSelectTasks = cellSelectTasks.then(() => {
-				// Use the mapped row ID if we're on that row
-				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
-					? self.rowIdMappings[self.currentCell.row]
-					: self.currentCell.row;
-
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue)
-					.then(
-					result => {
-						// Cell update was successful, update the flags
-						self.currentEditCellValue = null;
-						self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
-						self.setRowDirtyState(row, result.isRowDirty);
-						return Promise.resolve();
-					},
-					error => {
-						// Cell update failed, jump back to the last cell we were on
-						self.focusCell(self.currentCell.row, self.currentCell.column, true);
-						return Promise.reject(null);
-					}
-					);
-			});
-		}
-
-		if (this.currentCell.row !== row) {
-			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
-			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === null) {
-				cellSelectTasks = cellSelectTasks.then(() => {
-					return this.revertCurrentRow().then(() => this.focusCell(row, column));
-				});
-			} else {
-				// We're changing row, commit the changes
-				cellSelectTasks = cellSelectTasks.then(() => {
-					return self.dataService.commitEdit().then(result => {
-						// Committing was successful, clean the grid
-						self.setGridClean();
-						self.rowIdMappings = {};
-						self.newRowVisible = false;
-						return Promise.resolve();
-					}, error => {
-						// Committing failed, jump back to the last selected cell
-						self.focusCell(self.currentCell.row, self.currentCell.column);
-						return Promise.reject(null);
-					});
-				});
-			}
-		}
-
-		if (this.isNullRow(row) && !this.removingNewRow) {
-			// We've entered the "new row", so we need to add a row and jump to it
-			cellSelectTasks = cellSelectTasks.then(() => {
-				self.addRow(row);
-			});
-		}
-
-		// At the end of a successful cell select, update the currently selected cell
-		cellSelectTasks = cellSelectTasks.then(() => {
-			self.currentCell = {
-				row: row,
-				column: column,
-				isEditable: self.dataSet.columnDefinitions[column - 1]
-					? self.dataSet.columnDefinitions[column - 1].isEditable
-					: false
-			};
-		});
-
-		// Cap off any failed promises, since they'll be handled
-		cellSelectTasks.catch(() => { });
 	}
 
 	handleComplete(self: EditDataComponent, event: any): void {
@@ -578,4 +468,99 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			? (this._defaultNumShowingRows + 1) * this._rowHeight + 10
 			: this.getMaxHeight(rowCount);
 	}
+
+	//#region gridEvents
+
+	protected onCellChange(event: Slick.OnCellChangeEventArgs<any>): void {
+		let newValue = event.item[this.dataSet.columnDefinitions[event.cell].id];
+		// Store the value that was set
+		this.dataService.updateCell(event.row, event.cell - 1, newValue)
+			.then(
+				result => {
+					// Cell update was successful, update the flags
+					this.currentEditCellValue = null;
+					this.setCellDirtyState(event.row, event.cell, result.cell.isDirty);
+					this.setRowDirtyState(event.row, result.isRowDirty);
+					return Promise.resolve();
+				}, error => {
+					// Cell update failed, jump back to the last cell we were on
+					this.focusCell(event.row, event.cell, true);
+					return Promise.reject(null);
+				}
+			);
+		this.currentEditCellValue = newValue;
+	}
+
+	protected onBeforeEditCell(event: Slick.OnBeforeEditCellEventArgs<any>): void {
+
+	}
+
+	protected isCellEditValid(): boolean {
+		return true;
+	}
+
+	protected onActiveCellChanged(event: Slick.OnActiveCellChangedEventArgs<any>): void {
+		let row = event.row;
+		let column = event.cell;
+
+		// Skip processing if the newly selected cell is undefined or we don't have column
+		// definition for the column (ie, the selection was reset)
+		if (row === undefined || column === undefined) {
+			return;
+		}
+
+		// Skip processing if the cell hasn't moved (eg, we reset focus to the previous cell after a failed update)
+		if (this.currentCell.row === row && this.currentCell.column === column) {
+			return;
+		}
+
+		let cellSelectTasks: Promise<void> = Promise.resolve();
+
+		if (this.currentCell.row !== row) {
+			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
+			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === null) {
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return this.revertCurrentRow().then(() => this.focusCell(row, column));
+				});
+			} else {
+				// We're changing row, commit the changes
+				cellSelectTasks = cellSelectTasks.then(() => {
+					return this.dataService.commitEdit().then(result => {
+						// Committing was successful, clean the grid
+						this.setGridClean();
+						this.rowIdMappings = {};
+						this.newRowVisible = false;
+						return Promise.resolve();
+					}, error => {
+						// Committing failed, jump back to the last selected cell
+						this.focusCell(this.currentCell.row, this.currentCell.column);
+						return Promise.reject(null);
+					});
+				});
+			}
+		}
+
+		if (this.isNullRow(row) && !this.removingNewRow) {
+			// We've entered the "new row", so we need to add a row and jump to it
+			cellSelectTasks = cellSelectTasks.then(() => {
+				this.addRow(row);
+			});
+		}
+
+		// At the end of a successful cell select, update the currently selected cell
+		cellSelectTasks = cellSelectTasks.then(() => {
+			this.currentCell = {
+				row: row,
+				column: column,
+				isEditable: this.dataSet.columnDefinitions[column]
+					? this.dataSet.columnDefinitions[column].isEditable
+					: false
+			};
+		});
+
+		// Cap off any failed promises, since they'll be handled
+		cellSelectTasks.catch(() => { });
+	}
+
+	//#endregion
 }

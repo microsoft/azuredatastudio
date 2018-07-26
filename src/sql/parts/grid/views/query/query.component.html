@@ -18,7 +18,7 @@
 			<slick-grid #slickgrid id="slickgrid_{{i}}" [columnDefinitions]="dataSet.columnDefinitions"
 						[ngClass]="i === activeGrid ? 'active' : ''"
 						[dataRows]="dataSet.dataRows"
-						(contextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
+						(onContextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
 						enableAsyncPostRender="true"
 						showHeader="true"
 						[resized]="dataSet.resized"
