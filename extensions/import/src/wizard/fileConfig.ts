@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import { ImportDataModel } from './dataModel';
+import {ImportDataModel} from './dataModel';
 
 let server: sqlops.connection.Connection;
 
@@ -28,27 +28,11 @@ let loading: sqlops.LoadingComponent;
 export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): Promise<void> {
 	model = dm;
 
-	let serverComponent = await createServerDropdown(view);
-	let databaseComponent = await createDatabaseDropdown(view);
-
-	// Handle server changes
-	serverDropdown.onValueChanged(async (params) => {
-		server = (serverDropdown.value as ConnectionDropdownValue).connection;
-
-		model.server = server;
-		await populateDatabaseDropdown().then(() => populateSchemaDropdown());
-	});
-
-	// Handle database changes
-	databaseDropdown.onValueChanged(async (db) => {
-
-		model.database = (<sqlops.CategoryValue>databaseDropdown.value).name;
-		await populateTableNames();
-	});
-
-	let fileBrowserComponent = await createFileBrowser(view);
-	let tableNameComponent = await createTableNameBox(view);
 	let schemaComponent = await createSchemaDropdown(view);
+	let tableNameComponent = await createTableNameBox(view);
+	let fileBrowserComponent = await createFileBrowser(view);
+	let databaseComponent = await createDatabaseDropdown(view);
+	let serverComponent = await createServerDropdown(view);
 
 	form = view.modelBuilder.formContainer()
 		.withFormItems(
@@ -64,75 +48,40 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 	await view.initializeModel(loading);
 }
 
-async function populateTableNames(): Promise<boolean> {
-	let databaseName = (<sqlops.CategoryValue>databaseDropdown.value).name;
 
-	if (!databaseName || databaseName.length === 0) {
-		this.tableNames = [];
-		return false;
-	}
+async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 
-	let connectionUri = await sqlops.connection.getUriForConnection(server.connectionId);
-	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(server.providerName, sqlops.DataProviderType.QueryProvider);
-	let results: sqlops.SimpleExecuteResult;
+	serverDropdown = view.modelBuilder.dropDown().component();
+	populateServerDropdown().then(populateDatabaseDropdown).then(populateSchemaDropdown);
 
-	try {
+	// Handle server changes
+	serverDropdown.onValueChanged(async (params) => {
+		server = (serverDropdown.value as ConnectionDropdownValue).connection;
 
-		let query = `USE ${databaseName}; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
-		results = await queryProvider.runQueryAndReturn(connectionUri, query);
-	} catch (e) {
-		return false;
-	}
-
-	tableNames = results.rows.map(row => {
-		return row[0].displayValue;
+		model.server = server;
+		await populateDatabaseDropdown().then(() => populateSchemaDropdown());
 	});
-
-	return true;
-}
-
-
-
-async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
-	schemaDropdown = view.modelBuilder.dropDown().component();
-
-	schemaDropdown.onValueChanged(() => {
-		model.schema = (<sqlops.CategoryValue>schemaDropdown.value).name;
-	});
-	populateSchemaDropdown();
 
 	return {
-		component: schemaDropdown,
-		title: 'Table schema'
+		component: serverDropdown,
+		title: 'Server the database is in',
 	};
-
 }
 
+async function createDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	databaseDropdown = view.modelBuilder.dropDown().component();
 
+	// Handle database changes
+	databaseDropdown.onValueChanged(async (db) => {
 
-async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
-	tableNameTextBox = view.modelBuilder.inputBox().withValidation((name) => {
-		let tableName = name.value;
-
-		if (!tableName || tableName.length === 0) {
-			return false;
-		}
-
-		if (tableNames.indexOf(tableName) !== -1) {
-			return false;
-		}
-
-		return true;
-	}).component();
-
-	tableNameTextBox.onTextChanged((tableName) => {
-		console.log(tableName);
-		model.table = tableName;
+		model.database = (<sqlops.CategoryValue>databaseDropdown.value).name;
+		populateTableNames();
+		populateSchemaDropdown();
 	});
 
 	return {
-		component: tableNameTextBox,
-		title: 'New table name',
+		component: databaseDropdown,
+		title: 'Database the table is created in',
 	};
 }
 
@@ -164,15 +113,15 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 		fileTextBox.value = fileUri.fsPath;
 
 		// Get the name of the file.
-		let nameStart = fileUri.fsPath.lastIndexOf('/');
-		let nameEnd = fileUri.fsPath.lastIndexOf('.');
+		let nameStart = fileUri.path.lastIndexOf('/');
+		let nameEnd = fileUri.path.lastIndexOf('.');
 
 		// Handle files without extensions
 		if (nameEnd === 0) {
-			nameEnd = fileUri.fsPath.length;
+			nameEnd = fileUri.path.length;
 		}
 
-		tableNameTextBox.value = fileUri.fsPath.substring(nameStart + 1, nameEnd);
+		tableNameTextBox.value = fileUri.path.substring(nameStart + 1, nameEnd);
 		model.table = tableNameTextBox.value;
 		tableNameTextBox.validate();
 
@@ -187,28 +136,43 @@ async function createFileBrowser(view: sqlops.ModelView): Promise<sqlops.FormCom
 	};
 }
 
-async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	tableNameTextBox = view.modelBuilder.inputBox().withValidation((name) => {
+		let tableName = name.value;
 
+		if (!tableName || tableName.length === 0) {
+			return false;
+		}
 
-	serverDropdown = view.modelBuilder.dropDown().component();
-	populateServerDropdown();
+		if (tableNames.indexOf(tableName) !== -1) {
+			return false;
+		}
+
+		return true;
+	}).component();
+
+	tableNameTextBox.onTextChanged((tableName) => {
+		model.table = tableName;
+	});
 
 	return {
-		component: serverDropdown,
-		title: 'Server the database is in',
+		component: tableNameTextBox,
+		title: 'New table name',
 	};
 }
+async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	schemaDropdown = view.modelBuilder.dropDown().component();
 
-async function createDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
-	databaseDropdown = view.modelBuilder.dropDown().component();
-	populateDatabaseDropdown();
+	schemaDropdown.onValueChanged(() => {
+		model.schema = (<sqlops.CategoryValue>schemaDropdown.value).name;
+	});
 
 	return {
-		component: databaseDropdown,
-		title: 'Database the table is created in',
+		component: schemaDropdown,
+		title: 'Table schema'
 	};
-}
 
+}
 async function populateServerDropdown() {
 	let cons = await sqlops.connection.getActiveConnections();
 	// This user has no active connections ABORT MISSION
@@ -234,8 +198,9 @@ async function populateServerDropdown() {
 
 async function populateDatabaseDropdown(): Promise<boolean> {
 	// Clean out everything
-	databaseDropdown.updateProperties({ values: [] });
-	schemaDropdown.updateProperties({ values: [] });
+
+	databaseDropdown.updateProperties({values: []});
+	schemaDropdown.updateProperties({values: []});
 
 	if (!server) {
 		return false;
@@ -274,8 +239,12 @@ async function populateSchemaDropdown(): Promise<Boolean> {
 			first = false;
 			model.schema = schemaName;
 		}
+		let val = row[0].displayValue;
 
-		return row[0].displayValue;
+		return {
+			name: val,
+			displayName: val
+		};
 	});
 
 	schemaDropdown.updateProperties({
@@ -283,6 +252,36 @@ async function populateSchemaDropdown(): Promise<Boolean> {
 	});
 	return true;
 }
+
+async function populateTableNames(): Promise<boolean> {
+	let databaseName = (<sqlops.CategoryValue>databaseDropdown.value).name;
+
+	if (!databaseName || databaseName.length === 0) {
+		this.tableNames = [];
+		return false;
+	}
+
+	let connectionUri = await sqlops.connection.getUriForConnection(server.connectionId);
+	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(server.providerName, sqlops.DataProviderType.QueryProvider);
+	let results: sqlops.SimpleExecuteResult;
+
+	try {
+
+		let query = `USE ${databaseName}; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
+		results = await queryProvider.runQueryAndReturn(connectionUri, query);
+	} catch (e) {
+		return false;
+	}
+
+	tableNames = results.rows.map(row => {
+		return row[0].displayValue;
+	});
+
+	console.log(tableNames);
+
+	return true;
+}
+
 interface ConnectionDropdownValue extends sqlops.CategoryValue {
 	connection: sqlops.connection.Connection;
 }

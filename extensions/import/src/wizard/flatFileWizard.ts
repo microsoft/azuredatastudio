@@ -61,7 +61,6 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 				tableName: model.table,
 				schemaName: model.schema
 			}).then((result)=>{
-				console.log("Recieved PROSE results");
 				model.proseDataPreview = result.dataPreview;
 				model.proseColumns = [];
 				result.columnInfo.forEach((column) => {
