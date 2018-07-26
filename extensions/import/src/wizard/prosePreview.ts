@@ -68,7 +68,7 @@ async function createTable(view: sqlops.ModelView, tableData: string[][], column
 			data: rows,
 			columns: columnHeaders,
 			height: 400,
-			width: '100%',
+			width: '700',
         }).component();
 
 	return Promise.resolve(table);
