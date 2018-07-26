@@ -190,11 +190,11 @@ async function populateServerDropdown() {
 			let usr = c.options.user;
 			let srv = c.options.server;
 
-			if(!db){
+			if (!db) {
 				db = '<default>';
 			}
 
-			if(!usr){
+			if (!usr) {
 				usr = 'default';
 			}
 
@@ -223,26 +223,26 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 	let val: sqlops.CategoryValue[];
 
 	// If the connection doesn't specify a database, then do your best attempt to load all the databases.
-	if (!server.options.database) {
-		let first = true;
-		val = (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
+	//if (!server.options.database) {
+	let first = true;
+	val = (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
 
-			if (first) {
-				first = false;
-				model.database = db;
-			}
+		if (first) {
+			first = false;
+			model.database = db;
+		}
 
-			return {
-				displayName: db,
-				name: db
-			};
-		});
-	} else {
-		val = [{
-			displayName: server.options.database,
-			name: server.options.database
-		}];
-	}
+		return {
+			displayName: db,
+			name: db
+		};
+	});
+	// } else {
+	// 	val = [{
+	// 		displayName: server.options.database,
+	// 		name: server.options.database
+	// 	}];
+	// }
 
 	databaseDropdown.updateProperties({
 		values: val
