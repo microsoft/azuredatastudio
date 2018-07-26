@@ -549,13 +549,9 @@
                           "assetType": "Microsoft.SQLOps.DownloadPage",
                           "source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.1.0"
                         },
-                        {
-                          "assetType": "Microsoft.VisualStudio.Services.Links.Source",
-                          "source": "https://github.com/dzsquared/sqlops-firstresponderkit"
-                       },
                        {
                           "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-                          "source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/images/first-responder-kit-sqlops-extension.png>"
+                          "source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/images/first-responder-kit-sqlops-extension.png"
                         },
                         {
                           "assetType": "Microsoft.VisualStudio.Services.Content.Details",
