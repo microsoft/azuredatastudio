@@ -194,7 +194,7 @@ export class ConnectionStatusManager {
 	 * Get a list of the active connection profiles managed by the status manager
 	*/
 	public getActiveConnectionProfiles(): ConnectionProfile[] {
-		let profiles = Object.values(this._connections).map((connectionInfo: ConnectionManagementInfo) => connectionInfo.connectionProfile);
+		let profiles = Object.values(this._connections).filter((connectionInfo: ConnectionManagementInfo) => !connectionInfo.deleted).map((connectionInfo: ConnectionManagementInfo) => connectionInfo.connectionProfile);
 		// Remove duplicate profiles that may be listed multiple times under different URIs by filtering for profiles that don't have the same ID as an earlier profile in the list
 		return profiles.filter((profile, index) => profiles.findIndex(otherProfile => otherProfile.id === profile.id) === index);
 	}
