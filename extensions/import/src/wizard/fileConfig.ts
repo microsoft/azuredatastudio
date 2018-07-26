@@ -232,13 +232,11 @@ async function populateServerDropdown() {
 
 
 async function populateDatabaseDropdown(): Promise<boolean> {
-	loading.loading = true;
 	// Clean out everything
 	databaseDropdown.updateProperties({ values: [] });
 	schemaDropdown.updateProperties({ values: [] });
 
 	if (!server) {
-		loading.loading = false;
 		return false;
 	}
 
@@ -257,12 +255,10 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 			};
 		})
 	});
-	loading.loading = false;
 	return true;
 }
 
 async function populateSchemaDropdown(): Promise<Boolean> {
-	loading.loading = true;
 	let connectionUri = await sqlops.connection.getUriForConnection(server.connectionId);
 	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(server.providerName, sqlops.DataProviderType.QueryProvider);
 
@@ -284,7 +280,6 @@ async function populateSchemaDropdown(): Promise<Boolean> {
 	schemaDropdown.updateProperties({
 		values: schemas
 	});
-	loading.loading = false;
 	return true;
 }
 interface ConnectionDropdownValue extends sqlops.CategoryValue {
