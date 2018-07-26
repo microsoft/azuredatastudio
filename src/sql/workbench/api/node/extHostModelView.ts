@@ -101,6 +101,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	editor(): sqlops.ComponentBuilder<sqlops.EditorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.EditorComponent> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	button(): sqlops.ComponentBuilder<sqlops.ButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.ButtonComponent> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
@@ -737,6 +744,28 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 	public get onMessage(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onMessage);
 		return emitter && emitter.event;
+	}
+}
+
+class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Editor, id);
+		this.properties = {};
+	}
+
+	public get content(): string {
+		return this.properties['content'];
+	}
+	public set content(v: string) {
+		this.setProperty('content', v);
+	}
+
+	public get languageMode(): string {
+		return this.properties['languageMode'];
+	}
+	public set languageMode(v: string) {
+		this.setProperty('languageMode', v);
 	}
 }
 
