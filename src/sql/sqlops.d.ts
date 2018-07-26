@@ -777,7 +777,7 @@ declare module 'sqlops' {
 
 	export interface SyntaxParseResult {
 		parseable: boolean;
-		errorMessages: string[];
+		errors: string[];
 	}
 
 	// Query Batch Notification -----------------------------------------------------------------------
