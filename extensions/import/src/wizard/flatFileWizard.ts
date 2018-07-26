@@ -41,6 +41,10 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 		fileConfigPage = new FileConfigPage(model, view);
 		pages.set(0, fileConfigPage);
 		await fileConfigPage.start();
+		if (!fileConfigPage) {
+			console.log('how can you');
+		}
+		fileConfigPage.onPageEnter();
 	});
 
 	page2.registerContent(async (view) => {

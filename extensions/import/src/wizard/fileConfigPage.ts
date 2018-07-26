@@ -32,7 +32,6 @@ export class FileConfigPage extends ImportPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
-
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -43,6 +42,7 @@ export class FileConfigPage extends ImportPage {
 					schemaComponent
 				]).component();
 
+		await this.view.initializeModel(this.form);
 		return true;
 	}
 
