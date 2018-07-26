@@ -90,7 +90,7 @@ export class QueryEditor extends BaseEditor {
 	private _actualQueryPlanAction: ActualQueryPlanAction;
 
 	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
-	private _resultViewStateChangeEmitters = new Map<QueryResultsInput, { onSaveViewStateEmitter: Emitter<void>; onRestoreViewStateEmitter: Emitter<void> }>();
+	private _resultViewStateChangeEmitters = new Map<QueryResultsInput, { onSaveViewState: Emitter<void>; onRestoreViewState: Emitter<void> }>();
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -494,7 +494,7 @@ export class QueryEditor extends BaseEditor {
 		if (oldInput) {
 			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get(oldInput.results);
 			if (resultViewStateChangeEmitters) {
-				resultViewStateChangeEmitters.onSaveViewStateEmitter.fire();
+				resultViewStateChangeEmitters.onSaveViewState.fire();
 			}
 
 			this._disposeEditors();
@@ -572,7 +572,7 @@ export class QueryEditor extends BaseEditor {
 			.then(doLayout)
 			.then(() => {
 				if (this._resultViewStateChangeEmitters.has(newInput.results)) {
-					this._resultViewStateChangeEmitters.get(newInput.results).onRestoreViewStateEmitter.fire();
+					this._resultViewStateChangeEmitters.get(newInput.results).onRestoreViewState.fire();
 				}
 				if (this._savedViewStates.has(newInput.sql)) {
 					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
@@ -610,12 +610,12 @@ export class QueryEditor extends BaseEditor {
 		this._resultsEditor = resultsEditor;
 		if (!this._resultViewStateChangeEmitters.has(resultsInput)) {
 			this._resultViewStateChangeEmitters.set(resultsInput, {
-				onRestoreViewStateEmitter: new Emitter<void>(),
-				onSaveViewStateEmitter: new Emitter<void>()
+				onRestoreViewState: new Emitter<void>(),
+				onSaveViewState: new Emitter<void>()
 			});
 		}
 		let emitters = this._resultViewStateChangeEmitters.get(resultsInput);
-		this._resultsEditor.setViewStateChangeEvents(emitters.onRestoreViewStateEmitter.event, emitters.onSaveViewStateEmitter.event);
+		this._resultsEditor.setViewStateChangeEvents(emitters.onRestoreViewState.event, emitters.onSaveViewState.event);
 		return this._resultsEditor.setInput(resultsInput, options);
 	}
 

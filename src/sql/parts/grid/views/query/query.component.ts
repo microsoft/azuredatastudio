@@ -235,8 +235,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			self._cd.detectChanges();
 		});
 
-		this.queryParameters.saveViewStateEvent(() => this.saveViewState());
-		this.queryParameters.restoreViewStateEvent(() => this.restoreViewState());
+		this.queryParameters.onSaveViewState(() => this.saveViewState());
+		this.queryParameters.onRestoreViewState(() => this.restoreViewState());
 
 		this.dataService.onAngularLoaded();
 	}

@@ -12,8 +12,8 @@ import { Event } from 'vs/base/common/event';
 
 export interface IQueryComponentParams extends IBootstrapParams {
 	dataService: DataService;
-	saveViewStateEvent: Event<void>;
-	restoreViewStateEvent: Event<void>;
+	onSaveViewState: Event<void>;
+	onRestoreViewState: Event<void>;
 }
 
 export interface IEditDataComponentParams extends IBootstrapParams {
