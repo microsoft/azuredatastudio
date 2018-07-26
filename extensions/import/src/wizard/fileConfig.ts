@@ -23,7 +23,6 @@ let tableNames: string[] = [];
 let model: ImportDataModel;
 
 let form: sqlops.FormContainer;
-let loading: sqlops.LoadingComponent;
 
 export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): Promise<void> {
 	model = dm;
@@ -43,16 +42,15 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 				tableNameComponent,
 				schemaComponent
 			]).component();
-	loading = view.modelBuilder.loadingComponent().withItem(form).component();
-	loading.loading = false;
-	await view.initializeModel(loading);
+
+	populateServerDropdown().then(populateDatabaseDropdown).then(populateSchemaDropdown);
+
+	await view.initializeModel(form);
 }
 
 
 async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
-
 	serverDropdown = view.modelBuilder.dropDown().component();
-	populateServerDropdown().then(populateDatabaseDropdown).then(populateSchemaDropdown);
 
 	// Handle server changes
 	serverDropdown.onValueChanged(async (params) => {
@@ -160,6 +158,7 @@ async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormCo
 		title: 'New table name',
 	};
 }
+
 async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	schemaDropdown = view.modelBuilder.dropDown().component();
 
@@ -173,6 +172,7 @@ async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 	};
 
 }
+
 async function populateServerDropdown() {
 	let cons = await sqlops.connection.getActiveConnections();
 	// This user has no active connections ABORT MISSION
@@ -183,11 +183,25 @@ async function populateServerDropdown() {
 	server = cons[0];
 	model.server = server;
 
+
 	serverDropdown.updateProperties({
 		values: cons.map(c => {
+			let db = c.options.databaseDisplayName;
+			let usr = c.options.user;
+			let srv = c.options.server;
+
+			if(!db){
+				db = '<default>';
+			}
+
+			if(!usr){
+				usr = 'default';
+			}
+
+			let finalName = `${srv}, ${db} (${usr})`;
 			return {
 				connection: c,
-				displayName: c.options.server,
+				displayName: finalName,
 				name: c.connectionId
 			};
 		})
@@ -206,9 +220,12 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 		return false;
 	}
 
-	let first = true;
-	databaseDropdown.updateProperties({
-		values: (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
+	let val: sqlops.CategoryValue[];
+
+	// If the connection doesn't specify a database, then do your best attempt to load all the databases.
+	if (!server.options.database) {
+		let first = true;
+		val = (await sqlops.connection.listDatabases(server.connectionId)).map(db => {
 
 			if (first) {
 				first = false;
@@ -219,8 +236,18 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 				displayName: db,
 				name: db
 			};
-		})
+		});
+	} else {
+		val = [{
+			displayName: server.options.database,
+			name: server.options.database
+		}];
+	}
+
+	databaseDropdown.updateProperties({
+		values: val
 	});
+
 	return true;
 }
 
