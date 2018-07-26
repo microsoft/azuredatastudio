@@ -8,7 +8,7 @@ import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionM
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as sqlops from 'sqlops';
 
-export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape  {
+export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
 	private _proxy: MainThreadConnectionManagementShape;
 
@@ -27,7 +27,15 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getCurrentConnection();
 	}
 
-	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string}> {
+	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 		return this._proxy.$getCredentials(connectionId);
+	}
+
+	public $listDatabases(connectionId: string): Thenable<string[]> {
+		return this._proxy.$listDatabases(connectionId);
+	}
+
+	public $getUriForConnection(connectionId: string): Thenable<string> {
+		return this._proxy.$getUriForConnection(connectionId);
 	}
 }

@@ -35,6 +35,7 @@
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
 		"Microsoft.agent",
+		"Microsoft.import",
 		"Microsoft.profiler",
 		"Microsoft.server-report",
 		"Microsoft.whoisactive",
