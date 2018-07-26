@@ -5,19 +5,24 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as path from 'path';
 import * as sqlops from 'sqlops';
-import { fileConfig } from './fileConfig';
-import { prosePreview } from './prosePreview';
-import { modifyColumns } from './modifyColumns';
-import { summary } from './summary';
-import { FlatFileProvider, InsertDataResponse, PROSEDiscoveryResponse } from '../services/contracts';
-import {ImportDataModel} from './dataModel';
+import {prosePreview} from './prosePreview';
+import {modifyColumns} from './modifyColumns';
+import {summary} from './summary';
+import {FlatFileProvider, InsertDataResponse, PROSEDiscoveryResponse} from '../services/contracts';
+import {ImportDataModel} from './api/dataModel';
+import {ImportPage} from './api/importPage';
+// pages
+import {FileConfigPage} from './fileConfigPage';
 
 export async function flatFileWizard(provider: FlatFileProvider) {
-  	let model = <ImportDataModel>{};
+	let model = <ImportDataModel>{};
+	//let pages: ImportPage[] = [];
+	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
+
 	let importDataStatusPromise = deferredPromise<InsertDataResponse>();
 	let previewReadyPromise = deferredPromise<PROSEDiscoveryResponse>();
+
 	// TODO localize this
 	let connections = await sqlops.connection.getActiveConnections();
 	if (!connections || connections.length === 0) {
@@ -31,18 +36,22 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
 	let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
 
-		page1.registerContent(async (view) => {
-			await fileConfig(view, model);
-		});
-		page2.registerContent(async (view) => {
-			await prosePreview(view, model, previewReadyPromise);
-		});
-		page3.registerContent(async (view) => {
-			await modifyColumns(view, model, previewReadyPromise);
-		});
-		page4.registerContent(async (view) => {
-			await summary(view,model, wizard, importDataStatusPromise);
-		});
+	let fileConfigPage: FileConfigPage;
+	page1.registerContent(async (view) => {
+		fileConfigPage = new FileConfigPage(model, view);
+		pages.set(0, fileConfigPage);
+		await fileConfigPage.start();
+	});
+
+	page2.registerContent(async (view) => {
+		await prosePreview(view, model, previewReadyPromise);
+	});
+	page3.registerContent(async (view) => {
+		await modifyColumns(view, model, previewReadyPromise);
+	});
+	page4.registerContent(async (view) => {
+		await summary(view, model, wizard, importDataStatusPromise);
+	});
 
 
 	let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
@@ -54,13 +63,33 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 	importAnotherFileButton.hidden = true;
 	wizard.customButtons = [importAnotherFileButton];
 
+	wizard.onPageChanged(async (event) => {
+		console.log(event);
+		let idx = event.newPage;
+
+		let page = pages.get(idx);
+
+		if (page) {
+			page.onPageEnter();
+		}
+	});
+
+	wizard.onPageChanged(async (event) => {
+		let idx = event.lastPage;
+
+		let page = pages.get(idx);
+		if (page) {
+			page.onPageLeave();
+		}
+	});
+
 	wizard.onPageChanged(async e => {
-		if(e.lastPage === 0 && e.newPage === 1) {
+		if (e.lastPage === 0 && e.newPage === 1) {
 			provider.sendPROSEDiscoveryRequest({
 				filePath: model.filePath,
 				tableName: model.table,
 				schemaName: model.schema
-			}).then((result)=>{
+			}).then((result) => {
 				model.proseDataPreview = result.dataPreview;
 				model.proseColumns = [];
 				result.columnInfo.forEach((column) => {
@@ -74,7 +103,7 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 				});
 				previewReadyPromise.resolve(result as any);
 			});
-		} else if(e.lastPage === 2 && e.newPage === 3) {
+		} else if (e.lastPage === 2 && e.newPage === 3) {
 			let changeColumnResults = [];
 			model.proseColumns.forEach((val, i, arr) => {
 				let columnChangeParams = {
@@ -95,12 +124,12 @@ export async function flatFileWizard(provider: FlatFileProvider) {
 				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
 			}
 			provider.sendInsertDataRequest({
-			connectionString: connectionString,
-			//TODO check what SSMS uses as batch size
-			batchSize: 500
-        }).then((response) => {
-        	importAnotherFileButton.hidden = false;
-        	importDataStatusPromise.resolve(response);
+				connectionString: connectionString,
+				//TODO check what SSMS uses as batch size
+				batchSize: 500
+			}).then((response) => {
+				importAnotherFileButton.hidden = false;
+				importDataStatusPromise.resolve(response);
 			});
 		}
 

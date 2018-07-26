@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as sqlops from 'sqlops';
-import { ImportDataModel, ColumnMetadata } from './dataModel';
+import { ImportDataModel, ColumnMetadata } from './api/dataModel';
 import { DeferredPromise } from './flatFileWizard';
 import { PROSEDiscoveryResponse } from '../services/contracts';
 const localize = nls.loadMessageBundle();

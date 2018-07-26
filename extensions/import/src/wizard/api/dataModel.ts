@@ -7,7 +7,6 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { PROSEDiscoveryResponse, ColumnInfo } from '../services/contracts';
 
 export interface ImportDataModel {
 	ownerUri: string;
