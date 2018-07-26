@@ -126,6 +126,7 @@ async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormCo
 	}).component();
 
 	tableNameTextBox.onTextChanged((tableName) => {
+		console.log(tableName);
 		model.table = tableName;
 	});
 
