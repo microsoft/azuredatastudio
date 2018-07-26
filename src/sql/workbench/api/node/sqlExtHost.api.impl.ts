@@ -102,6 +102,9 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
+				listDatabases(connectionId: string): Thenable<string[]> {
+					return extHostConnectionManagement.$listDatabases(connectionId);
+				},
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				}

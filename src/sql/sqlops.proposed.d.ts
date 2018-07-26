@@ -23,6 +23,7 @@ declare module 'sqlops' {
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		webView(): ComponentBuilder<WebViewComponent>;
+		editor(): ComponentBuilder<EditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
@@ -375,6 +376,7 @@ declare module 'sqlops' {
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
+		fontSize?: number | string;
 		selectedRows?: number[];
 	}
 
@@ -433,6 +435,20 @@ declare module 'sqlops' {
 	export interface WebViewProperties {
 		message?: any;
 		html?: string;
+	}
+
+	/**
+	 * Editor properties for the editor component
+	 */
+	export interface EditorProperties {
+		/**
+		 * The content inside the text editor
+		 */
+		content?: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
+		languageMode?: string
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
@@ -501,6 +517,20 @@ declare module 'sqlops' {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
+	}
+
+	/**
+	 * Editor component for displaying the text code editor
+	 */
+	export interface EditorComponent extends Component {
+		/**
+		 * The content inside the text editor
+		 */
+		content: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
+		languageMode: string;
 	}
 
 	export interface ButtonComponent extends Component {
@@ -1081,6 +1111,13 @@ declare module 'sqlops' {
 	}
 
 	export namespace connection {
+		/**
+		 * List the databases that can be accessed from the given connection
+		 * @param {string} connectionId The ID of the connection
+		 * @returns {string[]} An list of names of databases
+		 */
+		export function listDatabases(connectionId: string): Thenable<string[]>;
+
 		/**
 		 * Get a URI corresponding to the given connection so that it can be used with data
 		 * providers and other APIs that require a connection API.

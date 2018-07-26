@@ -809,16 +809,15 @@ suite('SQL ConnectionManagementService tests', () => {
 		let profile = Object.assign({}, connectionProfile);
 		profile.options = {password: profile.password};
 		profile.id = 'test_id';
-		let uri = Utils.generateUri(profile);
+		let uri = 'test_initial_uri';
 		connectionStatusManager.addConnection(profile, uri);
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 
 		// If I call getConnectionUriFromId on the given connection
 		let foundUri = connectionManagementService.getConnectionUriFromId(profile.id);
 
-		// Then the returned URI matches the one from the connection TODO
-		let foundConnection = connectionManagementService.getConnectionProfile(foundUri);
-		assert.equal(foundConnection, profile);
+		// Then the returned URI matches the connection's
+		assert.equal(foundUri, Utils.generateUri(new ConnectionProfile(capabilitiesService, profile)));
 	});
 
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {

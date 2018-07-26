@@ -301,6 +301,7 @@ export default class MainController implements vscode.Disposable {
 		page1.registerContent(async (view) => {
 			await this.getTabContent(view, customButton1, customButton2, 800);
 		});
+		/*
 		wizard.registerOperation({
 			displayName: 'test task',
 			description: 'task description',
@@ -311,7 +312,7 @@ export default class MainController implements vscode.Disposable {
 			setTimeout(() => {
 				op.updateStatus(sqlops.TaskStatus.Succeeded);
 			}, 5000);
-		});
+		});*/
 		wizard.pages = [page1, page2];
 		wizard.open();
 	}
@@ -354,15 +355,32 @@ export default class MainController implements vscode.Disposable {
 				webview2.message = count;
 			});
 
-			let flexModel = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column',
-					alignItems: 'flex-start',
-					height: 500
-				}).withItems([
-					webview1, webview2
-				], { flex: '1 1 50%' })
+			let editor1 = view.modelBuilder.editor()
+				.withProperties({
+					content: 'select * from sys.tables'
+				})
 				.component();
+
+			let editor2 = view.modelBuilder.editor()
+				.withProperties({
+					content: 'print("Hello World !")',
+					languageMode: 'python'
+				})
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(editor1, { flex: '1' });
+			flexModel.addItem(editor2, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			view.onClosed((params) => {
+				vscode.window.showInformationMessage('editor1: language: ' + editor1.languageMode + ' Content1: ' + editor1.content);
+				vscode.window.showInformationMessage('editor2: language: ' + editor2.languageMode + ' Content2: ' + editor2.content);
+			});
 			await view.initializeModel(flexModel);
 		});
 		editor.openEditor();

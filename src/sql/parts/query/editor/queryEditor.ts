@@ -41,7 +41,7 @@ import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesAction, ListDatabasesActionItem,
 	ConnectDatabaseAction, ToggleConnectDatabaseAction, EstimatedQueryPlanAction,
-	ActualQueryPlanAction
+	ActualQueryPlanAction, ParseSyntaxAction
 } from 'sql/parts/query/execution/queryActions';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
@@ -87,6 +87,7 @@ export class QueryEditor extends BaseEditor {
 	private _listDatabasesAction: ListDatabasesAction;
 	private _estimatedQueryPlanAction: EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: ActualQueryPlanAction;
+	private _parseSyntaxAction: ParseSyntaxAction;
 
 	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
 
@@ -368,6 +369,22 @@ export class QueryEditor extends BaseEditor {
 		return true;
 	}
 
+	public getAllText(): string {
+		if (this._sqlEditor && this._sqlEditor.getControl()) {
+			let control = this._sqlEditor.getControl();
+			let codeEditor: CodeEditor = <CodeEditor>control;
+			if (codeEditor) {
+				let value = codeEditor.getValue();
+				if (value !== undefined && value.length > 0) {
+					return value;
+				} else {
+					return '';
+				}
+			}
+		}
+		return undefined;
+	}
+
 	public getSelectionText(): string {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
@@ -437,6 +454,7 @@ export class QueryEditor extends BaseEditor {
 		this._listDatabasesAction = this._instantiationService.createInstance(ListDatabasesAction, this);
 		this._estimatedQueryPlanAction = this._instantiationService.createInstance(EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this._instantiationService.createInstance(ActualQueryPlanAction, this);
+		this._parseSyntaxAction = this._instantiationService.createInstance(ParseSyntaxAction, this);
 
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
@@ -451,6 +469,7 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._listDatabasesAction },
 			{ element: separator },
 			{ action: this._estimatedQueryPlanAction },
+			{ action: this._parseSyntaxAction }
 		];
 		this._taskbar.setContent(content);
 	}
