@@ -23,6 +23,7 @@ declare module 'sqlops' {
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		webView(): ComponentBuilder<WebViewComponent>;
+		editor(): ComponentBuilder<EditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
@@ -435,6 +436,11 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
+	export interface EditorProperties {
+		content?: string;
+		languageMode?: string
+	}
+
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 		isFile?: boolean;
@@ -501,6 +507,11 @@ declare module 'sqlops' {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
+	}
+
+	export interface EditorComponent extends Component {
+		content: string;
+		languageMode: string;
 	}
 
 	export interface ButtonComponent extends Component {
