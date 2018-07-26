@@ -161,6 +161,13 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
 	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
+	private savedViewState: {
+		gridSelections: ISlickRange[][];
+		resultsScroll: number;
+		messagePaneScroll: number;
+		slickGridScrolls: { vertical: number; horizontal: number }[];
+	};
+
 	@Input() public queryParameters: IQueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
@@ -168,6 +175,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
 	@ViewChild('queryLink', { read: ElementRef }) private _queryLinkElement: ElementRef;
 	@ViewChild('messagesContainer', { read: ElementRef }) private _messagesContainer: ElementRef;
+	@ViewChild('resultsScrollBox', { read: ElementRef }) private _resultsScrollBox: ElementRef;
+	@ViewChildren('slickgrid', { read: ElementRef }) private _slickgridElements: QueryList<ElementRef>;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -655,24 +664,41 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		}
 	}
 
-	// TODO: Selection and message scroll are working, results scroll is not. Also add scroll for each grid
-	// resultsElement.parentElement.children[1] has a scrolltop set (i think this is the results pane scroll)
-	// resultsElement.parentElement.children[1].children[0].children[0].children[0].children[3] also has scroll top
-	private _gridSelections: ISlickRange[][] = [];
-	private _resultsPaneScroll: number;
-	private _messagePaneScroll: number;
-
 	private saveViewState(): void {
-		this._gridSelections = this.slickgrids.map(grid => grid.getSelectedRanges());
-		let resultsElement = (this._resultsPane.nativeElement as HTMLElement);
-		this._resultsPaneScroll = resultsElement.scrollTop;
-		this._messagePaneScroll = (this._messagesContainer.nativeElement as HTMLElement).scrollTop;
+		let gridSelections = this.slickgrids.map(grid => grid.getSelectedRanges());
+		let resultsScrollElement = (this._resultsScrollBox.nativeElement as HTMLElement);
+		let resultsScroll = resultsScrollElement.scrollTop;
+		let messagePaneScroll = (this._messagesContainer.nativeElement as HTMLElement).scrollTop;
+		let slickGridScrolls = this._slickgridElements.map(element => {
+			// Get the slick grid's viewport element and save its scroll position
+			let scrollElement = (element.nativeElement as HTMLElement).children[0].children[3];
+			return {
+				vertical: scrollElement.scrollTop,
+				horizontal: scrollElement.scrollLeft
+			};
+		});
+
+		this.savedViewState = {
+			gridSelections,
+			messagePaneScroll,
+			resultsScroll,
+			slickGridScrolls
+		};
 	}
 
 	private restoreViewState(): void {
-		this.slickgrids.forEach((grid, index) => grid.selection = this._gridSelections[index]);
-		(this._resultsPane.nativeElement as HTMLElement).scrollTop = this._resultsPaneScroll;
-		(this._messagesContainer.nativeElement as HTMLElement).scrollTop = this._messagePaneScroll;
+		if (this.savedViewState) {
+			this.slickgrids.forEach((grid, index) => grid.selection = this.savedViewState.gridSelections[index]);
+			(this._resultsScrollBox.nativeElement as HTMLElement).scrollTop = this.savedViewState.resultsScroll;
+			(this._messagesContainer.nativeElement as HTMLElement).scrollTop = this.savedViewState.messagePaneScroll;
+			this._slickgridElements.forEach((element, index) => {
+				let scrollElement = (element.nativeElement as HTMLElement).children[0].children[3];
+				let savedScroll = this.savedViewState.slickGridScrolls[index];
+				scrollElement.scrollTop = savedScroll.vertical;
+				scrollElement.scrollLeft = savedScroll.horizontal;
+			});
+			this.savedViewState = undefined;
+		}
 	}
 
 	layout() {

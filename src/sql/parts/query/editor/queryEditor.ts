@@ -492,8 +492,9 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		if (oldInput) {
-			if (this._resultViewStateChangeEmitters.has(oldInput.results)) {
-				this._resultViewStateChangeEmitters.get(oldInput.results).onSaveViewStateEmitter.fire();
+			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get(oldInput.results);
+			if (resultViewStateChangeEmitters) {
+				resultViewStateChangeEmitters.onSaveViewStateEmitter.fire();
 			}
 
 			this._disposeEditors();
