@@ -847,6 +847,14 @@ class TableComponentWrapper extends ComponentWrapper implements sqlops.TableComp
 		this.setProperty('columns', v);
 	}
 
+	public get fontSize(): number | string {
+		return this.properties['fontSize'];
+	}
+
+	public set fontSize(size: number | string) {
+		this.setProperty('fontSize', size);
+	}
+
 	public get selectedRows(): number[] {
 		return this.properties['selectedRows'];
 	}
