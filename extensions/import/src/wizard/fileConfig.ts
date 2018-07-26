@@ -7,7 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import {ImportDataModel} from './dataModel';
+import { ImportDataModel } from './dataModel';
 
 let server: sqlops.connection.Connection;
 
@@ -21,6 +21,9 @@ let schemaDropdown: sqlops.DropDownComponent;
 let tableNames: string[] = [];
 
 let model: ImportDataModel;
+
+let form: sqlops.FormContainer;
+let loading: sqlops.LoadingComponent;
 
 export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): Promise<void> {
 	model = dm;
@@ -47,7 +50,7 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 	let tableNameComponent = await createTableNameBox(view);
 	let schemaComponent = await createSchemaDropdown(view);
 
-	let formModel = view.modelBuilder.formContainer()
+	form = view.modelBuilder.formContainer()
 		.withFormItems(
 			[
 				serverComponent,
@@ -56,9 +59,9 @@ export async function fileConfig(view: sqlops.ModelView, dm: ImportDataModel): P
 				tableNameComponent,
 				schemaComponent
 			]).component();
-	let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
-	formWrapper.loading = false;
-	await view.initializeModel(formWrapper);
+	loading = view.modelBuilder.loadingComponent().withItem(form).component();
+	loading.loading = false;
+	await view.initializeModel(loading);
 }
 
 async function populateTableNames(): Promise<boolean> {
@@ -105,30 +108,7 @@ async function createSchemaDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 
 }
 
-async function populateSchemaDropdown(): Promise<Boolean> {
-	let connectionUri = await sqlops.connection.getUriForConnection(server.connectionId);
-	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(server.providerName, sqlops.DataProviderType.QueryProvider);
 
-	let query = `SELECT name FROM sys.schemas`;
-
-	let results = await queryProvider.runQueryAndReturn(connectionUri, query);
-
-	let first = true;
-	let schemas = results.rows.map(row => {
-		let schemaName = row[0].displayValue;
-		if (first) {
-			first = false;
-			model.schema = schemaName;
-		}
-
-		return row[0].displayValue;
-	});
-
-	schemaDropdown.updateProperties({
-		values: schemas
-	});
-	return true;
-}
 
 async function createTableNameBox(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
 	tableNameTextBox = view.modelBuilder.inputBox().withValidation((name) => {
@@ -218,6 +198,16 @@ async function createServerDropdown(view: sqlops.ModelView): Promise<sqlops.Form
 	};
 }
 
+async function createDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
+	databaseDropdown = view.modelBuilder.dropDown().component();
+	populateDatabaseDropdown();
+
+	return {
+		component: databaseDropdown,
+		title: 'Database the table is created in',
+	};
+}
+
 async function populateServerDropdown() {
 	let cons = await sqlops.connection.getActiveConnections();
 	// This user has no active connections ABORT MISSION
@@ -240,18 +230,15 @@ async function populateServerDropdown() {
 
 }
 
-async function createDatabaseDropdown(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
-	databaseDropdown = view.modelBuilder.dropDown().component();
-	populateDatabaseDropdown();
-
-	return {
-		component: databaseDropdown,
-		title: 'Database the table is created in',
-	};
-}
 
 async function populateDatabaseDropdown(): Promise<boolean> {
+	loading.loading = true;
+	// Clean out everything
+	databaseDropdown.updateProperties({ values: [] });
+	schemaDropdown.updateProperties({ values: [] });
+
 	if (!server) {
+		loading.loading = false;
 		return false;
 	}
 
@@ -270,10 +257,36 @@ async function populateDatabaseDropdown(): Promise<boolean> {
 			};
 		})
 	});
-
+	loading.loading = false;
 	return true;
 }
 
+async function populateSchemaDropdown(): Promise<Boolean> {
+	loading.loading = true;
+	let connectionUri = await sqlops.connection.getUriForConnection(server.connectionId);
+	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(server.providerName, sqlops.DataProviderType.QueryProvider);
+
+	let query = `SELECT name FROM sys.schemas`;
+
+	let results = await queryProvider.runQueryAndReturn(connectionUri, query);
+
+	let first = true;
+	let schemas = results.rows.map(row => {
+		let schemaName = row[0].displayValue;
+		if (first) {
+			first = false;
+			model.schema = schemaName;
+		}
+
+		return row[0].displayValue;
+	});
+
+	schemaDropdown.updateProperties({
+		values: schemas
+	});
+	loading.loading = false;
+	return true;
+}
 interface ConnectionDropdownValue extends sqlops.CategoryValue {
 	connection: sqlops.connection.Connection;
 }
