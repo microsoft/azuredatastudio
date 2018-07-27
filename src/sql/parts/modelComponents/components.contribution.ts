@@ -21,6 +21,7 @@ import TableComponent from './table.component';
 import TextComponent from './text.component';
 import LoadingComponent from './loadingComponent.component';
 import FileBrowserTreeComponent from './fileBrowserTree.component';
+import EditorComponent from './editor.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -78,3 +79,6 @@ registerComponentType(TREE_COMPONENT, ModelComponentTypes.TreeComponent, TreeCom
 
 export const FILEBROWSERTREE_COMPONENT = 'filebrowsertree-component';
 registerComponentType(FILEBROWSERTREE_COMPONENT, ModelComponentTypes.FileBrowserTree, FileBrowserTreeComponent);
+
+export const EDITOR_COMPONENT = 'editor-component';
+registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorComponent);
