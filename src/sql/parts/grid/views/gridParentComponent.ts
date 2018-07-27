@@ -436,7 +436,7 @@ export abstract class GridParentComponent {
 		});
 	}
 
-	abstract onScroll(scrollTop): void;
+	protected abstract onScroll(scrollTop): void;
 
 	protected getResultsElement(): any {
 		return this._el.nativeElement.querySelector('#results');
