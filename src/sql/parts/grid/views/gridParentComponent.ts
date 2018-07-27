@@ -80,16 +80,6 @@ export abstract class GridParentComponent {
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
 
-	// Edit Data functions
-	public onActiveCellChanged: (event: { row: number, column: number }) => void;
-	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
-	public onCellEditBegin: (event: { row: number, column: number }) => void;
-	public onRowEditBegin: (event: { row: number }) => void;
-	public onRowEditEnd: (event: { row: number }) => void;
-	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
-	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
-	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
-
 	set messageActive(input: boolean) {
 		this._messageActive = input;
 		if (this.resultActive) {
@@ -449,7 +439,7 @@ export abstract class GridParentComponent {
 		});
 	}
 
-	abstract onScroll(scrollTop): void;
+	protected abstract onScroll(scrollTop): void;
 
 	protected getResultsElement(): any {
 		return this._el.nativeElement.querySelector('#results');
