@@ -6,186 +6,134 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import {prosePreview} from './prosePreview';
-import {modifyColumns} from './modifyColumns';
-import {summary} from './summary';
-import {FlatFileProvider, InsertDataResponse, PROSEDiscoveryResponse} from '../services/contracts';
-import {ImportDataModel} from './api/dataModel';
+import {FlatFileProvider} from '../services/contracts';
+import {ImportDataModel} from './api/models';
 import {ImportPage} from './api/importPage';
 // pages
 import {FileConfigPage} from './fileConfigPage';
+import {ProsePreviewPage} from './prosePreviewPage';
+import {ModifyColumnsPage} from './modifyColumnsPage';
+import {SummaryPage} from './summaryPage';
 
-export async function flatFileWizard(provider: FlatFileProvider) {
-	let model = <ImportDataModel>{};
-	//let pages: ImportPage[] = [];
-	let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
+export class FlatFileWizard {
+	private readonly provider: FlatFileProvider;
+	private model = <ImportDataModel>{};
+	private importAnotherFileButton: sqlops.window.modelviewdialog.Button;
 
-	let importDataStatusPromise = deferredPromise<InsertDataResponse>();
-	let previewReadyPromise = deferredPromise<PROSEDiscoveryResponse>();
-
-	// TODO localize this
-	let connections = await sqlops.connection.getActiveConnections();
-	if (!connections || connections.length === 0) {
-		vscode.window.showErrorMessage('Please connect to a server before using this wizard.');
-		return;
+	constructor(provider: FlatFileProvider) {
+		this.provider = provider;
 	}
 
-	let wizard = sqlops.window.modelviewdialog.createWizard('Flat file import wizard');
-	let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
-	let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
-	let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
-	let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
+	public async start() {
+		let model = <ImportDataModel>{};
+		//let pages: ImportPage[] = [];
+		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
-	let fileConfigPage: FileConfigPage;
-	page1.registerContent(async (view) => {
-		fileConfigPage = new FileConfigPage(model, view);
-		pages.set(0, fileConfigPage);
-		await fileConfigPage.start();
-		if (!fileConfigPage) {
-			console.log('how can you');
+
+		// TODO localize this
+		let connections = await sqlops.connection.getActiveConnections();
+		if (!connections || connections.length === 0) {
+			vscode.window.showErrorMessage('Please connect to a server before using this wizard.');
+			return;
 		}
-		fileConfigPage.onPageEnter();
-	});
 
-	page2.registerContent(async (view) => {
-		await prosePreview(view, model, previewReadyPromise);
-	});
-	page3.registerContent(async (view) => {
-		await modifyColumns(view, model, previewReadyPromise);
-	});
-	page4.registerContent(async (view) => {
-		await summary(view, model, wizard, importDataStatusPromise);
-	});
+		let wizard = sqlops.window.modelviewdialog.createWizard('Import flat file wizard');
+		let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
+		let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
+		let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
+		let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
+
+		let fileConfigPage: FileConfigPage;
+		await page1.registerContent(async (view) => {
+			fileConfigPage = new FileConfigPage(this, model, view, this.provider);
+			pages.set(0, fileConfigPage);
+			await fileConfigPage.start();
+			console.log('A');
+			fileConfigPage.onPageEnter();
+			console.log('B');
+		});
+
+		let prosePreviewPage: ProsePreviewPage;
+		page2.registerContent(async (view) => {
+			prosePreviewPage = new ProsePreviewPage(this, model, view, this.provider);
+			pages.set(1, prosePreviewPage);
+			await prosePreviewPage.start();
+		});
+
+		let modifyColumnsPage: ModifyColumnsPage;
+		page3.registerContent(async (view) => {
+			modifyColumnsPage = new ModifyColumnsPage(this, model, view, this.provider);
+			pages.set(2, modifyColumnsPage);
+			await modifyColumnsPage.start();
+		});
+
+		let summaryPage: SummaryPage;
+
+		page4.registerContent(async (view) => {
+			summaryPage = new SummaryPage(this, model, view, this.provider);
+			pages.set(3, summaryPage);
+			await summaryPage.start();
+		});
 
 
-	let importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
-	importAnotherFileButton.onClick(() => {
-		//TODO replace this with proper cleanup for all the pages
-		wizard.close();
-		flatFileWizard(provider);
-	});
-	importAnotherFileButton.hidden = true;
-	wizard.customButtons = [importAnotherFileButton];
+		this.importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
+		this.importAnotherFileButton.onClick(() => {
+			//TODO replace this with proper cleanup for all the pages
+			wizard.close();
+			this.model = <ImportDataModel>{};
+			wizard.open();
+		});
 
-	wizard.onPageChanged(async (event) => {
-		console.log(event);
-		let idx = event.newPage;
+		this.importAnotherFileButton.hidden = true;
+		wizard.customButtons = [this.importAnotherFileButton];
 
-		let page = pages.get(idx);
+		wizard.onPageChanged(async (event) => {
+			console.log(event);
+			let idx = event.newPage;
 
-		if (page) {
-			page.onPageEnter();
-		}
-	});
+			let page = pages.get(idx);
 
-	wizard.onPageChanged(async (event) => {
-		let idx = event.lastPage;
-
-		let page = pages.get(idx);
-		if (page) {
-			page.onPageLeave();
-		}
-	});
-
-	wizard.onPageChanged(async e => {
-		if (e.lastPage === 0 && e.newPage === 1) {
-			provider.sendPROSEDiscoveryRequest({
-				filePath: model.filePath,
-				tableName: model.table,
-				schemaName: model.schema
-			}).then((result) => {
-				model.proseDataPreview = result.dataPreview;
-				model.proseColumns = [];
-				result.columnInfo.forEach((column) => {
-					let columnData = {
-						columnName: column.name,
-						dataType: column.sqlType,
-						primaryKey: false,
-						nullable: column.isNullable
-					};
-					model.proseColumns.push(columnData);
-				});
-				previewReadyPromise.resolve(result as any);
-			});
-		} else if (e.lastPage === 2 && e.newPage === 3) {
-			let changeColumnResults = [];
-			model.proseColumns.forEach((val, i, arr) => {
-				let columnChangeParams = {
-					index: i,
-					newName: val.columnName,
-					newDataType: val.dataType,
-					newNullable: val.nullable,
-					newInPrimaryKey: val.primaryKey
-				};
-				changeColumnResults.push(provider.sendChangeColumnSettingsRequest(columnChangeParams));
-			});
-			let connectionString: string;
-			let options = model.server.options;
-			if (options.authenticationType === 'Integrated') {
-				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=True`;
-			} else {
-				let credentials = await sqlops.connection.getCredentials(model.server.connectionId);
-				connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
+			if (page) {
+				page.onPageEnter();
 			}
-			provider.sendInsertDataRequest({
-				connectionString: connectionString,
-				//TODO check what SSMS uses as batch size
-				batchSize: 500
-			}).then((response) => {
-				importAnotherFileButton.hidden = false;
-				importDataStatusPromise.resolve(response);
-			});
-		}
+		});
 
-		if (e.lastPage === 3 && e.newPage !== 3) {
-			importAnotherFileButton.hidden = true;
-		}
+		wizard.onPageChanged(async (event) => {
+			let idx = event.lastPage;
 
-		let oldLabel: string;
-		if (e.newPage === 2) {
-			oldLabel = wizard.nextButton.label;
-			wizard.nextButton.label = 'Import data';
-		} else if (oldLabel) {
-			wizard.nextButton.label = oldLabel;
-		}
-	});
+			let page = pages.get(idx);
+			if (page) {
+				page.onPageLeave();
+			}
+		});
 
-	// wizard.registerOperation({
-	// 	displayName: 'test task',
-	// 	description: 'task description',
-	// 	connection: null,
-	// 	isCancelable: true,
-	// 	operation: (op) => {
-	// 		op.updateStatus(sqlops.TaskStatus.InProgress);
-	// 		op.updateStatus(sqlops.TaskStatus.InProgress, 'Task is running');
-	// 		setTimeout(() => {
-	// 			op.updateStatus(sqlops.TaskStatus.Succeeded);
-	// 		}, 5000);
-	// 	}
-	// });
+		// 	if (e.lastPage === 3 && e.newPage !== 3) {
+		// 		importAnotherFileButton.hidden = true;
+		// 	}
+		//
+		// 	let oldLabel: string;
+		// 	if (e.newPage === 2) {
+		// 		oldLabel = wizard.nextButton.label;
+		// 		wizard.nextButton.label = 'Import data';
+		// 	} else if (oldLabel) {
+		// 		wizard.nextButton.label = oldLabel;
+		// 	}
+		// });
 
-	//not needed for this wizard
-	wizard.generateScriptButton.hidden = true;
 
-	wizard.pages = [page1, page2, page3, page4];
-	wizard.open();
+		//not needed for this wizard
+		wizard.generateScriptButton.hidden = true;
+
+		wizard.pages = [page1, page2, page3, page4];
+		wizard.open();
+	}
+
+	public setImportAnotherFileVisibility(visibility: boolean) {
+		this.importAnotherFileButton.hidden = !visibility;
+	}
+
+
 }
 
-//TODO put in a different file with other interfaces
-export interface DeferredPromise<T> {
-	promise: Promise<T>;
-	resolve: (value: T | PromiseLike<T>) => void;
-	reject: (reason?: any) => void;
-}
 
-function deferredPromise<T>(): DeferredPromise<T> {
-	let outResolve, outReject;
-	return {
-		promise: new Promise<T>((resolve, reject) => {
-			outResolve = resolve;
-			outReject = reject;
-		}),
-		resolve: outResolve,
-		reject: outReject
-	};
-}
+

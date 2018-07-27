@@ -6,8 +6,10 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import {ImportDataModel} from './api/dataModel';
+import {ImportDataModel} from './api/models';
 import {ImportPage} from './api/importPage';
+import {FlatFileProvider} from '../services/contracts';
+import {FlatFileWizard} from './flatFileWizard';
 
 export class FileConfigPage extends ImportPage {
 	private server: sqlops.connection.Connection;
@@ -22,8 +24,8 @@ export class FileConfigPage extends ImportPage {
 
 	private tableNames: string[] = [];
 
-	public constructor(model: ImportDataModel, view: sqlops.ModelView) {
-		super(model, view);
+	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, model, view, provider);
 	}
 
 	async start(): Promise<boolean> {
@@ -32,6 +34,7 @@ export class FileConfigPage extends ImportPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
+
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -47,7 +50,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.populateServerDropdown().then(this.populateDatabaseDropdown).then(this.populateSchemaDropdown);
+		await this.populateServerDropdown();
+		await this.populateDatabaseDropdown();
+		await this.populateSchemaDropdown();
 		return true;
 	}
 
@@ -56,17 +61,37 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	private async populateServerDropdown() {
+	private async createServerDropdown(): Promise<sqlops.FormComponent> {
+		this.serverDropdown = this.view.modelBuilder.dropDown().component();
+
+		// Handle server changes
+		this.serverDropdown.onValueChanged(async (params) => {
+			this.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
+
+			this.model.server = this.server;
+
+			await this.populateDatabaseDropdown();
+			await this.populateSchemaDropdown();
+		});
+
+		return {
+			component: this.serverDropdown,
+			title: 'Server the database is in',
+		};
+	}
+
+
+	private async populateServerDropdown(): Promise<boolean> {
 		let cons = await sqlops.connection.getActiveConnections();
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
-			return;
+			return true;
 		}
 
 		this.server = cons[0];
 		this.model.server = this.server;
 
-
+		console.log('E');
 		this.serverDropdown.updateProperties({
 			values: cons.map(c => {
 				let db = c.options.databaseDisplayName;
@@ -89,7 +114,8 @@ export class FileConfigPage extends ImportPage {
 				};
 			})
 		});
-
+		console.log('G');
+		return true;
 	}
 
 	private async createDatabaseDropdown(): Promise<sqlops.FormComponent> {
@@ -97,7 +123,6 @@ export class FileConfigPage extends ImportPage {
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async (db) => {
-
 			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 			this.populateTableNames();
 			this.populateSchemaDropdown();
@@ -107,6 +132,37 @@ export class FileConfigPage extends ImportPage {
 			component: this.databaseDropdown,
 			title: 'Database the table is created in',
 		};
+	}
+
+	private async populateDatabaseDropdown(): Promise<boolean> {
+		this.databaseDropdown.updateProperties({values: []});
+		this.schemaDropdown.updateProperties({values: []});
+
+		if (!this.server) {
+			return false;
+		}
+
+		let val: sqlops.CategoryValue[];
+
+		let first = true;
+		val = (await sqlops.connection.listDatabases(this.server.connectionId)).map(db => {
+
+			if (first) {
+				first = false;
+				this.model.database = db;
+			}
+
+			return {
+				displayName: db,
+				name: db
+			};
+		});
+
+		this.databaseDropdown.updateProperties({
+			values: val
+		});
+
+		return true;
 	}
 
 	private async createFileBrowser(): Promise<sqlops.FormComponent> {
@@ -185,55 +241,6 @@ export class FileConfigPage extends ImportPage {
 		};
 	}
 
-	private async createServerDropdown(): Promise<sqlops.FormComponent> {
-		this.serverDropdown = this.view.modelBuilder.dropDown().component();
-
-		// Handle server changes
-		this.serverDropdown.onValueChanged(async (params) => {
-			this.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
-
-			this.model.server = this.server;
-			await this.populateDatabaseDropdown().then(() => this.populateSchemaDropdown());
-		});
-
-		return {
-			component: this.serverDropdown,
-			title: 'Server the database is in',
-		};
-	}
-
-	private async populateDatabaseDropdown(): Promise<boolean> {
-		// Clean out everything
-
-		this.databaseDropdown.updateProperties({values: []});
-		this.schemaDropdown.updateProperties({values: []});
-
-		if (!this.server) {
-			return false;
-		}
-
-		let val: sqlops.CategoryValue[];
-
-		let first = true;
-		val = (await sqlops.connection.listDatabases(this.server.connectionId)).map(db => {
-
-			if (first) {
-				first = false;
-				this.model.database = db;
-			}
-
-			return {
-				displayName: db,
-				name: db
-			};
-		});
-
-		this.databaseDropdown.updateProperties({
-			values: val
-		});
-
-		return true;
-	}
 
 	private async createSchemaDropdown(): Promise<sqlops.FormComponent> {
 		this.schemaDropdown = this.view.modelBuilder.dropDown().component();
@@ -279,9 +286,11 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async populateTableNames(): Promise<boolean> {
+		this.tableNames = [];
 		let databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 
 		if (!databaseName || databaseName.length === 0) {
+			console.log('db broke?');
 			this.tableNames = [];
 			return false;
 		}
