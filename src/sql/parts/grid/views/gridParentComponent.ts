@@ -236,21 +236,25 @@ export abstract class GridParentComponent {
 		this.messagesFocussedContextKey.set(false);
 	}
 
+	protected getSelection(index?: number): ISlickRange[] {
+		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+		selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
+		return selection;
+	}
+
 	private copySelection(): void {
 		let messageText = this.getMessageText();
 		if (messageText.length > 0) {
 			this.clipboardService.writeText(messageText);
 		} else {
 			let activeGrid = this.activeGrid;
-			let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
-			this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
+			this.dataService.copyResults(this.getSelection(activeGrid), this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
 		}
 	}
 
 	private copyWithHeaders(): void {
 		let activeGrid = this.activeGrid;
-		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
-		this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId,
+		this.dataService.copyResults(this.getSelection(activeGrid), this.renderedDataSets[activeGrid].batchId,
 			this.renderedDataSets[activeGrid].resultId, true);
 	}
 
@@ -364,8 +368,7 @@ export abstract class GridParentComponent {
 		let activeGrid = this.activeGrid;
 		let batchId = this.renderedDataSets[activeGrid].batchId;
 		let resultId = this.renderedDataSets[activeGrid].resultId;
-		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
-		this.dataService.sendSaveRequest({ batchIndex: batchId, resultSetNumber: resultId, format: format, selection: selection });
+		this.dataService.sendSaveRequest({ batchIndex: batchId, resultSetNumber: resultId, format: format, selection: this.getSelection(activeGrid) });
 	}
 
 	protected _keybindingFor(action: IAction): ResolvedKeybinding {
@@ -377,7 +380,7 @@ export abstract class GridParentComponent {
 		let slick: any = this.slickgrids.toArray()[index];
 		let grid = slick._grid;
 
-		let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
 			let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
