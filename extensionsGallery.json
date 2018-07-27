@@ -527,7 +527,55 @@
                     ],
                     "statistics": [],
                     "flags": "preview"
-                }
+                },
+                {
+                    "extensionId": "22",
+                    "extensionName": "firstresponderkit",
+                    "displayName": "First Responder Kit",
+                    "shortDescription": "Access current versions of scripts from the First Responder Kit",
+                    "publisher": {
+                      "displayName":"Drew Skwiers-Koballa",
+                      "publisherId": "drewsk",
+                      "publisherName":"drewsk"
+                    },
+                    "versions": [
+                      {
+                        "version": "0.1.0",
+                        "lastUpdated": "7/25/2018",
+                        "assetUri": "",
+                        "fallbackAssetUri": "fallbackAssetUri",
+                        "files": [
+                        {
+                          "assetType": "Microsoft.SQLOps.DownloadPage",
+                          "source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.1.0"
+                        },
+                       {
+                          "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+                          "source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/images/first-responder-kit-sqlops-extension.png"
+                        },
+                        {
+                          "assetType": "Microsoft.VisualStudio.Services.Content.Details",
+                         "source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/README.md"
+                        },
+                        {
+                          "assetType": "Microsoft.VisualStudio.Code.Manifest",
+                          "source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/package.json"
+                        },
+                        {
+                          "assetType": "Microsoft.VisualStudio.Services.Content.License",
+                          "source": "https://raw.githubusercontent.com/dzsquared/sqlops-firstresponderkit/master/LICENSE"
+                        }
+                        ],
+                        "properties": [
+                          { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+						  { "key": "Microsoft.VisualStudio.Services.Links.Source", "value": "https://github.com/dzsquared/sqlops-firstresponderkit"},
+                          { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
+                        ]
+                      }
+                    ],
+                    "statistics": [],
+                    "flags": "preview"
+                  }
 		],
 		"resultMetadata": [{
 			"metadataType": "ResultCount",
