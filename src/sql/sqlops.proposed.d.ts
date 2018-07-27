@@ -454,6 +454,7 @@ declare module 'sqlops' {
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 		isFile?: boolean;
+		fileContent?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -533,7 +534,7 @@ declare module 'sqlops' {
 		languageMode: string;
 	}
 
-	export interface ButtonComponent extends Component {
+	export interface ButtonComponent extends Component, ButtonProperties  {
 		label: string;
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
