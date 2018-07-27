@@ -32,6 +32,7 @@ import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
+import { Emitter } from 'vs/base/common/event';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -90,6 +91,7 @@ export class QueryEditor extends BaseEditor {
 	private _parseSyntaxAction: ParseSyntaxAction;
 
 	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
+	private _resultViewStateChangeEmitters = new Map<QueryResultsInput, { onSaveViewState: Emitter<void>; onRestoreViewState: Emitter<void> }>();
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -509,6 +511,11 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		if (oldInput) {
+			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get(oldInput.results);
+			if (resultViewStateChangeEmitters) {
+				resultViewStateChangeEmitters.onSaveViewState.fire();
+			}
+
 			this._disposeEditors();
 		}
 
@@ -583,6 +590,9 @@ export class QueryEditor extends BaseEditor {
 			.then(onEditorsCreated)
 			.then(doLayout)
 			.then(() => {
+				if (this._resultViewStateChangeEmitters.has(newInput.results)) {
+					this._resultViewStateChangeEmitters.get(newInput.results).onRestoreViewState.fire();
+				}
 				if (this._savedViewStates.has(newInput.sql)) {
 					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
 				}
@@ -617,6 +627,14 @@ export class QueryEditor extends BaseEditor {
 	 */
 	private _onResultsEditorCreated(resultsEditor: QueryResultsEditor, resultsInput: QueryResultsInput, options: EditorOptions): TPromise<void> {
 		this._resultsEditor = resultsEditor;
+		if (!this._resultViewStateChangeEmitters.has(resultsInput)) {
+			this._resultViewStateChangeEmitters.set(resultsInput, {
+				onRestoreViewState: new Emitter<void>(),
+				onSaveViewState: new Emitter<void>()
+			});
+		}
+		let emitters = this._resultViewStateChangeEmitters.get(resultsInput);
+		this._resultsEditor.setViewStateChangeEvents(emitters.onRestoreViewState.event, emitters.onSaveViewState.event);
 		return this._resultsEditor.setInput(resultsInput, options);
 	}
 
