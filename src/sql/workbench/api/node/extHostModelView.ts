@@ -14,7 +14,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType} from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
@@ -1008,15 +1008,23 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops
 	}
 }
 
- class TreeComponentWrapper extends ComponentWrapper implements sqlops.TreeComponent {
+class TreeComponentWrapper extends ComponentWrapper implements sqlops.TreeComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.TreeComponent, id);
 		this.properties = {};
-		//this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
-	public get onDidChange(): vscode.Event<any> {
+	public get data(): sqlops.TreeComponentDataModel {
+		return this.properties['data'];
+	}
+
+	public set data(value: sqlops.TreeComponentDataModel) {
+		this.setProperty('data', value);
+	}
+
+	public get onChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
 	}

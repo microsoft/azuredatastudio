@@ -7,7 +7,7 @@
 
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as sqlops from 'sqlops';
+import { TreeNode } from 'sql/parts/modelComponents/tree/treeDataModel';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the recent connection tree
@@ -19,7 +19,7 @@ export class TreeComponentDataSource implements IDataSource {
 	 * No more than one element may use a given identifier.
 	 */
 	public getId(tree: ITree, element: any): string {
-		let treeElement = <sqlops.TreeComponentDataModel>element;
+		let treeElement = <TreeNode>element;
 		return treeElement && treeElement.id;
 	}
 
@@ -27,16 +27,16 @@ export class TreeComponentDataSource implements IDataSource {
 	 * Returns a boolean value indicating whether the element has children.
 	 */
 	public hasChildren(tree: ITree, element: any): boolean {
-		let treeElement = <sqlops.TreeComponentDataModel>element;
-		return treeElement && treeElement.children !== undefined;
+		let treeElement = <TreeNode>element;
+		return treeElement && treeElement.hasChildren;
 	}
 
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
 	public getChildren(tree: ITree, element: any): TPromise<any> {
-		let treeElement = <sqlops.TreeComponentDataModel>element;
-		if (treeElement && treeElement.children) {
+		let treeElement = <TreeNode>element;
+		if (treeElement && treeElement.hasChildren) {
 			return TPromise.as(treeElement.children);
 		} else {
 			return TPromise.as([]);
@@ -47,7 +47,11 @@ export class TreeComponentDataSource implements IDataSource {
 	 * Returns the element's parent in a promise.
 	 */
 	public getParent(tree: ITree, element: any): TPromise<any> {
-		let treeElement = <sqlops.TreeComponentDataModel>element;
-		return TPromise.as(treeElement && treeElement.parent !== undefined);
+		let treeElement = <TreeNode>element;
+		if (treeElement && treeElement.parent) {
+			return TPromise.as(treeElement.parent);
+		} else {
+			return TPromise.as(undefined);
+		}
 	}
 }

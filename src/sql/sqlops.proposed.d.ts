@@ -40,10 +40,10 @@ declare module 'sqlops' {
 	}
 
 	export interface TreeComponentDataModel {
-		data: any;
+		label?: string;
 		children?: TreeComponentDataModel[];
-		parent?: TreeComponentDataModel;
-		id: string;
+		id?: string;
+		checked?: boolean;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -395,6 +395,10 @@ declare module 'sqlops' {
 		label?: string;
 	}
 
+	export interface TreeProperties {
+		data: TreeComponentDataModel;
+	}
+
 	export enum DeclarativeDataType {
 		string = 'string',
 		category = 'category',
@@ -505,8 +509,8 @@ declare module 'sqlops' {
 		onDidChange: vscode.Event<any>;
 	}
 
-	export interface TreeComponent extends Component {
-
+	export interface TreeComponent extends Component, TreeProperties {
+		onChanged: vscode.Event<any>;
 	}
 
 	export interface WebViewComponent extends Component {
