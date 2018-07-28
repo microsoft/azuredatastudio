@@ -5,11 +5,11 @@
 
 'use strict';
 
-import {ColumnMetadata, ImportDataModel} from './api/models';
 import * as sqlops from 'sqlops';
-import {FlatFileProvider} from '../services/contracts';
-import {ImportPage} from './api/importPage';
-import {FlatFileWizard} from './flatFileWizard';
+import {ColumnMetadata, ImportDataModel} from '../api/models';
+import {ImportPage} from '../api/importPage';
+import {FlatFileProvider} from '../../services/contracts';
+import {FlatFileWizard} from '../flatFileWizard';
 
 export class ModifyColumnsPage extends ImportPage {
 	private readonly categoryValues = [

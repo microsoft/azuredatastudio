@@ -5,11 +5,11 @@
 
 'use strict';
 
-import {ImportPage} from './api/importPage';
 import * as sqlops from 'sqlops';
-import {ImportDataModel} from './api/models';
-import {FlatFileProvider, InsertDataResponse} from '../services/contracts';
-import {FlatFileWizard} from './flatFileWizard';
+import {ImportDataModel} from '../api/models';
+import {ImportPage} from '../api/importPage';
+import {FlatFileProvider, InsertDataResponse} from '../../services/contracts';
+import {FlatFileWizard} from '../flatFileWizard';
 
 export class SummaryPage extends ImportPage {
 	private table: sqlops.TableComponent;

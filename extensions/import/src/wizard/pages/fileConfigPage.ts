@@ -6,10 +6,10 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import {ImportDataModel} from './api/models';
-import {ImportPage} from './api/importPage';
-import {FlatFileProvider} from '../services/contracts';
-import {FlatFileWizard} from './flatFileWizard';
+import {ImportDataModel} from '../api/models';
+import {ImportPage} from '../api/importPage';
+import {FlatFileProvider} from '../../services/contracts';
+import {FlatFileWizard} from '../flatFileWizard';
 
 export class FileConfigPage extends ImportPage {
 	private server: sqlops.connection.Connection;
@@ -21,6 +21,9 @@ export class FileConfigPage extends ImportPage {
 	private tableNameTextBox: sqlops.InputBoxComponent;
 	private schemaDropdown: sqlops.DropDownComponent;
 	private form: sqlops.FormContainer;
+
+	private databaseLoader: sqlops.LoadingComponent;
+	private schemaLoader: sqlops.LoadingComponent;
 
 	private tableNames: string[] = [];
 
@@ -34,6 +37,7 @@ export class FileConfigPage extends ImportPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
+		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -59,6 +63,15 @@ export class FileConfigPage extends ImportPage {
 	async onPageLeave(): Promise<boolean> {
 		console.log('left page');
 		return true;
+	}
+
+	private setupNavigationValidator() {
+		this.instance.registerNavigationValidator((info) => {
+			if (this.schemaLoader.loading || this.databaseLoader.loading) {
+				return false;
+			}
+			return true;
+		});
 	}
 
 	private async createServerDropdown(): Promise<sqlops.FormComponent> {
@@ -128,17 +141,22 @@ export class FileConfigPage extends ImportPage {
 			this.populateSchemaDropdown();
 		});
 
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
+
 		return {
-			component: this.databaseDropdown,
+			component: this.databaseLoader,
 			title: 'Database the table is created in',
 		};
 	}
 
 	private async populateDatabaseDropdown(): Promise<boolean> {
+		this.databaseLoader.loading = true;
 		this.databaseDropdown.updateProperties({values: []});
 		this.schemaDropdown.updateProperties({values: []});
 
 		if (!this.server) {
+			//TODO handle error case
+			this.databaseLoader.loading = false;
 			return false;
 		}
 
@@ -161,6 +179,7 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.updateProperties({
 			values: val
 		});
+		this.databaseLoader.loading = false;
 
 		return true;
 	}
@@ -244,19 +263,22 @@ export class FileConfigPage extends ImportPage {
 
 	private async createSchemaDropdown(): Promise<sqlops.FormComponent> {
 		this.schemaDropdown = this.view.modelBuilder.dropDown().component();
+		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
 
 		this.schemaDropdown.onValueChanged(() => {
 			this.model.schema = (<sqlops.CategoryValue>this.schemaDropdown.value).name;
 		});
 
+
 		return {
-			component: this.schemaDropdown,
+			component: this.schemaLoader,
 			title: 'Table schema'
 		};
 
 	}
 
 	private async populateSchemaDropdown(): Promise<Boolean> {
+		this.schemaLoader.loading = true;
 		let connectionUri = await sqlops.connection.getUriForConnection(this.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.server.providerName, sqlops.DataProviderType.QueryProvider);
 
@@ -282,6 +304,8 @@ export class FileConfigPage extends ImportPage {
 		this.schemaDropdown.updateProperties({
 			values: schemas
 		});
+
+		this.schemaLoader.loading = false;
 		return true;
 	}
 

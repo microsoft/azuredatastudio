@@ -10,14 +10,16 @@ import {FlatFileProvider} from '../services/contracts';
 import {ImportDataModel} from './api/models';
 import {ImportPage} from './api/importPage';
 // pages
-import {FileConfigPage} from './fileConfigPage';
-import {ProsePreviewPage} from './prosePreviewPage';
-import {ModifyColumnsPage} from './modifyColumnsPage';
-import {SummaryPage} from './summaryPage';
+import {FileConfigPage} from './pages/fileConfigPage';
+import {ProsePreviewPage} from './pages/prosePreviewPage';
+import {ModifyColumnsPage} from './pages/modifyColumnsPage';
+import {SummaryPage} from './pages/summaryPage';
 
 export class FlatFileWizard {
 	private readonly provider: FlatFileProvider;
 	private model = <ImportDataModel>{};
+	private wizard: sqlops.window.modelviewdialog.Wizard;
+
 	private importAnotherFileButton: sqlops.window.modelviewdialog.Button;
 
 	constructor(provider: FlatFileProvider) {
@@ -37,20 +39,18 @@ export class FlatFileWizard {
 			return;
 		}
 
-		let wizard = sqlops.window.modelviewdialog.createWizard('Import flat file wizard');
+		this.wizard = sqlops.window.modelviewdialog.createWizard('Import flat file wizard');
 		let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
 		let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
 		let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
 		let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
 
 		let fileConfigPage: FileConfigPage;
-		await page1.registerContent(async (view) => {
+		page1.registerContent(async (view) => {
 			fileConfigPage = new FileConfigPage(this, model, view, this.provider);
 			pages.set(0, fileConfigPage);
 			await fileConfigPage.start();
-			console.log('A');
 			fileConfigPage.onPageEnter();
-			console.log('B');
 		});
 
 		let prosePreviewPage: ProsePreviewPage;
@@ -79,15 +79,15 @@ export class FlatFileWizard {
 		this.importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
-			wizard.close();
+			this.wizard.close();
 			this.model = <ImportDataModel>{};
-			wizard.open();
+			this.wizard.open();
 		});
 
 		this.importAnotherFileButton.hidden = true;
-		wizard.customButtons = [this.importAnotherFileButton];
+		this.wizard.customButtons = [this.importAnotherFileButton];
 
-		wizard.onPageChanged(async (event) => {
+		this.wizard.onPageChanged(async (event) => {
 			console.log(event);
 			let idx = event.newPage;
 
@@ -98,7 +98,7 @@ export class FlatFileWizard {
 			}
 		});
 
-		wizard.onPageChanged(async (event) => {
+		this.wizard.onPageChanged(async (event) => {
 			let idx = event.lastPage;
 
 			let page = pages.get(idx);
@@ -122,14 +122,18 @@ export class FlatFileWizard {
 
 
 		//not needed for this wizard
-		wizard.generateScriptButton.hidden = true;
+		this.wizard.generateScriptButton.hidden = true;
 
-		wizard.pages = [page1, page2, page3, page4];
-		wizard.open();
+		this.wizard.pages = [page1, page2, page3, page4];
+		this.wizard.open();
 	}
 
 	public setImportAnotherFileVisibility(visibility: boolean) {
 		this.importAnotherFileButton.hidden = !visibility;
+	}
+
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean) {
+		this.wizard.registerNavigationValidator(validator);
 	}
 
 
