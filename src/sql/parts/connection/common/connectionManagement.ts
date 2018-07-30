@@ -152,9 +152,11 @@ export interface IConnectionManagementService {
 
 	getAdvancedProperties(): sqlops.ConnectionOption[];
 
-	getConnectionId(connectionProfile: IConnectionProfile): string;
+	getConnectionUri(connectionProfile: IConnectionProfile): string;
 
 	getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string;
+
+	getConnectionUriFromId(connectionId: string): string;
 
 	isConnected(fileUri: string): boolean;
 

@@ -648,6 +648,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles();
 	}
 
+	public getConnectionUriFromId(connectionId: string): string {
+		let connection = this.getActiveConnections().find(connection => connection.id === connectionId);
+		if (connection) {
+			return this.getConnectionUri(connection);
+		} else {
+			return undefined;
+		}
+	}
+
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
@@ -704,7 +713,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return false;
 	}
 
-	public getConnectionId(connectionProfile: IConnectionProfile): string {
+	public getConnectionUri(connectionProfile: IConnectionProfile): string {
 		return this._connectionStatusManager.getOriginalOwnerUri(Utils.generateUri(connectionProfile));
 	}
 
@@ -716,7 +725,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string {
 		if (this._connectionStatusManager.isDefaultTypeUri(uri)) {
-			return this.getConnectionId(connectionProfile);
+			return this.getConnectionUri(connectionProfile);
 		} else {
 			return uri;
 		}
