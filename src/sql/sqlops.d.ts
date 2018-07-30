@@ -841,6 +841,9 @@ declare module 'sqlops' {
 		columnEndIndex: number;
 		includeHeaders?: boolean;
 		delimiter?: string;
+		lineSeperator?: string;
+		textIdentifier?: string;
+		encoding?: string;
 	}
 
 	export interface SaveResultRequestResult {

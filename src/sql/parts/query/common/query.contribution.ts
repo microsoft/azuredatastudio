@@ -280,6 +280,21 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.delimiter', '[Optional] The custom delimiter to use between values when saving as CSV'),
 		'default': ','
 	},
+	'sql.saveAsCsv.lineSeperator': {
+		'type': '',
+		'description': localize('sql.saveAsCsv.lineSeperator', '[Optional] Character(s) used for seperating rows when saving results as CSV'),
+		'default': null
+	},
+	'sql.saveAsCsv.textIdentifier': {
+		'type': 'string',
+		'description': localize('sql.saveAsCsv.textIdentifier', '[Optional] Character used for enclosing text fields when saving results as CSV'),
+		'default': '\"'
+	},
+	'sql.saveAsCsv.encoding': {
+		'type': 'string',
+		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
+		'default': 'utf-8'
+	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
