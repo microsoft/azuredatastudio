@@ -6,10 +6,13 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import {ImportDataModel} from '../api/models';
 import {ImportPage} from '../api/importPage';
 import {FlatFileProvider} from '../../services/contracts';
 import {FlatFileWizard} from '../flatFileWizard';
+
+const localize = nls.loadMessageBundle();
 
 export class FileConfigPage extends ImportPage {
 	private server: sqlops.connection.Connection;
@@ -61,7 +64,6 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageLeave(): Promise<boolean> {
-		console.log('left page');
 		return true;
 	}
 
@@ -89,7 +91,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.serverDropdown,
-			title: 'Server the database is in',
+			title: localize('flatFileImport.serverDropdownTitle', 'Server the database is in')
 		};
 	}
 
@@ -104,7 +106,6 @@ export class FileConfigPage extends ImportPage {
 		this.server = cons[0];
 		this.model.server = this.server;
 
-		console.log('E');
 		this.serverDropdown.updateProperties({
 			values: cons.map(c => {
 				let db = c.options.databaseDisplayName;
@@ -127,7 +128,6 @@ export class FileConfigPage extends ImportPage {
 				};
 			})
 		});
-		console.log('G');
 		return true;
 	}
 
@@ -145,7 +145,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.databaseLoader,
-			title: 'Database the table is created in',
+			title: localize('flatFileImport.databaseDropdownTitle', 'Database the table is created in')
 		};
 	}
 
@@ -187,7 +187,7 @@ export class FileConfigPage extends ImportPage {
 	private async createFileBrowser(): Promise<sqlops.FormComponent> {
 		this.fileTextBox = this.view.modelBuilder.inputBox().component();
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: 'Browse'
+			label: localize('flatFileImport.browseFiles', 'Browse'),
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -197,7 +197,7 @@ export class FileConfigPage extends ImportPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					openLabel: 'Open',
+					openLabel: localize('flatFileImport.openFile', 'Open'),
 					filters: {
 						'Files': ['csv', 'txt']
 					}
@@ -230,7 +230,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.fileTextBox,
-			title: 'Location of file to be imported',
+			title: localize('flatFileImport.fileTextboxTitle', 'Location of the file to be imported'),
 			actions: [this.fileButton]
 		};
 	}
@@ -256,7 +256,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.tableNameTextBox,
-			title: 'New table name',
+			title: localize('flatFileImport.tableTextboxTitle', 'New table name'),
 		};
 	}
 
@@ -272,7 +272,7 @@ export class FileConfigPage extends ImportPage {
 
 		return {
 			component: this.schemaLoader,
-			title: 'Table schema'
+			title: localize('flatFileImport.schemaTextboxTitle', 'Table schema'),
 		};
 
 	}
@@ -314,7 +314,6 @@ export class FileConfigPage extends ImportPage {
 		let databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 
 		if (!databaseName || databaseName.length === 0) {
-			console.log('db broke?');
 			this.tableNames = [];
 			return false;
 		}

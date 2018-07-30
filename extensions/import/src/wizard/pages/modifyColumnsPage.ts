@@ -6,10 +6,13 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vscode-nls';
 import {ColumnMetadata, ImportDataModel} from '../api/models';
 import {ImportPage} from '../api/importPage';
 import {FlatFileProvider} from '../../services/contracts';
 import {FlatFileWizard} from '../flatFileWizard';
+
+const localize = nls.loadMessageBundle();
 
 export class ModifyColumnsPage extends ImportPage {
 	private readonly categoryValues = [
@@ -122,23 +125,23 @@ export class ModifyColumnsPage extends ImportPage {
 		this.table.updateProperties({
 			height: 400,
 			columns: [{
-				displayName: 'Column Name',
+				displayName: localize('flatFileImport.columnName', 'Column Name'),
 				valueType: sqlops.DeclarativeDataType.string,
 				width: '150px',
 				isReadOnly: false
 			}, {
-				displayName: 'Data Type',
+				displayName: localize('flatFileImport.dataType', 'Data type'),
 				valueType: sqlops.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
-				displayName: 'Primary Key',
+				displayName: localize('flatFileImport.primaryKey', 'Primary key'),
 				valueType: sqlops.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false
 			}, {
-				displayName: 'Allow Null',
+				displayName: localize('flatFileImport.allowNull', 'Allow null'),
 				valueType: sqlops.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px'

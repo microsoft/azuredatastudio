@@ -6,10 +6,13 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vscode-nls';
 import {ImportDataModel} from '../api/models';
 import {ImportPage} from '../api/importPage';
 import {FlatFileProvider} from '../../services/contracts';
 import {FlatFileWizard} from '../flatFileWizard';
+
+const localize = nls.loadMessageBundle();
 
 export class ProsePreviewPage extends ImportPage {
 	private table: sqlops.TableComponent;
@@ -29,7 +32,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
 				component: this.table,
-				title: 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows'
+				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows')
 			}
 		]).component();
 

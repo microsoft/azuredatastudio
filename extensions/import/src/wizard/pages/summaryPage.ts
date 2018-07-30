@@ -6,10 +6,14 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vscode-nls';
 import {ImportDataModel} from '../api/models';
 import {ImportPage} from '../api/importPage';
 import {FlatFileProvider, InsertDataResponse} from '../../services/contracts';
 import {FlatFileWizard} from '../flatFileWizard';
+
+const localize = nls.loadMessageBundle();
+
 
 export class SummaryPage extends ImportPage {
 	private table: sqlops.TableComponent;
@@ -30,11 +34,11 @@ export class SummaryPage extends ImportPage {
 			[
 				{
 					component: this.table,
-					title: 'Import information'
+					title: localize('flatFileImport.importInformation', 'Import information')
 				},
 				{
 					component: this.loading,
-					title: 'Import Status'
+					title: localize('flatFileImport.importStatus', 'Import status')
 				}
 			]
 		).component();
@@ -109,9 +113,9 @@ export class SummaryPage extends ImportPage {
 		} else {
 			let rows = await this.getCountRowsInserted();
 			if (rows < 0) {
-				updateText = '✔ Awesome! You have successfully inserted the data into a table.';
+				updateText = localize('flatFileImport.success.norows', '✔ Awesome! You have successfully inserted the data into a table.');
 			} else {
-				updateText = `✔ Awesome! You have successfully inserted ${rows} rows.`;
+				updateText = localize('flatFileImport.success.rows', '✔ Awesome! You have successfully inserted %rows% rows.').replace('%rows%', String(rows));
 			}
 		}
 		this.statusText.updateProperties({
@@ -139,15 +143,11 @@ export class SummaryPage extends ImportPage {
 	}
 
 	private async getCountRowsInserted(): Promise<Number> {
+		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
-		let results: sqlops.SimpleExecuteResult;
-
 		try {
-
 			let query = `USE ${this.model.database}; SELECT COUNT(*) FROM ${this.model.table}`;
-			queryProvider.runQueryAndReturn(this.model.server.connectionId, query).then((r) => {
-				results = r;
-			});
+			let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 			let cell = results.rows[0][0];
 			if (!cell || cell.isNull) {
 				return -1;
