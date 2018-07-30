@@ -80,7 +80,7 @@ export class FlatFileWizard {
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();
-			this.model = <ImportDataModel>{};
+			pages.forEach((page) => page.cleanup());
 			this.wizard.open();
 		});
 

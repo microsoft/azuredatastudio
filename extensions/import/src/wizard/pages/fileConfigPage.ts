@@ -67,6 +67,13 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
+	public async cleanup(): Promise<boolean> {
+		delete this.model.filePath;
+		delete this.model.table;
+
+		return true;
+	}
+
 	private setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (this.schemaLoader.loading || this.databaseLoader.loading) {
@@ -95,7 +102,6 @@ export class FileConfigPage extends ImportPage {
 		};
 	}
 
-
 	private async populateServerDropdown(): Promise<boolean> {
 		let cons = await sqlops.connection.getActiveConnections();
 		// This user has no active connections ABORT MISSION
@@ -103,30 +109,53 @@ export class FileConfigPage extends ImportPage {
 			return true;
 		}
 
-		this.server = cons[0];
+
+		let count = -1;
+		let idx = -1;
+
+		let values = cons.map(c => {
+			// Handle the code to remember what the user's choice was from before
+			count++;
+			if (this.model.server && c.connectionId === this.model.server.connectionId) {
+				idx = count;
+			}
+
+			let db = c.options.databaseDisplayName;
+			let usr = c.options.user;
+			let srv = c.options.server;
+
+			if (!db) {
+				db = '<default>';
+			}
+
+			if (!usr) {
+				usr = 'default';
+			}
+
+			let finalName = `${srv}, ${db} (${usr})`;
+			return {
+				connection: c,
+				displayName: finalName,
+				name: c.connectionId
+			};
+		});
+
+		if (idx > 0) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		} else {
+			delete this.model.server;
+			delete this.model.database;
+			delete this.model.schema;
+		}
+
+		this.server = values[0].connection;
 		this.model.server = this.server;
 
+
 		this.serverDropdown.updateProperties({
-			values: cons.map(c => {
-				let db = c.options.databaseDisplayName;
-				let usr = c.options.user;
-				let srv = c.options.server;
-
-				if (!db) {
-					db = '<default>';
-				}
-
-				if (!usr) {
-					usr = 'default';
-				}
-
-				let finalName = `${srv}, ${db} (${usr})`;
-				return {
-					connection: c,
-					displayName: finalName,
-					name: c.connectionId
-				};
-			})
+			values: values
 		});
 		return true;
 	}
@@ -160,24 +189,33 @@ export class FileConfigPage extends ImportPage {
 			return false;
 		}
 
-		let val: sqlops.CategoryValue[];
 
-		let first = true;
-		val = (await sqlops.connection.listDatabases(this.server.connectionId)).map(db => {
-
-			if (first) {
-				first = false;
-				this.model.database = db;
+		let idx = -1;
+		let count = -1;
+		let values = (await sqlops.connection.listDatabases(this.server.connectionId)).map(db => {
+			count++;
+			if (this.model.database && db === this.model.database) {
+				idx = count;
 			}
-
 			return {
 				displayName: db,
 				name: db
 			};
 		});
 
+		if (idx > 0) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		} else {
+			delete this.model.database;
+			delete this.model.schema;
+		}
+
+		this.model.database = values[0].name;
+
 		this.databaseDropdown.updateProperties({
-			values: val
+			values: values
 		});
 		this.databaseLoader.loading = false;
 
@@ -286,12 +324,14 @@ export class FileConfigPage extends ImportPage {
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
-		let first = true;
-		let schemas = results.rows.map(row => {
+		let idx = -1;
+		let count = -1;
+
+		let values = results.rows.map(row => {
 			let schemaName = row[0].displayValue;
-			if (first) {
-				first = false;
-				this.model.schema = schemaName;
+			count++;
+			if (this.model.schema && schemaName == this.model.schema) {
+				idx = count;
 			}
 			let val = row[0].displayValue;
 
@@ -301,8 +341,16 @@ export class FileConfigPage extends ImportPage {
 			};
 		});
 
+		if (idx > 0) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		}
+
+		this.model.schema = values[0].name;
+
 		this.schemaDropdown.updateProperties({
-			values: schemas
+			values: values
 		});
 
 		this.schemaLoader.loading = false;

@@ -115,6 +115,12 @@ export class ModifyColumnsPage extends ImportPage {
 		return undefined;
 	}
 
+	async cleanup(): Promise<boolean> {
+		delete this.model.proseColumns;
+
+		return true;
+	}
+
 	private async populateTable() {
 		let data: any[][] = [];
 

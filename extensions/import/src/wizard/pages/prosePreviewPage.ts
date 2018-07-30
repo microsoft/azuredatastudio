@@ -28,6 +28,7 @@ export class ProsePreviewPage extends ImportPage {
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
 		this.loading = this.view.modelBuilder.loadingComponent().component();
+		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
@@ -52,6 +53,15 @@ export class ProsePreviewPage extends ImportPage {
 		return true;
 	}
 
+	private setupNavigationValidator() {
+		this.instance.registerNavigationValidator((info) => {
+			if (this.loading.loading) {
+				return false;
+			}
+			return true;
+		});
+	}
+
 	async onPageLeave(): Promise<boolean> {
 		await this.emptyTable();
 		return true;
@@ -74,6 +84,12 @@ export class ProsePreviewPage extends ImportPage {
 				});
 			});
 		});
+	}
+
+
+	async cleanup(): Promise<boolean> {
+		delete this.model.proseDataPreview;
+		return true;
 	}
 
 	private async populateTable(tableData: string[][], columnHeaders: string[]) {

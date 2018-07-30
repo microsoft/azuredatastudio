@@ -10,7 +10,6 @@ import * as sqlops from 'sqlops';
 
 export interface ImportDataModel {
 	ownerUri: string;
-	fileConfigData: Map<string, string>;
 	proseColumns: ColumnMetadata[];
 	proseDataPreview: string[][];
 	server: sqlops.connection.Connection;
@@ -19,6 +18,7 @@ export interface ImportDataModel {
 	schema: string;
 	filePath: string;
 }
+
 export interface ColumnMetadata {
 	columnName: string;
 	dataType: string;

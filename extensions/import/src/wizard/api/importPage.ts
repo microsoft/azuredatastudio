@@ -21,4 +21,8 @@ export abstract class ImportPage {
 	public async abstract onPageEnter(): Promise<boolean>;
 
 	public async abstract onPageLeave(): Promise<boolean>;
+
+	public async cleanup(): Promise<boolean> {
+		return true;
+	}
 }
