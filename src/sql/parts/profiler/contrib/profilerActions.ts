@@ -94,7 +94,7 @@ export class ProfilerCreate extends Action {
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService
 	) {
-		super(id, label, 'create_insight');
+		super(id, label, 'add');
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {

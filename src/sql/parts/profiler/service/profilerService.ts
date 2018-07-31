@@ -200,6 +200,6 @@ export class ProfilerService implements IProfilerService {
 			return p;
 		}, new Array<sqlops.ProfilerSessionTemplate>());
 
-		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, this.getSessionTemplates());
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, templates);
 	}
 }

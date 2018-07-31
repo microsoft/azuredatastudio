@@ -5,7 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
-import * as sqlops from 'sqlops'
+import * as sqlops from 'sqlops';
 import { ApiWrapper } from './apiWrapper';
 import { CreateSessionDialog } from './dialogs/profilerCreateSessionDialog';
 

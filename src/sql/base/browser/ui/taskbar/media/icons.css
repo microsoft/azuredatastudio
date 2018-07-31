@@ -18,6 +18,12 @@
 	background-image: url('start.svg');
 }
 
+.vs .icon.add,
+.vs-dark .icon.add,
+.hc-black .icon.add {
+	background-image: url('add.svg');
+}
+
 .vs .icon.stop,
 .vs-dark .icon.stop,
 .hc-black .icon.stop {
