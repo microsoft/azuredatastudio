@@ -66,7 +66,7 @@ export interface IProfilerService {
 	/**
 	 * Creates a new session using the given create statement and session name
 	 */
-	createSession(id: string, createStatement: string, sessionName: string): Thenable<boolean>;
+	createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean>;
 	/**
 	 * Starts the session specified by the id
 	 */

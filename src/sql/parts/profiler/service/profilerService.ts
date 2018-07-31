@@ -104,8 +104,9 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)));
 	}
 
-	public createSession(id: string, createStatement: string, sessionName: string): Thenable<boolean>{
-		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, sessionName)).then(() => {
+	public createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean>{
+		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, template)).then(() => {
+			// this is when I set up the template for the input class to use it
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
 		}, (reason) => {
@@ -189,15 +190,15 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
-		let templates = this.getSessionTemplates().reduce<Map<string, sqlops.ProfilerSessionTemplate>>((p, e) => {
+		let templates = this.getSessionTemplates().reduce<Array<sqlops.ProfilerSessionTemplate>>((p, e) => {
 			let template: sqlops.ProfilerSessionTemplate = {
 				name: e.name,
 				defaultView: e.defaultView,
 				createStatement: e.createStatement
 			};
-			p[e.name] = template;
+			p.push(template);
 			return p;
-		}, new Map<string, sqlops.ProfilerSessionTemplate>());
+		}, new Array<sqlops.ProfilerSessionTemplate>());
 
 		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, this.getSessionTemplates());
 	}

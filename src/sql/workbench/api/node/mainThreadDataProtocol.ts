@@ -292,8 +292,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._profilerService.registerProvider(providerId, <sqlops.ProfilerProvider>{
-			createSession(sessionId: string, createStatement: string, sessionName: string): Thenable<boolean> {
-				return self._proxy.$createSession(handle, sessionId, createStatement, sessionName);
+			createSession(sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+				return self._proxy.$createSession(handle, sessionId, createStatement, template);
 			},
 			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
 				return self._proxy.$startSession(handle, sessionId, sessionName);

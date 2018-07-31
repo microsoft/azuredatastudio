@@ -29,7 +29,7 @@ export class MainController  {
     }
 
     public activate(): void {
-        vscode.commands.registerCommand('profiler.openCreateSessionDialog', (ownerUri: string, templates: Map<string, sqlops.ProfilerSessionTemplate>) => {
+        vscode.commands.registerCommand('profiler.openCreateSessionDialog', (ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) => {
             let dialog = new CreateSessionDialog(ownerUri, templates);
             dialog.showDialog();
         });

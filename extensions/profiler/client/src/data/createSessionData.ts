@@ -9,26 +9,13 @@ import * as sqlops from 'sqlops';
 export class CreateSessionData  {
 	public ownerUri: string;
 	public sessionName: string;
-	public templates: Map<string, string> = new Map<string, string>();
-	public templateOptions: string[];
-	public selectedTemplate: string;
+	public templates: Array<sqlops.ProfilerSessionTemplate> = new Array<sqlops.ProfilerSessionTemplate>();
 
-	constructor(ownerUri:string, templates: Map<string, string>) {
+	constructor(ownerUri:string, templates:Array<sqlops.ProfilerSessionTemplate>) {
 		this.ownerUri = ownerUri;
 		this.templates = templates;
-		this.templateOptions = [];
 		if(this.templates)
 		{
-			for (let key in this.templates)
-			{
-				this.templateOptions.push(key);
-			}
-
-			if (this.templateOptions.length > 0) {
-				this.selectedTemplate = this.templates[this.templateOptions[0]];
-			} else {
-				this.selectedTemplate = '';
-			}
 
 		} else {
 			// display an error here
@@ -36,9 +23,17 @@ export class CreateSessionData  {
 		}
 	}
 
-	public getCreateStatement(): string {
-		return this.templates[this.selectedTemplate];
+	public getTemplateNames(): string[] {
+		return this.templates.reduce<Array<string>>((p, e) => {
+			p.push(e.name);
+			return p;
+		}, new Array<string>());
 	}
+
+	public selectTemplate(name: string): sqlops.ProfilerSessionTemplate {
+		return this.templates.find((t) => {return t.name === name;});
+	}
+
 	public async initialize() {
 		// do something here?
 	}

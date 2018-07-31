@@ -310,7 +310,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Create a profiler session
 	 */
-	$createSession(handle: number, sessionId: string, createStatement: string, sessionName: string): Thenable<boolean> { throw ni(); }
+	$createSession(handle: number, sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Start a profiler session

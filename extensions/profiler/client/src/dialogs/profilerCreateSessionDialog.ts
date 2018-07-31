@@ -31,7 +31,7 @@ export class CreateSessionDialog {
 	public readonly onSuccess: vscode.Event<CreateSessionData> = this._onSuccess.event;
 
 
-	constructor(ownerUri: string, templates: Map<string, string>) {
+	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
 		if (types.isUndefinedOrNull(templates) || types.isUndefinedOrNull(ownerUri)) {
 			throw new Error(localize('createSessionDialog.argumentInvalid', "Invalid arguments, cannot create new session"));
 		}
@@ -60,7 +60,6 @@ export class CreateSessionDialog {
 			this.sessionNameBox = view.modelBuilder.inputBox()
 				.withProperties({
 					required: true,
-					placeHolder: 'session name',
 					multiline: false
 				}).component();
 
@@ -80,10 +79,7 @@ export class CreateSessionDialog {
 			await view.initializeModel(formModel);
 
 			if (this.model.templates) {
-				this.templatesBox.values = this.model.templateOptions;
-				this.templatesBox.onValueChanged(() => {
-					this.updateModel();
-				});
+				this.templatesBox.values = this.model.getTemplateNames();
 			}
 
 			this.sessionNameBox.onTextChanged(() => {
@@ -99,18 +95,12 @@ export class CreateSessionDialog {
 	}
 
 	private async execute() {
-		this.updateModel();
 		let currentConnection = await sqlops.connection.getCurrentConnection();
 		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
 
-		profilerService.createSession(this.model.ownerUri, this.model.getCreateStatement(), this.model.sessionName);
+		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, this.model.selectTemplate(this.sessionNameBox.value));
 	}
 
 	private async cancel() {
-	}
-
-	private updateModel() {
-		this.model.sessionName = this.sessionNameBox.value;
-		this.model.selectedTemplate = this.templatesBox.value.toString();
 	}
 }
