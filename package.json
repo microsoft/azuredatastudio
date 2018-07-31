@@ -1,6 +1,6 @@
 {
   "name": "sqlops",
-  "version": "0.32.1",
+  "version": "0.32.3",
   "distro": "8c3e97e3425cc9814496472ab73e076de2ba99ee",
   "author": {
     "name": "Microsoft Corporation"
@@ -43,8 +43,8 @@
     "getmac": "1.0.7",
     "graceful-fs": "4.1.11",
     "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.4",
-    "http-proxy-agent": "0.2.7",
-    "https-proxy-agent": "0.3.6",
+    "http-proxy-agent": "^2.1.0",
+    "https-proxy-agent": "^2.2.1",
     "iconv-lite": "0.4.19",
     "jquery": "3.1.0",
     "jschardet": "1.6.0",

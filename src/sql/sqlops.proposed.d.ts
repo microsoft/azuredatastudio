@@ -23,6 +23,7 @@ declare module 'sqlops' {
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		webView(): ComponentBuilder<WebViewComponent>;
+		editor(): ComponentBuilder<EditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
@@ -375,6 +376,7 @@ declare module 'sqlops' {
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
+		fontSize?: number | string;
 		selectedRows?: number[];
 	}
 
@@ -435,9 +437,24 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
+	/**
+	 * Editor properties for the editor component
+	 */
+	export interface EditorProperties {
+		/**
+		 * The content inside the text editor
+		 */
+		content?: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
+		languageMode?: string
+	}
+
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 		isFile?: boolean;
+		fileContent?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -503,7 +520,21 @@ declare module 'sqlops' {
 		onMessage: vscode.Event<any>;
 	}
 
-	export interface ButtonComponent extends Component {
+	/**
+	 * Editor component for displaying the text code editor
+	 */
+	export interface EditorComponent extends Component {
+		/**
+		 * The content inside the text editor
+		 */
+		content: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
+		languageMode: string;
+	}
+
+	export interface ButtonComponent extends Component, ButtonProperties  {
 		label: string;
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
@@ -1078,5 +1109,22 @@ declare module 'sqlops' {
 		*/
 		export function startBackgroundOperation(operationInfo: BackgroundOperationInfo): void;
 
+	}
+
+	export namespace connection {
+		/**
+		 * List the databases that can be accessed from the given connection
+		 * @param {string} connectionId The ID of the connection
+		 * @returns {string[]} An list of names of databases
+		 */
+		export function listDatabases(connectionId: string): Thenable<string[]>;
+
+		/**
+		 * Get a URI corresponding to the given connection so that it can be used with data
+		 * providers and other APIs that require a connection API.
+		 * Note: If the given connection corresponds to multiple URIs this may return any of them
+		 * @param connectionId The ID of the connection
+		 */
+		export function getUriForConnection(connectionId: string): Thenable<string>;
 	}
 }
