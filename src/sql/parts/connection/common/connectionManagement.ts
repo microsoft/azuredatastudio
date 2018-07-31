@@ -258,6 +258,11 @@ export interface IConnectionManagementService {
 	 * in the connection profile's options dictionary, or undefined if the profile is not connected
 	 */
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
+
+	/**
+	 * Get the connection string for the provided connection profile
+	 */
+	getConnectionString(profile: IConnectionProfile): string;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');

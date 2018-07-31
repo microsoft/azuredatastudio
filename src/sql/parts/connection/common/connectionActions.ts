@@ -13,6 +13,9 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -124,6 +127,39 @@ export class ClearSingleRecentConnectionAction extends Action {
 		return new TPromise<void>((resolve, reject) => {
 			resolve(this._connectionManagementService.clearRecentConnection(this._connectionProfile));
 			this._onRecentConnectionRemoved.fire();
+		});
+	}
+}
+
+/**
+ * Action to retrieve the current connection string
+ */
+export class GetCurrentConnectionStringAction extends Action {
+
+	public static ID = 'getCurrentConnectionStringAction';
+	public static LABEL = nls.localize('connectionAction.GetCurrentConnectionString', "Get Current Connection String");
+
+	constructor(
+		id: string,
+		label: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+	) {
+		super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
+		this.enabled = true;
+	}
+
+	public run(): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
+			let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+			if (activeConnection) {
+
+//				var ownerUri = this._connectionManagementService.getConnectionUri(activeConnection);
+
+
+
+			}
 		});
 	}
 }
