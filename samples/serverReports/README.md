@@ -37,6 +37,10 @@ See [Paul Randal's wait types library] for more information about each wait type
 
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 *	flyfishingdba for Add square brackets for ms_foreachdb call (#1023)
+*	Peter-Schneider for Changed the stored procedure call to work on case sensitive instances (#1809)
+
+## What's new in Server Reports v1.3?
+* Changed the stored procedure call to work on case sensitive instances
 
 ## What's new in Server Reports v1.2?
 * Created left nav bar and added 2 categories for insight widgets: monitor and performance
