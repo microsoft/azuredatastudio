@@ -20,6 +20,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 const singleQuote = '\'';
 
@@ -386,5 +387,72 @@ export class RunQueryShortcutAction extends Action {
 	private getDatabaseName(editor: QueryEditor): string {
 		let info = this._connectionManagementService.getConnectionInfo(editor.uri);
 		return info.connectionProfile.databaseName;
+	}
+}
+
+/**
+ * Action class that parses the query string in the current SQL text document.
+ */
+export class ParseSyntaxAction extends Action {
+
+	public static ID = 'parseQueryAction';
+	public static LABEL = nls.localize('parseSyntaxLabel', 'Parse Query');
+
+	constructor(
+		id: string,
+		label: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IQueryManagementService private _queryManagementService: IQueryManagementService,
+		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@INotificationService private _notificationService: INotificationService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public run(): TPromise<void> {
+		let editor = this._editorService.getActiveEditor();
+		if (editor && editor instanceof QueryEditor) {
+			let queryEditor: QueryEditor = editor;
+			if (!queryEditor.isSelectionEmpty()) {
+				if (this.isConnected(queryEditor)) {
+					let text = queryEditor.getSelectionText();
+					if (text === '') {
+						text = queryEditor.getAllText();
+					}
+					this._queryManagementService.parseSyntax(queryEditor.connectedUri, text).then(result => {
+						if (result && result.parseable) {
+							this._notificationService.notify({
+								severity: Severity.Info,
+								message: nls.localize('queryActions.parseSyntaxSuccess', 'Commands completed successfully')
+							});
+						} else if (result && result.errors.length > 0) {
+							let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command failed: ');
+							this._notificationService.error(`${errorMessage}${result.errors[0]}`);
+
+						}
+					});
+				} else {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: nls.localize('queryActions.notConnected', 'Please connect to a server')
+					});
+				}
+			}
+
+		}
+
+		return TPromise.as(null);
+	}
+
+	/**
+	 * Returns the URI of the given editor if it is not undefined and is connected.
+	 * Public for testing only.
+	 */
+	private isConnected(editor: QueryEditor): boolean {
+		if (!editor || !editor.currentQueryInput) {
+			return false;
+		}
+		return this._connectionManagementService.isConnected(editor.currentQueryInput.uri);
 	}
 }

@@ -25,7 +25,7 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
@@ -152,6 +152,15 @@ actionRegistry.registerWorkbenchAction(
 		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
 	),
 	FocusOnCurrentQueryKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ParseSyntaxAction,
+		ParseSyntaxAction.ID,
+		ParseSyntaxAction.LABEL
+	),
+	ParseSyntaxAction.LABEL
 );
 
 // Grid actions
