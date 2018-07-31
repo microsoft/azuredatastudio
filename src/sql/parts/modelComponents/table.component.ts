@@ -22,7 +22,7 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="width: 100%;height:100%"></div>
+		<div #table style="width: 100%;height:100%" [style.font-size]="fontSize"></div>
 	`
 })
 export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -98,7 +98,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				syncColumnCellResize: true,
 				enableColumnReorder: false,
 				enableCellNavigation: true,
-				forceFitColumns: true,
+				forceFitColumns: true
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this._tableData, this._tableColumns, options);
@@ -176,6 +176,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get columns(): string[] {
 		return this.getPropertyOrDefault<sqlops.TableComponentProperties, string[]>((props) => props.columns, []);
+	}
+
+	public get fontSize(): number | string {
+		return this.getPropertyOrDefault<sqlops.TableComponentProperties, number | string>((props) => props.fontSize, '');
 	}
 
 	public set columns(newValue: string[]) {

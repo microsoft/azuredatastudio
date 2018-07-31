@@ -25,6 +25,7 @@ import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -413,6 +414,55 @@ export class ListDatabasesAction extends QueryTaskbarAction {
 	}
 
 	public run(): TPromise<void> {
+		return TPromise.as(null);
+	}
+}
+
+/**
+ * Action class that parses the query string in the current SQL text document.
+ */
+export class ParseSyntaxAction extends QueryTaskbarAction {
+
+	public static EnabledClass = '';
+	public static ID = 'parseQueryAction';
+
+	constructor(
+		editor: QueryEditor,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IQueryManagementService private _queryManagementService: IQueryManagementService,
+		@INotificationService private _notificationService: INotificationService,
+	) {
+		super(connectionManagementService, editor, ParseSyntaxAction.ID, ParseSyntaxAction.EnabledClass);
+		this.enabled = true;
+		this.label = nls.localize('parseSyntaxLabel', 'Parse Query');
+	}
+
+	public run(): TPromise<void> {
+		if (!this.editor.isSelectionEmpty()) {
+			if (this.isConnected(this.editor)) {
+				let text = this.editor.getSelectionText();
+				if (text === '') {
+					text = this.editor.getAllText();
+				}
+				this._queryManagementService.parseSyntax(this.editor.connectedUri, text).then(result => {
+					if (result && result.parseable) {
+						this._notificationService.notify({
+							severity: Severity.Info,
+							message: nls.localize('queryActions.parseSyntaxSuccess', 'Commands completed successfully')
+						});
+					} else if (result && result.errors.length > 0) {
+						let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command failed: ');
+						this._notificationService.error(`${errorMessage}${result.errors[0]}`);
+
+					}
+				});
+			} else {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('queryActions.notConnected', 'Please connect to a server')
+				});
+			}
+		}
 		return TPromise.as(null);
 	}
 }

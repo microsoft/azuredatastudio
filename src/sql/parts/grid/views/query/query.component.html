@@ -10,9 +10,9 @@
 		<span> {{LocalizedConstants.resultPaneLabel}} </span>
 		<span class="queryResultsShortCut"> {{resultShortcut}} </span>
 	</div>
-	<div id="results" *ngIf="renderedDataSets.length > 0" class="results vertBox scrollable"
-		 (onScroll)="onScroll($event)" [scrollEnabled]="scrollEnabled" [class.hidden]="!resultActive"
-		 (focusin)="onGridFocus()" (focusout)="onGridFocusout()">
+	<div #resultsScrollBox id="results" *ngIf="renderedDataSets.length > 0" class="results vertBox scrollable"
+		(onScroll)="onScroll($event)" [scrollEnabled]="scrollEnabled" [class.hidden]="!resultActive"
+		(focusin)="onGridFocus()" (focusout)="onGridFocusout()">
 		<div class="boxRow content horzBox slickgrid" *ngFor="let dataSet of renderedDataSets; let i = index"
 			[style.max-height]="dataSet.maxHeight" [style.min-height]="dataSet.minHeight">
 			<slick-grid #slickgrid id="slickgrid_{{i}}" [columnDefinitions]="dataSet.columnDefinitions"
@@ -20,12 +20,11 @@
 						[dataRows]="dataSet.dataRows"
 						(contextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
 						enableAsyncPostRender="true"
-						showDataTypeIcon="false"
 						showHeader="true"
 						[resized]="dataSet.resized"
 						(mousedown)="navigateToGrid(i)"
 						[selectionModel]="selectionModel"
-						[plugins]="slickgridPlugins"
+						[plugins]="plugins[i]"
 						class="boxCol content vertBox slickgrid"
 						[rowHeight]="rowHeight">
 			</slick-grid>

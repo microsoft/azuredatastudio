@@ -174,10 +174,12 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 			if (self.agentJobHistoryInfo.steps) {
+				let jobStepStatus = this.didJobFail(self.agentJobHistoryInfo);
 				self._stepRows = self.agentJobHistoryInfo.steps.map(step => {
 					let stepViewRow = new JobStepsViewRow();
 					stepViewRow.message = step.message;
-					stepViewRow.runStatus = JobManagementUtilities.convertToStatusString(step.runStatus);
+					stepViewRow.runStatus = jobStepStatus ? JobManagementUtilities.convertToStatusString(0) :
+						JobManagementUtilities.convertToStatusString(step.runStatus);
 					self._runStatus = JobManagementUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
 					stepViewRow.stepName = step.stepName;
 					stepViewRow.stepID = step.stepId.toString();
@@ -189,6 +191,15 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			}
 			self._cd.detectChanges();
 		}
+	}
+
+	private didJobFail(job: sqlops.AgentJobHistoryInfo): boolean {
+		for (let i = 0; i < job.steps.length; i++) {
+			if (job.steps[i].runStatus === 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private buildHistoryTree(self: any, jobHistories: sqlops.AgentJobHistoryInfo[]) {

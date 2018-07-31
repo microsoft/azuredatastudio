@@ -145,7 +145,7 @@ export class FirewallRuleDialog extends Modal {
 			subnetIPRangeSection = subnetIPRangeContainer.getHTMLElement();
 			subnetIPRangeContainer.div({ 'class': 'dialog-input-section' }, (inputContainer) => {
 				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(LocalizedStrings.FROM);
+					labelContainer.text(LocalizedStrings.FROM);
 				});
 
 				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
@@ -155,7 +155,7 @@ export class FirewallRuleDialog extends Modal {
 				});
 
 				inputContainer.div({ 'class': 'dialog-label' }, (labelContainer) => {
-					labelContainer.innerHtml(LocalizedStrings.TO);
+					labelContainer.text(LocalizedStrings.TO);
 				});
 
 				inputContainer.div({ 'class': 'dialog-input' }, (inputCellContainer) => {
@@ -234,7 +234,7 @@ export class FirewallRuleDialog extends Modal {
 			className += ' header';
 		}
 		container.div({ 'class': className }, (labelContainer) => {
-			labelContainer.innerHtml(content);
+			labelContainer.text(content);
 		});
 	}
 

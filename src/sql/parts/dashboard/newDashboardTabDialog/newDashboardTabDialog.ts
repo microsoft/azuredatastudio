@@ -163,7 +163,7 @@ export class NewDashboardTabDialog extends Modal {
 		this._noExtensionViewContainer = DOM.$('.no-extension-view');
 		let noExtensionTitle = DOM.append(this._noExtensionViewContainer, DOM.$('.no-extensionTab-label'));
 		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', 'No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.');
-		noExtensionTitle.innerHTML = noExtensionLabel;
+		noExtensionTitle.textContent = noExtensionLabel;
 
 		DOM.append(container, this._noExtensionViewContainer);
 	}

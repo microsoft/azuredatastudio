@@ -100,7 +100,7 @@ export class AutoOAuthDialog extends Modal {
 		let inputBox: InputBox;
 		container.div({ class: 'dialog-input-section' }, (inputContainer) => {
 			inputContainer.div({ class: 'dialog-label' }, (labelContainer) => {
-				labelContainer.innerHtml(label);
+				labelContainer.text(label);
 			});
 
 			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {

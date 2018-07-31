@@ -17,7 +17,6 @@ import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryComponent } from 'sql/parts/grid/views/query/query.component';
 import { QueryPlanComponent } from 'sql/parts/queryPlan/queryPlan.component';
 import { TopOperationsComponent } from 'sql/parts/queryPlan/topOperations.component';
-import { ChartViewerComponent } from 'sql/parts/grid/views/query/chartViewer.component';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import { PanelComponent, IPanelOptions } from 'sql/base/browser/ui/panel/panel.component';
 

@@ -104,7 +104,6 @@ export interface IListTemplate {
 }
 
 export class JobHistoryRenderer implements tree.IRenderer {
-	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobHistoryRow): number {
 		return 30;
@@ -121,11 +120,10 @@ export class JobHistoryRenderer implements tree.IRenderer {
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): IListTemplate {
 		let row = DOM.$('.list-row');
 		let label = DOM.$('.label');
-		this._statusIcon = this.createStatusIcon();
-		row.appendChild(this._statusIcon);
+		let statusIcon = this.createStatusIcon();
+		row.appendChild(statusIcon);
 		row.appendChild(label);
 		container.appendChild(row);
-		let statusIcon = this._statusIcon;
 		return { statusIcon, label };
 	}
 
@@ -133,13 +131,13 @@ export class JobHistoryRenderer implements tree.IRenderer {
 		templateData.label.innerHTML = element.runDate + '&nbsp;&nbsp;' + element.runStatus;
 		let statusClass: string;
 		if (element.runStatus === 'Succeeded') {
-			statusClass = ' job-passed';
+			statusClass = 'status-icon job-passed';
 		} else if (element.runStatus === 'Failed') {
-			statusClass = ' job-failed';
+			statusClass = 'status-icon job-failed';
 		} else {
-			statusClass = ' job-unknown';
+			statusClass = 'status-icon job-unknown';
 		}
-		this._statusIcon.className += statusClass;
+		templateData.statusIcon.className = statusClass;
 	}
 
 	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: IListTemplate): void {
@@ -148,7 +146,6 @@ export class JobHistoryRenderer implements tree.IRenderer {
 
 	private createStatusIcon(): HTMLElement {
 		let statusIcon: HTMLElement = DOM.$('div');
-		statusIcon.className += ' status-icon';
 		return statusIcon;
 	}
 }

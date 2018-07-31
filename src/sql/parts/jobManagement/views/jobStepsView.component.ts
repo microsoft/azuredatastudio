@@ -88,15 +88,6 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	}
 
 	public layout() {
-		let jobsViewToolbar = $('jobhistory-component .actionbar-container').get(0);
-		let statusBar = $('.part.statusbar').get(0);
-		if (jobsViewToolbar && statusBar) {
-			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
-			let statusTop = statusBar.getBoundingClientRect().top;
-			this._table.layout(new dom.Dimension(
-				dom.getContentWidth(this._tableContainer.nativeElement),
-				statusTop - toolbarBottom));
-		}
 	}
 }
 
