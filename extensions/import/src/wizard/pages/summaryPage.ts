@@ -146,7 +146,8 @@ export class SummaryPage extends ImportPage {
 		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
 		try {
-			let query = `USE ${this.model.database}; SELECT COUNT(*) FROM ${this.model.table}`;
+			// TODO: This can potentially be used to sql inject with a weird file name.
+			let query = `USE "${this.model.database}"; SELECT COUNT(*) FROM "${this.model.table}"`;
 			let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 			let cell = results.rows[0][0];
 			if (!cell || cell.isNull) {
