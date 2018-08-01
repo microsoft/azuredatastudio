@@ -83,6 +83,7 @@ export interface PROSEDiscoveryParams {
     filePath: string;
     tableName: string;
     schemaName?: string;
+	fileType?: string;
 }
 
 export interface PROSEDiscoveryResponse {
@@ -153,6 +154,7 @@ export namespace GetColumnInfoRequest {
 export namespace ChangeColumnSettingsRequest {
     export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
+
 
 export interface FlatFileProvider {
     providerId?: string;

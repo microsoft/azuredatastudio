@@ -237,7 +237,7 @@ export class FileConfigPage extends ImportPage {
 					canSelectMany: false,
 					openLabel: localize('flatFileImport.openFile', 'Open'),
 					filters: {
-						'Files': ['csv', 'txt']
+						'Files': ['csv', 'txt', 'json']
 					}
 				}
 			);
@@ -256,6 +256,12 @@ export class FileConfigPage extends ImportPage {
 			// Handle files without extensions
 			if (nameEnd === 0) {
 				nameEnd = fileUri.path.length;
+			}
+			this.model.fileType = 'TXT';
+			let extension = fileUri.path.substring(nameEnd + 1, fileUri.path.length);
+
+			if (extension.toLowerCase() === 'json') {
+				this.model.fileType = 'JSON';
 			}
 
 			this.tableNameTextBox.value = fileUri.path.substring(nameStart + 1, nameEnd);
@@ -330,7 +336,7 @@ export class FileConfigPage extends ImportPage {
 		let values = results.rows.map(row => {
 			let schemaName = row[0].displayValue;
 			count++;
-			if (this.model.schema && schemaName == this.model.schema) {
+			if (this.model.schema && schemaName === this.model.schema) {
 				idx = count;
 			}
 			let val = row[0].displayValue;

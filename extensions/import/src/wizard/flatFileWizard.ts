@@ -17,7 +17,6 @@ import {SummaryPage} from './pages/summaryPage';
 
 export class FlatFileWizard {
 	private readonly provider: FlatFileProvider;
-	private model = <ImportDataModel>{};
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 
 	private importAnotherFileButton: sqlops.window.modelviewdialog.Button;

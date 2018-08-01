@@ -71,7 +71,8 @@ export class ProsePreviewPage extends ImportPage {
 		await this.provider.sendPROSEDiscoveryRequest({
 			filePath: this.model.filePath,
 			tableName: this.model.table,
-			schemaName: this.model.schema
+			schemaName: this.model.schema,
+			fileType: this.model.fileType
 		}).then((result) => {
 			this.model.proseDataPreview = result.dataPreview;
 			this.model.proseColumns = [];

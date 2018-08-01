@@ -17,6 +17,7 @@ export interface ImportDataModel {
 	table: string;
 	schema: string;
 	filePath: string;
+	fileType: string;
 }
 
 export interface ColumnMetadata {
