@@ -208,7 +208,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					return view.name === sessionTemplate.defaultView;
 				});
 				if (!types.isUndefinedOrNull(newView)) {
-					this._viewTemplate = newView;
+					this.viewTemplate = newView;
 				}
 			}
 

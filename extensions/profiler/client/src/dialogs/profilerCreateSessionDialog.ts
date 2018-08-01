@@ -8,7 +8,6 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { CreateSessionData } from '../data/createSessionData';
-import * as types from '../../../../../src/vs/base/common/types';
 
 const localize = nls.loadMessageBundle();
 
@@ -32,8 +31,11 @@ export class CreateSessionDialog {
 
 
 	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
-		if (types.isUndefinedOrNull(templates) || types.isUndefinedOrNull(ownerUri)) {
-			throw new Error(localize('createSessionDialog.argumentInvalid', "Invalid arguments, cannot create new session"));
+		if (typeof (templates) === 'undefined' || templates === null){
+			throw new Error(localize('createSessionDialog.templatesInvalid', "Invalid templates list, cannot open dialog"));
+		}
+		if (typeof (ownerUri) === 'undefined' || ownerUri === null){
+			throw new Error(localize('createSessionDialog.dialogOwnerInvalid', "Invalid dialog owner, cannot open dialog"));
 		}
 		this.model = new CreateSessionData(ownerUri, templates);
 	}
@@ -60,6 +62,7 @@ export class CreateSessionDialog {
 			this.sessionNameBox = view.modelBuilder.inputBox()
 				.withProperties({
 					required: true,
+					value: '',
 					multiline: false
 				}).component();
 
@@ -71,6 +74,7 @@ export class CreateSessionDialog {
 					},
 					{
 						component: this.sessionNameBox,
+
 						title: 'Enter session name:'
 					}],
 					title: this.DialogTitleText
@@ -80,6 +84,11 @@ export class CreateSessionDialog {
 
 			if (this.model.templates) {
 				this.templatesBox.values = this.model.getTemplateNames();
+				this.templatesBox.onValueChanged(() => {
+					if (this.sessionNameBox.value === '') {
+						this.sessionNameBox.value = this.templatesBox.value.toString();
+					}
+				});
 			}
 
 			this.sessionNameBox.onTextChanged(() => {
@@ -98,7 +107,11 @@ export class CreateSessionDialog {
 		let currentConnection = await sqlops.connection.getCurrentConnection();
 		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
 
-		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, this.model.selectTemplate(this.sessionNameBox.value));
+		let name = this.sessionNameBox.value;
+		let selected = this.templatesBox.value.toString();
+		let temp = this.model.selectTemplate(selected);
+		console.log(`owner: ${ this.model.ownerUri }\nname: ${ name }\nSelected: ${ selected }Template: ${ temp.name }`);
+		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, temp);
 	}
 
 	private async cancel() {

@@ -467,6 +467,7 @@ export class ProfilerEditor extends BaseEditor {
 				this._sessionSelector.setOptions([this.input.sessionName]);
 				this._sessionSelector.selectWithOptionName(this.input.sessionName);
 				this._sessionSelector.disable();
+				this._viewTemplateSelector.selectWithOptionName(this.input.viewTemplate.name);
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
@@ -483,6 +484,7 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _updateToolbar(): void {
 		this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
+		this._createAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
 		this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused) && this.input.state.isConnected;
 		this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused && this.input.state.isConnected);
 	}
