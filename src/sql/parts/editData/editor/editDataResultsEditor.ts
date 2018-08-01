@@ -23,6 +23,7 @@ import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { Event } from 'vs/base/common/event';
 
 export class EditDataResultsEditor extends BaseEditor {
 
@@ -30,6 +31,8 @@ export class EditDataResultsEditor extends BaseEditor {
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
+	private _restoreViewStateEvent: Event<void>;
+	private _saveViewStateEvent: Event<void>;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -71,6 +74,11 @@ export class EditDataResultsEditor extends BaseEditor {
 		return TPromise.wrap<void>(null);
 	}
 
+	public setViewStateChangeEvents(onRestoreViewStateEvent: Event<void>, onSaveViewStateEvent: Event<void>) {
+		this._restoreViewStateEvent = onRestoreViewStateEvent;
+		this._saveViewStateEvent = onSaveViewStateEvent;
+	}
+
 	private _applySettings() {
 		if (this.input && this.input.container) {
 			Configuration.applyFontInfoSlow(this.getContainer(), this._rawOptions);
@@ -109,7 +117,11 @@ export class EditDataResultsEditor extends BaseEditor {
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
 		const parent = input.container;
-		let params: IEditDataComponentParams = { dataService: dataService };
+		let params: IEditDataComponentParams = {
+			dataService: dataService,
+			onSaveViewState: this._saveViewStateEvent,
+			onRestoreViewState: this._restoreViewStateEvent
+		};
 		bootstrapAngular(this._instantiationService,
 			EditDataModule,
 			parent,

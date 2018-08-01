@@ -111,6 +111,14 @@ export class QueryEditor extends BaseEditor {
 		if (contextKeyService) {
 			this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
+
+		if (_editorGroupService) {
+			_editorGroupService.onEditorOpening(e => {
+				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+					this.saveEditorViewState();
+				}
+			});
+		}
 	}
 
 	// PROPERTIES //////////////////////////////////////////////////////////
@@ -225,6 +233,7 @@ export class QueryEditor extends BaseEditor {
 	 * input should be freed.
 	 */
 	public clearInput(): void {
+		// this.saveEditorViewState(this.input as QueryInput);
 		if (this._resultsEditor) {
 			this._resultsEditor.clearInput();
 		}
@@ -500,19 +509,11 @@ export class QueryEditor extends BaseEditor {
 	 * Handles setting input for this editor.
 	 */
 	private _updateInput(oldInput: QueryInput, newInput: QueryInput, options?: EditorOptions): TPromise<void> {
-
 		if (this._sqlEditor) {
-			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
-			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
 			this._sqlEditor.clearInput();
 		}
 
 		if (oldInput) {
-			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get(oldInput.results);
-			if (resultViewStateChangeEmitters) {
-				resultViewStateChangeEmitters.onSaveViewState.fire();
-			}
-
 			this._disposeEditors();
 		}
 
@@ -889,6 +890,20 @@ export class QueryEditor extends BaseEditor {
 		editor.revealRange(rangeConversion);
 		editor.setSelection(rangeConversion);
 		editor.focus();
+	}
+
+	private saveEditorViewState(): void {
+		if (this._sqlEditor) {
+			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
+			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
+		}
+
+		if (this.input) {
+			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get((this.input as QueryInput).results);
+			if (resultViewStateChangeEmitters) {
+				resultViewStateChangeEmitters.onSaveViewState.fire();
+			}
+		}
 	}
 
 	// TESTING PROPERTIES ////////////////////////////////////////////////////////////
