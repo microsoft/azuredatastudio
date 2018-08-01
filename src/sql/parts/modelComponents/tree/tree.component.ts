@@ -10,7 +10,6 @@ import {
 	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { TreeNode } from 'sql/parts/modelComponents/tree/treeDataModel';
 import * as sqlops from 'sqlops';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
@@ -24,6 +23,17 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITreeComponentItem, IModelViewTreeViewDataProvider } from 'sql/workbench/common/views';
+import { TreeViewDataProvider } from './treeViewDataProvider';
+
+class Root implements ITreeComponentItem {
+	label = 'root';
+	handle = '0';
+	parentHandle = null;
+	collapsibleState = 0;
+	children = void 0;
+	options = undefined;
+}
 
 @Component({
 	selector: 'modelview-tree',
@@ -35,6 +45,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _tree: Tree;
+	private _treeRenderer: TreeComponentRenderer;
+	private _dataProvider: TreeViewDataProvider;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
@@ -54,10 +66,8 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
 
-			this._tree = this.createTreeControl();
-			this._tree.domFocus();
-			this._register(this._tree);
-			this._register(attachListStyler(this._tree, this.themeService));
+			this.createTreeControl();
+
 		}
 	}
 
@@ -65,29 +75,67 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		this.baseDestroy();
 	}
 
-	private createTreeControl(): Tree {
-		const dataSource = this._instantiationService.createInstance(TreeComponentDataSource);
-		const renderer = this._instantiationService.createInstance(TreeComponentRenderer);
-		const controller = new DefaultController();
-		const filter = new DefaultFilter();
-		const sorter = undefined;
-		const dnd = undefined;
-		const accessibilityProvider = new DefaultAccessibilityProvider();
+	public setDataProvider(context: any): any {
+		this._dataProvider = new TreeViewDataProvider(this.descriptor.id, context);
+		this.createTreeControl();
+	}
 
-		return new Tree(this._inputContainer.nativeElement,
-			{ dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider },
-			{
-				indentPixels: 10,
-				twistiePixels: 20,
-				ariaLabel: 'Tree Node'
-			});
+	private get dataProvider(): IModelViewTreeViewDataProvider {
+		if (this._dataProvider) {
+			let treeDataProvider: IModelViewTreeViewDataProvider = <IModelViewTreeViewDataProvider>this._dataProvider;
+			return treeDataProvider;
+		} else {
+			return undefined;
+		}
+	}
+
+	public refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
+		if (this.dataProvider) {
+			this.dataProvider.refresh(itemsToRefreshByHandle);
+		}
+		if (this._tree) {
+			for (const item of Object.values(itemsToRefreshByHandle)) {
+				this._tree.refresh(<ITreeComponentItem>item);
+			}
+		}
+	}
+
+	private createTreeControl(): void {
+		if (!this._tree && this.dataProvider) {
+			const dataSource = this._instantiationService.createInstance(TreeComponentDataSource, this._dataProvider);
+			const renderer = this._instantiationService.createInstance(TreeComponentRenderer, { withCheckbox: this.withCheckbox });
+			this._treeRenderer = renderer;
+			const controller = new DefaultController();
+			const filter = new DefaultFilter();
+			const sorter = undefined;
+			const dnd = undefined;
+			const accessibilityProvider = new DefaultAccessibilityProvider();
+
+			this._tree = new Tree(this._inputContainer.nativeElement,
+				{ dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider },
+				{
+					indentPixels: 10,
+					twistiePixels: 20,
+					ariaLabel: 'Tree Node'
+				});
+			this._tree.setInput(new Root());
+			this._tree.domFocus();
+			this._register(this._tree);
+			this._register(attachListStyler(this._tree, this.themeService));
+			this._tree.refresh();
+			this.layout();
+		}
 	}
 
 	/// IComponent implementation
 
 	public layout(): void {
 		this._changeRef.detectChanges();
-		this._tree.layout(700, 700);
+		this.createTreeControl();
+		if (this._tree) {
+			this._tree.layout(700, 700);
+			this._tree.refresh();
+		}
 	}
 
 	public setLayout(layout: any): void {
@@ -98,23 +146,14 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		let treeNode = TreeNode.createTree(this.data);
-		this._tree.setInput(treeNode);
-		this._register(treeNode.onTreeChange(node => {
-			this._onEventEmitter.fire({
-				eventType: ComponentEventType.onDidChange,
-				args: node.data
-			});
-		}));
+		this._treeRenderer.options.withCheckbox = this.withCheckbox;
 	}
 
-	// CSS-bound properties
-
-	private get data(): sqlops.TreeComponentDataModel {
-		return this.getPropertyOrDefault<sqlops.TreeProperties, sqlops.TreeComponentDataModel>((props) => props.data, {});
+	public get withCheckbox(): boolean {
+		return this.getPropertyOrDefault<sqlops.TreeProperties, boolean>((props) => props.withCheckbox, false);
 	}
 
-	private set data(newValue: sqlops.TreeComponentDataModel) {
-		this.setPropertyFromUI<sqlops.TreeProperties, sqlops.TreeComponentDataModel>((properties, data) => { properties.data = data; }, newValue);
+	public set withCheckbox(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.TreeProperties, boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
 	}
 }

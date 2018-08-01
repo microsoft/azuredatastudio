@@ -11,16 +11,23 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { TreeNode, TreeCheckboxState } from 'sql/parts/modelComponents/tree/treeDataModel';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
+import { ITreeComponentItem } from 'sql/workbench/common/views';
+
+
+export enum TreeCheckboxState {
+	Intermediate = 0,
+	Checked = 1,
+	Unchecked = 2
+}
 
 export class TreeDataTemplate extends Disposable {
 	root: HTMLElement;
 	label: HTMLSpanElement;
 	icon: HTMLElement;
 	private _checkbox: HTMLInputElement;
-	model: TreeNode;
+	model: ITreeComponentItem;
 	private _onChange = new Emitter<boolean>();
 
 	public readonly onChange: Event<boolean> = this._onChange.event;
@@ -29,8 +36,8 @@ export class TreeDataTemplate extends Disposable {
 		this._checkbox = input;
 		this.handleOnChange(this._checkbox, () => {
 			this._onChange.fire(this._checkbox.checked);
-			if (this.model) {
-				this.model.changeNodeCheckedState(this._checkbox.checked);
+			if (this.model && this.model.onCheckedChanged) {
+				this.model.onCheckedChanged(this._checkbox.checked);
 			}
 		});
 	}
@@ -83,8 +90,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 
 
 	constructor(
-		@IContextViewService private _contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService
+		public options?: { withCheckbox: boolean }
 	) {
 		super();
 	}
@@ -112,9 +118,10 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		if (templateId === TreeComponentRenderer.DEFAULT_TEMPLATE) {
 			const nodeTemplate: TreeDataTemplate = new TreeDataTemplate();
 			nodeTemplate.root = dom.append(container, dom.$('.tree-component-node-tile'));
-			let checkboxWrapper = dom.append(nodeTemplate.root, dom.$('div.checkboxWrapper'));
-			nodeTemplate.checkbox = dom.append(checkboxWrapper, dom.$<HTMLInputElement>('input.checkbox', { type: 'checkbox' }));
-
+			if (this.options && this.options.withCheckbox) {
+				let checkboxWrapper = dom.append(nodeTemplate.root, dom.$('div.checkboxWrapper'));
+				nodeTemplate.checkbox = dom.append(checkboxWrapper, dom.$<HTMLInputElement>('input.checkbox', { type: 'checkbox' }));
+			}
 			nodeTemplate.icon = dom.append(nodeTemplate.root, dom.$('div.icon'));
 			nodeTemplate.label = dom.append(nodeTemplate.root, dom.$('div.label'));
 			return nodeTemplate;
@@ -124,24 +131,29 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	/**
 	 * Render a element, given an object bag returned by the template
 	 */
-	public renderElement(tree: ITree, element: any, templateId: string, templateData: TreeDataTemplate): void {
-		let treeNode = <TreeNode>element;
-		if (treeNode && !templateData.model) {
-			templateData.model = treeNode;
-			treeNode.onNodeChange(() => {
-				tree.refresh(element, false);
-			});
+	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
+
+		if (element && !templateData.model) {
+			templateData.model = element;
 		}
 		if (templateId === TreeComponentRenderer.DEFAULT_TEMPLATE) {
 			this.renderNode(element, templateData);
 		}
 	}
 
-	private renderNode(treeNode: TreeNode, templateData: TreeDataTemplate): void {
+	private renderNode(treeNode: ITreeComponentItem, templateData: TreeDataTemplate): void {
 		let label = treeNode.label;
 		templateData.label.textContent = label;
 		templateData.root.title = label;
-		templateData.checkboxState = treeNode.checkboxState;
+		templateData.checkboxState = this.getCheckboxState(treeNode);//treeNode.checkboxState;
+	}
+
+	private getCheckboxState(treeNode: ITreeComponentItem): TreeCheckboxState {
+		if (treeNode.checked === undefined) {
+			return TreeCheckboxState.Intermediate;
+		} else {
+			return treeNode.checked ? TreeCheckboxState.Checked : TreeCheckboxState.Unchecked;
+		}
 	}
 
 	public disposeTemplate(tree: ITree, templateId: string, templateData: any): void {

@@ -27,7 +27,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
-		tree(): ComponentBuilder<TreeComponent>;
+		tree<T>(): ComponentBuilder<TreeComponent<T>>;
 		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
@@ -40,10 +40,14 @@ declare module 'sqlops' {
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
 	}
 
-	export interface TreeComponentDataModel {
-		label?: string;
-		children?: TreeComponentDataModel[];
-		id?: string;
+	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
+		getTreeItem(element: T): TreeComponentItem | Thenable<TreeComponentItem>;
+
+		onNodeCheckedChanged?(element: T, checked: boolean): void;
+	}
+
+
+	export class TreeComponentItem extends vscode.TreeItem {
 		checked?: boolean;
 	}
 
@@ -398,7 +402,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TreeProperties {
-		data: TreeComponentDataModel;
+		withCheckbox?: boolean;
 	}
 
 	export enum DeclarativeDataType {
@@ -523,11 +527,10 @@ declare module 'sqlops' {
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
-		onDidChange: vscode.Event<any>;
 	}
 
-	export interface TreeComponent extends Component, TreeProperties {
-		onChanged: vscode.Event<any>;
+	export interface TreeComponent<T> extends Component, TreeProperties {
+		registerDataProvider<T>(dataProvider: TreeComponentDataProvider<T>): any;
 	}
 
 	export interface WebViewComponent extends Component {
@@ -550,7 +553,7 @@ declare module 'sqlops' {
 		languageMode: string;
 	}
 
-	export interface ButtonComponent extends Component, ButtonProperties  {
+	export interface ButtonComponent extends Component, ButtonProperties {
 		label: string;
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;

@@ -1,13 +1,12 @@
 /*---------------------------------------------------------------------------------------------
-*  Copyright (c) Microsoft Corporation. All rights reserved.
-*  Licensed under the Source EULA. See License.txt in the project root for license information.
-*--------------------------------------------------------------------------------------------*/
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 'use strict';
 
+import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import { Event, Emitter } from 'vs/base/common/event';
-import * as UUID from 'vs/base/common/uuid';
 
 export enum TreeCheckboxState {
 	Intermediate = 0,
@@ -15,25 +14,33 @@ export enum TreeCheckboxState {
 	Unchecked = 2
 }
 
-export class TreeNode {
-	private _onNodeChange = new Emitter<void>();
-	private _onTreeChange = new Emitter<TreeNode>();
-	private _data: sqlops.TreeComponentDataModel;
+export interface TreeComponentDataModel {
+	label?: string;
+	children?: TreeComponentDataModel[];
+	id?: string;
+	checked?: boolean;
+}
+
+export class TreeNode implements sqlops.TreeComponentItem {
+	private _onNodeChange = new vscode.EventEmitter<void>();
+	private _onTreeChange = new vscode.EventEmitter<TreeNode>();
+	private _data: TreeComponentDataModel;
 	private _parent?: TreeNode;
 	private _root: TreeNode;
 	private _isAlwaysLeaf: boolean;
 	private _nodeMap: Map<string, TreeNode>;
 	private _children: TreeNode[];
 
-	public readonly onNodeChange: Event<void> = this._onNodeChange.event;
-	public readonly onTreeChange: Event<TreeNode> = this._onTreeChange.event;
+	public readonly onNodeChange: vscode.Event<void> = this._onNodeChange.event;
+	public readonly onTreeChange: vscode.Event<TreeNode> = this._onTreeChange.event;
+
 
 	/**
 	 * Creates new instance of tree node
 	 * @param data the underlining data that's bind to the tree node, any change in the tree will affect the same node in data
 	 * @param root the root node of the tree. If passed null, the current node will be the root
 	 */
-	constructor(data: sqlops.TreeComponentDataModel, root: TreeNode) {
+	constructor(data: TreeComponentDataModel, root: TreeNode) {
 		if (!data) {
 			throw new Error(`Invalid tree node data`);
 		}
@@ -96,7 +103,7 @@ export class TreeNode {
 		return `${this.parent ? this.parent.nodePath + '-' : ''}${this.id}`;
 	}
 
-	public get data(): sqlops.TreeComponentDataModel {
+	public get data(): TreeComponentDataModel {
 		if (this._data === undefined) {
 			this._data = {
 				label: undefined
@@ -204,8 +211,7 @@ export class TreeNode {
 		}
 	}
 
-	public static createNode(nodeData: sqlops.TreeComponentDataModel, parent?: TreeNode, root?: TreeNode): TreeNode {
-		nodeData.id = nodeData.id || `treeNode-${UUID.generateUuid()}`;
+	public static createNode(nodeData: TreeComponentDataModel, parent?: TreeNode, root?: TreeNode): TreeNode {
 		let rootNode = root || (parent !== undefined ? parent.root : undefined);
 		let treeNode = new TreeNode(nodeData, rootNode);
 
@@ -213,7 +219,7 @@ export class TreeNode {
 		return treeNode;
 	}
 
-	public static createTree(nodeData: sqlops.TreeComponentDataModel, parent?: TreeNode, root?: TreeNode): TreeNode {
+	public static createTree(nodeData: TreeComponentDataModel, parent?: TreeNode, root?: TreeNode): TreeNode {
 		if (nodeData) {
 			let treeNode = TreeNode.createNode(nodeData, parent, root);
 
@@ -235,4 +241,57 @@ export class TreeNode {
 			return undefined;
 		}
 	}
+}
+
+export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNode> {
+		private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
+		constructor(private _root: TreeNode) {
+			if(this._root) {
+				this._root.onTreeChange(node => {
+					this._onDidChangeTreeData.fire(node);
+				});
+			}
+		}
+		onDidChangeTreeData?: vscode.Event<TreeNode | undefined | null> = this._onDidChangeTreeData.event ;
+
+		/**
+		 * Get [TreeItem](#TreeItem) representation of the `element`
+		 *
+		 * @param element The element for which [TreeItem](#TreeItem) representation is asked for.
+		 * @return [TreeItem](#TreeItem) representation of the element
+		 */
+		getTreeItem(element: TreeNode): sqlops.TreeComponentItem | Thenable<sqlops.TreeComponentItem> {
+			let item: sqlops.TreeComponentItem = {};
+			item.label = element.label;
+			item.checked = element.checked;
+			return item;
+		}
+
+		/**
+		 * Get the children of `element` or root if no element is passed.
+		 *
+		 * @param element The element from which the provider gets children. Can be `undefined`.
+		 * @return Children of `element` or root if no element is passed.
+		 */
+		getChildren(element?: TreeNode): vscode.ProviderResult<TreeNode[]> {
+			if (element) {
+				return Promise.resolve(element.children);
+			} else {
+				return Promise.resolve(this._root.children);
+			}
+		}
+
+		getParent(element?: TreeNode): vscode.ProviderResult<TreeNode> {
+			if (element) {
+				return Promise.resolve(element.parent);
+			} else {
+				return Promise.resolve(this._root);
+			}
+		}
+
+		onNodeCheckedChanged(element: TreeNode, checked: boolean): void {
+			if (element) {
+				element.changeNodeCheckedState(checked);
+			}
+		}
 }

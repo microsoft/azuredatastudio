@@ -16,6 +16,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
+import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
@@ -523,6 +524,7 @@ export const SqlExtHostContext = {
 	ExtHostBackgroundTaskManagement: createExtId<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
+	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
@@ -582,6 +584,12 @@ export interface ExtHostModelViewShape {
 	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
 }
 
+export interface ExtHostModelViewTreeViewsShape {
+	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): vscode.TreeView<any>;
+	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
+}
+
 export interface ExtHostBackgroundTaskManagementShape {
 	$onTaskRegistered(operationId: string): void;
 	$onTaskCanceled(operationId: string): void;
@@ -603,6 +611,8 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
+	$setDataProvider(handle: number, componentId: string): Thenable<void>;
+	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {
