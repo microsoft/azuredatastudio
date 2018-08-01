@@ -35,6 +35,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$listDatabases(connectionId);
 	}
 
+	public $getConnectionString(connectionId: string, includePassword: boolean): Thenable<string> {
+		return this._proxy.$getConnectionString(connectionId, includePassword);
+	}
+
 	public $getUriForConnection(connectionId: string): Thenable<string> {
 		return this._proxy.$getUriForConnection(connectionId);
 	}
