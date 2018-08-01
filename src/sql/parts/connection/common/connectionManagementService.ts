@@ -1363,11 +1363,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Get the connection string for the provided connection profile
 	 */
-	public getConnectionString(profile: IConnectionProfile): string {
+	public getConnectionString(profile: IConnectionProfile): Thenable<string> {
 		if (!profile) {
 			return undefined;
 		}
 
-		return 'undefined';
+		let ownerUri = this.getConnectionUri(profile);
+		if (!ownerUri) {
+			return undefined;
+		}
+
+		let providerId = this.getProviderIdFromUri(ownerUri);
+		if (!providerId) {
+			return undefined;
+		}
+
+		return this._providers.get(providerId).onReady.then(provider => {
+			return provider.getConnectionString(ownerUri).then(connectionString => {
+				return connectionString;
+			});
+		});
 	}
 }

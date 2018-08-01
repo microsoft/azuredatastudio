@@ -105,6 +105,9 @@ export function createApiFactory(
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
 				},
+				getConnectionString(connectionId: string): Thenable<string> {
+					return extHostConnectionManagement.$getConnectionString(connectionId);
+				},
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				}

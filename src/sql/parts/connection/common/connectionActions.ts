@@ -145,6 +145,7 @@ export class GetCurrentConnectionStringAction extends Action {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@INotificationService private readonly _notificationService: INotificationService
 	) {
 		super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
 		this.enabled = true;
@@ -152,13 +153,21 @@ export class GetCurrentConnectionStringAction extends Action {
 
 	public run(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+			let activeConnection = TaskUtilities.getCurrentGlobalConnection(
+				this._objectExplorerService,
+				this._connectionManagementService,
+				this._editorService);
+
 			if (activeConnection) {
-
-//				var ownerUri = this._connectionManagementService.getConnectionUri(activeConnection);
-
-
-
+				this._connectionManagementService.getConnectionString(activeConnection).then(result => {
+					let message = result
+						? result
+						: nls.localize('connectionAction.connectionString', "Connection string not available");
+					this._notificationService.info(message);
+				});
+			} else {
+				let message = nls.localize('connectionAction.noConnection', "No active connection available");
+				this._notificationService.info(message);
 			}
 		});
 	}

@@ -64,6 +64,13 @@ export abstract class ExtHostDataProtocolShape {
 	$listDatabases(handle: number, connectionUri: string): Thenable<sqlops.ListDatabasesResult> { throw ni(); }
 
 	/**
+	 * Get the connection string for the connection specified by connectionUri
+	 * @param handle the handle to use when looking up a provider
+	 * @param connectionUri URI identifying a connected resource
+	 */
+	$getConnectionString(handle: number, connectionUri: string): Thenable<string> { throw ni(); }
+
+	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
 	 * for a dataprotocol language. The sub-flavor is the specific implementation used for query
 	 * and other events
@@ -474,6 +481,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
+	$getConnectionString(connectionId: string): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
 }
 

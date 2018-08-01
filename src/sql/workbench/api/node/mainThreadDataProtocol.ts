@@ -88,6 +88,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
 				return self._proxy.$listDatabases(handle, connectionUri);
 			},
+			getConnectionString(connectionUri: string): Thenable<string> {
+				return self._proxy.$getConnectionString(handle, connectionUri);
+			},
 			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
 				return self._proxy.$rebuildIntelliSenseCache(handle, connectionUri);
 			}
