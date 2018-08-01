@@ -103,7 +103,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	private createTreeControl(): void {
 		if (!this._tree && this.dataProvider) {
 			const dataSource = this._instantiationService.createInstance(TreeComponentDataSource, this._dataProvider);
-			const renderer = this._instantiationService.createInstance(TreeComponentRenderer, { withCheckbox: this.withCheckbox });
+			const renderer = this._instantiationService.createInstance(TreeComponentRenderer, this.themeService, { withCheckbox: this.withCheckbox });
 			this._treeRenderer = renderer;
 			const controller = new DefaultController();
 			const filter = new DefaultFilter();

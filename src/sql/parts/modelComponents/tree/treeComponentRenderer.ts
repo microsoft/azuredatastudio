@@ -10,11 +10,11 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { LIGHT } from 'vs/platform/theme/common/themeService';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITreeComponentItem } from 'sql/workbench/common/views';
-
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 export enum TreeCheckboxState {
 	Intermediate = 0,
@@ -90,6 +90,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 
 
 	constructor(
+		private themeService: IWorkbenchThemeService,
 		public options?: { withCheckbox: boolean }
 	) {
 		super();
@@ -118,12 +119,13 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		if (templateId === TreeComponentRenderer.DEFAULT_TEMPLATE) {
 			const nodeTemplate: TreeDataTemplate = new TreeDataTemplate();
 			nodeTemplate.root = dom.append(container, dom.$('.tree-component-node-tile'));
+			nodeTemplate.icon = dom.append(nodeTemplate.root, dom.$('div.model-view-tree-node-item-icon'));
 			if (this.options && this.options.withCheckbox) {
 				let checkboxWrapper = dom.append(nodeTemplate.root, dom.$('div.checkboxWrapper'));
 				nodeTemplate.checkbox = dom.append(checkboxWrapper, dom.$<HTMLInputElement>('input.checkbox', { type: 'checkbox' }));
 			}
-			nodeTemplate.icon = dom.append(nodeTemplate.root, dom.$('div.icon'));
-			nodeTemplate.label = dom.append(nodeTemplate.root, dom.$('div.label'));
+
+			nodeTemplate.label = dom.append(nodeTemplate.root, dom.$('div.model-view-tree-node-item-label'));
 			return nodeTemplate;
 		}
 	}
@@ -132,7 +134,9 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 	 * Render a element, given an object bag returned by the template
 	 */
 	public renderElement(tree: ITree, element: ITreeComponentItem, templateId: string, templateData: TreeDataTemplate): void {
-
+		const icon = this.themeService.getTheme().type === LIGHT ? element.icon : element.iconDark;
+		templateData.icon.style.backgroundImage = icon ? `url('${icon}')` : '';
+		dom.toggleClass(templateData.icon, 'model-view-tree-node-item-icon', !!icon);
 		if (element && !templateData.model) {
 			templateData.model = element;
 		}

@@ -7,6 +7,7 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import * as path from 'path';
 
 export enum TreeCheckboxState {
 	Intermediate = 0,
@@ -264,6 +265,7 @@ export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNo
 			let item: sqlops.TreeComponentItem = {};
 			item.label = element.label;
 			item.checked = element.checked;
+			item.iconPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
 			return item;
 		}
 
