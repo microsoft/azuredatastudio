@@ -264,7 +264,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Get the connection string for the provided connection profile
 	 */
-	getConnectionString(profile: IConnectionProfile): Thenable<string>;
+	getConnectionString(profile: IConnectionProfile, includePassword: boolean): Thenable<string>;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');

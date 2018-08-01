@@ -828,20 +828,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private sendGetConnectionStringRequest(uri: string): Thenable<string> {
-		let providerId: string = this.getProviderIdFromUri(uri);
-		if (!providerId) {
-			return Promise.resolve(undefined);
-		}
-
-		return this._providers.get(providerId).onReady.then(provider => {
-			//provider.cancelConnect(uri);
-
-
-			return undefined;
-		});
-	}
-
 	private saveToSettings(id: string, connection: IConnectionProfile): Promise<string> {
 
 		return new Promise<string>((resolve, reject) => {
@@ -1363,7 +1349,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Get the connection string for the provided connection profile
 	 */
-	public getConnectionString(profile: IConnectionProfile): Thenable<string> {
+	public getConnectionString(profile: IConnectionProfile, includePassword: boolean = false): Thenable<string> {
 		if (!profile) {
 			return undefined;
 		}
@@ -1379,7 +1365,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		return this._providers.get(providerId).onReady.then(provider => {
-			return provider.getConnectionString(ownerUri).then(connectionString => {
+			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
 				return connectionString;
 			});
 		});

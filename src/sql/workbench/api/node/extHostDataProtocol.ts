@@ -181,8 +181,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).listDatabases(connectionUri);
 	}
 
-	$getConnectionString(handle: number, connectionUri: string): Thenable<string> {
-		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri);
+	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> {
+		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
 	}
 
 	$rebuildIntelliSenseCache(handle: number, connectionUri: string): Thenable<void> {

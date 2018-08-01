@@ -90,7 +90,7 @@ declare module 'sqlops' {
 		/**
 		 * Get connection string
 		*/
-		export function getConnectionString(connectionId: string): Thenable<string>;
+		export function getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 		/**
 		 * Get the credentials for an active connection
@@ -327,7 +327,7 @@ declare module 'sqlops' {
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
 
-		getConnectionString(connectionUri: string): Thenable<string> ;
+		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> ;
 
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
