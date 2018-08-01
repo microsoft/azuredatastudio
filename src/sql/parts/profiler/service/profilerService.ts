@@ -106,7 +106,6 @@ export class ProfilerService implements IProfilerService {
 
 	public createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
 		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, template)).then(() => {
-			// this is when I set up the template for the input class to use it
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
 		}, (reason) => {
