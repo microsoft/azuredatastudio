@@ -18,6 +18,7 @@ export class ProsePreviewPage extends ImportPage {
 	private table: sqlops.TableComponent;
 	private loading: sqlops.LoadingComponent;
 	private form: sqlops.FormContainer;
+	private refresh: sqlops.ButtonComponent;
 
 
 	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
@@ -27,13 +28,23 @@ export class ProsePreviewPage extends ImportPage {
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
+		this.refresh = this.view.modelBuilder.button().withProperties({
+			label: 'Refresh',
+			isFile: false
+		}).component();
+
+		this.refresh.onDidClick(async (event) => {
+			this.onPageEnter();
+		});
+
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
 				component: this.table,
-				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows')
+				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows'),
+				actions: [this.refresh]
 			}
 		]).component();
 
@@ -53,6 +64,16 @@ export class ProsePreviewPage extends ImportPage {
 		return true;
 	}
 
+	async onPageLeave(): Promise<boolean> {
+		await this.emptyTable();
+		return true;
+	}
+
+	async cleanup(): Promise<boolean> {
+		delete this.model.proseDataPreview;
+		return true;
+	}
+
 	private setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (this.loading.loading) {
@@ -60,11 +81,6 @@ export class ProsePreviewPage extends ImportPage {
 			}
 			return true;
 		});
-	}
-
-	async onPageLeave(): Promise<boolean> {
-		await this.emptyTable();
-		return true;
 	}
 
 	private async handleProse() {
@@ -85,12 +101,6 @@ export class ProsePreviewPage extends ImportPage {
 				});
 			});
 		});
-	}
-
-
-	async cleanup(): Promise<boolean> {
-		delete this.model.proseDataPreview;
-		return true;
 	}
 
 	private async populateTable(tableData: string[][], columnHeaders: string[]) {
