@@ -15,7 +15,9 @@ import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -153,14 +155,11 @@ export class GetCurrentConnectionStringAction extends Action {
 
 	public run(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			let activeConnection = TaskUtilities.getCurrentGlobalConnection(
-				this._objectExplorerService,
-				this._connectionManagementService,
-				this._editorService);
-
-			if (activeConnection) {
+			let activeInput = this._editorService.getActiveEditorInput();
+			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
+					&& this._connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;
-				this._connectionManagementService.getConnectionString(activeConnection, includePassword).then(result => {
+				this._connectionManagementService.getConnectionString(activeInput.uri, includePassword).then(result => {
 					let message = result
 						? result
 						: nls.localize('connectionAction.connectionString', "Connection string not available");
