@@ -442,7 +442,7 @@ export class ProfilerEditor extends BaseEditor {
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
 					this._sessionSelector.setOptions(r);
-					if (this.input.sessionName === undefined){
+					if (this.input.sessionName === undefined) {
 						this.input.sessionName = this._sessionsList[0];
 					}
 				});
@@ -474,7 +474,7 @@ export class ProfilerEditor extends BaseEditor {
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
 					this._sessionSelector.setOptions(r);
-					if (this.input.sessionName === undefined){
+					if (this.input.sessionName === undefined) {
 						this.input.sessionName = this._sessionsList[0];
 					}
 				});

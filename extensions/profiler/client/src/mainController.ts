@@ -12,26 +12,26 @@ import { CreateSessionDialog } from './dialogs/profilerCreateSessionDialog';
 /**
  * The main controller class that initializes the extension
  */
-export class MainController  {
-    protected _apiWrapper: ApiWrapper;
-    protected _context: vscode.ExtensionContext;
+export class MainController {
+	protected _apiWrapper: ApiWrapper;
+	protected _context: vscode.ExtensionContext;
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////
-    public constructor(context: vscode.ExtensionContext, apiWrapper?: ApiWrapper) {
-        this._apiWrapper = apiWrapper || new ApiWrapper();
-        this._context = context;
-    }
+	// PUBLIC METHODS
+	public constructor(context: vscode.ExtensionContext, apiWrapper?: ApiWrapper) {
+		this._apiWrapper = apiWrapper || new ApiWrapper();
+		this._context = context;
+	}
 
     /**
      * Deactivates the extension
      */
-    public deactivate(): void {
-    }
+	public deactivate(): void {
+	}
 
-    public activate(): void {
-        vscode.commands.registerCommand('profiler.openCreateSessionDialog', (ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) => {
-            let dialog = new CreateSessionDialog(ownerUri, templates);
-            dialog.showDialog();
-        });
-    }
+	public activate(): void {
+		vscode.commands.registerCommand('profiler.openCreateSessionDialog', (ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) => {
+			let dialog = new CreateSessionDialog(ownerUri, templates);
+			dialog.showDialog();
+		});
+	}
 }

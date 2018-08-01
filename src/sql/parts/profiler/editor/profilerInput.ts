@@ -59,7 +59,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 		this._profilerService.registerSession(generateUuid(), _connection, this).then((id) => {
 			this._id = id;
-			this.state.change({isConnected: true});
+			this.state.change({ isConnected: true });
 		});
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
@@ -113,7 +113,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public set sessionName(name: string) {
-		if (!this._state.isRunning || !this.state.isPaused){
+		if (!this._state.isRunning || !this.state.isPaused) {
 			this._sessionName = name;
 		}
 	}
@@ -167,9 +167,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	public get connectionName(): string {
 		if (this._connection !== null) {
 			if (this._connection.databaseName) {
-				return `${ this._connection.serverName } ${ this._connection.databaseName }`;
+				return `${this._connection.serverName} ${this._connection.databaseName}`;
 			} else {
-				return `${ this._connection.serverName }`;
+				return `${this._connection.serverName}`;
 			}
 		}
 		else {

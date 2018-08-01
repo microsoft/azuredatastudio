@@ -27,7 +27,7 @@
   ],
   "contributes": {
 
-      "commands": [
+    "commands": [
       {
         "command": "profiler.newProfiler",
         "title": "New Profiler",
@@ -45,7 +45,6 @@
       },
       {
         "command": "profiler.openCreateSessionDialog",
-        "title": "dialog",
         "category": "Profiler"
       }
     ],

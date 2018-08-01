@@ -31,17 +31,16 @@ export class CreateSessionDialog {
 
 
 	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
-		if (typeof (templates) === 'undefined' || templates === null){
+		if (typeof (templates) === 'undefined' || templates === null) {
 			throw new Error(localize('createSessionDialog.templatesInvalid', "Invalid templates list, cannot open dialog"));
 		}
-		if (typeof (ownerUri) === 'undefined' || ownerUri === null){
+		if (typeof (ownerUri) === 'undefined' || ownerUri === null) {
 			throw new Error(localize('createSessionDialog.dialogOwnerInvalid', "Invalid dialog owner, cannot open dialog"));
 		}
 		this.model = new CreateSessionData(ownerUri, templates);
 	}
 
 	public async showDialog() {
-		await this.model.initialize();
 		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
 		this.initializeContent();
 		this.dialog.okButton.onClick(async () => await this.execute());
@@ -62,8 +61,8 @@ export class CreateSessionDialog {
 			this.sessionNameBox = view.modelBuilder.inputBox()
 				.withProperties({
 					required: true,
-					value: '',
-					multiline: false
+					multiline: false,
+					value: ''
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()
@@ -95,8 +94,7 @@ export class CreateSessionDialog {
 				if (this.sessionNameBox.value.length > 0) {
 					this.model.sessionName = this.sessionNameBox.value;
 					this.dialog.okButton.enabled = true;
-				}
-				else{
+				} else {
 					this.dialog.okButton.enabled = false;
 				}
 			});
@@ -110,7 +108,6 @@ export class CreateSessionDialog {
 		let name = this.sessionNameBox.value;
 		let selected = this.templatesBox.value.toString();
 		let temp = this.model.selectTemplate(selected);
-		console.log(`owner: ${ this.model.ownerUri }\nname: ${ name }\nSelected: ${ selected }Template: ${ temp.name }`);
 		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, temp);
 	}
 

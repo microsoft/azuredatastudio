@@ -6,21 +6,14 @@
 
 import * as sqlops from 'sqlops';
 
-export class CreateSessionData  {
+export class CreateSessionData {
 	public ownerUri: string;
 	public sessionName: string;
 	public templates: Array<sqlops.ProfilerSessionTemplate> = new Array<sqlops.ProfilerSessionTemplate>();
 
-	constructor(ownerUri:string, templates:Array<sqlops.ProfilerSessionTemplate>) {
+	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
 		this.ownerUri = ownerUri;
 		this.templates = templates;
-		if(this.templates)
-		{
-
-		} else {
-			// display an error here
-			console.log('****** DIDN\'T GET TEMPLATES ******');
-		}
 	}
 
 	public getTemplateNames(): string[] {
@@ -31,10 +24,6 @@ export class CreateSessionData  {
 	}
 
 	public selectTemplate(name: string): sqlops.ProfilerSessionTemplate {
-		return this.templates.find((t) => {return t.name === name;});
-	}
-
-	public async initialize() {
-		// do something here?
+		return this.templates.find((t) => { return t.name === name; });
 	}
 }
