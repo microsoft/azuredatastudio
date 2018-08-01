@@ -1345,24 +1345,4 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		credentials[passwordOption.name] = profile.options[passwordOption.name];
 		return credentials;
 	}
-
-	/**
-	 * Get the connection string for the provided connection profile
-	 */
-	public getConnectionString(ownerUri: string, includePassword: boolean = false): Thenable<string> {
-		if (!ownerUri) {
-			return Promise.resolve(undefined);
-		}
-
-		let providerId = this.getProviderIdFromUri(ownerUri);
-		if (!providerId) {
-			return Promise.resolve(undefined);
-		}
-
-		return this._providers.get(providerId).onReady.then(provider => {
-			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
-				return connectionString;
-			});
-		});
-	}
 }
