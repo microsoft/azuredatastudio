@@ -17,10 +17,7 @@ export class CreateSessionData {
 	}
 
 	public getTemplateNames(): string[] {
-		return this.templates.reduce<Array<string>>((p, e) => {
-			p.push(e.name);
-			return p;
-		}, new Array<string>());
+		return this.templates.map(e => e.name);
 	}
 
 	public selectTemplate(name: string): sqlops.ProfilerSessionTemplate {

@@ -40,18 +40,18 @@ export class CreateSessionDialog {
 		this.model = new CreateSessionData(ownerUri, templates);
 	}
 
-	public async showDialog() {
+	public async showDialog(): Promise<void> {
 		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
 		this.initializeContent();
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
+		this.dialog.okButton.onClick(() => this.execute());
+		this.dialog.cancelButton.onClick(() => { });
 		this.dialog.okButton.label = this.CreateButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 
 		sqlops.window.modelviewdialog.openDialog(this.dialog);
 	}
 
-	private initializeContent() {
+	private initializeContent(): void {
 		this.dialog.registerContent(async view => {
 			this.templatesBox = view.modelBuilder.dropDown()
 				.withProperties({
@@ -69,12 +69,12 @@ export class CreateSessionDialog {
 				.withFormItems([{
 					components: [{
 						component: this.templatesBox,
-						title: 'Select session template:'
+						title: localize('createSessionDialog.selectTemplates', "Select session template:")
 					},
 					{
 						component: this.sessionNameBox,
 
-						title: 'Enter session name:'
+						title: localize('createSessionDialog.enterSessionName', "Enter session name:")
 					}],
 					title: this.DialogTitleText
 				}]).withLayout({ width: '100%' }).component();
@@ -83,11 +83,6 @@ export class CreateSessionDialog {
 
 			if (this.model.templates) {
 				this.templatesBox.values = this.model.getTemplateNames();
-				this.templatesBox.onValueChanged(() => {
-					if (this.sessionNameBox.value === '') {
-						this.sessionNameBox.value = this.templatesBox.value.toString();
-					}
-				});
 			}
 
 			this.sessionNameBox.onTextChanged(() => {
@@ -101,7 +96,7 @@ export class CreateSessionDialog {
 		});
 	}
 
-	private async execute() {
+	private async execute(): Promise<void> {
 		let currentConnection = await sqlops.connection.getCurrentConnection();
 		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
 
@@ -109,8 +104,5 @@ export class CreateSessionDialog {
 		let selected = this.templatesBox.value.toString();
 		let temp = this.model.selectTemplate(selected);
 		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, temp);
-	}
-
-	private async cancel() {
 	}
 }

@@ -71,11 +71,11 @@ export class ProfilerService implements IProfilerService {
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};
-		await this._connectionService.connect(connectionProfile, uri, options).then(() => {
+		try {
+			await this._connectionService.connect(connectionProfile, uri, options);
+		} catch (connectionError) {
 
-		}).catch(connectionError => {
-
-		});
+		}
 		this._sessionMap.set(uri, session);
 		this._idMap.set(uri, uri);
 		return TPromise.wrap(uri);
@@ -189,16 +189,6 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
-		let templates = this.getSessionTemplates().reduce<Array<sqlops.ProfilerSessionTemplate>>((p, e) => {
-			let template: sqlops.ProfilerSessionTemplate = {
-				name: e.name,
-				defaultView: e.defaultView,
-				createStatement: e.createStatement
-			};
-			p.push(template);
-			return p;
-		}, new Array<sqlops.ProfilerSessionTemplate>());
-
-		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, templates);
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, this.getSessionTemplates());
 	}
 }
