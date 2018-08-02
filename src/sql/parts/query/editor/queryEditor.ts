@@ -233,7 +233,6 @@ export class QueryEditor extends BaseEditor {
 	 * input should be freed.
 	 */
 	public clearInput(): void {
-		// this.saveEditorViewState(this.input as QueryInput);
 		if (this._resultsEditor) {
 			this._resultsEditor.clearInput();
 		}
