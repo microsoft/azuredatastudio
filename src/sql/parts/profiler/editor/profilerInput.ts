@@ -37,9 +37,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
 
-	public readonly onRestoreViewStateEmitter = new Emitter<void>();
-	public readonly onSaveViewStateEmitter = new Emitter<void>();
-
 	constructor(
 		private _connection: IConnectionProfile,
 		@IInstantiationService private _instantiationService: IInstantiationService,
