@@ -81,8 +81,8 @@ export class EditDataEditor extends BaseEditor {
 	private _queryEditorVisible: IContextKey<boolean>;
 	private hideQueryResultsView = false;
 
-	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
-	private _resultViewStateChangeEmitters = new Map<EditDataResultsInput, { onSaveViewState: Emitter<void>; onRestoreViewState: Emitter<void> }>();
+	// private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
+	// private _resultViewStateChangeEmitters = new Map<EditDataResultsInput, { onSaveViewState: Emitter<void>; onRestoreViewState: Emitter<void> }>();
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -541,14 +541,6 @@ export class EditDataEditor extends BaseEditor {
 	 */
 	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): TPromise<void> {
 		this._resultsEditor = resultsEditor;
-		if (!this._resultViewStateChangeEmitters.has(resultsInput)) {
-			this._resultViewStateChangeEmitters.set(resultsInput, {
-				onRestoreViewState: new Emitter<void>(),
-				onSaveViewState: new Emitter<void>()
-			});
-		}
-		let emitters = this._resultViewStateChangeEmitters.get(resultsInput);
-		this._resultsEditor.setViewStateChangeEvents(emitters.onRestoreViewState.event, emitters.onSaveViewState.event);
 		return this._resultsEditor.setInput(resultsInput, options);
 	}
 
@@ -617,11 +609,11 @@ export class EditDataEditor extends BaseEditor {
 			.then(onEditorsCreated)
 			.then(doLayout)
 			.then(() => {
-				if (this._resultViewStateChangeEmitters.has(newInput.results)) {
-					this._resultViewStateChangeEmitters.get(newInput.results).onRestoreViewState.fire();
+				if (newInput.results) {
+					newInput.results.onRestoreViewStateEmitter.fire();
 				}
-				if (this._savedViewStates.has(newInput.sql)) {
-					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
+				if (newInput.savedViewState) {
+					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
 				}
 			});
 	}
@@ -757,16 +749,13 @@ export class EditDataEditor extends BaseEditor {
 	}
 
 	private saveEditorViewState(): void {
-		if (this._sqlEditor) {
-			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
-			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
-			this._sqlEditor.clearInput();
-		}
-
-		if (this.input) {
-			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get((this.input as EditDataInput).results);
-			if (resultViewStateChangeEmitters) {
-				resultViewStateChangeEmitters.onSaveViewState.fire();
+		let editDataInput = this.input as EditDataInput;
+		if (editDataInput) {
+			if (this._sqlEditor) {
+				editDataInput.savedViewState = this._sqlEditor.getControl().saveViewState();
+			}
+			if (editDataInput.results) {
+				editDataInput.results.onSaveViewStateEmitter.fire();
 			}
 		}
 	}

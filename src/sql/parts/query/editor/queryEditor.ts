@@ -89,9 +89,6 @@ export class QueryEditor extends BaseEditor {
 	private _estimatedQueryPlanAction: EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: ActualQueryPlanAction;
 
-	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
-	private _resultViewStateChangeEmitters = new Map<QueryResultsInput, { onSaveViewState: Emitter<void>; onRestoreViewState: Emitter<void> }>();
-
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -587,11 +584,11 @@ export class QueryEditor extends BaseEditor {
 			.then(onEditorsCreated)
 			.then(doLayout)
 			.then(() => {
-				if (this._resultViewStateChangeEmitters.has(newInput.results)) {
-					this._resultViewStateChangeEmitters.get(newInput.results).onRestoreViewState.fire();
+				if (newInput.results) {
+					newInput.results.onRestoreViewStateEmitter.fire();
 				}
-				if (this._savedViewStates.has(newInput.sql)) {
-					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
+				if (newInput.savedViewState) {
+					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
 				}
 			});
 	}
@@ -624,14 +621,6 @@ export class QueryEditor extends BaseEditor {
 	 */
 	private _onResultsEditorCreated(resultsEditor: QueryResultsEditor, resultsInput: QueryResultsInput, options: EditorOptions): TPromise<void> {
 		this._resultsEditor = resultsEditor;
-		if (!this._resultViewStateChangeEmitters.has(resultsInput)) {
-			this._resultViewStateChangeEmitters.set(resultsInput, {
-				onRestoreViewState: new Emitter<void>(),
-				onSaveViewState: new Emitter<void>()
-			});
-		}
-		let emitters = this._resultViewStateChangeEmitters.get(resultsInput);
-		this._resultsEditor.setViewStateChangeEvents(emitters.onRestoreViewState.event, emitters.onSaveViewState.event);
 		return this._resultsEditor.setInput(resultsInput, options);
 	}
 
@@ -892,15 +881,13 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private saveEditorViewState(): void {
-		if (this._sqlEditor) {
-			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
-			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
-		}
-
-		if (this.input) {
-			let resultViewStateChangeEmitters = this._resultViewStateChangeEmitters.get((this.input as QueryInput).results);
-			if (resultViewStateChangeEmitters) {
-				resultViewStateChangeEmitters.onSaveViewState.fire();
+		let queryInput = this.input as QueryInput;
+		if (queryInput) {
+			if (this._sqlEditor) {
+				queryInput.savedViewState = this._sqlEditor.getControl().saveViewState();
+			}
+			if (queryInput.results) {
+				queryInput.results.onSaveViewStateEmitter.fire();
 			}
 		}
 	}

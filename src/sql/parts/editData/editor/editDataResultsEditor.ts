@@ -31,8 +31,6 @@ export class EditDataResultsEditor extends BaseEditor {
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
-	private _restoreViewStateEvent: Event<void>;
-	private _saveViewStateEvent: Event<void>;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -72,11 +70,6 @@ export class EditDataResultsEditor extends BaseEditor {
 			this._bootstrapAngular();
 		}
 		return TPromise.wrap<void>(null);
-	}
-
-	public setViewStateChangeEvents(onRestoreViewStateEvent: Event<void>, onSaveViewStateEvent: Event<void>) {
-		this._restoreViewStateEvent = onRestoreViewStateEvent;
-		this._saveViewStateEvent = onSaveViewStateEvent;
 	}
 
 	private _applySettings() {
@@ -119,8 +112,8 @@ export class EditDataResultsEditor extends BaseEditor {
 		const parent = input.container;
 		let params: IEditDataComponentParams = {
 			dataService: dataService,
-			onSaveViewState: this._saveViewStateEvent,
-			onRestoreViewState: this._restoreViewStateEvent
+			onSaveViewState: input.onSaveViewStateEmitter.event,
+			onRestoreViewState: input.onRestoreViewStateEmitter.event
 		};
 		bootstrapAngular(this._instantiationService,
 			EditDataModule,
