@@ -18,7 +18,8 @@ import { asWinJsPromise } from 'vs/base/common/async';
 import { TreeItemCollapsibleState, ThemeIcon } from 'vs/workbench/api/node/extHostTypes';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
-type TreeItemHandle = string;
+// {{SQL CARBON EDIT}}
+export type TreeItemHandle = string;
 
 export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 
@@ -79,24 +80,30 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 	}
 }
 
-interface TreeNode {
+// {{SQL CARBON EDIT}}
+export interface TreeNode {
 	item: ITreeItem;
 	parent: TreeNode;
 	children: TreeNode[];
 }
 
-class ExtHostTreeView<T> extends Disposable {
+// {{SQL CARBON EDIT}}
+export class ExtHostTreeView<T> extends Disposable {
 
 	private static LABEL_HANDLE_PREFIX = '0';
 	private static ID_HANDLE_PREFIX = '1';
 
 	private roots: TreeNode[] = null;
 	private elements: Map<TreeItemHandle, T> = new Map<TreeItemHandle, T>();
-	private nodes: Map<T, TreeNode> = new Map<T, TreeNode>();
+	// {{SQL CARBON EDIT}}
+	protected nodes: Map<T, TreeNode> = new Map<T, TreeNode>();
 
 	constructor(private viewId: string, private dataProvider: vscode.TreeDataProvider<T>, private proxy: MainThreadTreeViewsShape, private commands: CommandsConverter) {
 		super();
-		this.proxy.$registerTreeViewDataProvider(viewId);
+		// {{SQL CARBON EDIT}}
+		if (this.proxy) {
+			this.proxy.$registerTreeViewDataProvider(viewId);
+		}
 		if (this.dataProvider.onDidChangeTreeData) {
 			this._register(debounceEvent<T, T[]>(this.dataProvider.onDidChangeTreeData, (last, current) => last ? [...last, current] : [current], 200)(elements => this.refresh(elements)));
 		}
@@ -127,7 +134,8 @@ class ExtHostTreeView<T> extends Disposable {
 				.then(treeNode => this.proxy.$reveal(this.viewId, treeNode.item, parentChain.map(p => p.item), options)));
 	}
 
-	private resolveUnknownParentChain(element: T): TPromise<TreeNode[]> {
+	// {{SQL CARBON EDIT}}
+	protected resolveUnknownParentChain(element: T): TPromise<TreeNode[]> {
 		return this.resolveParent(element)
 			.then((parent) => {
 				if (!parent) {
@@ -150,7 +158,8 @@ class ExtHostTreeView<T> extends Disposable {
 		return asWinJsPromise(() => this.dataProvider.getParent(element));
 	}
 
-	private resolveTreeNode(element: T, parent?: TreeNode): TPromise<TreeNode> {
+	// {{SQL CARBON EDIT}}
+	protected resolveTreeNode(element: T, parent?: TreeNode): TPromise<TreeNode> {
 		return asWinJsPromise(() => this.dataProvider.getTreeItem(element))
 			.then(extTreeItem => this.createHandle(element, extTreeItem, parent, true))
 			.then(handle => this.getChildren(parent ? parent.item.handle : null)
@@ -194,7 +203,8 @@ class ExtHostTreeView<T> extends Disposable {
 			.then(nodes => nodes.filter(n => !!n));
 	}
 
-	private refresh(elements: T[]): void {
+	// {{SQL CARBON EDIT}}
+	protected refresh(elements: T[]): void {
 		const hasRoot = elements.some(element => !element);
 		if (hasRoot) {
 			this.clearAll(); // clear cache
@@ -207,7 +217,8 @@ class ExtHostTreeView<T> extends Disposable {
 		}
 	}
 
-	private getHandlesToRefresh(elements: T[]): TreeItemHandle[] {
+	// {{SQL CARBON EDIT}}
+	protected getHandlesToRefresh(elements: T[]): TreeItemHandle[] {
 		const elementsToUpdate = new Set<TreeItemHandle>();
 		for (const element of elements) {
 			let elementNode = this.nodes.get(element);
@@ -237,7 +248,8 @@ class ExtHostTreeView<T> extends Disposable {
 		return handlesToUpdate;
 	}
 
-	private refreshHandles(itemHandles: TreeItemHandle[]): TPromise<void> {
+	// {{SQL CARBON EDIT}}
+	protected refreshHandles(itemHandles: TreeItemHandle[]): TPromise<void> {
 		const itemsToRefresh: { [treeItemHandle: string]: ITreeItem } = {};
 		return TPromise.join(itemHandles.map(treeItemHandle =>
 			this.refreshNode(treeItemHandle)
@@ -249,7 +261,8 @@ class ExtHostTreeView<T> extends Disposable {
 			.then(() => Object.keys(itemsToRefresh).length ? this.proxy.$refresh(this.viewId, itemsToRefresh) : null);
 	}
 
-	private refreshNode(treeItemHandle: TreeItemHandle): TPromise<TreeNode> {
+	// {{SQL CARBON EDIT}}
+	protected refreshNode(treeItemHandle: TreeItemHandle): TPromise<TreeNode> {
 		const extElement = this.getExtensionElement(treeItemHandle);
 		const existing = this.nodes.get(extElement);
 		this.clearChildren(extElement); // clear children cache
@@ -274,7 +287,8 @@ class ExtHostTreeView<T> extends Disposable {
 		return node;
 	}
 
-	private createTreeNode(element: T, extensionTreeItem: vscode.TreeItem, parent: TreeNode): TreeNode {
+	// {{SQL CARBON EDIT}}
+	protected createTreeNode(element: T, extensionTreeItem: vscode.TreeItem, parent: TreeNode): TreeNode {
 		return {
 			item: this.createTreeItem(element, extensionTreeItem, parent),
 			parent,
@@ -282,7 +296,8 @@ class ExtHostTreeView<T> extends Disposable {
 		};
 	}
 
-	private createTreeItem(element: T, extensionTreeItem: vscode.TreeItem, parent?: TreeNode): ITreeItem {
+	// {{SQL CARBON EDIT}}
+	protected createTreeItem(element: T, extensionTreeItem: vscode.TreeItem, parent?: TreeNode): ITreeItem {
 
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
@@ -354,7 +369,8 @@ class ExtHostTreeView<T> extends Disposable {
 		this.nodes.set(element, node);
 	}
 
-	private updateNodeCache(element: T, newNode: TreeNode, existing: TreeNode, parentNode: TreeNode): void {
+	// {{SQL CARBON EDIT}}
+	protected updateNodeCache(element: T, newNode: TreeNode, existing: TreeNode, parentNode: TreeNode): void {
 		// Remove from the cache
 		this.elements.delete(newNode.item.handle);
 		this.nodes.delete(element);
@@ -418,7 +434,8 @@ class ExtHostTreeView<T> extends Disposable {
 		this.elements.delete(node.item.handle);
 	}
 
-	private clearAll(): void {
+	// {{SQL CARBON EDIT}}
+	protected clearAll(): void {
 		this.roots = null;
 		this.elements.clear();
 		this.nodes.clear();

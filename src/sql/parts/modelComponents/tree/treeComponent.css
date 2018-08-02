@@ -1,0 +1,8 @@
+.tree-component-node-tile {
+	display: flex;
+}
+
+.tree-component-node-tile .model-view-tree-node-item-icon{
+	width: 15px;
+	height: 15px;
+}

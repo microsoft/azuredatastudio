@@ -27,6 +27,7 @@ declare module 'sqlops' {
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		tree<T>(): ComponentBuilder<TreeComponent<T>>;
 		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
@@ -37,6 +38,17 @@ declare module 'sqlops' {
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
+	}
+
+	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
+		getTreeItem(element: T): TreeComponentItem | Thenable<TreeComponentItem>;
+
+		onNodeCheckedChanged?(element: T, checked: boolean): void;
+	}
+
+
+	export class TreeComponentItem extends vscode.TreeItem {
+		checked?: boolean;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -370,7 +382,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TableColumn {
-		value: string
+		value: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -387,6 +399,10 @@ declare module 'sqlops' {
 	export interface CheckBoxProperties {
 		checked?: boolean;
 		label?: string;
+	}
+
+	export interface TreeProperties {
+		withCheckbox?: boolean;
 	}
 
 	export enum DeclarativeDataType {
@@ -514,6 +530,10 @@ declare module 'sqlops' {
 		onDidChange: vscode.Event<any>;
 	}
 
+	export interface TreeComponent<T> extends Component, TreeProperties {
+		registerDataProvider<T>(dataProvider: TreeComponentDataProvider<T>): any;
+	}
+
 	export interface WebViewComponent extends Component {
 		html: string;
 		message: any;
@@ -534,7 +554,7 @@ declare module 'sqlops' {
 		languageMode: string;
 	}
 
-	export interface ButtonComponent extends Component, ButtonProperties  {
+	export interface ButtonComponent extends Component, ButtonProperties {
 		label: string;
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;

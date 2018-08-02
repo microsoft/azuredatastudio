@@ -26,6 +26,8 @@ export interface IComponent {
 	enabled: boolean;
 	readonly valid?: boolean;
 	validate(): Thenable<boolean>;
+	setDataProvider(handle: number, componentId: string, context: any): void;
+	refreshDataProvider(item: any): void;
 }
 
 export const COMPONENT_CONFIG = new InjectionToken<IComponentConfig>('component_config');

@@ -27,6 +27,12 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { IEditorInput } from 'vs/platform/editor/common/editor';
+
+export interface ProfilerTableViewState {
+	scrollTop: number;
+	scrollLeft: number;
+}
 
 export class ProfilerTableEditor extends BaseEditor implements IProfilerController, ITableController {
 
@@ -218,5 +224,19 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}
+	}
+
+	public saveViewState(): ProfilerTableViewState {
+		let viewElement = this._profilerTable.grid.getCanvasNode().parentElement;
+		return {
+			scrollTop: viewElement.scrollTop,
+			scrollLeft: viewElement.scrollLeft
+		};
+	}
+
+	public restoreViewState(state: ProfilerTableViewState): void {
+		let viewElement = this._profilerTable.grid.getCanvasNode().parentElement;
+		viewElement.scrollTop = state.scrollTop;
+		viewElement.scrollLeft = state.scrollLeft;
 	}
 }
