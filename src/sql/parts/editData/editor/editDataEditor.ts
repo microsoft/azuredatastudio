@@ -81,9 +81,6 @@ export class EditDataEditor extends BaseEditor {
 	private _queryEditorVisible: IContextKey<boolean>;
 	private hideQueryResultsView = false;
 
-	// private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
-	// private _resultViewStateChangeEmitters = new Map<EditDataResultsInput, { onSaveViewState: Emitter<void>; onRestoreViewState: Emitter<void> }>();
-
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
