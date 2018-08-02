@@ -11,6 +11,7 @@ import * as vscode from 'vscode';
 import SplitPropertiesPanel from './splitPropertiesPanel';
 import * as fs from 'fs';
 import * as path from 'path';
+import {TreeNode, TreeDataProvider} from './treeDataProvider';
 
 /**
  * The main controller class that initializes the extension
@@ -67,6 +68,67 @@ export default class MainController implements vscode.Disposable {
 		return Promise.resolve(true);
 	}
 
+	private async getTab3Content(view: sqlops.ModelView): Promise<void> {
+		let treeData = {
+			label: '1',
+			children: [
+				{
+					label: '11',
+					id: '11',
+					children: [
+						{
+							label: '111',
+							id: '111',
+							checked: false
+						},
+						{
+							label: '112',
+							id: '112',
+							children: [
+								{
+									label: '1121',
+									id: '1121',
+									checked: true
+								},
+								{
+									label: '1122',
+									id: '1122',
+									checked: false
+								}
+							]
+						}
+					]
+				},
+				{
+					label: '12',
+					id: '12',
+					checked: true
+				}
+			],
+			id: '1'
+		};
+		let root = TreeNode.createTree(treeData);
+
+		let treeDataProvider = new TreeDataProvider(root);
+
+		let tree: sqlops.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProperties({
+			'withCheckbox': true
+		}).component();
+		tree.registerDataProvider(treeDataProvider);
+		let formModel = view.modelBuilder.formContainer()
+			.withFormItems([{
+				component: tree,
+				title: 'Tree'
+			}], {
+					horizontal: false,
+					componentWidth: 800,
+					componentHeight: 800
+				}).component();
+		let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
+		formWrapper.loading = false;
+
+		await view.initializeModel(formWrapper);
+	}
 	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.modelviewdialog.Button, customButton2: sqlops.window.modelviewdialog.Button, componentWidth: number | string): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
 			.withProperties({
@@ -271,8 +333,9 @@ export default class MainController implements vscode.Disposable {
 		let tab1 = sqlops.window.modelviewdialog.createTab('Test tab 1');
 
 		let tab2 = sqlops.window.modelviewdialog.createTab('Test tab 2');
+		let tab3 = sqlops.window.modelviewdialog.createTab('Test tab 3');
 		tab2.content = 'sqlservices';
-		dialog.content = [tab1, tab2];
+		dialog.content = [tab1, tab2, tab3];
 		dialog.okButton.onClick(() => console.log('ok clicked!'));
 		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
 		dialog.okButton.label = 'ok';
@@ -284,6 +347,10 @@ export default class MainController implements vscode.Disposable {
 		dialog.customButtons = [customButton1, customButton2];
 		tab1.registerContent(async (view) => {
 			await this.getTabContent(view, customButton1, customButton2, 400);
+		});
+
+		tab3.registerContent(async (view) => {
+			await this.getTab3Content(view);
 		});
 		sqlops.window.modelviewdialog.openDialog(dialog);
 	}
@@ -301,6 +368,7 @@ export default class MainController implements vscode.Disposable {
 		page1.registerContent(async (view) => {
 			await this.getTabContent(view, customButton1, customButton2, 800);
 		});
+		/*
 		wizard.registerOperation({
 			displayName: 'test task',
 			description: 'task description',
@@ -311,7 +379,7 @@ export default class MainController implements vscode.Disposable {
 			setTimeout(() => {
 				op.updateStatus(sqlops.TaskStatus.Succeeded);
 			}, 5000);
-		});
+		});*/
 		wizard.pages = [page1, page2];
 		wizard.open();
 	}
@@ -354,15 +422,32 @@ export default class MainController implements vscode.Disposable {
 				webview2.message = count;
 			});
 
-			let flexModel = view.modelBuilder.flexContainer()
-				.withLayout({
-					flexFlow: 'column',
-					alignItems: 'flex-start',
-					height: 500
-				}).withItems([
-					webview1, webview2
-				], { flex: '1 1 50%' })
+			let editor1 = view.modelBuilder.editor()
+				.withProperties({
+					content: 'select * from sys.tables'
+				})
 				.component();
+
+			let editor2 = view.modelBuilder.editor()
+				.withProperties({
+					content: 'print("Hello World !")',
+					languageMode: 'python'
+				})
+				.component();
+
+			let flexModel = view.modelBuilder.flexContainer().component();
+			flexModel.addItem(editor1, { flex: '1' });
+			flexModel.addItem(editor2, { flex: '1' });
+			flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			view.onClosed((params) => {
+				vscode.window.showInformationMessage('editor1: language: ' + editor1.languageMode + ' Content1: ' + editor1.content);
+				vscode.window.showInformationMessage('editor2: language: ' + editor2.languageMode + ' Content2: ' + editor2.content);
+			});
 			await view.initializeModel(flexModel);
 		});
 		editor.openEditor();

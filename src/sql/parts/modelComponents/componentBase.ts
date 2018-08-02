@@ -71,6 +71,12 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 
 	abstract setLayout(layout: any): void;
 
+	public setDataProvider(handle: number, componentId: string, context: any): void {
+	}
+
+	public refreshDataProvider(item: any): void {
+	}
+
 	public setProperties(properties: { [key: string]: any; }): void {
 		if (!properties) {
 			this.properties = {};

@@ -15,7 +15,7 @@ import {
 	ElementRef, QueryList, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject,
 	ViewChildren, forwardRef, EventEmitter, Input, ViewChild
 } from '@angular/core';
-import { IGridDataRow, SlickGrid, VirtualizedCollection } from 'angular2-slickgrid';
+import { IGridDataRow, SlickGrid, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
 
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -91,7 +91,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			icon: () => { return 'saveCsv'; },
 			hoverText: () => { return LocalizedConstants.saveCSVLabel; },
 			functionality: (batchId, resultId, index) => {
-				let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+				let selection = this.getSelection(index);
 				if (selection.length <= 1) {
 					this.handleContextClick({ type: 'savecsv', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
@@ -104,7 +104,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			icon: () => { return 'saveJson'; },
 			hoverText: () => { return LocalizedConstants.saveJSONLabel; },
 			functionality: (batchId, resultId, index) => {
-				let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+				let selection = this.getSelection(index);
 				if (selection.length <= 1) {
 					this.handleContextClick({ type: 'savejson', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
@@ -117,7 +117,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			icon: () => { return 'saveExcel'; },
 			hoverText: () => { return LocalizedConstants.saveExcelLabel; },
 			functionality: (batchId, resultId, index) => {
-				let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+				let selection = this.getSelection(index);
 				if (selection.length <= 1) {
 					this.handleContextClick({ type: 'saveexcel', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
@@ -161,6 +161,13 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
 	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
 
+	private savedViewState: {
+		gridSelections: ISlickRange[][];
+		resultsScroll: number;
+		messagePaneScroll: number;
+		slickGridScrolls: { vertical: number; horizontal: number }[];
+	};
+
 	@Input() public queryParameters: IQueryComponentParams;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
@@ -168,6 +175,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	@ViewChild('resultsPane', { read: ElementRef }) private _resultsPane: ElementRef;
 	@ViewChild('queryLink', { read: ElementRef }) private _queryLinkElement: ElementRef;
 	@ViewChild('messagesContainer', { read: ElementRef }) private _messagesContainer: ElementRef;
+	@ViewChild('resultsScrollBox', { read: ElementRef }) private _resultsScrollBox: ElementRef;
+	@ViewChildren('slickgrid', { read: ElementRef }) private _slickgridElements: QueryList<ElementRef>;
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
@@ -225,6 +234,10 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			}
 			self._cd.detectChanges();
 		});
+
+		this.queryParameters.onSaveViewState(() => this.saveViewState());
+		this.queryParameters.onRestoreViewState(() => this.restoreViewState());
+
 		this.dataService.onAngularLoaded();
 	}
 
@@ -648,6 +661,43 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			this.toggleMessagePane();
 		} else if (pane === 'results') {
 			this.toggleResultPane();
+		}
+	}
+
+	private saveViewState(): void {
+		let gridSelections = this.slickgrids.map(grid => grid.getSelectedRanges());
+		let resultsScrollElement = (this._resultsScrollBox.nativeElement as HTMLElement);
+		let resultsScroll = resultsScrollElement.scrollTop;
+		let messagePaneScroll = (this._messagesContainer.nativeElement as HTMLElement).scrollTop;
+		let slickGridScrolls = this._slickgridElements.map(element => {
+			// Get the slick grid's viewport element and save its scroll position
+			let scrollElement = (element.nativeElement as HTMLElement).children[0].children[3];
+			return {
+				vertical: scrollElement.scrollTop,
+				horizontal: scrollElement.scrollLeft
+			};
+		});
+
+		this.savedViewState = {
+			gridSelections,
+			messagePaneScroll,
+			resultsScroll,
+			slickGridScrolls
+		};
+	}
+
+	private restoreViewState(): void {
+		if (this.savedViewState) {
+			this.slickgrids.forEach((grid, index) => grid.selection = this.savedViewState.gridSelections[index]);
+			(this._resultsScrollBox.nativeElement as HTMLElement).scrollTop = this.savedViewState.resultsScroll;
+			(this._messagesContainer.nativeElement as HTMLElement).scrollTop = this.savedViewState.messagePaneScroll;
+			this._slickgridElements.forEach((element, index) => {
+				let scrollElement = (element.nativeElement as HTMLElement).children[0].children[3];
+				let savedScroll = this.savedViewState.slickGridScrolls[index];
+				scrollElement.scrollTop = savedScroll.vertical;
+				scrollElement.scrollLeft = savedScroll.horizontal;
+			});
+			this.savedViewState = undefined;
 		}
 	}
 

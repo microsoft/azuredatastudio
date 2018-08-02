@@ -26,6 +26,7 @@ import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
 import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Event } from 'vs/base/common/event';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -95,6 +96,8 @@ export class QueryResultsEditor extends BaseEditor {
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _rawOptions: BareResultsGridInfo;
 	protected _input: QueryResultsInput;
+	private _restoreViewStateEvent: Event<void>;
+	private _saveViewStateEvent: Event<void>;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -149,6 +152,11 @@ export class QueryResultsEditor extends BaseEditor {
 		return TPromise.wrap<void>(null);
 	}
 
+	public setViewStateChangeEvents(onRestoreViewStateEvent: Event<void>, onSaveViewStateEvent: Event<void>) {
+		this._restoreViewStateEvent = onRestoreViewStateEvent;
+		this._saveViewStateEvent = onSaveViewStateEvent;
+	}
+
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
@@ -169,7 +177,11 @@ export class QueryResultsEditor extends BaseEditor {
 		// Note: pass in input so on disposal this is cleaned up.
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
-		let params: IQueryComponentParams = { dataService: dataService };
+		let params: IQueryComponentParams = {
+			dataService: dataService,
+			onSaveViewState: this._saveViewStateEvent,
+			onRestoreViewState: this._restoreViewStateEvent
+		};
 		bootstrapAngular(this._instantiationService,
 			QueryOutputModule,
 			this.getContainer(),

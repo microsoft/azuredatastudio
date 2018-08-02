@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IExtensionGalleryService, IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
+import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
@@ -13,10 +13,9 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { DashboardEditor } from 'sql/parts/dashboard/dashboardEditor';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { AddServerGroupAction, AddServerAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
-import { ClearRecentConnectionsAction } from 'sql/parts/connection/common/connectionActions';
+import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/parts/connection/common/connectionActions';
 
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
-import { EditorDescriptor } from 'vs/workbench/browser/editor';
 import { ExtensionTipsService } from 'vs/workbench/parts/extensions/electron-browser/extensionTipsService';
 import { ExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/node/extensionsWorkbenchService';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
@@ -49,6 +48,7 @@ actionRegistry.registerWorkbenchAction(
 	),
 	ClearRecentConnectionsAction.LABEL
 );
+
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		AddServerGroupAction,
@@ -65,6 +65,15 @@ actionRegistry.registerWorkbenchAction(
 		AddServerAction.LABEL
 	),
 	AddServerAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		GetCurrentConnectionStringAction,
+		GetCurrentConnectionStringAction.ID,
+		GetCurrentConnectionStringAction.LABEL
+	),
+	GetCurrentConnectionStringAction.LABEL
 );
 
 let configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
