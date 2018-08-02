@@ -358,6 +358,21 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	/**
+	 * Returns a footer button matching the provided label
+	 * @param label Label to show on the button
+	 * @param onSelect The callback to call when the button is selected
+	 */
+	protected findFooterButton(label: string): Button {
+		return this._footerButtons.find(e => {
+			try {
+				return e && e.element.innerText === label;
+			} catch {
+				return false;
+			}
+		});
+	}
+
+	/**
 	 * Show an error in the error message element
 	 * @param err Text to show in the error message
 	 */
