@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import nls = require('vs/nls');
 
 import * as sqlops from 'sqlops';
-import { IModelStore, IComponentDescriptor, IComponent, IComponentEventArgs } from './interfaces';
+import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView, IModelViewEventArgs } from 'sql/services/model/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
@@ -97,6 +97,10 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => component.setProperties(properties));
 	}
 
+	refreshDataProvider(componentId: string, item: any): void {
+		this.queueAction(componentId, (component) => component.refreshDataProvider(item));
+	}
+
 	private queueAction<T>(componentId: string, action: (component: IComponent) => T): void {
 		this.modelStore.eventuallyRunOnComponent(componentId, action).catch(err => {
 			// TODO add error handling
@@ -121,5 +125,9 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	public validate(componentId: string): Thenable<boolean> {
 		return new Promise(resolve => this.modelStore.eventuallyRunOnComponent(componentId, component => resolve(component.validate())));
+	}
+
+	public setDataProvider(handle: number, componentId: string, context: any): any {
+		return this.queueAction(componentId, (component) => component.setDataProvider(handle, componentId, context));
 	}
 }
