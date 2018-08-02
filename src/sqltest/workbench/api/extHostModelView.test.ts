@@ -47,7 +47,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		mockProxy.setup(x => x.$setProperties(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
 
 		// Register a model view of an input box and drop down box inside a form container inside a flex container
-		extHostModelView = new ExtHostModelView(mainContext);
+		extHostModelView = new ExtHostModelView(mainContext, undefined);
 		extHostModelView.$registerProvider(widgetId, async view => {
 			modelView = view;
 			inputBox = view.modelBuilder.inputBox()

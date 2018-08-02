@@ -88,6 +88,11 @@ declare module 'sqlops' {
 		export function getActiveConnections(): Thenable<Connection[]>;
 
 		/**
+		 * Get connection string
+		*/
+		export function getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+
+		/**
 		 * Get the credentials for an active connection
 		 * @param {string} connectionId The id of the connection
 		 * @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
@@ -321,6 +326,8 @@ declare module 'sqlops' {
 		changeDatabase(connectionUri: string, newDatabase: string): Thenable<boolean>;
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
+
+		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> ;
 
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
@@ -841,6 +848,9 @@ declare module 'sqlops' {
 		columnEndIndex: number;
 		includeHeaders?: boolean;
 		delimiter?: string;
+		lineSeperator?: string;
+		textIdentifier?: string;
+		encoding?: string;
 	}
 
 	export interface SaveResultRequestResult {
