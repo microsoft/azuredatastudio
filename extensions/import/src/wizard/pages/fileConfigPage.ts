@@ -15,7 +15,6 @@ import {FlatFileWizard} from '../flatFileWizard';
 const localize = nls.loadMessageBundle();
 
 export class FileConfigPage extends ImportPage {
-	private server: sqlops.connection.Connection;
 
 	private serverDropdown: sqlops.DropDownComponent;
 	private databaseDropdown: sqlops.DropDownComponent;
@@ -88,9 +87,7 @@ export class FileConfigPage extends ImportPage {
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async (params) => {
-			this.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
-
-			this.model.server = this.server;
+			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
 
 			await this.populateDatabaseDropdown();
 			await this.populateSchemaDropdown();
@@ -150,8 +147,7 @@ export class FileConfigPage extends ImportPage {
 			delete this.model.schema;
 		}
 
-		this.server = values[0].connection;
-		this.model.server = this.server;
+		this.model.server = values[0].connection;
 
 
 		this.serverDropdown.updateProperties({
@@ -183,7 +179,7 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.updateProperties({values: []});
 		this.schemaDropdown.updateProperties({values: []});
 
-		if (!this.server) {
+		if (!this.model.server) {
 			//TODO handle error case
 			this.databaseLoader.loading = false;
 			return false;
@@ -192,7 +188,7 @@ export class FileConfigPage extends ImportPage {
 
 		let idx = -1;
 		let count = -1;
-		let values = (await sqlops.connection.listDatabases(this.server.connectionId)).map(db => {
+		let values = (await sqlops.connection.listDatabases(this.model.server.connectionId)).map(db => {
 			count++;
 			if (this.model.database && db === this.model.database) {
 				idx = count;
@@ -323,8 +319,8 @@ export class FileConfigPage extends ImportPage {
 
 	private async populateSchemaDropdown(): Promise<Boolean> {
 		this.schemaLoader.loading = true;
-		let connectionUri = await sqlops.connection.getUriForConnection(this.server.connectionId);
-		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.server.providerName, sqlops.DataProviderType.QueryProvider);
+		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
 
 		let query = `SELECT name FROM sys.schemas`;
 
@@ -372,8 +368,8 @@ export class FileConfigPage extends ImportPage {
 			return false;
 		}
 
-		let connectionUri = await sqlops.connection.getUriForConnection(this.server.connectionId);
-		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.server.providerName, sqlops.DataProviderType.QueryProvider);
+		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
 		let results: sqlops.SimpleExecuteResult;
 
 		try {

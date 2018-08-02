@@ -1,7 +1,7 @@
 {
     "downloadUrl": "http://sqltools500:8080/{#fileName#}",
     "useDefaultLinuxRuntime": true,
-    "version": "0.1.15",
+    "version": "0.1.0",
     "downloadFileNames": {
         "Windows_64": "win-x64.zip",
         "Windows_86": "win-x86.zip",

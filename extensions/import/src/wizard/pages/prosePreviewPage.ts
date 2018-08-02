@@ -29,11 +29,11 @@ export class ProsePreviewPage extends ImportPage {
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
 		this.refresh = this.view.modelBuilder.button().withProperties({
-			label: 'Refresh',
+			label: localize('flatFileImport.refresh', 'Refresh'),
 			isFile: false
 		}).component();
 
-		this.refresh.onDidClick(async (event) => {
+		this.refresh.onDidClick(async () => {
 			this.onPageEnter();
 		});
 
@@ -43,7 +43,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
 				component: this.table,
-				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows'),
+				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below'),
 				actions: [this.refresh]
 			}
 		]).component();

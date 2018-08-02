@@ -8,6 +8,9 @@
 
 import * as sqlops from 'sqlops';
 
+/**
+ * The main data model that communicates between the pages.
+ */
 export interface ImportDataModel {
 	ownerUri: string;
 	proseColumns: ColumnMetadata[];
@@ -20,6 +23,9 @@ export interface ImportDataModel {
 	fileType: string;
 }
 
+/**
+ * Metadata of a column
+ */
 export interface ColumnMetadata {
 	columnName: string;
 	dataType: string;

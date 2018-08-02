@@ -5,6 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import {FlatFileProvider} from '../services/contracts';
 import {ImportDataModel} from './api/models';
@@ -14,6 +15,8 @@ import {FileConfigPage} from './pages/fileConfigPage';
 import {ProsePreviewPage} from './pages/prosePreviewPage';
 import {ModifyColumnsPage} from './pages/modifyColumnsPage';
 import {SummaryPage} from './pages/summaryPage';
+
+const localize = nls.loadMessageBundle();
 
 export class FlatFileWizard {
 	private readonly provider: FlatFileProvider;
@@ -38,11 +41,11 @@ export class FlatFileWizard {
 			return;
 		}
 
-		this.wizard = sqlops.window.modelviewdialog.createWizard('Import flat file wizard');
-		let page1 = sqlops.window.modelviewdialog.createWizardPage('New Table Details');
-		let page2 = sqlops.window.modelviewdialog.createWizardPage('Preview Data');
-		let page3 = sqlops.window.modelviewdialog.createWizardPage('Modify Columns');
-		let page4 = sqlops.window.modelviewdialog.createWizardPage('Summary');
+		this.wizard = sqlops.window.modelviewdialog.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
+		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page1Name', 'New Table Details'));
+		let page2 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page2Name', 'Preview Data'));
+		let page3 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page3Name', 'Modify Columns'));
+		let page4 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page4Name', 'Summary'));
 
 		let fileConfigPage: FileConfigPage;
 		page1.registerContent(async (view) => {
@@ -75,7 +78,7 @@ export class FlatFileWizard {
 		});
 
 
-		this.importAnotherFileButton = sqlops.window.modelviewdialog.createButton('Import new file');
+		this.importAnotherFileButton = sqlops.window.modelviewdialog.createButton(localize('flatFileImport.importNewFile', 'Import new file'));
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();
