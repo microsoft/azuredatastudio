@@ -60,9 +60,11 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	}
 }
 
-type TreeItemHandle = string;
+// {{SQL CARBON EDIT}}
+export type TreeItemHandle = string;
 
-class TreeViewDataProvider implements ITreeViewDataProvider {
+// {{SQL CARBON EDIT}}
+export class TreeViewDataProvider implements ITreeViewDataProvider {
 
 	private readonly _onDidChange: Emitter<ITreeItem[] | undefined | null> = new Emitter<ITreeItem[] | undefined | null>();
 	readonly onDidChange: Event<ITreeItem[] | undefined | null> = this._onDidChange.event;
@@ -70,11 +72,13 @@ class TreeViewDataProvider implements ITreeViewDataProvider {
 	private readonly _onDispose: Emitter<void> = new Emitter<void>();
 	readonly onDispose: Event<void> = this._onDispose.event;
 
-	private itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
+	// {{SQL CARBON EDIT}}
+	protected itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
 
-	constructor(private treeViewId: string,
-		private _proxy: ExtHostTreeViewsShape,
-		private notificationService: INotificationService
+	// {{SQL CARBON EDIT}}
+	constructor(protected treeViewId: string,
+		protected _proxy: ExtHostTreeViewsShape,
+		protected notificationService: INotificationService
 	) {
 	}
 
@@ -121,7 +125,8 @@ class TreeViewDataProvider implements ITreeViewDataProvider {
 		}
 	}
 
-	private postGetChildren(elements: ITreeItem[]): ITreeItem[] {
+	// {{SQL CARBON EDIT}}
+	protected postGetChildren(elements: ITreeItem[]): ITreeItem[] {
 		const result = [];
 		if (elements) {
 			for (const element of elements) {

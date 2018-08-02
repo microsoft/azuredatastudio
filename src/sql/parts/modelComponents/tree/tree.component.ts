@@ -65,9 +65,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	ngAfterViewInit(): void {
 		if (this._inputContainer) {
-
 			this.createTreeControl();
-
 		}
 	}
 
@@ -75,23 +73,14 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		this.baseDestroy();
 	}
 
-	public setDataProvider(context: any): any {
-		this._dataProvider = new TreeViewDataProvider(this.descriptor.id, context);
+	public setDataProvider(handle: number, componentId: string, context: any): any {
+		this._dataProvider = new TreeViewDataProvider(handle, componentId, context);
 		this.createTreeControl();
 	}
 
-	private get dataProvider(): IModelViewTreeViewDataProvider {
-		if (this._dataProvider) {
-			let treeDataProvider: IModelViewTreeViewDataProvider = <IModelViewTreeViewDataProvider>this._dataProvider;
-			return treeDataProvider;
-		} else {
-			return undefined;
-		}
-	}
-
 	public refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
-		if (this.dataProvider) {
-			this.dataProvider.refresh(itemsToRefreshByHandle);
+		if (this._dataProvider) {
+			this._dataProvider.refresh(itemsToRefreshByHandle);
 		}
 		if (this._tree) {
 			for (const item of Object.values(itemsToRefreshByHandle)) {
@@ -101,7 +90,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	private createTreeControl(): void {
-		if (!this._tree && this.dataProvider) {
+		if (!this._tree && this._dataProvider) {
 			const dataSource = this._instantiationService.createInstance(TreeComponentDataSource, this._dataProvider);
 			const renderer = this._instantiationService.createInstance(TreeComponentRenderer, this.themeService, { withCheckbox: this.withCheckbox });
 			this._treeRenderer = renderer;
@@ -133,7 +122,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		this._changeRef.detectChanges();
 		this.createTreeControl();
 		if (this._tree) {
-			this._tree.layout(700, 700);
+			this._tree.layout(this.convertSizeToNumber(this.width), this.convertSizeToNumber(this.height));
 			this._tree.refresh();
 		}
 	}

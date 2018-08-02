@@ -527,6 +527,7 @@ declare module 'sqlops' {
 	}
 
 	export interface FileBrowserTreeComponent extends Component, FileBrowserTreeProperties {
+		onDidChange: vscode.Event<any>;
 	}
 
 	export interface TreeComponent<T> extends Component, TreeProperties {

@@ -26,7 +26,7 @@ export interface IComponent {
 	enabled: boolean;
 	readonly valid?: boolean;
 	validate(): Thenable<boolean>;
-	setDataProvider(context: any): void;
+	setDataProvider(handle: number, componentId: string, context: any): void;
 	refreshDataProvider(item: any): void;
 }
 

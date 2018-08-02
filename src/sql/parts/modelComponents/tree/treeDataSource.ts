@@ -18,8 +18,6 @@ export class TreeComponentDataSource implements IDataSource {
 	 *
 	 */
 	constructor(
-		//@IProgressService2 private progressService: IProgressService2,
-		//private location: ProgressLocation,
 		private _dataProvider: IModelViewTreeViewDataProvider) {
 
 	}
@@ -44,7 +42,6 @@ export class TreeComponentDataSource implements IDataSource {
 	 */
 	public getChildren(tree: ITree, node: ITreeComponentItem): TPromise<any> {
 		if (this._dataProvider) {
-			//return this.location ? this.progressService.withProgress({ location: this.location }, () => this._dataProvider.getChildren(node)) :
 			if (node && node.handle === '0') {
 				return this._dataProvider.getChildren(undefined);
 			} else {

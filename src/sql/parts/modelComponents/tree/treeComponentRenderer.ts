@@ -149,7 +149,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		let label = treeNode.label;
 		templateData.label.textContent = label;
 		templateData.root.title = label;
-		templateData.checkboxState = this.getCheckboxState(treeNode);//treeNode.checkboxState;
+		templateData.checkboxState = this.getCheckboxState(treeNode);
 	}
 
 	private getCheckboxState(treeNode: ITreeComponentItem): TreeCheckboxState {

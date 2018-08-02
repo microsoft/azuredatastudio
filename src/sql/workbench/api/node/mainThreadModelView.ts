@@ -78,7 +78,7 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 	}
 
 	$setDataProvider(handle: number, componentId: string): Thenable<void> {
-		return this.execModelViewAction(handle, (modelView) => modelView.setDataProvider(componentId, this._context));
+		return this.execModelViewAction(handle, (modelView) => modelView.setDataProvider(handle, componentId, this._context));
 	}
 
 	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void> {
