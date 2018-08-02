@@ -13,14 +13,18 @@ import * as nls from 'vs/nls';
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
-import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType} from 'sql/workbench/api/common/sqlExtHostTypes';
+import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 class ModelBuilderImpl implements sqlops.ModelBuilder {
 	private nextComponentId: number;
 	private readonly _componentBuilders = new Map<string, ComponentBuilderImpl<any>>();
 
-	constructor(private readonly _proxy: MainThreadModelViewShape, private readonly _handle: number) {
+	constructor(
+		private readonly _proxy: MainThreadModelViewShape,
+		private readonly _handle: number,
+		private readonly _mainContext: IMainContext,
+		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape) {
 		this.nextComponentId = 0;
 	}
 
@@ -66,6 +70,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	tree<T>(): sqlops.ComponentBuilder<sqlops.TreeComponent<T>> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.TreeComponent<T>> = this.getComponentBuilder(new TreeComponentWrapper(this._extHostModelViewTree, this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	inputBox(): sqlops.ComponentBuilder<sqlops.InputBoxComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.InputBoxComponent> = this.getComponentBuilder(new InputBoxWrapper(this._proxy, this._handle, id), id);
@@ -97,6 +108,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 	webView(): sqlops.ComponentBuilder<sqlops.WebViewComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
+	editor(): sqlops.ComponentBuilder<sqlops.EditorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.EditorComponent> = this.getComponentBuilder(new EditorWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -493,6 +511,11 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
+
+	protected setDataProvider(): Thenable<void> {
+		return this._proxy.$setDataProvider(this._handle, this._id);
+	}
+
 	protected async setProperty(key: string, value: any): Promise<void> {
 		if (!this.properties[key] || this.properties[key] !== value) {
 			// Only notify the front end if a value has been updated
@@ -740,6 +763,28 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 	}
 }
 
+class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Editor, id);
+		this.properties = {};
+	}
+
+	public get content(): string {
+		return this.properties['content'];
+	}
+	public set content(v: string) {
+		this.setProperty('content', v);
+	}
+
+	public get languageMode(): string {
+		return this.properties['languageMode'];
+	}
+	public set languageMode(v: string) {
+		this.setProperty('languageMode', v);
+	}
+}
+
 class RadioButtonWrapper extends ComponentWrapper implements sqlops.RadioButtonComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -816,6 +861,14 @@ class TableComponentWrapper extends ComponentWrapper implements sqlops.TableComp
 	}
 	public set columns(v: string[] | sqlops.TableColumn[]) {
 		this.setProperty('columns', v);
+	}
+
+	public get fontSize(): number | string {
+		return this.properties['fontSize'];
+	}
+
+	public set fontSize(size: number | string) {
+		this.setProperty('fontSize', size);
 	}
 
 	public get selectedRows(): number[] {
@@ -1001,6 +1054,28 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops
 	}
 }
 
+class TreeComponentWrapper<T> extends ComponentWrapper implements sqlops.TreeComponent<T> {
+
+	constructor(
+		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.TreeComponent, id);
+		this.properties = {};
+	}
+
+	public registerDataProvider<T>(dataProvider: sqlops.TreeComponentDataProvider<T>): vscode.TreeView<T> {
+		this.setDataProvider();
+		return this._extHostModelViewTree.$createTreeView(this._handle, this.id, { treeDataProvider: dataProvider });
+	}
+
+	public get withCheckbox(): boolean {
+		return this.properties['withCheckbox'];
+	}
+	public set withCheckbox(v: boolean) {
+		this.setProperty('withCheckbox', v);
+	}
+}
+
 class ModelViewImpl implements sqlops.ModelView {
 
 	public onClosedEmitter = new Emitter<any>();
@@ -1014,9 +1089,11 @@ class ModelViewImpl implements sqlops.ModelView {
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
 		private readonly _connection: sqlops.connection.Connection,
-		private readonly _serverInfo: sqlops.ServerInfo
+		private readonly _serverInfo: sqlops.ServerInfo,
+		private readonly mainContext: IMainContext,
+		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1069,9 +1146,10 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	private readonly _handlers = new Map<string, (view: sqlops.ModelView) => void>();
 
 	constructor(
-		mainContext: IMainContext
+		private _mainContext: IMainContext,
+		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
 	) {
-		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadModelView);
+		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
 
 	$onClosed(handle: number): void {
@@ -1086,7 +1164,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 	}
 
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void {
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}

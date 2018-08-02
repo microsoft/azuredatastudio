@@ -25,7 +25,7 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
@@ -154,6 +154,15 @@ actionRegistry.registerWorkbenchAction(
 	FocusOnCurrentQueryKeyboardAction.LABEL
 );
 
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ParseSyntaxAction,
+		ParseSyntaxAction.ID,
+		ParseSyntaxAction.LABEL
+	),
+	ParseSyntaxAction.LABEL
+);
+
 // Grid actions
 
 actionRegistry.registerWorkbenchAction(
@@ -279,6 +288,21 @@ let registryProperties = {
 		'type': 'string',
 		'description': localize('sql.saveAsCsv.delimiter', '[Optional] The custom delimiter to use between values when saving as CSV'),
 		'default': ','
+	},
+	'sql.saveAsCsv.lineSeperator': {
+		'type': '',
+		'description': localize('sql.saveAsCsv.lineSeperator', '[Optional] Character(s) used for seperating rows when saving results as CSV'),
+		'default': null
+	},
+	'sql.saveAsCsv.textIdentifier': {
+		'type': 'string',
+		'description': localize('sql.saveAsCsv.textIdentifier', '[Optional] Character used for enclosing text fields when saving results as CSV'),
+		'default': '\"'
+	},
+	'sql.saveAsCsv.encoding': {
+		'type': 'string',
+		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
+		'default': 'utf-8'
 	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',

@@ -213,6 +213,7 @@ class BackgroundOperationHandler {
 	}
 
 	public createOperation(): void {
+
 		if (this._operationInfo && !this._operationInfo.operationId) {
 			let uniqueId = generateUuid();
 			this._operationInfo.operationId = 'OperationId' + uniqueId + this._name;

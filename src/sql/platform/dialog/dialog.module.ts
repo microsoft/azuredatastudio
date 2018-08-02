@@ -22,6 +22,7 @@ import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/boot
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
+import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -36,6 +37,7 @@ export const DialogModule = (params, selector: string, instantiationService: IIn
 		declarations: [
 			Checkbox,
 			SelectBox,
+			EditableDropDown,
 			InputBox,
 			DialogContainer,
 			WizardNavigation,

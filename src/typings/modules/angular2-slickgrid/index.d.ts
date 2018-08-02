@@ -81,6 +81,11 @@ export interface IColumnDefinition {
     formatter?: (row: number, cell: any, value: any, columnDef: any, dataContext: any) => string;
     isEditable?: boolean;
 }
+
+export interface ISlickColumn<T> extends Slick.Column<T> {
+    isEditable?: boolean;
+}
+
 export interface IGridColumnDefinition {
     id: string;
     type: number;

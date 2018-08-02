@@ -13,6 +13,11 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
+import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -124,6 +129,46 @@ export class ClearSingleRecentConnectionAction extends Action {
 		return new TPromise<void>((resolve, reject) => {
 			resolve(this._connectionManagementService.clearRecentConnection(this._connectionProfile));
 			this._onRecentConnectionRemoved.fire();
+		});
+	}
+}
+
+/**
+ * Action to retrieve the current connection string
+ */
+export class GetCurrentConnectionStringAction extends Action {
+
+	public static ID = 'getCurrentConnectionStringAction';
+	public static LABEL = nls.localize('connectionAction.GetCurrentConnectionString', "Get Current Connection String");
+
+	constructor(
+		id: string,
+		label: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@INotificationService private readonly _notificationService: INotificationService
+	) {
+		super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
+		this.enabled = true;
+	}
+
+	public run(): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
+			let activeInput = this._editorService.getActiveEditorInput();
+			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
+					&& this._connectionManagementService.isConnected(activeInput.uri)) {
+				let includePassword = false;
+				this._connectionManagementService.getConnectionString(activeInput.uri, includePassword).then(result => {
+					let message = result
+						? result
+						: nls.localize('connectionAction.connectionString', "Connection string not available");
+					this._notificationService.info(message);
+				});
+			} else {
+				let message = nls.localize('connectionAction.noConnection', "No active connection available");
+				this._notificationService.info(message);
+			}
 		});
 	}
 }

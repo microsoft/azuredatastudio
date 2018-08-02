@@ -23,9 +23,11 @@ declare module 'sqlops' {
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
 		radioButton(): ComponentBuilder<RadioButtonComponent>;
 		webView(): ComponentBuilder<WebViewComponent>;
+		editor(): ComponentBuilder<EditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
+		tree<T>(): ComponentBuilder<TreeComponent<T>>;
 		listBox(): ComponentBuilder<ListBoxComponent>;
 		table(): ComponentBuilder<TableComponent>;
 		declarativeTable(): ComponentBuilder<DeclarativeTableComponent>;
@@ -36,6 +38,17 @@ declare module 'sqlops' {
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
+	}
+
+	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
+		getTreeItem(element: T): TreeComponentItem | Thenable<TreeComponentItem>;
+
+		onNodeCheckedChanged?(element: T, checked: boolean): void;
+	}
+
+
+	export class TreeComponentItem extends vscode.TreeItem {
+		checked?: boolean;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -369,12 +382,13 @@ declare module 'sqlops' {
 	}
 
 	export interface TableColumn {
-		value: string
+		value: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
+		fontSize?: number | string;
 		selectedRows?: number[];
 	}
 
@@ -387,10 +401,15 @@ declare module 'sqlops' {
 		label?: string;
 	}
 
+	export interface TreeProperties {
+		withCheckbox?: boolean;
+	}
+
 	export enum DeclarativeDataType {
 		string = 'string',
 		category = 'category',
-		boolean = 'boolean'
+		boolean = 'boolean',
+		editableCategory = 'editableCategory'
 	}
 
 	export interface RadioButtonProperties {
@@ -434,9 +453,24 @@ declare module 'sqlops' {
 		html?: string;
 	}
 
+	/**
+	 * Editor properties for the editor component
+	 */
+	export interface EditorProperties {
+		/**
+		 * The content inside the text editor
+		 */
+		content?: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
+		languageMode?: string
+	}
+
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 		isFile?: boolean;
+		fileContent?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -496,13 +530,31 @@ declare module 'sqlops' {
 		onDidChange: vscode.Event<any>;
 	}
 
+	export interface TreeComponent<T> extends Component, TreeProperties {
+		registerDataProvider<T>(dataProvider: TreeComponentDataProvider<T>): any;
+	}
+
 	export interface WebViewComponent extends Component {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
 	}
 
-	export interface ButtonComponent extends Component {
+	/**
+	 * Editor component for displaying the text code editor
+	 */
+	export interface EditorComponent extends Component {
+		/**
+		 * The content inside the text editor
+		 */
+		content: string;
+		/**
+		 * The languge mode for this text editor. The language mode is SQL by default.
+		 */
+		languageMode: string;
+	}
+
+	export interface ButtonComponent extends Component, ButtonProperties {
 		label: string;
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
 		onDidClick: vscode.Event<any>;
@@ -1079,10 +1131,22 @@ declare module 'sqlops' {
 
 	}
 
-	/**
-	 * Namespace for connection management
-	 */
 	export namespace connection {
+		/**
+		 * List the databases that can be accessed from the given connection
+		 * @param {string} connectionId The ID of the connection
+		 * @returns {string[]} An list of names of databases
+		 */
+		export function listDatabases(connectionId: string): Thenable<string[]>;
+
+		/**
+		 * Get a URI corresponding to the given connection so that it can be used with data
+		 * providers and other APIs that require a connection API.
+		 * Note: If the given connection corresponds to multiple URIs this may return any of them
+		 * @param connectionId The ID of the connection
+		 */
+		export function getUriForConnection(connectionId: string): Thenable<string>;
+
 		/**
 		 * Opens the connection dialog, calls the callback with the result. If connection was successful
 		 * returns the connection otherwise returns undefined

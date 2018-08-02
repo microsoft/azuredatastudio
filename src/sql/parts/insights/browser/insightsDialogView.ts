@@ -295,8 +295,9 @@ export class InsightsDialogView extends Modal {
 			for (let action of this._insight.actions.types) {
 				let task = tasks.includes(action);
 				let commandAction = MenuRegistry.getCommand(action);
-				if (task) {
-					let button = this.addFooterButton(types.isString(commandAction.title) ? commandAction.title : commandAction.title.value, () => {
+				let commandLabel = types.isString(commandAction.title) ? commandAction.title : commandAction.title.value;
+				if (task && !this.findFooterButton(commandLabel)) {
+					let button = this.addFooterButton(commandLabel, () => {
 						let element = this._topTable.getSelectedRows();
 						let resource: ListResource;
 						if (element && element.length > 0) {

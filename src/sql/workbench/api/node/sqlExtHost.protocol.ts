@@ -16,6 +16,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
+import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
@@ -64,6 +65,13 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param connectionUri URI identifying a connected resource
 	 */
 	$listDatabases(handle: number, connectionUri: string): Thenable<sqlops.ListDatabasesResult> { throw ni(); }
+
+	/**
+	 * Get the connection string for the connection specified by connectionUri
+	 * @param handle the handle to use when looking up a provider
+	 * @param connectionUri URI identifying a connected resource
+	 */
+	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
@@ -476,6 +484,9 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$openConnectionDialog(handleId: string): void;
+	$listDatabases(connectionId: string): Thenable<string[]>;
+	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+	$getUriForConnection(connectionId: string): Thenable<string>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -524,6 +535,7 @@ export const SqlExtHostContext = {
 	ExtHostBackgroundTaskManagement: createExtId<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
+	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
@@ -583,6 +595,12 @@ export interface ExtHostModelViewShape {
 	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
 }
 
+export interface ExtHostModelViewTreeViewsShape {
+	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): vscode.TreeView<any>;
+	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
+}
+
 export interface ExtHostBackgroundTaskManagementShape {
 	$onTaskRegistered(operationId: string): void;
 	$onTaskCanceled(operationId: string): void;
@@ -604,6 +622,8 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
+	$setDataProvider(handle: number, componentId: string): Thenable<void>;
+	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

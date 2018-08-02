@@ -24,6 +24,9 @@ import { error } from 'sql/base/common/log';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -36,7 +39,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -66,6 +68,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
+	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: { row: number, column: number }) => void;
@@ -167,17 +170,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onRowEditEnd = (event: { row: number }): void => { };
 
-		this.onIsColumnEditable = (column: number): boolean => {
-			let result = false;
-			// Check that our variables exist
-			if (column !== undefined && !!this.dataSet && !!this.dataSet.columnDefinitions[column]) {
-				result = this.dataSet.columnDefinitions[column].isEditable;
-			}
-
-			// If no column definition exists then the row is not editable
-			return result;
-		};
-
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
 			if (Services.DBCellValue.isDBCellValue(value)) {
@@ -197,9 +189,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						self.idMapping[rowIndex] = row.id;
 						rowIndex++;
 						return {
-							values: row.cells.map(c => {
+							values: [{}].concat(row.cells.map(c => {
 								return mixin({ ariaLabel: escape(c.displayValue) }, c);
-							}), row: row.id
+							})), row: row.id
 						};
 					});
 
@@ -351,6 +343,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let maxHeight = this.getMaxHeight(resultSet.rowCount);
 		let minHeight = this.getMinHeight(resultSet.rowCount);
 
+		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {
 			resized: undefined,
@@ -365,7 +359,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 
@@ -374,13 +368,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
 						: escape(c.columnName),
-					type: self.stringToFieldType('string'),
+					field: i.toString(),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
 					isEditable: c.isUpdatable
 				};
-			})
+			}))
 		};
+		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size

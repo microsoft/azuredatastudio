@@ -17,6 +17,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { Event, Emitter } from 'vs/base/common/event';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
+import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import * as nls from 'vs/nls';
@@ -24,29 +25,38 @@ import * as nls from 'vs/nls';
 export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
-	boolean = 'boolean'
+	boolean = 'boolean',
+	editableCategory = 'editableCategory'
 }
 
 @Component({
 	selector: 'modelview-declarativeTable',
 	template: `
 	<table role=grid aria-labelledby="ID_REF" #container *ngIf="columns" class="declarative-table">
+	<thead>
+        <tr style="display:block;">
 		<ng-container *ngFor="let column of columns;let h = index">
-			<th class="declarative-table-header" tabindex="-1" role="button" aria-sort="none">{{column.displayName}}</th>
+            <td class="declarative-table-header" tabindex="-1" [style.width]="getColumnWidth(h)" role="button" aria-sort="none">{{column.displayName}}</td>
 		</ng-container>
+		</tr>
+    </thead>
 		<ng-container *ngIf="data">
+		<tbody style="display: block; width:100%; overflow-y: scroll" [style.height]="getHeight()">
 			<ng-container *ngFor="let row of data;let r = index">
 				<tr class="declarative-table-row">
 					<ng-container *ngFor="let cellData of row;let c = index">
 						<td class="declarative-table-cell" tabindex="-1" role="button" [style.width]="getColumnWidth(c)">
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
 							<select-box *ngIf="isSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></select-box>
+							<editable-select-box *ngIf="isEditableSelectBox(c)" [options]="GetOptions(c)" (onDidSelect)="onSelectBoxChanged($event,r,c)" [selectedOption]="GetSelectedOptionDisplayName(r,c)"></editable-select-box>
 							<input-box *ngIf="isInputBox(c)" [value]="cellData" (onDidChange)="onInputBoxChanged($event,r,c)"></input-box>
 							<ng-container *ngIf="isLabel(c)" >{{cellData}}</ng-container>
 						</td>
 					</ng-container>
 				</tr>
+
 			</ng-container>
+			</tbody>
 		</ng-container>
 	</table>
 	`
@@ -109,10 +119,20 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		this.onCellDataChanged(e, row, cell);
 	}
 
-	private onSelectBoxChanged(e: ISelectData, row: number, cell: number): void {
+	private onSelectBoxChanged(e: ISelectData | string, row: number, cell: number): void {
+
 		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
 		if (column.categoryValues) {
-			this.onCellDataChanged(column.categoryValues[e.index].name, row, cell);
+			if (typeof e === 'string') {
+				let category = column.categoryValues.find(c => c.displayName === e);
+				if (category) {
+					this.onCellDataChanged(category.name, row, cell);
+				} else {
+					this.onCellDataChanged(e, row, cell);
+				}
+			} else {
+				this.onCellDataChanged(column.categoryValues[e.index].name, row, cell);
+			}
 		}
 	}
 
@@ -135,6 +155,11 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		return column.valueType === DeclarativeDataType.category;
 	}
 
+	private isEditableSelectBox(cell: number): boolean {
+		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
+		return column.valueType === DeclarativeDataType.editableCategory;
+	}
+
 	private isInputBox(cell: number): boolean {
 		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
 		return column.valueType === DeclarativeDataType.string && !column.isReadOnly;
@@ -142,7 +167,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 
 	private getColumnWidth(cell: number): string {
 		let column: sqlops.DeclarativeTableColumn = this.columns[cell];
-		return this.convertSize(column.width);
+		return this.convertSize(column.width, '30px');
 	}
 
 	private GetOptions(cell: number): string[] {
@@ -155,7 +180,13 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		let cellData = this.data[row][cell];
 		if (cellData && column.categoryValues) {
 			let category = column.categoryValues.find(v => v.name === cellData);
-			return category.displayName;
+			if (category) {
+				return category.displayName;
+			} else if (this.isEditableSelectBox(cell)) {
+				return cellData;
+			} else {
+				return undefined;
+			}
 		} else {
 			return '';
 		}

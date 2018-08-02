@@ -568,6 +568,8 @@ export class CodeMenu {
 		let cut: Electron.MenuItem;
 		let copy: Electron.MenuItem;
 		let paste: Electron.MenuItem;
+		// {{SQL CARBON EDIT}}
+		let selectAll: Electron.MenuItem;
 
 		if (isMacintosh) {
 			undo = this.createContextAwareMenuItem(nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"), 'undo', {
@@ -581,12 +583,19 @@ export class CodeMenu {
 			cut = this.createRoleMenuItem(nls.localize({ key: 'miCut', comment: ['&& denotes a mnemonic'] }, "Cu&&t"), 'editor.action.clipboardCutAction', 'cut');
 			copy = this.createRoleMenuItem(nls.localize({ key: 'miCopy', comment: ['&& denotes a mnemonic'] }, "&&Copy"), 'editor.action.clipboardCopyAction', 'copy');
 			paste = this.createRoleMenuItem(nls.localize({ key: 'miPaste', comment: ['&& denotes a mnemonic'] }, "&&Paste"), 'editor.action.clipboardPasteAction', 'paste');
+			// {{SQL CARBON EDIT}}
+			selectAll = this.createContextAwareMenuItem(nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"), 'editor.action.selectAll', {
+				inDevTools: devTools => devTools.selectAll(),
+				inNoWindow: () => Menu.sendActionToFirstResponder('selectAll:')
+			});
 		} else {
 			undo = this.createMenuItem(nls.localize({ key: 'miUndo', comment: ['&& denotes a mnemonic'] }, "&&Undo"), 'undo');
 			redo = this.createMenuItem(nls.localize({ key: 'miRedo', comment: ['&& denotes a mnemonic'] }, "&&Redo"), 'redo');
 			cut = this.createMenuItem(nls.localize({ key: 'miCut', comment: ['&& denotes a mnemonic'] }, "Cu&&t"), 'editor.action.clipboardCutAction');
 			copy = this.createMenuItem(nls.localize({ key: 'miCopy', comment: ['&& denotes a mnemonic'] }, "&&Copy"), 'editor.action.clipboardCopyAction');
 			paste = this.createMenuItem(nls.localize({ key: 'miPaste', comment: ['&& denotes a mnemonic'] }, "&&Paste"), 'editor.action.clipboardPasteAction');
+			// {{SQL CARBON EDIT}}
+			selectAll = this.createMenuItem(nls.localize({ key: 'miSelectAll', comment: ['&& denotes a mnemonic'] }, "&&Select All"), 'editor.action.selectAll');
 		}
 
 		const find = this.createMenuItem(nls.localize({ key: 'miFind', comment: ['&& denotes a mnemonic'] }, "&&Find"), 'actions.find');
@@ -613,6 +622,8 @@ export class CodeMenu {
 			__separator__(),
 			findInFiles,
 			replaceInFiles,
+			// {{SQL CARBON EDIT}}
+			selectAll,
 			// {{SQL CARBON EDIT}}
 			// __separator__(),
 			// toggleLineComment,
