@@ -1680,14 +1680,17 @@ declare module 'sqlops' {
 	}
 
 	export interface ProfilerProvider extends DataProvider {
-		startSession(sessionId: string): Thenable<boolean>;
+		createSession(sessionId: string, sessionName: string, template: ProfilerSessionTemplate): Thenable<boolean>;
+		startSession(sessionId: string, sessionName: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
+		getXEventSessions(sessionId: string): Thenable<string[]>;
 		connectSession(sessionId: string): Thenable<boolean>;
 		disconnectSession(sessionId: string): Thenable<boolean>;
 
 		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
 		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
+		registerOnProfilerSessionCreated(handler: (response: ProfilerSessionCreatedParams) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -1724,6 +1727,26 @@ declare module 'sqlops' {
 		values: {};
 	}
 
+	/**
+	 * Profiler Session Template
+	 */
+	export interface ProfilerSessionTemplate {
+		/**
+		 * Template name
+		 */
+		name: string;
+
+		/**
+		 * Default view for template
+		 */
+		defaultView: string;
+
+		/**
+		 * TSQL for creating a session
+		 */
+		createStatement: string;
+	}
+
 	export interface ProfilerSessionEvents {
 		sessionId: string;
 
@@ -1737,6 +1760,12 @@ declare module 'sqlops' {
 		ownerUri: string;
 
 		sessionId: number;
+	}
+
+	export interface ProfilerSessionCreatedParams {
+		ownerUri: string;
+		sessionName: string;
+		templateName: string;
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------

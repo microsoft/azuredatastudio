@@ -5,7 +5,7 @@
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import {
-	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate,
+	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate,
 	PROFILER_SETTINGS, IProfilerSettings
 } from './interfaces';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -18,6 +18,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -48,20 +49,21 @@ export class ProfilerService implements IProfilerService {
 	private _providers = new Map<string, sqlops.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
-	private _dialog: ProfilerColumnEditorDialog;
+	private _editColumnDialog: ProfilerColumnEditorDialog;
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IConfigurationService public _configurationService: IConfigurationService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@ICommandService private _commandService: ICommandService
 	) { }
 
 	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {
 		this._providers.set(providerId, provider);
 	}
 
-	public registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): ProfilerSessionID {
+	public async registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): Promise<ProfilerSessionID> {
 		let options: IConnectionCompletionOptions = {
 			params: { connectionType: ConnectionType.default, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: undefined },
 			saveTheConnection: false,
@@ -69,14 +71,14 @@ export class ProfilerService implements IProfilerService {
 			showConnectionDialogOnError: false,
 			showFirewallRuleOnError: true
 		};
-		this._connectionService.connect(connectionProfile, uri, options).then(() => {
+		try {
+			await this._connectionService.connect(connectionProfile, uri, options);
+		} catch (connectionError) {
 
-		}).catch(connectionError => {
-
-		});
+		}
 		this._sessionMap.set(uri, session);
 		this._idMap.set(uri, uri);
-		return uri;
+		return TPromise.wrap(uri);
 	}
 
 	public onMoreRows(params: sqlops.ProfilerSessionEvents): void {
@@ -89,6 +91,11 @@ export class ProfilerService implements IProfilerService {
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
 	}
 
+	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams): void {
+
+		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
+	}
+
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
 		return this._runAction(id, provider => provider.connectSession(this._idMap.get(id)));
 	}
@@ -97,8 +104,17 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.disconnectSession(this._idMap.get(id)));
 	}
 
-	public startSession(id: ProfilerSessionID): Thenable<boolean> {
-		return this._runAction(id, provider => provider.startSession(this._idMap.get(id))).then(() => {
+	public createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+		return this._runAction(id, provider => provider.createSession(this._idMap.get(id), createStatement, template)).then(() => {
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
+			return true;
+		}, (reason) => {
+			this._notificationService.error(reason.message);
+		});
+	}
+
+	public startSession(id: ProfilerSessionID, sessionName: string): Thenable<boolean> {
+		return this._runAction(id, provider => provider.startSession(this._idMap.get(id), sessionName)).then(() => {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
 		}, (reason) => {
@@ -114,6 +130,14 @@ export class ProfilerService implements IProfilerService {
 		return this._runAction(id, provider => provider.stopSession(this._idMap.get(id))).then(() => {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
 			return true;
+		}, (reason) => {
+			this._notificationService.error(reason.message);
+		});
+	}
+
+	public getXEventSessions(id: ProfilerSessionID): Thenable<string[]> {
+		return this._runAction(id, provider => provider.getXEventSessions(this._idMap.get(id))).then((r) => {
+			return r;
 		}, (reason) => {
 			this._notificationService.error(reason.message);
 		});
@@ -144,13 +168,27 @@ export class ProfilerService implements IProfilerService {
 		}
 	}
 
+	public getSessionTemplates(provider?: string): Array<IProfilerSessionTemplate> {
+		let config = <IProfilerSettings>this._configurationService.getValue(PROFILER_SETTINGS);
+
+		if (provider) {
+			return config.sessionTemplates;
+		} else {
+			return config.sessionTemplates;
+		}
+	}
+
 	public launchColumnEditor(input?: ProfilerInput): Thenable<void> {
-		if (!this._dialog) {
-			this._dialog = this._instantiationService.createInstance(ProfilerColumnEditorDialog);
-			this._dialog.render();
+		if (!this._editColumnDialog) {
+			this._editColumnDialog = this._instantiationService.createInstance(ProfilerColumnEditorDialog);
+			this._editColumnDialog.render();
 		}
 
-		this._dialog.open(input);
+		this._editColumnDialog.open(input);
 		return TPromise.as(null);
+	}
+
+	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, this.getSessionTemplates());
 	}
 }
