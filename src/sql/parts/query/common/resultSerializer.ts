@@ -144,7 +144,7 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? prevSavePath : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
+		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
 		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
