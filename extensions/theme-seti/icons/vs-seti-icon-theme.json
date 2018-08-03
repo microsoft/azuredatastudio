@@ -936,11 +936,11 @@
 		},
 		"_shell_light": {
 			"fontCharacter": "\\E073",
-			"fontColor": "#455155"
+			"fontColor": "#bfc2c1"
 		},
 		"_shell": {
 			"fontCharacter": "\\E073",
-			"fontColor": "#4d5a5e"
+			"fontColor": "#d4d7d6"
 		},
 		"_slim_light": {
 			"fontCharacter": "\\E074",
@@ -1374,7 +1374,9 @@
 		"cmakelists.txt": "_makefile_3",
 		"procfile": "_heroku",
 		"todo": "_todo",
-		"npm-debug.log": "_npm_ignored"
+		"npm-debug.log": "_npm_ignored",
+		"dashboard": "_shell",
+		"profiler": "_csv"
 	},
 	"languageIds": {
 		"bat": "_windows",
@@ -1409,7 +1411,7 @@
 		"rust": "_rust",
 		"scss": "_sass",
 		"shellscript": "_shell",
-		"sql": "_db",
+		"sql": "_default",
 		"swift": "_swift",
 		"typescript": "_typescript",
 		"typescriptreact": "_react",
@@ -1614,7 +1616,7 @@
 			"rust": "_rust_light",
 			"scss": "_sass_light",
 			"shellscript": "_shell_light",
-			"sql": "_db_light",
+			"sql": "_default_light",
 			"swift": "_swift_light",
 			"typescript": "_typescript_light",
 			"typescriptreact": "_react_light",
@@ -1660,7 +1662,9 @@
 			"omakefile": "_makefile_2_light",
 			"cmakelists.txt": "_makefile_3_light",
 			"procfile": "_heroku_light",
-			"npm-debug.log": "_npm_ignored_light"
+			"npm-debug.log": "_npm_ignored_light",
+			"dashboard": "_shell_light",
+			"profiler": "_csv_light"
 		}
 	},
 	"version": "https://github.com/jesseweed/seti-ui/commit/188dda34a56b9555c7d363771264c24f4693983d"
