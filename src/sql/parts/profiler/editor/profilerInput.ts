@@ -20,6 +20,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
+import URI from 'vs/base/common/uri';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -116,7 +117,19 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public getName(): string {
-		return nls.localize('profilerInput.profiler', 'Profiler');
+		let name: string = nls.localize('profilerInput.profiler', 'Profiler');
+		if (!this._connection) {
+			return name;
+		}
+		name += ': ' + this._connection.serverName.substring(0, 20);
+		return name;
+	}
+
+	public getResource(): URI {
+		return URI.from({
+			scheme: ProfilerInput.SCHEMA,
+			path: 'profiler'
+		});
 	}
 
 	public get data(): TableDataView<Slick.SlickData> {
