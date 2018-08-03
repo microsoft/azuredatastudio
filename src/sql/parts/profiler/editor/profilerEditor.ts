@@ -12,7 +12,7 @@ import { IProfilerService, IProfilerViewTemplate } from 'sql/parts/profiler/serv
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IProfilerStateChangedEvent } from './profilerState';
-import { ProfilerTableEditor } from './controller/profilerTableEditor';
+import { ProfilerTableEditor, ProfilerTableViewState } from './controller/profilerTableEditor';
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -45,6 +45,7 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
+import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -131,6 +132,7 @@ export class ProfilerEditor extends BaseEditor {
 	private _createAction: Actions.ProfilerCreate;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
 
+	private _savedTableViewStates = new Map<ProfilerInput, ProfilerTableViewState>();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -140,10 +142,19 @@ export class ProfilerEditor extends BaseEditor {
 		@IModelService private _modelService: IModelService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IEditorGroupService private _editorGroupService: IEditorGroupService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
+
+		if (_editorGroupService) {
+			_editorGroupService.onEditorOpening(e => {
+				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+					this.saveEditorViewState();
+				}
+			});
+		}
 	}
 
 	protected createEditor(parent: HTMLElement): void {
@@ -366,8 +377,13 @@ export class ProfilerEditor extends BaseEditor {
 	}
 
 	public setInput(input: ProfilerInput, options?: EditorOptions): TPromise<void> {
+		let savedViewState = this._savedTableViewStates.get(input);
+
 		this._profilerEditorContextKey.set(true);
 		if (input instanceof ProfilerInput && input.matches(this.input)) {
+			if (savedViewState) {
+				this._profilerTableEditor.restoreViewState(savedViewState);
+			}
 			return TPromise.as(null);
 		}
 
@@ -398,6 +414,9 @@ export class ProfilerEditor extends BaseEditor {
 			this._profilerTableEditor.updateState();
 			this._splitView.layout();
 			this._profilerTableEditor.focus();
+			if (savedViewState) {
+				this._profilerTableEditor.restoreViewState(savedViewState);
+			}
 		});
 	}
 
@@ -497,6 +516,12 @@ export class ProfilerEditor extends BaseEditor {
 		this._body.style.width = dimension.width + 'px';
 		this._body.style.height = (dimension.height - (28 + 4)) + 'px';
 		this._splitView.layout(dimension.height - (28 + 4));
+	}
+
+	private saveEditorViewState(): void {
+		if (this.input && this._profilerTableEditor) {
+			this._savedTableViewStates.set(this.input, this._profilerTableEditor.saveViewState());
+		}
 	}
 }
 

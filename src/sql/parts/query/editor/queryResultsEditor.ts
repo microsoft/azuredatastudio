@@ -96,8 +96,6 @@ export class QueryResultsEditor extends BaseEditor {
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _rawOptions: BareResultsGridInfo;
 	protected _input: QueryResultsInput;
-	private _restoreViewStateEvent: Event<void>;
-	private _saveViewStateEvent: Event<void>;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -152,11 +150,6 @@ export class QueryResultsEditor extends BaseEditor {
 		return TPromise.wrap<void>(null);
 	}
 
-	public setViewStateChangeEvents(onRestoreViewStateEvent: Event<void>, onSaveViewStateEvent: Event<void>) {
-		this._restoreViewStateEvent = onRestoreViewStateEvent;
-		this._saveViewStateEvent = onSaveViewStateEvent;
-	}
-
 	/**
 	 * Load the angular components and record for this input that we have done so
 	 */
@@ -179,8 +172,8 @@ export class QueryResultsEditor extends BaseEditor {
 		// to events from the backing data service
 		let params: IQueryComponentParams = {
 			dataService: dataService,
-			onSaveViewState: this._saveViewStateEvent,
-			onRestoreViewState: this._restoreViewStateEvent
+			onSaveViewState: this.input.onSaveViewStateEmitter.event,
+			onRestoreViewState: this.input.onRestoreViewStateEmitter.event
 		};
 		bootstrapAngular(this._instantiationService,
 			QueryOutputModule,

@@ -13,7 +13,7 @@ import { Builder } from 'vs/base/browser/builder';
 
 import { EditorOptions, EditorInput } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { Position, IEditorControl, IEditor } from 'vs/platform/editor/common/editor';
+import { Position, IEditorControl, IEditor, IEditorInput } from 'vs/platform/editor/common/editor';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -43,6 +43,8 @@ import { IFlexibleSash, VerticalFlexibleSash, HorizontalFlexibleSash } from 'sql
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
+import { Emitter } from 'vs/base/common/event';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -95,6 +97,14 @@ export class EditDataEditor extends BaseEditor {
 
 		if (contextKeyService) {
 			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+		}
+
+		if (_editorGroupService) {
+			_editorGroupService.onEditorOpening(e => {
+				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+					this.saveEditorViewState();
+				}
+			});
 		}
 	}
 
@@ -594,7 +604,15 @@ export class EditDataEditor extends BaseEditor {
 		// Run all three steps synchronously
 		return createEditors()
 			.then(onEditorsCreated)
-			.then(doLayout);
+			.then(doLayout)
+			.then(() => {
+				if (newInput.results) {
+					newInput.results.onRestoreViewStateEmitter.fire();
+				}
+				if (newInput.savedViewState) {
+					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
+				}
+			});
 	}
 
 	private _setSashDimension(): void {
@@ -631,7 +649,6 @@ export class EditDataEditor extends BaseEditor {
 	 * has been opened with the same editor, or we are opening the editor for the first time).
 	 */
 	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): TPromise<void> {
-
 		if (this._sqlEditor) {
 			this._sqlEditor.clearInput();
 		}
@@ -726,5 +743,17 @@ export class EditDataEditor extends BaseEditor {
 
 	public queryPaneEnabled(): boolean {
 		return this.editDataInput.queryPaneEnabled;
+	}
+
+	private saveEditorViewState(): void {
+		let editDataInput = this.input as EditDataInput;
+		if (editDataInput) {
+			if (this._sqlEditor) {
+				editDataInput.savedViewState = this._sqlEditor.getControl().saveViewState();
+			}
+			if (editDataInput.results) {
+				editDataInput.results.onSaveViewStateEmitter.fire();
+			}
+		}
 	}
 }

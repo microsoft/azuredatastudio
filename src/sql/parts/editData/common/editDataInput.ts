@@ -16,6 +16,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**
  * Input for the EditDataEditor.
@@ -36,6 +37,8 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	private _objectType: string;
 	private _css: HTMLStyleElement;
 	private _useQueryFilter: boolean;
+
+	public savedViewState: IEditorViewState;
 
 	constructor(
 		private _uri: URI,
