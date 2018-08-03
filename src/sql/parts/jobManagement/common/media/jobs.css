@@ -421,3 +421,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
 .jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
     border-left: 1px dotted #444444;
 }
+
+.overview-container > .overview-tab > label {
+    margin-bottom: 0px;
+}
