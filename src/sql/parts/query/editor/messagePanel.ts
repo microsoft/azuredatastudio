@@ -97,7 +97,11 @@ export class MessagePanel extends ViewletPanel {
 	}
 
 	protected layoutBody(size: number): void {
+		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.layout(size);
+		if (previousScrollPosition === 1) {
+			this.tree.setScrollPosition(1);
+		}
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -124,8 +128,9 @@ export class MessagePanel extends ViewletPanel {
 				isError: message.isError
 			});
 		}
+		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
-			if (this.tree.getScrollPosition() === 1) {
+			if (previousScrollPosition === 1) {
 				this.tree.setScrollPosition(1);
 			}
 		});
@@ -138,8 +143,9 @@ export class MessagePanel extends ViewletPanel {
 			selection: batch.selection,
 			isError: false
 		});
+		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
-			if (this.tree.getScrollPosition() === 1) {
+			if (previousScrollPosition === 1) {
 				this.tree.setScrollPosition(1);
 			}
 		});
@@ -150,8 +156,9 @@ export class MessagePanel extends ViewletPanel {
 			message: localize('query.message.executionTime', 'Total execution time: {0}', elapsedTime),
 			isError: false
 		};
+		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
-			if (this.tree.getScrollPosition() === 1) {
+			if (previousScrollPosition === 1) {
 				this.tree.setScrollPosition(1);
 			}
 		});

@@ -7,7 +7,7 @@
 
 import 'vs/css!./scrollableSplitview';
 import { IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { mapEvent, Emitter, Event } from 'vs/base/common/event';
+import { mapEvent, Emitter, Event, debounceEvent } from 'vs/base/common/event';
 import * as types from 'vs/base/common/types';
 import * as dom from 'vs/base/browser/dom';
 import { clamp } from 'vs/base/common/numbers';
@@ -91,6 +91,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	private state: State = State.Idle;
 	private scrollable: ScrollableElement;
 
+	private dirtyState = false;
+
 	private lastRenderTop: number;
 	private lastRenderHeight: number;
 
@@ -109,7 +111,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		this.el = document.createElement('div');
 		this.scrollable = new ScrollableElement(this.el, {});
-		this.scrollable.onScroll(e => {
+		debounceEvent(this.scrollable.onScroll, (l, e) => e, 25)(e => {
 			this.render(e.scrollTop, e.height);
 		});
 		let domNode = this.scrollable.getDomNode();
@@ -117,6 +119,74 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		dom.addClass(domNode, 'monaco-split-view2');
 		dom.addClass(domNode, this.orientation === Orientation.VERTICAL ? 'vertical' : 'horizontal');
 		container.appendChild(domNode);
+	}
+
+	addViews(views: IView[], sizes: number[], index = this.viewItems.length): void {
+		if (this.state !== State.Idle) {
+			throw new Error('Cant modify splitview');
+		}
+
+		this.state = State.Busy;
+
+		for (let i = 0; i < views.length; i++) {
+			let view = views[i], size = sizes[i];
+
+			// Add view
+			const container = dom.$('.split-view-view');
+
+			const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
+			const containerDisposable = toDisposable(() => {
+				if (container.parentElement) {
+					this.el.removeChild(container);
+				}
+				this.onRemoveItems(new ArrayIterator([item.view.id]));
+			});
+			const disposable = combinedDisposable([onChangeDisposable, containerDisposable]);
+
+			const layoutContainer = this.orientation === Orientation.VERTICAL
+				? size => item.container.style.height = `${item.size}px`
+				: size => item.container.style.width = `${item.size}px`;
+
+			const layout = () => {
+				layoutContainer(item.size);
+				item.view.layout(item.size, this.orientation);
+			};
+
+			size = Math.round(size);
+			const item: IViewItem = { view, container, size, layout, disposable, height: size, top: 0, width: 0 };
+			this.viewItems.splice(index, 0, item);
+
+			this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
+
+			// Add sash
+			if (this.viewItems.length > 1) {
+				const orientation = this.orientation === Orientation.VERTICAL ? Orientation.HORIZONTAL : Orientation.VERTICAL;
+				const layoutProvider = this.orientation === Orientation.VERTICAL ? { getHorizontalSashTop: sash => this.getSashPosition(sash) } : { getVerticalSashLeft: sash => this.getSashPosition(sash) };
+				const sash = new Sash(this.el, layoutProvider, { orientation });
+				const sashEventMapper = this.orientation === Orientation.VERTICAL
+					? (e: IBaseSashEvent) => ({ sash, start: e.startY, current: e.currentY })
+					: (e: IBaseSashEvent) => ({ sash, start: e.startX, current: e.currentX });
+
+				const onStart = mapEvent(sash.onDidStart, sashEventMapper);
+				const onStartDisposable = onStart(this.onSashStart, this);
+				const onChange = mapEvent(sash.onDidChange, sashEventMapper);
+				const onSashChangeDisposable = onChange(this.onSashChange, this);
+				const onEnd = mapEvent<void, void>(sash.onDidEnd, () => null);
+				const onEndDisposable = onEnd(() => this._onDidSashChange.fire());
+				const onDidReset = mapEvent<void, void>(sash.onDidReset, () => null);
+				const onDidResetDisposable = onDidReset(() => this._onDidSashReset.fire());
+
+				const disposable = combinedDisposable([onStartDisposable, onSashChangeDisposable, onEndDisposable, onDidResetDisposable, sash]);
+				const sashItem: ISashItem = { sash, disposable };
+
+				this.sashItems.splice(index - 1, 0, sashItem);
+			}
+
+			view.render(container, this.orientation);
+		}
+
+		this.relayout(index);
+		this.state = State.Idle;
 	}
 
 	addView(view: IView, size: number, index = this.viewItems.length): void {
@@ -264,21 +334,25 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		// when view scrolls down, start rendering from the renderBottom
 		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
 			this.insertItemInDOM(<IViewItem>this.itemAtIndex(i));
+			this.dirtyState = true;
 		}
 
 		// when view scrolls up, start rendering from either this.renderTop or renderBottom
 		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
 			this.insertItemInDOM(<IViewItem>this.itemAtIndex(i));
+			this.dirtyState = true;
 		}
 
 		// when view scrolls down, start unrendering from renderTop
 		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
 			this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i));
+			this.dirtyState = true;
 		}
 
 		// when view scrolls up, start unrendering from either renderBottom this.renderTop
 		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
 			this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i));
+			this.dirtyState = true;
 		}
 
 		let topItem = this.itemAtIndex(this.indexAt(renderTop));
@@ -473,12 +547,14 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	private layoutViews(): void {
-		for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
-			this.viewItems[i].layout();
-		}
+		if (this.dirtyState) {
+			for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 1; i++) {
+				this.viewItems[i].layout();
+			}
 
-		for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 2; i++) {
-			this.sashItems[i].sash.layout();
+			for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 2; i++) {
+				this.sashItems[i].sash.layout();
+			}
 		}
 
 		// Update sashes enablement

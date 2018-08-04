@@ -199,29 +199,17 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 
 export class AsyncDataProvider<TData extends IGridDataRow> implements Slick.DataProvider<TData> {
 
-	constructor(public dataRows: IObservableCollection<TData>, public columns: Slick.Column<TData>[]) { }
+	constructor(private dataRows: IObservableCollection<TData>) { }
 
 	public getLength(): number {
-		return this.dataRows && this.columns ? this.dataRows.getLength() : 0;
+		return this.dataRows ? this.dataRows.getLength() : 0;
 	}
 
 	public getItem(index: number): TData {
-		return this.getDataWithSchema(this.dataRows.at(index));
+		return !this.dataRows ? undefined : this.dataRows.at(index);
 	}
 
 	public getRange(start: number, end: number): TData[] {
-		return !this.dataRows ? undefined : this.dataRows.getRange(start, end).map(i => {
-			return this.getDataWithSchema(i);
-		});
+		return !this.dataRows ? undefined : this.dataRows.getRange(start, end);
 	}
-
-    private getDataWithSchema(data: TData): any {
-        let dataWithSchema = {};
-        for (let i = 0; i < this.columns.length; i++) {
-            dataWithSchema[this.columns[i].field] = data.values[i];
-        }
-
-        return dataWithSchema;
-    }
-
 }
