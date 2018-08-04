@@ -35,9 +35,9 @@ class DataWindow<TData> {
 	private placeholderItemGenerator: (index: number) => TData;
 
 	constructor(dataSourceLength: number,
-				loadFunction: (offset: number, count: number) => Thenable<TData[]>,
-				placeholderItemGenerator: (index: number) => TData,
-				loadCompleteCallback: (start: number, end: number) => void) {
+		loadFunction: (offset: number, count: number) => Thenable<TData[]>,
+		placeholderItemGenerator: (index: number) => TData,
+		loadCompleteCallback: (start: number, end: number) => void) {
 		this._dataSourceLength = dataSourceLength;
 		this.loadFunction = loadFunction;
 		this.placeholderItemGenerator = placeholderItemGenerator;
@@ -98,9 +98,9 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 	private collectionChangedCallback: (change: CollectionChange, startIndex: number, count: number) => void;
 
 	constructor(windowSize: number,
-				length: number,
-				loadFn: (offset: number, count: number) => Thenable<TData[]>,
-				private _placeHolderGenerator: (index: number) => TData) {
+		length: number,
+		loadFn: (offset: number, count: number) => Thenable<TData[]>,
+		private _placeHolderGenerator: (index: number) => TData) {
 		this._windowSize = windowSize;
 		this._length = length;
 
