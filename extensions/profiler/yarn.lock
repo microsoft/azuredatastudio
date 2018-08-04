@@ -2035,6 +2035,10 @@ vinyl@~2.0.1:
     remove-trailing-separator "^1.0.1"
     replace-ext "^1.0.0"
 
+vscode-nls@^3.2.1:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-3.2.4.tgz#2166b4183c8aea884d20727f5449e62be69fd398"
+
 vscode@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/vscode/-/vscode-1.0.1.tgz#3d161200615fe2af1d92ddc650751159411a513b"
