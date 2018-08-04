@@ -144,7 +144,7 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? prevSavePath : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
+		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
 		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
@@ -189,6 +189,15 @@ export class ResultSerializer {
 			if (saveConfig.delimiter !== undefined) {
 				saveResultsParams.delimiter = saveConfig.delimiter;
 			}
+			if (saveConfig.lineSeperator !== undefined) {
+				saveResultsParams.lineSeperator = saveConfig.lineSeperator;
+			}
+			if (saveConfig.textIdentifier !== undefined) {
+				saveResultsParams.textIdentifier = saveConfig.textIdentifier;
+			}
+			if (saveConfig.encoding !== undefined) {
+				saveResultsParams.encoding = saveConfig.encoding;
+			}
 		}
 
 		return saveResultsParams;
@@ -207,6 +216,9 @@ export class ResultSerializer {
 		let config = this.getConfigForCsv();
 		config.resultFormat = SaveFormat.EXCEL;
 		config.delimiter = undefined;
+		config.lineSeperator = undefined;
+		config.textIdentifier = undefined;
+		config.encoding = undefined;
 		return config;
 	}
 

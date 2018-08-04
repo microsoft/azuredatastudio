@@ -20,6 +20,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
+import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
+import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
 import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
 
 export const RESULTS_GRID_DEFAULTS = {

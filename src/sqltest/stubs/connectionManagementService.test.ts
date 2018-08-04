@@ -115,11 +115,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return [];
 	}
 
-	getConnectionId(connectionProfile: ConnectionProfile): string {
+	getConnectionUri(connectionProfile: ConnectionProfile): string {
 		return undefined;
 	}
 
 	getFormattedUri(uri: string, connectionProfile: ConnectionProfile): string {
+		return undefined;
+	}
+
+	getConnectionUriFromId(connectionId: string): string {
 		return undefined;
 	}
 
@@ -247,6 +251,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+		return undefined;
+	}
+
+	getConnectionString(ownerUri: string): Thenable<string> {
 		return undefined;
 	}
 }

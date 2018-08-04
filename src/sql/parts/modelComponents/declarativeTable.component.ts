@@ -17,7 +17,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { Event, Emitter } from 'vs/base/common/event';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
-import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editabledropdown.component';
+import { EditableDropDown } from 'sql/base/browser/ui/editableDropdown/editableDropdown.component';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import * as nls from 'vs/nls';
@@ -36,10 +36,7 @@ export enum DeclarativeDataType {
 	<thead>
         <tr style="display:block;">
 		<ng-container *ngFor="let column of columns;let h = index">
-
             <td class="declarative-table-header" tabindex="-1" [style.width]="getColumnWidth(h)" role="button" aria-sort="none">{{column.displayName}}</td>
-
-
 		</ng-container>
 		</tr>
     </thead>
@@ -183,7 +180,13 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 		let cellData = this.data[row][cell];
 		if (cellData && column.categoryValues) {
 			let category = column.categoryValues.find(v => v.name === cellData);
-			return category.displayName;
+			if (category) {
+				return category.displayName;
+			} else if (this.isEditableSelectBox(cell)) {
+				return cellData;
+			} else {
+				return undefined;
+			}
 		} else {
 			return '';
 		}

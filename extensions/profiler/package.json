@@ -27,7 +27,7 @@
   ],
   "contributes": {
 
-      "commands": [
+    "commands": [
       {
         "command": "profiler.newProfiler",
         "title": "New Profiler",
@@ -42,11 +42,18 @@
         "command": "profiler.stop",
         "title": "Stop",
         "category": "Profiler"
+      },
+      {
+        "command": "profiler.openCreateSessionDialog",
+        "category": "Profiler"
       }
     ],
     "outputChannels": [
       "sqlprofiler"
     ]
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
     "vscode": "1.0.1"

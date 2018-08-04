@@ -32,6 +32,7 @@ import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
+import { Emitter } from 'vs/base/common/event';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -41,7 +42,7 @@ import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesAction, ListDatabasesActionItem,
 	ConnectDatabaseAction, ToggleConnectDatabaseAction, EstimatedQueryPlanAction,
-	ActualQueryPlanAction, ParseSyntaxAction
+	ActualQueryPlanAction
 } from 'sql/parts/query/execution/queryActions';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
@@ -87,9 +88,6 @@ export class QueryEditor extends BaseEditor {
 	private _listDatabasesAction: ListDatabasesAction;
 	private _estimatedQueryPlanAction: EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: ActualQueryPlanAction;
-	private _parseSyntaxAction: ParseSyntaxAction;
-
-	private _savedViewStates = new Map<IEditorInput, IEditorViewState>();
 
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
@@ -109,6 +107,14 @@ export class QueryEditor extends BaseEditor {
 
 		if (contextKeyService) {
 			this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+		}
+
+		if (_editorGroupService) {
+			_editorGroupService.onEditorOpening(e => {
+				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+					this.saveEditorViewState();
+				}
+			});
 		}
 	}
 
@@ -454,7 +460,6 @@ export class QueryEditor extends BaseEditor {
 		this._listDatabasesAction = this._instantiationService.createInstance(ListDatabasesAction, this);
 		this._estimatedQueryPlanAction = this._instantiationService.createInstance(EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this._instantiationService.createInstance(ActualQueryPlanAction, this);
-		this._parseSyntaxAction = this._instantiationService.createInstance(ParseSyntaxAction, this);
 
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
@@ -468,8 +473,7 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._changeConnectionAction },
 			{ action: this._listDatabasesAction },
 			{ element: separator },
-			{ action: this._estimatedQueryPlanAction },
-			{ action: this._parseSyntaxAction }
+			{ action: this._estimatedQueryPlanAction }
 		];
 		this._taskbar.setContent(content);
 	}
@@ -501,10 +505,7 @@ export class QueryEditor extends BaseEditor {
 	 * Handles setting input for this editor.
 	 */
 	private _updateInput(oldInput: QueryInput, newInput: QueryInput, options?: EditorOptions): TPromise<void> {
-
 		if (this._sqlEditor) {
-			let sqlEditorViewState = this._sqlEditor.getControl().saveViewState();
-			this._savedViewStates.set(this._sqlEditor.input, sqlEditorViewState);
 			this._sqlEditor.clearInput();
 		}
 
@@ -583,8 +584,11 @@ export class QueryEditor extends BaseEditor {
 			.then(onEditorsCreated)
 			.then(doLayout)
 			.then(() => {
-				if (this._savedViewStates.has(newInput.sql)) {
-					this._sqlEditor.getControl().restoreViewState(this._savedViewStates.get(newInput.sql));
+				if (newInput.results) {
+					newInput.results.onRestoreViewStateEmitter.fire();
+				}
+				if (newInput.savedViewState) {
+					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
 				}
 			});
 	}
@@ -874,6 +878,18 @@ export class QueryEditor extends BaseEditor {
 		editor.revealRange(rangeConversion);
 		editor.setSelection(rangeConversion);
 		editor.focus();
+	}
+
+	private saveEditorViewState(): void {
+		let queryInput = this.input as QueryInput;
+		if (queryInput) {
+			if (this._sqlEditor) {
+				queryInput.savedViewState = this._sqlEditor.getControl().saveViewState();
+			}
+			if (queryInput.results) {
+				queryInput.results.onSaveViewStateEmitter.fire();
+			}
+		}
 	}
 
 	// TESTING PROPERTIES ////////////////////////////////////////////////////////////

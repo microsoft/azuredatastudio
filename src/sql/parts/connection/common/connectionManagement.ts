@@ -152,9 +152,11 @@ export interface IConnectionManagementService {
 
 	getAdvancedProperties(): sqlops.ConnectionOption[];
 
-	getConnectionId(connectionProfile: IConnectionProfile): string;
+	getConnectionUri(connectionProfile: IConnectionProfile): string;
 
 	getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string;
+
+	getConnectionUriFromId(connectionId: string): string;
 
 	isConnected(fileUri: string): boolean;
 
@@ -258,6 +260,11 @@ export interface IConnectionManagementService {
 	 * in the connection profile's options dictionary, or undefined if the profile is not connected
 	 */
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
+
+	/**
+	 * Get the connection string for the provided connection profile
+	 */
+	getConnectionString(ownerUri: string, includePassword: boolean): Thenable<string>;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');

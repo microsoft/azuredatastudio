@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
+
 // SQL added extension host types
 export enum ServiceOptionType {
 	string = 'string',
@@ -146,7 +148,9 @@ export enum ModelComponentTypes {
 	Group,
 	Toolbar,
 	LoadingComponent,
-	FileBrowserTree
+	TreeComponent,
+	FileBrowserTree,
+	Editor
 }
 
 export interface IComponentShape {
@@ -280,6 +284,11 @@ export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details'
 }
+
+export class TreeComponentItem extends TreeItem {
+	checked?: boolean;
+}
+
 export class SqlThemeIcon {
 
 	static readonly Folder = new SqlThemeIcon('Folder');

@@ -33,6 +33,7 @@ import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
 import { ExtHostLogService } from 'vs/workbench/api/node/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
+import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 
@@ -66,7 +67,8 @@ export function createApiFactory(
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
-	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol));
+	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol));
+	const extHostModelView = rpcProtocol.set(SqlExtHostContext.ExtHostModelView, new ExtHostModelView(rpcProtocol, extHostModelViewTree));
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
@@ -101,6 +103,15 @@ export function createApiFactory(
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
+				},
+				listDatabases(connectionId: string): Thenable<string[]> {
+					return extHostConnectionManagement.$listDatabases(connectionId);
+				},
+				getConnectionString(connectionId: string, includePassword: boolean): Thenable<string> {
+					return extHostConnectionManagement.$getConnectionString(connectionId, includePassword);
+				},
+				getUriForConnection(connectionId: string): Thenable<string> {
+					return extHostConnectionManagement.$getUriForConnection(connectionId);
 				}
 			};
 
@@ -241,6 +252,10 @@ export function createApiFactory(
 
 				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
 					extHostDataProvider.$onSessionStopped(provider.handle, response);
+				});
+
+				provider.registerOnProfilerSessionCreated((response: sqlops.ProfilerSessionCreatedParams) => {
+					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
 				});
 
 				return extHostDataProvider.$registerProfilerProvider(provider);
@@ -406,7 +421,8 @@ export function createApiFactory(
 				ui: ui,
 				StatusIndicator: sqlExtHostTypes.StatusIndicator,
 				CardType: sqlExtHostTypes.CardType,
-				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon
+				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
+				TreeComponentItem: sqlExtHostTypes.TreeComponentItem
 			};
 		}
 	};

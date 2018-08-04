@@ -648,6 +648,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.getActiveConnectionProfiles();
 	}
 
+	public getConnectionUriFromId(connectionId: string): string {
+		let connection = this.getActiveConnections().find(connection => connection.id === connectionId);
+		if (connection) {
+			return this.getConnectionUri(connection);
+		} else {
+			return undefined;
+		}
+	}
+
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
@@ -704,7 +713,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return false;
 	}
 
-	public getConnectionId(connectionProfile: IConnectionProfile): string {
+	public getConnectionUri(connectionProfile: IConnectionProfile): string {
 		return this._connectionStatusManager.getOriginalOwnerUri(Utils.generateUri(connectionProfile));
 	}
 
@@ -716,7 +725,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string {
 		if (this._connectionStatusManager.isDefaultTypeUri(uri)) {
-			return this.getConnectionId(connectionProfile);
+			return this.getConnectionUri(connectionProfile);
 		} else {
 			return uri;
 		}
@@ -1111,7 +1120,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					resolve(result);
 				});
 			} else {
-				resolve(self.disconnectEditor(owner));
+				// If the editor is connected then there is nothing to cancel
+				resolve(false);
 			}
 		});
 	}
@@ -1335,5 +1345,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let credentials = {};
 		credentials[passwordOption.name] = profile.options[passwordOption.name];
 		return credentials;
+	}
+
+	/**
+	 * Get the connection string for the provided connection profile
+	 */
+	public getConnectionString(ownerUri: string, includePassword: boolean = false): Thenable<string> {
+		if (!ownerUri) {
+			return Promise.resolve(undefined);
+		}
+
+		let providerId = this.getProviderIdFromUri(ownerUri);
+		if (!providerId) {
+			return Promise.resolve(undefined);
+		}
+
+		return this._providers.get(providerId).onReady.then(provider => {
+			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
+				return connectionString;
+			});
+		});
 	}
 }

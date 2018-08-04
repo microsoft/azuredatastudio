@@ -181,6 +181,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).listDatabases(connectionUri);
 	}
 
+	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> {
+		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
+	}
+
 	$rebuildIntelliSenseCache(handle: number, connectionUri: string): Thenable<void> {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).rebuildIntelliSenseCache(connectionUri);
 	}
@@ -494,10 +498,17 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 
 	/**
+	 * Create a new profiler session
+	 */
+	public $createSession(handle: number, sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).createSession(sessionId, createStatement, template);
+	}
+
+	/**
 	 * Start a profiler session
 	 */
-	public $startSession(handle: number, sessionId: string): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ProfilerProvider>(handle).startSession(sessionId);
+	public $startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).startSession(sessionId, sessionName);
 	}
 
 	/**
@@ -514,6 +525,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ProfilerProvider>(handle).pauseSession(sessionId);
 	}
 
+	/**
+	 * Get list of running XEvent sessions on the session's target server
+	 */
+	public $getXEventSessions(handle: number, sessionId: string): Thenable<string[]> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).getXEventSessions(sessionId);
+	}
 
 	/**
 	 * Profiler session events available notification
@@ -527,6 +544,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._proxy.$onSessionStopped(handle, response);
+	}
+
+	/**
+	 * Profiler session created notification
+	 */
+	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+		this._proxy.$onProfilerSessionCreated(handle, response);
 	}
 
 

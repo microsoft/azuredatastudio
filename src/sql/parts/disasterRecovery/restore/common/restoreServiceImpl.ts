@@ -293,7 +293,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 		return new TPromise<void>((resolve, reject) => {
 			let result: void;
 
-			this._ownerUri = this._connectionService.getConnectionId(connection)
+			this._ownerUri = this._connectionService.getConnectionUri(connection)
 				+ ProviderConnectionInfo.idSeparator
 				+ Utils.ConnectionUriRestoreIdAttributeName
 				+ ProviderConnectionInfo.nameValueSeparator

@@ -11,6 +11,7 @@ import URI from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -55,6 +56,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	private _toDispose: IDisposable[];
 	private _currentEventCallbacks: IDisposable[];
+
+	public savedViewState: IEditorViewState;
 
 	constructor(
 		private _description: string,

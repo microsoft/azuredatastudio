@@ -49,6 +49,22 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
+	public async $listDatabases(connectionId: string): Promise<string[]> {
+		let connection = this._connectionManagementService.getActiveConnections().find(profile => profile.id === connectionId);
+		let connectionUri = this._connectionManagementService.getConnectionUri(connection);
+		let result = await this._connectionManagementService.listDatabases(connectionUri);
+		return result.databaseNames;
+	}
+
+	public async $getConnectionString(connectionId: string, includePassword: boolean): Promise<string> {
+		let connection = this._connectionManagementService.getActiveConnections().find(profile => profile.id === connectionId);
+		return await this._connectionManagementService.getConnectionString(connectionId, includePassword);
+	}
+
+	public $getUriForConnection(connectionId: string): Thenable<string> {
+		return Promise.resolve(this._connectionManagementService.getConnectionUriFromId(connectionId));
+	}
+
 	private convertConnection(profile: IConnectionProfile): sqlops.connection.Connection {
 		if (!profile) {
 			return undefined;
