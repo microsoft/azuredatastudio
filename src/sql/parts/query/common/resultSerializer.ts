@@ -178,8 +178,8 @@ export class ResultSerializer {
 	}
 
 	private getResultsFileExtension(saveRequest: ISaveRequest): FileFilter[] {
-		var fileFilters = new Array<FileFilter>();
-		var fileFilter = new FileFilter();
+		let fileFilters = new Array<FileFilter>();
+		let fileFilter:  { extensions: string[]; name: string } = { extensions: undefined, name: undefined};
 
 		switch (saveRequest.format) {
 			case SaveFormat.CSV:
@@ -187,22 +187,18 @@ export class ResultSerializer {
 				fileFilter.extensions = ['csv'];
 				break;
 			case SaveFormat.JSON:
-				var fileFilter = new FileFilter();
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', 'JSON');
 				fileFilter.extensions = ['json'];
 				break;
 			case SaveFormat.EXCEL:
-				var fileFilter = new FileFilter();
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', 'Excel Workbook');
 				fileFilter.extensions = ['xlsx'];
 				break;
 			case SaveFormat.XML:
-				var fileFilter = new FileFilter();
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionXMLTitle', 'XML');
 				fileFilter.extensions = ['xml'];
 				break;
 			default:
-				var fileFilter = new FileFilter();
 				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionTXTTitle', 'Plain Text');
 				fileFilter.extensions = ['txt'];
 		}
