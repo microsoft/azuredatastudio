@@ -604,8 +604,9 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
-	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): vscode.TreeView<any>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
+	$onNodeSelected(treeViewId: string, nodes:  string[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

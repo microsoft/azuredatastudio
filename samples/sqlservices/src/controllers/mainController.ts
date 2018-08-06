@@ -114,7 +114,17 @@ export default class MainController implements vscode.Disposable {
 		let tree: sqlops.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProperties({
 			'withCheckbox': true
 		}).component();
-		tree.registerDataProvider(treeDataProvider);
+		let treeView = tree.registerDataProvider(treeDataProvider);
+		treeView.onNodeCheckedChanged(item => {
+			if (item && item.element) {
+				item.element.changeNodeCheckedState(item.checked);
+			}
+		});
+		treeView.onNodeSelected(selectedNodes => {
+			selectedNodes.forEach(node => {
+				console.info('tree node selected: ' + node.label);
+			});
+		});
 		let formModel = view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: tree,
@@ -150,7 +160,7 @@ export default class MainController implements vscode.Disposable {
 			})
 			.component();
 		checkbox.onChanged(e => {
-			console.info("inputBox.enabled " + inputBox.enabled);
+			console.info('inputBox.enabled ' + inputBox.enabled);
 			inputBox.enabled = !inputBox.enabled;
 		});
 		let button = view.modelBuilder.button()
