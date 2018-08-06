@@ -120,7 +120,7 @@ export default class MainController implements vscode.Disposable {
 				item.element.changeNodeCheckedState(item.checked);
 			}
 		});
-		treeView.onNodeSelected(selectedNodes => {
+		treeView.onDidChangeSelection(selectedNodes => {
 			selectedNodes.forEach(node => {
 				console.info('tree node selected: ' + node.label);
 			});

@@ -39,7 +39,7 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 				treeView.dispose();
 			},
 			onNodeCheckedChanged: treeView.NodeCheckedChanged,
-			onNodeSelected: treeView.NodeSelected
+			onDidChangeSelection: treeView.ChangeSelection
 		};
 	}
 
@@ -76,9 +76,9 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
 	private _onNodeCheckedChanged = new Emitter<sqlops.NodeCheckedEventParameters<T>>();
-	private _onNodeSelected = new Emitter<T[]>();
+	private _onDidChangeSelection = new Emitter<T[]>();
 	public readonly NodeCheckedChanged: vscode.Event<sqlops.NodeCheckedEventParameters<T>> = this._onNodeCheckedChanged.event;
-	public readonly NodeSelected: vscode.Event<T[]> = this._onNodeSelected.event;
+	public readonly ChangeSelection: vscode.Event<T[]> = this._onDidChangeSelection.event;
 	constructor(private handle: number, private componentId: string, private componentDataProvider: sqlops.TreeComponentDataProvider<T>, private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter) {
 		super(componentId, componentDataProvider, undefined, commands);
 	}
@@ -97,7 +97,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			let nodes = parentHandles.map(parentHandle => {
 				return  parentHandle ? this.getExtensionElement(parentHandle) : void 0;
 			});
-			this._onNodeSelected.fire(nodes);
+			this._onDidChangeSelection.fire(nodes);
 		}
 	}
 
