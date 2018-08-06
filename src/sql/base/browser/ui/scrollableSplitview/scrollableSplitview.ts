@@ -113,6 +113,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.scrollable = new ScrollableElement(this.el, {});
 		debounceEvent(this.scrollable.onScroll, (l, e) => e, 25)(e => {
 			this.render(e.scrollTop, e.height);
+			this.relayout();
 		});
 		let domNode = this.scrollable.getDomNode();
 		dom.addClass(this.el, 'monaco-scroll-split-view');
@@ -244,6 +245,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			const disposable = combinedDisposable([onStartDisposable, onSashChangeDisposable, onEndDisposable, onDidResetDisposable, sash]);
 			const sashItem: ISashItem = { sash, disposable };
 
+			sash.hide();
 			this.sashItems.splice(index - 1, 0, sashItem);
 		}
 
@@ -333,26 +335,42 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		// when view scrolls down, start rendering from the renderBottom
 		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
-			this.insertItemInDOM(<IViewItem>this.itemAtIndex(i));
-			this.dirtyState = true;
+			if (this.insertItemInDOM(<IViewItem>this.itemAtIndex(i))) {
+				this.dirtyState = true;
+			}
+			if (i > 0) {
+				this.sashItems[i-1].sash.show();
+			}
 		}
 
 		// when view scrolls up, start rendering from either this.renderTop or renderBottom
 		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
-			this.insertItemInDOM(<IViewItem>this.itemAtIndex(i));
-			this.dirtyState = true;
+			if (this.insertItemInDOM(<IViewItem>this.itemAtIndex(i))) {
+				this.dirtyState = true;
+			}
+			if (i > 0) {
+				this.sashItems[i-1].sash.show();
+			}
 		}
 
 		// when view scrolls down, start unrendering from renderTop
 		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
-			this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i));
-			this.dirtyState = true;
+			if (this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i))) {
+				this.dirtyState = true;
+			}
+			if (i > 0) {
+				this.sashItems[i-1].sash.hide();
+			}
 		}
 
 		// when view scrolls up, start unrendering from either renderBottom this.renderTop
 		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
-			this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i));
-			this.dirtyState = true;
+			if (this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i))) {
+				this.dirtyState = true;
+			}
+			if (i > 0) {
+				this.sashItems[i-1].sash.hide();
+			}
 		}
 
 		let topItem = this.itemAtIndex(this.indexAt(renderTop));
@@ -443,9 +461,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 	// DOM changes
 
-	private insertItemInDOM(item: IViewItem): void {
+	private insertItemInDOM(item: IViewItem): boolean {
 		if (item.container.parentElement) {
-			return;
+			return false;
 		}
 
 		let elementAfter: HTMLElement = null;
@@ -467,14 +485,16 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		}
 
 		item.layout();
+		return true;
 	}
 
-	private removeItemFromDOM(item: IViewItem): void {
+	private removeItemFromDOM(item: IViewItem): boolean {
 		if (!item || !item.container || !item.container.parentElement) {
-			return;
+			return false;
 		}
 
 		this.el.removeChild(item.container);
+		return true;
 	}
 
 	getViewSize(index: number): number {
@@ -555,6 +575,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			for (let i = this.indexAt(this.lastRenderTop); i <= this.indexAfter(this.lastRenderTop + this.lastRenderHeight) - 2; i++) {
 				this.sashItems[i].sash.layout();
 			}
+			this.dirtyState = false;
 		}
 
 		// Update sashes enablement
