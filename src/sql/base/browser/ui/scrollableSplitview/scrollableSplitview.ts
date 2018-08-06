@@ -339,7 +339,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				this.dirtyState = true;
 			}
 			if (i > 0) {
-				this.sashItems[i-1].sash.show();
+				this.sashItems[i - 1].sash.show();
 			}
 		}
 
@@ -349,7 +349,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				this.dirtyState = true;
 			}
 			if (i > 0) {
-				this.sashItems[i-1].sash.show();
+				this.sashItems[i - 1].sash.show();
 			}
 		}
 
@@ -359,7 +359,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				this.dirtyState = true;
 			}
 			if (i > 0) {
-				this.sashItems[i-1].sash.hide();
+				this.sashItems[i - 1].sash.hide();
 			}
 		}
 
@@ -369,7 +369,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				this.dirtyState = true;
 			}
 			if (i > 0) {
-				this.sashItems[i-1].sash.hide();
+				this.sashItems[i - 1].sash.hide();
 			}
 		}
 
