@@ -54,7 +54,7 @@ export interface OpenDialogOptions {
 	message?: string;
 }
 
-export class FileFilter {
+export interface FileFilter {
 	extensions: string[];
 	name: string;
 }
