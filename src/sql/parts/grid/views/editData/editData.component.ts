@@ -166,7 +166,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
 			// Store the value that was set
-			self.currentEditCellValue = event.item[event.cell-1];
+			self.currentEditCellValue = event.item[event.cell - 1];
 		};
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
