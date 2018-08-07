@@ -1,5 +1,5 @@
 {
-    "downloadUrl": "http://sqltools500:8080/{#fileName#}",
+    "downloadUrl": "https://sqlopsextensions.blob.core.windows.net/extensions/import/{#fileName#}",
     "useDefaultLinuxRuntime": true,
     "version": "0.0.1",
     "downloadFileNames": {
