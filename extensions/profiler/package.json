@@ -45,6 +45,7 @@
       },
       {
         "command": "profiler.openCreateSessionDialog",
+        "title": "Create Profiler Session",
         "category": "Profiler"
       }
     ],
