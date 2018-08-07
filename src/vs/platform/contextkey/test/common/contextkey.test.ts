@@ -94,8 +94,8 @@ suite('ContextKeyExpr', () => {
 			testExpression(expr + ' =~ /d.*/', /d.*/.test(value));
 			testExpression(expr + ' =~ /D/i', /D/i.test(value));
 			// {{SQL CARBON EDIT}}
-			testExpression(expr + ' >= 10', parseInt(value) >= 10);
-			testExpression(expr + ' <= 10', parseInt(value) <= 10);
+			testExpression(expr + ' >= 10', parseFloat(value) >= 10);
+			testExpression(expr + ' <= 10', parseFloat(value) <= 10);
 			//
 		}
 

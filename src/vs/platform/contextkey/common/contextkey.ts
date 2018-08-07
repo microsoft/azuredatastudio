@@ -567,8 +567,8 @@ export class ContextKeyGreaterThanEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		let keyInt = parseInt(context.getValue(this.key));
-		let valueInt = parseInt(this.value);
+		let keyInt = parseFloat(context.getValue(this.key));
+		let valueInt = parseFloat(this.value);
 		return (keyInt >= valueInt);
 	}
 
@@ -618,8 +618,8 @@ export class ContextKeyLessThanEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		let keyInt = parseInt(context.getValue(this.key));
-		let valueInt = parseInt(this.value);
+		let keyInt = parseFloat(context.getValue(this.key));
+		let valueInt = parseFloat(this.value);
 		return (keyInt <= valueInt);
 	}
 
