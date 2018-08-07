@@ -45,7 +45,6 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
 	}
 
 	public fillClientCapabilities(capabilities: ClientCapabilities): void {
-		// ensure(ensure(capabilities, 'connection')!, 'objectExplorer')!.dynamicRegistration = true;
 	}
 
 	public initialize(capabilities: ServerCapabilities): void {
