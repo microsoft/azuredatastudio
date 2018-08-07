@@ -90,12 +90,8 @@ suite('ContextKeyExpr', () => {
 			testExpression('!' + expr, !value);
 			testExpression(expr + ' =~ /d.*/', /d.*/.test(value));
 			testExpression(expr + ' =~ /D/i', /D/i.test(value));
-			testExpression(expr + ' >= 5', value >= <any>'5');
-			testExpression(expr + ' <= 5', value <= <any>'5');
-			testExpression(expr + ' >= true', value >= true);
-			testExpression(expr + ' <= true', value <= true);
-			testExpression(expr + ' >= false', value >= false);
-			testExpression(expr + ' <= false', value <= false);
+			testExpression(expr + ' >= 10', parseInt(value) >= 10);
+			testExpression(expr + ' <= 10', parseInt(value) <= 10);
 		}
 
 		testBatch('a', true);

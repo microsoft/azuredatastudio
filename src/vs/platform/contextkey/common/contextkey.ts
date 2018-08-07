@@ -560,7 +560,9 @@ export class ContextKeyGreaterThanEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		return (context.getValue(this.key) >= this.value);
+		let keyInt = parseInt(context.getValue(this.key));
+		let valueInt = parseInt(this.value);
+		return (keyInt >= valueInt);
 	}
 
 	public normalize(): ContextKeyExpr {
@@ -608,7 +610,9 @@ export class ContextKeyLessThanEqualsExpr implements ContextKeyExpr {
 	}
 
 	public evaluate(context: IContext): boolean {
-		return (context.getValue(this.key) <= this.value);
+		let keyInt = parseInt(context.getValue(this.key));
+		let valueInt = parseInt(this.value);
+		return (keyInt <= valueInt);
 	}
 
 	public normalize(): ContextKeyExpr {
