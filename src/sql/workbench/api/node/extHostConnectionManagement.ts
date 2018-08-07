@@ -33,10 +33,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getCredentials(connectionId);
 	}
 
-	public $openConnectionDialog(callback: (connection: sqlops.connection.Connection) => void) {
+	public $openConnectionDialog(providers: string[], callback: (connection: sqlops.connection.Connection) => void) {
 		let handleId = `connectionDialog-${generateUuid()}`;
 		this._connectionDialogHandles.set(handleId, callback);
-		this._proxy.$openConnectionDialog(handleId);
+		this._proxy.$openConnectionDialog(providers, handleId);
 	}
 
 	public $onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void {

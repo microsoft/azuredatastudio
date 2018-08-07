@@ -1152,6 +1152,6 @@ declare module 'sqlops' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(callback: (connection: connection.Connection) => void);
+		export function openConnectionDialog(provider: string[], callback: (connection: connection.Connection) => void);
 	}
 }

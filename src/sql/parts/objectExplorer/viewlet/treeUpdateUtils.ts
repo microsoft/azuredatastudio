@@ -22,7 +22,7 @@ export class TreeUpdateUtils {
 	/**
 	 * Set input for the tree.
 	 */
-	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService): void {
+	public static structuralTreeUpdate(tree: ITree, viewKey: string, connectionManagementService: IConnectionManagementService, providers?: string[]): void {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 		if (tree) {
@@ -35,13 +35,13 @@ export class TreeUpdateUtils {
 		let groups;
 		let treeInput = new ConnectionProfileGroup('root', null, undefined, undefined, undefined);
 		if (viewKey === 'recent') {
-			groups = connectionManagementService.getRecentConnections();
+			groups = connectionManagementService.getRecentConnections(providers);
 			treeInput.addConnections(groups);
 		} else if (viewKey === 'active') {
-			groups = connectionManagementService.getActiveConnections();
+			groups = connectionManagementService.getActiveConnections(providers);
 			treeInput.addConnections(groups);
 		} else if (viewKey === 'saved') {
-			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
+			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 
 		tree.setInput(treeInput).done(() => {
@@ -96,9 +96,9 @@ export class TreeUpdateUtils {
 		}
 	}
 
-	public static getTreeInput(connectionManagementService: IConnectionManagementService): ConnectionProfileGroup {
+	public static getTreeInput(connectionManagementService: IConnectionManagementService, providers?: string[]): ConnectionProfileGroup {
 
-		let groups = connectionManagementService.getConnectionGroups();
+		let groups = connectionManagementService.getConnectionGroups(providers);
 		if (groups && groups.length > 0) {
 			let treeInput = groups[0];
 			treeInput.name = 'root';

@@ -50,7 +50,7 @@ export interface IConnectionComponentCallbacks {
 
 export interface IConnectionComponentController {
 	showUiComponent(container: HTMLElement): void;
-	initDialog(model: IConnectionProfile): void;
+	initDialog(providers: string[], odel: IConnectionProfile): void;
 	validateConnection(): IConnectionValidateResult;
 	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
 	handleOnConnecting(): void;
@@ -227,7 +227,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleInitDialog() {
-		this.uiController.initDialog(this._model);
+		this.uiController.initDialog(this._params && this._params.providers, this._model);
 	}
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
@@ -309,10 +309,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			// only create the provider maps first time the dialog gets called
 			if (this._providerTypes.length === 0) {
 				entries(this._capabilitiesService.providers).forEach(p => {
-					if (this.includeProvider(p[0], params)) {
-						this._providerTypes.push(p[1].connection.displayName);
-						this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
-					}
+					this._providerTypes.push(p[1].connection.displayName);
+					this._providerNameToDisplayNameMap[p[0]] = p[1].connection.displayName;
 				});
 			}
 			this.updateModelServerCapabilities(model);
@@ -329,15 +327,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		});
 	}
 
-	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
-		return params === undefined || params.providers === undefined || params.providers.find(x => x === providerName) !== undefined;
-	}
 
 	private doShowDialog(params: INewConnectionParams): TPromise<void> {
 		if (!this._connectionDialog) {
 			let container = document.getElementById(this._partService.getWorkbenchElementId()).parentElement;
 			this._container = container;
-			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName]);
+			this._connectionDialog = this._instantiationService.createInstance(ConnectionDialogWidget, this._providerTypes, this._providerNameToDisplayNameMap[this._model.providerName], this._providerNameToDisplayNameMap);
 			this._connectionDialog.onCancel(() => {
 				this._connectionDialog.databaseDropdownExpanded = this.uiController.databaseDropdownExpanded;
 				this.handleOnCancel(this._connectionDialog.newConnectionParams);
@@ -352,7 +347,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.newConnectionParams = params;
 
 		return new TPromise<void>(() => {
-			this._connectionDialog.open(this._connectionManagementService.getRecentConnections().length > 0);
+			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0);
 			this.uiController.focusOnOpen();
 		});
 	}

@@ -627,12 +627,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getConnectionGroups(): ConnectionProfileGroup[] {
-		return this._connectionStore.getConnectionProfileGroups();
+	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
+		return this._connectionStore.getConnectionProfileGroups(false, providers);
 	}
 
 	public getRecentConnections(providers?: string[]): ConnectionProfile[] {
-		return this._connectionStore.getRecentlyUsedConnections();
+		return this._connectionStore.getRecentlyUsedConnections(providers);
 	}
 
 
@@ -644,7 +644,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
 	}
 
-	public getActiveConnections(): ConnectionProfile[] {
+	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
 		return this._connectionStatusManager.getActiveConnectionProfiles();
 	}
 

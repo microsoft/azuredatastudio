@@ -131,7 +131,7 @@ export interface IConnectionManagementService {
 
 	onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo);
 
-	getConnectionGroups(): ConnectionProfileGroup[];
+	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
 	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
@@ -139,7 +139,7 @@ export interface IConnectionManagementService {
 
 	clearRecentConnection(connectionProfile: IConnectionProfile): void;
 
-	getActiveConnections(): ConnectionProfile[];
+	getActiveConnections(providers?: string[]): ConnectionProfile[];
 
 	saveProfileGroup(profile: IConnectionProfileGroup): Promise<string>;
 

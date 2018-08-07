@@ -51,8 +51,8 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 
-	public $openConnectionDialog(handleId: string): void {
-		this._connectionDialogService.openDialogAndWait(this._connectionManagementService).then(connectionProfile => {
+	public $openConnectionDialog(providers: string[], handleId: string): void {
+		this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }).then(connectionProfile => {
 			if (connectionProfile) {
 				this._proxy.$onConnectionOpened(handleId, {
 					connectionId: connectionProfile.id,
