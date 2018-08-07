@@ -27,7 +27,6 @@ import { ISerializationService } from 'sql/services/serialization/serializationS
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import severity from 'vs/base/common/severity';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -90,6 +89,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> {
 				return self._proxy.$getConnectionString(handle, connectionUri, includePassword);
+			},
+			serializeConnectionString(connectionString: string): Thenable<sqlops.IConnectionProfile> {
+				return self._proxy.$serializeConnectionString(handle, connectionString);
 			},
 			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
 				return self._proxy.$rebuildIntelliSenseCache(handle, connectionUri);

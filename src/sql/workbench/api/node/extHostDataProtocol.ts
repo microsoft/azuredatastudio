@@ -11,6 +11,7 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -183,6 +184,15 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
+	}
+
+	$serializeConnectionString(handle: number, connectionString: string): Thenable<sqlops.IConnectionProfile> {
+		let provider = this._resolveProvider<sqlops.ConnectionProvider>(handle);
+		if (provider.serializeConnectionString) {
+			return provider.serializeConnectionString(connectionString);
+		} else {
+			return TPromise.as(undefined);
+		}
 	}
 
 	$rebuildIntelliSenseCache(handle: number, connectionUri: string): Thenable<void> {
