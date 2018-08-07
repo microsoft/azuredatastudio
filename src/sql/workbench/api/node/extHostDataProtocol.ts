@@ -627,7 +627,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Proxies list
 	 */
-	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult>  {
+	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getProxies(ownerUri);
 	}
 
