@@ -10,7 +10,7 @@ import { RequestType, NotificationType } from 'vscode-languageclient';
  * @interface IMessage
  */
 export interface IMessage {
-    jsonrpc: string;
+	jsonrpc: string;
 }
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
@@ -19,26 +19,26 @@ export interface IMessage {
  * Event sent when the language service send a telemetry event
  */
 export namespace TelemetryNotification {
-    export const type = new NotificationType<TelemetryParams, void>('telemetry/sqlevent');
+	export const type = new NotificationType<TelemetryParams, void>('telemetry/sqlevent');
 }
 
 /**
  * Update event parameters
  */
 export class TelemetryParams {
-    public params: {
-        eventName: string;
-        properties: ITelemetryEventProperties;
-        measures: ITelemetryEventMeasures;
-    };
+	public params: {
+		eventName: string;
+		properties: ITelemetryEventProperties;
+		measures: ITelemetryEventMeasures;
+	};
 }
 
 export interface ITelemetryEventProperties {
-    [key: string]: string;
+	[key: string]: string;
 }
 
 export interface ITelemetryEventMeasures {
-    [key: string]: number;
+	[key: string]: number;
 }
 
 
@@ -62,14 +62,14 @@ export interface ITelemetryEventMeasures {
  * Contract Classes
  */
 export interface Result {
-    success: boolean;
-    errorMessage: string;
+	success: boolean;
+	errorMessage: string;
 }
 
 export interface ColumnInfo {
-    name: string;
-    sqlType: string;
-    isNullable: boolean;
+	name: string;
+	sqlType: string;
+	isNullable: boolean;
 }
 
 
@@ -80,15 +80,15 @@ export interface ColumnInfo {
 const proseDiscoveryRequestName = 'flatfile/proseDiscovery';
 
 export interface PROSEDiscoveryParams {
-    filePath: string;
-    tableName: string;
-    schemaName?: string;
+	filePath: string;
+	tableName: string;
+	schemaName?: string;
 	fileType?: string;
 }
 
 export interface PROSEDiscoveryResponse {
-    dataPreview: string[][];
-    columnInfo: ColumnInfo[];
+	dataPreview: string[][];
+	columnInfo: ColumnInfo[];
 }
 
 /**
@@ -97,12 +97,12 @@ export interface PROSEDiscoveryResponse {
 const insertDataRequestName = 'flatfile/insertData';
 
 export interface InsertDataParams {
-    connectionString: string;
-    batchSize: number;
+	connectionString: string;
+	batchSize: number;
 }
 
 export interface InsertDataResponse {
-    result: Result;
+	result: Result;
 }
 
 
@@ -115,7 +115,7 @@ export interface GetColumnInfoParams {
 }
 
 export interface GetColumnInfoResponse {
-    columnInfo: ColumnInfo[];
+	columnInfo: ColumnInfo[];
 }
 
 
@@ -125,43 +125,43 @@ export interface GetColumnInfoResponse {
 const changeColumnSettingsRequestName = 'flatfile/changeColumnSettings';
 
 export interface ChangeColumnSettingsParams {
-    index: number;
-    newName?: string;
-    newDataType?: string;
-    newNullable?: boolean;
-    newInPrimaryKey?: boolean;
+	index: number;
+	newName?: string;
+	newDataType?: string;
+	newNullable?: boolean;
+	newInPrimaryKey?: boolean;
 }
 
 export interface ChangeColumnSettingsResponse {
-    result: Result;
+	result: Result;
 }
 
 /**
  * Requests
  */
 export namespace PROSEDiscoveryRequest {
-    export const type = new RequestType<PROSEDiscoveryParams, PROSEDiscoveryResponse, void, void>(proseDiscoveryRequestName);
+	export const type = new RequestType<PROSEDiscoveryParams, PROSEDiscoveryResponse, void, void>(proseDiscoveryRequestName);
 }
 
 export namespace InsertDataRequest {
-    export const type = new RequestType<InsertDataParams, InsertDataResponse, void, void>(insertDataRequestName);
+	export const type = new RequestType<InsertDataParams, InsertDataResponse, void, void>(insertDataRequestName);
 }
 
 export namespace GetColumnInfoRequest {
-    export const type = new RequestType<GetColumnInfoParams, GetColumnInfoResponse, void, void>(getColumnInfoRequestName);
+	export const type = new RequestType<GetColumnInfoParams, GetColumnInfoResponse, void, void>(getColumnInfoRequestName);
 }
 
 export namespace ChangeColumnSettingsRequest {
-    export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
+	export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
 
 export interface FlatFileProvider {
-    providerId?: string;
+	providerId?: string;
 
-    //sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
-    sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<PROSEDiscoveryResponse>;
-    sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
-    sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
-    sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
+	//sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
+	sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<PROSEDiscoveryResponse>;
+	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
+	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
+	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
 }

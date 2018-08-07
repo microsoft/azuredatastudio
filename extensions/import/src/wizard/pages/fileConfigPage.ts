@@ -8,10 +8,10 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as sqlstring from 'sqlstring';
-import {ImportDataModel} from '../api/models';
-import {ImportPage} from '../api/importPage';
-import {FlatFileProvider} from '../../services/contracts';
-import {FlatFileWizard} from '../flatFileWizard';
+import { ImportDataModel } from '../api/models';
+import { ImportPage } from '../api/importPage';
+import { FlatFileProvider } from '../../services/contracts';
+import { FlatFileWizard } from '../flatFileWizard';
 
 const localize = nls.loadMessageBundle();
 
@@ -177,8 +177,8 @@ export class FileConfigPage extends ImportPage {
 
 	private async populateDatabaseDropdown(): Promise<boolean> {
 		this.databaseLoader.loading = true;
-		this.databaseDropdown.updateProperties({values: []});
-		this.schemaDropdown.updateProperties({values: []});
+		this.databaseDropdown.updateProperties({ values: [] });
+		this.schemaDropdown.updateProperties({ values: [] });
 
 		if (!this.model.server) {
 			//TODO handle error case

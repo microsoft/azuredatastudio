@@ -7,10 +7,10 @@
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
-import {ImportDataModel} from '../api/models';
-import {ImportPage} from '../api/importPage';
-import {FlatFileProvider} from '../../services/contracts';
-import {FlatFileWizard} from '../flatFileWizard';
+import { ImportDataModel } from '../api/models';
+import { ImportPage } from '../api/importPage';
+import { FlatFileProvider } from '../../services/contracts';
+import { FlatFileWizard } from '../flatFileWizard';
 
 const localize = nls.loadMessageBundle();
 

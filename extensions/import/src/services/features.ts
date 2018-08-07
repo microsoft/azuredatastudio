@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import {SqlOpsDataClient, SqlOpsFeature} from 'dataprotocol-client';
+import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import {
 	ClientCapabilities,
 	StaticFeature,
@@ -13,14 +13,14 @@ import {
 	RequestType
 } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-import {Disposable} from 'vscode';
+import { Disposable } from 'vscode';
 import * as sqlops from 'sqlops';
 
-import {Telemetry} from './telemetry';
+import { Telemetry } from './telemetry';
 import * as serviceUtils from './serviceUtils';
 import * as Contracts from './contracts';
-import {IServiceApi, managerInstance, ApiType} from './serviceApiManager';
-import {ConnectionDetails} from 'dataprotocol-client/lib/types';
+import { IServiceApi, managerInstance, ApiType } from './serviceApiManager';
+import { ConnectionDetails } from 'dataprotocol-client/lib/types';
 
 export class TelemetryFeature implements StaticFeature {
 

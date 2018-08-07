@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import {ImportDataModel} from './models';
+import { ImportDataModel } from './models';
 import * as sqlops from 'sqlops';
-import {FlatFileProvider} from '../../services/contracts';
-import {FlatFileWizard} from '../flatFileWizard';
+import { FlatFileProvider } from '../../services/contracts';
+import { FlatFileWizard } from '../flatFileWizard';
 
 export abstract class ImportPage {
 	protected readonly instance: FlatFileWizard;

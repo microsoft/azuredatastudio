@@ -9,10 +9,10 @@ import * as constants from '../constants';
 import * as sqlops from 'sqlops';
 import ControllerBase from './controllerBase';
 import * as vscode from 'vscode';
-import {FlatFileWizard} from '../wizard/flatFileWizard';
-import {ServiceClient} from '../services/serviceClient';
-import {ApiType, managerInstance} from '../services/serviceApiManager';
-import {FlatFileProvider} from '../services/contracts';
+import { FlatFileWizard } from '../wizard/flatFileWizard';
+import { ServiceClient } from '../services/serviceClient';
+import { ApiType, managerInstance } from '../services/serviceApiManager';
+import { FlatFileProvider } from '../services/contracts';
 
 /**
  * The main controller class that initializes the extension

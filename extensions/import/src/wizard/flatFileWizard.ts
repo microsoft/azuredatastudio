@@ -7,14 +7,14 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
-import {FlatFileProvider} from '../services/contracts';
-import {ImportDataModel} from './api/models';
-import {ImportPage} from './api/importPage';
+import { FlatFileProvider } from '../services/contracts';
+import { ImportDataModel } from './api/models';
+import { ImportPage } from './api/importPage';
 // pages
-import {FileConfigPage} from './pages/fileConfigPage';
-import {ProsePreviewPage} from './pages/prosePreviewPage';
-import {ModifyColumnsPage} from './pages/modifyColumnsPage';
-import {SummaryPage} from './pages/summaryPage';
+import { FileConfigPage } from './pages/fileConfigPage';
+import { ProsePreviewPage } from './pages/prosePreviewPage';
+import { ModifyColumnsPage } from './pages/modifyColumnsPage';
+import { SummaryPage } from './pages/summaryPage';
 
 const localize = nls.loadMessageBundle();
 

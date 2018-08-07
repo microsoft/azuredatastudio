@@ -9,10 +9,10 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as sqlstring from 'sqlstring';
 
-import {ImportDataModel} from '../api/models';
-import {ImportPage} from '../api/importPage';
-import {FlatFileProvider, InsertDataResponse} from '../../services/contracts';
-import {FlatFileWizard} from '../flatFileWizard';
+import { ImportDataModel } from '../api/models';
+import { ImportPage } from '../api/importPage';
+import { FlatFileProvider, InsertDataResponse } from '../../services/contracts';
+import { FlatFileWizard } from '../flatFileWizard';
 
 const localize = nls.loadMessageBundle();
 
