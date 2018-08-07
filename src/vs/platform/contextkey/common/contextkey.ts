@@ -15,8 +15,10 @@ export enum ContextKeyExprType {
 	NotEquals = 4,
 	And = 5,
 	Regex = 6,
+	// {{SQL CARBON EDIT}}
 	GreaterThanEquals = 7,
 	LessThanEquals = 8
+	//
 }
 
 export abstract class ContextKeyExpr {
@@ -45,13 +47,14 @@ export abstract class ContextKeyExpr {
 		return new ContextKeyAndExpr(expr);
 	}
 
+	// {{SQL CARBON EDIT}}
 	public static greaterThanEquals(key: string, value: any): ContextKeyExpr {
 		return new ContextKeyGreaterThanEqualsExpr(key, value);
 	}
-
 	public static lessThanEquals(key: string, value: any): ContextKeyExpr {
 		return new ContextKeyLessThanEqualsExpr(key, value);
 	}
+	//
 
 	public static deserialize(serialized: string): ContextKeyExpr {
 		if (!serialized) {
@@ -81,15 +84,16 @@ export abstract class ContextKeyExpr {
 			return new ContextKeyRegexExpr(pieces[0].trim(), this._deserializeRegexValue(pieces[1]));
 		}
 
+		// {{SQL CARBON EDIT}}
 		if (serializedOne.indexOf('>=') >= 0) {
 			let pieces = serializedOne.split('>=');
 			return new ContextKeyGreaterThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
 		}
-
 		if (serializedOne.indexOf('<=') >= 0) {
 			let pieces = serializedOne.split('<=');
 			return new ContextKeyLessThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
 		}
+		//
 
 		if (/^\!\s*/.test(serializedOne)) {
 			return new ContextKeyNotExpr(serializedOne.substr(1).trim());
@@ -166,10 +170,12 @@ function cmp(a: ContextKeyExpr, b: ContextKeyExpr): number {
 			return (<ContextKeyNotEqualsExpr>a).cmp(<ContextKeyNotEqualsExpr>b);
 		case ContextKeyExprType.Regex:
 			return (<ContextKeyRegexExpr>a).cmp(<ContextKeyRegexExpr>b);
+		// {{SQL CARBON EDIT}}
 		case ContextKeyExprType.GreaterThanEquals:
 			return (<ContextKeyGreaterThanEqualsExpr>a).cmp(<ContextKeyGreaterThanEqualsExpr>b);
 		case ContextKeyExprType.LessThanEquals:
 			return (<ContextKeyLessThanEqualsExpr>a).cmp(<ContextKeyLessThanEqualsExpr>b);
+		//
 		default:
 			throw new Error('Unknown ContextKeyExpr!');
 	}
@@ -528,6 +534,7 @@ export class ContextKeyAndExpr implements ContextKeyExpr {
 	}
 }
 
+// {{SQL CARBON EDIT}}
 export class ContextKeyGreaterThanEqualsExpr implements ContextKeyExpr {
 	constructor(private key: string, private value: any) {
 	}
@@ -578,6 +585,7 @@ export class ContextKeyGreaterThanEqualsExpr implements ContextKeyExpr {
 	}
 }
 
+// {{SQL CARBON EDIT}}
 export class ContextKeyLessThanEqualsExpr implements ContextKeyExpr {
 	constructor(private key: string, private value: any) {
 	}

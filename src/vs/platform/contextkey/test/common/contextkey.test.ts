@@ -29,12 +29,15 @@ suite('ContextKeyExpr', () => {
 			ContextKeyExpr.notEquals('c2', 'cc2'),
 			ContextKeyExpr.not('d1'),
 			ContextKeyExpr.not('d2'),
+			// {{SQL CARBON EDIT}}
 			ContextKeyExpr.greaterThanEquals('e1', 'ee1'),
 			ContextKeyExpr.greaterThanEquals('e2', 'ee2'),
 			ContextKeyExpr.lessThanEquals('f1', 'ff1'),
 			ContextKeyExpr.lessThanEquals('f2', 'ff2')
+			//
 		);
 		let b = ContextKeyExpr.and(
+			// {{SQL CARBON EDIT}}
 			ContextKeyExpr.greaterThanEquals('e2', 'ee2'),
 			ContextKeyExpr.equals('b2', 'bb2'),
 			ContextKeyExpr.notEquals('c1', 'cc1'),
@@ -90,8 +93,10 @@ suite('ContextKeyExpr', () => {
 			testExpression('!' + expr, !value);
 			testExpression(expr + ' =~ /d.*/', /d.*/.test(value));
 			testExpression(expr + ' =~ /D/i', /D/i.test(value));
+			// {{SQL CARBON EDIT}}
 			testExpression(expr + ' >= 10', parseInt(value) >= 10);
 			testExpression(expr + ' <= 10', parseInt(value) <= 10);
+			//
 		}
 
 		testBatch('a', true);
