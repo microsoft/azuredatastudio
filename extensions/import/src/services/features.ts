@@ -9,18 +9,15 @@ import {
 	ClientCapabilities,
 	StaticFeature,
 	RPCMessageType,
-	ServerCapabilities,
-	RequestType
+	ServerCapabilities
 } from 'vscode-languageclient';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Disposable } from 'vscode';
-import * as sqlops from 'sqlops';
 
 import { Telemetry } from './telemetry';
 import * as serviceUtils from './serviceUtils';
 import * as Contracts from './contracts';
-import { IServiceApi, managerInstance, ApiType } from './serviceApiManager';
-import { ConnectionDetails } from 'dataprotocol-client/lib/types';
+import { managerInstance, ApiType } from './serviceApiManager';
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -60,16 +57,6 @@ export class FlatFileImportFeature extends SqlOpsFeature<undefined> {
 
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
-
-		// let sendHelloWorldRequest = (params: Contracts.HelloWorldParam): Thenable<Contracts.HelloWorldResponse> => {
-		//     return client.sendRequest(Contracts.HelloWorldRequest.type, params).then(
-		//         r => r,
-		//         e => {
-		//             client.logFailedRequest(Contracts.HelloWorldRequest.type, e);
-		//             return Promise.reject(e);
-		//         }
-		//     );
-		// };
 
 		let requestSender = (requestType, params) => {
 			return client.sendRequest(requestType, params).then(

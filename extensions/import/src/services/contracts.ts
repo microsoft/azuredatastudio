@@ -41,23 +41,6 @@ export interface ITelemetryEventMeasures {
 	[key: string]: number;
 }
 
-
-// ------------------------------- </ Telemetry Sent Event > ----------------------------------
-
-// ------------------------------- < Flat File Methods > ------------------------------------
-
-// export interface HelloWorldParam {
-//     name: string;
-// }
-
-// export interface HelloWorldResponse {
-//     response: string;
-// }
-
-// export namespace HelloWorldRequest {
-//     export const type = new RequestType<HelloWorldParam, HelloWorldResponse, void, void>('flatfile/helloworld');
-// }
-
 /**
  * Contract Classes
  */
@@ -159,7 +142,6 @@ export namespace ChangeColumnSettingsRequest {
 export interface FlatFileProvider {
 	providerId?: string;
 
-	//sendHelloWorldRequest(params: HelloWorldParam): Thenable<HelloWorldResponse>;
 	sendPROSEDiscoveryRequest(params: PROSEDiscoveryParams): Thenable<PROSEDiscoveryResponse>;
 	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
 	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;

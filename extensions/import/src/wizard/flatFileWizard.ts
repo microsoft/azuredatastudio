@@ -30,7 +30,6 @@ export class FlatFileWizard {
 
 	public async start() {
 		let model = <ImportDataModel>{};
-		//let pages: ImportPage[] = [];
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
 
@@ -107,20 +106,6 @@ export class FlatFileWizard {
 				page.onPageLeave();
 			}
 		});
-
-		// 	if (e.lastPage === 3 && e.newPage !== 3) {
-		// 		importAnotherFileButton.hidden = true;
-		// 	}
-		//
-		// 	let oldLabel: string;
-		// 	if (e.newPage === 2) {
-		// 		oldLabel = wizard.nextButton.label;
-		// 		wizard.nextButton.label = 'Import data';
-		// 	} else if (oldLabel) {
-		// 		wizard.nextButton.label = oldLabel;
-		// 	}
-		// });
-
 
 		//not needed for this wizard
 		this.wizard.generateScriptButton.hidden = true;

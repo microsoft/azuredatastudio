@@ -226,7 +226,6 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
-			//TODO: Add filters for csv and txt
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -234,7 +233,7 @@ export class FileConfigPage extends ImportPage {
 					canSelectMany: false,
 					openLabel: localize('flatFileImport.openFile', 'Open'),
 					filters: {
-						'Files': ['csv', 'txt', 'json']
+						'Files': ['csv', 'txt']
 					}
 				}
 			);

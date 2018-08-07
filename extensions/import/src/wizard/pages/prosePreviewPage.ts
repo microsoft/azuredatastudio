@@ -23,7 +23,6 @@ export class ProsePreviewPage extends ImportPage {
 
 	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
 		super(instance, model, view, provider);
-		//this.previewReadyPromise = previewReadyPromise;
 	}
 
 	async start(): Promise<boolean> {

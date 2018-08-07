@@ -117,7 +117,7 @@ export class SummaryPage extends ImportPage {
 			if (rows < 0) {
 				updateText = localize('flatFileImport.success.norows', '✔ Awesome! You have successfully inserted the data into a table.');
 			} else {
-				updateText = localize('flatFileImport.success.rows', '✔ Awesome! You have successfully inserted %rows% rows.').replace('%rows%', String(rows));
+				updateText = localize('flatFileImport.success.rows', '✔ Awesome! You have successfully inserted {0} rows.', rows);
 			}
 		}
 		this.statusText.updateProperties({
@@ -131,6 +131,7 @@ export class SummaryPage extends ImportPage {
 	 * @returns {Promise<string>}
 	 */
 	private async getConnectionString(): Promise<string> {
+		// TODO: Replace with the new API
 		let options = this.model.server.options;
 		let connectionString: string;
 
