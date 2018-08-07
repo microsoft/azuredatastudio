@@ -7,6 +7,7 @@
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import * as sqlstring from 'sqlstring';
 import {ImportDataModel} from '../api/models';
 import {ImportPage} from '../api/importPage';
 import {FlatFileProvider} from '../../services/contracts';
@@ -373,19 +374,15 @@ export class FileConfigPage extends ImportPage {
 		let results: sqlops.SimpleExecuteResult;
 
 		try {
-
-			let query = `USE ${databaseName}; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'`;
+			let query = sqlstring.format('USE ?; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = \'BASE TABLE\'', [databaseName]);
 			results = await queryProvider.runQueryAndReturn(connectionUri, query);
 		} catch (e) {
-			console.log(e);
 			return false;
 		}
 
 		this.tableNames = results.rows.map(row => {
 			return row[0].displayValue;
 		});
-
-		console.log(this.tableNames);
 
 		return true;
 	}

@@ -22,7 +22,6 @@ export default class MainController extends ControllerBase {
 	/**
 	 */
 	public deactivate(): void {
-		console.log('Main controller deactivated');
 	}
 
 	public activate(): Promise<boolean> {

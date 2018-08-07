@@ -90,7 +90,6 @@ export class FlatFileWizard {
 		this.wizard.customButtons = [this.importAnotherFileButton];
 
 		this.wizard.onPageChanged(async (event) => {
-			console.log(event);
 			let idx = event.newPage;
 
 			let page = pages.get(idx);

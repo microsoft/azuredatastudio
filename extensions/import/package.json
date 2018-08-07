@@ -41,11 +41,13 @@
         "command": "flatFileImport.listDatabases"
       }
     ],
-    "keybindings": [{
-      "command": "flatFileImport.start",
-      "key": "ctrl+i",
-      "mac": "ctrl+i"
-    }],
+    "keybindings": [
+      {
+        "command": "flatFileImport.start",
+        "key": "ctrl+i",
+        "mac": "ctrl+i"
+      }
+    ],
     "dashboard.tabs": [
       {
         "id": "flat-file-import",
@@ -72,14 +74,24 @@
           ]
         }
       }
-    ]
+    ],
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "flatFileImport.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "group": "import"
+        }
+      ]
+    }
   },
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
-    "vscode-nls": "^3.2.1",
     "opener": "^1.4.3",
-    "vscode-extension-telemetry": "^0.0.5"
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
+    "sqlstring": "^2.3.1",
+    "vscode-extension-telemetry": "^0.0.5",
+    "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
     "mocha-junit-reporter": "^1.17.0",

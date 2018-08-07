@@ -7,6 +7,8 @@
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
+import * as sqlstring from 'sqlstring';
+
 import {ImportDataModel} from '../api/models';
 import {ImportPage} from '../api/importPage';
 import {FlatFileProvider, InsertDataResponse} from '../../services/contracts';
@@ -146,8 +148,7 @@ export class SummaryPage extends ImportPage {
 		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
 		try {
-			// TODO: This can potentially be used to sql inject with a weird file name.
-			let query = `USE "${this.model.database}"; SELECT COUNT(*) FROM "${this.model.table}"`;
+			let query = sqlstring.format('USE ?; SELECT COUNT(*) FROM ?', [this.model.database, this.model.table]);
 			let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 			let cell = results.rows[0][0];
 			if (!cell || cell.isNull) {
