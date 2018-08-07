@@ -14,7 +14,11 @@ export enum ContextKeyExprType {
 	Equals = 3,
 	NotEquals = 4,
 	And = 5,
-	Regex = 6
+	Regex = 6,
+	// {{SQL CARBON EDIT}}
+	GreaterThanEquals = 7,
+	LessThanEquals = 8
+	//
 }
 
 export abstract class ContextKeyExpr {
@@ -43,6 +47,15 @@ export abstract class ContextKeyExpr {
 		return new ContextKeyAndExpr(expr);
 	}
 
+	// {{SQL CARBON EDIT}}
+	public static greaterThanEquals(key: string, value: any): ContextKeyExpr {
+		return new ContextKeyGreaterThanEqualsExpr(key, value);
+	}
+	public static lessThanEquals(key: string, value: any): ContextKeyExpr {
+		return new ContextKeyLessThanEqualsExpr(key, value);
+	}
+	//
+
 	public static deserialize(serialized: string): ContextKeyExpr {
 		if (!serialized) {
 			return null;
@@ -70,6 +83,17 @@ export abstract class ContextKeyExpr {
 			let pieces = serializedOne.split('=~');
 			return new ContextKeyRegexExpr(pieces[0].trim(), this._deserializeRegexValue(pieces[1]));
 		}
+
+		// {{SQL CARBON EDIT}}
+		if (serializedOne.indexOf('>=') >= 0) {
+			let pieces = serializedOne.split('>=');
+			return new ContextKeyGreaterThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
+		}
+		if (serializedOne.indexOf('<=') >= 0) {
+			let pieces = serializedOne.split('<=');
+			return new ContextKeyLessThanEqualsExpr(pieces[0].trim(), this._deserializeValue(pieces[1]));
+		}
+		//
 
 		if (/^\!\s*/.test(serializedOne)) {
 			return new ContextKeyNotExpr(serializedOne.substr(1).trim());
@@ -146,6 +170,12 @@ function cmp(a: ContextKeyExpr, b: ContextKeyExpr): number {
 			return (<ContextKeyNotEqualsExpr>a).cmp(<ContextKeyNotEqualsExpr>b);
 		case ContextKeyExprType.Regex:
 			return (<ContextKeyRegexExpr>a).cmp(<ContextKeyRegexExpr>b);
+		// {{SQL CARBON EDIT}}
+		case ContextKeyExprType.GreaterThanEquals:
+			return (<ContextKeyGreaterThanEqualsExpr>a).cmp(<ContextKeyGreaterThanEqualsExpr>b);
+		case ContextKeyExprType.LessThanEquals:
+			return (<ContextKeyLessThanEqualsExpr>a).cmp(<ContextKeyLessThanEqualsExpr>b);
+		//
 		default:
 			throw new Error('Unknown ContextKeyExpr!');
 	}
@@ -501,6 +531,108 @@ export class ContextKeyAndExpr implements ContextKeyExpr {
 			result.push(...expr.keys());
 		}
 		return result;
+	}
+}
+
+// {{SQL CARBON EDIT}}
+export class ContextKeyGreaterThanEqualsExpr implements ContextKeyExpr {
+	constructor(private key: string, private value: any) {
+	}
+
+	public getType(): ContextKeyExprType {
+		return ContextKeyExprType.GreaterThanEquals;
+	}
+
+	public cmp(other: ContextKeyGreaterThanEqualsExpr): number {
+		if (this.key < other.key) {
+			return -1;
+		}
+		if (this.key > other.key) {
+			return 1;
+		}
+		if (this.value < other.value) {
+			return -1;
+		}
+		if (this.value > other.value) {
+			return 1;
+		}
+		return 0;
+	}
+
+	public equals(other: ContextKeyExpr): boolean {
+		if (other instanceof ContextKeyGreaterThanEqualsExpr) {
+			return (this.key === other.key && this.value === other.value);
+		}
+		return false;
+	}
+
+	public evaluate(context: IContext): boolean {
+		let keyInt = parseFloat(context.getValue(this.key));
+		let valueInt = parseFloat(this.value);
+		return (keyInt >= valueInt);
+	}
+
+	public normalize(): ContextKeyExpr {
+		return this;
+	}
+
+	public serialize(): string {
+		return this.key + ' >= \'' + this.value + '\'';
+	}
+
+	public keys(): string[] {
+		return [this.key];
+	}
+}
+
+// {{SQL CARBON EDIT}}
+export class ContextKeyLessThanEqualsExpr implements ContextKeyExpr {
+	constructor(private key: string, private value: any) {
+	}
+
+	public getType(): ContextKeyExprType {
+		return ContextKeyExprType.LessThanEquals;
+	}
+
+	public cmp(other: ContextKeyLessThanEqualsExpr): number {
+		if (this.key < other.key) {
+			return -1;
+		}
+		if (this.key > other.key) {
+			return 1;
+		}
+		if (this.value < other.value) {
+			return -1;
+		}
+		if (this.value > other.value) {
+			return 1;
+		}
+		return 0;
+	}
+
+	public equals(other: ContextKeyExpr): boolean {
+		if (other instanceof ContextKeyLessThanEqualsExpr) {
+			return (this.key === other.key && this.value === other.value);
+		}
+		return false;
+	}
+
+	public evaluate(context: IContext): boolean {
+		let keyInt = parseFloat(context.getValue(this.key));
+		let valueInt = parseFloat(this.value);
+		return (keyInt <= valueInt);
+	}
+
+	public normalize(): ContextKeyExpr {
+		return this;
+	}
+
+	public serialize(): string {
+		return this.key + ' <= \'' + this.value + '\'';
+	}
+
+	public keys(): string[] {
+		return [this.key];
 	}
 }
 
