@@ -90,7 +90,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> {
 				return self._proxy.$getConnectionString(handle, connectionUri, includePassword);
 			},
-			serializeConnectionString(connectionString: string): Thenable<sqlops.IConnectionProfile> {
+			serializeConnectionString(connectionString: string): Thenable<sqlops.ConnectionInfo> {
 				return self._proxy.$serializeConnectionString(handle, connectionString);
 			},
 			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {

@@ -329,7 +329,7 @@ declare module 'sqlops' {
 
 		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string>;
 
-		serializeConnectionString?(connectionString: string): Thenable<IConnectionProfile>;
+		serializeConnectionString?(connectionString: string): Thenable<ConnectionInfo>;
 
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
