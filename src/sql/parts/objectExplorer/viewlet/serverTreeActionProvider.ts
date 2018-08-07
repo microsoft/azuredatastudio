@@ -35,6 +35,8 @@ import { TreeNodeContextKey } from './treeNodeContextKey';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import * as constants from 'sql/common/constants';
+import { ServerInfoContextKey } from '../../connection/common/serverInfoContextKey';
+import * as Utils from 'sql/parts/connection/common/utils';
 
 /**
  *  Provides actions for the server tree elements
@@ -132,8 +134,16 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getContextKeyService(context: ObjectExplorerContext): IContextKeyService {
 		let scopedContextService = this._contextKeyService.createScoped();
+
 		let connectionContextKey = new ConnectionContextKey(scopedContextService);
 		connectionContextKey.set(context.profile);
+
+		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
+		let connectInfo = this._connectionManagementService.getConnectionInfo(Utils.generateUri(context.profile));
+		if (connectInfo) {
+			serverInfoContextKey.set(connectInfo.serverInfo);
+		}
+
 		let treeNodeContextKey = new TreeNodeContextKey(scopedContextService);
 		if (context.treeNode) {
 			treeNodeContextKey.set(context.treeNode);

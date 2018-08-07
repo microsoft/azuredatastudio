@@ -23,6 +23,7 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ServerInfoContextKey } from '../connection/common/serverInfoContextKey';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -113,6 +114,8 @@ export class DashboardEditor extends BaseEditor {
 		let scopedContextService = this._contextKeyService.createScoped(input.container);
 		let connectionContextKey = new ConnectionContextKey(scopedContextService);
 		connectionContextKey.set(input.connectionProfile);
+		let serverInfoContextKey = new ServerInfoContextKey(scopedContextService);
+		serverInfoContextKey.set(serverInfo);
 
 		let params: IDashboardComponentParams = {
 			connection: input.connectionProfile,
