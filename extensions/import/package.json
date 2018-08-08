@@ -89,7 +89,6 @@
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.1.5",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
-    "sqlstring": "^2.3.1",
     "vscode-extension-telemetry": "^0.0.5",
     "vscode-nls": "^3.2.1"
   },
