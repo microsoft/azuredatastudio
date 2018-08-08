@@ -1366,4 +1366,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			});
 		});
 	}
+
+	/**
+	 * Serialize connection with options provider
+	 */
+	public serializeConnectionString(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
+		if (provider) {
+			return this._providers.get(provider).onReady.then(e => {
+				return e.serializeConnectionString(connectionString);
+			});
+		} else {
+			return Promise.resolve(undefined);
+		}
+	}
 }

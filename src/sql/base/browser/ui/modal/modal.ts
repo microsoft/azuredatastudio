@@ -133,9 +133,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	constructor(
 		private _title: string,
 		private _name: string,
-		private _partService: IPartService,
+		protected _partService: IPartService,
 		private _telemetryService: ITelemetryService,
-		private _contextKeyService: IContextKeyService,
+		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
 		super();

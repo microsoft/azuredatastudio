@@ -19,6 +19,8 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { attachInputBoxStyler, attachButtonStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
 import * as sqlops from 'sqlops';
 
@@ -32,6 +34,8 @@ import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { ConnectionProfile } from '../common/connectionProfile';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -85,7 +89,11 @@ export class ConnectionWidget {
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
 		@IThemeService private _themeService: IThemeService,
-		@IContextViewService private _contextViewService: IContextViewService) {
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IClipboardService private _clipboardService: IClipboardService
+	) {
 		this._callbacks = callbacks;
 		this._toDispose = [];
 		this._optionsMaps = {};
@@ -120,7 +128,26 @@ export class ConnectionWidget {
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}
+
+		DOM.addDisposableListener(container, 'paste', e => {
+			this._handleClipboard();
+		});
+
 		DOM.append(container, this._builder.getHTMLElement());
+		this._handleClipboard();
+	}
+
+	private _handleClipboard(): void {
+		let paste = this._clipboardService.readText();
+		this._connectionManagementService.serializeConnectionString(paste).then(e => {
+			if (e) {
+				let profile = new ConnectionProfile(this._capabilitiesService, undefined);
+				profile.options = e.options;
+				if (profile.serverName) {
+					this.initDialog(profile);
+				}
+			}
+		});
 	}
 
 	private fillInConnectionForm(): void {
