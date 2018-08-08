@@ -31,7 +31,7 @@ class Root implements ITreeComponentItem {
 	label = 'root';
 	handle = '0';
 	parentHandle = null;
-	collapsibleState = 0;
+	collapsibleState = 2;
 	children = void 0;
 	options = undefined;
 }
