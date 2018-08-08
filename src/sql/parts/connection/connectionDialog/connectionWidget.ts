@@ -156,7 +156,7 @@ export class ConnectionWidget {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
-						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName)});
+						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName) });
 					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
 						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', '{0} will be trimmed.', serverNameOption.displayName) });
 					}
