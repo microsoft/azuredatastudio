@@ -25,12 +25,6 @@
   },
   "devDependencies": {
   },
-  "resolutions": {
-    "vscode-jsonrpc": "3.5.0",
-    "vscode-languageclient": "3.5.0",
-    "vscode-languageserver-protocol": "3.5.0",
-    "vscode-languageserver-types": "3.5.0"
-  },
   "contributes": {
     "languages": [
       {
