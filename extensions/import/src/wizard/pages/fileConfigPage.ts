@@ -7,7 +7,6 @@
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import * as sqlstring from 'sqlstring';
 import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import { FlatFileProvider } from '../../services/contracts';
@@ -163,7 +162,7 @@ export class FileConfigPage extends ImportPage {
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async (db) => {
 			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
-			this.populateTableNames();
+			//this.populateTableNames();
 			this.populateSchemaDropdown();
 		});
 
@@ -283,6 +282,7 @@ export class FileConfigPage extends ImportPage {
 				return false;
 			}
 
+			// This won't actually do anything until table names are brought back in.
 			if (this.tableNames.indexOf(tableName) !== -1) {
 				return false;
 			}
@@ -359,32 +359,32 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	private async populateTableNames(): Promise<boolean> {
-		this.tableNames = [];
-		let databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
-
-		if (!databaseName || databaseName.length === 0) {
-			this.tableNames = [];
-			return false;
-		}
-
-		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
-		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
-		let results: sqlops.SimpleExecuteResult;
-
-		try {
-			let query = sqlstring.format('USE ?; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = \'BASE TABLE\'', [databaseName]);
-			results = await queryProvider.runQueryAndReturn(connectionUri, query);
-		} catch (e) {
-			return false;
-		}
-
-		this.tableNames = results.rows.map(row => {
-			return row[0].displayValue;
-		});
-
-		return true;
-	}
+	// private async populateTableNames(): Promise<boolean> {
+	// 	this.tableNames = [];
+	// 	let databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+	//
+	// 	if (!databaseName || databaseName.length === 0) {
+	// 		this.tableNames = [];
+	// 		return false;
+	// 	}
+	//
+	// 	let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+	// 	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
+	// 	let results: sqlops.SimpleExecuteResult;
+	//
+	// 	try {
+	// 		//let query = sqlstring.format('USE ?; SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = \'BASE TABLE\'', [databaseName]);
+	// 		//results = await queryProvider.runQueryAndReturn(connectionUri, query);
+	// 	} catch (e) {
+	// 		return false;
+	// 	}
+	//
+	// 	this.tableNames = results.rows.map(row => {
+	// 		return row[0].displayValue;
+	// 	});
+	//
+	// 	return true;
+	// }
 }
 
 

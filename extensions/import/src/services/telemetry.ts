@@ -39,7 +39,7 @@ export class LanguageClientErrorHandler {
 	showOnErrorPrompt(): void {
 		// TODO add telemetry
 		// Telemetry.sendTelemetryEvent('SqlToolsServiceCrash');
-		let crashButtonText = localize('serviceCrashButton', 'View Known Issues');
+		let crashButtonText = localize('import.serviceCrashButton', 'Give Feedback');
 		vscode.window.showErrorMessage(
 			localize('serviceCrashMessage', 'service component could not start'),
 			crashButtonText

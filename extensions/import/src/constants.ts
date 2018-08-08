@@ -10,5 +10,5 @@ export const providerId = 'FlatFileImport';
 export const configLogDebugInfo = 'logDebugInfo';
 export const sqlConfigSectionName = 'sql';
 
-export const serviceCrashLink = 'TODO';
+export const serviceCrashLink = 'https://github.com/Microsoft/sqlopsstudio/issues/2090';
 

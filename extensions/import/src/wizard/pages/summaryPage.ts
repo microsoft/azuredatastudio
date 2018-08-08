@@ -7,7 +7,6 @@
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
-import * as sqlstring from 'sqlstring';
 
 import { ImportDataModel } from '../api/models';
 import { ImportPage } from '../api/importPage';
@@ -113,12 +112,13 @@ export class SummaryPage extends ImportPage {
 				updateText += result.result.errorMessage;
 			}
 		} else {
-			let rows = await this.getCountRowsInserted();
-			if (rows < 0) {
-				updateText = localize('flatFileImport.success.norows', '✔ Awesome! You have successfully inserted the data into a table.');
-			} else {
-				updateText = localize('flatFileImport.success.rows', '✔ Awesome! You have successfully inserted {0} rows.', rows);
-			}
+			// TODO: When sql statements are in, implement this.
+			//let rows = await this.getCountRowsInserted();
+			//if (rows < 0) {
+			updateText = localize('flatFileImport.success.norows', '✔ Awesome! You have successfully inserted the data into a table.');
+			//} else {
+			//updateText = localize('flatFileImport.success.rows', '✔ Awesome! You have successfully inserted {0} rows.', rows);
+			//}
 		}
 		this.statusText.updateProperties({
 			value: updateText
@@ -134,23 +134,23 @@ export class SummaryPage extends ImportPage {
 		return sqlops.connection.getConnectionString(this.model.server.connectionId, true);
 	}
 
-	private async getCountRowsInserted(): Promise<Number> {
-		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
-		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
-		try {
-			let query = sqlstring.format('USE ?; SELECT COUNT(*) FROM ?', [this.model.database, this.model.table]);
-			let results = await queryProvider.runQueryAndReturn(connectionUri, query);
-			let cell = results.rows[0][0];
-			if (!cell || cell.isNull) {
-				return -1;
-			}
-			let numericCell = Number(cell.displayValue);
-			if (isNaN(numericCell)) {
-				return -1;
-			}
-			return numericCell;
-		} catch (e) {
-			return -1;
-		}
-	}
+	// private async getCountRowsInserted(): Promise<Number> {
+	// 	let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+	// 	let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
+	// 	try {
+	// 		let query = sqlstring.format('USE ?; SELECT COUNT(*) FROM ?', [this.model.database, this.model.table]);
+	// 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
+	// 		let cell = results.rows[0][0];
+	// 		if (!cell || cell.isNull) {
+	// 			return -1;
+	// 		}
+	// 		let numericCell = Number(cell.displayValue);
+	// 		if (isNaN(numericCell)) {
+	// 			return -1;
+	// 		}
+	// 		return numericCell;
+	// 	} catch (e) {
+	// 		return -1;
+	// 	}
+	// }
 }

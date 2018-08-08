@@ -111,6 +111,7 @@ export class FlatFileWizard {
 		this.wizard.generateScriptButton.hidden = true;
 
 		this.wizard.pages = [page1, page2, page3, page4];
+
 		this.wizard.open();
 	}
 
