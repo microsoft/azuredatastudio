@@ -21,6 +21,7 @@ import { attachInputBoxStyler, attachButtonStyler, attachEditableDropdownStyler 
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from '../common/connectionProfile';
 
 import * as sqlops from 'sqlops';
 
@@ -35,7 +36,6 @@ import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ConnectionProfile } from '../common/connectionProfile';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -134,14 +134,13 @@ export class ConnectionWidget {
 		});
 
 		DOM.append(container, this._builder.getHTMLElement());
-		this._handleClipboard();
 	}
 
 	private _handleClipboard(): void {
 		let paste = this._clipboardService.readText();
-		this._connectionManagementService.serializeConnectionString(paste).then(e => {
+		this._connectionManagementService.serializeConnectionString(paste, this._providerName).then(e => {
 			if (e) {
-				let profile = new ConnectionProfile(this._capabilitiesService, undefined);
+				let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
 				profile.options = e.options;
 				if (profile.serverName) {
 					this.initDialog(profile);
@@ -381,6 +380,7 @@ export class ConnectionWidget {
 	}
 
 	public focusOnOpen(): void {
+		this._handleClipboard();
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();

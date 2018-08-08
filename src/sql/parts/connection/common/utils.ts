@@ -8,6 +8,10 @@
 import { IConnectionProfile } from './interfaces';
 import { ConnectionProfile } from './connectionProfile';
 import { ConnectionProfileGroup } from './connectionProfileGroup';
+import { ConnectionInfo } from 'sqlops';
+import { ICapabilitiesService } from '../../../services/capabilities/capabilitiesService';
+import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { ConnectionOption } from 'sqlops';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
