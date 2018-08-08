@@ -23,7 +23,7 @@ import { IObjectExplorerService } from '../../objectExplorer/common/objectExplor
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IProfilerService} from '../service/interfaces';
+import { IProfilerService } from '../service/interfaces';
 import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/editor/editor.api';
 import { ProfilerEditor } from '../editor/profilerEditor';
@@ -73,12 +73,12 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		let activeEditor = editorService.getActiveEditor();
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
-			if (profilerInput.state.isRunning){
+			if (profilerInput.state.isRunning) {
 				return profilerService.stopSession(profilerInput.id);
 			} else {
 				// clear data when profiler is started
 				profilerInput.data.clear();
-				return profilerService.startSession(profilerInput.id);
+				return profilerService.startSession(profilerInput.id, profilerInput.sessionName);
 			}
 		}
 		return TPromise.as(false);

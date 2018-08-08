@@ -15,11 +15,13 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 	static SubType = new RawContextKey<string>('nodeSubType', undefined);
 	static Status = new RawContextKey<string>('nodeStatus', undefined);
 	static TreeNode = new RawContextKey<TreeNode>('treeNode', undefined);
+	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
 
 	private _nodeTypeKey: IContextKey<string>;
 	private _subTypeKey: IContextKey<string>;
 	private _statusKey: IContextKey<string>;
 	private _treeNodeKey: IContextKey<TreeNode>;
+	private _nodeLabelKey: IContextKey<string>;
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService
@@ -28,6 +30,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._subTypeKey = TreeNodeContextKey.SubType.bindTo(contextKeyService);
 		this._statusKey = TreeNodeContextKey.Status.bindTo(contextKeyService);
 		this._treeNodeKey = TreeNodeContextKey.TreeNode.bindTo(contextKeyService);
+		this._nodeLabelKey = TreeNodeContextKey.NodeLabel.bindTo(contextKeyService);
 	}
 
 	set(value: TreeNode) {
@@ -35,6 +38,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._nodeTypeKey.set(value && value.nodeTypeId);
 		this._subTypeKey.set(value && value.nodeSubType);
 		this._statusKey.set(value && value.nodeStatus);
+		this._nodeLabelKey.set(value && value.label);
 	}
 
 	reset(): void {
@@ -42,6 +46,7 @@ export class TreeNodeContextKey implements IContextKey<TreeNode> {
 		this._subTypeKey.reset();
 		this._statusKey.reset();
 		this._treeNodeKey.reset();
+		this._nodeLabelKey.reset();
 	}
 
 	public get(): TreeNode {

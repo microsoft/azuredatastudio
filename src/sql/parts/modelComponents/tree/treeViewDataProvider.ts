@@ -19,21 +19,13 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 		super(`${handle}-${treeViewId}`, context.getProxy(SqlExtHostContext.ExtHostModelViewTreeViews), notificationService);
 	}
 
-	onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean) {
-		(<ExtHostModelViewTreeViewsShape>this._proxy).$onNodeCheckedChanged(treeViewId, treeItemHandle, checked);
+	onNodeCheckedChanged(treeItemHandle?: string, checked?: boolean) {
+		(<ExtHostModelViewTreeViewsShape>this._proxy).$onNodeCheckedChanged(this.treeViewId, treeItemHandle, checked);
 	}
 
-	protected postGetChildren(elements: ITreeComponentItem[]): ITreeComponentItem[] {
-		const result = [];
-		if (elements) {
-			for (const element of elements) {
-				element.onCheckedChanged = (checked: boolean) => {
-					this.onNodeCheckedChanged(this.treeViewId, element.handle, checked);
-				};
-				this.itemsMap.set(element.handle, element);
-				result.push(element);
-			}
+	onNodeSelected(items: ITreeComponentItem[]) {
+		if (items) {
+			(<ExtHostModelViewTreeViewsShape>this._proxy).$onNodeSelected(this.treeViewId, items.map(i => i.handle));
 		}
-		return result;
 	}
 }

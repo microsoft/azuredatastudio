@@ -316,9 +316,14 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 
 	/**
+	 * Create a profiler session
+	 */
+	$createSession(handle: number, sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> { throw ni(); }
+
+	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session
@@ -330,6 +335,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$pauseSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 
+	/**
+	 * Get list of running XEvent sessions on the profiler session's target server
+	 */
+	$getXEventSessions(handle: number, sessionId: string): Thenable<string[]> { throw ni(); }
 
 	/**
 	 * Get Agent Job list
@@ -469,6 +478,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
+	$onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 
 	/**
@@ -594,8 +604,9 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
-	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): vscode.TreeView<any>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
+	$onNodeSelected(treeViewId: string, nodes:  string[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

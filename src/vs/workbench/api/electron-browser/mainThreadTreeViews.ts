@@ -125,8 +125,7 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
-	protected postGetChildren(elements: ITreeItem[]): ITreeItem[] {
+	private postGetChildren(elements: ITreeItem[]): ITreeItem[] {
 		const result = [];
 		if (elements) {
 			for (const element of elements) {

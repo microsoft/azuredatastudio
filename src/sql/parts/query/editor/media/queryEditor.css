@@ -22,3 +22,8 @@
 .editDataEditor {
 	height: inherit
 }
+
+#chartViewerDiv .chartViewer {
+	display: flex;
+	flex-direction: column;
+}

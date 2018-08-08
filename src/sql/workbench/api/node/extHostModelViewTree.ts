@@ -14,12 +14,12 @@ import { asWinJsPromise } from 'vs/base/common/async';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import * as sqlops from 'sqlops';
 import * as  vsTreeExt from 'vs/workbench/api/node/extHostTreeViews';
+import { Emitter } from 'vs/base/common/event';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
 
 	private treeViews: Map<string, ExtHostTreeView<any>> = new Map<string, ExtHostTreeView<any>>();
-
 
 	constructor(
 		private _mainContext: IMainContext
@@ -27,20 +27,19 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadModelView);
 	}
 
-	$createTreeView<T>(handle: number, componentId: string, options: { treeDataProvider: sqlops.TreeComponentDataProvider<T> }): vscode.TreeView<T> {
+	$createTreeView<T>(handle: number, componentId: string, options: { treeDataProvider: sqlops.TreeComponentDataProvider<T> }): sqlops.TreeComponentView<T> {
 		if (!options || !options.treeDataProvider) {
 			throw new Error('Options with treeDataProvider is mandatory');
 		}
 
 		const treeView = this.createExtHostTreeViewer(handle, componentId, options.treeDataProvider);
 		return {
-			reveal: (element: T, options?: { select?: boolean }): Thenable<void> => {
-				return treeView.reveal(element, options);
-			},
 			dispose: () => {
 				this.treeViews.delete(componentId);
 				treeView.dispose();
-			}
+			},
+			onNodeCheckedChanged: treeView.NodeCheckedChanged,
+			onDidChangeSelection: treeView.ChangeSelection
 		};
 	}
 
@@ -60,6 +59,13 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		}
 	}
 
+	$onNodeSelected(treeViewId: string, handles: string[]): void {
+		const treeView = this.treeViews.get(treeViewId);
+		if (treeView) {
+			treeView.onNodeSelectedChanged(handles);
+		}
+	}
+
 	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: sqlops.TreeComponentDataProvider<T>): ExtHostTreeView<T> {
 		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined);
 		this.treeViews.set(`${handle}-${id}`, treeView);
@@ -69,6 +75,10 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 
 export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
+	private _onNodeCheckedChanged = new Emitter<sqlops.NodeCheckedEventParameters<T>>();
+	private _onDidChangeSelection = new Emitter<T[]>();
+	public readonly NodeCheckedChanged: vscode.Event<sqlops.NodeCheckedEventParameters<T>> = this._onNodeCheckedChanged.event;
+	public readonly ChangeSelection: vscode.Event<T[]> = this._onDidChangeSelection.event;
 	constructor(private handle: number, private componentId: string, private componentDataProvider: sqlops.TreeComponentDataProvider<T>, private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter) {
 		super(componentId, componentDataProvider, undefined, commands);
 	}
@@ -79,7 +89,16 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			console.error(`No tree item with id \'${parentHandle}\' found.`);
 		}
 
-		this.componentDataProvider.onNodeCheckedChanged(parentElement, checked);
+		this._onNodeCheckedChanged.fire({element: parentElement, checked: checked});
+	}
+
+	onNodeSelectedChanged(parentHandles?: vsTreeExt.TreeItemHandle[]): void {
+		if (parentHandles) {
+			let nodes = parentHandles.map(parentHandle => {
+				return  parentHandle ? this.getExtensionElement(parentHandle) : void 0;
+			});
+			this._onDidChangeSelection.fire(nodes);
+		}
 	}
 
 	reveal(element: T, options?: { select?: boolean }): TPromise<void> {

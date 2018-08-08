@@ -42,10 +42,17 @@ declare module 'sqlops' {
 
 	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
 		getTreeItem(element: T): TreeComponentItem | Thenable<TreeComponentItem>;
-
-		onNodeCheckedChanged?(element: T, checked: boolean): void;
 	}
 
+	export interface NodeCheckedEventParameters<T> {
+		element: T,
+		checked: boolean
+	}
+
+	export interface TreeComponentView<T> extends vscode.Disposable {
+		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
+		onDidChangeSelection:  vscode.Event<T[]>;
+	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
 		checked?: boolean;
@@ -401,7 +408,7 @@ declare module 'sqlops' {
 		label?: string;
 	}
 
-	export interface TreeProperties {
+	export interface TreeProperties extends ComponentProperties {
 		withCheckbox?: boolean;
 	}
 
@@ -531,7 +538,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TreeComponent<T> extends Component, TreeProperties {
-		registerDataProvider<T>(dataProvider: TreeComponentDataProvider<T>): any;
+		registerDataProvider<T>(dataProvider: TreeComponentDataProvider<T>): TreeComponentView<T>;
 	}
 
 	export interface WebViewComponent extends Component {

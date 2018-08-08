@@ -12,7 +12,7 @@ import { IProfilerService, IProfilerViewTemplate } from 'sql/parts/profiler/serv
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IProfilerStateChangedEvent } from './profilerState';
-import { ProfilerTableEditor } from './controller/profilerTableEditor';
+import { ProfilerTableEditor, ProfilerTableViewState } from './controller/profilerTableEditor';
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -45,6 +45,7 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
+import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -118,6 +119,8 @@ export class ProfilerEditor extends BaseEditor {
 
 	private _viewTemplateSelector: SelectBox;
 	private _viewTemplates: Array<IProfilerViewTemplate>;
+	private _sessionSelector: SelectBox;
+	private _sessionsList: Array<string>;
 	private _connectionInfoText: HTMLElement;
 
 	// Actions
@@ -126,8 +129,10 @@ export class ProfilerEditor extends BaseEditor {
 	private _pauseAction: Actions.ProfilerPause;
 	private _stopAction: Actions.ProfilerStop;
 	private _autoscrollAction: Actions.ProfilerAutoScroll;
+	private _createAction: Actions.ProfilerCreate;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
 
+	private _savedTableViewStates = new Map<ProfilerInput, ProfilerTableViewState>();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -137,10 +142,19 @@ export class ProfilerEditor extends BaseEditor {
 		@IModelService private _modelService: IModelService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IEditorGroupService private _editorGroupService: IEditorGroupService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
+
+		if (_editorGroupService) {
+			_editorGroupService.onEditorOpening(e => {
+				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+					this.saveEditorViewState();
+				}
+			});
+		}
 	}
 
 	protected createEditor(parent: HTMLElement): void {
@@ -186,6 +200,8 @@ export class ProfilerEditor extends BaseEditor {
 		this._actionBar = new Taskbar(this._header, this._contextMenuService);
 		this._startAction = this._instantiationService.createInstance(Actions.ProfilerStart, Actions.ProfilerStart.ID, Actions.ProfilerStart.LABEL);
 		this._startAction.enabled = false;
+		this._createAction = this._instantiationService.createInstance(Actions.ProfilerCreate, Actions.ProfilerCreate.ID, Actions.ProfilerCreate.LABEL);
+		this._createAction.enabled = true;
 		this._stopAction = this._instantiationService.createInstance(Actions.ProfilerStop, Actions.ProfilerStop.ID, Actions.ProfilerStop.LABEL);
 		this._stopAction.enabled = false;
 		this._pauseAction = this._instantiationService.createInstance(Actions.ProfilerPause, Actions.ProfilerPause.ID, Actions.ProfilerPause.LABEL);
@@ -200,10 +216,22 @@ export class ProfilerEditor extends BaseEditor {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
 			}
 		}));
-		let dropdownContainer = document.createElement('div');
-		dropdownContainer.style.width = '150px';
-		dropdownContainer.style.paddingRight = '5px';
-		this._viewTemplateSelector.render(dropdownContainer);
+		let viewTemplateContainer = document.createElement('div');
+		viewTemplateContainer.style.width = '150px';
+		viewTemplateContainer.style.paddingRight = '5px';
+		this._viewTemplateSelector.render(viewTemplateContainer);
+
+		this._sessionsList = [''];
+		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
+		this._register(this._sessionSelector.onDidSelect(e => {
+			if (this.input) {
+				this.input.sessionName = e.selected;
+			}
+		}));
+		let sessionsContainer = document.createElement('div');
+		sessionsContainer.style.width = '150px';
+		sessionsContainer.style.paddingRight = '5px';
+		this._sessionSelector.render(sessionsContainer);
 
 		this._connectionInfoText = document.createElement('div');
 		this._connectionInfoText.style.paddingRight = '5px';
@@ -213,15 +241,18 @@ export class ProfilerEditor extends BaseEditor {
 		this._connectionInfoText.style.alignItems = 'center';
 
 		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
+		this._register(attachSelectBoxStyler(this._sessionSelector, this.themeService));
 
 		this._actionBar.setContent([
 			{ action: this._startAction },
 			{ action: this._stopAction },
+			{ element: sessionsContainer },
+			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
-			{ element: dropdownContainer },
+			{ element: viewTemplateContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._connectionInfoText }
 		]);
@@ -346,8 +377,13 @@ export class ProfilerEditor extends BaseEditor {
 	}
 
 	public setInput(input: ProfilerInput, options?: EditorOptions): TPromise<void> {
+		let savedViewState = this._savedTableViewStates.get(input);
+
 		this._profilerEditorContextKey.set(true);
 		if (input instanceof ProfilerInput && input.matches(this.input)) {
+			if (savedViewState) {
+				this._profilerTableEditor.restoreViewState(savedViewState);
+			}
 			return TPromise.as(null);
 		}
 
@@ -378,6 +414,9 @@ export class ProfilerEditor extends BaseEditor {
 			this._profilerTableEditor.updateState();
 			this._splitView.layout();
 			this._profilerTableEditor.focus();
+			if (savedViewState) {
+				this._profilerTableEditor.restoreViewState(savedViewState);
+			}
 		});
 	}
 
@@ -416,24 +455,59 @@ export class ProfilerEditor extends BaseEditor {
 
 		if (e.isConnected) {
 			this._connectAction.connected = this.input.state.isConnected;
-			if (!this.input.state.isConnected) {
-				this._startAction.enabled = this.input.state.isConnected;
+
+			if (this.input.state.isConnected) {
+				this._updateToolbar();
+				this._sessionSelector.enable();
+				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					this._sessionSelector.setOptions(r);
+					this._sessionsList = r;
+					if (this.input.sessionName === undefined || this.input.sessionName === '') {
+						this.input.sessionName = this._sessionsList[0];
+					}
+				});
+			} else {
+				this._startAction.enabled = false;
 				this._stopAction.enabled = false;
 				this._pauseAction.enabled = false;
+				this._sessionSelector.setOptions([]);
+				this._sessionSelector.disable();
 				return;
 			}
 		}
 
-		if (e.isPaused){
+		if (e.isPaused) {
 			this._pauseAction.paused = this.input.state.isPaused;
-			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+			this._updateToolbar();
 		}
 
 		if (e.isStopped || e.isRunning) {
-			this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused;
-			this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
-			this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused);
+			if (this.input.state.isRunning) {
+				this._updateToolbar();
+				this._sessionSelector.setOptions([this.input.sessionName]);
+				this._sessionSelector.selectWithOptionName(this.input.sessionName);
+				this._sessionSelector.disable();
+				this._viewTemplateSelector.selectWithOptionName(this.input.viewTemplate.name);
+			}
+			if (this.input.state.isStopped) {
+				this._updateToolbar();
+				this._sessionSelector.enable();
+				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					this._sessionsList = r;
+					this._sessionSelector.setOptions(r);
+					if (this.input.sessionName === undefined || this.input.sessionName === '') {
+						this.input.sessionName = this._sessionsList[0];
+					}
+				});
+			}
 		}
+	}
+
+	private _updateToolbar(): void {
+		this._startAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
+		this._createAction.enabled = !this.input.state.isRunning && !this.input.state.isPaused && this.input.state.isConnected;
+		this._stopAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused) && this.input.state.isConnected;
+		this._pauseAction.enabled = !this.input.state.isStopped && (this.input.state.isRunning || this.input.state.isPaused && this.input.state.isConnected);
 	}
 
 	public layout(dimension: DOM.Dimension): void {
@@ -442,6 +516,12 @@ export class ProfilerEditor extends BaseEditor {
 		this._body.style.width = dimension.width + 'px';
 		this._body.style.height = (dimension.height - (28 + 4)) + 'px';
 		this._splitView.layout(dimension.height - (28 + 4));
+	}
+
+	private saveEditorViewState(): void {
+		if (this.input && this._profilerTableEditor) {
+			this._savedTableViewStates.set(this.input, this._profilerTableEditor.saveViewState());
+		}
 	}
 }
 
@@ -453,7 +533,6 @@ abstract class SettingsCommand extends Command {
 			return activeEditor;
 		}
 		return null;
-
 	}
 
 }

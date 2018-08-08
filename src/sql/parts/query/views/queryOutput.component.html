@@ -33,7 +33,7 @@
 	<tab *ngIf="showChartView" [visibilityType]="'visibility'" [title]="chartViewerTitle" [identifier]="chartViewerTabIdentifier">
 		<ng-template>
 			<div id="chartViewerDiv" class="headersVisible fullsize" >
-				<chart-viewer [dataSet]="activeDataSet" class="fullsize" style="display: block">
+				<chart-viewer [dataSet]="activeDataSet" class="fullsize chartViewer">
 				</chart-viewer>
 			</div>
 		</ng-template>

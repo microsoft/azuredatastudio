@@ -120,7 +120,11 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			} else {
 				tree.setFocus(element, payload);
 				tree.setSelection([element], payload);
-				self.setStepsTree(element);
+				if (element.rowID) {
+					self.setStepsTree(element);
+				} else {
+					event.preventDefault();
+				}
 			}
 			return true;
 		};

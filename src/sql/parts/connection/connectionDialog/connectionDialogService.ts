@@ -144,9 +144,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			} else {
 				this._connectionManagementService.cancelConnection(this._model);
 			}
-			if (params && params.input && params.input.onConnectReject) {
-				params.input.onConnectReject();
-			}
 			this._connectionDialog.resetConnection();
 			this._connecting = false;
 		}
