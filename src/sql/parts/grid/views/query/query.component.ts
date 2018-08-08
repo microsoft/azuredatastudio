@@ -160,6 +160,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public queryPlanAvailable: EventEmitter<string> = new EventEmitter<string>();
 	public showChartRequested: EventEmitter<IGridDataSet> = new EventEmitter<IGridDataSet>();
 	public goToNextQueryOutputTabRequested: EventEmitter<void> = new EventEmitter<void>();
+	public onActiveCellChanged: (gridIndex: number) => void;
 
 	private savedViewState: {
 		gridSelections: ISlickRange[][];
@@ -265,6 +266,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		self.totalElapsedTimeSpan = undefined;
 		self.complete = false;
 		self.activeGrid = 0;
+
+		this.onActiveCellChanged = this.onCellSelect;
 
 		// reset query plan info and send notification to subscribers
 		self.hasQueryPlan = false;
@@ -400,6 +403,10 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		undefinedDataSet.resized = new EventEmitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
 		self.onScroll(0);
+	}
+
+	onCellSelect(gridIndex: number): void {
+		this.activeGrid = gridIndex;
 	}
 
 	openMessagesContextMenu(event: any): void {

@@ -408,7 +408,7 @@ declare module 'sqlops' {
 		label?: string;
 	}
 
-	export interface TreeProperties {
+	export interface TreeProperties extends ComponentProperties {
 		withCheckbox?: boolean;
 	}
 

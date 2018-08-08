@@ -8,6 +8,7 @@
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
+import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the recent connection tree
@@ -34,7 +35,7 @@ export class TreeComponentDataSource implements IDataSource {
 	 * Returns a boolean value indicating whether the element has children.
 	 */
 	public hasChildren(tree: ITree, node: ITreeComponentItem): boolean {
-		return this._dataProvider !== undefined;
+		return this._dataProvider !== undefined && node.collapsibleState !== TreeItemCollapsibleState.None;
 	}
 
 	/**
