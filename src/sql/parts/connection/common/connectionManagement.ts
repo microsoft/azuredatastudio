@@ -278,7 +278,7 @@ export interface IConnectionDialogService {
 	 * @param model
 	 * @param connectionResult
 	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
 
 	/**
 	 * Opens the connection dialog and returns the promise when connection is made

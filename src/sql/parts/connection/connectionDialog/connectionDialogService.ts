@@ -50,7 +50,7 @@ export interface IConnectionComponentCallbacks {
 
 export interface IConnectionComponentController {
 	showUiComponent(container: HTMLElement): void;
-	initDialog(providers: string[], odel: IConnectionProfile): void;
+	initDialog(providers: string[], model: IConnectionProfile): void;
 	validateConnection(): IConnectionValidateResult;
 	fillInConnectionInputs(connectionInfo: IConnectionProfile): void;
 	handleOnConnecting(): void;

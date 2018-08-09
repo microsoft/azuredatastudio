@@ -26,6 +26,7 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 suite('SQL ConnectionStore tests', () => {
 	let defaultNamedProfile: IConnectionProfile;
 	let defaultUnnamedProfile: IConnectionProfile;
+	let profileForProvider2: IConnectionProfile;
 	let context: TypeMoq.Mock<Memento>;
 	let credentialStore: TypeMoq.Mock<CredentialsService>;
 	let connectionConfig: TypeMoq.Mock<ConnectionConfig>;
@@ -35,6 +36,7 @@ suite('SQL ConnectionStore tests', () => {
 	let mementoArray: any = [];
 	let maxRecent = 5;
 	let msSQLCapabilities: ConnectionProviderProperties;
+	let provider2Capabilities: ConnectionProviderProperties;
 	let defaultNamedConnectionProfile: ConnectionProfile;
 
 	setup(() => {
@@ -56,6 +58,23 @@ suite('SQL ConnectionStore tests', () => {
 		});
 
 		defaultUnnamedProfile = Object.assign({}, {
+			serverName: 'unnamedServer',
+			databaseName: undefined,
+			authenticationType: 'SqlLogin',
+			userName: 'aUser',
+			password: 'asdf!@#$',
+			savePassword: true,
+			groupId: '',
+			groupFullName: '',
+			getOptionsKey: undefined,
+			matches: undefined,
+			providerName: 'MSSQL',
+			options: {},
+			saveProfile: true,
+			id: undefined
+		});
+
+		profileForProvider2 = Object.assign({}, {
 			serverName: 'unnamedServer',
 			databaseName: undefined,
 			authenticationType: 'SqlLogin',
@@ -164,7 +183,14 @@ suite('SQL ConnectionStore tests', () => {
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider
 		};
+
+		provider2Capabilities = {
+			providerId: 'MSSQL',
+			displayName: 'MSSQL',
+			connectionOptions: connectionProvider
+		};
 		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
+		capabilitiesService.capabilities['Provider2'] = { connection: provider2Capabilities };
 		let groups: IConnectionProfileGroup[] = [
 			{
 				id: 'root',
@@ -224,6 +250,14 @@ suite('SQL ConnectionStore tests', () => {
 			// Must call done here so test indicates it's finished if errors occur
 			done(err);
 		});
+	});
+
+	test('getRecentlyUsedConnections should return connection for given provider', () => {
+		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
+			credentialStore.object, capabilitiesService, connectionConfig.object);
+		let connections = connectionStore.getRecentlyUsedConnections(['Provider2']);
+		assert.notEqual(connections, undefined);
+		assert.equal(connections.every(c => c.providerName === 'Provider2'), true);
 	});
 
 	test('addActiveConnection should add same connection exactly once', (done) => {

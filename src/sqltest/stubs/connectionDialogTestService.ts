@@ -20,8 +20,7 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 	}
 
 	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
-		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<IConnectionProfile> {
-		let none: void;
+		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<IConnectionProfile> {
 		return TPromise.as(undefined);
 	}
 }

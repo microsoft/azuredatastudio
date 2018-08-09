@@ -172,7 +172,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connectionDialogService.verify(x => x.showDialog(
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
-				TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName),
+				TypeMoq.It.is<IConnectionProfile>(c => c !== undefined && c.serverName === connectionProfile.serverName),
 				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 
