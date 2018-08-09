@@ -67,7 +67,7 @@ export class ServiceClient {
 				resolve(client);
 			}, e => {
 				Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-				vscode.window.showErrorMessage(localize('serviceStartFailed', 'Failed to start Scale Out Data service:{0}', e));
+				vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', 'Failed to start Import service{0}', e));
 				// Just resolve to avoid unhandled promise. We show the error to the user.
 				resolve(undefined);
 			});
