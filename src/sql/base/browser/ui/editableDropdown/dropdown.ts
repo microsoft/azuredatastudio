@@ -233,8 +233,8 @@ export class Dropdown extends Disposable {
 					this._layoutTree();
 					return { dispose: () => { } };
 				},
-				onDOMEvent: (e, activeElement) => {
-					if (!DOM.isAncestor(activeElement, this.$el.getHTMLElement()) && !DOM.isAncestor(activeElement, this.$treeContainer.getHTMLElement())) {
+				onDOMEvent: e => {
+					if (!DOM.isAncestor(e.srcElement, this.$el.getHTMLElement()) && !DOM.isAncestor(e.srcElement, this.$treeContainer.getHTMLElement())) {
 						this._input.validate();
 						this._onBlur.fire();
 						this._contextView.hide();

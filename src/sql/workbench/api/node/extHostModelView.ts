@@ -1063,7 +1063,7 @@ class TreeComponentWrapper<T> extends ComponentWrapper implements sqlops.TreeCom
 		this.properties = {};
 	}
 
-	public registerDataProvider<T>(dataProvider: sqlops.TreeComponentDataProvider<T>): vscode.TreeView<T> {
+	public registerDataProvider<T>(dataProvider: sqlops.TreeComponentDataProvider<T>): sqlops.TreeComponentView<T> {
 		this.setDataProvider();
 		return this._extHostModelViewTree.$createTreeView(this._handle, this.id, { treeDataProvider: dataProvider });
 	}

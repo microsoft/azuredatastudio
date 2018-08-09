@@ -23,6 +23,7 @@ import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams
 import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { Event } from 'vs/base/common/event';
 
 export class EditDataResultsEditor extends BaseEditor {
 
@@ -109,7 +110,11 @@ export class EditDataResultsEditor extends BaseEditor {
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
 		const parent = input.container;
-		let params: IEditDataComponentParams = { dataService: dataService };
+		let params: IEditDataComponentParams = {
+			dataService: dataService,
+			onSaveViewState: input.onSaveViewStateEmitter.event,
+			onRestoreViewState: input.onRestoreViewStateEmitter.event
+		};
 		bootstrapAngular(this._instantiationService,
 			EditDataModule,
 			parent,

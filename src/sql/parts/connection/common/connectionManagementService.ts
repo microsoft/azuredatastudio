@@ -1120,7 +1120,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					resolve(result);
 				});
 			} else {
-				resolve(self.disconnectEditor(owner));
+				// If the editor is connected then there is nothing to cancel
+				resolve(false);
 			}
 		});
 	}

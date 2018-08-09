@@ -18,6 +18,8 @@ export interface IQueryComponentParams extends IBootstrapParams {
 
 export interface IEditDataComponentParams extends IBootstrapParams {
 	dataService: DataService;
+	onSaveViewState: Event<void>;
+	onRestoreViewState: Event<void>;
 }
 
 export interface IDefaultComponentParams extends IBootstrapParams {

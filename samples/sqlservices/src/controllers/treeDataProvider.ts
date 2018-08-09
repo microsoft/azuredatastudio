@@ -291,9 +291,4 @@ export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNo
 			}
 		}
 
-		onNodeCheckedChanged(element: TreeNode, checked: boolean): void {
-			if (element) {
-				element.changeNodeCheckedState(checked);
-			}
-		}
 }

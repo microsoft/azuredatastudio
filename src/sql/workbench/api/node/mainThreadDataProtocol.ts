@@ -295,14 +295,20 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._profilerService.registerProvider(providerId, <sqlops.ProfilerProvider>{
-			startSession(sessionId: string): Thenable<boolean> {
-				return self._proxy.$startSession(handle, sessionId);
+			createSession(sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+				return self._proxy.$createSession(handle, sessionId, createStatement, template);
+			},
+			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
+				return self._proxy.$startSession(handle, sessionId, sessionName);
 			},
 			stopSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$stopSession(handle, sessionId);
 			},
 			pauseSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$pauseSession(handle, sessionId);
+			},
+			getXEventSessions(sessionId: string): Thenable<string[]> {
+				return self._proxy.$getXEventSessions(handle, sessionId);
 			},
 			connectSession(sessionId: string): Thenable<boolean> {
 				return TPromise.as(true);
@@ -464,6 +470,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._profilerService.onSessionStopped(response);
+	}
+
+	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+		this._profilerService.onProfilerSessionCreated(response);
 	}
 
 	// SQL Server Agent handlers

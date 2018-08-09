@@ -16,6 +16,7 @@ export const IProfilerService = createDecorator<IProfilerService>(PROFILER_SERVI
 export type ProfilerSessionID = string;
 
 export const PROFILER_VIEW_TEMPLATE_SETTINGS = 'profiler.viewTemplates';
+export const PROFILER_SESSION_TEMPLATE_SETTINGS = 'profiler.sessionTemplates';
 export const PROFILER_SETTINGS = 'profiler';
 
 /**
@@ -30,6 +31,10 @@ export interface IProfilerSession {
 	 * Called by the service when the session is closed unexpectedly
 	 */
 	onSessionStopped(events: sqlops.ProfilerSessionStoppedParams);
+	/**
+	 * Called by the service when a new profiler session is created by the dialog
+	 */
+	onProfilerSessionCreated(events: sqlops.ProfilerSessionCreatedParams);
 	/**
 	 * Called by the service when the session state is changed
 	 */
@@ -49,7 +54,7 @@ export interface IProfilerService {
 	 * Registers a session with the service that acts as the UI for a profiler session
 	 * @returns An unique id that should be used to make subsequent calls to this service
 	 */
-	registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): ProfilerSessionID;
+	registerSession(uri: string, connectionProfile: IConnectionProfile, session: IProfilerSession): Promise<ProfilerSessionID>;
 	/**
 	 * Connects the session specified by the id
 	 */
@@ -59,9 +64,13 @@ export interface IProfilerService {
 	 */
 	disconnectSession(sessionId: ProfilerSessionID): Thenable<boolean>;
 	/**
+	 * Creates a new session using the given create statement and session name
+	 */
+	createSession(id: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean>;
+	/**
 	 * Starts the session specified by the id
 	 */
-	startSession(sessionId: ProfilerSessionID): Thenable<boolean>;
+	startSession(sessionId: ProfilerSessionID, sessionName: string): Thenable<boolean>;
 	/**
 	 * Pauses the session specified by the id
 	 */
@@ -71,6 +80,10 @@ export interface IProfilerService {
 	 */
 	stopSession(sessionId: ProfilerSessionID): Thenable<boolean>;
 	/**
+	 * Gets a list of running XEvent sessions on the Profiler Session's target
+	 */
+	getXEventSessions(sessionId: ProfilerSessionID): Thenable<string[]>;
+	/**
 	 * The method called by the service provider for when more rows are available to render
 	 */
 	onMoreRows(params: sqlops.ProfilerSessionEvents): void;
@@ -79,21 +92,38 @@ export interface IProfilerService {
 	 */
 	onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void;
 	/**
+	 * Called by the service when a new profiler session is created by the dialog
+	 */
+	onProfilerSessionCreated(events: sqlops.ProfilerSessionCreatedParams);
+	/**
+	 * Gets a list of the view templates that are specified in the settings
+	 * @param provider An optional string to limit the view templates to a specific provider
+	 * @returns An array of view templates that match the provider passed, if passed, and generic ones (no provider specified),
+	 * otherwise returns all view templates
+	 */
+	getViewTemplates(providerId?: string): Array<IProfilerViewTemplate>;
+	/**
 	 * Gets a list of the session templates that are specified in the settings
 	 * @param provider An optional string to limit the session template to a specific
 	 * @returns An array of session templates that match the provider passed, if passed, and generic ones (no provider specified),
 	 * otherwise returns all session templates
 	 */
-	getViewTemplates(providerId?: string): Array<IProfilerViewTemplate>;
+	getSessionTemplates(providerId?: string): Array<IProfilerSessionTemplate>;
 	/**
 	 * Launches the dialog for editing the view columns of a profiler session template for the given input
 	 * @param input input object that contains the necessary information which will be modified based on used input
 	 */
 	launchColumnEditor(input: ProfilerInput): Thenable<void>;
+	/**
+	 * Launches the dialog for creating a new XEvent session from a template
+	 * @param input input object that contains the necessary information which will be modified based on used input
+	 */
+	launchCreateSessionDialog(input: ProfilerInput): Thenable<void>;
 }
 
 export interface IProfilerSettings {
 	viewTemplates: Array<IProfilerViewTemplate>;
+	sessionTemplates: Array<IProfilerSessionTemplate>;
 }
 
 export interface IColumnViewTemplate {
@@ -104,4 +134,10 @@ export interface IColumnViewTemplate {
 export interface IProfilerViewTemplate {
 	name: string;
 	columns: Array<IColumnViewTemplate>;
+}
+
+export interface IProfilerSessionTemplate {
+	name: string;
+	defaultView: string;
+	createStatement: string;
 }

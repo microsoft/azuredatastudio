@@ -257,6 +257,10 @@ export function createApiFactory(
 					extHostDataProvider.$onSessionStopped(provider.handle, response);
 				});
 
+				provider.registerOnProfilerSessionCreated((response: sqlops.ProfilerSessionCreatedParams) => {
+					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
+				});
+
 				return extHostDataProvider.$registerProfilerProvider(provider);
 			};
 

@@ -13,7 +13,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
+import { IGridDataRow, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -71,15 +71,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
-	public onActiveCellChanged: (event: { row: number, column: number }) => void;
-	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
-	public onCellEditBegin: (event: { row: number, column: number }) => void;
-	public onRowEditBegin: (event: { row: number }) => void;
-	public onRowEditEnd: (event: { row: number }) => void;
+	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
+	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
 	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
 	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
+
+	private savedViewState: {
+		gridSelections: ISlickRange[];
+		scrollTop;
+		scrollLeft;
+	};
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -98,6 +101,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
+		params.onRestoreViewState(() => this.restoreViewState());
+		params.onSaveViewState(() => this.saveViewState());
 	}
 
 	/**
@@ -159,16 +164,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onActiveCellChanged = this.onCellSelect;
 
-		this.onCellEditEnd = (event: { row: number, column: number, newValue: any }): void => {
+		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
 			// Store the value that was set
-			self.currentEditCellValue = event.newValue;
+			self.currentEditCellValue = event.item[event.cell - 1];
 		};
-
-		this.onCellEditBegin = (event: { row: number, column: number }): void => { };
-
-		this.onRowEditBegin = (event: { row: number }): void => { };
-
-		this.onRowEditEnd = (event: { row: number }): void => { };
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
@@ -225,10 +224,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		};
 	}
 
-	onCellSelect(event: { row: number, column: number }): void {
+	onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): void {
 		let self = this;
 		let row = event.row;
-		let column = event.column;
+		let column = event.cell;
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
@@ -577,5 +576,26 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		return rowCount > this._defaultNumShowingRows
 			? (this._defaultNumShowingRows + 1) * this._rowHeight + 10
 			: this.getMaxHeight(rowCount);
+	}
+
+	private saveViewState(): void {
+		let gridSelections = this.slickgrids.toArray()[0].getSelectedRanges();
+		let viewport = ((this.slickgrids.toArray()[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
+
+		this.savedViewState = {
+			gridSelections,
+			scrollTop: viewport.scrollTop,
+			scrollLeft: viewport.scrollLeft
+		};
+	}
+
+	private restoreViewState(): void {
+		if (this.savedViewState) {
+			this.slickgrids.toArray()[0].selection = this.savedViewState.gridSelections;
+			let viewport = ((this.slickgrids.toArray()[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
+			viewport.scrollLeft = this.savedViewState.scrollLeft;
+			viewport.scrollTop = this.savedViewState.scrollTop;
+			this.savedViewState = undefined;
+		}
 	}
 }
