@@ -3,6 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.monaco-select-box {
-	width: 100%;
+.monaco-select-box.disabled {
+	opacity: 0.4;
 }
