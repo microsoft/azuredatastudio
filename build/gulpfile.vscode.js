@@ -274,7 +274,8 @@ function packageBuiltInExtensions() {
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
 				cwd: element.path,
-				packagePath: packagePath
+				packagePath: packagePath,
+				useYarn: true
 		});
 	});
 }
