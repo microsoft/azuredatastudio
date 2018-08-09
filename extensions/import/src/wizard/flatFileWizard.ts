@@ -33,7 +33,6 @@ export class FlatFileWizard {
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
 
-		// TODO localize this
 		let connections = await sqlops.connection.getActiveConnections();
 		if (!connections || connections.length === 0) {
 			vscode.window.showErrorMessage('Please connect to a server before using this wizard.');
