@@ -136,18 +136,18 @@ export class ModifyColumnsPage extends ImportPage {
 				width: '150px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.dataType', 'Data type'),
+				displayName: localize('flatFileImport.dataType', 'Data Type'),
 				valueType: sqlops.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
-				displayName: localize('flatFileImport.primaryKey', 'Primary key'),
+				displayName: localize('flatFileImport.primaryKey', 'Primary Key'),
 				valueType: sqlops.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.allowNull', 'Allow null'),
+				displayName: localize('flatFileImport.allowNulls', 'Allow Nulls'),
 				valueType: sqlops.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px'
