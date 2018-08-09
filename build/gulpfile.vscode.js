@@ -78,6 +78,7 @@ const sqlBuiltInExtensions = [
 	// Add SQL built-in extensions here.
 	// the extension will be excluded from SQLOps package and will have separate vsix packages
 	'agent',
+	'import',
 	'profiler'
 ];
 
@@ -273,7 +274,8 @@ function packageBuiltInExtensions() {
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
 				cwd: element.path,
-				packagePath: packagePath
+				packagePath: packagePath,
+				useYarn: true
 		});
 	});
 }

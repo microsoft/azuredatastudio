@@ -28,18 +28,29 @@ suite('ContextKeyExpr', () => {
 			ContextKeyExpr.notEquals('c1', 'cc1'),
 			ContextKeyExpr.notEquals('c2', 'cc2'),
 			ContextKeyExpr.not('d1'),
-			ContextKeyExpr.not('d2')
+			ContextKeyExpr.not('d2'),
+			// {{SQL CARBON EDIT}}
+			ContextKeyExpr.greaterThanEquals('e1', 'ee1'),
+			ContextKeyExpr.greaterThanEquals('e2', 'ee2'),
+			ContextKeyExpr.lessThanEquals('f1', 'ff1'),
+			ContextKeyExpr.lessThanEquals('f2', 'ff2')
+			//
 		);
 		let b = ContextKeyExpr.and(
+			// {{SQL CARBON EDIT}}
+			ContextKeyExpr.greaterThanEquals('e2', 'ee2'),
 			ContextKeyExpr.equals('b2', 'bb2'),
 			ContextKeyExpr.notEquals('c1', 'cc1'),
 			ContextKeyExpr.not('d1'),
+			ContextKeyExpr.lessThanEquals('f1', 'ff1'),
 			ContextKeyExpr.regex('d4', /\*\*3*/),
+			ContextKeyExpr.greaterThanEquals('e1', 'ee1'),
 			ContextKeyExpr.notEquals('c2', 'cc2'),
 			ContextKeyExpr.has('a2'),
 			ContextKeyExpr.equals('b1', 'bb1'),
 			ContextKeyExpr.regex('d3', /d.*/),
 			ContextKeyExpr.has('a1'),
+			ContextKeyExpr.lessThanEquals('f2', 'ff2'),
 			ContextKeyExpr.and(ContextKeyExpr.equals('and.a', true)),
 			ContextKeyExpr.not('d2')
 		);
@@ -82,6 +93,10 @@ suite('ContextKeyExpr', () => {
 			testExpression('!' + expr, !value);
 			testExpression(expr + ' =~ /d.*/', /d.*/.test(value));
 			testExpression(expr + ' =~ /D/i', /D/i.test(value));
+			// {{SQL CARBON EDIT}}
+			testExpression(expr + ' >= 10', parseFloat(value) >= 10);
+			testExpression(expr + ' <= 10', parseFloat(value) <= 10);
+			//
 		}
 
 		testBatch('a', true);

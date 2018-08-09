@@ -75,6 +75,14 @@ export class TreeNode implements sqlops.TreeComponentItem {
 		this.data.label = value;
 	}
 
+	public get collapsibleState(): vscode.TreeItemCollapsibleState {
+		if (!this._isAlwaysLeaf) {
+			return vscode.TreeItemCollapsibleState.Collapsed;
+		} else {
+			vscode.TreeItemCollapsibleState.None;
+		}
+	}
+
 	public get label(): string {
 		return this.data.label;
 	}
@@ -265,6 +273,7 @@ export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNo
 			let item: sqlops.TreeComponentItem = {};
 			item.label = element.label;
 			item.checked = element.checked;
+			item.collapsibleState = element.collapsibleState;
 			item.iconPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
 			return item;
 		}
@@ -291,9 +300,4 @@ export class TreeDataProvider implements sqlops.TreeComponentDataProvider<TreeNo
 			}
 		}
 
-		onNodeCheckedChanged(element: TreeNode, checked: boolean): void {
-			if (element) {
-				element.changeNodeCheckedState(checked);
-			}
-		}
 }

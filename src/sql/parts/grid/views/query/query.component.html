@@ -22,6 +22,7 @@
 						enableAsyncPostRender="true"
 						showHeader="true"
 						[resized]="dataSet.resized"
+						(onActiveCellChanged)="onActiveCellChanged(i)"
 						(mousedown)="navigateToGrid(i)"
 						[selectionModel]="selectionModel"
 						[plugins]="plugins[i]"

@@ -17,7 +17,7 @@ import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as O
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
+import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import URI from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -148,7 +148,8 @@ export class ResultSerializer {
 		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: paths.normalize(filepathPlaceHolder, true)
+			defaultPath: paths.normalize(filepathPlaceHolder, true),
+			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
 			prevSavePath = filePath;
 			return Promise.resolve(filePath);
@@ -174,6 +175,36 @@ export class ResultSerializer {
 				fileName = fileName + '.txt';
 		}
 		return fileName;
+	}
+
+	private getResultsFileExtension(saveRequest: ISaveRequest): FileFilter[] {
+		let fileFilters = new Array<FileFilter>();
+		let fileFilter:  { extensions: string[]; name: string } = { extensions: undefined, name: undefined};
+
+		switch (saveRequest.format) {
+			case SaveFormat.CSV:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionCSVTitle', 'CSV (Comma delimited)');
+				fileFilter.extensions = ['csv'];
+				break;
+			case SaveFormat.JSON:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', 'JSON');
+				fileFilter.extensions = ['json'];
+				break;
+			case SaveFormat.EXCEL:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', 'Excel Workbook');
+				fileFilter.extensions = ['xlsx'];
+				break;
+			case SaveFormat.XML:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionXMLTitle', 'XML');
+				fileFilter.extensions = ['xml'];
+				break;
+			default:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionTXTTitle', 'Plain Text');
+				fileFilter.extensions = ['txt'];
+		}
+
+		fileFilters.push(fileFilter);
+		return fileFilters;
 	}
 
 	private getConfigForCsv(): SaveResultsRequestParams {
@@ -325,14 +356,14 @@ export class ResultSerializer {
 
 		this._editorService.openEditor(input, { pinned: true })
 			.then(
-			(success) => {
-			},
-			(error: any) => {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: error
-				});
-			}
+				(success) => {
+				},
+				(error: any) => {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: error
+					});
+				}
 			);
 	}
 }
