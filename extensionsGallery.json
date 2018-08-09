@@ -595,7 +595,7 @@
                         "files": [
                         {
                           "assetType": "Microsoft.SQLOps.DownloadPage",
-                          "source": "https://github.com/wakatime/vscode-wakatime/releases/tag/1.2.3"
+                          "source": "https://wakatime.com/vs-code"
                         },
                        {
                           "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
