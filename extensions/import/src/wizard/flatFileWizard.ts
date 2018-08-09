@@ -41,7 +41,7 @@ export class FlatFileWizard {
 		}
 
 		this.wizard = sqlops.window.modelviewdialog.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
-		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page1Name', 'New Table Details'));
+		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page1Name', 'Specify Input File'));
 		let page2 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page2Name', 'Preview Data'));
 		let page3 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page3Name', 'Modify Columns'));
 		let page4 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page4Name', 'Summary'));

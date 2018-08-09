@@ -42,7 +42,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
 				component: this.table,
-				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below'),
+				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.'),
 				actions: [this.refresh]
 			}
 		]).component();
