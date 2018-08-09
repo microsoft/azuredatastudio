@@ -35,7 +35,7 @@ export class FlatFileWizard {
 
 		let connections = await sqlops.connection.getActiveConnections();
 		if (!connections || connections.length === 0) {
-			vscode.window.showErrorMessage('Please connect to a server before using this wizard.');
+			vscode.window.showErrorMessage(localize('import.needConnection', 'Please connect to a server before using this wizard.'));
 			return;
 		}
 
