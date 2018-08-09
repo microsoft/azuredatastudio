@@ -1369,14 +1369,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	/**
 	 * Serialize connection with options provider
+	 * TODO this could be a map reduce operation
 	 */
-	public serializeConnectionString(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
-		if (provider) {
-			return this._providers.get(provider).onReady.then(e => {
-				return e.serializeConnectionString(connectionString);
-			});
-		} else {
-			return Promise.resolve(undefined);
-		}
+	public serializeConnectionString(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
+		return this._providers.get(provider).onReady.then(e => {
+			return e.serializeConnectionString(connectionString);
+		});
 	}
 }
