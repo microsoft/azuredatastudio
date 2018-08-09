@@ -131,7 +131,19 @@ export class SummaryPage extends ImportPage {
 	 * @returns {Promise<string>}
 	 */
 	private async getConnectionString(): Promise<string> {
-		return sqlops.connection.getConnectionString(this.model.server.connectionId, true);
+		let options = this.model.server.options;
+		let connectionString: string;
+
+		if (options.authenticationType === 'Integrated') {
+			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=True`;
+		} else {
+			let credentials = await sqlops.connection.getCredentials(this.model.server.connectionId);
+			connectionString = `Data Source=${options.server + (options.port ? `,${options.port}` : '')};Initial Catalog=${this.model.database};Integrated Security=False;User Id=${options.user};Password=${credentials.password}`;
+		}
+
+		// TODO: Fix this, it's returning undefined string.
+		//await sqlops.connection.getConnectionString(this.model.server.connectionId, true);
+		return connectionString;
 	}
 
 	// private async getCountRowsInserted(): Promise<Number> {
