@@ -649,9 +649,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getConnectionUriFromId(connectionId: string): string {
-		let connection = this.getActiveConnections().find(connection => connection.id === connectionId);
-		if (connection) {
-			return this.getConnectionUri(connection);
+		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
+		if (connectionInfo) {
+			return connectionInfo.ownerUri;
 		} else {
 			return undefined;
 		}

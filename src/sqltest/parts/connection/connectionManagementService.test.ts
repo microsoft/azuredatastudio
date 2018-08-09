@@ -816,8 +816,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		// If I call getConnectionUriFromId on the given connection
 		let foundUri = connectionManagementService.getConnectionUriFromId(profile.id);
 
-		// Then the returned URI matches the connection's
-		assert.equal(foundUri, Utils.generateUri(new ConnectionProfile(capabilitiesService, profile)));
+		// Then the returned URI matches the connection's original URI
+		assert.equal(foundUri, uri);
 	});
 
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
