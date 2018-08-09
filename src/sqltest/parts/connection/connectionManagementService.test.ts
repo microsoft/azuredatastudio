@@ -108,7 +108,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
-		connectionStore.setup(x => x.getConnectionProfileGroups()).returns(() => [root]);
+		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 

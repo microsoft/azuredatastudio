@@ -12,7 +12,6 @@ import * as sqlops from 'sqlops';
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
 	private _proxy: MainThreadConnectionManagementShape;
-	private readonly _connectionDialogHandles = new Map<string, (connection: sqlops.connection.Connection) => void>();
 
 	constructor(
 		mainContext: IMainContext
@@ -33,18 +32,10 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		return this._proxy.$getCredentials(connectionId);
 	}
 
-	public $openConnectionDialog(providers: string[], callback: (connection: sqlops.connection.Connection) => void) {
-		let handleId = `connectionDialog-${generateUuid()}`;
-		this._connectionDialogHandles.set(handleId, callback);
-		this._proxy.$openConnectionDialog(providers, handleId);
+	public $openConnectionDialog(providers?: string[]): Thenable<sqlops.connection.Connection> {
+		return this._proxy.$openConnectionDialog(providers);
 	}
 
-	public $onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void {
-		if (this._connectionDialogHandles.has(handleId)) {
-			let handler = this._connectionDialogHandles.get(handleId);
-			handler(connection);
-		}
-	}
 	public $listDatabases(connectionId: string): Thenable<string[]> {
 		return this._proxy.$listDatabases(connectionId);
 	}

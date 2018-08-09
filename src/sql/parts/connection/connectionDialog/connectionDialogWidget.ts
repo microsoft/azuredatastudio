@@ -103,7 +103,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		if (this._newConnectionParams &&  this._newConnectionParams.providers) {
 			let validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
-			if (validProviderNames) {
+			if (validProviderNames && validProviderNames.length > 0) {
 				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find( v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
 			}
 		}

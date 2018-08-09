@@ -76,7 +76,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _currentProviderType: string = 'Microsoft SQL Server';
 	private _connecting: boolean = false;
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
-	private _deferredPromise: Deferred<IConnectionProfile>;
+	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
 	constructor(
 		@IPartService private _partService: IPartService,
@@ -157,7 +157,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connecting = false;
 		}
 		this.uiController.databaseDropdownExpanded = false;
-		this._deferredPromise.resolve(undefined);
+		this._dialogDeferredPromise.resolve(undefined);
 	}
 
 	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
@@ -178,7 +178,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close();
-				this._deferredPromise.resolve(connectionResult.connectionProfile);
+				this._dialogDeferredPromise.resolve(connectionResult.connectionProfile);
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 			} else {
@@ -280,16 +280,16 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
-		this._deferredPromise = new Deferred<IConnectionProfile>();
+		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
 
 		this.showDialog(connectionManagementService,
 			params,
 			model,
 			connectionResult).then(() => {
 			}, error => {
-				this._deferredPromise.reject(error);
+				this._dialogDeferredPromise.reject(error);
 			});
-		return this._deferredPromise;
+		return this._dialogDeferredPromise;
 	}
 
 	public showDialog(

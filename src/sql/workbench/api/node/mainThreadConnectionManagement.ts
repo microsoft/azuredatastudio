@@ -51,18 +51,13 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 
-	public $openConnectionDialog(providers: string[], handleId: string): void {
-		this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }).then(connectionProfile => {
-			if (connectionProfile) {
-				this._proxy.$onConnectionOpened(handleId, {
-					connectionId: connectionProfile.id,
-					options: connectionProfile.options,
-					providerName: connectionProfile.providerName
-				});
-			} else {
-				this._proxy.$onConnectionOpened(handleId, undefined);
-			}
-		});
+	public async $openConnectionDialog(providers: string[]): Promise<sqlops.connection.Connection> {
+		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers });
+		return connectionProfile ? {
+			connectionId: connectionProfile.id,
+			options: connectionProfile.options,
+			providerName: connectionProfile.providerName
+		} : undefined;
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

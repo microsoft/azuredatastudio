@@ -104,8 +104,8 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
-				openConnectionDialog(providers: string[], callback: (connection: sqlops.connection.Connection) => void) {
-					extHostConnectionManagement.$openConnectionDialog(providers, callback);
+				openConnectionDialog(providers?: string[]): Thenable<sqlops.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
