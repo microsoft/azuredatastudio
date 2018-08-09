@@ -797,7 +797,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getActiveConnectionCredentials returns the credentials dictionary for a connection profile', () => {
 		let profile = Object.assign({}, connectionProfile);
-		profile.options = {password: profile.password};
+		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
@@ -807,7 +807,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConnectionUriFromId returns a URI of an active connection with the given id', () => {
 		let profile = Object.assign({}, connectionProfile);
-		profile.options = {password: profile.password};
+		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let uri = 'test_initial_uri';
 		connectionStatusManager.addConnection(profile, uri);
@@ -822,7 +822,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
 		let profile = Object.assign({}, connectionProfile);
-		profile.options = {password: profile.password};
+		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, Utils.generateUri(profile));
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
