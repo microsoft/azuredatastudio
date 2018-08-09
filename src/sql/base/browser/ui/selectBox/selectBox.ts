@@ -119,6 +119,7 @@ export class SelectBox extends vsSelectBox {
 		this.selectBackground = this.enabledSelectBackground;
 		this.selectForeground = this.enabledSelectForeground;
 		this.selectBorder = this.enabledSelectBorder;
+		dom.removeClass(this.selectElement, 'disabled');
 		this.applyStyles();
 	}
 
@@ -127,6 +128,7 @@ export class SelectBox extends vsSelectBox {
 		this.selectBackground = this.disabledSelectBackground;
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
+		dom.addClass(this.selectElement, 'disabled');
 		this.applyStyles();
 	}
 
