@@ -77,7 +77,7 @@ export class TreeNode implements sqlops.TreeComponentItem {
 
 	public get collapsibleState(): vscode.TreeItemCollapsibleState {
 		if (!this._isAlwaysLeaf) {
-			return vscode.TreeItemCollapsibleState.Collapsed;
+			return vscode.TreeItemCollapsibleState.Expanded;
 		} else {
 			vscode.TreeItemCollapsibleState.None;
 		}

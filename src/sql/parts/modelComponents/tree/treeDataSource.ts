@@ -55,4 +55,8 @@ export class TreeComponentDataSource implements IDataSource {
 	public getParent(tree: ITree, node: any): TPromise<any> {
 		return TPromise.as(null);
 	}
+
+	public shouldAutoexpand(tree: ITree, node: ITreeComponentItem): boolean {
+		return node.collapsibleState === TreeItemCollapsibleState.Expanded;
+	}
 }
