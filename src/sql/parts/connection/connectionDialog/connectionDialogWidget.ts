@@ -59,6 +59,7 @@ export class ConnectionDialogWidget extends Modal {
 	private $connectionUIContainer: Builder;
 	private _databaseDropdownExpanded: boolean;
 	private _actionbar: ActionBar;
+	private _providers: string[];
 
 	private _panel: TabbedPanel;
 	private _recentConnectionTabId: PanelTabIdentifier;
@@ -84,6 +85,7 @@ export class ConnectionDialogWidget extends Modal {
 	constructor(
 		private providerTypeOptions: string[],
 		private selectedProviderType: string,
+		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
@@ -94,6 +96,22 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextViewService private _contextViewService: IContextViewService
 	) {
 		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
+	}
+
+	public refresh(): void {
+		let filteredProviderTypes = this.providerTypeOptions;
+
+		if (this._newConnectionParams &&  this._newConnectionParams.providers) {
+			let validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
+			if (validProviderNames && validProviderNames.length > 0) {
+				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find( v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
+			}
+		}
+		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
+	}
+
+	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
+		return params === undefined || params.providers === undefined || params.providers.find(x => x === providerName) !== undefined;
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -147,7 +165,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._panel.onTabChange(c => {
 			if (c === savedConnectionTabId && this._savedConnectionTree.getContentHeight() === 0) {
 				// Update saved connection tree
-				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService);
+				TreeUpdateUtils.structuralTreeUpdate(this._savedConnectionTree, 'saved', this._connectionManagementService, this._providers);
 
 				if (this._savedConnectionTree.getContentHeight() > 0) {
 					this._noSavedConnectionBuilder.hide();
@@ -366,7 +384,7 @@ export class ConnectionDialogWidget extends Modal {
 			this._recentConnectionBuilder.hide();
 			this._noRecentConnectionBuilder.show();
 		}
-		TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService);
+		TreeUpdateUtils.structuralTreeUpdate(this._recentConnectionTree, 'recent', this._connectionManagementService, this._providers);
 
 		// reset saved connection tree
 		this._savedConnectionTree.setInput([]);
@@ -415,6 +433,8 @@ export class ConnectionDialogWidget extends Modal {
 
 	public set newConnectionParams(params: INewConnectionParams) {
 		this._newConnectionParams = params;
+		this._providers = params && params.providers;
+		this.refresh();
 	}
 
 	public updateProvider(displayName: string) {

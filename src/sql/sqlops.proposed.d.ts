@@ -1106,7 +1106,7 @@ declare module 'sqlops' {
 		/**
 		 * Connection information
 		 */
-		connection: connection.Connection;
+		connection?: connection.Connection;
 
 		/**
 		 * Operation Display Name
@@ -1153,5 +1153,12 @@ declare module 'sqlops' {
 		 * @param connectionId The ID of the connection
 		 */
 		export function getUriForConnection(connectionId: string): Thenable<string>;
+
+		/**
+		 * Opens the connection dialog, calls the callback with the result. If connection was successful
+		 * returns the connection otherwise returns undefined
+		 * @param callback
+		 */
+		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
 	}
 }
