@@ -338,9 +338,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			if (this.insertItemInDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
-			if (i > 0) {
-				this.sashItems[i - 1].sash.show();
-			}
+			this.sashItems[i].sash.show();
 		}
 
 		// when view scrolls up, start rendering from either this.renderTop or renderBottom
@@ -348,9 +346,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			if (this.insertItemInDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
-			if (i > 0) {
-				this.sashItems[i - 1].sash.show();
-			}
+			this.sashItems[i].sash.show();
 		}
 
 		// when view scrolls down, start unrendering from renderTop
@@ -358,9 +354,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			if (this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
-			if (i > 0) {
-				this.sashItems[i - 1].sash.hide();
-			}
+			this.sashItems[i].sash.hide();
 		}
 
 		// when view scrolls up, start unrendering from either renderBottom this.renderTop
@@ -368,9 +362,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			if (this.removeItemFromDOM(<IViewItem>this.itemAtIndex(i))) {
 				this.dirtyState = true;
 			}
-			if (i > 0) {
-				this.sashItems[i - 1].sash.hide();
-			}
+			this.sashItems[i].sash.hide();
 		}
 
 		let topItem = this.itemAtIndex(this.indexAt(renderTop));
