@@ -157,7 +157,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connecting = false;
 		}
 		this.uiController.databaseDropdownExpanded = false;
-		this._dialogDeferredPromise.resolve(undefined);
+		if (this._dialogDeferredPromise) {
+			this._dialogDeferredPromise.resolve(undefined);
+		}
 	}
 
 	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
@@ -178,7 +180,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close();
-				this._dialogDeferredPromise.resolve(connectionResult.connectionProfile);
+				if (this._dialogDeferredPromise) {
+					this._dialogDeferredPromise.resolve(connectionResult.connectionProfile);
+				}
 			} else if (connectionResult && connectionResult.errorHandled) {
 				this._connectionDialog.resetConnection();
 			} else {
