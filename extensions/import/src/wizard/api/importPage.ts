@@ -10,13 +10,16 @@ import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
 
 export abstract class ImportPage {
+
+	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: FlatFileWizard;
 	protected readonly model: ImportDataModel;
 	protected readonly view: sqlops.ModelView;
 	protected readonly provider: FlatFileProvider;
 
-	protected constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+	protected constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
 		this.instance = instance;
+		this.wizardPage = wizardPage;
 		this.model = model;
 		this.view = view;
 		this.provider = provider;

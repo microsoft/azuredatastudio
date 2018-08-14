@@ -47,22 +47,21 @@ export class FlatFileWizard {
 
 		let fileConfigPage: FileConfigPage;
 		page1.registerContent(async (view) => {
-			fileConfigPage = new FileConfigPage(this, model, view, this.provider);
+			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider);
 			pages.set(0, fileConfigPage);
-			await fileConfigPage.start();
-			fileConfigPage.onPageEnter();
+			await fileConfigPage.start().then(() => fileConfigPage.onPageEnter);
 		});
 
 		let prosePreviewPage: ProsePreviewPage;
 		page2.registerContent(async (view) => {
-			prosePreviewPage = new ProsePreviewPage(this, model, view, this.provider);
+			prosePreviewPage = new ProsePreviewPage(this, page2, model, view, this.provider);
 			pages.set(1, prosePreviewPage);
 			await prosePreviewPage.start();
 		});
 
 		let modifyColumnsPage: ModifyColumnsPage;
 		page3.registerContent(async (view) => {
-			modifyColumnsPage = new ModifyColumnsPage(this, model, view, this.provider);
+			modifyColumnsPage = new ModifyColumnsPage(this, page3, model, view, this.provider);
 			pages.set(2, modifyColumnsPage);
 			await modifyColumnsPage.start();
 		});
@@ -70,7 +69,7 @@ export class FlatFileWizard {
 		let summaryPage: SummaryPage;
 
 		page4.registerContent(async (view) => {
-			summaryPage = new SummaryPage(this, model, view, this.provider);
+			summaryPage = new SummaryPage(this, page4, model, view, this.provider);
 			pages.set(3, summaryPage);
 			await summaryPage.start();
 		});
@@ -121,7 +120,6 @@ export class FlatFileWizard {
 	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
 	}
-
 
 }
 
