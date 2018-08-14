@@ -1,0 +1,91 @@
+{
+  "name": "import",
+  "displayName": "SQL Server Import",
+  "description": "Imports data from a flat file.",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "engines": {
+    "vscode": "^1.25.0",
+    "sqlops": "*"
+  },
+  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/sqlopsstudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "flatFileImport.start",
+        "title": "Import wizard",
+        "category": "Flat File Import",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "flatFileImport.start",
+        "key": "ctrl+i",
+        "mac": "ctrl+i"
+      }
+    ],
+    "dashboard.tabs": [
+      {
+        "id": "flat-file-import",
+        "title": "Flat File Import",
+        "description": "The flat file importer.",
+        "container": {
+          "flat-file-import-container": {}
+        }
+      }
+    ],
+    "dashboard.containers": [
+      {
+        "id": "flat-file-import-container",
+        "container": {
+          "widgets-container": [
+            {
+              "name": "Tasks",
+              "widget": {
+                "tasks-widget": [
+                  "flatFileImport.start"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "flatFileImport.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "group": "import"
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.5",
+    "opener": "^1.4.3",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
+    "vscode-extension-telemetry": "^0.0.5",
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+  }
+}

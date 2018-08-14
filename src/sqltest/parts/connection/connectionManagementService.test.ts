@@ -108,7 +108,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
-		connectionStore.setup(x => x.getConnectionProfileGroups()).returns(() => [root]);
+		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
@@ -172,7 +172,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connectionDialogService.verify(x => x.showDialog(
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
-				TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName),
+				TypeMoq.It.is<IConnectionProfile>(c => c !== undefined && c.serverName === connectionProfile.serverName),
 				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 

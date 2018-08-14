@@ -59,6 +59,7 @@ export interface IConnectionResult {
 	errorCode: number;
 	callStack: string;
 	errorHandled?: boolean;
+	connectionProfile?: IConnectionProfile;
 }
 
 export interface IConnectionCallbacks {
@@ -130,15 +131,15 @@ export interface IConnectionManagementService {
 
 	onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo);
 
-	getConnectionGroups(): ConnectionProfileGroup[];
+	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
-	getRecentConnections(): ConnectionProfile[];
+	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
 	clearRecentConnectionsList(): void;
 
 	clearRecentConnection(connectionProfile: IConnectionProfile): void;
 
-	getActiveConnections(): ConnectionProfile[];
+	getActiveConnections(providers?: string[]): ConnectionProfile[];
 
 	saveProfileGroup(profile: IConnectionProfileGroup): Promise<string>;
 
@@ -270,7 +271,24 @@ export interface IConnectionManagementService {
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
 export interface IConnectionDialogService {
 	_serviceBrand: any;
+	/**
+	 * Opens the connection dialog and returns the promise for successfully opening the dialog
+	 * @param connectionManagementService
+	 * @param params
+	 * @param model
+	 * @param connectionResult
+	 */
 	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
+
+	/**
+	 * Opens the connection dialog and returns the promise when connection is made
+	 * or dialog is closed
+	 * @param connectionManagementService
+	 * @param params
+	 * @param model
+	 * @param connectionResult
+	 */
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
 }
 
 export interface IServerGroupDialogCallbacks {
@@ -304,6 +322,7 @@ export interface INewConnectionParams {
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
 	querySelection?: sqlops.ISelectionData;
 	showDashboard?: boolean;
+	providers?: string[];
 }
 
 export interface IConnectableInput {

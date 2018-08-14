@@ -213,13 +213,16 @@ export class ConnectionStore {
 	 *
 	 * @returns {sqlops.ConnectionInfo} the array of connections, empty if none are found
 	 */
-	public getRecentlyUsedConnections(): ConnectionProfile[] {
+	public getRecentlyUsedConnections(providers?: string[]): ConnectionProfile[] {
 		let configValues: IConnectionProfile[] = this._memento[Constants.recentConnections];
 		if (!configValues) {
 			configValues = [];
 		}
 
 		configValues = configValues.filter(c => !!(c));
+		if (providers && providers.length > 0) {
+			configValues = configValues.filter(c => providers.includes(c.providerName));
+		}
 		return this.convertConfigValuesToConnectionProfiles(configValues);
 	}
 
@@ -429,10 +432,13 @@ export class ConnectionStore {
 		});
 	}
 
-	public getConnectionProfileGroups(withoutConnections?: boolean): ConnectionProfileGroup[] {
+	public getConnectionProfileGroups(withoutConnections?: boolean, providers?: string[]): ConnectionProfileGroup[] {
 		let profilesInConfiguration: ConnectionProfile[];
 		if (!withoutConnections) {
 			profilesInConfiguration = this._connectionConfig.getConnections(true);
+			if (providers && providers.length > 0) {
+				profilesInConfiguration = profilesInConfiguration.filter(x => providers.includes(x.providerName));
+			}
 		}
 		let groups = this._connectionConfig.getAllGroups();
 

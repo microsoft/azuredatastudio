@@ -3,8 +3,8 @@
 
 
 agent-base@4, agent-base@^4.1.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-4.2.0.tgz#9838b5c3392b962bad031e6a4c5e1024abec45ce"
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/agent-base/-/agent-base-4.2.1.tgz#d89e5999f797875674c07d87f260fc41e83e8ca9"
   dependencies:
     es6-promisify "^5.0.0"
 
@@ -27,9 +27,24 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
+buffer-alloc-unsafe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc-unsafe/-/buffer-alloc-unsafe-1.1.0.tgz#bd7dc26ae2972d0eda253be061dba992349c19f0"
+
+buffer-alloc@^1.1.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/buffer-alloc/-/buffer-alloc-1.2.0.tgz#890dd90d923a873e08e10e5fd51a57e5b7cce0ec"
+  dependencies:
+    buffer-alloc-unsafe "^1.1.0"
+    buffer-fill "^1.0.0"
+
 buffer-crc32@~0.2.3:
   version "0.2.13"
   resolved "https://registry.yarnpkg.com/buffer-crc32/-/buffer-crc32-0.2.13.tgz#0d333e3f00eac50aa1454abd30ef8c2a5d9a7242"
+
+buffer-fill@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/buffer-fill/-/buffer-fill-1.0.0.tgz#f8f78b76789888ef39f205cd637f68e702122b2c"
 
 buffer@^3.0.1:
   version "3.6.0"
@@ -49,11 +64,11 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.2.4":
-  version "0.2.4"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/b4e2696563d0075e1b674ac8b179b3b8c441f59f"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.2.5":
+  version "0.2.5"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/6aca9c6850d2b2e1e59f09d67e15922f5acec5ea"
   dependencies:
-    vscode-languageclient "3.5.0"
+    vscode-languageclient "3.5.1"
 
 debug@3.1.0, debug@^3.1.0:
   version "3.1.0"
@@ -139,9 +154,9 @@ eventemitter2@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/eventemitter2/-/eventemitter2-5.0.1.tgz#6197a095d5fb6b57e8942f6fd7eaad63a09c9452"
 
-fd-slicer@~1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/fd-slicer/-/fd-slicer-1.0.1.tgz#8b5bcbd9ec327c5041bf9ab023fd6750f1177e65"
+fd-slicer@~1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/fd-slicer/-/fd-slicer-1.1.0.tgz#25c7c89cb1f9077f8891bbe61d8f390eae256f1e"
   dependencies:
     pend "~1.2.0"
 
@@ -156,6 +171,10 @@ file-type@^5.2.0:
 file-type@^6.1.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/file-type/-/file-type-6.2.0.tgz#e50cd75d356ffed4e306dc4f5bcf52a79903a919"
+
+fs-constants@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/fs-constants/-/fs-constants-1.0.0.tgz#6be0de9be998ce16af8afc24497b9ee9b7ccd9ad"
 
 get-stream@^2.2.0:
   version "2.3.1"
@@ -180,15 +199,15 @@ http-proxy-agent@^2.0.0:
     debug "3.1.0"
 
 https-proxy-agent@^2.1.1:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.0.tgz#7fbba856be8cd677986f42ebd3664f6317257887"
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.1.tgz#51552970fa04d723e04c56d04178c3f92592bbc0"
   dependencies:
     agent-base "^4.1.0"
     debug "^3.1.0"
 
 ieee754@^1.1.4:
-  version "1.1.11"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.11.tgz#c16384ffe00f5b7835824e67b6f2bd44a5229455"
+  version "1.1.12"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.12.tgz#50bf24e5b9c8bb98af4964c941cdb0918da7b60b"
 
 inherits@~2.0.3:
   version "2.0.3"
@@ -207,8 +226,8 @@ isarray@^1.0.0, isarray@~1.0.0:
   resolved "https://registry.yarnpkg.com/isarray/-/isarray-1.0.0.tgz#bb935d48582cba168c06834957a54a3e07124f11"
 
 make-dir@^1.0.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.2.0.tgz#6d6a49eead4aae296c53bbf3a1a008bd6c89469b"
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-1.3.0.tgz#79c1033b80515bd6d24ec9933e860ca75ee27f0c"
   dependencies:
     pify "^3.0.0"
 
@@ -270,21 +289,21 @@ process-nextick-args@~2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/process-nextick-args/-/process-nextick-args-2.0.0.tgz#a37d732f4271b4ab1ad070d35508e8290788ffaa"
 
-readable-stream@^2.0.0, readable-stream@^2.3.5:
-  version "2.3.5"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.5.tgz#b4f85003a938cbb6ecbce2a124fb1012bd1a838d"
+readable-stream@^2.3.0, readable-stream@^2.3.5:
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
   dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.3"
     isarray "~1.0.0"
     process-nextick-args "~2.0.0"
     safe-buffer "~5.1.1"
-    string_decoder "~1.0.3"
+    string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
 safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.1.tgz#893312af69b2123def71f57889001671eeb2c853"
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.1.2.tgz#991ec69d296e0313747d59bdfd2b745c35f8828d"
 
 seek-bzip@^1.0.5:
   version "1.0.5"
@@ -307,9 +326,9 @@ semver@^5.3.0:
     mkdirp "^0.5.1"
     tmp "^0.0.33"
 
-string_decoder@~1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.0.3.tgz#0fc67d7c141825de94282dd536bec6b9bce860ab"
+string_decoder@~1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/string_decoder/-/string_decoder-1.1.1.tgz#9cf1611ba62685d7030ae9e4ba34149c3af03fc8"
   dependencies:
     safe-buffer "~5.1.0"
 
@@ -320,12 +339,15 @@ strip-dirs@^2.0.0:
     is-natural-number "^4.0.1"
 
 tar-stream@^1.5.2:
-  version "1.5.5"
-  resolved "https://registry.yarnpkg.com/tar-stream/-/tar-stream-1.5.5.tgz#5cad84779f45c83b1f2508d96b09d88c7218af55"
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/tar-stream/-/tar-stream-1.6.1.tgz#f84ef1696269d6223ca48f6e1eeede3f7e81f395"
   dependencies:
     bl "^1.0.0"
+    buffer-alloc "^1.1.0"
     end-of-stream "^1.0.0"
-    readable-stream "^2.0.0"
+    fs-constants "^1.0.0"
+    readable-stream "^2.3.0"
+    to-buffer "^1.1.0"
     xtend "^4.0.0"
 
 through@^2.3.6:
@@ -337,6 +359,10 @@ tmp@^0.0.33:
   resolved "https://registry.yarnpkg.com/tmp/-/tmp-0.0.33.tgz#6d34335889768d21b2bcda0aa277ced3b1bfadf9"
   dependencies:
     os-tmpdir "~1.0.2"
+
+to-buffer@^1.1.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/to-buffer/-/to-buffer-1.1.1.tgz#493bd48f62d7c43fcded313a03dcadb2e1213a80"
 
 unbzip2-stream@^1.0.9:
   version "1.2.5"
@@ -355,24 +381,24 @@ vscode-extension-telemetry@^0.0.15:
   dependencies:
     applicationinsights "1.0.1"
 
-vscode-jsonrpc@3.5.0, vscode-jsonrpc@^3.5.0:
+vscode-jsonrpc@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
 
-vscode-languageclient@3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-3.5.0.tgz#36d02cc186a8365a4467719a290fb200a9ae490a"
+vscode-languageclient@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-3.5.1.tgz#c78e582459c24e58f88020dfa34065e976186a98"
   dependencies:
-    vscode-languageserver-protocol "^3.5.0"
+    vscode-languageserver-protocol "3.5.1"
 
-vscode-languageserver-protocol@3.5.0, vscode-languageserver-protocol@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.5.0.tgz#067c5cbe27709795398d119692c97ebba1452209"
+vscode-languageserver-protocol@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.5.1.tgz#5144a3a9eeccbd83fe2745bd4ed75fad6cc45f0d"
   dependencies:
-    vscode-jsonrpc "^3.5.0"
-    vscode-languageserver-types "^3.5.0"
+    vscode-jsonrpc "3.5.0"
+    vscode-languageserver-types "3.5.0"
 
-vscode-languageserver-types@3.5.0, vscode-languageserver-types@^3.5.0:
+vscode-languageserver-types@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.5.0.tgz#e48d79962f0b8e02de955e3f524908e2b19c0374"
 
@@ -385,11 +411,11 @@ xtend@^4.0.0:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
 
 yauzl@^2.4.2:
-  version "2.9.1"
-  resolved "https://registry.yarnpkg.com/yauzl/-/yauzl-2.9.1.tgz#a81981ea70a57946133883f029c5821a89359a7f"
+  version "2.10.0"
+  resolved "https://registry.yarnpkg.com/yauzl/-/yauzl-2.10.0.tgz#c7eb17c93e112cb1086fa6d8e51fb0667b79a5f9"
   dependencies:
     buffer-crc32 "~0.2.3"
-    fd-slicer "~1.0.1"
+    fd-slicer "~1.1.0"
 
 zone.js@0.7.6:
   version "0.7.6"

@@ -71,11 +71,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
-	public onActiveCellChanged: (event: { row: number, column: number }) => void;
-	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
-	public onCellEditBegin: (event: { row: number, column: number }) => void;
-	public onRowEditBegin: (event: { row: number }) => void;
-	public onRowEditEnd: (event: { row: number }) => void;
+	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
+	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
 	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
 	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
@@ -167,16 +164,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onActiveCellChanged = this.onCellSelect;
 
-		this.onCellEditEnd = (event: { row: number, column: number, newValue: any }): void => {
+		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
 			// Store the value that was set
-			self.currentEditCellValue = event.newValue;
+			self.currentEditCellValue = event.item[event.cell - 1];
 		};
-
-		this.onCellEditBegin = (event: { row: number, column: number }): void => { };
-
-		this.onRowEditBegin = (event: { row: number }): void => { };
-
-		this.onRowEditEnd = (event: { row: number }): void => { };
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
 			let returnVal = '';
@@ -233,10 +224,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		};
 	}
 
-	onCellSelect(event: { row: number, column: number }): void {
+	onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): void {
 		let self = this;
 		let row = event.row;
-		let column = event.column;
+		let column = event.cell;
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)

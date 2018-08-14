@@ -23,14 +23,15 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITreeComponentItem, IModelViewTreeViewDataProvider } from 'sql/workbench/common/views';
+import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { TreeViewDataProvider } from './treeViewDataProvider';
+import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 
 class Root implements ITreeComponentItem {
 	label = 'root';
 	handle = '0';
 	parentHandle = null;
-	collapsibleState = 0;
+	collapsibleState = 2;
 	children = void 0;
 	options = undefined;
 }
@@ -123,11 +124,19 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 
 	public layout(): void {
 		this._changeRef.detectChanges();
-		this.createTreeControl();
 		if (this._tree) {
-			this._tree.layout(this.convertSizeToNumber(this.width), this.convertSizeToNumber(this.height));
+
+			this.layoutTree();
 			this._tree.refresh();
 		}
+	}
+
+	private layoutTree(): void {
+		let width: number = this.convertSizeToNumber(this.width);
+		let height: number = this.convertSizeToNumber(this.height);
+		this._tree.layout(
+			height && height > 0 ? height : getContentHeight(this._inputContainer.nativeElement),
+			width && width > 0 ? width : getContentWidth(this._inputContainer.nativeElement));
 	}
 
 	public setLayout(layout: any): void {
