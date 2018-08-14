@@ -36,7 +36,6 @@ export class ProsePreviewPage extends ImportPage {
 		});
 
 		this.loading = this.view.modelBuilder.loadingComponent().component();
-		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
@@ -55,6 +54,7 @@ export class ProsePreviewPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
+		this.setupNavigationValidator();
 		await this.handleProse();
 		await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 		this.loading.loading = false;

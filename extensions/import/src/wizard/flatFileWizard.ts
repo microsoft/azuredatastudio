@@ -49,7 +49,9 @@ export class FlatFileWizard {
 		page1.registerContent(async (view) => {
 			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider);
 			pages.set(0, fileConfigPage);
-			await fileConfigPage.start().then(() => fileConfigPage.onPageEnter);
+			await fileConfigPage.start().then(() => {
+				fileConfigPage.onPageEnter();
+			});
 		});
 
 		let prosePreviewPage: ProsePreviewPage;

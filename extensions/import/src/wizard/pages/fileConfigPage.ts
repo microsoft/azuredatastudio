@@ -39,7 +39,6 @@ export class FileConfigPage extends ImportPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
-		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -56,6 +55,7 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
+		this.setupNavigationValidator();
 		await this.populateServerDropdown();
 		await this.populateDatabaseDropdown();
 		await this.populateSchemaDropdown();

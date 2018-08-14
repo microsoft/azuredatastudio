@@ -106,6 +106,7 @@ export class ModifyColumnsPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
+		this.setupNavigationValidator();
 		await this.populateTable();
 		this.loading.loading = false;
 
@@ -121,7 +122,14 @@ export class ModifyColumnsPage extends ImportPage {
 
 		return true;
 	}
-
+	private setupNavigationValidator() {
+		this.instance.registerNavigationValidator((info) => {
+			if (this.loading.loading) {
+				return false;
+			}
+			return true;
+		});
+	}
 	private async populateTable() {
 		let data: any[][] = [];
 
