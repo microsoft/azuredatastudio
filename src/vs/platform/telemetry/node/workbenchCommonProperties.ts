@@ -41,6 +41,8 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		// result['common.instanceId'] = getOrCreateInstanceId(storageService);
 		result['common.instanceId'] = '';
 
+		// {{SQL CARBON EDIT}}
+		setUsageDates(storageService, result);
 		return result;
 	});
 }
@@ -51,3 +53,29 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 // 	storageService.store('telemetry.instanceId', result);
 // 	return result;
 // }
+
+// {{SQL CARBON EDIT}}
+function setUsageDates(storageService: IStorageService, result: {[key:string]: string}): void {
+	// first usage date
+	const firstUseDate = storageService.get('telemetry.firstUseDate') || convertToDate(new Date());
+	storageService.store('telemetry.firstUseDate', firstUseDate);
+
+	// last usage date
+	const lastUseDate = storageService.get('telemetry.lastUseDate') || convertToDate(new Date());
+	storageService.store('telemetry.lastUseDate', lastUseDate);
+}
+
+export function convertToDate(date: Date): string {
+	let day = date.getDate();
+	let month = date.getMonth();
+	let year = date.getFullYear();
+	return `${month}/${day}/${year}`;
+}
+
+export function diffInDays(nowDate: string, lastUseDate: string): number {
+	let nowDateArray = nowDate.split('/');
+	let lastUseDateArray = lastUseDate.split('/');
+	let newNowDate: any = new Date(+nowDateArray[2], +nowDateArray[1], +nowDateArray[0]);
+	let newLastUseDate: any = new Date(+lastUseDateArray[2], +lastUseDateArray[1], +lastUseDateArray[0]);
+	return (newNowDate - newLastUseDate)/(24*3600*1000);
+}
