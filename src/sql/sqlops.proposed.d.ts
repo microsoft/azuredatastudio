@@ -270,6 +270,10 @@ declare module 'sqlops' {
 		 * Default is "1 1 auto".
 		 */
 		flex?: string;
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string }
 	}
 
 	export interface FormItemLayout {
