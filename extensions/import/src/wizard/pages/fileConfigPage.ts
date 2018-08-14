@@ -29,8 +29,8 @@ export class FileConfigPage extends ImportPage {
 
 	private tableNames: string[] = [];
 
-	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
-		super(instance, model, view, provider);
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, wizardPage, model, view, provider);
 	}
 
 	async start(): Promise<boolean> {
@@ -39,7 +39,6 @@ export class FileConfigPage extends ImportPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
-		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -73,7 +72,7 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	private setupNavigationValidator() {
+	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (this.schemaLoader.loading || this.databaseLoader.loading) {
 				return false;
