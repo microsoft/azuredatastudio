@@ -816,6 +816,7 @@ declare module 'sqlops' {
 	export interface DbCellValue {
 		displayValue: string;
 		isNull: boolean;
+		invariantCultureDisplayValue: string;
 	}
 
 	export interface ResultSetSubset {
