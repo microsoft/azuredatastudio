@@ -44,6 +44,12 @@ export abstract class ImportPage {
 	public async abstract onPageLeave(): Promise<boolean>;
 
 	/**
+	 * Sets up a navigation validator.
+	 * This will be called right before onPageEnter().
+	 */
+	public abstract setupNavigationValidator();
+
+	/**
 	 * Override this method to cleanup what you don't need cached in the page.
 	 * @returns {Promise<boolean>}
 	 */

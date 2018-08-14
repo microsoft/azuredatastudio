@@ -55,7 +55,6 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.setupNavigationValidator();
 		await this.populateServerDropdown();
 		await this.populateDatabaseDropdown();
 		await this.populateSchemaDropdown();
@@ -73,7 +72,7 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	private setupNavigationValidator() {
+	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (this.schemaLoader.loading || this.databaseLoader.loading) {
 				return false;

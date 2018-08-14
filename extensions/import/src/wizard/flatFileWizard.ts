@@ -50,6 +50,7 @@ export class FlatFileWizard {
 			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider);
 			pages.set(0, fileConfigPage);
 			await fileConfigPage.start().then(() => {
+				fileConfigPage.setupNavigationValidator();
 				fileConfigPage.onPageEnter();
 			});
 		});
@@ -94,6 +95,7 @@ export class FlatFileWizard {
 			let page = pages.get(idx);
 
 			if (page) {
+				page.setupNavigationValidator();
 				page.onPageEnter();
 			}
 		});

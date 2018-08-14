@@ -54,7 +54,6 @@ export class ProsePreviewPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
-		this.setupNavigationValidator();
 		await this.handleProse();
 		await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
 		this.loading.loading = false;
@@ -72,12 +71,9 @@ export class ProsePreviewPage extends ImportPage {
 		return true;
 	}
 
-	private setupNavigationValidator() {
+	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			if (this.loading.loading) {
-				return false;
-			}
-			return true;
+			return !this.loading.loading;
 		});
 	}
 
