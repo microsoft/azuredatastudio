@@ -46,7 +46,8 @@
     background-image: url('down.svg');
 }
 
-.vs-dark .slick-header-menubutton {
+.vs-dark .slick-header-menubutton,
+.hc-black .slick-header-menubutton {
     background-image: url('down-inverse.svg');
 }
 
@@ -54,7 +55,8 @@
     background-image: url('filter.svg');
 }
 
-.vs-dark .slick-header-menubutton.filtered {
+.vs-dark .slick-header-menubutton.filtered,
+.hc-black .slick-header-menubutton.filtered {
     background-image: url('filter_inverse.svg');
 }
 
@@ -72,6 +74,10 @@
 
 .vs-dark .slick-header-menu {
     background: none repeat scroll 0 0 #333333;
+}
+
+.hc-black .slick-header-menu {
+    background: none repeat scroll 0 0 #000000;
 }
 
 .slick-header-menu a.monaco-button.monaco-text-button {
@@ -144,4 +150,8 @@ label {
 
 .vs-dark .slick-header-menu > input.input {
     color: #4a4a4a;
+}
+
+.hc-black .slick-header-menu > input.input {
+    color: #000000;
 }
