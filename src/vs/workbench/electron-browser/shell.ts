@@ -25,7 +25,7 @@ import { ITelemetryAppenderChannel, TelemetryAppenderClient } from 'vs/platform/
 import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 import { ElectronWindow } from 'vs/workbench/electron-browser/window';
-import { resolveWorkbenchCommonProperties, convertToDate, diffInDays } from 'vs/platform/telemetry/node/workbenchCommonProperties';
+import { resolveWorkbenchCommonProperties, diffInDays } from 'vs/platform/telemetry/node/workbenchCommonProperties';
 import { IWindowsService, IWindowService, IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { WindowService } from 'vs/platform/windows/electron-browser/windowService';
 import { IRequestService } from 'vs/platform/request/node/request';
@@ -293,75 +293,31 @@ export class WorkbenchShell {
 
 	// {{SQL CARBON EDIT}}
 	private sendUsageEvents(): void {
-		const lastUseDate = this.storageService.get('telemetry.lastUseDate');
+		const dailyLastUseDate = Date.parse(this.storageService.get('telemetry.dailyLastUseDate'));
+		const weeklyLastUseDate = Date.parse(this.storageService.get('telemetry.weeklyLastUseDate'));
+		const monthlyLastUseDate = Date.parse(this.storageService.get('telemetry.monthlyLastUseDate'));
+
+		let today = new Date().toUTCString();
 
 		// daily user event
-		let today = convertToDate(new Date());
-		if (lastUseDate !== today) {
+		if (diffInDays(Date.parse(today), dailyLastUseDate) > 1) {
 			// daily first use
 			this.telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
-			this.storageService.store('telemetry.dailyFirstUse', 'true');
-		} else {
-			if (this.storageService.get('telemetry.dailyFirstUse') === 'true') {
-				// daily second use
-				this.telemetryService.publicLog('telemetry.dailySecondUse', { dailySecondUse: true});
-				this.storageService.store('telemetry.dailyFirstUse', 'false');
-			}
+			this.storageService.store('telemetry.dailyLastUseDate', today);
 		}
 
 		// weekly user event
-		let weeklyUseFlag = this.storageService.get('telemetry.weeklyUse');
-		if (diffInDays(lastUseDate, today) < 7) {
-			if (weeklyUseFlag) {
-				if (weeklyUseFlag === 'first') {
-					// weekly second use
-					this.telemetryService.publicLog('telemetry.weeklySecondUse', { weeklySecondUse: true});
-					this.storageService.store('telemetry.weeklyUse', 'second');
-				}
-			} else {
-				// weekly first use
-				this.telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
-				this.storageService.store('telemetry.weeklyUse', 'first');
-			}
+		if (diffInDays(Date.parse(today), weeklyLastUseDate) > 7) {
+			// weekly first use
+			this.telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
+			this.storageService.store('telemetry.weeklyLastUseDate', today);
 		}
 
 		// monthly user events
-		let monthlyUseFlag = this.storageService.get('telemetry.monthlyUse');
-		if (diffInDays(lastUseDate, today) < 30) {
-			if (monthlyUseFlag) {
-				if (monthlyUseFlag === 'second') {
-					// monthly second use
-					this.telemetryService.publicLog('telemetry.monthlySecondUse', { monthlySecondUse: true });
-					this.storageService.store('telemetry.monthlyUse', 'third');
-				} else if (monthlyUseFlag === 'third') {
-					// monthly third use
-					this.telemetryService.publicLog('telemetry.monthlyThirdUse', { monthlyThirdUse: true });
-					this.storageService.store('telemetry.monthlyUse', 'fourth');
-				} else if (monthlyUseFlag === 'fourth') {
-					// monthly fourth use
-					this.telemetryService.publicLog('telemetry.monthlyFourthUse', { monthlyFourthUse: true });
-					this.storageService.store('telemetry.monthlyUse', 'fifth');
-				}
-			} else {
-				this.telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
-				this.storageService.store('telemetry.monthlyUse', 'second');
-			}
-		} else if (diffInDays(lastUseDate, today) < 30) {
-			this.storageService.remove
+		if (diffInDays(Date.parse(today), monthlyLastUseDate) > 30) {
+			this.telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
+			this.storageService.store('telemetry.monthlyLastUseDate', today);
 		}
-
-		// inactive user events
-		if (diffInDays(lastUseDate, today) >= 7) { // 1 week since last use
-			this.storageService.remove('telemetry.weeklyUse'); // remove weekly use telemetry flag since its > 7 days
-			this.telemetryService.publicLog('telemetry.oneWeekSinceLastUse', { oneWeekSinceLastUse: true });
-		} else if (diffInDays(lastUseDate, today) >= 14) { // 2 weeks since last use
-			this.telemetryService.publicLog('telemetry.twoWeeksSinceLastUse', { twoWeeksSinceLastUse: true });
-		} else if (diffInDays(lastUseDate, today) >= 21) { // 3 weeks since last use
-			this.telemetryService.publicLog('telemetry.threeWeeksSinceLastUse', { threeWeeksSinceLastUse: true});
-		} else if (diffInDays(lastUseDate, today) >= 28) { // 4 or more weeks since last use
-			this.telemetryService.publicLog('telemetry.fourOrMoreWeeksSinceLastUse', { fourOrMoreWeeksSinceLastUse: true});
-		}
-		this.storageService.store('telemetry.lastUseDate', today);
 	}
 
 	private logLocalStorageMetrics(): void {

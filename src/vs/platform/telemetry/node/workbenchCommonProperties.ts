@@ -42,7 +42,7 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		result['common.instanceId'] = '';
 
 		// {{SQL CARBON EDIT}}
-		setUsageDates(storageService, result);
+		setUsageDates(storageService);
 		return result;
 	});
 }
@@ -54,28 +54,22 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 // 	return result;
 // }
 
-// {{SQL CARBON EDIT}}
-function setUsageDates(storageService: IStorageService, result: {[key:string]: string}): void {
-	// first usage date
-	const firstUseDate = storageService.get('telemetry.firstUseDate') || convertToDate(new Date());
-	storageService.store('telemetry.firstUseDate', firstUseDate);
+// {{SQL CARBON EDIT}}s
+function setUsageDates(storageService: IStorageService): void {
+	// daily last usage date
+	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate') || new Date().toUTCString();
+	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate);
 
-	// last usage date
-	const lastUseDate = storageService.get('telemetry.lastUseDate') || convertToDate(new Date());
-	storageService.store('telemetry.lastUseDate', lastUseDate);
+	// weekly last usage date
+	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate') || new Date().toUTCString();
+	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate);
+
+	// monthly last usage date
+	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate') || new Date().toUTCString();
+	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate);
+
 }
 
-export function convertToDate(date: Date): string {
-	let day = date.getDate();
-	let month = date.getMonth();
-	let year = date.getFullYear();
-	return `${month}/${day}/${year}`;
-}
-
-export function diffInDays(nowDate: string, lastUseDate: string): number {
-	let nowDateArray = nowDate.split('/');
-	let lastUseDateArray = lastUseDate.split('/');
-	let newNowDate: any = new Date(+nowDateArray[2], +nowDateArray[1], +nowDateArray[0]);
-	let newLastUseDate: any = new Date(+lastUseDateArray[2], +lastUseDateArray[1], +lastUseDateArray[0]);
-	return (newNowDate - newLastUseDate)/(24*3600*1000);
+export function diffInDays(nowDate: number, lastUseDate: number): number {
+	return (nowDate - lastUseDate)/(24*3600*1000);
 }
