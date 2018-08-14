@@ -329,7 +329,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._executeResult = <IInsightData>{};
 		this._executeResult.columns = dataSet.columnDefinitions.map(def => def.name);
 		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
-			return gridRow.values.map(cell => cell.displayValue);
+			return gridRow.values.map(cell => (cell.invariantCultureDisplayValue === null || cell.invariantCultureDisplayValue === undefined) ? cell.displayValue : cell.invariantCultureDisplayValue);
 		});
 	}
 
