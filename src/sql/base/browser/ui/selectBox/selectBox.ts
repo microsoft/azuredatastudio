@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import 'vs/css!sql/base/browser/ui/selectBox/selectBox';
 import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
@@ -120,6 +121,7 @@ export class SelectBox extends vsSelectBox {
 		this.selectBackground = this.enabledSelectBackground;
 		this.selectForeground = this.enabledSelectForeground;
 		this.selectBorder = this.enabledSelectBorder;
+		dom.removeClass(this.selectElement, 'disabled');
 		this.applyStyles();
 	}
 
@@ -128,6 +130,7 @@ export class SelectBox extends vsSelectBox {
 		this.selectBackground = this.disabledSelectBackground;
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
+		dom.addClass(this.selectElement, 'disabled');
 		this.applyStyles();
 	}
 
