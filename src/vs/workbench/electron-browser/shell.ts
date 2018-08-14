@@ -25,7 +25,7 @@ import { ITelemetryAppenderChannel, TelemetryAppenderClient } from 'vs/platform/
 import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 import { ElectronWindow } from 'vs/workbench/electron-browser/window';
-import { resolveWorkbenchCommonProperties, diffInDays } from 'vs/platform/telemetry/node/workbenchCommonProperties';
+import { resolveWorkbenchCommonProperties } from 'vs/platform/telemetry/node/workbenchCommonProperties';
 import { IWindowsService, IWindowService, IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { WindowService } from 'vs/platform/windows/electron-browser/windowService';
 import { IRequestService } from 'vs/platform/request/node/request';
@@ -300,21 +300,21 @@ export class WorkbenchShell {
 		let today = new Date().toUTCString();
 
 		// daily user event
-		if (diffInDays(Date.parse(today), dailyLastUseDate) > 1) {
+		if (this.diffInDays(Date.parse(today), dailyLastUseDate) > 1) {
 			// daily first use
 			this.telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
 			this.storageService.store('telemetry.dailyLastUseDate', today);
 		}
 
 		// weekly user event
-		if (diffInDays(Date.parse(today), weeklyLastUseDate) > 7) {
+		if (this.diffInDays(Date.parse(today), weeklyLastUseDate) > 7) {
 			// weekly first use
 			this.telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
 			this.storageService.store('telemetry.weeklyLastUseDate', today);
 		}
 
 		// monthly user events
-		if (diffInDays(Date.parse(today), monthlyLastUseDate) > 30) {
+		if (this.diffInDays(Date.parse(today), monthlyLastUseDate) > 30) {
 			this.telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
 			this.storageService.store('telemetry.monthlyLastUseDate', today);
 		}
@@ -532,6 +532,11 @@ export class WorkbenchShell {
 
 		// Resize
 		this.toUnbind.push(addDisposableListener(window, EventType.RESIZE, () => this.layout()));
+	}
+
+	// {{SQL CARBON EDIT}}
+	private diffInDays(nowDate: number, lastUseDate: number): number {
+		return (nowDate - lastUseDate)/(24*3600*1000);
 	}
 
 	public onUnexpectedError(error: any): void {

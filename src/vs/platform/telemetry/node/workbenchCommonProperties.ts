@@ -54,10 +54,11 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 // 	return result;
 // }
 
-// {{SQL CARBON EDIT}}s
+// {{SQL CARBON EDIT}}
 function setUsageDates(storageService: IStorageService): void {
 	// daily last usage date
-	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate') || new Date().toUTCString();
+	const appStartDate = new Date('January 1, 2000');
+	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate') || appStartDate;
 	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate);
 
 	// weekly last usage date
@@ -68,8 +69,4 @@ function setUsageDates(storageService: IStorageService): void {
 	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate') || new Date().toUTCString();
 	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate);
 
-}
-
-export function diffInDays(nowDate: number, lastUseDate: number): number {
-	return (nowDate - lastUseDate)/(24*3600*1000);
 }
