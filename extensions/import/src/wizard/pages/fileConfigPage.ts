@@ -55,7 +55,10 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		return await this.populateServerDropdown().then(() => this.populateDatabaseDropdown()).then(() => this.populateSchemaDropdown());
+		let r1 = await this.populateServerDropdown();
+		let r2 = await this.populateDatabaseDropdown();
+		let r3 = await this.populateSchemaDropdown();
+		return r1 && r2 && r3;
 	}
 
 	async onPageLeave(): Promise<boolean> {
