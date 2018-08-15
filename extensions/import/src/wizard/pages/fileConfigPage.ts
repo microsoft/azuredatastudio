@@ -59,6 +59,7 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageLeave(): Promise<boolean> {
+		delete this.model.serverId;
 		return true;
 	}
 

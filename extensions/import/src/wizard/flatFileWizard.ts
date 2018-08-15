@@ -91,7 +91,6 @@ export class FlatFileWizard {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();
 			pages.forEach((page) => page.cleanup());
-			delete model.serverId;
 			this.wizard.open();
 		});
 
