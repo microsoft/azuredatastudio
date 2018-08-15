@@ -28,8 +28,15 @@ export class FlatFileWizard {
 		this.provider = provider;
 	}
 
-	public async start() {
+	public async start(p: any, ...args: any[]) {
 		let model = <ImportDataModel>{};
+
+		let profile = <sqlops.IConnectionProfile>p.connectionProfile;
+		if (profile) {
+			model.serverId = profile.id;
+			model.database = profile.databaseName;
+		}
+
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
 
@@ -46,6 +53,7 @@ export class FlatFileWizard {
 		let page4 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page4Name', 'Summary'));
 
 		let fileConfigPage: FileConfigPage;
+
 		page1.registerContent(async (view) => {
 			fileConfigPage = new FileConfigPage(this, page1, model, view, this.provider);
 			pages.set(0, fileConfigPage);

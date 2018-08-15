@@ -13,12 +13,16 @@ import { FlatFileWizard } from '../wizard/flatFileWizard';
 import { ServiceClient } from '../services/serviceClient';
 import { ApiType, managerInstance } from '../services/serviceApiManager';
 import { FlatFileProvider } from '../services/contracts';
+import { IConnectionProfile } from "sqlops";
 
 /**
  * The main controller class that initializes the extension
  */
 export default class MainController extends ControllerBase {
 
+	public constructor(context: vscode.ExtensionContext) {
+		super(context);
+	}
 	/**
 	 */
 	public deactivate(): void {
@@ -36,6 +40,6 @@ export default class MainController extends ControllerBase {
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
-		sqlops.tasks.registerTask('flatFileImport.start', () => new FlatFileWizard(provider).start());
+		sqlops.tasks.registerTask('flatFileImport.start', (profile: IConnectionProfile, ...args: any[]) => new FlatFileWizard(provider).start(profile, args));
 	}
 }
