@@ -133,6 +133,11 @@ export class FlatFileWizard {
 		this.wizard.registerNavigationValidator(validator);
 	}
 
+	public changeNextButtonLabel(label: string) {
+		this.wizard.nextButton.label = label;
+	}
+
+
 }
 
 

@@ -68,6 +68,7 @@ export class SummaryPage extends ImportPage {
 			return !this.loading.loading;
 		});
 	}
+
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
