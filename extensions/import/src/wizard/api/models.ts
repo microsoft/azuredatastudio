@@ -14,6 +14,7 @@ export interface ImportDataModel {
 	proseColumns: ColumnMetadata[];
 	proseDataPreview: string[][];
 	server: sqlops.connection.Connection;
+	serverId: string;
 	database: string;
 	table: string;
 	schema: string;

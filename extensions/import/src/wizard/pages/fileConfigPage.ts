@@ -55,13 +55,14 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		await this.populateServerDropdown();
-		await this.populateDatabaseDropdown();
-		await this.populateSchemaDropdown();
-		return true;
+		let r1 = await this.populateServerDropdown();
+		let r2 = await this.populateDatabaseDropdown();
+		let r3 = await this.populateSchemaDropdown();
+		return r1 && r2 && r3;
 	}
 
 	async onPageLeave(): Promise<boolean> {
+		delete this.model.serverId;
 		return true;
 	}
 
@@ -109,11 +110,16 @@ export class FileConfigPage extends ImportPage {
 		let count = -1;
 		let idx = -1;
 
+
 		let values = cons.map(c => {
 			// Handle the code to remember what the user's choice was from before
 			count++;
-			if (this.model.server && c.connectionId === this.model.server.connectionId) {
-				idx = count;
+			if (idx === -1) {
+				if (this.model.server && c.connectionId === this.model.server.connectionId) {
+					idx = count;
+				} else if (this.model.serverId && c.connectionId === this.model.serverId) {
+					idx = count;
+				}
 			}
 
 			let db = c.options.databaseDisplayName;
@@ -136,12 +142,13 @@ export class FileConfigPage extends ImportPage {
 			};
 		});
 
-		if (idx > 0) {
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
 		} else {
 			delete this.model.server;
+			delete this.model.serverId;
 			delete this.model.database;
 			delete this.model.schema;
 		}
@@ -192,13 +199,14 @@ export class FileConfigPage extends ImportPage {
 			if (this.model.database && db === this.model.database) {
 				idx = count;
 			}
+
 			return {
 				displayName: db,
 				name: db
 			};
 		});
 
-		if (idx > 0) {
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
@@ -316,7 +324,7 @@ export class FileConfigPage extends ImportPage {
 
 	}
 
-	private async populateSchemaDropdown(): Promise<Boolean> {
+	private async populateSchemaDropdown(): Promise<boolean> {
 		this.schemaLoader.loading = true;
 		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
@@ -342,7 +350,7 @@ export class FileConfigPage extends ImportPage {
 			};
 		});
 
-		if (idx > 0) {
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
