@@ -114,9 +114,7 @@ export class FileConfigPage extends ImportPage {
 			if (idx === -1) {
 				if (this.model.server && c.connectionId === this.model.server.connectionId) {
 					idx = count;
-				}
-
-				if (this.model.serverId && c.connectionId === this.model.serverId) {
+				} else if (this.model.serverId && c.connectionId === this.model.serverId) {
 					idx = count;
 				}
 			}
