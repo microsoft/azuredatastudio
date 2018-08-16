@@ -324,13 +324,21 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 
 		// Style parent select
 
+		// {{SQL CARBON EDIT}}
 		let background = null;
+		let foreground = null;
+		let border = null;
 
 		if (this.selectElement) {
-			background = this.styles.selectBackground ? this.styles.selectBackground.toString() : null;
-			const foreground = this.styles.selectForeground ? this.styles.selectForeground.toString() : null;
-			const border = this.styles.selectBorder ? this.styles.selectBorder.toString() : null;
-
+			if (this.selectElement.disabled) {
+				background = (<any>this.styles).disabledSelectBackground ? (<any>this.styles).disabledSelectBackground.toString() : null;
+				foreground = (<any>this.styles).disabledSelectForeground ? (<any>this.styles).disabledSelectForeground.toString() : null;
+				border = null;
+			} else {
+				background = this.styles.selectBackground ? this.styles.selectBackground.toString() : null;
+				foreground = this.styles.selectForeground ? this.styles.selectForeground.toString() : null;
+				border = this.styles.selectBorder ? this.styles.selectBorder.toString() : null;
+			}
 			this.selectElement.style.backgroundColor = background;
 			this.selectElement.style.color = foreground;
 			this.selectElement.style.borderColor = border;

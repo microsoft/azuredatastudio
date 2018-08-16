@@ -270,6 +270,10 @@ declare module 'sqlops' {
 		 * Default is "1 1 auto".
 		 */
 		flex?: string;
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string }
 	}
 
 	export interface FormItemLayout {
@@ -1106,7 +1110,7 @@ declare module 'sqlops' {
 		/**
 		 * Connection information
 		 */
-		connection: connection.Connection;
+		connection?: connection.Connection;
 
 		/**
 		 * Operation Display Name
@@ -1153,5 +1157,12 @@ declare module 'sqlops' {
 		 * @param connectionId The ID of the connection
 		 */
 		export function getUriForConnection(connectionId: string): Thenable<string>;
+
+		/**
+		 * Opens the connection dialog, calls the callback with the result. If connection was successful
+		 * returns the connection otherwise returns undefined
+		 * @param callback
+		 */
+		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
 	}
 }

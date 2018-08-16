@@ -20,9 +20,8 @@ export class ProsePreviewPage extends ImportPage {
 	private form: sqlops.FormContainer;
 	private refresh: sqlops.ButtonComponent;
 
-
-	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
-		super(instance, model, view, provider);
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, wizardPage, model, view, provider);
 	}
 
 	async start(): Promise<boolean> {
@@ -37,12 +36,11 @@ export class ProsePreviewPage extends ImportPage {
 		});
 
 		this.loading = this.view.modelBuilder.loadingComponent().component();
-		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
 				component: this.table,
-				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below'),
+				title: localize('flatFileImport.prosePreviewMessage', 'This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.'),
 				actions: [this.refresh]
 			}
 		]).component();
@@ -73,12 +71,9 @@ export class ProsePreviewPage extends ImportPage {
 		return true;
 	}
 
-	private setupNavigationValidator() {
+	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			if (this.loading.loading) {
-				return false;
-			}
-			return true;
+			return !this.loading.loading;
 		});
 	}
 

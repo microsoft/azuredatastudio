@@ -22,8 +22,8 @@ export class SummaryPage extends ImportPage {
 	private loading: sqlops.LoadingComponent;
 	private form: sqlops.FormContainer;
 
-	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
-		super(instance, model, view, provider);
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, wizardPage, model, view, provider);
 	}
 
 	async start(): Promise<boolean> {
@@ -63,15 +63,20 @@ export class SummaryPage extends ImportPage {
 
 		return true;
 	}
+	public setupNavigationValidator() {
+		this.instance.registerNavigationValidator((info) => {
+			return !this.loading.loading;
+		});
+	}
 
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				['Server name', this.model.server.providerName],
-				['Database name', this.model.database],
-				['Table name', this.model.table],
-				['Table schema', this.model.schema],
-				['File to be imported', this.model.filePath]],
+				[localize('flatFileImport.serverName', 'Server name'), this.model.server.providerName],
+				[localize('flatFileImport.databaseName', 'Database name'), this.model.database],
+				[localize('flatFileImport.tableName', 'Table name'), this.model.table],
+				[localize('flatFileImport.tableSchema', 'Table schema'), this.model.schema],
+				[localize('flatFileImport.fileImport', 'File to be imported'), this.model.filePath]],
 			columns: ['Object type', 'Name'],
 			width: 600,
 			height: 200
@@ -115,9 +120,9 @@ export class SummaryPage extends ImportPage {
 			// TODO: When sql statements are in, implement this.
 			//let rows = await this.getCountRowsInserted();
 			//if (rows < 0) {
-			updateText = localize('flatFileImport.success.norows', '✔ Awesome! You have successfully inserted the data into a table.');
+			updateText = localize('flatFileImport.success.norows', '✔ You have successfully inserted the data into a table.');
 			//} else {
-			//updateText = localize('flatFileImport.success.rows', '✔ Awesome! You have successfully inserted {0} rows.', rows);
+			//updateText = localize('flatFileImport.success.rows', '✔ You have successfully inserted {0} rows.', rows);
 			//}
 		}
 		this.statusText.updateProperties({
