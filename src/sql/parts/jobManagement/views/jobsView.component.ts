@@ -36,7 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { tableBackground, cellBackground } from 'sql/common/theme/colors';
+import { tableBackground, cellBackground, tableHoverBackground, jobsHeadingBackground, cellBorderColor } from 'sql/common/theme/colors';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -825,15 +825,16 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private updateTheme(theme: IColorTheme) {
 		let bgColor = theme.getColor(tableBackground);
 		let cellColor = theme.getColor(cellBackground);
+		let borderColor = theme.getColor(cellBorderColor);
 		let headerColumns = $('#agentViewDiv .slick-header-column');
 		let cells = $('.grid-canvas .ui-widget-content.slick-row .slick-cell');
 		let cellDetails = $('#jobsDiv .dynamic-cell-detail');
-
 		headerColumns.toArray().forEach(col => {
 			col.style.background = bgColor.toString();
 		});
 		cells.toArray().forEach(cell => {
 			cell.style.background = bgColor.toString();
+			cell.style.border = borderColor ? '1px solid ' + borderColor.toString() : null;
 		});
 		cellDetails.toArray().forEach(cellDetail => {
 			cellDetail.style.background = cellColor.toString();

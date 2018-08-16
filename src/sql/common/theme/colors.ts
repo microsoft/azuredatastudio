@@ -18,3 +18,6 @@ export const listFocusAndSelectionBackground = registerColor('list.focusAndSelec
 // SQL Agent Colors
 export const tableBackground = registerColor('agent.tableBackground', { light: '#fffffe', dark: '#333333', hc: Color.black }, nls.localize('agentTableBackground', "SQL Agent Table background color."));
 export const cellBackground = registerColor('agent.cellBackground', { light: '#faf5f8', dark: Color.black, hc: Color.black }, nls.localize('agentCellBackground', "SQL Agent table cell background color."));
+export const tableHoverBackground = registerColor('agent.tableHoverColor', { light: '#dcdcdc', dark: '#444444', hc: null }, nls.localize('agentTableHoverBackground', "SQL Agent table hover background color."));
+export const jobsHeadingBackground = registerColor('agent.jobsHeadingColor', { light: '#f4f4f4', dark: '#444444', hc: '#2b56f2' }, nls.localize('agentJobsHeadingColor', "SQL Agent heading background color."));
+export const cellBorderColor = registerColor('agent.cellBorderColor', { light: null, dark: null, hc: '#2b56f2' }, nls.localize('agentCellBorderColor', "SQL Agent table cell border color."));
