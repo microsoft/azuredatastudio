@@ -258,7 +258,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	serializeConnectionString(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
 		return undefined;
 	}
 }

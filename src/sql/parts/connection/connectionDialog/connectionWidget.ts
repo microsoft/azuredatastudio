@@ -138,7 +138,7 @@ export class ConnectionWidget {
 
 	private _handleClipboard(): void {
 		let paste = this._clipboardService.readText();
-		this._connectionManagementService.serializeConnectionString(paste, this._providerName).then(e => {
+		this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
 			if (e) {
 				let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
 				profile.options = e.options;

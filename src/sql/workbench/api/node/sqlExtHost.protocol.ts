@@ -75,7 +75,7 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param handle the handle to use when looking up a provider
 	 * @param connectionString the connection string to serialize
 	 */
-	$serializeConnectionString(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> { throw ni(); }
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred

@@ -269,7 +269,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Serialize connection string with optional provider
 	 */
-	serializeConnectionString(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
