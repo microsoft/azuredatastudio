@@ -186,7 +186,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
 	}
 
-	$serializeConnectionString(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> {
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> {
 		let provider = this._resolveProvider<sqlops.ConnectionProvider>(handle);
 		if (provider.buildConnectionInfo) {
 			return provider.buildConnectionInfo(connectionString);
