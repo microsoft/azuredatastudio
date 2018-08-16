@@ -97,7 +97,8 @@ export async function rename(model: ITextModel, position: Position, newName: str
 
 const CONTEXT_RENAME_INPUT_VISIBLE = new RawContextKey<boolean>('renameInputVisible', false);
 
-class RenameController implements IEditorContribution {
+// {{SQL CARBON EDIT}}
+export class RenameController implements IEditorContribution {
 
 	private static readonly ID = 'editor.contrib.renameController';
 
