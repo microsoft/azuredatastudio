@@ -45,28 +45,17 @@ jobhistory-component {
 	background: #333333 !important;
 }
 
-.hc-black #agentViewDiv .slick-header-column {
-	background: #000000 !important;
-}
-
 #agentViewDiv .slick-header-column {
 	background-color: transparent !important;
-	background: white !important;
     border: 0px !important;
     font-weight: bold;
 }
 
-.vs-dark #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
 .hc-black #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: #000000;
     border: 1px solid #2b56f2;
 }
 
 #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -172,15 +161,6 @@ jobhistory-component {
     line-height:        13px;
     padding:            10px;
     margin-left:		20px;
-}
-
-.vs-dark #jobsDiv .dynamic-cell-detail,
-.hc-black #jobsDiv .dynamic-cell-detail {
-    background: black !important;
-}
-
-#jobsDiv .dynamic-cell-detail {
-    background: #faf5f8 !important;
 }
 
 .jobsview-icon {
@@ -330,16 +310,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     opacity: 0;
 }
 
-.vs-dark #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
-.hc-black #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#000000;
-}
-
 #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -365,16 +336,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     border-left: 1px dotted #444444;
 }
 
-.vs-dark #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
-.hc-black #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: #000000;;
-}
-
 #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -400,16 +362,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     border-left: 1px dotted #444444;
 }
 
-.vs-dark #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
-.hc-black #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: #000000;;
-}
-
 #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
