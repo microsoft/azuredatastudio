@@ -83,7 +83,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createServerDropdown(): Promise<sqlops.FormComponent> {
-		this.serverDropdown = this.view.modelBuilder.dropDown().component();
+		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async (params) => {
@@ -163,7 +165,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createDatabaseDropdown(): Promise<sqlops.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async (db) => {
@@ -226,7 +230,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createFileBrowser(): Promise<sqlops.FormComponent> {
-		this.fileTextBox = this.view.modelBuilder.inputBox().component();
+		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
+			required: true
+		}).component();
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: localize('flatFileImport.browseFiles', 'Browse'),
 		}).component();
@@ -295,6 +301,8 @@ export class FileConfigPage extends ImportPage {
 			}
 
 			return true;
+		}).withProperties({
+			required: true,
 		}).component();
 
 		this.tableNameTextBox.onTextChanged((tableName) => {
@@ -309,7 +317,9 @@ export class FileConfigPage extends ImportPage {
 
 
 	private async createSchemaDropdown(): Promise<sqlops.FormComponent> {
-		this.schemaDropdown = this.view.modelBuilder.dropDown().component();
+		this.schemaDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
 		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
 
 		this.schemaDropdown.onValueChanged(() => {

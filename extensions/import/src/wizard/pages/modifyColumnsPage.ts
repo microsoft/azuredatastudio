@@ -107,17 +107,20 @@ export class ModifyColumnsPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
 		await this.populateTable();
+		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', 'Import Data'));
 		this.loading.loading = false;
 
 		return true;
 	}
 
 	async onPageLeave(): Promise<boolean> {
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 
 		return true;
 	}
@@ -127,6 +130,7 @@ export class ModifyColumnsPage extends ImportPage {
 			return !this.loading.loading;
 		});
 	}
+
 	private async populateTable() {
 		let data: any[][] = [];
 
