@@ -114,13 +114,13 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	async onPageLeave(): Promise<boolean> {
-		this.instance.changeNextButtonLabel(localize('next', 'Next'));
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
-		this.instance.changeNextButtonLabel(localize('next', 'Next'));
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 
 		return true;
 	}
@@ -130,6 +130,7 @@ export class ModifyColumnsPage extends ImportPage {
 			return !this.loading.loading;
 		});
 	}
+
 	private async populateTable() {
 		let data: any[][] = [];
 
