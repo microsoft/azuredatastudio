@@ -49,7 +49,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 		optionWidget.value = optionValue;
 		inputElement = findElement(rowContainer, 'input');
 	} else if (option.valueType === ServiceOptionType.category || option.valueType === ServiceOptionType.boolean) {
-		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService);
+		optionWidget = new SelectBox(possibleInputs, optionValue.toString(), contextViewService, undefined, { ariaLabel: option.displayName });
 		DialogHelper.appendInputSelectBox(rowContainer, optionWidget);
 		inputElement = findElement(rowContainer, 'monaco-select-box');
 	} else if (option.valueType === ServiceOptionType.string || option.valueType === ServiceOptionType.password) {
