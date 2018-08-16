@@ -36,6 +36,7 @@ import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -92,7 +93,8 @@ export class ConnectionWidget {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		this._callbacks = callbacks;
 		this._toDispose = [];
@@ -137,16 +139,18 @@ export class ConnectionWidget {
 	}
 
 	private _handleClipboard(): void {
-		let paste = this._clipboardService.readText();
-		this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
-			if (e) {
-				let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
-				profile.options = e.options;
-				if (profile.serverName) {
-					this.initDialog(profile);
+		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
+			let paste = this._clipboardService.readText();
+			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
+				if (e) {
+					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
+					profile.options = e.options;
+					if (profile.serverName) {
+						this.initDialog(profile);
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 
 	private fillInConnectionForm(): void {
