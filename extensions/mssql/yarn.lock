@@ -64,10 +64,11 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-dataprotocol-client@../../../sqlops-dataprotocolclient:
-  version "0.2.2"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.2.6":
+  version "0.2.6"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/b40358cdf33fbc4076a5621363d95350ab08d882"
   dependencies:
-    vscode-languageclient "3.5.0"
+    vscode-languageclient "3.5.1"
 
 debug@3.1.0, debug@^3.1.0:
   version "3.1.0"
@@ -380,24 +381,24 @@ vscode-extension-telemetry@^0.0.15:
   dependencies:
     applicationinsights "1.0.1"
 
-vscode-jsonrpc@3.5.0, vscode-jsonrpc@^3.5.0:
+vscode-jsonrpc@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.5.0.tgz#87239d9e166b2d7352245b8a813597804c1d63aa"
 
-vscode-languageclient@3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-3.5.0.tgz#36d02cc186a8365a4467719a290fb200a9ae490a"
+vscode-languageclient@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-3.5.1.tgz#c78e582459c24e58f88020dfa34065e976186a98"
   dependencies:
-    vscode-languageserver-protocol "^3.5.0"
+    vscode-languageserver-protocol "3.5.1"
 
-vscode-languageserver-protocol@3.5.0, vscode-languageserver-protocol@^3.5.0:
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.5.0.tgz#067c5cbe27709795398d119692c97ebba1452209"
+vscode-languageserver-protocol@3.5.1:
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.5.1.tgz#5144a3a9eeccbd83fe2745bd4ed75fad6cc45f0d"
   dependencies:
-    vscode-jsonrpc "^3.5.0"
-    vscode-languageserver-types "^3.5.0"
+    vscode-jsonrpc "3.5.0"
+    vscode-languageserver-types "3.5.0"
 
-vscode-languageserver-types@3.5.0, vscode-languageserver-types@^3.5.0:
+vscode-languageserver-types@3.5.0:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.5.0.tgz#e48d79962f0b8e02de955e3f524908e2b19c0374"
 
