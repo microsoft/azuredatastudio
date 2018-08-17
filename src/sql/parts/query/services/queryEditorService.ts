@@ -30,10 +30,6 @@ import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
-import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
-import { getBaseLabel } from 'vs/base/common/labels';
-import { ShowFileInFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
 
 const fs = require('fs');
 
@@ -66,8 +62,7 @@ export class QueryEditorService implements IQueryEditorService {
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@INotificationService private _notificationService: INotificationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWindowsService private windowsService: IWindowsService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
@@ -166,26 +161,7 @@ export class QueryEditorService implements IQueryEditorService {
 	public onQueryInputClosed(uri: string): void {
 	}
 
-	private promptFileSavedNotification(savedFilePath: string) {
-		let label = getBaseLabel(paths.dirname(savedFilePath));
-
-		this._notificationService.prompt(
-			Severity.Info,
-			LocalizedConstants.msgSaveFileSucceeded + savedFilePath,
-			[{
-				label: nls.localize('openLocation', "Open file location"),
-				run: () => {
-					var action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this.windowsService);
-					action.run();
-					action.dispose();
-				}
-			}]
-		);
-	}
-
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
-		this.promptFileSavedNotification(newResource.fsPath);
-
 		let oldResourceString: string = oldResource.toString();
 		const stacks = this._editorGroupService.getStacksModel();
 		stacks.groups.forEach(group => {

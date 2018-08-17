@@ -31,7 +31,7 @@ import * as path from 'path';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { getBaseLabel } from 'vs/base/common/labels';
-import { ShowFileInFolderAction, OpenFileInFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
+import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 
 let prevSavePath: string;
 
@@ -301,14 +301,14 @@ export class ResultSerializer {
 			[{
 				label: nls.localize('openLocation', "Open file location"),
 				run: () => {
-					var action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					let action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
 					action.run();
 					action.dispose();
 				}
 			}, {
 				label: nls.localize('openFile', "Open file"),
 				run: () => {
-					var action = new OpenFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					let action = new OpenFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
 					action.run();
 					action.dispose();
 				}

@@ -131,29 +131,6 @@ export class GlobalRemoveRootFolderAction extends Action {
 	}
 }
 
-
-export class ShowFileInFolderAction extends Action {
-
-	constructor(private path: string, label: string, private windowsService: IWindowsService) {
-		super('showItemInFolder.action.id', label);
-	}
-
-	run(): TPromise<void> {
-		return this.windowsService.showItemInFolder(this.path);
-	}
-}
-
-export class OpenFileInFolderAction extends Action {
-
-	constructor(private path: string, label: string, private windowsService: IWindowsService) {
-		super('showItemInFolder.action.id', label);
-	}
-
-	run() {
-		return this.windowsService.openExternal(this.path);
-	}
-}
-
 export class SaveWorkspaceAsAction extends Action {
 
 	static readonly ID = 'workbench.action.saveWorkspaceAs';
