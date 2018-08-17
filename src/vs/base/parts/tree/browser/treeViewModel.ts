@@ -23,9 +23,11 @@ export class HeightMap {
 		this.indexes = {};
 	}
 
-	public getContentHeight(): number {
-		var last = this.heightMap[this.heightMap.length - 1];
-		return !last ? 0 : last.top + last.height;
+	// {{SQL CARBON EDIT}}
+	public getContentHeight(offsetTop?: number): number {
+		let last = this.heightMap[this.heightMap.length - 1];
+		let height = !last ? 0 : last.top + last.height;
+		return offsetTop ? height + offsetTop : height;
 	}
 
 	public onInsertItems(iterator: INextIterator<Item>, afterItemId: string = null): number {

@@ -830,8 +830,10 @@ export class TreeView extends HeightMap {
 	}
 
 	public set scrollTop(scrollTop: number) {
+		// {{SQL CARBON EDIT}}
+		let offset = this.domNode.offsetTop ? this.domNode.offsetTop : null;
 		this.scrollableElement.setScrollDimensions({
-			scrollHeight: this.getContentHeight()
+			scrollHeight: this.getContentHeight(offset)
 		});
 		this.scrollableElement.setScrollPosition({
 			scrollTop: scrollTop

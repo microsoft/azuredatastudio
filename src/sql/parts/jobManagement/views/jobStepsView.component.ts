@@ -20,7 +20,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import * as dom from 'vs/base/browser/dom';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -36,7 +35,9 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	private _treeDataSource = new JobStepsViewDataSource();
 	private _treeRenderer = new JobStepsViewRenderer();
 	private _treeFilter =  new JobStepsViewFilter();
-	private static _pageSize = 1024;
+
+	private static readonly INITIAL_TREE_HEIGHT: number = 760;
+	private static readonly ROW_SIZE = 22;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -63,18 +64,16 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 					dataSource: this._treeDataSource,
 					filter: this._treeFilter,
 					renderer: this._treeRenderer
-				}, { verticalScrollMode: ScrollbarVisibility.Visible });
+				}, { verticalScrollMode: ScrollbarVisibility.Visible, horizontalScrollMode: ScrollbarVisibility.Visible });
 				this._register(attachListStyler(this._tree, this.themeService));
 			}
-			this._tree.layout(JobStepsViewComponent._pageSize);
-			this._tree.setInput(new JobStepsViewModel());
+			this.layout();
 			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
 			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
 		}
 	}
 
 	ngOnInit() {
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
@@ -88,6 +87,18 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	}
 
 	public layout() {
+		let historyDetails = $('.overview-container').get(0);
+		let statusBar = $('.part.statusbar').get(0);
+		if (historyDetails && statusBar) {
+			let historyBottom = historyDetails.getBoundingClientRect().bottom;
+			let statusTop = statusBar.getBoundingClientRect().top;
+			let height: number = Math.min(statusTop - historyBottom, JobStepsViewComponent.INITIAL_TREE_HEIGHT);
+			let width: number = $('.step-columns').get(0).clientWidth;
+			if (this._tree) {
+				this._tree.layout(height, width);
+				this._tree.setInput(new JobStepsViewModel());
+				this._tableContainer.nativeElement.style.height = height - JobStepsViewComponent.ROW_SIZE + 'px';
+			}
+		}
 	}
 }
-

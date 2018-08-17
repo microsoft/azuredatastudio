@@ -305,13 +305,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			if (this._tree) {
 				this._tree.layout(height);
 			}
-
-			if (this._jobStepsView) {
-				let element = this._jobStepsView.nativeElement as HTMLElement;
-				if (element) {
-					element.style.height = height + 'px';
-				}
-			}
 		}
 	}
 
