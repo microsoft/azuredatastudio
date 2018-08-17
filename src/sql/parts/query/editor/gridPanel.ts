@@ -14,6 +14,7 @@ import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumn
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction } from 'sql/parts/query/editor/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 
 import * as sqlops from 'sqlops';
 
@@ -23,7 +24,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -32,8 +33,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Dimension, getContentWidth } from 'vs/base/browser/dom';
-import { RowNumberColumn } from '../../../base/browser/ui/table/plugins/rowNumberColumn.plugin';
-import { foldersToRgExcludeGlobs } from 'vs/workbench/services/search/node/ripgrepTextSearch';
 
 const rowHeight = 29;
 const columnHeight = 26;
