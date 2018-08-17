@@ -182,7 +182,6 @@ export class QueryEditorService implements IQueryEditorService {
 		);
 	}
 
-
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
 		this.promptFileSavedNotification(newResource.fsPath);
 
