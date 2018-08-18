@@ -62,7 +62,7 @@ export class QueryEditorService implements IQueryEditorService {
 		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@INotificationService private _notificationService: INotificationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
