@@ -15,6 +15,7 @@ export const msgCancelQueryFailed = localize('msgCancelQueryFailed', 'Canceling 
 export const msgSaveStarted = localize('msgSaveStarted', 'Started saving results to ');
 export const msgSaveFailed = localize('msgSaveFailed', 'Failed to save results. ');
 export const msgSaveSucceeded = localize('msgSaveSucceeded', 'Successfully saved results to ');
+export const msgSaveFileSucceeded = localize('msgSaveFileSucceeded', 'Successfully saved file to ');
 
 export const msgStatusRunQueryInProgress = localize('msgStatusRunQueryInProgress', 'Executing query...');
 
