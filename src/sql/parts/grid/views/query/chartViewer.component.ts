@@ -327,9 +327,11 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	@Input() set dataSet(dataSet: IGridDataSet) {
 		// Setup the execute result
 		this._executeResult = <IInsightData>{};
-		this._executeResult.columns = dataSet.columnDefinitions.map(def => def.name);
+
+		// Remove first column and its value since this is the row number column
+		this._executeResult.columns = dataSet.columnDefinitions.slice(1).map(def => def.name);
 		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
-			return gridRow.values.map(cell => (cell.invariantCultureDisplayValue === null || cell.invariantCultureDisplayValue === undefined) ? cell.displayValue : cell.invariantCultureDisplayValue);
+			return gridRow.values.slice(1).map(cell => (cell.invariantCultureDisplayValue === null || cell.invariantCultureDisplayValue === undefined) ? cell.displayValue : cell.invariantCultureDisplayValue);
 		});
 	}
 
