@@ -33,7 +33,7 @@ export interface DialogComponentParams extends IBootstrapParams {
 			<modelview-content [modelViewId]="modelViewId" style="flex: 1 1 auto; position: relative;">
 			</modelview-content>
 		</div>
-		<modelview-content [modelViewId]="modelViewId" *ngIf="!_dialogPane || !_dialogPane.displayPageTitle">
+		<modelview-content [modelViewId]="modelViewId" *ngIf="!_dialogPane || !_dialogPane.displayPageTitle" style="flex: 1 1 auto; position: relative;">
 		</modelview-content>
 	`
 })
