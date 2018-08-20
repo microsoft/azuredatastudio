@@ -156,7 +156,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 	public isAncestorOf(node: ConnectionProfileGroup | ConnectionProfile): boolean {
 		let isAncestor = false;
 		let currentNode = node;
-		while (currentNode !== null && currentNode !== undefined) {
+		while (currentNode) {
 			if (currentNode.parent && currentNode.parent.id === this.id) {
 				isAncestor = true;
 				break;
