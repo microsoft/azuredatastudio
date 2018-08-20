@@ -30,6 +30,8 @@ import { ISlickRange } from 'angular2-slickgrid';
 import * as path from 'path';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { getBaseLabel } from 'vs/base/common/labels';
+import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 
 let prevSavePath: string;
 
@@ -289,6 +291,31 @@ export class ResultSerializer {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
+
+	private promptFileSavedNotification(savedFilePath: string) {
+		let label = getBaseLabel(paths.dirname(savedFilePath));
+
+		this._notificationService.prompt(
+			Severity.Info,
+			LocalizedConstants.msgSaveSucceeded + savedFilePath,
+			[{
+				label: nls.localize('openLocation', "Open file location"),
+				run: () => {
+					let action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					action.run();
+					action.dispose();
+				}
+			}, {
+				label: nls.localize('openFile', "Open file"),
+				run: () => {
+					let action = new OpenFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					action.run();
+					action.dispose();
+				}
+			}]
+		);
+	}
+
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
@@ -306,10 +333,7 @@ export class ResultSerializer {
 				});
 				this.logToOutputChannel(LocalizedConstants.msgSaveFailed + result.messages);
 			} else {
-				this._notificationService.notify({
-					severity: Severity.Info,
-					message: LocalizedConstants.msgSaveSucceeded + this._filePath
-				});
+				this.promptFileSavedNotification(this._filePath);
 				this.logToOutputChannel(LocalizedConstants.msgSaveSucceeded + filePath);
 				this.openSavedFile(this._filePath, format);
 			}
@@ -329,13 +353,7 @@ export class ResultSerializer {
 	 * Open the saved file in a new vscode editor pane
 	 */
 	private openSavedFile(filePath: string, format: string): void {
-		if (format === SaveFormat.EXCEL) {
-			// This will not open in VSCode as it's treated as binary. Use the native file opener instead
-			// Note: must use filePath here, URI does not open correctly
-			// TODO see if there is an alternative opener that includes error handling
-			let fileUri = URI.from({ scheme: PathUtilities.FILE_SCHEMA, path: filePath });
-			this._windowsService.openExternal(fileUri.toString());
-		} else {
+		if (format !== SaveFormat.EXCEL) {
 			let uri = URI.file(filePath);
 			this._editorService.openEditor({ resource: uri }).then((result) => {
 

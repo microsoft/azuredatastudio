@@ -22,6 +22,10 @@
                 "title": "sqlservices.openDialog"
             },
             {
+                "command": "sqlservices.openConnectionDialog",
+                "title": "sqlservices.openConnectionDialog"
+            },
+            {
                 "command": "sqlservices.openEditor",
                 "title": "sqlservices.openEditor"
             },

@@ -15,19 +15,20 @@
 		(focusin)="onGridFocus()" (focusout)="onGridFocusout()">
 		<div class="boxRow content horzBox slickgrid" *ngFor="let dataSet of renderedDataSets; let i = index"
 			[style.max-height]="dataSet.maxHeight" [style.min-height]="dataSet.minHeight">
-			<slick-grid #slickgrid id="slickgrid_{{i}}" [columnDefinitions]="dataSet.columnDefinitions"
-						[ngClass]="i === activeGrid ? 'active' : ''"
-						[dataRows]="dataSet.dataRows"
-						(contextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
-						enableAsyncPostRender="true"
-						showHeader="true"
-						[resized]="dataSet.resized"
-						(onActiveCellChanged)="onActiveCellChanged(i)"
-						(mousedown)="navigateToGrid(i)"
-						[selectionModel]="selectionModel"
-						[plugins]="plugins[i]"
-						class="boxCol content vertBox slickgrid"
-						[rowHeight]="rowHeight">
+			<slick-grid #slickgrid id="slickgrid_{{i}}"
+				class="boxCol content vertBox slickgrid"
+				enableAsyncPostRender="true"
+				showHeader="true"
+				[columnDefinitions]="dataSet.columnDefinitions"
+				[ngClass]="i === activeGrid ? 'active' : ''"
+				[dataRows]="dataSet.dataRows"
+				[resized]="dataSet.resized"
+				[selectionModel]="selectionModel"
+				[plugins]="plugins[i]"
+				[rowHeight]="rowHeight"
+				(onContextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
+				(onActiveCellChanged)="onActiveCellChanged(i)"
+				(mousedown)="navigateToGrid(i)">
 			</slick-grid>
 			<span class="boxCol content vertBox">
 				<div class="boxRow content maxHeight" *ngFor="let icon of dataIcons">

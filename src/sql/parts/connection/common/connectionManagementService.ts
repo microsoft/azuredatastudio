@@ -627,12 +627,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getConnectionGroups(): ConnectionProfileGroup[] {
-		return this._connectionStore.getConnectionProfileGroups();
+	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
+		return this._connectionStore.getConnectionProfileGroups(false, providers);
 	}
 
-	public getRecentConnections(): ConnectionProfile[] {
-		return this._connectionStore.getRecentlyUsedConnections();
+	public getRecentConnections(providers?: string[]): ConnectionProfile[] {
+		return this._connectionStore.getRecentlyUsedConnections(providers);
 	}
 
 
@@ -644,7 +644,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
 	}
 
-	public getActiveConnections(): ConnectionProfile[] {
+	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
 		return this._connectionStatusManager.getActiveConnectionProfiles();
 	}
 
@@ -1002,14 +1002,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
 				}
 			});
@@ -1366,6 +1366,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
 				return connectionString;
 			});
+		});
+	}
+
+	/**
+	 * Serialize connection with options provider
+	 * TODO this could be a map reduce operation
+	 */
+	public buildConnectionInfo(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
+		return this._providers.get(provider).onReady.then(e => {
+			return e.buildConnectionInfo(connectionString);
 		});
 	}
 }

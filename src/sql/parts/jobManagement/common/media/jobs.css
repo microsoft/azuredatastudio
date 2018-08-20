@@ -31,6 +31,10 @@ jobhistory-component {
     border-bottom: 3px solid #444444;
 }
 
+.hc-black .job-heading-container {
+    border-bottom: 3px solid #2b56f2;
+}
+
 .jobview-grid {
     height: calc(100% - 75px);
 	width : 100%;
@@ -43,17 +47,15 @@ jobhistory-component {
 
 #agentViewDiv .slick-header-column {
 	background-color: transparent !important;
-	background: white !important;
     border: 0px !important;
     font-weight: bold;
 }
 
-.vs-dark #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
+.hc-black #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+    border: 1px solid #2b56f2;
 }
 
 #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -161,19 +163,12 @@ jobhistory-component {
     margin-left:		20px;
 }
 
-.vs-dark #jobsDiv .dynamic-cell-detail {
-    background: black !important;
-}
-
-#jobsDiv .dynamic-cell-detail {
-    background: #faf5f8 !important;
-}
-
 .jobsview-icon {
     background-image: url('./job.svg');
 }
 
-.vs-dark .jobsview-icon {
+.vs-dark .jobsview-icon,
+.hc-black .jobsview-icon {
 	background-image: url('./job_inverse.svg');
 }
 
@@ -181,7 +176,8 @@ jobhistory-component {
     background-image: url('./alert.svg');
 }
 
-.vs-dark .alertsview-icon {
+.vs-dark .alertsview-icon,
+.hc-black .alertsview-icon {
 	background-image: url('./alert_inverse.svg');
 }
 
@@ -189,7 +185,8 @@ jobhistory-component {
     background-image: url('./proxy.svg');
 }
 
-.vs-dark .proxiesview-icon {
+.vs-dark .proxiesview-icon,
+.hc-black .proxiesview-icon {
 	background-image: url('./proxy_inverse.svg');
 }
 
@@ -197,7 +194,8 @@ jobhistory-component {
     background-image: url('./operator.svg');
 }
 
-.vs-dark .operatorsview-icon {
+.vs-dark .operatorsview-icon,
+.hc-black .operatorsview-icon {
 	background-image: url('./operator_inverse.svg');
 }
 
@@ -208,6 +206,10 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
 
 .vs-dark .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
     border-left: 1px dotted white;
+}
+
+.hc-black .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+    border-left: 1px dotted #2b56f2;
 }
 
 .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
@@ -238,6 +240,12 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
     background: #444444 !important;
 }
 
+.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+    background: none !important;
+}
+
 table.jobprevruns div.bar0, table.jobprevruns div.bar1, table.jobprevruns div.bar2,
 table.jobprevruns div.bar3, table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
     padding-top: 3px;
@@ -257,33 +265,6 @@ table.jobprevruns {
 table.jobprevruns > tbody {
     vertical-align: bottom;
 }
-
-.jobs-view-toolbar{
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    padding: 15px 10px 15px 30px;
-    font-size: 16px;
-    border-bottom: 3px solid #f4f4f4;
-}
-
-.jobs-view-toolbar .vs-dark {
-    border-bottom: 3px solid #444444;
-}
-
-.jobs-view-toolbar > div{
-    display: flex;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    margin-right: 25px;
-    cursor: pointer;
-    padding: 2px;
-}
-
-.jobs-view-toolbar span{
-    padding-left: 5px;
-}
-
 
 #alertsDiv .jobalertsview-grid {
     height: calc(100% - 75px);
@@ -329,12 +310,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     opacity: 0;
 }
 
-.vs-dark #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
 #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -360,12 +336,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     border-left: 1px dotted #444444;
 }
 
-.vs-dark #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
 #operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;
@@ -391,12 +362,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     border-left: 1px dotted #444444;
 }
 
-.vs-dark #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background:#333333;
-}
-
 #proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
-    background: white;
     border-right: transparent !important;
     border-left: transparent !important;
     line-height: 33px !important;

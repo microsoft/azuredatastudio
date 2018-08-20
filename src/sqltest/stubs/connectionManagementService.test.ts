@@ -63,11 +63,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getConnectionGroups(): ConnectionProfileGroup[] {
+	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
 		return [];
 	}
 
-	getActiveConnections(): ConnectionProfile[] {
+	getActiveConnections(providers?: string[]): ConnectionProfile[] {
 		return [];
 	}
 
@@ -75,7 +75,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getRecentConnections(): ConnectionProfile[] {
+	getRecentConnections(providers?: string[]): ConnectionProfile[] {
 		return [];
 	}
 
@@ -255,6 +255,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getConnectionString(connectionId: string): Thenable<string> {
+		return undefined;
+	}
+
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
 		return undefined;
 	}
 }

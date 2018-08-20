@@ -29,8 +29,8 @@ export class FileConfigPage extends ImportPage {
 
 	private tableNames: string[] = [];
 
-	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
-		super(instance, model, view, provider);
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, wizardPage, model, view, provider);
 	}
 
 	async start(): Promise<boolean> {
@@ -39,7 +39,6 @@ export class FileConfigPage extends ImportPage {
 		let fileBrowserComponent = await this.createFileBrowser();
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
-		this.setupNavigationValidator();
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -56,13 +55,14 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		await this.populateServerDropdown();
-		await this.populateDatabaseDropdown();
-		await this.populateSchemaDropdown();
-		return true;
+		let r1 = await this.populateServerDropdown();
+		let r2 = await this.populateDatabaseDropdown();
+		let r3 = await this.populateSchemaDropdown();
+		return r1 && r2 && r3;
 	}
 
 	async onPageLeave(): Promise<boolean> {
+		delete this.model.serverId;
 		return true;
 	}
 
@@ -73,7 +73,7 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	private setupNavigationValidator() {
+	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (this.schemaLoader.loading || this.databaseLoader.loading) {
 				return false;
@@ -83,7 +83,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createServerDropdown(): Promise<sqlops.FormComponent> {
-		this.serverDropdown = this.view.modelBuilder.dropDown().component();
+		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async (params) => {
@@ -110,11 +112,16 @@ export class FileConfigPage extends ImportPage {
 		let count = -1;
 		let idx = -1;
 
+
 		let values = cons.map(c => {
 			// Handle the code to remember what the user's choice was from before
 			count++;
-			if (this.model.server && c.connectionId === this.model.server.connectionId) {
-				idx = count;
+			if (idx === -1) {
+				if (this.model.server && c.connectionId === this.model.server.connectionId) {
+					idx = count;
+				} else if (this.model.serverId && c.connectionId === this.model.serverId) {
+					idx = count;
+				}
 			}
 
 			let db = c.options.databaseDisplayName;
@@ -137,12 +144,13 @@ export class FileConfigPage extends ImportPage {
 			};
 		});
 
-		if (idx > 0) {
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
 		} else {
 			delete this.model.server;
+			delete this.model.serverId;
 			delete this.model.database;
 			delete this.model.schema;
 		}
@@ -157,7 +165,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createDatabaseDropdown(): Promise<sqlops.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async (db) => {
@@ -193,13 +203,14 @@ export class FileConfigPage extends ImportPage {
 			if (this.model.database && db === this.model.database) {
 				idx = count;
 			}
+
 			return {
 				displayName: db,
 				name: db
 			};
 		});
 
-		if (idx > 0) {
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
@@ -219,7 +230,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createFileBrowser(): Promise<sqlops.FormComponent> {
-		this.fileTextBox = this.view.modelBuilder.inputBox().component();
+		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
+			required: true
+		}).component();
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: localize('flatFileImport.browseFiles', 'Browse'),
 		}).component();
@@ -288,6 +301,8 @@ export class FileConfigPage extends ImportPage {
 			}
 
 			return true;
+		}).withProperties({
+			required: true,
 		}).component();
 
 		this.tableNameTextBox.onTextChanged((tableName) => {
@@ -302,7 +317,9 @@ export class FileConfigPage extends ImportPage {
 
 
 	private async createSchemaDropdown(): Promise<sqlops.FormComponent> {
-		this.schemaDropdown = this.view.modelBuilder.dropDown().component();
+		this.schemaDropdown = this.view.modelBuilder.dropDown().withProperties({
+			required: true
+		}).component();
 		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
 
 		this.schemaDropdown.onValueChanged(() => {
@@ -317,7 +334,7 @@ export class FileConfigPage extends ImportPage {
 
 	}
 
-	private async populateSchemaDropdown(): Promise<Boolean> {
+	private async populateSchemaDropdown(): Promise<boolean> {
 		this.schemaLoader.loading = true;
 		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
@@ -343,7 +360,7 @@ export class FileConfigPage extends ImportPage {
 			};
 		});
 
-		if (idx > 0) {
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;

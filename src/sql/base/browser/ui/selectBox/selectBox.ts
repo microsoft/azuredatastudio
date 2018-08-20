@@ -84,6 +84,7 @@ export class SelectBox extends vsSelectBox {
 		this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
 		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
+		this.applyStyles();
 	}
 
 	public selectWithOptionName(optionName: string): void {

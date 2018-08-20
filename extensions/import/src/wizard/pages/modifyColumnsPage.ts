@@ -56,9 +56,10 @@ export class ModifyColumnsPage extends ImportPage {
 	private text: sqlops.TextComponent;
 	private form: sqlops.FormContainer;
 
-	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
-		super(instance, model, view, provider);
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, wizardPage, model, view, provider);
 	}
+
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
 		return [column.columnName, column.dataType, false, column.nullable];
@@ -106,19 +107,28 @@ export class ModifyColumnsPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
 		await this.populateTable();
+		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', 'Import Data'));
 		this.loading.loading = false;
 
 		return true;
 	}
 
 	async onPageLeave(): Promise<boolean> {
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 
 		return true;
+	}
+
+	public setupNavigationValidator() {
+		this.instance.registerNavigationValidator((info) => {
+			return !this.loading.loading;
+		});
 	}
 
 	private async populateTable() {
@@ -136,18 +146,18 @@ export class ModifyColumnsPage extends ImportPage {
 				width: '150px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.dataType', 'Data type'),
+				displayName: localize('flatFileImport.dataType', 'Data Type'),
 				valueType: sqlops.DeclarativeDataType.editableCategory,
 				width: '150px',
 				isReadOnly: false,
 				categoryValues: this.categoryValues
 			}, {
-				displayName: localize('flatFileImport.primaryKey', 'Primary key'),
+				displayName: localize('flatFileImport.primaryKey', 'Primary Key'),
 				valueType: sqlops.DeclarativeDataType.boolean,
 				width: '100px',
 				isReadOnly: false
 			}, {
-				displayName: localize('flatFileImport.allowNull', 'Allow null'),
+				displayName: localize('flatFileImport.allowNulls', 'Allow Nulls'),
 				valueType: sqlops.DeclarativeDataType.boolean,
 				isReadOnly: false,
 				width: '100px'
