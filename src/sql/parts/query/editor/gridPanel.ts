@@ -96,7 +96,7 @@ export class GridPanel extends ViewletPanel {
 		@IThemeService private themeService: IThemeService
 	) {
 		super(title, options, keybindingService, contextMenuService, configurationService);
-		this.splitView = new ScrollableSplitView(this.container);
+		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
 	}
 
 	protected renderBody(container: HTMLElement): void {
