@@ -125,7 +125,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.initializeSchedulesTab();
 		this.initializeNotificationsTab();
 		this.dialog.content = [this.generalTab, this.stepsTab, this.schedulesTab, this.alertsTab, this.notificationsTab];
-
 		this.dialog.registerCloseValidator(() => {
 			this.updateModel();
 			let validationResult = this.model.validate();
@@ -194,6 +193,10 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private initializeStepsTab() {
 		this.stepsTab.registerContent(async view => {
+			let previewTag = view.modelBuilder.text()
+				.withProperties({
+					value: 'Feature Preview'
+				}).component();
 			this.stepsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -246,8 +249,14 @@ export class JobDialog extends AgentDialog<JobData>  {
 				width: 80
 			}).component();
 
+			this.stepsTable.enabled = false;
+
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
+					component: previewTag,
+					title: ''
+				},
+				{
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
 					actions: [this.moveStepUpButton, this.moveStepDownButton, this.newStepButton, this.editStepButton, this.deleteStepButton]
@@ -258,6 +267,10 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private initializeAlertsTab() {
 		this.alertsTab.registerContent(async view => {
+			let previewTag = view.modelBuilder.text()
+			.withProperties({
+				value: 'Feature Preview'
+			}).component();
 			this.alertsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -282,6 +295,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
+					component: previewTag,
+					title: ''
+				}, {
 					component: this.alertsTable,
 					title: this.AlertsTopLabelString,
 					actions: [this.newAlertButton]
