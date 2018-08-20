@@ -34,7 +34,6 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as styler from 'vs/platform/theme/common/styler';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 
@@ -376,6 +375,7 @@ export class ConnectionDialogWidget extends Modal {
 	 */
 	public open(recentConnections: boolean) {
 		this._panel.showTab(this._recentConnectionTabId);
+
 		this.show();
 		if (recentConnections) {
 			this._noRecentConnectionBuilder.hide();

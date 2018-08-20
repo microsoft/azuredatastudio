@@ -22,7 +22,6 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { Event, Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -72,6 +71,13 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param connectionUri URI identifying a connected resource
 	 */
 	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> { throw ni(); }
+
+	/**
+	 * Serialize connection string
+	 * @param handle the handle to use when looking up a provider
+	 * @param connectionString the connection string to serialize
+	 */
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
@@ -609,7 +615,7 @@ export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
-	$onNodeSelected(treeViewId: string, nodes:  string[]): void;
+	$onNodeSelected(treeViewId: string, nodes: string[]): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

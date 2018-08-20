@@ -257,4 +257,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	getConnectionString(ownerUri: string): Thenable<string> {
 		return undefined;
 	}
+
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
+		return undefined;
+	}
 }

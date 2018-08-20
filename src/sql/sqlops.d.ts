@@ -327,7 +327,9 @@ declare module 'sqlops' {
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
 
-		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> ;
+		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string>;
+
+		buildConnectionInfo?(connectionString: string): Thenable<ConnectionInfo>;
 
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 

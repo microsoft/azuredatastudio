@@ -266,6 +266,11 @@ export interface IConnectionManagementService {
 	 * Get the connection string for the provided connection profile
 	 */
 	getConnectionString(ownerUri: string, includePassword: boolean): Thenable<string>;
+
+	/**
+	 * Serialize connection string with optional provider
+	 */
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
