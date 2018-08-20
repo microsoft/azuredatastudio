@@ -110,6 +110,11 @@ export class SelectBoxList implements ISelectBoxDelegate, IDelegate<ISelectOptio
 		this.selectElement = document.createElement('select');
 		this.selectElement.className = 'monaco-select-box';
 
+		// {{SQL CARBON EDIT}}
+		if (selectBoxOptions && selectBoxOptions.ariaLabel) {
+			this.selectElement.setAttribute('aria-label', selectBoxOptions.ariaLabel);
+		}
+
 		this._onDidSelect = new Emitter<ISelectData>();
 		this.styles = styles;
 
