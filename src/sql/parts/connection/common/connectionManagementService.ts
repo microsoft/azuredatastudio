@@ -1348,9 +1348,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Get the connection string for the provided connection profile
+	 * Get the connection string for the provided connection ID
 	 */
-	public getConnectionString(ownerUri: string, includePassword: boolean = false): Thenable<string> {
+	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
+		let ownerUri = this.getConnectionUriFromId(connectionId);
+
 		if (!ownerUri) {
 			return Promise.resolve(undefined);
 		}

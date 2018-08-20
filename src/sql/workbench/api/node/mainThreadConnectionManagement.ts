@@ -56,8 +56,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public async $getConnectionString(connectionId: string, includePassword: boolean): Promise<string> {
-		let uri = await this.$getUriForConnection(connectionId);
-		return this._connectionManagementService.getConnectionString(uri, includePassword);
+		return this._connectionManagementService.getConnectionString(connectionId, includePassword);
 	}
 
 	public $getUriForConnection(connectionId: string): Thenable<string> {

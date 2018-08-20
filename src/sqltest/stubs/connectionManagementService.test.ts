@@ -254,7 +254,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getConnectionString(ownerUri: string): Thenable<string> {
+	getConnectionString(connectionId: string): Thenable<string> {
 		return undefined;
 	}
 }
