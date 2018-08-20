@@ -457,9 +457,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				}
 			} finally {
 				// The operation may fail if there were no changes sent to the service to revert,
-				// so clear any existing client-side edit and refresh the table regardless
+				// so clear any existing client-side edit and refresh on-screen data
+				// do not refresh the whole dataset as it will move the focus away to the first row.
+				//
 				this.currentEditCellValue = null;
-				this.refreshResultsets();
+				this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
 			}
 		}
 	}

@@ -32,18 +32,15 @@ export enum DeclarativeDataType {
 @Component({
 	selector: 'modelview-declarativeTable',
 	template: `
-	<table role=grid aria-labelledby="ID_REF" #container *ngIf="columns" class="declarative-table">
+	<table role=grid aria-labelledby="ID_REF" #container *ngIf="columns" class="declarative-table" [style.height]="getHeight()">
 	<thead>
-        <tr style="display:block;">
 		<ng-container *ngFor="let column of columns;let h = index">
-            <td class="declarative-table-header" tabindex="-1" [style.width]="getColumnWidth(h)" role="button" aria-sort="none">{{column.displayName}}</td>
+		<th class="declarative-table-header" tabindex="-1" role="button" aria-sort="none">{{column.displayName}}</th>
 		</ng-container>
-		</tr>
     </thead>
 		<ng-container *ngIf="data">
-		<tbody style="display: block; width:100%; overflow-y: scroll" [style.height]="getHeight()">
 			<ng-container *ngFor="let row of data;let r = index">
-				<tr class="declarative-table-row">
+				<tr class="declarative-table-row" >
 					<ng-container *ngFor="let cellData of row;let c = index">
 						<td class="declarative-table-cell" tabindex="-1" role="button" [style.width]="getColumnWidth(c)">
 							<checkbox *ngIf="isCheckBox(c)" label="" (onChange)="onCheckBoxChanged($event,r,c)" [enabled]="isControlEnabled(c)" [checked]="isChecked(r,c)"></checkbox>
@@ -54,9 +51,7 @@ export enum DeclarativeDataType {
 						</td>
 					</ng-container>
 				</tr>
-
 			</ng-container>
-			</tbody>
 		</ng-container>
 	</table>
 	`

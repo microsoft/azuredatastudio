@@ -228,8 +228,12 @@ export abstract class GridParentComponent {
 
 	protected getSelection(index?: number): ISlickRange[] {
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
-		selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
-		return selection;
+		if (selection) {
+			selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
+			return selection;
+		} else {
+			return undefined;
+		}
 	}
 
 	private copySelection(): void {
