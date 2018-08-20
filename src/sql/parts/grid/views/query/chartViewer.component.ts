@@ -122,15 +122,13 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			this._chartConfig = <ILineConfig>{
 				dataDirection: 'vertical',
 				dataType: 'point',
-				legendPosition: 'none',
-				labelFirstColumn: false
+				legendPosition: 'none'
 			};
 		} else {
 			this._chartConfig = <ILineConfig>{
 				dataDirection: 'vertical',
 				dataType: 'number',
-				legendPosition: 'none',
-				labelFirstColumn: false
+				legendPosition: 'none'
 			};
 		}
 	}

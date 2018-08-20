@@ -81,8 +81,8 @@ export interface IChartConfig {
 }
 
 export const defaultChartConfig: IChartConfig = {
-	labelFirstColumn: false,
-	columnsAsLabels: false,
+	labelFirstColumn: true,
+	columnsAsLabels: true,
 	legendPosition: LegendPosition.Top,
 	dataDirection: DataDirection.Vertical
 };
