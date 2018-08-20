@@ -22,12 +22,16 @@ export class ConnectionStatusManager {
 		this._providerCapabilitiesMap = {};
 	}
 
-	public findConnection(id: string): ConnectionManagementInfo {
-		if (id in this._connections) {
-			return this._connections[id];
+	public findConnection(uri: string): ConnectionManagementInfo {
+		if (uri in this._connections) {
+			return this._connections[uri];
 		} else {
 			return undefined;
 		}
+	}
+
+	public findConnectionByProfileId(profileId: string): ConnectionManagementInfo {
+		return Object.values(this._connections).find((connection: ConnectionManagementInfo) => connection.connectionProfile.id === profileId);
 	}
 
 	public findConnectionProfile(connectionProfile: IConnectionProfile): ConnectionManagementInfo {

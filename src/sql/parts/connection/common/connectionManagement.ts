@@ -263,9 +263,9 @@ export interface IConnectionManagementService {
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
 
 	/**
-	 * Get the connection string for the provided connection profile
+	 * Get the connection string for the provided connection ID
 	 */
-	getConnectionString(ownerUri: string, includePassword: boolean): Thenable<string>;
+	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 
 	/**
 	 * Serialize connection string with optional provider
