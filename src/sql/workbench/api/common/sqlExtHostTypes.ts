@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
+
 // SQL added extension host types
 export enum ServiceOptionType {
 	string = 'string',
@@ -39,12 +41,13 @@ export enum EditRowState {
 }
 
 export enum TaskStatus {
-	notStarted = 0,
-	inProgress = 1,
-	succeeded = 2,
-	succeededWithWarning = 3,
-	failed = 4,
-	canceled = 5
+	NotStarted = 0,
+	InProgress = 1,
+	Succeeded = 2,
+	SucceededWithWarning = 3,
+	Failed = 4,
+	Canceled = 5,
+	Canceling = 6
 }
 
 export enum TaskExecutionMode {
@@ -99,7 +102,7 @@ export enum AlertType {
 }
 
 export enum FrequencyTypes {
-	Unknown ,
+	Unknown,
 	OneTime = 1 << 1,
 	Daily = 1 << 2,
 	Weekly = 1 << 3,
@@ -145,7 +148,9 @@ export enum ModelComponentTypes {
 	Group,
 	Toolbar,
 	LoadingComponent,
-	FileBrowserTree
+	TreeComponent,
+	FileBrowserTree,
+	Editor
 }
 
 export interface IComponentShape {
@@ -271,13 +276,19 @@ export enum DataProviderType {
 export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
-	boolean = 'boolean'
+	boolean = 'boolean',
+	editableCategory = 'editableCategory'
 }
 
 export enum CardType {
-	VerticalButton  = 'VerticalButton',
+	VerticalButton = 'VerticalButton',
 	Details = 'Details'
 }
+
+export class TreeComponentItem extends TreeItem {
+	checked?: boolean;
+}
+
 export class SqlThemeIcon {
 
 	static readonly Folder = new SqlThemeIcon('Folder');

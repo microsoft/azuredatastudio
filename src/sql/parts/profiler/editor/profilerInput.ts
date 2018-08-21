@@ -20,6 +20,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
+import * as types from 'vs/base/common/types';
+import URI from 'vs/base/common/uri';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -29,6 +31,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	private _id: ProfilerSessionID;
 	private _state: ProfilerState;
 	private _columns: string[] = [];
+	private _sessionName: string;
 	private _viewTemplate: IProfilerViewTemplate;
 	// mapping of event categories to what column they display under
 	// used for coallescing multiple events with different names to the same column
@@ -48,14 +51,17 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this._state = new ProfilerState();
 		// set inital state
 		this.state.change({
-			isConnected: true,
+			isConnected: false,
 			isStopped: true,
 			isPaused: false,
 			isRunning: false,
 			autoscroll: true
 		});
 
-		this._id = this._profilerService.registerSession(generateUuid(), _connection, this);
+		this._profilerService.registerSession(generateUuid(), _connection, this).then((id) => {
+			this._id = id;
+			this.state.change({ isConnected: true });
+		});
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
@@ -107,6 +113,16 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._viewTemplate;
 	}
 
+	public set sessionName(name: string) {
+		if (!this._state.isRunning || !this.state.isPaused) {
+			this._sessionName = name;
+		}
+	}
+
+	public get sessionName(): string {
+		return this._sessionName;
+	}
+
 	public getTypeId(): string {
 		return ProfilerInput.ID;
 	}
@@ -116,7 +132,19 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public getName(): string {
-		return nls.localize('profilerInput.profiler', 'Profiler');
+		let name: string = nls.localize('profilerInput.profiler', 'Profiler');
+		if (!this._connection) {
+			return name;
+		}
+		name += ': ' + this._connection.serverName.substring(0, 20);
+		return name;
+	}
+
+	public getResource(): URI {
+		return URI.from({
+			scheme: ProfilerInput.SCHEMA,
+			path: 'profiler'
+		});
 	}
 
 	public get data(): TableDataView<Slick.SlickData> {
@@ -150,11 +178,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public get connectionName(): string {
-		if (this._connection !== null) {
+		if (!types.isUndefinedOrNull(this._connection)) {
 			if (this._connection.databaseName) {
-				return `${ this._connection.serverName } ${ this._connection.databaseName }`;
+				return `${this._connection.serverName} ${this._connection.databaseName}`;
 			} else {
-				return `${ this._connection.serverName }`;
+				return `${this._connection.serverName}`;
 			}
 		}
 		else {
@@ -178,6 +206,32 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			isPaused: false,
 			isRunning: false
 		});
+	}
+
+	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams) {
+		if (types.isUndefinedOrNull(params.sessionName) || types.isUndefinedOrNull(params.templateName)) {
+			this._notificationService.error(nls.localize("profiler.sessionCreationError", "Error while starting new session"));
+		} else {
+			this._sessionName = params.sessionName;
+			let sessionTemplate = this._profilerService.getSessionTemplates().find((template) => {
+				return template.name === params.templateName;
+			});
+			if (!types.isUndefinedOrNull(sessionTemplate)) {
+				let newView = this._profilerService.getViewTemplates().find((view) => {
+					return view.name === sessionTemplate.defaultView;
+				});
+				if (!types.isUndefinedOrNull(newView)) {
+					this.viewTemplate = newView;
+				}
+			}
+
+			this.data.clear();
+			this.state.change({
+				isStopped: false,
+				isPaused: false,
+				isRunning: true
+			});
+		}
 	}
 
 	public onSessionStateChanged(state: ProfilerState) {

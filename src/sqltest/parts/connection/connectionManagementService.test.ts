@@ -108,7 +108,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 			() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
 		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
-		connectionStore.setup(x => x.getConnectionProfileGroups()).returns(() => [root]);
+		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 
 		mssqlConnectionProvider.setup(x => x.connect(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => undefined);
 
@@ -172,7 +172,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			connectionDialogService.verify(x => x.showDialog(
 				TypeMoq.It.isAny(),
 				TypeMoq.It.is<INewConnectionParams>(p => p.connectionType === connectionType && (uri === undefined || p.input.uri === uri)),
-				TypeMoq.It.is<IConnectionProfile>(c => c.serverName === connectionProfile.serverName),
+				TypeMoq.It.is<IConnectionProfile>(c => c !== undefined && c.serverName === connectionProfile.serverName),
 				connectionResult ? TypeMoq.It.is<IConnectionResult>(r => r.errorMessage === connectionResult.errorMessage && r.callStack === connectionResult.callStack) : undefined),
 				didShow ? TypeMoq.Times.once() : TypeMoq.Times.never());
 
@@ -756,8 +756,8 @@ suite('SQL ConnectionManagementService tests', () => {
 		connect(ownerUri, undefined, false, connectionProfileWithoutDb).then(() => {
 			try {
 				// If I get the URI for the connection with or without a database from the connection management service
-				let actualUriWithDb = connectionManagementService.getConnectionId(connectionProfileWithDb);
-				let actualUriWithoutDb = connectionManagementService.getConnectionId(connectionProfileWithoutDb);
+				let actualUriWithDb = connectionManagementService.getConnectionUri(connectionProfileWithDb);
+				let actualUriWithoutDb = connectionManagementService.getConnectionUri(connectionProfileWithoutDb);
 
 				// Then the retrieved URIs should match the one on the connection
 				let expectedUri = Utils.generateUri(connectionProfileWithoutDb);
@@ -797,11 +797,40 @@ suite('SQL ConnectionManagementService tests', () => {
 
 	test('getActiveConnectionCredentials returns the credentials dictionary for a connection profile', () => {
 		let profile = Object.assign({}, connectionProfile);
-		profile.options = {password: profile.password};
+		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 		let credentials = connectionManagementService.getActiveConnectionCredentials(profile.id);
 		assert.equal(credentials['password'], profile.options['password']);
+	});
+
+	test('getConnectionUriFromId returns a URI of an active connection with the given id', () => {
+		let profile = Object.assign({}, connectionProfile);
+		profile.options = { password: profile.password };
+		profile.id = 'test_id';
+		let uri = 'test_initial_uri';
+		connectionStatusManager.addConnection(profile, uri);
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+
+		// If I call getConnectionUriFromId on the given connection
+		let foundUri = connectionManagementService.getConnectionUriFromId(profile.id);
+
+		// Then the returned URI matches the connection's original URI
+		assert.equal(foundUri, uri);
+	});
+
+	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
+		let profile = Object.assign({}, connectionProfile);
+		profile.options = { password: profile.password };
+		profile.id = 'test_id';
+		connectionStatusManager.addConnection(profile, Utils.generateUri(profile));
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+
+		// If I call getConnectionUriFromId with a different URI than the connection's
+		let foundUri = connectionManagementService.getConnectionUriFromId('different_id');
+
+		// Then undefined is returned
+		assert.equal(foundUri, undefined);
 	});
 });

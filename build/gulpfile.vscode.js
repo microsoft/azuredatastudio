@@ -78,6 +78,7 @@ const sqlBuiltInExtensions = [
 	// Add SQL built-in extensions here.
 	// the extension will be excluded from SQLOps package and will have separate vsix packages
 	'agent',
+	'import',
 	'profiler'
 ];
 
@@ -273,7 +274,8 @@ function packageBuiltInExtensions() {
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
 				cwd: element.path,
-				packagePath: packagePath
+				packagePath: packagePath,
+				useYarn: true
 		});
 	});
 }
@@ -412,7 +414,7 @@ function packageTask(platform, arch, opts) {
 			license,
 			watermark,
 			api,
-	  // {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 			copiedModules,
 			dataApi,
 			sources,
@@ -526,7 +528,9 @@ gulp.task('vscode-translations-push-test', ['optimize-vscode'], function () {
 		gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
 		gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 		gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-	).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
+	// {{SQL CARBON EDIT}}
+	// disable since function makes calls to VS Code Transifex API
+	// ).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
 	).pipe(vfs.dest('../vscode-transifex-input'));
 });
 

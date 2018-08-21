@@ -135,7 +135,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _name: string,
 		private _partService: IPartService,
 		private _telemetryService: ITelemetryService,
-		private _contextKeyService: IContextKeyService,
+		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
 		super();
@@ -228,7 +228,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		// The builder builds the dialog. It append header, body and footer sections.
-		this._builder = $().div({ class: builderClass, 'role': 'dialog' }, (dialogContainer) => {
+		this._builder = $().div({ class: builderClass, 'role': 'dialog', 'aria-label': this._title }, (dialogContainer) => {
 			this._modalDialog = dialogContainer.div({ class: 'modal-dialog ', role: 'document' }, (modalDialog) => {
 				modalDialog.div({ class: 'modal-content' }, (modelContent) => {
 					parts.forEach((part) => {
@@ -355,6 +355,21 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		this._footerButtons.push(button);
 		return button;
+	}
+
+	/**
+	 * Returns a footer button matching the provided label
+	 * @param label Label to show on the button
+	 * @param onSelect The callback to call when the button is selected
+	 */
+	protected findFooterButton(label: string): Button {
+		return this._footerButtons.find(e => {
+			try {
+				return e && e.element.innerText === label;
+			} catch {
+				return false;
+			}
+		});
 	}
 
 	/**

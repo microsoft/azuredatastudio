@@ -57,6 +57,7 @@ export interface IObservableCollection<T> {
     at(index: number): T;
     getRange(start: number, end: number): T[];
     setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void;
+    resetWindowsAroundIndex(index: number): void;
 }
 export class CancellationToken {
     private _isCanceled;
@@ -81,6 +82,11 @@ export interface IColumnDefinition {
     formatter?: (row: number, cell: any, value: any, columnDef: any, dataContext: any) => string;
     isEditable?: boolean;
 }
+
+export interface ISlickColumn<T> extends Slick.Column<T> {
+    isEditable?: boolean;
+}
+
 export interface IGridColumnDefinition {
     id: string;
     type: number;
@@ -286,7 +292,7 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
     getRange(start: number, end: number): TData[];
     private getRangeFromCurrent(start, end);
     private getDataFromCurrent(index);
-    private resetWindowsAroundIndex(index);
+    resetWindowsAroundIndex(index);
 }
 }
 declare module 'angular2-slickgrid/out/js/virtualizedCollection' {

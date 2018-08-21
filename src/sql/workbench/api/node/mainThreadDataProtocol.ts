@@ -27,7 +27,6 @@ import { ISerializationService } from 'sql/services/serialization/serializationS
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import severity from 'vs/base/common/severity';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -87,6 +86,12 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			listDatabases(connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
 				return self._proxy.$listDatabases(handle, connectionUri);
+			},
+			getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> {
+				return self._proxy.$getConnectionString(handle, connectionUri, includePassword);
+			},
+			buildConnectionInfo(connectionString: string): Thenable<sqlops.ConnectionInfo> {
+				return self._proxy.$buildConnectionInfo(handle, connectionString);
 			},
 			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
 				return self._proxy.$rebuildIntelliSenseCache(handle, connectionUri);
@@ -292,14 +297,20 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerProfilerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._profilerService.registerProvider(providerId, <sqlops.ProfilerProvider>{
-			startSession(sessionId: string): Thenable<boolean> {
-				return self._proxy.$startSession(handle, sessionId);
+			createSession(sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+				return self._proxy.$createSession(handle, sessionId, createStatement, template);
+			},
+			startSession(sessionId: string, sessionName: string): Thenable<boolean> {
+				return self._proxy.$startSession(handle, sessionId, sessionName);
 			},
 			stopSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$stopSession(handle, sessionId);
 			},
 			pauseSession(sessionId: string): Thenable<boolean> {
 				return self._proxy.$pauseSession(handle, sessionId);
+			},
+			getXEventSessions(sessionId: string): Thenable<string[]> {
+				return self._proxy.$getXEventSessions(handle, sessionId);
 			},
 			connectSession(sessionId: string): Thenable<boolean> {
 				return TPromise.as(true);
@@ -334,7 +345,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerAgentServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider> {
+		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider>{
 			providerId: providerId,
 			getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 				return self._proxy.$getJobs(handle, connectionUri);
@@ -461,6 +472,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._profilerService.onSessionStopped(response);
+	}
+
+	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+		this._profilerService.onProfilerSessionCreated(response);
 	}
 
 	// SQL Server Agent handlers

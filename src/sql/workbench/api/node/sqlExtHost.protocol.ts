@@ -16,12 +16,12 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
+import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { Event, Emitter } from 'vs/base/common/event';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -32,7 +32,9 @@ export abstract class ExtHostAccountManagementShape {
 	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
 }
 
-export abstract class ExtHostConnectionManagementShape { }
+export abstract class ExtHostConnectionManagementShape {
+	$onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void { throw ni; }
+ }
 
 export abstract class ExtHostDataProtocolShape {
 
@@ -62,6 +64,20 @@ export abstract class ExtHostDataProtocolShape {
 	 * @param connectionUri URI identifying a connected resource
 	 */
 	$listDatabases(handle: number, connectionUri: string): Thenable<sqlops.ListDatabasesResult> { throw ni(); }
+
+	/**
+	 * Get the connection string for the connection specified by connectionUri
+	 * @param handle the handle to use when looking up a provider
+	 * @param connectionUri URI identifying a connected resource
+	 */
+	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> { throw ni(); }
+
+	/**
+	 * Serialize connection string
+	 * @param handle the handle to use when looking up a provider
+	 * @param connectionString the connection string to serialize
+	 */
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> { throw ni(); }
 
 	/**
 	 * Notifies all listeners on the Extension Host side that a language change occurred
@@ -308,9 +324,14 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 
 	/**
+	 * Create a profiler session
+	 */
+	$createSession(handle: number, sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> { throw ni(); }
+
+	/**
 	 * Start a profiler session
 	 */
-	$startSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+	$startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * Stop a profiler session
@@ -322,6 +343,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$pauseSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
 
+	/**
+	 * Get list of running XEvent sessions on the profiler session's target server
+	 */
+	$getXEventSessions(handle: number, sessionId: string): Thenable<string[]> { throw ni(); }
 
 	/**
 	 * Get Agent Job list
@@ -461,6 +486,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onScriptingComplete(handle: number, message: sqlops.ScriptingCompleteResult): void;
 	$onSessionEventsAvailable(handle: number, response: sqlops.ProfilerSessionEvents): void;
 	$onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void;
+	$onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void;
 	$onJobDataUpdated(handle: Number): void;
 
 	/**
@@ -473,6 +499,10 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+	$openConnectionDialog(providers: string[]): Thenable<sqlops.connection.Connection>;
+	$listDatabases(connectionId: string): Thenable<string[]>;
+	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+	$getUriForConnection(connectionId: string): Thenable<string>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -496,6 +526,7 @@ export const SqlMainContext = {
 	MainThreadCredentialManagement: createMainId<MainThreadCredentialManagementShape>('MainThreadCredentialManagement'),
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
+	MainThreadBackgroundTaskManagement: createMainId<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
 	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
@@ -517,8 +548,10 @@ export const SqlExtHostContext = {
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
+	ExtHostBackgroundTaskManagement: createExtId<ExtHostBackgroundTaskManagementShape>('ExtHostBackgroundTaskManagement'),
 	ExtHostDashboardWebviews: createExtId<ExtHostDashboardWebviewsShape>('ExtHostDashboardWebviews'),
 	ExtHostModelView: createExtId<ExtHostModelViewShape>('ExtHostModelView'),
+	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
@@ -578,6 +611,25 @@ export interface ExtHostModelViewShape {
 	$runCustomValidations(handle: number, id: string): Thenable<boolean>;
 }
 
+export interface ExtHostModelViewTreeViewsShape {
+	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
+	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
+	$onNodeSelected(treeViewId: string, nodes: string[]): void;
+}
+
+export interface ExtHostBackgroundTaskManagementShape {
+	$onTaskRegistered(operationId: string): void;
+	$onTaskCanceled(operationId: string): void;
+	$registerTask(operationInfo: sqlops.BackgroundOperationInfo): void;
+	$removeTask(operationId: string): void;
+}
+
+export interface MainThreadBackgroundTaskManagementShape extends IDisposable {
+	$registerTask(taskInfo: sqlops.TaskInfo): void;
+	$updateTask(taskProgressInfo: sqlops.TaskProgressInfo): void;
+}
+
 export interface MainThreadModelViewShape extends IDisposable {
 	$registerProvider(id: string): void;
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
@@ -587,6 +639,8 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;
 	$validate(handle: number, componentId: string): Thenable<boolean>;
+	$setDataProvider(handle: number, componentId: string): Thenable<void>;
+	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void>;
 }
 
 export interface ExtHostObjectExplorerShape {

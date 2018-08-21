@@ -627,12 +627,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	public getConnectionGroups(): ConnectionProfileGroup[] {
-		return this._connectionStore.getConnectionProfileGroups();
+	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
+		return this._connectionStore.getConnectionProfileGroups(false, providers);
 	}
 
-	public getRecentConnections(): ConnectionProfile[] {
-		return this._connectionStore.getRecentlyUsedConnections();
+	public getRecentConnections(providers?: string[]): ConnectionProfile[] {
+		return this._connectionStore.getRecentlyUsedConnections(providers);
 	}
 
 
@@ -644,8 +644,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._connectionStore.removeConnectionToMemento(connectionProfile, Constants.recentConnections);
 	}
 
-	public getActiveConnections(): ConnectionProfile[] {
+	public getActiveConnections(providers?: string[]): ConnectionProfile[] {
 		return this._connectionStatusManager.getActiveConnectionProfiles();
+	}
+
+	public getConnectionUriFromId(connectionId: string): string {
+		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
+		if (connectionInfo) {
+			return connectionInfo.ownerUri;
+		} else {
+			return undefined;
+		}
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
@@ -704,7 +713,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return false;
 	}
 
-	public getConnectionId(connectionProfile: IConnectionProfile): string {
+	public getConnectionUri(connectionProfile: IConnectionProfile): string {
 		return this._connectionStatusManager.getOriginalOwnerUri(Utils.generateUri(connectionProfile));
 	}
 
@@ -716,7 +725,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public getFormattedUri(uri: string, connectionProfile: IConnectionProfile): string {
 		if (this._connectionStatusManager.isDefaultTypeUri(uri)) {
-			return this.getConnectionId(connectionProfile);
+			return this.getConnectionUri(connectionProfile);
 		} else {
 			return uri;
 		}
@@ -993,14 +1002,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let connectionMngInfo = this._connectionStatusManager.findConnection(uri);
 				if (connectionMngInfo && connectionMngInfo.deleted) {
 					this._connectionStatusManager.deleteConnection(uri);
-					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true });
+					resolve({ connected: connectResult, errorMessage: undefined, errorCode: undefined, callStack: undefined, errorHandled: true, connectionProfile: connection });
 				} else {
 					if (errorMessage) {
 						// Connection to the server failed
 						this._connectionStatusManager.deleteConnection(uri);
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					} else {
-						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack });
+						resolve({ connected: connectResult, errorMessage: errorMessage, errorCode: errorCode, callStack: callStack, connectionProfile: connection });
 					}
 				}
 			});
@@ -1111,7 +1120,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					resolve(result);
 				});
 			} else {
-				resolve(self.disconnectEditor(owner));
+				// If the editor is connected then there is nothing to cancel
+				resolve(false);
 			}
 		});
 	}
@@ -1335,5 +1345,37 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let credentials = {};
 		credentials[passwordOption.name] = profile.options[passwordOption.name];
 		return credentials;
+	}
+
+	/**
+	 * Get the connection string for the provided connection ID
+	 */
+	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
+		let ownerUri = this.getConnectionUriFromId(connectionId);
+
+		if (!ownerUri) {
+			return Promise.resolve(undefined);
+		}
+
+		let providerId = this.getProviderIdFromUri(ownerUri);
+		if (!providerId) {
+			return Promise.resolve(undefined);
+		}
+
+		return this._providers.get(providerId).onReady.then(provider => {
+			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
+				return connectionString;
+			});
+		});
+	}
+
+	/**
+	 * Serialize connection with options provider
+	 * TODO this could be a map reduce operation
+	 */
+	public buildConnectionInfo(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
+		return this._providers.get(provider).onReady.then(e => {
+			return e.buildConnectionInfo(connectionString);
+		});
 	}
 }

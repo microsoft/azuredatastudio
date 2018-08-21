@@ -231,7 +231,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
 		}
-		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => item.displayValue)) };
+		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => (item.invariantCultureDisplayValue === null || item.invariantCultureDisplayValue === undefined) ?  item.displayValue : item.invariantCultureDisplayValue)) };
 
 		if (componentInstance.init) {
 			componentInstance.init();

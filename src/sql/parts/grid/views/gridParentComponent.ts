@@ -26,6 +26,7 @@ import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { error } from 'sql/base/common/log';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 import { IAction } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
@@ -33,8 +34,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
-import { DragCellSelectionModel } from 'sql/base/browser/ui/table/plugins/dragCellSelectionModel.plugin';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -42,14 +41,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 export abstract class GridParentComponent {
 	// CONSTANTS
 	// tslint:disable:no-unused-variable
-	protected get selectionModel(): DragCellSelectionModel<any> {
-		return new DragCellSelectionModel<any>();
-	}
-	protected get slickgridPlugins(): Array<any> {
-		return [
-			new AutoColumnSize<any>({})
-		];
-	}
+
+	protected get selectionModel() { return new CellSelectionModel(); }
 	protected _rowHeight = 29;
 	protected _defaultNumShowingRows = 8;
 	protected Constants = Constants;
@@ -86,17 +79,6 @@ export abstract class GridParentComponent {
 	protected activeGrid = 0;
 
 	@ViewChildren('slickgrid') slickgrids: QueryList<SlickGrid>;
-
-	// Edit Data functions
-	public onActiveCellChanged: (event: { row: number, column: number }) => void;
-	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
-	public onCellEditBegin: (event: { row: number, column: number }) => void;
-	public onRowEditBegin: (event: { row: number }) => void;
-	public onRowEditEnd: (event: { row: number }) => void;
-	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
-	public onIsColumnEditable: (column: number) => boolean;
-	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
-	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
 
 	set messageActive(input: boolean) {
 		this._messageActive = input;
@@ -244,21 +226,29 @@ export abstract class GridParentComponent {
 		this.messagesFocussedContextKey.set(false);
 	}
 
+	protected getSelection(index?: number): ISlickRange[] {
+		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+		if (selection) {
+			selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
+			return selection;
+		} else {
+			return undefined;
+		}
+	}
+
 	private copySelection(): void {
 		let messageText = this.getMessageText();
 		if (messageText.length > 0) {
 			this.clipboardService.writeText(messageText);
 		} else {
 			let activeGrid = this.activeGrid;
-			let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
-			this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
+			this.dataService.copyResults(this.getSelection(activeGrid), this.renderedDataSets[activeGrid].batchId, this.renderedDataSets[activeGrid].resultId);
 		}
 	}
 
 	private copyWithHeaders(): void {
 		let activeGrid = this.activeGrid;
-		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
-		this.dataService.copyResults(selection, this.renderedDataSets[activeGrid].batchId,
+		this.dataService.copyResults(this.getSelection(activeGrid), this.renderedDataSets[activeGrid].batchId,
 			this.renderedDataSets[activeGrid].resultId, true);
 	}
 
@@ -372,8 +362,7 @@ export abstract class GridParentComponent {
 		let activeGrid = this.activeGrid;
 		let batchId = this.renderedDataSets[activeGrid].batchId;
 		let resultId = this.renderedDataSets[activeGrid].resultId;
-		let selection = this.slickgrids.toArray()[activeGrid].getSelectedRanges();
-		this.dataService.sendSaveRequest({ batchIndex: batchId, resultSetNumber: resultId, format: format, selection: selection });
+		this.dataService.sendSaveRequest({ batchIndex: batchId, resultSetNumber: resultId, format: format, selection: this.getSelection(activeGrid) });
 	}
 
 	protected _keybindingFor(action: IAction): ResolvedKeybinding {
@@ -385,7 +374,7 @@ export abstract class GridParentComponent {
 		let slick: any = this.slickgrids.toArray()[index];
 		let grid = slick._grid;
 
-		let selection = this.slickgrids.toArray()[index].getSelectedRanges();
+		let selection = this.getSelection(index);
 
 		if (selection && selection.length === 0) {
 			let cell = (grid as Slick.Grid<any>).getCellFromEvent(event);
@@ -423,7 +412,9 @@ export abstract class GridParentComponent {
 		let self = this;
 		return (gridIndex: number) => {
 			self.activeGrid = gridIndex;
-			self.slickgrids.toArray()[this.activeGrid].selection = true;
+			let grid = self.slickgrids.toArray()[self.activeGrid];
+			grid.setActive();
+			grid.selection = true;
 		};
 	}
 
@@ -431,22 +422,6 @@ export abstract class GridParentComponent {
 		if (this.activeGrid >= 0 && this.slickgrids.length > this.activeGrid) {
 			this.slickgrids.toArray()[this.activeGrid].selection = true;
 		}
-	}
-
-	/**
-	 * Used to convert the string to a enum compatible with SlickGrid
-	 */
-	protected stringToFieldType(input: string): FieldType {
-		let fieldtype: FieldType;
-		switch (input) {
-			case 'string':
-				fieldtype = FieldType.String;
-				break;
-			default:
-				fieldtype = FieldType.String;
-				break;
-		}
-		return fieldtype;
 	}
 
 	/**

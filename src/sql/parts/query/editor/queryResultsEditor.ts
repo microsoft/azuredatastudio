@@ -26,6 +26,7 @@ import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
 import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Event } from 'vs/base/common/event';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -169,7 +170,11 @@ export class QueryResultsEditor extends BaseEditor {
 		// Note: pass in input so on disposal this is cleaned up.
 		// Otherwise many components will be left around and be subscribed
 		// to events from the backing data service
-		let params: IQueryComponentParams = { dataService: dataService };
+		let params: IQueryComponentParams = {
+			dataService: dataService,
+			onSaveViewState: this.input.onSaveViewStateEmitter.event,
+			onRestoreViewState: this.input.onRestoreViewStateEmitter.event
+		};
 		bootstrapAngular(this._instantiationService,
 			QueryOutputModule,
 			this.getContainer(),

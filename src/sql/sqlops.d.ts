@@ -88,6 +88,11 @@ declare module 'sqlops' {
 		export function getActiveConnections(): Thenable<Connection[]>;
 
 		/**
+		 * Get connection string
+		*/
+		export function getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+
+		/**
 		 * Get the credentials for an active connection
 		 * @param {string} connectionId The id of the connection
 		 * @returns {{ [name: string]: string}} A dictionary containing the credentials as they would be included in the connection's options dictionary
@@ -321,6 +326,10 @@ declare module 'sqlops' {
 		changeDatabase(connectionUri: string, newDatabase: string): Thenable<boolean>;
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
+
+		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string>;
+
+		buildConnectionInfo?(connectionString: string): Thenable<ConnectionInfo>;
 
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
@@ -777,7 +786,7 @@ declare module 'sqlops' {
 
 	export interface SyntaxParseResult {
 		parseable: boolean;
-		errorMessages: string[];
+		errors: string[];
 	}
 
 	// Query Batch Notification -----------------------------------------------------------------------
@@ -809,6 +818,7 @@ declare module 'sqlops' {
 	export interface DbCellValue {
 		displayValue: string;
 		isNull: boolean;
+		invariantCultureDisplayValue: string;
 	}
 
 	export interface ResultSetSubset {
@@ -841,6 +851,9 @@ declare module 'sqlops' {
 		columnEndIndex: number;
 		includeHeaders?: boolean;
 		delimiter?: string;
+		lineSeperator?: string;
+		textIdentifier?: string;
+		encoding?: string;
 	}
 
 	export interface SaveResultRequestResult {
@@ -1531,12 +1544,13 @@ declare module 'sqlops' {
 
 	// Task service interfaces ----------------------------------------------------------------------------
 	export enum TaskStatus {
-		notStarted = 0,
-		inProgress = 1,
-		succeeded = 2,
-		succeededWithWarning = 3,
-		failed = 4,
-		canceled = 5
+		NotStarted = 0,
+		InProgress = 1,
+		Succeeded = 2,
+		SucceededWithWarning = 3,
+		Failed = 4,
+		Canceled = 5,
+		Canceling = 6
 	}
 
 	export enum TaskExecutionMode {
@@ -1550,6 +1564,7 @@ declare module 'sqlops' {
 	}
 
 	export interface TaskInfo {
+		connection?: connection.Connection;
 		taskId: string;
 		status: TaskStatus;
 		taskExecutionMode: TaskExecutionMode;
@@ -1573,8 +1588,7 @@ declare module 'sqlops' {
 		taskId: string;
 		status: TaskStatus;
 		message: string;
-		script: string;
-		duration: number;
+		script?: string;
 	}
 
 	export interface TaskServicesProvider extends DataProvider {
@@ -1669,14 +1683,17 @@ declare module 'sqlops' {
 	}
 
 	export interface ProfilerProvider extends DataProvider {
-		startSession(sessionId: string): Thenable<boolean>;
+		createSession(sessionId: string, sessionName: string, template: ProfilerSessionTemplate): Thenable<boolean>;
+		startSession(sessionId: string, sessionName: string): Thenable<boolean>;
 		stopSession(sessionId: string): Thenable<boolean>;
 		pauseSession(sessionId: string): Thenable<boolean>;
+		getXEventSessions(sessionId: string): Thenable<string[]>;
 		connectSession(sessionId: string): Thenable<boolean>;
 		disconnectSession(sessionId: string): Thenable<boolean>;
 
 		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
 		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
+		registerOnProfilerSessionCreated(handler: (response: ProfilerSessionCreatedParams) => any): void;
 	}
 
 	export interface IProfilerTableRow {
@@ -1713,6 +1730,26 @@ declare module 'sqlops' {
 		values: {};
 	}
 
+	/**
+	 * Profiler Session Template
+	 */
+	export interface ProfilerSessionTemplate {
+		/**
+		 * Template name
+		 */
+		name: string;
+
+		/**
+		 * Default view for template
+		 */
+		defaultView: string;
+
+		/**
+		 * TSQL for creating a session
+		 */
+		createStatement: string;
+	}
+
 	export interface ProfilerSessionEvents {
 		sessionId: string;
 
@@ -1726,6 +1763,12 @@ declare module 'sqlops' {
 		ownerUri: string;
 
 		sessionId: number;
+	}
+
+	export interface ProfilerSessionCreatedParams {
+		ownerUri: string;
+		sessionName: string;
+		templateName: string;
 	}
 
 	// File browser interfaces  -----------------------------------------------------------------------

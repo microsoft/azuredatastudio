@@ -1,5 +1,26 @@
 # Change Log
 
+## Version 0.31.4
+* Release date: July 19, 2018
+* Release status: Public Preview
+
+## What's new in this version
+* SQL Server Agent for SQL Operations Studio extension improvements
+  * Added view of Alerts, Operators, and Proxies and icons on left pane
+  * Added dialogs for New Job, New Job Step, New Alert, and New Operator
+  * Added Delete Job, Delete Alert, and Delete Operator (right-click)
+  * Added Previous Runs visualization
+  * Added Filters for each column name
+* SQL Server Profiler for SQL Operations Studio extension improvements
+  * Added Hotkeys to quickly launch and start/stop Profiler
+  * Added 5 Default Templates to view Extended Events
+  * Added Server/Database connection name
+  * Added support for Azure SQL Database instances
+  * Added suggestion to exit Profiler when tab is closed when Profiler is still running
+* Release of Combine Scripts Extension
+* Wizard and Dialog Extensibility
+* Fix GitHub Issues
+
 ## Version 0.30.6
 * Release date: June 20, 2018
 * Release status: Public Preview

@@ -27,7 +27,7 @@ import { Color } from 'vs/base/common/color';
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input *ngIf="this.isFile === true" id={{this.label}} type="file" style="display: none">
+				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept=".sql" style="display: none">
 			</div>
 		</label>
 	</div>
@@ -39,17 +39,16 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	private _button: Button;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
+	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super(changeRef);
-
 	}
 
 	ngOnInit(): void {
 		this.baseInit();
-
 	}
 
 	ngAfterViewInit(): void {
@@ -61,10 +60,27 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 				buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_TITLE_FOREGROUND
 			}));
 			this._register(this._button.onDidClick(e => {
-				this._onEventEmitter.fire({
-					eventType: ComponentEventType.onDidClick,
-					args: e
-				});
+				if (this._fileInputContainer) {
+					const self = this;
+					this._fileInputContainer.nativeElement.onchange = () => {
+						let file  = self._fileInputContainer.nativeElement.files[0];
+						let reader = new FileReader();
+						reader.onload = (e) => {
+							let text = (<FileReader>e.target).result;
+							self.fileContent = text;
+							self._onEventEmitter.fire({
+								eventType: ComponentEventType.onDidClick,
+								args: self.fileContent
+							});
+						};
+						reader.readAsText(file);
+					};
+				} else {
+					this._onEventEmitter.fire({
+						eventType: ComponentEventType.onDidClick,
+						args: e
+					});
+				}
 			}));
 		}
 	}
@@ -131,6 +147,18 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	private set isFile(newValue: boolean) {
 		this.setPropertyFromUI<sqlops.ButtonProperties, boolean>(this.setFileProperties, newValue);
+	}
+
+	private get fileContent(): string {
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.fileContent, '');
+	}
+
+	private set fileContent(newValue: string) {
+		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setFileContentProperties, newValue);
+	}
+
+	private setFileContentProperties(properties: sqlops.ButtonProperties, fileContent: string) : void {
+		properties.fileContent = fileContent;
 	}
 
 	private setValueProperties(properties: sqlops.ButtonProperties, label: string): void {

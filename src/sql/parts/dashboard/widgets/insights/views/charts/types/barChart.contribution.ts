@@ -16,7 +16,7 @@ const properties: IJSONSchema = {
 	properties: {
 		yAxisMin: {
 			type: 'number',
-			description: nls.localize('yAxisMin', "Minumum value of the y axis")
+			description: nls.localize('yAxisMin', "Minimum value of the y axis")
 		},
 		yAxisMax: {
 			type: 'number',
@@ -24,11 +24,11 @@ const properties: IJSONSchema = {
 		},
 		yAxisLabel: {
 			type: 'string',
-			description: nls.localize('yAxisLabel', "Label for the y axis")
+			description: nls.localize('barchart.yAxisLabel', "Label for the y axis")
 		},
 		xAxisMin: {
 			type: 'number',
-			description: nls.localize('xAxisMin', "Minumum value of the x axis")
+			description: nls.localize('xAxisMin', "Minimum value of the x axis")
 		},
 		xAxisMax: {
 			type: 'number',
@@ -36,7 +36,7 @@ const properties: IJSONSchema = {
 		},
 		xAxisLabel: {
 			type: 'string',
-			description: nls.localize('xAxisLabel', "Label for the x axis")
+			description: nls.localize('barchart.xAxisLabel', "Label for the x axis")
 		}
 	}
 };

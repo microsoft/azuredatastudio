@@ -22,6 +22,10 @@
                 "title": "sqlservices.openDialog"
             },
             {
+                "command": "sqlservices.openConnectionDialog",
+                "title": "sqlservices.openConnectionDialog"
+            },
+            {
                 "command": "sqlservices.openEditor",
                 "title": "sqlservices.openEditor"
             },
@@ -100,7 +104,7 @@
         "sqlops": "github:anthonydresser/sqlops-extension-sqlops",
         "tslint": "^3.14.0",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.14",
+        "vscode": "^1.1.18",
         "@types/handlebars": "^4.0.11",
         "vsce": "1.36.2"
     },

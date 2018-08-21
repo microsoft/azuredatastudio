@@ -13,7 +13,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { IGridDataRow, VirtualizedCollection } from 'angular2-slickgrid';
+import { IGridDataRow, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -24,6 +24,9 @@ import { error } from 'sql/base/common/log';
 import { clone, mixin } from 'sql/base/common/objects';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { escape } from 'sql/base/common/strings';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -36,7 +39,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -66,17 +68,21 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
+	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
-	public onActiveCellChanged: (event: { row: number, column: number }) => void;
-	public onCellEditEnd: (event: { row: number, column: number, newValue: any }) => void;
-	public onCellEditBegin: (event: { row: number, column: number }) => void;
-	public onRowEditBegin: (event: { row: number }) => void;
-	public onRowEditEnd: (event: { row: number }) => void;
+	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
+	public onCellEditEnd: (event: Slick.OnCellChangeEventArgs<any>) => void;
 	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
 	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
+
+	private savedViewState: {
+		gridSelections: ISlickRange[];
+		scrollTop;
+		scrollLeft;
+	};
 
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -95,6 +101,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
+		params.onRestoreViewState(() => this.restoreViewState());
+		params.onSaveViewState(() => this.saveViewState());
 	}
 
 	/**
@@ -156,26 +164,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onActiveCellChanged = this.onCellSelect;
 
-		this.onCellEditEnd = (event: { row: number, column: number, newValue: any }): void => {
+		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
 			// Store the value that was set
-			self.currentEditCellValue = event.newValue;
-		};
-
-		this.onCellEditBegin = (event: { row: number, column: number }): void => { };
-
-		this.onRowEditBegin = (event: { row: number }): void => { };
-
-		this.onRowEditEnd = (event: { row: number }): void => { };
-
-		this.onIsColumnEditable = (column: number): boolean => {
-			let result = false;
-			// Check that our variables exist
-			if (column !== undefined && !!this.dataSet && !!this.dataSet.columnDefinitions[column]) {
-				result = this.dataSet.columnDefinitions[column].isEditable;
-			}
-
-			// If no column definition exists then the row is not editable
-			return result;
+			self.currentEditCellValue = event.item[event.cell - 1];
 		};
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
@@ -197,9 +188,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						self.idMapping[rowIndex] = row.id;
 						rowIndex++;
 						return {
-							values: row.cells.map(c => {
+							values: [{}].concat(row.cells.map(c => {
 								return mixin({ ariaLabel: escape(c.displayValue) }, c);
-							}), row: row.id
+							})), row: row.id
 						};
 					});
 
@@ -233,10 +224,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		};
 	}
 
-	onCellSelect(event: { row: number, column: number }): void {
+	onCellSelect(event: Slick.OnActiveCellChangedEventArgs<any>): void {
 		let self = this;
 		let row = event.row;
-		let column = event.column;
+		let column = event.cell;
 
 		// Skip processing if the newly selected cell is undefined or we don't have column
 		// definition for the column (ie, the selection was reset)
@@ -351,6 +342,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let maxHeight = this.getMaxHeight(resultSet.rowCount);
 		let minHeight = this.getMinHeight(resultSet.rowCount);
 
+		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
+
 		// Store the result set from the event
 		let dataSet: IGridDataSet = {
 			resized: undefined,
@@ -365,7 +358,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				this.loadDataFunction,
 				index => { return { values: [] }; }
 			),
-			columnDefinitions: resultSet.columnInfo.map((c, i) => {
+			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
 				let linkType = c.isXml ? 'xml' : 'json';
 
@@ -374,13 +367,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 						? 'XML Showplan'
 						: escape(c.columnName),
-					type: self.stringToFieldType('string'),
+					field: i.toString(),
 					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
 					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
 					isEditable: c.isUpdatable
 				};
-			})
+			}))
 		};
+		self.plugins.push([rowNumberColumn, new AutoColumnSize(), new AdditionalKeyBindings()]);
 		self.dataSet = dataSet;
 
 		// Create a dataSet to render without rows to reduce DOM size
@@ -463,9 +457,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				}
 			} finally {
 				// The operation may fail if there were no changes sent to the service to revert,
-				// so clear any existing client-side edit and refresh the table regardless
+				// so clear any existing client-side edit and refresh on-screen data
+				// do not refresh the whole dataset as it will move the focus away to the first row.
+				//
 				this.currentEditCellValue = null;
-				this.refreshResultsets();
+				this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
 			}
 		}
 	}
@@ -582,5 +578,26 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		return rowCount > this._defaultNumShowingRows
 			? (this._defaultNumShowingRows + 1) * this._rowHeight + 10
 			: this.getMaxHeight(rowCount);
+	}
+
+	private saveViewState(): void {
+		let gridSelections = this.slickgrids.toArray()[0].getSelectedRanges();
+		let viewport = ((this.slickgrids.toArray()[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
+
+		this.savedViewState = {
+			gridSelections,
+			scrollTop: viewport.scrollTop,
+			scrollLeft: viewport.scrollLeft
+		};
+	}
+
+	private restoreViewState(): void {
+		if (this.savedViewState) {
+			this.slickgrids.toArray()[0].selection = this.savedViewState.gridSelections;
+			let viewport = ((this.slickgrids.toArray()[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
+			viewport.scrollLeft = this.savedViewState.scrollLeft;
+			viewport.scrollTop = this.savedViewState.scrollTop;
+			this.savedViewState = undefined;
+		}
 	}
 }

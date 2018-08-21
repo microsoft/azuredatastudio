@@ -63,11 +63,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getConnectionGroups(): ConnectionProfileGroup[] {
+	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
 		return [];
 	}
 
-	getActiveConnections(): ConnectionProfile[] {
+	getActiveConnections(providers?: string[]): ConnectionProfile[] {
 		return [];
 	}
 
@@ -75,7 +75,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
-	getRecentConnections(): ConnectionProfile[] {
+	getRecentConnections(providers?: string[]): ConnectionProfile[] {
 		return [];
 	}
 
@@ -115,11 +115,15 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return [];
 	}
 
-	getConnectionId(connectionProfile: ConnectionProfile): string {
+	getConnectionUri(connectionProfile: ConnectionProfile): string {
 		return undefined;
 	}
 
 	getFormattedUri(uri: string, connectionProfile: ConnectionProfile): string {
+		return undefined;
+	}
+
+	getConnectionUriFromId(connectionId: string): string {
 		return undefined;
 	}
 
@@ -247,6 +251,14 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string } {
+		return undefined;
+	}
+
+	getConnectionString(connectionId: string): Thenable<string> {
+		return undefined;
+	}
+
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
 		return undefined;
 	}
 }

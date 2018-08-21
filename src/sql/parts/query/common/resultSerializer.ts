@@ -17,7 +17,7 @@ import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as O
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
+import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import URI from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -30,6 +30,8 @@ import { ISlickRange } from 'angular2-slickgrid';
 import * as path from 'path';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { getBaseLabel } from 'vs/base/common/labels';
+import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 
 let prevSavePath: string;
 
@@ -144,11 +146,12 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? prevSavePath : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
+		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
 		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: paths.normalize(filepathPlaceHolder, true)
+			defaultPath: paths.normalize(filepathPlaceHolder, true),
+			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
 			prevSavePath = filePath;
 			return Promise.resolve(filePath);
@@ -176,6 +179,36 @@ export class ResultSerializer {
 		return fileName;
 	}
 
+	private getResultsFileExtension(saveRequest: ISaveRequest): FileFilter[] {
+		let fileFilters = new Array<FileFilter>();
+		let fileFilter:  { extensions: string[]; name: string } = { extensions: undefined, name: undefined};
+
+		switch (saveRequest.format) {
+			case SaveFormat.CSV:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionCSVTitle', 'CSV (Comma delimited)');
+				fileFilter.extensions = ['csv'];
+				break;
+			case SaveFormat.JSON:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', 'JSON');
+				fileFilter.extensions = ['json'];
+				break;
+			case SaveFormat.EXCEL:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', 'Excel Workbook');
+				fileFilter.extensions = ['xlsx'];
+				break;
+			case SaveFormat.XML:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionXMLTitle', 'XML');
+				fileFilter.extensions = ['xml'];
+				break;
+			default:
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionTXTTitle', 'Plain Text');
+				fileFilter.extensions = ['txt'];
+		}
+
+		fileFilters.push(fileFilter);
+		return fileFilters;
+	}
+
 	private getConfigForCsv(): SaveResultsRequestParams {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string };
 
@@ -188,6 +221,15 @@ export class ResultSerializer {
 			}
 			if (saveConfig.delimiter !== undefined) {
 				saveResultsParams.delimiter = saveConfig.delimiter;
+			}
+			if (saveConfig.lineSeperator !== undefined) {
+				saveResultsParams.lineSeperator = saveConfig.lineSeperator;
+			}
+			if (saveConfig.textIdentifier !== undefined) {
+				saveResultsParams.textIdentifier = saveConfig.textIdentifier;
+			}
+			if (saveConfig.encoding !== undefined) {
+				saveResultsParams.encoding = saveConfig.encoding;
 			}
 		}
 
@@ -207,6 +249,9 @@ export class ResultSerializer {
 		let config = this.getConfigForCsv();
 		config.resultFormat = SaveFormat.EXCEL;
 		config.delimiter = undefined;
+		config.lineSeperator = undefined;
+		config.textIdentifier = undefined;
+		config.encoding = undefined;
 		return config;
 	}
 
@@ -246,6 +291,31 @@ export class ResultSerializer {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
+
+	private promptFileSavedNotification(savedFilePath: string) {
+		let label = getBaseLabel(paths.dirname(savedFilePath));
+
+		this._notificationService.prompt(
+			Severity.Info,
+			LocalizedConstants.msgSaveSucceeded + savedFilePath,
+			[{
+				label: nls.localize('openLocation', "Open file location"),
+				run: () => {
+					let action = new ShowFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					action.run();
+					action.dispose();
+				}
+			}, {
+				label: nls.localize('openFile', "Open file"),
+				run: () => {
+					let action = new OpenFileInFolderAction(savedFilePath, label || paths.sep, this._windowsService);
+					action.run();
+					action.dispose();
+				}
+			}]
+		);
+	}
+
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
@@ -263,10 +333,7 @@ export class ResultSerializer {
 				});
 				this.logToOutputChannel(LocalizedConstants.msgSaveFailed + result.messages);
 			} else {
-				this._notificationService.notify({
-					severity: Severity.Info,
-					message: LocalizedConstants.msgSaveSucceeded + this._filePath
-				});
+				this.promptFileSavedNotification(this._filePath);
 				this.logToOutputChannel(LocalizedConstants.msgSaveSucceeded + filePath);
 				this.openSavedFile(this._filePath, format);
 			}
@@ -286,13 +353,7 @@ export class ResultSerializer {
 	 * Open the saved file in a new vscode editor pane
 	 */
 	private openSavedFile(filePath: string, format: string): void {
-		if (format === SaveFormat.EXCEL) {
-			// This will not open in VSCode as it's treated as binary. Use the native file opener instead
-			// Note: must use filePath here, URI does not open correctly
-			// TODO see if there is an alternative opener that includes error handling
-			let fileUri = URI.from({ scheme: PathUtilities.FILE_SCHEMA, path: filePath });
-			this._windowsService.openExternal(fileUri.toString());
-		} else {
+		if (format !== SaveFormat.EXCEL) {
 			let uri = URI.file(filePath);
 			this._editorService.openEditor({ resource: uri }).then((result) => {
 
@@ -313,14 +374,14 @@ export class ResultSerializer {
 
 		this._editorService.openEditor(input, { pinned: true })
 			.then(
-			(success) => {
-			},
-			(error: any) => {
-				this._notificationService.notify({
-					severity: Severity.Error,
-					message: error
-				});
-			}
+				(success) => {
+				},
+				(error: any) => {
+					this._notificationService.notify({
+						severity: Severity.Error,
+						message: error
+					});
+				}
 			);
 	}
 }

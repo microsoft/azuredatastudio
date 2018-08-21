@@ -17,6 +17,14 @@
     "compile": "gulp compile-extension:mssql-client",
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.6",
+    "opener": "^1.4.3",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
+    "vscode-extension-telemetry": "^0.0.15"
+  },
+  "devDependencies": {
+  },
   "contributes": {
     "languages": [
       {
@@ -656,19 +664,5 @@
         }
       ]
     }
-  },
-  "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.0",
-    "opener": "^1.4.3",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.2",
-    "vscode-extension-telemetry": "^0.0.15"
-  },
-  "devDependencies": {
-  },
-  "resolutions": {
-    "vscode-jsonrpc": "3.5.0",
-    "vscode-languageclient": "3.5.0",
-    "vscode-languageserver-protocol": "3.5.0",
-    "vscode-languageserver-types": "3.5.0"
   }
 }

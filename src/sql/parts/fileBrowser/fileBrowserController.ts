@@ -15,7 +15,7 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 export class FileBrowserController extends treedefaults.DefaultController {
 
 	constructor() {
-		super({ clickBehavior: treedefaults.ClickBehavior.ON_MOUSE_DOWN });
+		super({ clickBehavior: treedefaults.ClickBehavior.ON_MOUSE_DOWN, openMode: treedefaults.OpenMode.SINGLE_CLICK });
 	}
 
 	protected onLeftClick(tree: ITree, element: any, event: IMouseEvent, origin: string = 'mouse'): boolean {

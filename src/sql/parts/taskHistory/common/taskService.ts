@@ -14,6 +14,7 @@ import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);
@@ -27,6 +28,8 @@ export interface ITaskService {
 	getAllTasks(): TaskNode;
 	getNumberOfInProgressTasks(): number;
 	onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo);
+	createNewTask(taskInfo: sqlops.TaskInfo);
+	updateTask(taskProgressInfo: sqlops.TaskProgressInfo);
 	onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo);
 	cancelTask(providerId: string, taskId: string): Thenable<boolean>;
 	/**
@@ -52,7 +55,8 @@ export class TaskService implements ITaskService {
 	constructor(
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IDialogService private dialogService: IDialogService,
-		@IQueryEditorService private queryEditorService: IQueryEditorService
+		@IQueryEditorService private queryEditorService: IQueryEditorService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
 	) {
 		this._taskQueue = new TaskNode('Root', undefined, undefined);
 		this._onTaskComplete = new Emitter<TaskNode>();
@@ -70,12 +74,27 @@ export class TaskService implements ITaskService {
 	}
 
 	public onNewTaskCreated(handle: number, taskInfo: sqlops.TaskInfo) {
-		let node: TaskNode = new TaskNode(taskInfo.name, taskInfo.serverName, taskInfo.databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
+		this.createNewTask(taskInfo);
+	}
+
+	public createNewTask(taskInfo: sqlops.TaskInfo) {
+		let databaseName: string = taskInfo.databaseName;
+		let serverName: string = taskInfo.serverName;
+		if (taskInfo && taskInfo.connection) {
+			let connectionProfile = this.connectionManagementService.getConnectionProfile(taskInfo.connection.connectionId);
+			if (connectionProfile && !!databaseName) {
+				databaseName = connectionProfile.databaseName;
+			}
+			if (connectionProfile && !!serverName) {
+				serverName = connectionProfile.serverName;
+			}
+		}
+		let node: TaskNode = new TaskNode(taskInfo.name, serverName, databaseName, taskInfo.taskId, taskInfo.taskExecutionMode, taskInfo.isCancelable);
 		node.providerName = taskInfo.providerName;
 		this.handleNewTask(node);
 	}
 
-	public onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo) {
+	public updateTask(taskProgressInfo: sqlops.TaskProgressInfo) {
 		this.handleTaskComplete({
 			taskId: taskProgressInfo.taskId,
 			status: taskProgressInfo.status,
@@ -84,15 +103,23 @@ export class TaskService implements ITaskService {
 		});
 	}
 
+	public onTaskStatusChanged(handle: number, taskProgressInfo: sqlops.TaskProgressInfo) {
+		this.updateTask(taskProgressInfo);
+	}
+
 	public cancelTask(providerId: string, taskId: string): Thenable<boolean> {
 		let task = this.getTaskInQueue(taskId);
-		task.status = TaskStatus.canceling;
+		task.status = TaskStatus.Canceling;
 		this._onTaskComplete.fire(task);
-		let provider = this._providers[providerId];
-		if (provider) {
-			return provider.cancelTask({
-				taskId: taskId
-			});
+		if (providerId) {
+			let provider = this._providers[providerId];
+			if (provider && provider.cancelTask) {
+				return provider.cancelTask({
+					taskId: taskId
+				});
+			}
+		} else {
+			return Promise.resolve(true);
 		}
 		return Promise.resolve(undefined);
 	}
@@ -100,7 +127,7 @@ export class TaskService implements ITaskService {
 	private cancelAllTasks(): Thenable<void> {
 		return new TPromise<void>((resolve, reject) => {
 			let promises = this._taskQueue.children.map(task => {
-				if (task.status === TaskStatus.inProgress || task.status === TaskStatus.notStarted) {
+				if (task.status === TaskStatus.InProgress || task.status === TaskStatus.NotStarted) {
 					return this.cancelTask(task.providerName, task.id);
 				}
 				return Promise.resolve(true);
@@ -173,10 +200,10 @@ export class TaskService implements ITaskService {
 				task.message = eventArgs.message;
 			}
 			switch (task.status) {
-				case TaskStatus.canceled:
-				case TaskStatus.succeeded:
-				case TaskStatus.succeededWithWarning:
-				case TaskStatus.failed:
+				case TaskStatus.Canceled:
+				case TaskStatus.Succeeded:
+				case TaskStatus.SucceededWithWarning:
+				case TaskStatus.Failed:
 					task.endTime = new Date().toLocaleTimeString();
 					task.timer.stop();
 					this._onTaskComplete.fire(task);
@@ -185,7 +212,7 @@ export class TaskService implements ITaskService {
 					break;
 			}
 
-			if ((task.status === TaskStatus.succeeded || task.status === TaskStatus.succeededWithWarning)
+			if ((task.status === TaskStatus.Succeeded || task.status === TaskStatus.SucceededWithWarning)
 				&& eventArgs.script && eventArgs.script !== '') {
 				if (task.taskExecutionMode === TaskExecutionMode.script) {
 					this.queryEditorService.newSqlEditor(eventArgs.script);
@@ -214,7 +241,7 @@ export class TaskService implements ITaskService {
 
 	public getNumberOfInProgressTasks(): number {
 		if (this._taskQueue.hasChildren) {
-			var inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.inProgress);
+			var inProgressTasks = this._taskQueue.children.filter(x => x.status === TaskStatus.InProgress);
 			return inProgressTasks ? inProgressTasks.length : 0;
 		}
 		return 0;

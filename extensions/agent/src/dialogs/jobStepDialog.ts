@@ -143,13 +143,16 @@ export class JobStepDialog {
 				width: '80px',
 				isFile: true
 			}).component();
-		this.openButton.enabled = false;
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.ParseCommandText,
 				width: '80px',
 				isFile: false
 			}).component();
+		this.openButton.onDidClick(e => {
+			let queryContent = e;
+			this.commandTextBox.value = queryContent;
+		});
 		this.parseButton.onDidClick(e => {
 			if (this.commandTextBox.value) {
 				queryProvider.parseSyntax(this.ownerUri, this.commandTextBox.value).then(result => {

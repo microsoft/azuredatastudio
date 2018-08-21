@@ -8,6 +8,7 @@
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
+import { Emitter } from 'vs/base/common/event';
 
 /**
  * Input for the EditDataResultsEditor. This input helps with logic for the viewing and editing of
@@ -24,6 +25,9 @@ export class EditDataResultsInput extends EditorInput {
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _editorContainer: HTMLElement;
 	public css: HTMLStyleElement;
+
+	public readonly onRestoreViewStateEmitter = new Emitter<void>();
+	public readonly onSaveViewStateEmitter = new Emitter<void>();
 
 	constructor(private _uri: string) {
 		super();

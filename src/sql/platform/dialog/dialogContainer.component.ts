@@ -30,8 +30,10 @@ export interface DialogComponentParams extends IBootstrapParams {
 				<h1 class="wizardPageTitle">{{_dialogPane.title}}</h1>
 				<div *ngIf="_dialogPane.description">{{_dialogPane.description}}</div>
 			</div>
-			<modelview-content [modelViewId]="modelViewId">
-			</modelview-content>
+			<div style="flex: 1 1 auto; position: relative;">
+				<modelview-content [modelViewId]="modelViewId" style="width: 100%; height: 100%; position: absolute;">
+				</modelview-content>
+			</div>
 		</div>
 		<modelview-content [modelViewId]="modelViewId" *ngIf="!_dialogPane || !_dialogPane.displayPageTitle">
 		</modelview-content>

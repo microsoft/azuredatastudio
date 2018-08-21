@@ -10,7 +10,7 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IEditorControl, Position, IEditor } from 'vs/platform/editor/common/editor';
+import { IEditorControl, Position, IEditor, IEditorInput } from 'vs/platform/editor/common/editor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
@@ -31,6 +31,8 @@ import { IEditorGroupService } from 'vs/workbench/services/group/common/groupSer
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
+import { Emitter } from 'vs/base/common/event';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -105,6 +107,14 @@ export class QueryEditor extends BaseEditor {
 
 		if (contextKeyService) {
 			this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+		}
+
+		if (_editorGroupService) {
+			_editorGroupService.onEditorOpening(e => {
+				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+					this.saveEditorViewState();
+				}
+			});
 		}
 	}
 
@@ -365,6 +375,22 @@ export class QueryEditor extends BaseEditor {
 		return true;
 	}
 
+	public getAllText(): string {
+		if (this._sqlEditor && this._sqlEditor.getControl()) {
+			let control = this._sqlEditor.getControl();
+			let codeEditor: CodeEditor = <CodeEditor>control;
+			if (codeEditor) {
+				let value = codeEditor.getValue();
+				if (value !== undefined && value.length > 0) {
+					return value;
+				} else {
+					return '';
+				}
+			}
+		}
+		return undefined;
+	}
+
 	public getSelectionText(): string {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
@@ -447,7 +473,7 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._changeConnectionAction },
 			{ action: this._listDatabasesAction },
 			{ element: separator },
-			{ action: this._estimatedQueryPlanAction },
+			{ action: this._estimatedQueryPlanAction }
 		];
 		this._taskbar.setContent(content);
 	}
@@ -479,7 +505,6 @@ export class QueryEditor extends BaseEditor {
 	 * Handles setting input for this editor.
 	 */
 	private _updateInput(oldInput: QueryInput, newInput: QueryInput, options?: EditorOptions): TPromise<void> {
-
 		if (this._sqlEditor) {
 			this._sqlEditor.clearInput();
 		}
@@ -557,7 +582,15 @@ export class QueryEditor extends BaseEditor {
 		// Run all three steps synchronously
 		return createEditors()
 			.then(onEditorsCreated)
-			.then(doLayout);
+			.then(doLayout)
+			.then(() => {
+				if (newInput.results) {
+					newInput.results.onRestoreViewStateEmitter.fire();
+				}
+				if (newInput.savedViewState) {
+					this._sqlEditor.getControl().restoreViewState(newInput.savedViewState);
+				}
+			});
 	}
 
 	/**
@@ -845,6 +878,18 @@ export class QueryEditor extends BaseEditor {
 		editor.revealRange(rangeConversion);
 		editor.setSelection(rangeConversion);
 		editor.focus();
+	}
+
+	private saveEditorViewState(): void {
+		let queryInput = this.input as QueryInput;
+		if (queryInput) {
+			if (this._sqlEditor) {
+				queryInput.savedViewState = this._sqlEditor.getControl().saveViewState();
+			}
+			if (queryInput.results) {
+				queryInput.results.onSaveViewStateEmitter.fire();
+			}
+		}
 	}
 
 	// TESTING PROPERTIES ////////////////////////////////////////////////////////////

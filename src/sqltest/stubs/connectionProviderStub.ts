@@ -28,6 +28,10 @@ export class ConnectionProviderStub implements sqlops.ConnectionProvider {
 		return undefined;
 	}
 
+	getConnectionString(connectionUri: string): Thenable<string> {
+		return undefined;
+	}
+
 	rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
 		return undefined;
 	}

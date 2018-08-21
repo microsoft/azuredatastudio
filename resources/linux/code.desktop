@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=@@NAME_LONG@@
-Comment=SQL Operations Studio
+Comment=Data Management Tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 GenericName=Text Editor
 Exec=/usr/share/@@NAME@@/@@NAME@@ --unity-launch %F
 Icon=@@ICON@@

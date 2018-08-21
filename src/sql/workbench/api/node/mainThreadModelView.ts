@@ -9,10 +9,9 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 
-import * as sqlops from 'sqlops';
 
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
-import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView } from 'sql/services/model/modelViewService';
 
 
@@ -22,15 +21,14 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 	private static _handlePool = 0;
 	private readonly _proxy: ExtHostModelViewShape;
 	private readonly _dialogs = new Map<number, IModelView>();
-
 	private knownWidgets = new Array<string>();
 
 	constructor(
-		context: IExtHostContext,
+		private _context: IExtHostContext,
 		@IModelViewService viewService: IModelViewService
 	) {
 		super();
-		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelView);
+		this._proxy = _context.getProxy(SqlExtHostContext.ExtHostModelView);
 		viewService.onRegisteredModelView(view => {
 			if (this.knownWidgets.includes(view.id)) {
 				let handle = MainThreadModelView._handlePool++;
@@ -77,6 +75,14 @@ export class MainThreadModelView extends Disposable implements MainThreadModelVi
 				}
 			}));
 		});
+	}
+
+	$setDataProvider(handle: number, componentId: string): Thenable<void> {
+		return this.execModelViewAction(handle, (modelView) => modelView.setDataProvider(handle, componentId, this._context));
+	}
+
+	$refreshDataProvider(handle: number, componentId: string, item?: any): Thenable<void> {
+		return this.execModelViewAction(handle, (modelView) => modelView.refreshDataProvider(componentId, item));
 	}
 
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any; }): Thenable<void> {

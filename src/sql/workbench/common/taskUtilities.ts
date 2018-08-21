@@ -108,7 +108,7 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 
 export function connectIfNotAlreadyConnected(connectionProfile: IConnectionProfile, connectionService: IConnectionManagementService): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
-		let connectionID = connectionService.getConnectionId(connectionProfile);
+		let connectionID = connectionService.getConnectionUri(connectionProfile);
 		let uri: string = connectionService.getFormattedUri(connectionID, connectionProfile);
 		if (!connectionService.isConnected(uri)) {
 			let options: IConnectionCompletionOptions = {
@@ -218,13 +218,22 @@ export function script(connectionProfile: IConnectionProfile, metadata: sqlops.O
 					let script: string = result.script;
 
 					if (script) {
-						queryEditorService.newSqlEditor(script, connectionProfile.providerName).then(() => {
-							resolve();
+						queryEditorService.newSqlEditor(script, connectionProfile.providerName).then((owner) => {
+							// Connect our editor to the input connection
+							let options: IConnectionCompletionOptions = {
+								params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: owner },
+								saveTheConnection: false,
+								showDashboard: false,
+								showConnectionDialogOnError: true,
+								showFirewallRuleOnError: true
+							};
+							connectionService.connect(connectionProfile, owner.uri, options).then(() => {
+								resolve();
+							});
 						}).catch(editorError => {
 							reject(editorError);
 						});
-					}
-					else {
+					} else {
 						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', 'No script was returned when scripting as {0} on object {1}',
 							GetScriptOperationName(operation), metadata.metadataTypeName);
 						let messageDetail = '';

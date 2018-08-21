@@ -11,6 +11,7 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -179,6 +180,19 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$listDatabases(handle: number, connectionUri: string): Thenable<sqlops.ListDatabasesResult> {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).listDatabases(connectionUri);
+	}
+
+	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> {
+		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
+	}
+
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> {
+		let provider = this._resolveProvider<sqlops.ConnectionProvider>(handle);
+		if (provider.buildConnectionInfo) {
+			return provider.buildConnectionInfo(connectionString);
+		} else {
+			return TPromise.as(undefined);
+		}
 	}
 
 	$rebuildIntelliSenseCache(handle: number, connectionUri: string): Thenable<void> {
@@ -494,10 +508,17 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 
 	/**
+	 * Create a new profiler session
+	 */
+	public $createSession(handle: number, sessionId: string, createStatement: string, template: sqlops.ProfilerSessionTemplate): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).createSession(sessionId, createStatement, template);
+	}
+
+	/**
 	 * Start a profiler session
 	 */
-	public $startSession(handle: number, sessionId: string): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ProfilerProvider>(handle).startSession(sessionId);
+	public $startSession(handle: number, sessionId: string, sessionName: string): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).startSession(sessionId, sessionName);
 	}
 
 	/**
@@ -514,6 +535,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ProfilerProvider>(handle).pauseSession(sessionId);
 	}
 
+	/**
+	 * Get list of running XEvent sessions on the session's target server
+	 */
+	public $getXEventSessions(handle: number, sessionId: string): Thenable<string[]> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).getXEventSessions(sessionId);
+	}
 
 	/**
 	 * Profiler session events available notification
@@ -527,6 +554,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onSessionStopped(handle: number, response: sqlops.ProfilerSessionStoppedParams): void {
 		this._proxy.$onSessionStopped(handle, response);
+	}
+
+	/**
+	 * Profiler session created notification
+	 */
+	public $onProfilerSessionCreated(handle: number, response: sqlops.ProfilerSessionCreatedParams): void {
+		this._proxy.$onProfilerSessionCreated(handle, response);
 	}
 
 
@@ -593,7 +627,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Proxies list
 	 */
-	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult>  {
+	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getProxies(ownerUri);
 	}
 

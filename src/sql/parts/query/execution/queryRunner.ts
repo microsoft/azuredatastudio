@@ -421,6 +421,12 @@ export default class QueryRunner {
 		let tasks = selection.map((range, i) => {
 			return () => {
 				return self.getQueryRows(range.fromRow, range.toRow - range.fromRow + 1, batchId, resultId).then((result) => {
+					// If there was a previous selection separate it with a line break. Currently
+					// when there are multiple selections they are never on the same line
+					if (i > 0) {
+						copyString += eol;
+					}
+
 					if (self.shouldIncludeHeaders(includeHeaders)) {
 						let columnHeaders = self.getColumnHeaders(batchId, resultId, range);
 						if (columnHeaders !== undefined) {

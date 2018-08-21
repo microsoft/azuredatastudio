@@ -52,12 +52,12 @@ export class TaskHistoryActionProvider extends ContributableActionProvider {
 		var actions = [];
 
 		// get actions for tasks in progress
-		if (element.status === TaskStatus.inProgress && element.isCancelable) {
+		if (element.status === TaskStatus.InProgress && element.isCancelable) {
 			actions.push(this._instantiationService.createInstance(CancelAction, CancelAction.ID, CancelAction.LABEL));
 		}
 
 		// get actions for tasks succeeded
-		if (element.status === TaskStatus.succeeded || element.status === TaskStatus.succeededWithWarning) {
+		if (element.status === TaskStatus.Succeeded || element.status === TaskStatus.SucceededWithWarning) {
 			if (element.taskExecutionMode === TaskExecutionMode.executeAndScript) {
 				actions.push(this._instantiationService.createInstance(ScriptAction, ScriptAction.ID, ScriptAction.LABEL));
 			}

@@ -15,7 +15,6 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
 @Component({
@@ -29,7 +28,7 @@ export class InputBox extends AngularDisposable implements OnInit, OnChanges {
 	@Input() max: string;
 	@Input() type: string;
 	@Input() placeholder: string;
-	@Input() ariaLabel: string;
+	@Input('aria-label') ariaLabel: string;
 	@Input() value: string;
 
 	@Output() onDidChange = new EventEmitter<string | number>();

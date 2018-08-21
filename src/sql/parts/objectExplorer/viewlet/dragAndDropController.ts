@@ -68,12 +68,16 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let canDragOver: boolean = true;
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
 			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
-			//Verify if the connection can be moved to the target group
+			// Verify if the connection can be moved to the target group
 			const source = data.getData()[0];
 			if (source instanceof ConnectionProfile) {
 				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id)) {
 					canDragOver = false;
 				}
+			} else if (source instanceof ConnectionProfileGroup) {
+				// Dropping a group to itself or its descendants nodes is not allowed
+				// to avoid creating a circular structure.
+				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
 
 		} else {
@@ -96,24 +100,24 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let targetConnectionProfileGroup: ConnectionProfileGroup = this.getTargetGroup(targetElement);
 
 		const source = data.getData()[0];
-		let oldParent: ConnectionProfileGroup = source.getParent();
-		const self = this;
-		if (this.isDropAllowed(targetConnectionProfileGroup, oldParent, source)) {
+		if (source && source.getParent) {
+			let oldParent: ConnectionProfileGroup = source.getParent();
+			const self = this;
+			if (this.isDropAllowed(targetConnectionProfileGroup, oldParent, source)) {
 
-			if (source instanceof ConnectionProfile) {
-				// Change group id of profile
-				this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
-					TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
-				});
-			} else if (source instanceof ConnectionProfileGroup) {
-				// Change parent id of group
-				this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
-					TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
-				});
+				if (source instanceof ConnectionProfile) {
+					// Change group id of profile
+					this._connectionManagementService.changeGroupIdForConnection(source, targetConnectionProfileGroup.id).then(() => {
+						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService, targetConnectionProfileGroup);
+					});
+				} else if (source instanceof ConnectionProfileGroup) {
+					// Change parent id of group
+					this._connectionManagementService.changeGroupIdForConnectionGroup(source, targetConnectionProfileGroup).then(() => {
+						TreeUpdateUtils.registeredServerUpdate(tree, self._connectionManagementService);
+					});
+				}
 			}
 		}
-
-		return;
 	}
 
 	public dropAbort(tree: ITree, data: IDragAndDropData): void {
@@ -148,7 +152,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
  */
 export class RecentConnectionsDragAndDrop implements IDragAndDrop {
 
-	constructor( @IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+	constructor(@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 	}

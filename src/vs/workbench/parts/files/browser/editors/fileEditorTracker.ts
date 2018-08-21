@@ -30,6 +30,9 @@ import { SideBySideEditor } from 'vs/workbench/browser/parts/editor/sideBySideEd
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { BINARY_FILE_EDITOR_ID } from 'vs/workbench/parts/files/common/files';
 
+// {{SQL CARBON EDIT}}
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+
 export class FileEditorTracker implements IWorkbenchContribution {
 
 	protected closeOnFileDelete: boolean;
@@ -142,7 +145,9 @@ export class FileEditorTracker implements IWorkbenchContribution {
 			// - the user has not disabled the setting closeOnFileDelete
 			// - the file change is local or external
 			// - the input is not resolved (we need to dispose because we cannot restore otherwise since we do not have the contents)
-			if (this.closeOnFileDelete || !isExternal || !editor.isResolved()) {
+
+			// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
+			if (this.closeOnFileDelete || !isExternal || (editor instanceof FileEditorInput && !editor.isResolved())) {
 
 				// Do NOT close any opened editor that matches the resource path (either equal or being parent) of the
 				// resource we move to (movedTo). Otherwise we would close a resource that has been renamed to the same
@@ -186,13 +191,15 @@ export class FileEditorTracker implements IWorkbenchContribution {
 		});
 	}
 
-	private getOpenedFileEditors(dirtyState: boolean): FileEditorInput[] {
-		const editors: FileEditorInput[] = [];
+	// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
+	private getOpenedFileEditors(dirtyState: boolean): (FileEditorInput | QueryInput)[] {
+		const editors: (FileEditorInput | QueryInput)[] = [];
 
 		const stacks = this.editorGroupService.getStacksModel();
 		stacks.groups.forEach(group => {
 			group.getEditors().forEach(editor => {
-				if (editor instanceof FileEditorInput) {
+				// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
+				if (editor instanceof FileEditorInput || editor instanceof QueryInput) {
 					if (!!editor.isDirty() === dirtyState) {
 						editors.push(editor);
 					}
@@ -222,7 +229,8 @@ export class FileEditorTracker implements IWorkbenchContribution {
 		const stacks = this.editorGroupService.getStacksModel();
 		stacks.groups.forEach(group => {
 			group.getEditors().forEach(input => {
-				if (input instanceof FileEditorInput) {
+				// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
+				if (input instanceof FileEditorInput || input instanceof QueryInput) {
 					const resource = input.getResource();
 
 					// Update Editor if file (or any parent of the input) got renamed or moved

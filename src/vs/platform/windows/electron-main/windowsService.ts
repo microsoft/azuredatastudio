@@ -458,15 +458,17 @@ export class WindowsService implements IWindowsService, IURLHandler, IDisposable
 		this.logService.trace('windowsService#openAboutDialog');
 		const lastActiveWindow = this.windowsMainService.getFocusedWindow() || this.windowsMainService.getLastActiveWindow();
 
+		// {{SQL CARBON EDIT}}
 		const detail = nls.localize('aboutDetail',
-			"Version {0}\nCommit {1}\nDate {2}\nShell {3}\nRenderer {4}\nNode {5}\nArchitecture {6}",
+			"Version {0}\nCommit {1}\nDate {2}\nVS Code {7}\nShell {3}\nRenderer {4}\nNode {5}\nArchitecture {6}",
 			app.getVersion(),
 			product.commit || 'Unknown',
 			product.date || 'Unknown',
 			process.versions['electron'],
 			process.versions['chrome'],
 			process.versions['node'],
-			process.arch
+			process.arch,
+			product.vscodeVersion
 		);
 
 		const buttons = [nls.localize('okButton', "OK")];
