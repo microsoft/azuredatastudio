@@ -414,7 +414,7 @@ function packageTask(platform, arch, opts) {
 			license,
 			watermark,
 			api,
-	  // {{SQL CARBON EDIT}}
+			// {{SQL CARBON EDIT}}
 			copiedModules,
 			dataApi,
 			sources,
@@ -528,7 +528,8 @@ gulp.task('vscode-translations-push-test', ['optimize-vscode'], function () {
 		gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
 		gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 		gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-	).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
+	// {{SQL CARBON EDIT}}
+	// ).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
 	).pipe(vfs.dest('../vscode-transifex-input'));
 });
 
