@@ -203,7 +203,7 @@ export class ConnectionWidget {
 			placeholder: this._defaultDatabaseName,
 			maxHeight: 125,
 			ariaLabel: databaseOption.displayName,
-			actionLabel: localize('toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+			actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
 		});
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
