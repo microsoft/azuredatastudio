@@ -188,7 +188,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						let dataWithSchema = {};
 						// skip the first column since its a number column
 						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-							dataWithSchema[this.dataSet.columnDefinitions[i].field] = r[i - 1].displayValue;
+							dataWithSchema[this.dataSet.columnDefinitions[i].field] = r.cells[i - 1].displayValue;
 						}
 						return dataWithSchema;
 					});

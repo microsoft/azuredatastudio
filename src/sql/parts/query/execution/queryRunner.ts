@@ -189,6 +189,7 @@ export default class QueryRunner {
 	private handleSuccessRunQueryResult() {
 		// The query has started, so lets fire up the result pane
 		this._onQueryStart.fire();
+		this._eventEmitter.emit(EventType.START);
 		this._queryManagementService.registerRunner(this, this.uri);
 	}
 
@@ -223,6 +224,7 @@ export default class QueryRunner {
 			}
 		});
 
+		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 		// We're done with this query so shut down any waiting mechanisms
 		this._onQueryEnd.fire(Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 	}
@@ -244,6 +246,7 @@ export default class QueryRunner {
 
 		// Store the batch
 		this.batchSets[batch.id] = batch;
+		this._eventEmitter.emit(EventType.BATCH_START, batch);
 		this._onBatchStart.fire(batch);
 	}
 
@@ -262,6 +265,7 @@ export default class QueryRunner {
 			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
 		}
 
+		this._eventEmitter.emit(EventType.BATCH_COMPLETE, batch);
 		this._onBatchEnd.fire(batch);
 	}
 
@@ -292,6 +296,7 @@ export default class QueryRunner {
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
+				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
 				this._onResultSet.fire(resultSet);
 			}
 		}
@@ -305,6 +310,7 @@ export default class QueryRunner {
 		message.time = new Date(message.time).toLocaleTimeString();
 
 		// Send the message to the results pane
+		this._eventEmitter.emit(EventType.MESSAGE, message);
 		this._onMessage.fire(message);
 	}
 
