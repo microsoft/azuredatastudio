@@ -132,8 +132,8 @@ export class ConnectionController implements IConnectionComponentController {
 		}
 	}
 
-	private getAllServerGroups(): IConnectionProfileGroup[] {
-		var connectionGroupRoot = this._connectionManagementService.getConnectionGroups();
+	private getAllServerGroups(providers?: string[]): IConnectionProfileGroup[] {
+		var connectionGroupRoot = this._connectionManagementService.getConnectionGroups(providers);
 		var connectionGroupNames: IConnectionProfileGroup[] = [];
 		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
 			this.getServerGroupHelper(connectionGroupRoot[0], connectionGroupNames);
@@ -149,8 +149,8 @@ export class ConnectionController implements IConnectionComponentController {
 		return connectionGroupNames;
 	}
 
-	public initDialog(connectionInfo: IConnectionProfile): void {
-		this._connectionWidget.updateServerGroup(this.getAllServerGroups());
+	public initDialog(providers: string[], connectionInfo: IConnectionProfile): void {
+		this._connectionWidget.updateServerGroup(this.getAllServerGroups(providers));
 		this._model = connectionInfo;
 		this._model.providerName = this._providerName;
 		let appNameOption = this._providerOptions.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);

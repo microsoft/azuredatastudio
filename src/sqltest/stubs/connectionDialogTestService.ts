@@ -19,4 +19,8 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 		return TPromise.as(none);
 	}
 
+	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
+		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<IConnectionProfile> {
+		return TPromise.as(undefined);
+	}
 }

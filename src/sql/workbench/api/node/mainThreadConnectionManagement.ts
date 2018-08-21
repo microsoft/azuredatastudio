@@ -8,7 +8,7 @@ import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, Ma
 import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -25,7 +25,8 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService
+		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService,
+		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnectionManagement);
@@ -49,16 +50,24 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
 
+
+	public async $openConnectionDialog(providers: string[]): Promise<sqlops.connection.Connection> {
+		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers });
+		return connectionProfile ? {
+			connectionId: connectionProfile.id,
+			options: connectionProfile.options,
+			providerName: connectionProfile.providerName
+		} : undefined;
+	}
+
 	public async $listDatabases(connectionId: string): Promise<string[]> {
-		let connection = this._connectionManagementService.getActiveConnections().find(profile => profile.id === connectionId);
-		let connectionUri = this._connectionManagementService.getConnectionUri(connection);
+		let connectionUri = await this.$getUriForConnection(connectionId);
 		let result = await this._connectionManagementService.listDatabases(connectionUri);
 		return result.databaseNames;
 	}
 
 	public async $getConnectionString(connectionId: string, includePassword: boolean): Promise<string> {
-		let connection = this._connectionManagementService.getActiveConnections().find(profile => profile.id === connectionId);
-		return await this._connectionManagementService.getConnectionString(connectionId, includePassword);
+		return this._connectionManagementService.getConnectionString(connectionId, includePassword);
 	}
 
 	public $getUriForConnection(connectionId: string): Thenable<string> {

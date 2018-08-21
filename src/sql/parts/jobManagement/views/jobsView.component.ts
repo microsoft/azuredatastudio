@@ -27,7 +27,6 @@ import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plu
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -36,6 +35,8 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { escape } from 'sql/base/common/strings';
+import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { tableBackground, cellBackground, tableHoverBackground, jobsHeadingBackground, cellBorderColor } from 'sql/common/theme/colors';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -96,7 +97,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IThemeService) private _themeService: IThemeService,
+		@Inject(IWorkbenchThemeService) private _themeService: IWorkbenchThemeService,
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
@@ -121,6 +122,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
+		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 	}
 
 	public layout() {
@@ -818,6 +820,25 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 				return -1;
 			}
 		}
+	}
+
+	private updateTheme(theme: IColorTheme) {
+		let bgColor = theme.getColor(tableBackground);
+		let cellColor = theme.getColor(cellBackground);
+		let borderColor = theme.getColor(cellBorderColor);
+		let headerColumns = $('#agentViewDiv .slick-header-column');
+		let cells = $('.grid-canvas .ui-widget-content.slick-row .slick-cell');
+		let cellDetails = $('#jobsDiv .dynamic-cell-detail');
+		headerColumns.toArray().forEach(col => {
+			col.style.background = bgColor.toString();
+		});
+		cells.toArray().forEach(cell => {
+			cell.style.background = bgColor.toString();
+			cell.style.border = borderColor ? '1px solid ' + borderColor.toString() : null;
+		});
+		cellDetails.toArray().forEach(cellDetail => {
+			cellDetail.style.background = cellColor.toString();
+		});
 	}
 
 	protected getTableActions(): TPromise<IAction[]> {

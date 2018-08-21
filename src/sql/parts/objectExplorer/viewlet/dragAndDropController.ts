@@ -68,12 +68,16 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
 		let canDragOver: boolean = true;
 		if (targetElement instanceof ConnectionProfile || targetElement instanceof ConnectionProfileGroup) {
 			let targetConnectionProfileGroup = this.getTargetGroup(targetElement);
-			//Verify if the connection can be moved to the target group
+			// Verify if the connection can be moved to the target group
 			const source = data.getData()[0];
 			if (source instanceof ConnectionProfile) {
 				if (!this._connectionManagementService.canChangeConnectionConfig(source, targetConnectionProfileGroup.id)) {
 					canDragOver = false;
 				}
+			} else if (source instanceof ConnectionProfileGroup) {
+				// Dropping a group to itself or its descendants nodes is not allowed
+				// to avoid creating a circular structure.
+				canDragOver = source.id !== targetElement.id && !source.isAncestorOf(targetElement);
 			}
 
 		} else {
@@ -148,7 +152,7 @@ export class ServerTreeDragAndDrop implements IDragAndDrop {
  */
 export class RecentConnectionsDragAndDrop implements IDragAndDrop {
 
-	constructor( @IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+	constructor(@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 	}

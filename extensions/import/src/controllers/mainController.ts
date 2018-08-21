@@ -19,6 +19,9 @@ import { FlatFileProvider } from '../services/contracts';
  */
 export default class MainController extends ControllerBase {
 
+	public constructor(context: vscode.ExtensionContext) {
+		super(context);
+	}
 	/**
 	 */
 	public deactivate(): void {
@@ -36,6 +39,6 @@ export default class MainController extends ControllerBase {
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
-		sqlops.tasks.registerTask('flatFileImport.start', () => new FlatFileWizard(provider).start());
+		sqlops.tasks.registerTask('flatFileImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new FlatFileWizard(provider).start(profile, args));
 	}
 }

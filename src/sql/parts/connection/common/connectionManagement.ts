@@ -59,6 +59,7 @@ export interface IConnectionResult {
 	errorCode: number;
 	callStack: string;
 	errorHandled?: boolean;
+	connectionProfile?: IConnectionProfile;
 }
 
 export interface IConnectionCallbacks {
@@ -130,15 +131,15 @@ export interface IConnectionManagementService {
 
 	onConnectionChangedNotification(handle: number, changedConnInfo: sqlops.ChangedConnectionInfo);
 
-	getConnectionGroups(): ConnectionProfileGroup[];
+	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
-	getRecentConnections(): ConnectionProfile[];
+	getRecentConnections(providers?: string[]): ConnectionProfile[];
 
 	clearRecentConnectionsList(): void;
 
 	clearRecentConnection(connectionProfile: IConnectionProfile): void;
 
-	getActiveConnections(): ConnectionProfile[];
+	getActiveConnections(providers?: string[]): ConnectionProfile[];
 
 	saveProfileGroup(profile: IConnectionProfileGroup): Promise<string>;
 
@@ -262,15 +263,37 @@ export interface IConnectionManagementService {
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
 
 	/**
-	 * Get the connection string for the provided connection profile
+	 * Get the connection string for the provided connection ID
 	 */
-	getConnectionString(ownerUri: string, includePassword: boolean): Thenable<string>;
+	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
+
+	/**
+	 * Serialize connection string with optional provider
+	 */
+	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
 export interface IConnectionDialogService {
 	_serviceBrand: any;
+	/**
+	 * Opens the connection dialog and returns the promise for successfully opening the dialog
+	 * @param connectionManagementService
+	 * @param params
+	 * @param model
+	 * @param connectionResult
+	 */
 	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
+
+	/**
+	 * Opens the connection dialog and returns the promise when connection is made
+	 * or dialog is closed
+	 * @param connectionManagementService
+	 * @param params
+	 * @param model
+	 * @param connectionResult
+	 */
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
 }
 
 export interface IServerGroupDialogCallbacks {
@@ -304,6 +327,7 @@ export interface INewConnectionParams {
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
 	querySelection?: sqlops.ISelectionData;
 	showDashboard?: boolean;
+	providers?: string[];
 }
 
 export interface IConnectableInput {

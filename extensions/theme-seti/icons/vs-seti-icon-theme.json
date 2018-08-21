@@ -232,11 +232,11 @@
 		},
 		"_db_light": {
 			"fontCharacter": "\\E01C",
-			"fontColor": "#dd4b78"
+			"fontColor": "#bfc2c1"
 		},
 		"_db": {
 			"fontCharacter": "\\E01C",
-			"fontColor": "#f55385"
+			"fontColor": "#d4d7d6"
 		},
 		"_default_light": {
 			"fontCharacter": "\\E01D",
@@ -1411,7 +1411,7 @@
 		"rust": "_rust",
 		"scss": "_sass",
 		"shellscript": "_shell",
-		"sql": "_default",
+		"sql": "_db",
 		"swift": "_swift",
 		"typescript": "_typescript",
 		"typescriptreact": "_react",
@@ -1616,7 +1616,7 @@
 			"rust": "_rust_light",
 			"scss": "_sass_light",
 			"shellscript": "_shell_light",
-			"sql": "_default_light",
+			"sql": "_db_light",
 			"swift": "_swift_light",
 			"typescript": "_typescript_light",
 			"typescriptreact": "_react_light",

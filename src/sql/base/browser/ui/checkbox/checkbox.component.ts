@@ -20,7 +20,7 @@ export class Checkbox implements OnInit, OnChanges {
 	@Input() label: string;
 	@Input() enabled = true;
 	@Input() checked = true;
-	@Input() private ariaLabel: string;
+	@Input('aria-label') private ariaLabel: string;
 
 	@Output() onChange = new EventEmitter<boolean>();
 

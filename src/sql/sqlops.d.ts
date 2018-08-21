@@ -327,7 +327,9 @@ declare module 'sqlops' {
 
 		rebuildIntelliSenseCache(connectionUri: string): Thenable<void>;
 
-		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> ;
+		getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string>;
+
+		buildConnectionInfo?(connectionString: string): Thenable<ConnectionInfo>;
 
 		registerOnConnectionComplete(handler: (connSummary: ConnectionInfoSummary) => any): void;
 
@@ -816,6 +818,7 @@ declare module 'sqlops' {
 	export interface DbCellValue {
 		displayValue: string;
 		isNull: boolean;
+		invariantCultureDisplayValue: string;
 	}
 
 	export interface ResultSetSubset {

@@ -153,6 +153,19 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		return this.parent;
 	}
 
+	public isAncestorOf(node: ConnectionProfileGroup | ConnectionProfile): boolean {
+		let isAncestor = false;
+		let currentNode = node;
+		while (currentNode) {
+			if (currentNode.parent && currentNode.parent.id === this.id) {
+				isAncestor = true;
+				break;
+			}
+			currentNode = currentNode.parent;
+		}
+		return isAncestor;
+	}
+
 	public static getGroupFullNameParts(groupFullName: string): string[] {
 		groupFullName = groupFullName ? groupFullName : '';
 		let groupNames: string[] = groupFullName.split(ConnectionProfileGroup.GroupNameSeparator);

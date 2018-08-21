@@ -11,6 +11,7 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -183,6 +184,15 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$getConnectionString(handle: number, connectionUri: string, includePassword: boolean): Thenable<string> {
 		return this._resolveProvider<sqlops.ConnectionProvider>(handle).getConnectionString(connectionUri, includePassword);
+	}
+
+	$buildConnectionInfo(handle: number, connectionString: string): Thenable<sqlops.ConnectionInfo> {
+		let provider = this._resolveProvider<sqlops.ConnectionProvider>(handle);
+		if (provider.buildConnectionInfo) {
+			return provider.buildConnectionInfo(connectionString);
+		} else {
+			return TPromise.as(undefined);
+		}
 	}
 
 	$rebuildIntelliSenseCache(handle: number, connectionUri: string): Thenable<void> {
@@ -617,7 +627,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Get Agent Proxies list
 	 */
-	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult>  {
+	$getProxies(handle: number, ownerUri: string): Thenable<sqlops.AgentProxiesResult> {
 		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getProxies(ownerUri);
 	}
 

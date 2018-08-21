@@ -26,7 +26,7 @@ class FlexItem {
 	template: `
 		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
 				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
-			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" >
+			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
@@ -107,5 +107,8 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	}
 	private getItemOrder(item: FlexItem): number {
 		return item.config ? item.config.order : 0;
+	}
+	private getItemStyles(item: FlexItem): { [key: string]: string } {
+		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 }

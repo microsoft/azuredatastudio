@@ -159,7 +159,8 @@ export class GetCurrentConnectionStringAction extends Action {
 			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
 					&& this._connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;
-				this._connectionManagementService.getConnectionString(activeInput.uri, includePassword).then(result => {
+				let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);
+				this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword).then(result => {
 					let message = result
 						? result
 						: nls.localize('connectionAction.connectionString', "Connection string not available");

@@ -36,7 +36,7 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 		this._onValidityChanged(valid => this._valid = valid);
 	}
 
-	public registerContent(handler: (view: sqlops.ModelView) => void): void {
+	public registerContent(handler: (view: sqlops.ModelView) => Thenable<void>): void {
 		if (!this._modelViewId) {
 			let viewId = this._viewType + this._handle;
 			this.setModelViewId(viewId);
