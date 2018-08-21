@@ -449,7 +449,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			strictSelection: true,
 			placeholder: selectString,
 			ariaLabel: selectString,
-			actionLabel: nls.localize('toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+			actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
 		});
 		this._dropdown.onValueChange(s => this.databaseSelected(s));
 
