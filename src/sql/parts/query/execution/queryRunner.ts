@@ -10,7 +10,6 @@ import * as sqlops from 'sqlops';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import { ISlickRange } from 'angular2-slickgrid';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 
@@ -445,7 +444,7 @@ export default class QueryRunner {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		const self = this;
 		let copyString = '';
 		const eol = this.getEolString();
@@ -510,7 +509,7 @@ export default class QueryRunner {
 		return !!removeNewLines;
 	}
 
-	private getColumnHeaders(batchId: number, resultId: number, range: ISlickRange): string[] {
+	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
 		let batchSummary: sqlops.BatchSummary = this.batchSets[batchId];
 		if (batchSummary !== undefined) {

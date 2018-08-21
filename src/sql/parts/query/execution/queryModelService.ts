@@ -16,7 +16,6 @@ import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
 import { RowCountStatusBarItem } from 'sql/parts/query/common/rowCountStatus';
 
 import * as sqlops from 'sqlops';
-import { ISlickRange } from 'angular2-slickgrid';
 
 import * as nls from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -170,7 +169,7 @@ export class QueryModelService implements IQueryModelService {
 		return undefined;
 	}
 
-	public copyResults(uri: string, selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	public copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		this._queryInfoMap.get(uri).queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
 	}
 

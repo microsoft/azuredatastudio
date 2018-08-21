@@ -328,10 +328,14 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 		// Remove first column and its value since this is the row number column
 		this._executeResult.columns = dataSet.columnDefinitions.slice(1).map(def => def.name);
-		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
-			return gridRow.values.slice(1).map(cell => (cell.invariantCultureDisplayValue === null || cell.invariantCultureDisplayValue === undefined) ? cell.displayValue : cell.invariantCultureDisplayValue);
+		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(v => {
+			return this._executeResult.columns.reduce((p, c) => {
+				p.push(v[c]);
+				return p;
+			}, []);
 		});
 	}
+
 
 	public initChart() {
 		this._cd.detectChanges();

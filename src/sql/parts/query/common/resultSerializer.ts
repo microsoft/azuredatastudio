@@ -26,7 +26,6 @@ import * as paths from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
 
-import { ISlickRange } from 'angular2-slickgrid';
 import * as path from 'path';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -255,7 +254,7 @@ export class ResultSerializer {
 		return config;
 	}
 
-	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: ISlickRange): SaveResultsRequestParams {
+	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams: SaveResultsRequestParams;
 		if (!path.isAbsolute(filePath)) {
 			this._filePath = PathUtilities.resolveFilePath(this._uri, filePath, this.rootPath);
@@ -287,7 +286,7 @@ export class ResultSerializer {
 	/**
 	 * Check if a range of cells were selected.
 	 */
-	private isSelected(selection: ISlickRange): boolean {
+	private isSelected(selection: Slick.Range): boolean {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
@@ -319,7 +318,7 @@ export class ResultSerializer {
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
-	private sendRequestToService(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: ISlickRange): Thenable<void> {
+	private sendRequestToService(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): Thenable<void> {
 		let saveResultsParams = this.getParameters(filePath, batchIndex, resultSetNo, format, selection);
 
 		this.logToOutputChannel(LocalizedConstants.msgSaveStarted + this._filePath);

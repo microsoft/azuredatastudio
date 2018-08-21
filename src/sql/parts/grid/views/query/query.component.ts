@@ -15,7 +15,7 @@ import {
 	ElementRef, QueryList, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject,
 	ViewChildren, forwardRef, EventEmitter, Input, ViewChild
 } from '@angular/core';
-import { IGridDataRow, SlickGrid, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
+import { IGridDataRow, SlickGrid, VirtualizedCollection } from 'angular2-slickgrid';
 
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -163,7 +163,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public onActiveCellChanged: (gridIndex: number) => void;
 
 	private savedViewState: {
-		gridSelections: ISlickRange[][];
+		gridSelections: Slick.Range[][];
 		resultsScroll: number;
 		messagePaneScroll: number;
 		slickGridScrolls: { vertical: number; horizontal: number }[];
