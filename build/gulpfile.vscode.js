@@ -529,6 +529,7 @@ gulp.task('vscode-translations-push-test', ['optimize-vscode'], function () {
 		gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 		gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
 	// {{SQL CARBON EDIT}}
+	// disable since function makes calls to VS Code Transifex API
 	// ).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
 	).pipe(vfs.dest('../vscode-transifex-input'));
 });
