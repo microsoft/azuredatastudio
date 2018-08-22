@@ -460,9 +460,14 @@ export class ProfilerEditor extends BaseEditor {
 				this._updateToolbar();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					// set undefined result to empty list
+					if (!r) {
+						r = [];
+					}
+
 					this._sessionSelector.setOptions(r);
 					this._sessionsList = r;
-					if (this.input.sessionName === undefined || this.input.sessionName === '') {
+					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
 						this.input.sessionName = this._sessionsList[0];
 					}
 				});
@@ -493,9 +498,14 @@ export class ProfilerEditor extends BaseEditor {
 				this._updateToolbar();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					// set undefined result to empty list
+					if (!r) {
+						r = [];
+					}
+
 					this._sessionsList = r;
 					this._sessionSelector.setOptions(r);
-					if (this.input.sessionName === undefined || this.input.sessionName === '') {
+					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
 						this.input.sessionName = this._sessionsList[0];
 					}
 				});
