@@ -73,7 +73,7 @@
 /* grid styling */
 
 .vs slick-grid.active .grid .slick-cell.active {
-  border: dotted 1px var(--color-cell-border-active);
+  border-color: var(--color-cell-border-active);
 }
 
 .vs slick-grid.active .grid .slick-cell.selected {
@@ -199,7 +199,7 @@
 /* grid styling */
 
 .vs-dark slick-grid.active .grid .slick-cell.active {
-  border: dotted 1px var(--color-cell-border-active);
+  border-color: var(--color-cell-border-active);
 }
 
 .vs-dark slick-grid.active .grid .slick-cell.selected {
@@ -332,7 +332,7 @@
 /* grid styling */
 
 .hc-black slick-grid.active .grid .slick-cell.active {
-  border: solid 1px var(--color-cell-border-active);
+  border-color: var(--color-cell-border-active);
 }
 
 .hc-black slick-grid.active .grid .slick-cell.selected {
