@@ -367,10 +367,17 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					title: AlertDialog.NewJobButtonLabel
 				}], { componentWidth: '100%'}).component();
 
+			let previewTag = view.modelBuilder.text()
+				.withProperties({
+					value: 'Feature Preview'
+				}).component();
+
 			this.notifyOperatorsCheckBox = view.modelBuilder.checkBox()
 				.withProperties({
 					label: AlertDialog.NotifyOperatorsTextBoxLabel
 				}).component();
+
+			this.notifyOperatorsCheckBox.enabled = false;
 
 			this.operatorsTable = view.modelBuilder.table()
 				.withProperties({
@@ -422,6 +429,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 					title: ''
 				}, {
 					component: executeJobContainer,
+					title: ''
+				}, {
+					component: previewTag,
 					title: ''
 				}, {
 					component: this.notifyOperatorsCheckBox,

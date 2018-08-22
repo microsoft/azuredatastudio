@@ -649,9 +649,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public getConnectionUriFromId(connectionId: string): string {
-		let connection = this.getActiveConnections().find(connection => connection.id === connectionId);
-		if (connection) {
-			return this.getConnectionUri(connection);
+		let connectionInfo = this._connectionStatusManager.findConnectionByProfileId(connectionId);
+		if (connectionInfo) {
+			return connectionInfo.ownerUri;
 		} else {
 			return undefined;
 		}
@@ -1348,9 +1348,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
-	 * Get the connection string for the provided connection profile
+	 * Get the connection string for the provided connection ID
 	 */
-	public getConnectionString(ownerUri: string, includePassword: boolean = false): Thenable<string> {
+	public getConnectionString(connectionId: string, includePassword: boolean = false): Thenable<string> {
+		let ownerUri = this.getConnectionUriFromId(connectionId);
+
 		if (!ownerUri) {
 			return Promise.resolve(undefined);
 		}
@@ -1364,6 +1366,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return provider.getConnectionString(ownerUri, includePassword).then(connectionString => {
 				return connectionString;
 			});
+		});
+	}
+
+	/**
+	 * Serialize connection with options provider
+	 * TODO this could be a map reduce operation
+	 */
+	public buildConnectionInfo(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
+		return this._providers.get(provider).onReady.then(e => {
+			return e.buildConnectionInfo(connectionString);
 		});
 	}
 }

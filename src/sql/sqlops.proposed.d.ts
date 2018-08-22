@@ -270,6 +270,10 @@ declare module 'sqlops' {
 		 * Default is "1 1 auto".
 		 */
 		flex?: string;
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string }
 	}
 
 	export interface FormItemLayout {
@@ -711,7 +715,7 @@ declare module 'sqlops' {
 				 * Register model view content for the dialog.
 				 * Doesn't do anything if model view is already registered
 				 */
-				registerContent(handler: (view: ModelView) => void): void;
+				registerContent(handler: (view: ModelView) => Thenable<void>): void;
 
 				/**
 				 * Returns the model view content if registered. Returns undefined if model review is not registered

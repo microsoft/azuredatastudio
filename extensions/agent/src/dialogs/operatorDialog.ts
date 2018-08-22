@@ -368,6 +368,10 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private initializeNotificationTab() {
 		this.notificationsTab.registerContent(async view => {
 
+			let previewTag = view.modelBuilder.text()
+				.withProperties({
+					value: 'Feature Preview'
+				}).component();
 			this.alertsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -381,6 +385,9 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
+					component: previewTag,
+					title: ''
+				}, {
 					component: this.alertsTable,
 					title: OperatorDialog.AlertsTableLabel
 				}]).withLayout({ width: '100%' }).component();

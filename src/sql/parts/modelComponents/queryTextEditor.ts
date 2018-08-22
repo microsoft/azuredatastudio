@@ -24,16 +24,16 @@ import { EditorOptions } from 'vs/workbench/common/editor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
 import { FoldingController } from 'vs/editor/contrib/folding/folding';
+import { RenameController } from 'vs/editor/contrib/rename/rename';
 
 class QueryCodeEditor extends CodeEditor {
 
 	protected _getContributions(): IEditorContributionCtor[] {
 		let contributions = super._getContributions();
-		let skipContributions = [FoldingController.prototype];
+		let skipContributions = [FoldingController.prototype, RenameController.prototype];
 		contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
 		return contributions;
 	}
-
 }
 
 /**

@@ -57,8 +57,8 @@ const LocalizedStrings = {
 	DATA_TYPE: nls.localize('dataTypeLabel', 'Data Type'),
 	NUMBER: nls.localize('numberLabel', 'Number'),
 	POINT: nls.localize('pointLabel', 'Point'),
-	LABEL_FIRST_COLUMN: nls.localize('labelFirstColumnLabel', 'Use First Column as row label?'),
-	COLUMNS_AS_LABELS: nls.localize('columnsAsLabelsLabel', 'Use Column names as labels?'),
+	LABEL_FIRST_COLUMN: nls.localize('labelFirstColumnLabel', 'Use first column as row label'),
+	COLUMNS_AS_LABELS: nls.localize('columnsAsLabelsLabel', 'Use column names as labels'),
 	LEGEND: nls.localize('legendLabel', 'Legend Position'),
 	CHART_NOT_FOUND: nls.localize('chartNotFound', 'Could not find chart to save'),
 	X_AXIS_LABEL: nls.localize('xAxisLabel', 'X Axis Label'),
@@ -122,15 +122,13 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 			this._chartConfig = <ILineConfig>{
 				dataDirection: 'vertical',
 				dataType: 'point',
-				legendPosition: 'none',
-				labelFirstColumn: false
+				legendPosition: 'none'
 			};
 		} else {
 			this._chartConfig = <ILineConfig>{
 				dataDirection: 'vertical',
 				dataType: 'number',
-				legendPosition: 'none',
-				labelFirstColumn: false
+				legendPosition: 'none'
 			};
 		}
 	}
@@ -327,9 +325,11 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 	@Input() set dataSet(dataSet: IGridDataSet) {
 		// Setup the execute result
 		this._executeResult = <IInsightData>{};
-		this._executeResult.columns = dataSet.columnDefinitions.map(def => def.name);
+
+		// Remove first column and its value since this is the row number column
+		this._executeResult.columns = dataSet.columnDefinitions.slice(1).map(def => def.name);
 		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
-			return gridRow.values.map(cell => cell.displayValue);
+			return gridRow.values.slice(1).map(cell => (cell.invariantCultureDisplayValue === null || cell.invariantCultureDisplayValue === undefined) ? cell.displayValue : cell.invariantCultureDisplayValue);
 		});
 	}
 

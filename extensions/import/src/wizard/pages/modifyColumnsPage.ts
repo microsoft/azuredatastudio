@@ -56,9 +56,10 @@ export class ModifyColumnsPage extends ImportPage {
 	private text: sqlops.TextComponent;
 	private form: sqlops.FormContainer;
 
-	public constructor(instance: FlatFileWizard, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
-		super(instance, model, view, provider);
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+		super(instance, wizardPage, model, view, provider);
 	}
+
 
 	private static convertMetadata(column: ColumnMetadata): any[] {
 		return [column.columnName, column.dataType, false, column.nullable];
@@ -106,19 +107,28 @@ export class ModifyColumnsPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		this.loading.loading = true;
 		await this.populateTable();
+		this.instance.changeNextButtonLabel(localize('flatFileImport.importData', 'Import Data'));
 		this.loading.loading = false;
 
 		return true;
 	}
 
 	async onPageLeave(): Promise<boolean> {
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 		return undefined;
 	}
 
 	async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
+		this.instance.changeNextButtonLabel(localize('flatFileImport.next', 'Next'));
 
 		return true;
+	}
+
+	public setupNavigationValidator() {
+		this.instance.registerNavigationValidator((info) => {
+			return !this.loading.loading;
+		});
 	}
 
 	private async populateTable() {

@@ -27,7 +27,6 @@ import { ISerializationService } from 'sql/services/serialization/serializationS
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import severity from 'vs/base/common/severity';
 
 /**
  * Main thread class for handling data protocol management registration.
@@ -90,6 +89,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			getConnectionString(connectionUri: string, includePassword: boolean): Thenable<string> {
 				return self._proxy.$getConnectionString(handle, connectionUri, includePassword);
+			},
+			buildConnectionInfo(connectionString: string): Thenable<sqlops.ConnectionInfo> {
+				return self._proxy.$buildConnectionInfo(handle, connectionString);
 			},
 			rebuildIntelliSenseCache(connectionUri: string): Thenable<void> {
 				return self._proxy.$rebuildIntelliSenseCache(handle, connectionUri);
@@ -343,7 +345,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerAgentServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider> {
+		this._jobManagementService.registerProvider(providerId, <sqlops.AgentServicesProvider>{
 			providerId: providerId,
 			getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 				return self._proxy.$getJobs(handle, connectionUri);

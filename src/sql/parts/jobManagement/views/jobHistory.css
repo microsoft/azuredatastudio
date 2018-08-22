@@ -28,6 +28,10 @@
 	color: #fff;
 }
 
+.hc-black .overview-container .overview-tab {
+	color: #ffffff;
+}
+
 .overview-container > .overview-tab {
 	position: relative;
 	margin-bottom: 1px;
@@ -46,6 +50,11 @@ input#accordion {
 	background: #444444;
 }
 
+.hc-black .overview-container .overview-tab label {
+	background: #000000;
+	border: 1px solid #2b56f2;
+}
+
 .overview-container .overview-tab label {
 	position: relative;
 	display: block;
@@ -59,6 +68,11 @@ input#accordion {
 
 .vs-dark .overview-tab .accordion-content {
 	background: #333333;
+}
+
+.hc-black .overview-tab .accordion-content {
+	background: #000000;
+	border: 1px solid #2b56f2;
 }
 
 .overview-tab .accordion-content {
@@ -105,7 +119,8 @@ input#accordion:checked ~ .accordion-content {
 	padding-bottom: 10px;
 }
 
-.vs-dark.monaco-shell .all-jobs >.back-button-icon {
+.vs-dark.monaco-shell .all-jobs >.back-button-icon,
+.hc-black.monaco-shell .all-jobs >.back-button-icon {
 	content: url('../common/media/back_inverse.svg');
 }
 
@@ -166,15 +181,6 @@ table.step-list tr.step-row td {
 	display: flex;
 }
 
-.vs-dark .history-details > .job-steps {
-	display: block;
-	border-left: 3px solid #444444;
-	padding-left: 10px;
-	height: 100%;
-	width: 90%;
-	overflow-y: scroll;
-}
-
 .history-details > .job-steps {
 	display: block;
 	border-left: 3px solid #f4f4f4;
@@ -182,6 +188,14 @@ table.step-list tr.step-row td {
 	height: 100%;
 	width: 90%;
 	overflow-y: scroll;
+}
+
+.vs-dark .history-details > .job-steps {
+	border-left: 3px solid #444444;
+}
+
+.hc-black .history-details > .job-steps {
+	border-left: 3px solid #2b56f2;
 }
 
 .history-details > .job-steps > .step-list {
@@ -251,3 +265,6 @@ jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-cont
 	border-top: 3px solid #444444;
 }
 
+.hc-black jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+	border-top: 3px solid #2b56f2;
+}

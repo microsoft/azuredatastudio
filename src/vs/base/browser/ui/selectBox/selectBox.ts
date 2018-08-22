@@ -35,6 +35,8 @@ export interface ISelectBoxDelegate {
 }
 
 export interface ISelectBoxOptions {
+	// {{SQL CARBON EDIT}}
+	ariaLabel?: string;
 	minBottomMargin?: number;
 }
 
@@ -76,7 +78,8 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 
 		// Instantiate select implementation based on platform
 		if (isMacintosh) {
-			this.selectBoxDelegate = new SelectBoxNative(options, selected, styles);
+			// {{SQL CARBON EDIT}}
+			this.selectBoxDelegate = new SelectBoxNative(options, selected, styles, selectBoxOptions);
 		} else {
 			this.selectBoxDelegate = new SelectBoxList(options, selected, contextViewProvider, styles, selectBoxOptions);
 		}

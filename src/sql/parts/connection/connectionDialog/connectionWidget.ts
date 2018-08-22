@@ -19,6 +19,9 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { attachInputBoxStyler, attachButtonStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from '../common/connectionProfile';
 
 import * as sqlops from 'sqlops';
 
@@ -32,6 +35,8 @@ import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -85,7 +90,12 @@ export class ConnectionWidget {
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
 		@IThemeService private _themeService: IThemeService,
-		@IContextViewService private _contextViewService: IContextViewService) {
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IConfigurationService private _configurationService: IConfigurationService
+	) {
 		this._callbacks = callbacks;
 		this._toDispose = [];
 		this._optionsMaps = {};
@@ -120,7 +130,27 @@ export class ConnectionWidget {
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
 		}
+
+		DOM.addDisposableListener(container, 'paste', e => {
+			this._handleClipboard();
+		});
+
 		DOM.append(container, this._builder.getHTMLElement());
+	}
+
+	private _handleClipboard(): void {
+		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
+			let paste = this._clipboardService.readText();
+			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
+				if (e) {
+					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
+					profile.options = e.options;
+					if (profile.serverName) {
+						this.initDialog(profile);
+					}
+				}
+			});
+		}
 	}
 
 	private fillInConnectionForm(): void {
@@ -130,7 +160,7 @@ export class ConnectionWidget {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
-						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName)});
+						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName) });
 					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
 						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', '{0} will be trimmed.', serverNameOption.displayName) });
 					}
@@ -173,7 +203,7 @@ export class ConnectionWidget {
 			placeholder: this._defaultDatabaseName,
 			maxHeight: 125,
 			ariaLabel: databaseOption.displayName,
-			actionLabel: localize('toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+			actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
 		});
 
 		let serverGroupLabel = localize('serverGroup', 'Server group');
@@ -354,6 +384,7 @@ export class ConnectionWidget {
 	}
 
 	public focusOnOpen(): void {
+		this._handleClipboard();
 		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();

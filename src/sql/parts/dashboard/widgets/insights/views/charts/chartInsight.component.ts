@@ -19,6 +19,8 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
+declare var Chart: any;
+
 export enum ChartType {
 	Bar = 'bar',
 	Doughnut = 'doughnut',
@@ -81,8 +83,8 @@ export interface IChartConfig {
 }
 
 export const defaultChartConfig: IChartConfig = {
-	labelFirstColumn: false,
-	columnsAsLabels: false,
+	labelFirstColumn: true,
+	columnsAsLabels: true,
 	legendPosition: LegendPosition.Top,
 	dataDirection: DataDirection.Vertical
 };
@@ -161,11 +163,17 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected updateTheme(e: IColorTheme): void {
 		let foregroundColor = e.getColor(colors.editorForeground);
 		let foreground = foregroundColor ? foregroundColor.toString() : null;
+		let backgroundColor = e.getColor(colors.editorBackground);
+		let background = backgroundColor ? backgroundColor.toString() : null;
+
 		let options = {
 			legend: {
 				labels: {
 					fontColor: foreground
 				}
+			},
+			viewArea: {
+				backgroundColor: background
 			}
 		};
 		this.options = mixin({}, mixin(this.options, options));
@@ -348,3 +356,13 @@ function isValidData(data: IInsightData): boolean {
 
 	return true;
 }
+
+Chart.pluginService.register({
+	beforeDraw: function (chart) {
+		if (chart.config.options.viewArea && chart.config.options.viewArea.backgroundColor) {
+			var ctx = chart.chart.ctx;
+			ctx.fillStyle = chart.config.options.viewArea.backgroundColor;
+			ctx.fillRect(0, 0, chart.chart.width, chart.chart.height);
+		}
+	}
+});
