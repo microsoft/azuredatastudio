@@ -300,21 +300,21 @@ export class WorkbenchShell {
 		let today = new Date().toUTCString();
 
 		// daily user event
-		if (this.diffInDays(Date.parse(today), dailyLastUseDate) > 1) {
+		if (this.diffInDays(Date.parse(today), dailyLastUseDate) >= 1) {
 			// daily first use
 			this.telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
 			this.storageService.store('telemetry.dailyLastUseDate', today);
 		}
 
 		// weekly user event
-		if (this.diffInDays(Date.parse(today), weeklyLastUseDate) > 7) {
+		if (this.diffInDays(Date.parse(today), weeklyLastUseDate) >= 7) {
 			// weekly first use
 			this.telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
 			this.storageService.store('telemetry.weeklyLastUseDate', today);
 		}
 
 		// monthly user events
-		if (this.diffInDays(Date.parse(today), monthlyLastUseDate) > 30) {
+		if (this.diffInDays(Date.parse(today), monthlyLastUseDate) >= 30) {
 			this.telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
 			this.storageService.store('telemetry.monthlyLastUseDate', today);
 		}
