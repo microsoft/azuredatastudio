@@ -19,6 +19,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { Scope as MementoScope, Memento } from 'vs/workbench/common/memento';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -45,19 +47,26 @@ class TwoWayMap<T, K> {
 }
 
 export class ProfilerService implements IProfilerService {
+	private static readonly PROFILER_SERVICE_UI_STATE_STORAGE_KEY = 'profileservice.uiState';
 	public _serviceBrand: any;
 	private _providers = new Map<string, sqlops.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
 	private _editColumnDialog: ProfilerColumnEditorDialog;
+	private _memento: any;
+	private _context: Memento;
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IConfigurationService public _configurationService: IConfigurationService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
-		@ICommandService private _commandService: ICommandService
-	) { }
+		@ICommandService private _commandService: ICommandService,
+		@IStorageService private _storageService: IStorageService
+	) {
+		this._context = new Memento('ProfilerEditor');
+		this._memento = this._context.getMemento(this._storageService, MementoScope.GLOBAL);
+	}
 
 	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {
 		this._providers.set(providerId, provider);
@@ -82,18 +91,26 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public onMoreRows(params: sqlops.ProfilerSessionEvents): void {
-
 		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
 
 	public onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void {
-
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
 	}
 
 	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams): void {
-
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
+
+		// get settings
+		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
+		if (!uiStateMap) {
+			uiStateMap = new Map<string, any>();
+		}
+		uiStateMap[params.ownerUri] =  {
+			previousSessionName: params.templateName
+		};
+		this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY] = uiStateMap;
+		this._context.saveMemento();
 	}
 
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
@@ -176,6 +193,17 @@ export class ProfilerService implements IProfilerService {
 		} else {
 			return config.sessionTemplates;
 		}
+	}
+
+	public getSessionViewState(ownerUri: string): any {
+		// get settings
+		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
+		if (!uiStateMap) {
+			uiStateMap = new Map<string, any>();
+			this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY] = uiStateMap;
+			this._context.saveMemento();
+		}
+		return uiStateMap[ownerUri];
 	}
 
 	public launchColumnEditor(input?: ProfilerInput): Thenable<void> {
