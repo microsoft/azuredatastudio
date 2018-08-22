@@ -285,6 +285,15 @@ export enum CardType {
 	Details = 'Details'
 }
 
+export enum Orientation {
+	Horizontal = 'horizontal',
+	Vertical = 'vertial'
+}
+
+export interface ToolbarLayout {
+	orientation: Orientation;
+}
+
 export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
 }

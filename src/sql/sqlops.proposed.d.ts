@@ -75,8 +75,8 @@ declare module 'sqlops' {
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
 	}
 
-	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, any, any> {
-		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, any, any>;
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -307,7 +307,16 @@ declare module 'sqlops' {
 	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
 	}
 
-	export interface ToolbarContainer extends Container<any, any> {
+
+	export enum Orientation {
+		Horizontal = 'horizontal',
+		Vertical = 'vertial'
+	}
+
+	export interface ToolbarLayout {
+		orientation: Orientation;
+	}
+	export interface ToolbarContainer extends Container<ToolbarLayout, any> {
 	}
 
 	/**

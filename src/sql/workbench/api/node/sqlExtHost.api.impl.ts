@@ -424,6 +424,7 @@ export function createApiFactory(
 				ui: ui,
 				StatusIndicator: sqlExtHostTypes.StatusIndicator,
 				CardType: sqlExtHostTypes.CardType,
+				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem
 			};
