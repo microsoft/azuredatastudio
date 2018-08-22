@@ -62,11 +62,11 @@ function setUsageDates(storageService: IStorageService): void {
 	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate);
 
 	// weekly last usage date
-	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate') || new Date().toUTCString();
+	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate') || appStartDate;
 	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate);
 
 	// monthly last usage date
-	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate') || new Date().toUTCString();
+	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate') || appStartDate;
 	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate);
 
 }
