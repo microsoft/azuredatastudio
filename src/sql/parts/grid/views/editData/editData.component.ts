@@ -304,8 +304,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			self.currentCell = {
 				row: row,
 				column: column,
-				isEditable: self.dataSet.columnDefinitions[column - 1]
-					? self.dataSet.columnDefinitions[column - 1].isEditable
+				isEditable: self.dataSet.columnDefinitions[column]
+					? self.dataSet.columnDefinitions[column].isEditable
 					: false
 			};
 		});
