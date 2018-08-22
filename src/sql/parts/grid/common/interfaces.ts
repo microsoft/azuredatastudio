@@ -47,8 +47,8 @@ export interface IGridDataSet {
 	totalRows: number;
 	batchId: number;
 	resultId: number;
-	maxHeight: number | string;
-	minHeight: number | string;
+	maxHeight?: number | string;
+	minHeight?: number | string;
 }
 
 export enum SaveFormat {

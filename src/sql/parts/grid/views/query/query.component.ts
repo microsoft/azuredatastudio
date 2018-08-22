@@ -339,19 +339,6 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			});
 		};
 
-		// Precalculate the max height and min height
-		let maxHeight: string = 'inherit';
-		if (resultSet.rowCount < self._defaultNumShowingRows) {
-			let maxHeightNumber: number = Math.max((resultSet.rowCount + 1) * self._rowHeight, self.dataIcons.length * 30) + 10;
-			maxHeight = maxHeightNumber.toString() + 'px';
-		}
-
-		let minHeight: string = maxHeight;
-		if (resultSet.rowCount >= self._defaultNumShowingRows) {
-			let minHeightNumber: number = (self._defaultNumShowingRows + 1) * self._rowHeight + 10;
-			minHeight = minHeightNumber.toString() + 'px';
-		}
-
 		let rowNumberColumn = new RowNumberColumn({ numberOfRows: resultSet.rowCount });
 
 		// Store the result set from the event
@@ -360,8 +347,6 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			batchId: resultSet.batchId,
 			resultId: resultSet.id,
 			totalRows: resultSet.rowCount,
-			maxHeight: maxHeight,
-			minHeight: minHeight,
 			dataRows: new VirtualizedCollection(
 				self.windowSize,
 				resultSet.rowCount,
