@@ -19,6 +19,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { Scope as MementoScope, Memento } from 'vs/workbench/common/memento';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -45,19 +47,27 @@ class TwoWayMap<T, K> {
 }
 
 export class ProfilerService implements IProfilerService {
+	private static readonly PROFILER_SERVICE_UI_STATE_STORAGE_KEY = 'profileservice.uiState';
 	public _serviceBrand: any;
 	private _providers = new Map<string, sqlops.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
+	private _connectionMap = new Map<ProfilerSessionID, IConnectionProfile>();
 	private _editColumnDialog: ProfilerColumnEditorDialog;
+	private _memento: any;
+	private _context: Memento;
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IConfigurationService public _configurationService: IConfigurationService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@INotificationService private _notificationService: INotificationService,
-		@ICommandService private _commandService: ICommandService
-	) { }
+		@ICommandService private _commandService: ICommandService,
+		@IStorageService private _storageService: IStorageService
+	) {
+		this._context = new Memento('ProfilerEditor');
+		this._memento = this._context.getMemento(this._storageService, MementoScope.GLOBAL);
+	}
 
 	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {
 		this._providers.set(providerId, provider);
@@ -77,23 +87,22 @@ export class ProfilerService implements IProfilerService {
 
 		}
 		this._sessionMap.set(uri, session);
+		this._connectionMap.set(uri, connectionProfile);
 		this._idMap.set(uri, uri);
 		return TPromise.wrap(uri);
 	}
 
 	public onMoreRows(params: sqlops.ProfilerSessionEvents): void {
-
 		this._sessionMap.get(this._idMap.reverseGet(params.sessionId)).onMoreRows(params);
 	}
 
 	public onSessionStopped(params: sqlops.ProfilerSessionStoppedParams): void {
-
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onSessionStopped(params);
 	}
 
 	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams): void {
-
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
+		this.updateMemento(params.ownerUri, { previousSessionName: params.sessionName });
 	}
 
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
@@ -114,6 +123,7 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public startSession(id: ProfilerSessionID, sessionName: string): Thenable<boolean> {
+		this.updateMemento(id, { previousSessionName: sessionName });
 		return this._runAction(id, provider => provider.startSession(this._idMap.get(id), sessionName)).then(() => {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
@@ -175,6 +185,35 @@ export class ProfilerService implements IProfilerService {
 			return config.sessionTemplates;
 		} else {
 			return config.sessionTemplates;
+		}
+	}
+
+	public getSessionViewState(ownerUri: string): any {
+		let mementoKey = this.getMementoKey(ownerUri);
+		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
+		if (uiStateMap && mementoKey) {
+			return uiStateMap[mementoKey];
+		}
+		return undefined;
+	}
+
+	private getMementoKey(ownerUri: string): string {
+		let mementoKey = undefined;
+		let connectionProfile: IConnectionProfile = this._connectionMap.get(ownerUri);
+		if (connectionProfile) {
+			mementoKey = connectionProfile.serverName;
+		}
+		return mementoKey;
+	}
+
+	private updateMemento(ownerUri: string, uiState: any) {
+		// update persisted session state
+		let mementoKey = this.getMementoKey(ownerUri);
+		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
+		if (uiStateMap && mementoKey) {
+			uiStateMap[mementoKey] = uiState;
+			this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY] = uiStateMap;
+			this._context.saveMemento();
 		}
 	}
 

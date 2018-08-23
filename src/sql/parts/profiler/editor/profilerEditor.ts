@@ -17,7 +17,6 @@ import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
-
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -99,7 +98,8 @@ export interface IDetailData {
 }
 
 export class ProfilerEditor extends BaseEditor {
-	public static ID: string = 'workbench.editor.profiler';
+	public static readonly ID: string = 'workbench.editor.profiler';
+
 	private _editor: ProfilerResourceEditor;
 	private _editorModel: ITextModel;
 	private _editorInput: UntitledEditorInput;
@@ -158,9 +158,6 @@ export class ProfilerEditor extends BaseEditor {
 	}
 
 	protected createEditor(parent: HTMLElement): void {
-		// test backend
-		//this._profilerService.registerProvider('default', this._instantiationService.createInstance(ProfilerTestBackend));
-
 		this._container = document.createElement('div');
 		this._container.className = 'carbon-profiler';
 		parent.appendChild(this._container);
@@ -457,13 +454,32 @@ export class ProfilerEditor extends BaseEditor {
 			this._connectAction.connected = this.input.state.isConnected;
 
 			if (this.input.state.isConnected) {
+
 				this._updateToolbar();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					// set undefined result to empty list
+					if (!r) {
+						r = [];
+					}
+
 					this._sessionSelector.setOptions(r);
 					this._sessionsList = r;
-					if (this.input.sessionName === undefined || this.input.sessionName === '') {
-						this.input.sessionName = this._sessionsList[0];
+					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
+						let sessionIndex: number = 0;
+						let uiState = this._profilerService.getSessionViewState(this.input.id);
+						if (uiState && uiState.previousSessionName) {
+							sessionIndex = this._sessionsList.indexOf(uiState.previousSessionName);
+						} else {
+							this._profilerService.launchCreateSessionDialog(this.input);
+						}
+
+						if (sessionIndex < 0) {
+							sessionIndex = 0;
+						}
+
+						this.input.sessionName = this._sessionsList[sessionIndex];
+						this._sessionSelector.selectWithOptionName(this.input.sessionName);
 					}
 				});
 			} else {
@@ -493,9 +509,14 @@ export class ProfilerEditor extends BaseEditor {
 				this._updateToolbar();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
+					// set undefined result to empty list
+					if (!r) {
+						r = [];
+					}
+
 					this._sessionsList = r;
 					this._sessionSelector.setOptions(r);
-					if (this.input.sessionName === undefined || this.input.sessionName === '') {
+					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
 						this.input.sessionName = this._sessionsList[0];
 					}
 				});
