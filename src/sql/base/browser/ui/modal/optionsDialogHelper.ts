@@ -67,6 +67,7 @@ export function createOptionElement(option: sqlops.ServiceOption, rowContainer: 
 	}
 	optionsMap[option.name] = { optionWidget: optionWidget, option: option, optionValue: optionValue };
 	inputElement.onfocus = () => onFocus(option.name);
+	inputElement.setAttribute('tabindex', '0');
 }
 
 export function getOptionValueAndCategoryValues(option: sqlops.ServiceOption, options: { [optionName: string]: any }, possibleInputs: string[]): any {
