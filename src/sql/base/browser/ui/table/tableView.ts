@@ -25,7 +25,7 @@ export class TableBasicView<T> extends View {
 		super(undefined, viewOpts);
 		this._container = document.createElement('div');
 		this._container.className = 'table-view';
-		this._table = new Table<T>(this._container, data, columns, tableOpts);
+		this._table = new Table<T>(this._container, { dataProvider: data, columns }, tableOpts);
 	}
 
 	public get table(): Table<T> {
@@ -59,7 +59,7 @@ export class TableHeaderView<T> extends HeaderView {
 		super(undefined, viewOpts);
 		this._container = document.createElement('div');
 		this._container.className = 'table-view';
-		this._table = new Table<T>(this._container, data, columns, tableOpts);
+		this._table = new Table<T>(this._container, { dataProvider: data, columns }, tableOpts);
 	}
 
 	public get table(): Table<T> {
@@ -76,7 +76,7 @@ export class TableHeaderView<T> extends HeaderView {
 	}
 
 	protected layoutBody(size: number): void {
-		this._table.layout(size, Orientation.HORIZONTAL);
+		this._table.layout(size, Orientation.VERTICAL);
 	}
 
 	focus(): void {
@@ -99,7 +99,7 @@ export class TableCollapsibleView<T> extends AbstractCollapsibleView {
 		super(undefined, viewOpts);
 		this._container = document.createElement('div');
 		this._container.className = 'table-view';
-		this._table = new Table<T>(this._container, data, columns, tableOpts);
+		this._table = new Table<T>(this._container, { dataProvider: data, columns }, tableOpts);
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {
@@ -143,6 +143,6 @@ export class TableCollapsibleView<T> extends AbstractCollapsibleView {
 	}
 
 	protected layoutBody(size: number): void {
-		this._table.layout(size, Orientation.HORIZONTAL);
+		this._table.layout(size, Orientation.VERTICAL);
 	}
 }

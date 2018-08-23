@@ -10,8 +10,8 @@ import * as sqlops from 'sqlops';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import { ISlickRange } from 'angular2-slickgrid';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -21,6 +21,9 @@ import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { Emitter, echo, debounceEvent, Event } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -61,6 +64,38 @@ export default class QueryRunner {
 	private _batchSets: sqlops.BatchSummary[] = [];
 	private _eventEmitter = new EventEmitter();
 
+	private _onMessage = new Emitter<sqlops.IResultMessage>();
+	public readonly onMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(echo(this._onMessage.event), (l, e) => {
+		// on first run
+		if (types.isUndefinedOrNull(l)) {
+			return [e];
+		} else {
+			return l.concat(e);
+		}
+	});
+
+	private _onResultSet = new Emitter<sqlops.ResultSetSummary>();
+	public readonly onResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(echo(this._onResultSet.event), (l, e) => {
+		// on first run
+		if (types.isUndefinedOrNull(l)) {
+			return [e];
+		} else {
+			return l.concat(e);
+		}
+	});
+
+	private _onQueryStart = new Emitter<void>();
+	public readonly onQueryStart: Event<void> = echo(this._onQueryStart.event);
+
+	private _onQueryEnd = new Emitter<string>();
+	public readonly onQueryEnd: Event<string> = echo(this._onQueryEnd.event);
+
+	private _onBatchStart = new Emitter<sqlops.BatchSummary>();
+	public readonly onBatchStart: Event<sqlops.BatchSummary> = echo(this._onBatchStart.event);
+
+	private _onBatchEnd = new Emitter<sqlops.BatchSummary>();
+	public readonly onBatchEnd: Event<sqlops.BatchSummary> = echo(this._onBatchEnd.event);
+
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		public uri: string,
@@ -68,7 +103,8 @@ export default class QueryRunner {
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IInstantiationService private instantiationService: IInstantiationService
 	) { }
 
 	get isExecuting(): boolean {
@@ -152,6 +188,7 @@ export default class QueryRunner {
 
 	private handleSuccessRunQueryResult() {
 		// The query has started, so lets fire up the result pane
+		this._onQueryStart.fire();
 		this._eventEmitter.emit(EventType.START);
 		this._queryManagementService.registerRunner(this, this.uri);
 	}
@@ -187,8 +224,9 @@ export default class QueryRunner {
 			}
 		});
 
-		// We're done with this query so shut down any waiting mechanisms
 		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+		// We're done with this query so shut down any waiting mechanisms
+		this._onQueryEnd.fire(Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
 	}
 
 	/**
@@ -209,6 +247,7 @@ export default class QueryRunner {
 		// Store the batch
 		this.batchSets[batch.id] = batch;
 		this._eventEmitter.emit(EventType.BATCH_START, batch);
+		this._onBatchStart.fire(batch);
 	}
 
 	/**
@@ -225,7 +264,9 @@ export default class QueryRunner {
 			// send a time message in the format used for query complete
 			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
 		}
+
 		this._eventEmitter.emit(EventType.BATCH_COMPLETE, batch);
+		this._onBatchEnd.fire(batch);
 	}
 
 	/**
@@ -256,6 +297,7 @@ export default class QueryRunner {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
 				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
+				this._onResultSet.fire(resultSet);
 			}
 		}
 	}
@@ -269,13 +311,13 @@ export default class QueryRunner {
 
 		// Send the message to the results pane
 		this._eventEmitter.emit(EventType.MESSAGE, message);
+		this._onMessage.fire(message);
 	}
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
 	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<sqlops.QueryExecuteSubsetResult> {
-		const self = this;
 		let rowData: sqlops.QueryExecuteSubsetParams = <sqlops.QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
@@ -284,16 +326,12 @@ export default class QueryRunner {
 			batchIndex: batchIndex
 		};
 
-		return new Promise<sqlops.QueryExecuteSubsetResult>((resolve, reject) => {
-			self._queryManagementService.getQueryRows(rowData).then(result => {
-				resolve(result);
-			}, error => {
-				self._notificationService.notify({
-					severity: Severity.Error,
-					message:  nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
-				});
-				reject(error);
+		return this._queryManagementService.getQueryRows(rowData).then(r => r, error => {
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
 			});
+			return error;
 		});
 	}
 
@@ -317,7 +355,7 @@ export default class QueryRunner {
 			this._isExecuting = false;
 			this._notificationService.notify({
 				severity: Severity.Error,
-				message:  nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
+				message: nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
 			});
 		});
 	}
@@ -341,7 +379,7 @@ export default class QueryRunner {
 					let error = `Nothing returned from subset query`;
 					self._notificationService.notify({
 						severity: Severity.Error,
-						message:  error
+						message: error
 					});
 					reject(error);
 				}
@@ -350,7 +388,7 @@ export default class QueryRunner {
 				let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
 				self._notificationService.notify({
 					severity: Severity.Error,
-					message:  `${errorMessage} ${error}`
+					message: `${errorMessage} ${error}`
 				});
 				reject(error);
 			});
@@ -412,7 +450,7 @@ export default class QueryRunner {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		const self = this;
 		let copyString = '';
 		const eol = this.getEolString();
@@ -483,7 +521,7 @@ export default class QueryRunner {
 		return !!removeNewLines;
 	}
 
-	private getColumnHeaders(batchId: number, resultId: number, range: ISlickRange): string[] {
+	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
 		let batchSummary: sqlops.BatchSummary = this.batchSets[batchId];
 		if (batchSummary !== undefined) {
@@ -519,7 +557,11 @@ export default class QueryRunner {
 				isError: false
 			};
 			// Send the message to the results pane
-			this._eventEmitter.emit(EventType.MESSAGE, message);
+			this._onMessage.fire(message);
 		}
+	}
+
+	public serializeResults(batchId: number, resultSetId: number, format: SaveFormat, selection: Slick.Range[]) {
+		return this.instantiationService.createInstance(ResultSerializer).saveResults(this.uri, { selection, format, batchIndex: batchId, resultSetNumber: resultSetId });
 	}
 }

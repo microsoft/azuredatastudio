@@ -4,11 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IThemable } from 'vs/platform/theme/common/styler';
-import * as objects from 'sql/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Dimension } from 'vs/base/browser/dom';
+import { Dimension, EventType } from 'vs/base/browser/dom';
 import { $, Builder } from 'vs/base/browser/builder';
-import { EventType } from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -17,12 +15,16 @@ import './panelStyles';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IPanelStyles {
+}
 
+export interface IPanelOptions {
+	showHeaderWhenSingleView?: boolean;
 }
 
 export interface IPanelView {
 	render(container: HTMLElement): void;
 	layout(dimension: Dimension): void;
+	remove?(): void;
 }
 
 export interface IPanelTab {
@@ -35,6 +37,10 @@ interface IInternalPanelTab extends IPanelTab {
 	header: Builder;
 	label: Builder;
 }
+
+const defaultOptions: IPanelOptions = {
+	showHeaderWhenSingleView: true
+};
 
 export type PanelTabIdentifier = string;
 
@@ -49,11 +55,12 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private _actionbar: ActionBar;
 	private _currentDimensions: Dimension;
 	private _collapsed = false;
+	private _headerVisible: boolean;
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
 
-	constructor(private container: HTMLElement) {
+	constructor(private container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
 		this.$parent = this._register($('.tabbedPanel'));
 		this.$parent.appendTo(container);
@@ -65,7 +72,12 @@ export class TabbedPanel extends Disposable implements IThemable {
 		let actionbarcontainer = $('.title-actions');
 		this._actionbar = new ActionBar(actionbarcontainer.getHTMLElement());
 		this.$header.append(actionbarcontainer);
-		this.$parent.append(this.$header);
+		if (options.showHeaderWhenSingleView) {
+			this._headerVisible = true;
+			this.$parent.append(this.$header);
+		} else {
+			this._headerVisible = false;
+		}
 		this.$body = $('tabBody');
 		this.$body.attr('role', 'tabpanel');
 		this.$body.attr('tabindex', '0');
@@ -73,11 +85,15 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public pushTab(tab: IPanelTab): PanelTabIdentifier {
-		let internalTab = objects.clone(tab) as IInternalPanelTab;
+		let internalTab = tab as IInternalPanelTab;
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab);
 		if (!this._shownTab) {
 			this.showTab(tab.identifier);
+		}
+		if (this._tabMap.size > 1 && !this._headerVisible) {
+			this.$parent.append(this.$header, 0);
+			this._headerVisible = true;
 		}
 		return tab.identifier as PanelTabIdentifier;
 	}
@@ -139,6 +155,11 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {
+		let actualTab = this._tabMap.get(tab);
+		actualTab.header.destroy();
+		if (actualTab.view.remove) {
+			actualTab.view.remove();
+		}
 		this._tabMap.get(tab).header.destroy();
 		this._tabMap.delete(tab);
 	}
@@ -151,8 +172,9 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._currentDimensions = dimension;
 		this.$header.style('width', dimension.width + 'px');
 		this.$body.style('width', dimension.width + 'px');
-		this.$body.style('height', (dimension.height - this.headersize) + 'px');
-		this._layoutCurrentTab(new Dimension(dimension.width, dimension.height - this.headersize));
+		const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
+		this.$body.style('height', bodyHeight + 'px');
+		this._layoutCurrentTab(new Dimension(dimension.width, bodyHeight));
 	}
 
 	private _layoutCurrentTab(dimension: Dimension): void {

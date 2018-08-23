@@ -327,7 +327,7 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableContainer.style.width = '100%';
 		detailTableContainer.style.height = '100%';
 		this._detailTableData = new TableDataView<IDetailData>();
-		this._detailTable = new Table(detailTableContainer, this._detailTableData, [
+		this._detailTable = new Table(detailTableContainer, { dataProvider: this._detailTableData, columns: [
 			{
 				id: 'label',
 				name: nls.localize('label', "Label"),
@@ -340,7 +340,7 @@ export class ProfilerEditor extends BaseEditor {
 				field: 'value',
 				formatter: textFormatter
 			}
-		], { forceFitColumns: true });
+		]}, { forceFitColumns: true });
 
 		this._tabbedPanel.pushTab({
 			identifier: 'detailTable',

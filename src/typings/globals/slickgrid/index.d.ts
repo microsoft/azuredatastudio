@@ -1212,7 +1212,7 @@ declare namespace Slick {
 		public render(): void;
 		public invalidate(): void;
 		public invalidateRow(row: number): void;
-		public invalidateRows(rows: number[]): void;
+		public invalidateRows(rows: number[], keepEditor: boolean): void;
 		public invalidateAllRows(): void;
 		public updateCell(row: number, cell: number): void;
 		public updateRow(row: number): void;

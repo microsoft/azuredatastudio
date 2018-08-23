@@ -103,7 +103,7 @@ export class TopOperationsComponent extends TabChild implements OnDestroy, OnIni
 				column.rerenderOnResize = true;
 				return column;
 			});
-			this._table = new Table(this._el.nativeElement, data, columns);
+			this._table = new Table(this._el.nativeElement, { dataProvider: data, columns });
 			this._disposables.push(attachTableStyler(this._table, this.themeService));
 		}
 	}
