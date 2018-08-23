@@ -333,7 +333,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 	}
 }
 
-class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContainer, any, any> implements sqlops.ToolbarBuilder {
+class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContainer, sqlops.ToolbarLayout, any> implements sqlops.ToolbarBuilder {
 	withToolbarItems(components: sqlops.ToolbarComponent[]): sqlops.ContainerBuilder<sqlops.ToolbarContainer, any, any> {
 		this._component.itemConfigs = components.map(item => {
 			return this.convertToItemConfig(item);

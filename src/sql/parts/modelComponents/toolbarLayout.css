@@ -5,15 +5,22 @@
 
 .modelview-toolbar-container {
 	display: flex;
-	padding: 15px;
 	justify-content: flex-start;
 	line-height: 1.4em;
 	white-space: nowrap;
 	flex-wrap: wrap;
+}
+
+.modelview-toolbar-container.toolbar-horizontal {
+	flex-direction: row;
 	border-bottom-width: .5px;
 	border-bottom-style: solid;
 	box-sizing: border-box;
 	border-bottom-color: rgba(128, 128, 128, 0.35);
+}
+
+.modelview-toolbar-container.toolbar-vertical {
+	flex-direction: column;
 }
 
 .modelview-toolbar-container .modelview-toolbar-item {

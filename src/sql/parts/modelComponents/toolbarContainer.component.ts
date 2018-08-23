@@ -5,35 +5,35 @@
 import 'vs/css!./toolbarLayout';
 
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
-	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList, AfterViewInit
+	Component, Input, Inject, ChangeDetectorRef, forwardRef,
+	ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
 
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
+import { Orientation, ToolbarLayout } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
+
 import { ContainerBase } from 'sql/parts/modelComponents/componentBase';
-import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 export interface ToolbarItemConfig {
 	title?: string;
 }
 
-class ToolbarItem {
+export class ToolbarItem {
 	constructor(public descriptor: IComponentDescriptor, public config: ToolbarItemConfig) { }
 }
 
 @Component({
 	selector: 'modelview-toolbarContainer',
 	template: `
-		<div #container *ngIf="items" class="modelview-toolbar-container">
+		<div #container *ngIf="items" [class]="toolbarClass" >
 			<ng-container *ngFor="let item of items">
-			<div class="modelview-toolbar-item" >
-				<div *ngIf="hasTitle(item)" class="modelview-toolbar-title" >
+			<div class="modelview-toolbar-item" [title]="getItemTitle(item)" [style.paddingTop]="paddingTop" tabindex="0">
+				<div *ngIf="shouldShowTitle(item)" class="modelview-toolbar-title" >
 					{{getItemTitle(item)}}
 				</div>
-				<div  class="modelview-toolbar-component">
+				<div class="modelview-toolbar-component">
 					<model-component-wrapper  [descriptor]="item.descriptor" [modelStore]="modelStore" >
 					</model-component-wrapper>
 				</div>
@@ -48,10 +48,13 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
+	private _orientation: Orientation;
+
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
+		this._orientation = Orientation.Horizontal;
 	}
 
 	ngOnInit(): void {
@@ -67,16 +70,39 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	/// IComponent implementation
 
-	public setLayout(layout: any): void {
+	public setLayout(layout: ToolbarLayout): void {
+		this._orientation = layout.orientation ? layout.orientation : Orientation.Horizontal;
 		this.layout();
 	}
 
-	private getItemTitle(item: ToolbarItem): string {
+	public getItemTitle(item: ToolbarItem): string {
 		let itemConfig = item.config;
 		return itemConfig ? itemConfig.title : '';
 	}
 
+	public shouldShowTitle(item: ToolbarItem): boolean {
+		return this.hasTitle(item) && this.isHorizontal();
+	}
+
 	private hasTitle(item: ToolbarItem): boolean {
 		return item && item.config && item.config.title !== undefined;
+	}
+
+	public get paddingTop(): string {
+		return this.isHorizontal() ? '' : '10px';
+	}
+
+	public get toolbarClass(): string {
+		let classes = ['modelview-toolbar-container'];
+		if (this.isHorizontal()) {
+			classes.push('toolbar-horizontal');
+		} else {
+			classes.push('toolbar-vertical');
+		}
+		return classes.join(' ');
+	}
+
+	private isHorizontal(): boolean {
+		return this._orientation === Orientation.Horizontal;
 	}
 }
