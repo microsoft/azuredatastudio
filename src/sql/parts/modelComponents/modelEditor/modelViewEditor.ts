@@ -79,7 +79,8 @@ export class ModelViewEditor extends BaseEditor {
 	}
 
 	private doUpdateContainer() {
-		const modelViewContainer = this.input && (this.input as ModelViewInput).container;
+		let modelViewInput = this.input as ModelViewInput;
+		const modelViewContainer = modelViewInput && modelViewInput.container;
 		if (modelViewContainer) {
 			const frameRect = this._editorFrame.getBoundingClientRect();
 			const containerRect = modelViewContainer.parentElement.getBoundingClientRect();
@@ -89,6 +90,9 @@ export class ModelViewEditor extends BaseEditor {
 			modelViewContainer.style.left = `${frameRect.left - containerRect.left}px`;
 			modelViewContainer.style.width = `${frameRect.width}px`;
 			modelViewContainer.style.height = `${frameRect.height}px`;
+			if (modelViewInput.dialogPane) {
+				modelViewInput.dialogPane.layout(true);
+			}
 		}
 	}
 

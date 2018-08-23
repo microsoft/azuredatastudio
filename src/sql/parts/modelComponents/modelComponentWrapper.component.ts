@@ -28,12 +28,13 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as nls from 'vs/nls';
+import { LayoutRequestParams } from 'sql/platform/dialog/dialogContainer.component';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 
 export interface ModelComponentParams extends IBootstrapParams {
 
-	onLayoutRequested: Event<string>;
+	onLayoutRequested: Event<LayoutRequestParams>;
 	modelViewId: string;
 }
 
@@ -69,8 +70,8 @@ export class ModelComponentWrapper extends AngularDisposable implements OnInit {
 		super();
 		if (_params && _params.onLayoutRequested) {
 			this._modelViewId = _params.modelViewId;
-			_params.onLayoutRequested(modelViewId => {
-				if (modelViewId === this._modelViewId) {
+			_params.onLayoutRequested(layoutParams => {
+				if (layoutParams && (layoutParams.alwaysRefresh || layoutParams.modelViewId === this._modelViewId)) {
 					this.layout();
 				}
 			});

@@ -82,11 +82,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 			width && width > 0 ? width : DOM.getContentWidth(this._el.nativeElement),
 			height && height > 0 ? height : DOM.getContentHeight(this._el.nativeElement)));
 		let element = <HTMLElement> this._el.nativeElement;
-		if (this.position) {
-			element.style.position = this.position;
-		} else {
-			element.style.position = '';
-		}
+		element.style.position = this.position;
 	}
 
 	/// Editor Functions
@@ -141,7 +137,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	public get position(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, undefined);
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
 	}
 
 	public set position(newValue: string) {
