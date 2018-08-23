@@ -32,7 +32,7 @@ export class DialogPane extends Disposable implements IThemable {
 
 	private _body: HTMLElement;
 	private _selectedTabIndex: number = 0; //TODO: can be an option
-	private _onTabChange = new Emitter<LayoutRequestParams>();
+	private _onLayoutChange = new Emitter<LayoutRequestParams>();
 	private _selectedTabContent: string;
 	public pageNumber?: number;
 
@@ -65,7 +65,7 @@ export class DialogPane extends Disposable implements IThemable {
 					this.initializeModelViewContainer(tabContainer, tab.content, tab);
 					this._tabbedPanel.onTabChange(e => {
 						tabContainer.style.height = (this.getTabDimension().height - this._tabbedPanel.headersize) + 'px';
-						this._onTabChange.fire({ modelViewId: tab.content });
+						this._onLayoutChange.fire({ modelViewId: tab.content });
 					});
 					this._tabbedPanel.pushTab({
 						title: tab.title,
@@ -99,9 +99,9 @@ export class DialogPane extends Disposable implements IThemable {
 		};
 		if (this._tabbedPanel) {
 			this._tabbedPanel.layout(this.getTabDimension());
-			this._onTabChange.fire(layoutParams);
+			this._onLayoutChange.fire(layoutParams);
 		} else if (alwaysRefresh) {
-			this._onTabChange.fire(layoutParams);
+			this._onLayoutChange.fire(layoutParams);
 		}
 	}
 
@@ -121,7 +121,7 @@ export class DialogPane extends Disposable implements IThemable {
 						tab.notifyValidityChanged(valid);
 					}
 				},
-				onLayoutRequested: this._onTabChange.event,
+				onLayoutRequested: this._onLayoutChange.event,
 				dialogPane: this
 			} as DialogComponentParams,
 			undefined,
