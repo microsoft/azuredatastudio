@@ -15,8 +15,8 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { ShowCurrentReleaseNotesAction } from 'sql/workbench/update/releaseNotes';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
-new Actions.BackupAction().registerTask();
-new Actions.RestoreAction().registerTask();
+new Actions.BackupAction().registerTask(false);
+new Actions.RestoreAction().registerTask(false);
 new Actions.NewQueryAction().registerTask();
 new Actions.ConfigureDashboardAction().registerTask();
 
