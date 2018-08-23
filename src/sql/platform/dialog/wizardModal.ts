@@ -197,8 +197,9 @@ export class WizardModal extends Modal {
 
 		if (this._nextButton && this._doneButton) {
 			if (this._wizard.pages[index + 1]) {
+				let isPageValid = this._wizard.pages[index] && this._wizard.pages[index].valid;
 				this._nextButton.element.parentElement.classList.remove('dialogModal-hidden');
-				this._nextButton.enabled = this._wizard.pages[index + 1].enabled;
+				this._nextButton.enabled = isPageValid && this._wizard.pages[index + 1].enabled;
 				this._doneButton.element.parentElement.classList.add('dialogModal-hidden');
 			} else {
 				this._nextButton.element.parentElement.classList.add('dialogModal-hidden');

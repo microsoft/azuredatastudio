@@ -171,11 +171,15 @@ export class AccountDialog extends Modal {
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
 		} else {
-			this._splitViewContainer.hidden = true;
-			this._noaccountViewContainer.hidden = false;
-			this._addAccountButton.focus();
+			this.showNoAccountContainer();
 		}
 
+	}
+
+	private showNoAccountContainer() {
+		this._splitViewContainer.hidden = true;
+		this._noaccountViewContainer.hidden = false;
+		this._addAccountButton.focus();
 	}
 
 	private showSplitView() {
@@ -296,6 +300,10 @@ export class AccountDialog extends Modal {
 
 		if (args.accountList.length > 0 && this._splitViewContainer.hidden) {
 			this.showSplitView();
+		}
+
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer.hidden) {
+			this.showNoAccountContainer();
 		}
 
 		this.layout();
