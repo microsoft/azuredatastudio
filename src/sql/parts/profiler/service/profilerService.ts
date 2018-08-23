@@ -52,6 +52,7 @@ export class ProfilerService implements IProfilerService {
 	private _providers = new Map<string, sqlops.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();
+	private _connectionMap = new Map<ProfilerSessionID, IConnectionProfile>();
 	private _editColumnDialog: ProfilerColumnEditorDialog;
 	private _memento: any;
 	private _context: Memento;
@@ -86,6 +87,7 @@ export class ProfilerService implements IProfilerService {
 
 		}
 		this._sessionMap.set(uri, session);
+		this._connectionMap.set(uri, connectionProfile);
 		this._idMap.set(uri, uri);
 		return TPromise.wrap(uri);
 	}
@@ -100,17 +102,7 @@ export class ProfilerService implements IProfilerService {
 
 	public onProfilerSessionCreated(params: sqlops.ProfilerSessionCreatedParams): void {
 		this._sessionMap.get(this._idMap.reverseGet(params.ownerUri)).onProfilerSessionCreated(params);
-
-		// get settings
-		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
-		if (!uiStateMap) {
-			uiStateMap = new Map<string, any>();
-		}
-		uiStateMap[params.ownerUri] =  {
-			previousSessionName: params.templateName
-		};
-		this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY] = uiStateMap;
-		this._context.saveMemento();
+		this.updateMemento(params.ownerUri, { previousSessionName: params.sessionName });
 	}
 
 	public connectSession(id: ProfilerSessionID): Thenable<boolean> {
@@ -131,6 +123,7 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public startSession(id: ProfilerSessionID, sessionName: string): Thenable<boolean> {
+		this.updateMemento(id, { previousSessionName: sessionName });
 		return this._runAction(id, provider => provider.startSession(this._idMap.get(id), sessionName)).then(() => {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isRunning: true, isStopped: false, isPaused: false });
 			return true;
@@ -196,14 +189,32 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public getSessionViewState(ownerUri: string): any {
-		// get settings
+		let mementoKey = this.getMementoKey(ownerUri);
 		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
-		if (!uiStateMap) {
-			uiStateMap = new Map<string, any>();
+		if (uiStateMap && mementoKey) {
+			return uiStateMap[mementoKey];
+		}
+		return undefined;
+	}
+
+	private getMementoKey(ownerUri: string): string {
+		let mementoKey = undefined;
+		let connectionProfile: IConnectionProfile = this._connectionMap.get(ownerUri);
+		if (connectionProfile) {
+			mementoKey = connectionProfile.serverName;
+		}
+		return mementoKey;
+	}
+
+	private updateMemento(ownerUri: string, uiState: any) {
+		// update persisted session state
+		let mementoKey = this.getMementoKey(ownerUri);
+		let uiStateMap = this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY];
+		if (uiStateMap && mementoKey) {
+			uiStateMap[mementoKey] = uiState;
 			this._memento[ProfilerService.PROFILER_SERVICE_UI_STATE_STORAGE_KEY] = uiStateMap;
 			this._context.saveMemento();
 		}
-		return uiStateMap[ownerUri];
 	}
 
 	public launchColumnEditor(input?: ProfilerInput): Thenable<void> {

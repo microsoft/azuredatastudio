@@ -454,7 +454,7 @@ export class ProfilerEditor extends BaseEditor {
 			this._connectAction.connected = this.input.state.isConnected;
 
 			if (this.input.state.isConnected) {
-				let uiState = this._profilerService.getSessionViewState(this.input.getResource().toString());
+
 				this._updateToolbar();
 				this._sessionSelector.enable();
 				this._profilerService.getXEventSessions(this.input.id).then((r) => {
@@ -467,6 +467,7 @@ export class ProfilerEditor extends BaseEditor {
 					this._sessionsList = r;
 					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
 						let sessionIndex: number = 0;
+						let uiState = this._profilerService.getSessionViewState(this.input.id);
 						if (uiState && uiState.previousSessionName) {
 							sessionIndex = this._sessionsList.indexOf(uiState.previousSessionName);
 						} else {
@@ -478,6 +479,7 @@ export class ProfilerEditor extends BaseEditor {
 						}
 
 						this.input.sessionName = this._sessionsList[sessionIndex];
+						this._sessionSelector.selectWithOptionName(this.input.sessionName);
 					}
 				});
 			} else {
