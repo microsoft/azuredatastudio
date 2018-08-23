@@ -27,9 +27,9 @@ export class ToolbarItem {
 @Component({
 	selector: 'modelview-toolbarContainer',
 	template: `
-		<div #container *ngIf="items" class="modelview-toolbar-container" [style.flexDirection]="flexDirection">
+		<div #container *ngIf="items" [class]="toolbarClass" >
 			<ng-container *ngFor="let item of items">
-			<div class="modelview-toolbar-item" [title]="getItemTitle(item)" tabindex="0">
+			<div class="modelview-toolbar-item" [title]="getItemTitle(item)" [style.paddingTop]="paddingTop" tabindex="0">
 				<div *ngIf="shouldShowTitle(item)" class="modelview-toolbar-title" >
 					{{getItemTitle(item)}}
 				</div>
@@ -88,8 +88,18 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 		return item && item.config && item.config.title !== undefined;
 	}
 
-	public get flexDirection(): string {
-		return this.isHorizontal() ? 'row' : 'column';
+	public get paddingTop(): string {
+		return this.isHorizontal() ? '' : '10px';
+	}
+
+	public get toolbarClass(): string {
+		let classes = ['modelview-toolbar-container'];
+		if (this.isHorizontal()) {
+			classes.push('toolbar-horizontal');
+		} else {
+			classes.push('toolbar-vertical');
+		}
+		return classes.join(' ');
 	}
 
 	private isHorizontal(): boolean {
