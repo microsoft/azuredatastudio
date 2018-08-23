@@ -10,6 +10,17 @@ Common SQL Profiler use-cases taken from https://docs.microsoft.com/en-us/sql/to
 - Monitoring the performance of SQL Server to tune workloads.
 - Correlating performance counters to diagnose problems.
 
+## Getting Started:
+To launch SQL Server Profiler, you have to first make a connection to a server.
+ 
+Open Profiler by pressing **Alt+P** on Windows, and **Ctrl+Alt+P** on macOS.
+ 
+To Start/Stop Profiler, click the Start button or press **Alt+S** on Windows, or **Ctrl+Alt+S** on macOS.
+ 
+Otherwise, open the command palette and type 'Profiler.'
+ 
+For more info, [check out our documentation.](https://docs.microsoft.com/en-us/sql/sql-operations-studio/sql-server-profiler-extension?view=sql-server-2017)
+
 ## SQL Server Profiler 0.1.1 Release
 The SQL Server Profiler for SQL Operations Studio *Preview* extension is now available. This is the initial preview release for a new lightweight XEvent-based profiler. The SQL Server Profiler extension tries to make it simple to quickly trace server activity for troubleshooting and monitoring.
 
