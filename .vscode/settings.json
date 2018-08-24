@@ -39,5 +39,10 @@
 		}
 	],
 	"typescript.tsdk": "node_modules/typescript/lib",
-	"git.ignoreLimitWarning": true
+	"git.ignoreLimitWarning": true,
+	"emmet.excludeLanguages": [],
+	npm.exclude": "**/extensions/**",
+	"typescript.preferences.importModuleSpecifier": "non-relative",
+	"typescript.preferences.quoteStyle": "single"
+
 }

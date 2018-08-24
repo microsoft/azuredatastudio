@@ -11,7 +11,7 @@ import * as nls from 'vs/nls';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Builder, $ } from 'vs/base/browser/builder';
-import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
+import { SelectBox, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IAction, IActionRunner, Action, IActionChangeEvent, ActionRunner, IRunEvent } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
@@ -154,7 +154,7 @@ export class BaseActionItem implements IActionItem {
 		DOM.EventHelper.stop(event, true);
 
 		let context: any;
-		if (types.isUndefinedOrNull(this._context)) {
+		if (types.isUndefinedOrNull(this._context) || !types.isObject(this._context)) {
 			context = event;
 		} else {
 			context = this._context;
@@ -167,12 +167,14 @@ export class BaseActionItem implements IActionItem {
 	public focus(): void {
 		if (this.builder) {
 			this.builder.domFocus();
+			this.builder.addClass('focused');
 		}
 	}
 
 	public blur(): void {
 		if (this.builder) {
 			this.builder.domBlur();
+			this.builder.removeClass('focused');
 		}
 	}
 
@@ -372,7 +374,6 @@ export class ActionBar implements IActionRunner {
 
 	// Items
 	public items: IActionItem[];
-
 	private focusedItem: number;
 	private focusTracker: DOM.IFocusTracker;
 
@@ -487,12 +488,45 @@ export class ActionBar implements IActionRunner {
 		this.actionsList = document.createElement('ul');
 		this.actionsList.className = 'actions-container';
 		if (this.options.isMenu) {
-			this.actionsList.setAttribute('role', 'menubar');
+			this.actionsList.setAttribute('role', 'menu');
 		} else {
 			this.actionsList.setAttribute('role', 'toolbar');
 		}
 		if (this.options.ariaLabel) {
 			this.actionsList.setAttribute('aria-label', this.options.ariaLabel);
+		}
+
+		if (this.options.isMenu) {
+			this.domNode.tabIndex = 0;
+
+			$(this.domNode).on(DOM.EventType.MOUSE_OUT, (e) => {
+				let relatedTarget = (e as MouseEvent).relatedTarget as HTMLElement;
+				if (!DOM.isAncestor(relatedTarget, this.domNode)) {
+					this.focusedItem = undefined;
+					this.updateFocus();
+					e.stopPropagation();
+				}
+			});
+
+			$(this.actionsList).on(DOM.EventType.MOUSE_OVER, (e) => {
+				let target = e.target as HTMLElement;
+				if (!target || !DOM.isAncestor(target, this.actionsList) || target === this.actionsList) {
+					return;
+				}
+
+				while (target.parentElement !== this.actionsList) {
+					target = target.parentElement;
+				}
+
+				if (DOM.hasClass(target, 'action-item')) {
+					const lastFocusedItem = this.focusedItem;
+					this.setFocusedItem(target);
+
+					if (lastFocusedItem !== this.focusedItem) {
+						this.updateFocus();
+					}
+				}
+			});
 		}
 
 		this.domNode.appendChild(this.actionsList);
@@ -521,6 +555,16 @@ export class ActionBar implements IActionRunner {
 			this.actionsList.setAttribute('aria-label', label);
 		} else {
 			this.actionsList.removeAttribute('aria-label');
+		}
+	}
+
+	private setFocusedItem(element: HTMLElement): void {
+		for (let i = 0; i < this.actionsList.children.length; i++) {
+			let elem = this.actionsList.children[i];
+			if (element === elem) {
+				this.focusedItem = i;
+				break;
+			}
 		}
 	}
 
@@ -591,11 +635,13 @@ export class ActionBar implements IActionRunner {
 
 			if (index === null || index < 0 || index >= this.actionsList.children.length) {
 				this.actionsList.appendChild(actionItemElement);
+				this.items.push(item);
 			} else {
-				this.actionsList.insertBefore(actionItemElement, this.actionsList.children[index++]);
+				this.actionsList.insertBefore(actionItemElement, this.actionsList.children[index]);
+				this.items.splice(index, 0, item);
+				index++;
 			}
 
-			this.items.push(item);
 		});
 	}
 
@@ -637,10 +683,12 @@ export class ActionBar implements IActionRunner {
 
 	public focus(selectFirst?: boolean): void {
 		if (selectFirst && typeof this.focusedItem === 'undefined') {
-			this.focusedItem = 0;
+			// Focus the first enabled item
+			this.focusedItem = this.items.length - 1;
+			this.focusNext();
+		} else {
+			this.updateFocus();
 		}
-
-		this.updateFocus();
 	}
 
 	private focusNext(): void {
@@ -691,7 +739,6 @@ export class ActionBar implements IActionRunner {
 	private updateFocus(fromRight?: boolean): void {
 		if (typeof this.focusedItem === 'undefined') {
 			this.domNode.focus();
-			return;
 		}
 
 		for (let i = 0; i < this.items.length; i++) {
@@ -700,8 +747,12 @@ export class ActionBar implements IActionRunner {
 			let actionItem = <any>item;
 
 			if (i === this.focusedItem) {
-				if (types.isFunction(actionItem.focus)) {
-					actionItem.focus(fromRight);
+				if (types.isFunction(actionItem.isEnabled)) {
+					if (actionItem.isEnabled() && types.isFunction(actionItem.focus)) {
+						actionItem.focus(fromRight);
+					} else {
+						this.domNode.focus();
+					}
 				}
 			} else {
 				if (types.isFunction(actionItem.blur)) {
@@ -757,10 +808,10 @@ export class SelectActionItem extends BaseActionItem {
 	protected selectBox: SelectBox;
 	protected toDispose: lifecycle.IDisposable[];
 
-	constructor(ctx: any, action: IAction, options: string[], selected: number, contextViewProvider: IContextViewProvider
+	constructor(ctx: any, action: IAction, options: string[], selected: number, contextViewProvider: IContextViewProvider, selectBoxOptions?: ISelectBoxOptions
 	) {
 		super(ctx, action);
-		this.selectBox = new SelectBox(options, selected, contextViewProvider);
+		this.selectBox = new SelectBox(options, selected, contextViewProvider, null, selectBoxOptions);
 
 		this.toDispose = [];
 		this.toDispose.push(this.selectBox);

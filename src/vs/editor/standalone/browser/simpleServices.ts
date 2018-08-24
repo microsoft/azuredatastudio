@@ -4,13 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { Schemas } from 'vs/base/common/network';
 import Severity from 'vs/base/common/severity';
 import URI from 'vs/base/common/uri';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IConfigurationService, IConfigurationChangeEvent, IConfigurationOverrides } from 'vs/platform/configuration/common/configuration';
-import { ISingleFolderWorkspaceIdentifier, IWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
-import { IEditor, IEditorInput, IEditorOptions, IEditorService, IResourceInput, Position } from 'vs/platform/editor/common/editor';
+import { IConfigurationService, IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationData } from 'vs/platform/configuration/common/configuration';
+import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { ICommandService, ICommand, ICommandEvent, ICommandHandler, CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { AbstractKeybindingService } from 'vs/platform/keybinding/common/abstractKeybindingService';
 import { USLayoutResolvedKeybinding } from 'vs/platform/keybinding/common/usLayoutResolvedKeybinding';
@@ -26,7 +24,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { ITextModelService, ITextModelContentProvider, ITextEditorModel } from 'vs/editor/common/services/resolverService';
-import { IDisposable, IReference, ImmortalReference, combinedDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, IReference, ImmortalReference, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeybindingsRegistry, IKeybindingItem } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -36,39 +34,17 @@ import { ITelemetryService, ITelemetryInfo } from 'vs/platform/telemetry/common/
 import { ResolvedKeybinding, Keybinding, createKeybinding, SimpleKeybinding } from 'vs/base/common/keyCodes';
 import { ResolvedKeybindingItem } from 'vs/platform/keybinding/common/resolvedKeybindingItem';
 import { OS } from 'vs/base/common/platform';
-import { IRange } from 'vs/editor/common/core/range';
+import { Range } from 'vs/editor/common/core/range';
 import { ITextModel } from 'vs/editor/common/model';
 import { INotificationService, INotification, INotificationHandle, NoOpNotification, IPromptChoice } from 'vs/platform/notification/common/notification';
 import { IConfirmation, IConfirmationResult, IDialogService, IDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IPosition, Position as Pos } from 'vs/editor/common/core/position';
-
-export class SimpleEditor implements IEditor {
-
-	public input: IEditorInput;
-	public options: IEditorOptions;
-	public position: Position;
-
-	public _widget: editorCommon.IEditor;
-
-	constructor(editor: editorCommon.IEditor) {
-		this._widget = editor;
-	}
-
-	public getId(): string { return 'editor'; }
-	public getControl(): editorCommon.IEditor { return this._widget; }
-	public focus(): void { this._widget.focus(); }
-	public isVisible(): boolean { return true; }
-
-	public withTypedEditor<T>(codeEditorCallback: (editor: ICodeEditor) => T, diffEditorCallback: (editor: IDiffEditor) => T): T {
-		if (isCodeEditor(this._widget)) {
-			// Single Editor
-			return codeEditorCallback(<ICodeEditor>this._widget);
-		} else {
-			// Diff Editor
-			return diffEditorCallback(<IDiffEditor>this._widget);
-		}
-	}
-}
+import { isEditorConfigurationKey, isDiffEditorConfigurationKey } from 'vs/editor/common/config/commonEditorConfig';
+import { IBulkEditService, IBulkEditOptions, IBulkEditResult } from 'vs/editor/browser/services/bulkEditService';
+import { WorkspaceEdit, isResourceTextEdit, TextEdit } from 'vs/editor/common/modes';
+import { IModelService } from 'vs/editor/common/services/modelService';
+import { EditOperation } from 'vs/editor/common/core/editOperation';
+import { localize } from 'vs/nls';
 
 export class SimpleModel implements ITextEditorModel {
 
@@ -101,94 +77,29 @@ export interface IOpenEditorDelegate {
 	(url: string): boolean;
 }
 
-export class SimpleEditorService implements IEditorService {
-	public _serviceBrand: any;
-
-	private editor: SimpleEditor;
-	private openEditorDelegate: IOpenEditorDelegate;
-
-	constructor() {
-		this.openEditorDelegate = null;
-	}
-
-	public setEditor(editor: editorCommon.IEditor): void {
-		this.editor = new SimpleEditor(editor);
-	}
-
-	public setOpenEditorDelegate(openEditorDelegate: IOpenEditorDelegate): void {
-		this.openEditorDelegate = openEditorDelegate;
-	}
-
-	public openEditor(typedData: IResourceInput, sideBySide?: boolean): TPromise<IEditor> {
-		return TPromise.as(this.editor.withTypedEditor(
-			(editor) => this.doOpenEditor(editor, typedData),
-			(diffEditor) => (
-				this.doOpenEditor(diffEditor.getOriginalEditor(), typedData) ||
-				this.doOpenEditor(diffEditor.getModifiedEditor(), typedData)
-			)
-		));
-	}
-
-	private doOpenEditor(editor: ICodeEditor, data: IResourceInput): IEditor {
-		let model = this.findModel(editor, data);
-		if (!model) {
-			if (data.resource) {
-				if (this.openEditorDelegate) {
-					this.openEditorDelegate(data.resource.toString());
-					return null;
-				} else {
-					let schema = data.resource.scheme;
-					if (schema === Schemas.http || schema === Schemas.https) {
-						// This is a fully qualified http or https URL
-						dom.windowOpenNoOpener(data.resource.toString());
-						return this.editor;
-					}
-				}
-			}
-			return null;
-		}
-
-		let selection = <IRange>data.options.selection;
-		if (selection) {
-			if (typeof selection.endLineNumber === 'number' && typeof selection.endColumn === 'number') {
-				editor.setSelection(selection);
-				editor.revealRangeInCenter(selection, editorCommon.ScrollType.Immediate);
-			} else {
-				let pos = {
-					lineNumber: selection.startLineNumber,
-					column: selection.startColumn
-				};
-				editor.setPosition(pos);
-				editor.revealPositionInCenter(pos, editorCommon.ScrollType.Immediate);
-			}
-		}
-
-		return this.editor;
-	}
-
-	private findModel(editor: ICodeEditor, data: IResourceInput): ITextModel {
-		let model = editor.getModel();
-		if (model.uri.toString() !== data.resource.toString()) {
-			return null;
-		}
-
-		return model;
+function withTypedEditor<T>(widget: editorCommon.IEditor, codeEditorCallback: (editor: ICodeEditor) => T, diffEditorCallback: (editor: IDiffEditor) => T): T {
+	if (isCodeEditor(widget)) {
+		// Single Editor
+		return codeEditorCallback(<ICodeEditor>widget);
+	} else {
+		// Diff Editor
+		return diffEditorCallback(<IDiffEditor>widget);
 	}
 }
 
 export class SimpleEditorModelResolverService implements ITextModelService {
 	public _serviceBrand: any;
 
-	private editor: SimpleEditor;
+	private editor: editorCommon.IEditor;
 
 	public setEditor(editor: editorCommon.IEditor): void {
-		this.editor = new SimpleEditor(editor);
+		this.editor = editor;
 	}
 
 	public createModelReference(resource: URI): TPromise<IReference<ITextEditorModel>> {
 		let model: ITextModel;
 
-		model = this.editor.withTypedEditor(
+		model = withTypedEditor(this.editor,
 			(editor) => this.findModel(editor, resource),
 			(diffEditor) => this.findModel(diffEditor.getOriginalEditor(), resource) || this.findModel(diffEditor.getModifiedEditor(), resource)
 		);
@@ -319,11 +230,9 @@ export class StandaloneCommandService implements ICommandService {
 	public addCommand(command: ICommand): IDisposable {
 		const { id } = command;
 		this._dynamicCommands[id] = command;
-		return {
-			dispose: () => {
-				delete this._dynamicCommands[id];
-			}
-		};
+		return toDisposable(() => {
+			delete this._dynamicCommands[id];
+		});
 	}
 
 	public executeCommand<T>(id: string, ...args: any[]): TPromise<T> {
@@ -358,7 +267,7 @@ export class StandaloneKeybindingService extends AbstractKeybindingService {
 		this._cachedResolver = null;
 		this._dynamicKeybindings = [];
 
-		this.toDispose.push(dom.addDisposableListener(domNode, dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		this._register(dom.addDisposableListener(domNode, dom.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let keyEvent = new StandardKeyboardEvent(e);
 			let shouldPreventDefault = this._dispatch(keyEvent, keyEvent.target);
 			if (shouldPreventDefault) {
@@ -378,18 +287,16 @@ export class StandaloneKeybindingService extends AbstractKeybindingService {
 			weight2: 0
 		});
 
-		toDispose.push({
-			dispose: () => {
-				for (let i = 0; i < this._dynamicKeybindings.length; i++) {
-					let kb = this._dynamicKeybindings[i];
-					if (kb.command === commandId) {
-						this._dynamicKeybindings.splice(i, 1);
-						this.updateResolver({ source: KeybindingSource.Default });
-						return;
-					}
+		toDispose.push(toDisposable(() => {
+			for (let i = 0; i < this._dynamicKeybindings.length; i++) {
+				let kb = this._dynamicKeybindings[i];
+				if (kb.command === commandId) {
+					this._dynamicKeybindings.splice(i, 1);
+					this.updateResolver({ source: KeybindingSource.Default });
+					return;
 				}
 			}
-		});
+		}));
 
 		let commandService = this._commandService;
 		if (commandService instanceof StandaloneCommandService) {
@@ -417,6 +324,10 @@ export class StandaloneKeybindingService extends AbstractKeybindingService {
 			this._cachedResolver = new KeybindingResolver(defaults, overrides);
 		}
 		return this._cachedResolver;
+	}
+
+	protected _documentHasFocus(): boolean {
+		return document.hasFocus();
 	}
 
 	private _toNormalizedKeybindingItems(items: IKeybindingItem[], isDefault: boolean): ResolvedKeybindingItem[] {
@@ -495,6 +406,7 @@ export class SimpleConfigurationService implements IConfigurationService {
 	}
 
 	public updateValue(key: string, value: any, arg3?: any, arg4?: any): TPromise<void> {
+		this.configuration().updateValue(key, value);
 		return TPromise.as(null);
 	}
 
@@ -516,7 +428,7 @@ export class SimpleConfigurationService implements IConfigurationService {
 		return TPromise.as(null);
 	}
 
-	public getConfigurationData() {
+	public getConfigurationData(): IConfigurationData {
 		return null;
 	}
 }
@@ -618,5 +530,63 @@ export class SimpleWorkspaceContextService implements IWorkspaceContextService {
 
 	public isCurrentWorkspace(workspaceIdentifier: ISingleFolderWorkspaceIdentifier | IWorkspaceIdentifier): boolean {
 		return true;
+	}
+}
+
+export function applyConfigurationValues(configurationService: IConfigurationService, source: any, isDiffEditor: boolean): void {
+	if (!source) {
+		return;
+	}
+	if (!(configurationService instanceof SimpleConfigurationService)) {
+		return;
+	}
+	Object.keys(source).forEach((key) => {
+		if (isEditorConfigurationKey(key)) {
+			configurationService.updateValue(`editor.${key}`, source[key]);
+		}
+		if (isDiffEditor && isDiffEditorConfigurationKey(key)) {
+			configurationService.updateValue(`diffEditor.${key}`, source[key]);
+		}
+	});
+}
+
+export class SimpleBulkEditService implements IBulkEditService {
+	_serviceBrand: any;
+
+	constructor(private readonly _modelService: IModelService) {
+		//
+	}
+
+	apply(workspaceEdit: WorkspaceEdit, options: IBulkEditOptions): TPromise<IBulkEditResult> {
+
+		let edits = new Map<ITextModel, TextEdit[]>();
+
+		for (let edit of workspaceEdit.edits) {
+			if (!isResourceTextEdit(edit)) {
+				return TPromise.wrapError(new Error('bad edit - only text edits are supported'));
+			}
+			let model = this._modelService.getModel(edit.resource);
+			if (!model) {
+				return TPromise.wrapError(new Error('bad edit - model not found'));
+			}
+			let array = edits.get(model);
+			if (!array) {
+				array = [];
+			}
+			edits.set(model, array.concat(edit.edits));
+		}
+
+		let totalEdits = 0;
+		let totalFiles = 0;
+		edits.forEach((edits, model) => {
+			model.applyEdits(edits.map(edit => EditOperation.replaceMove(Range.lift(edit.range), edit.text)));
+			totalFiles += 1;
+			totalEdits += edits.length;
+		});
+
+		return TPromise.as({
+			selection: undefined,
+			ariaSummary: localize('summary', 'Made {0} edits in {1} files', totalEdits, totalFiles)
+		});
 	}
 }
