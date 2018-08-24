@@ -25,14 +25,6 @@ class ResultsView implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
 
-	private _onRemove = new Emitter<void>();
-	public readonly onRemove = this._onRemove.event;
-
-	private _onLayout = new Emitter<void>();
-	public readonly onLayout = this._onLayout.event;
-
-	private queryRunnerDisposable: IDisposable[] = [];
-
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
 		this.gridPanel = instantiationService.createInstance(GridPanel, nls.localize('gridPanel', 'Results'), {});
@@ -68,17 +60,8 @@ class ResultsTab implements IPanelTab {
 	public readonly identifier = UUID.generateUuid();
 	public readonly view: ResultsView;
 
-	private _isAttached = false;
-
 	constructor(instantiationService: IInstantiationService) {
 		this.view = new ResultsView(instantiationService);
-
-		this.view.onLayout(() => this._isAttached = true, this);
-		this.view.onRemove(() => this._isAttached = false, this);
-	}
-
-	public isAttached(): boolean {
-		return this._isAttached;
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -107,9 +90,7 @@ export class QueryResultsView {
 	public set input(input: QueryResultsInput) {
 		this._input = input;
 		this.resultsTab.queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
-		// if (!this.resultsTab.isAttached) {
 		this._panelView.pushTab(this.resultsTab);
-		// }
 	}
 
 	public get input(): QueryResultsInput {
