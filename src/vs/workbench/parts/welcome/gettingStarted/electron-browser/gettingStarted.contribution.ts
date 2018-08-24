@@ -9,6 +9,7 @@ import { GettingStarted } from './gettingStarted';
 import { TelemetryOptOut } from './telemetryOptOut';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { EnablePreviewFeatures } from './enablePreviewFeatures';
 
 // {{SQL CARBON EDIT}}
 // Registry
@@ -22,3 +23,7 @@ Registry
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(TelemetryOptOut, LifecyclePhase.Eventually);
+
+Registry
+	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+	.registerWorkbenchContribution(EnablePreviewFeatures, LifecyclePhase.Eventually);

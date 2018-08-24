@@ -37,6 +37,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -100,7 +101,8 @@ export abstract class GridParentComponent {
 		protected contextKeyService: IContextKeyService,
 		protected configurationService: IConfigurationService,
 		protected clipboardService: IClipboardService,
-		protected queryEditorService: IQueryEditorService
+		protected queryEditorService: IQueryEditorService,
+		protected notificationService: INotificationService
 	) {
 		this.toDispose = [];
 	}

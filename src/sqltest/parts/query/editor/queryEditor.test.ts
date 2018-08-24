@@ -58,6 +58,7 @@ suite('SQL QueryEditor Tests', () => {
 			editorDescriptorService.object,
 			undefined,
 			undefined,
+			undefined,
 			undefined);
 	};
 

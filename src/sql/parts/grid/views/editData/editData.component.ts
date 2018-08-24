@@ -89,7 +89,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
 		@Inject(IBootstrapParams) params: IEditDataComponentParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
@@ -97,7 +97,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(IClipboardService) clipboardService: IClipboardService,
 		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, notificationService);
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());

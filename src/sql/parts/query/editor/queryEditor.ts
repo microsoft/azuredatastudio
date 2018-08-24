@@ -48,6 +48,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -99,7 +100,8 @@ export class QueryEditor extends BaseEditor {
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(QueryEditor.ID, _telemetryService, themeService);
 
@@ -461,6 +463,16 @@ export class QueryEditor extends BaseEditor {
 		this._estimatedQueryPlanAction = this._instantiationService.createInstance(EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this._instantiationService.createInstance(ActualQueryPlanAction, this);
 
+		this.setTaskbarContent();
+
+		this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent();
+			}
+		});
+	}
+
+	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
 
@@ -475,6 +487,12 @@ export class QueryEditor extends BaseEditor {
 			{ element: separator },
 			{ action: this._estimatedQueryPlanAction }
 		];
+
+		let previewFeaturesEnabled = this._configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!previewFeaturesEnabled) {
+			content = content.slice(0, -2);
+		}
+
 		this._taskbar.setContent(content);
 	}
 
