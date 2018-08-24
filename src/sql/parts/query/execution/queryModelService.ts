@@ -16,6 +16,7 @@ import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
 import { RowCountStatusBarItem } from 'sql/parts/query/common/rowCountStatus';
 
 import * as sqlops from 'sqlops';
+import { ISlickRange } from 'angular2-slickgrid';
 
 import * as nls from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -30,7 +31,7 @@ import Severity from 'vs/base/common/severity';
 
 const selectionSnippetMaxLen = 100;
 
-export interface QueryEvent {
+interface QueryEvent {
 	type: string;
 	data: any;
 }
@@ -38,7 +39,7 @@ export interface QueryEvent {
 /**
  * Holds information about the state of a query runner
  */
-export class QueryInfo {
+class QueryInfo {
 	public queryRunner: QueryRunner;
 	public dataService: DataService;
 	public queryEventQueue: QueryEvent[];
@@ -169,7 +170,7 @@ export class QueryModelService implements IQueryModelService {
 		return undefined;
 	}
 
-	public copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	public copyResults(uri: string, selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		this._queryInfoMap.get(uri).queryRunner.copyResults(selection, batchId, resultId, includeHeaders);
 	}
 
@@ -568,7 +569,7 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	public _getQueryInfo(uri: string): QueryInfo {
+	private _getQueryInfo(uri: string): QueryInfo {
 		return this._queryInfoMap.get(uri);
 	}
 

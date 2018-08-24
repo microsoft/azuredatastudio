@@ -13,7 +13,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { VirtualizedCollection } from 'angular2-slickgrid';
+import { IGridDataRow, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -76,10 +76,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public onIsCellEditValid: (row: number, column: number, newValue: any) => boolean;
 	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
-	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
+	public loadDataFunction: (offset: number, count: number) => Promise<IGridDataRow[]>;
 
 	private savedViewState: {
-		gridSelections: Slick.Range[];
+		gridSelections: ISlickRange[];
 		scrollTop;
 		scrollLeft;
 	};
@@ -153,7 +153,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.dataSet = undefined;
 		self.placeHolderDataSets = [];
 		self.renderedDataSets = self.placeHolderDataSets;
-		this._cd.detectChanges();
 		self.totalElapsedTimeSpan = undefined;
 		self.complete = false;
 
@@ -181,31 +180,23 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		};
 
 		// Setup a function for generating a promise to lookup result subsets
-		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
-			return new Promise<{}[]>((resolve, reject) => {
+		this.loadDataFunction = (offset: number, count: number): Promise<IGridDataRow[]> => {
+			return new Promise<IGridDataRow[]>((resolve, reject) => {
 				self.dataService.getEditRows(offset, count).subscribe(result => {
-					let gridData = result.subset.map(r => {
-						let dataWithSchema = {};
-						// skip the first column since its a number column
-						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-							dataWithSchema[this.dataSet.columnDefinitions[i].field] = r.cells[i - 1].displayValue;
-						}
-						return dataWithSchema;
+					let rowIndex = offset;
+					let gridData: IGridDataRow[] = result.subset.map(row => {
+						self.idMapping[rowIndex] = row.id;
+						rowIndex++;
+						return {
+							values: [{}].concat(row.cells.map(c => {
+								return mixin({ ariaLabel: escape(c.displayValue) }, c);
+							})), row: row.id
+						};
 					});
-					// let rowIndex = offset;
-					// let gridData: IGridDataRow[] = result.subset.map(row => {
-					// 	self.idMapping[rowIndex] = row.id;
-					// 	rowIndex++;
-					// 	return {
-					// 		values: [{}].concat(row.cells.map(c => {
-					// 			return mixin({ ariaLabel: escape(c.displayValue) }, c);
-					// 		})), row: row.id
-					// 	};
-					// });
 
 					// Append a NULL row to the end of gridData
-					// let newLastRow = gridData.length === 0 ? 0 : (gridData[gridData.length - 1].row + 1);
-					// gridData.push({ values: self.dataSet.columnDefinitions.map(cell => { return { displayValue: 'NULL', isNull: false }; }), row: newLastRow });
+					let newLastRow = gridData.length === 0 ? 0 : (gridData[gridData.length - 1].row + 1);
+					gridData.push({ values: self.dataSet.columnDefinitions.map(cell => { return { displayValue: 'NULL', isNull: false }; }), row: newLastRow });
 					resolve(gridData);
 				});
 			});
@@ -365,7 +356,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				self.windowSize,
 				resultSet.rowCount,
 				this.loadDataFunction,
-				index => { return {}; }
+				index => { return { values: [] }; }
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
 				let isLinked = c.isXml || c.isJson;
@@ -590,17 +581,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private saveViewState(): void {
-		let grid = this.slickgrids.toArray()[0]
-		if (grid) {
-			let gridSelections = grid.getSelectedRanges();
-			let viewport = ((grid as any)._grid.getCanvasNode() as HTMLElement).parentElement;
+		let gridSelections = this.slickgrids.toArray()[0].getSelectedRanges();
+		let viewport = ((this.slickgrids.toArray()[0] as any)._grid.getCanvasNode() as HTMLElement).parentElement;
 
-			this.savedViewState = {
-				gridSelections,
-				scrollTop: viewport.scrollTop,
-				scrollLeft: viewport.scrollLeft
-			};
-		}
+		this.savedViewState = {
+			gridSelections,
+			scrollTop: viewport.scrollTop,
+			scrollLeft: viewport.scrollLeft
+		};
 	}
 
 	private restoreViewState(): void {

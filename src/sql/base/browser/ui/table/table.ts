@@ -11,17 +11,9 @@ import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { isArray, isBoolean } from 'vs/base/common/types';
-import { Event, Emitter } from 'vs/base/common/event';
-import { range } from 'vs/base/common/arrays';
-
-export interface ITableContextMenuEvent {
-	anchor: HTMLElement | { x: number, y: number };
-	cell?: { row: number, cell: number };
-}
 
 export interface ITableStyles extends IListStyles {
 	tableHeaderBackground?: Color;
@@ -35,46 +27,30 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export interface ITableSorter<T> {
-	sort(args: Slick.OnSortEventArgs<T>);
-}
-
-export interface ITableConfiguration<T> {
-	dataProvider?: Slick.DataProvider<T> | Array<T>;
-	columns?: Slick.Column<T>[];
-	sorter?: ITableSorter<T>;
-}
-
-export class Table<T extends Slick.SlickData> extends Widget implements IThemable, IDisposable {
+export class Table<T extends Slick.SlickData> extends Widget implements IThemable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
-	private _data: Slick.DataProvider<T>;
-	private _sorter: ITableSorter<T>;
-
+	private _data: TableDataView<T>;
 	private _autoscroll: boolean;
+	private _onRowCountChangeListener: IDisposable;
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
 	private _classChangeTimeout: number;
 
-	private _disposables: IDisposable[] = [];
-
-	private _onContextMenu = new Emitter<ITableContextMenuEvent>();
-	public readonly onContextMenu: Event<ITableContextMenuEvent> = this._onContextMenu.event;
-
-	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
+	constructor(parent: HTMLElement, data?: Array<T> | TableDataView<T>, columns?: Slick.Column<T>[], options?: Slick.GridOptions<T>) {
 		super();
-		if (!configuration || isArray(configuration.dataProvider)) {
-			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
+		if (data instanceof TableDataView) {
+			this._data = data;
 		} else {
-			this._data = configuration.dataProvider;
+			this._data = new TableDataView<T>(data);
 		}
 
-		if (configuration.columns) {
-			this._columns = configuration.columns;
+		if (columns) {
+			this._columns = columns;
 		} else {
 			this._columns = new Array<Slick.Column<T>>();
 		}
@@ -105,33 +81,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
 		DOM.addClass(this._container, this.idPrefix);
-		if (configuration.sorter) {
-			this._sorter = configuration.sorter;
-			this._grid.onSort.subscribe((e, args) => {
-				this._sorter.sort(args);
-				this._grid.invalidate();
-				this._grid.render();
-			});
-		}
-
-		this._grid.onContextMenu.subscribe((e: JQuery.Event) => {
-			const originalEvent = e.originalEvent;
-			const cell = this._grid.getCellFromEvent(originalEvent);
-			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
-			this._onContextMenu.fire({ anchor, cell });
+		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
+		this._grid.onSort.subscribe((e, args) => {
+			this._data.sort(args);
+			this._grid.invalidate();
+			this._grid.render();
 		});
 	}
 
-	public dispose() {
-		dispose(this._disposables);
-	}
-
-	public invalidateRows(rows: number[], keepEditor: boolean) {
-		this._grid.invalidateRows(rows, keepEditor);
-		this._grid.render();
-	}
-
-	public updateRowCount() {
+	private _handleRowCountChange() {
 		this._grid.updateRowCount();
 		this._grid.render();
 		if (this._autoscroll) {
@@ -155,22 +113,20 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		} else {
 			this._data = new TableDataView<T>(data);
 		}
+		this._onRowCountChangeListener.dispose();
 		this._grid.setData(this._data, true);
+		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
 	}
 
 	get columns(): Slick.Column<T>[] {
 		return this._grid.getColumns();
 	}
 
-	public setSelectedRows(rows: number[] | boolean) {
-		if (isBoolean(rows)) {
-			this._grid.setSelectedRows(range(this._grid.getDataLength()));
-		} else {
-			this._grid.setSelectedRows(rows);
-		}
+	setSelectedRows(rows: number[]) {
+		this._grid.setSelectedRows(rows);
 	}
 
-	public getSelectedRows(): number[] {
+	getSelectedRows(): number[] {
 		return this._grid.getSelectedRows();
 	}
 
@@ -185,6 +141,21 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 				}
 			}
 		};
+	}
+
+	onContextMenu(fn: (e: Slick.EventData, data: Slick.OnContextMenuEventArgs<T>) => any): IDisposable;
+	onContextMenu(fn: (e: DOMEvent, data: Slick.OnContextMenuEventArgs<T>) => any): IDisposable;
+	onContextMenu(fn: any): IDisposable {
+		this._grid.onContextMenu.subscribe(fn);
+		return {
+			dispose: () => {
+				this._grid.onContextMenu.unsubscribe(fn);
+			}
+		};
+	}
+
+	getCellFromEvent(e: DOMEvent): Slick.Cell {
+		return this._grid.getCellFromEvent(e);
 	}
 
 	setSelectionModel(model: Slick.SelectionModel<T, Array<Slick.Range>>) {
@@ -223,7 +194,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			this._tableContainer.style.width = sizing.width + 'px';
 			this._tableContainer.style.height = sizing.height + 'px';
 		} else {
-			if (orientation === Orientation.VERTICAL) {
+			if (orientation === Orientation.HORIZONTAL) {
 				this._container.style.width = '100%';
 				this._container.style.height = sizing + 'px';
 				this._tableContainer.style.width = '100%';
@@ -236,7 +207,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			}
 		}
 		this.resizeCanvas();
-		this.autosizeColumns();
 	}
 
 	autosizeColumns() {

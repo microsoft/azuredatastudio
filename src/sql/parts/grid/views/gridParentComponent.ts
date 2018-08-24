@@ -13,7 +13,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
-import { SlickGrid } from 'angular2-slickgrid';
+import { IGridDataRow, ISlickRange, SlickGrid, FieldType } from 'angular2-slickgrid';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
@@ -226,11 +226,11 @@ export abstract class GridParentComponent {
 		this.messagesFocussedContextKey.set(false);
 	}
 
-	protected getSelection(index?: number): Slick.Range[] {
+	protected getSelection(index?: number): ISlickRange[] {
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
-			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
-		return selection;
+			selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
+			return selection;
 		} else {
 			return undefined;
 		}
@@ -332,7 +332,7 @@ export abstract class GridParentComponent {
 	/**
 	 * Send save result set request to service
 	 */
-	handleContextClick(event: { type: string, batchId: number, resultId: number, index: number, selection: Slick.Range[] }): void {
+	handleContextClick(event: { type: string, batchId: number, resultId: number, index: number, selection: ISlickRange[] }): void {
 		switch (event.type) {
 			case 'savecsv':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.CSV, selection: event.selection });
