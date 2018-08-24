@@ -245,7 +245,8 @@ export class FileConfigPage extends ImportPage {
 					canSelectMany: false,
 					openLabel: localize('flatFileImport.openFile', 'Open'),
 					filters: {
-						'Files': ['csv', 'txt']
+						'CSV/TXT Files': ['csv', 'txt'],
+						'All Files': ['*']
 					}
 				}
 			);
