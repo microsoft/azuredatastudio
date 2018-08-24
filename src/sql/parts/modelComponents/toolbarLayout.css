@@ -16,6 +16,7 @@
 	border-bottom-width: .5px;
 	border-bottom-style: solid;
 	box-sizing: border-box;
+	align-items: center;
 	border-bottom-color: rgba(128, 128, 128, 0.35);
 }
 

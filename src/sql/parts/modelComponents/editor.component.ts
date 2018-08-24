@@ -19,7 +19,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 
 @Component({
@@ -34,6 +34,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	private _editorModel: ITextModel;
 	private _renderedContent: string;
 	private _languageMode: string;
+	private _uri: string;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -57,7 +58,8 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor = this._instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}` }), false, 'sql', '', '');
+		let uri = this.createUri();
+		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, uri, false, 'sql', '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 
@@ -65,7 +67,20 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.content = this._editorModel.getValue();
+
+			// Notify via an event so that extensions can detect and propagate changes
+			this._onEventEmitter.fire({
+				eventType: ComponentEventType.onDidChange,
+				args: e
+			});
 		}));
+	}
+
+	private createUri(): URI {
+		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}` });
+		this._uri = uri.toString();
+		this.uri = this._uri;
+		return uri;
 	}
 
 	ngOnDestroy(): void {
@@ -117,6 +132,10 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		if (this.languageMode !== this._languageMode) {
 			this.updateLanguageMode();
 		}
+		if (this.uri !== this._uri) {
+			// For now we are always using the readonly Uri value
+			this.uri = this._uri;
+		}
 	}
 
 	// CSS-bound properties
@@ -141,6 +160,14 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	public set position(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.languoffsetMarginageMode = position; }, newValue);
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
+	}
+
+	public get uri(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.uri, '');
+	}
+
+	public set uri(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, uri) => { properties.uri = uri; }, newValue);
 	}
 }

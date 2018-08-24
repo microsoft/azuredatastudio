@@ -764,10 +764,10 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 }
 
 class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
-
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Editor, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
 	}
 
 	public get content(): string {
@@ -782,6 +782,15 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 	}
 	public set languageMode(v: string) {
 		this.setProperty('languageMode', v);
+	}
+
+	public get editorUri(): string {
+		return this.properties['editorUri'];
+	}
+
+	public get onContentChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
 	}
 }
 
