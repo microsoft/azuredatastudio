@@ -13,10 +13,14 @@ import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 
+export interface LayoutRequestParams {
+	modelViewId?: string;
+	alwaysRefresh?: boolean;
+}
 export interface DialogComponentParams extends IBootstrapParams {
 	modelViewId: string;
 	validityChangedCallback: (valid: boolean) => void;
-	onLayoutRequested: Event<string>;
+	onLayoutRequested: Event<LayoutRequestParams>;
 	dialogPane: DialogPane;
 }
 
@@ -50,8 +54,8 @@ export class DialogContainer implements AfterViewInit {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
 		this.modelViewId = this._params.modelViewId;
-		this._params.onLayoutRequested(e => {
-			if (this.modelViewId === e) {
+		this._params.onLayoutRequested(layoutParams => {
+			if (layoutParams && (layoutParams.alwaysRefresh || layoutParams.modelViewId === this.modelViewId)) {
 				this.layout();
 			}
 		});

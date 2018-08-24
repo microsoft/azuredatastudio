@@ -484,7 +484,14 @@ declare module 'sqlops' {
 		/**
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
-		languageMode?: string
+		languageMode?: string;
+		/**
+		 * The position CSS property for the editor. Empty by default.
+		 * If the editor is included inside a FlexContainer this must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the editor will fail to correctly size itself
+		 */
+		position?: string;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
