@@ -33,6 +33,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -72,7 +73,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
 		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
-
+		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -231,7 +232,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (componentInstance.setConfig) {
 			componentInstance.setConfig(this.insightConfig.type[this._typeKey]);
 		}
-		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => (item.invariantCultureDisplayValue === null || item.invariantCultureDisplayValue === undefined) ?  item.displayValue : item.invariantCultureDisplayValue)) };
+		componentInstance.data = { columns: result.columnInfo.map(item => item.columnName), rows: result.rows.map(row => row.map(item => (item.invariantCultureDisplayValue === null || item.invariantCultureDisplayValue === undefined) ? item.displayValue : item.invariantCultureDisplayValue)) };
 
 		if (componentInstance.init) {
 			componentInstance.init();
@@ -274,6 +275,14 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		let promises: Array<Promise<void>> = [];
 
 		this._typeKey = Object.keys(this.insightConfig.type)[0];
+
+		// When the editor.accessibilitySupport setting is on, we will force the chart type to be table.
+		// so that the information is accessible to the user.
+		// count chart type is already a text based chart, we don't have to apply this rule for it.
+		let isAccessibilitySupportOn = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
+		if (isAccessibilitySupportOn && this._typeKey !== 'count') {
+			this._typeKey = 'table';
+		}
 
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
