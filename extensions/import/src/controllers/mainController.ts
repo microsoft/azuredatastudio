@@ -39,6 +39,6 @@ export default class MainController extends ControllerBase {
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
-		sqlops.tasks.registerTask('flatFileImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new FlatFileWizard(provider).start(profile, args));
+		sqlops.tasks.registerTask<sqlops.ObjectExplorerContext>('flatFileImport.start', (objectExplorerContext: sqlops.ObjectExplorerContext, ...args: any[]) => new FlatFileWizard(provider).start(objectExplorerContext, args));
 	}
 }

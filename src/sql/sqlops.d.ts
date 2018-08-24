@@ -2174,8 +2174,8 @@ declare module 'sqlops' {
 
 	export namespace tasks {
 
-		export interface ITaskHandler {
-			(profile: IConnectionProfile, ...args: any[]): any;
+		export interface ITaskHandler<T> {
+			(callbackObj: T, ...args: any[]): any;
 		}
 
 		/**
@@ -2190,6 +2190,6 @@ declare module 'sqlops' {
 		* @param thisArg The `this` context used when invoking the handler function.
 		* @return Disposable which unregisters this task on disposal.
 		*/
-		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
+		export function registerTask<T>(task: string, callback: ITaskHandler<T>, thisArg?: any): vscode.Disposable;
 	}
 }

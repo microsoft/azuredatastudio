@@ -28,13 +28,15 @@ export class FlatFileWizard {
 		this.provider = provider;
 	}
 
-	public async start(p: any, ...args: any[]) {
+	public async start(objectExplorerContext: sqlops.ObjectExplorerContext, ...args: any[]) {
 		let model = <ImportDataModel>{};
 
-		let profile = <sqlops.IConnectionProfile>p.connectionProfile;
-		if (profile) {
-			model.serverId = profile.id;
-			model.database = profile.databaseName;
+		if (objectExplorerContext) {
+			let profile = objectExplorerContext.connectionProfile;
+			if (profile) {
+				model.serverId = profile.id;
+				model.database = profile.databaseName;
+			}
 		}
 
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
