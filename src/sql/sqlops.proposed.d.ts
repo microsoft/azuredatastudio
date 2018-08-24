@@ -487,8 +487,8 @@ declare module 'sqlops' {
 		languageMode?: string;
 		/**
 		 * The position CSS property for the editor. Empty by default.
-		 * If the editor is included inside a FlexBox container this must be
-		 * set to 'absolute', with the parent FlexBox having 'relative' position.
+		 * If the editor is included inside a FlexContainer this must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the editor will fail to correctly size itself
 		 */
 		position?: string;
