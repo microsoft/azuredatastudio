@@ -8,13 +8,14 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as dom from 'vs/base/browser/dom';
 import * as arrays from 'vs/base/common/arrays';
-import { ISelectBoxDelegate, ISelectBoxStyles, ISelectData, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxDelegate, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { isMacintosh } from 'vs/base/common/platform';
 
 export class SelectBoxNative implements ISelectBoxDelegate {
 
 	// {{SQL CARBON EDIT}}
 	public selectElement: HTMLSelectElement;
+	private selectBoxOptions: ISelectBoxOptions;
 	private options: string[];
 	private selected: number;
 	private readonly _onDidSelect: Emitter<ISelectData>;
@@ -25,13 +26,13 @@ export class SelectBoxNative implements ISelectBoxDelegate {
 	constructor(options: string[], selected: number, styles: ISelectBoxStyles, selectBoxOptions?: ISelectBoxOptions) {
 
 		this.toDispose = [];
+		this.selectBoxOptions = selectBoxOptions || Object.create(null);
 
 		this.selectElement = document.createElement('select');
 		this.selectElement.className = 'monaco-select-box';
 
-		// {{SQL CARBON EDIT}}
-		if (selectBoxOptions && selectBoxOptions.ariaLabel) {
-			this.selectElement.setAttribute('aria-label', selectBoxOptions.ariaLabel);
+		if (typeof this.selectBoxOptions.ariaLabel === 'string') {
+			this.selectElement.setAttribute('aria-label', this.selectBoxOptions.ariaLabel);
 		}
 
 		this._onDidSelect = new Emitter<ISelectData>();
@@ -39,7 +40,6 @@ export class SelectBoxNative implements ISelectBoxDelegate {
 		this.styles = styles;
 
 		this.registerListeners();
-
 		this.setOptions(options, selected);
 	}
 
@@ -108,6 +108,11 @@ export class SelectBoxNative implements ISelectBoxDelegate {
 
 		this.selectElement.selectedIndex = this.selected;
 		this.selectElement.title = this.options[this.selected];
+	}
+
+	public setAriaLabel(label: string): void {
+		this.selectBoxOptions.ariaLabel = label;
+		this.selectElement.setAttribute('aria-label', label);
 	}
 
 	public focus(): void {

@@ -93,6 +93,20 @@
 			"timeout": 15000
 		},
 		{
+			"type": "extensionHost",
+			"request": "launch",
+			"name": "TypeScript Extension Tests",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"${workspaceFolder}/extensions/typescript-language-features/test-fixtures",
+				"--extensionDevelopmentPath=${workspaceFolder}/extensions/typescript-language-features",
+				"--extensionTestsPath=${workspaceFolder}/extensions/typescript-language-features/out/test"
+			],
+			"outFiles": [
+				"${workspaceFolder}/extensions/typescript-language-features/out/**/*.js"
+			]
+		},
+		{
 			"type": "node",
 			"request": "launch",
 			"name": "Unit Tests",
@@ -106,6 +120,7 @@
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops"
 			},
 			"stopOnEntry": false,
+			"outputCapture": "std",
 			"args": [
 				"--delay",
 				"--timeout",
@@ -117,6 +132,15 @@
 			},
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"name": "Launch Built-in Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/extensions/debug-auto-launch"
 			]
 		}
 	],
@@ -133,6 +157,13 @@
 			"configurations": [
 				"Launch sqlops",
 				"Attach to Search Process"
+			]
+		},
+		{
+			"name": "Renderer and Extension Host processes",
+			"configurations": [
+				"Launch VS Code",
+				"Attach to Extension Host"
 			]
 		}
 	]

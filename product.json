@@ -11,6 +11,8 @@
 	"win32RegValueName": "sqlops",
 	"win32AppId": "{{E34003BB-9E10-4501-8C11-1234AA83F23F}",
 	"win32x64AppId": "{{EA457B21-9E10-494C-ACAB-1234DE069978}",
+	"win32UserAppId": "{{C6065F05-9603-4FC4-8101-B9781A25D88E}",
+	"win32x64UserAppId": "{{C6065F05-9603-4FC4-8101-B9781A25D88E}",
 	"win32AppUserModelId": "Microsoft.sqlops",
 	"win32ShellNameShort": "SQL Operations Studio",
 	"darwinBundleIdentifier": "com.sqlopsstudio.oss",

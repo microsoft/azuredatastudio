@@ -12,7 +12,6 @@ AppPublisherURL=https://github.com/Microsoft/sqlopsstudio
 AppSupportURL=https://github.com/Microsoft/sqlopsstudio
 AppUpdatesURL=https://github.com/Microsoft/sqlopsstudio
 
-DefaultDirName={pf}\{#DirName}
 DefaultGroupName={#NameLong}
 AllowNoIcons=yes
 OutputDir={#OutputDir}
@@ -34,6 +33,14 @@ VersionInfoVersion={#RawVersion}
 ShowLanguageDialog=auto
 ArchitecturesAllowed={#ArchitecturesAllowed}
 ArchitecturesInstallIn64BitMode={#ArchitecturesInstallIn64BitMode}
+SignTool=esrp
+
+#if "user" == InstallTarget
+DefaultDirName={userpf}\{#DirName}
+PrivilegesRequired=lowest
+#else
+DefaultDirName={pf}\{#DirName}
+#endif
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl,{#RepoDir}\build\win32\i18n\messages.en.isl" {#LocalizedLanguageFile}
@@ -67,7 +74,9 @@ Name: "addtopath"; Description: "{cm:AddToPath}"; GroupDescription: "{cm:Other}"
 Name: "runcode"; Description: "{cm:RunAfter,{#NameShort}}"; GroupDescription: "{cm:Other}"; Check: WizardSilent
 
 [Files]
-Source: "*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "*"; Excludes: "\tools,\tools\*,\resources\app\product.json"; DestDir: "{code:GetDestDir}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "tools\*"; DestDir: "{app}\tools"; Flags: ignoreversion
+Source: "{#ProductJsonPath}"; DestDir: "{code:GetDestDir}\resources\app"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; AppUserModelID: "{#AppUserId}"
@@ -101,15 +110,33 @@ var
 begin
   Result := True;
 
-  if IsWin64 then begin
-    RegKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + copy('{#IncompatibleAppId}', 2, 38) + '_is1';
+  #if "user" == InstallTarget
+    #if "ia32" == Arch
+      #define IncompatibleArchRootKey "HKLM32"
+    #else
+      #define IncompatibleArchRootKey "HKLM64"
+    #endif
+
+    if not WizardSilent() then begin
+      RegKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + copy('{#IncompatibleTargetAppId}', 2, 38) + '_is1';
+
+      if RegKeyExists({#IncompatibleArchRootKey}, RegKey) then begin
+        if MsgBox('{#NameShort} is already installed on this system for all users. We recommend first uninstalling that version before installing this one. Are you sure you want to continue the installation?', mbConfirmation, MB_YESNO) = IDNO then begin
+          Result := false;
+        end;
+      end;
+    end;
+  #endif
+
+  if Result and IsWin64 then begin
+    RegKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + copy('{#IncompatibleArchAppId}', 2, 38) + '_is1';
 
     if '{#Arch}' = 'ia32' then begin
-      Result := not RegKeyExists(HKLM64, RegKey);
+      Result := not RegKeyExists({#Uninstall64RootKey}, RegKey);
       ThisArch := '32';
       AltArch := '64';
     end else begin
-      Result := not RegKeyExists(HKLM32, RegKey);
+      Result := not RegKeyExists({#Uninstall32RootKey}, RegKey);
       ThisArch := '64';
       AltArch := '32';
     end;
@@ -218,7 +245,7 @@ function NeedsAddPath(Param: string): boolean;
 var
   OrigPath: string;
 begin
-  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', OrigPath)
+  if not RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', OrigPath)
   then begin
     Result := True;
     exit;
@@ -237,7 +264,7 @@ begin
   if not CurUninstallStep = usUninstall then begin
     exit;
   end;
-  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Path)
+  if not RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', Path)
   then begin
     exit;
   end;
@@ -253,5 +280,9 @@ begin
       end;
     end;
   end;
-  RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', NewPath);
+  RegWriteExpandStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', NewPath);
 end;
+
+#ifdef Debug
+  #expr SaveToFile(AddBackslash(SourcePath) + "code-processed.iss")
+#endif

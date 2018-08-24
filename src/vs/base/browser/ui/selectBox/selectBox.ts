@@ -5,7 +5,6 @@
 
 import 'vs/css!./selectBox';
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { Color } from 'vs/base/common/color';
@@ -24,6 +23,7 @@ export interface ISelectBoxDelegate {
 	readonly onDidSelect: Event<ISelectData>;
 	setOptions(options: string[], selected?: number, disabled?: number): void;
 	select(index: number): void;
+	setAriaLabel(label: string);
 	focus(): void;
 	blur(): void;
 	dispose(): void;
@@ -65,14 +65,11 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 	protected selectBackground: Color;
 	protected selectForeground: Color;
 	protected selectBorder: Color;
-	private toDispose: IDisposable[];
 	private styles: ISelectBoxStyles;
 	private selectBoxDelegate: ISelectBoxDelegate;
 
 	constructor(options: string[], selected: number, contextViewProvider: IContextViewProvider, styles: ISelectBoxStyles = deepClone(defaultStyles), selectBoxOptions?: ISelectBoxOptions) {
 		super();
-
-		this.toDispose = [];
 
 		mixin(this.styles, defaultStyles, false);
 
@@ -87,7 +84,7 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 		// {{SQL CARBON EDIT}}
 		this.selectElement = (<any>this.selectBoxDelegate).selectElement;
 
-		this.toDispose.push(this.selectBoxDelegate);
+		this._register(this.selectBoxDelegate);
 	}
 
 	// Public SelectBox Methods - routed through delegate interface
@@ -102,6 +99,10 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 
 	public select(index: number): void {
 		this.selectBoxDelegate.select(index);
+	}
+
+	public setAriaLabel(label: string): void {
+		this.selectBoxDelegate.setAriaLabel(label);
 	}
 
 	public focus(): void {
@@ -125,7 +126,6 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 	public applyStyles(): void {
 		this.selectBoxDelegate.applyStyles();
 	}
-
 	// {{SQL CARBON EDIT}}
 	protected createOption(value: string, disabled?: boolean): HTMLOptionElement {
 		let option = document.createElement('option');
@@ -136,8 +136,4 @@ export class SelectBox extends Widget implements ISelectBoxDelegate {
 		return option;
 	}
 
-	public dispose(): void {
-		this.toDispose = dispose(this.toDispose);
-		super.dispose();
-	}
 }
