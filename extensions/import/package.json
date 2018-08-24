@@ -2,7 +2,7 @@
   "name": "import",
   "displayName": "SQL Server Import",
   "description": "Imports data from a flat file.",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
