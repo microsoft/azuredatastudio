@@ -77,6 +77,7 @@ suite('Firewall rule dialog controller tests', () => {
 			.returns(() => mockFirewallRuleDialog.object);
 
 		connectionProfile = {
+			connectionName: 'new name',
 			serverName: 'new server',
 			databaseName: 'database',
 			userName: 'user',

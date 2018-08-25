@@ -195,6 +195,7 @@ declare module 'sqlops' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
+		connectionName: string;
 		serverName: string;
 		databaseName: string;
 		userName: string;
@@ -349,6 +350,7 @@ declare module 'sqlops' {
 	}
 
 	export enum ConnectionOptionSpecialType {
+		connectionName = 'connectionName',
 		serverName = 'serverName',
 		databaseName = 'databaseName',
 		authType = 'authType',

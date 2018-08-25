@@ -19,6 +19,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	let capabilitiesService: CapabilitiesTestService;
 
 	let connectionProfile: IConnectionProfile = {
+		connectionName: 'new name',
 		serverName: 'new server',
 		databaseName: 'database',
 		userName: 'user',
@@ -51,6 +52,18 @@ suite('SQL ConnectionProfileInfo tests', () => {
 
 	setup(() => {
 		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'connectionName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.connectionName,
+				valueType: ServiceOptionType.string
+			},
 			{
 				name: 'serverName',
 				displayName: undefined,

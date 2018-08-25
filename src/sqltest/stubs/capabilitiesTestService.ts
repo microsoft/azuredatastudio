@@ -24,7 +24,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 		let connectionProvider: sqlops.ConnectionOption[] = [
 			{
-				name: 'serverName',
+				name: 'connectionName',
 				displayName: undefined,
 				description: undefined,
 				groupName: undefined,
@@ -32,7 +32,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				defaultValue: undefined,
 				isIdentity: true,
 				isRequired: true,
-				specialValueType: ConnectionOptionSpecialType.serverName,
+				specialValueType: ConnectionOptionSpecialType.connectionName,
 				valueType: ServiceOptionType.string
 			},
 			{

@@ -19,6 +19,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	let capabilitiesService: CapabilitiesTestService;
 
 	let connectionProfile: IConnectionProfile = {
+		connectionName: 'name',
 		serverName: 'new server',
 		databaseName: 'database',
 		userName: 'user',
@@ -38,6 +39,18 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	setup(() => {
 		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
 		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'connectionName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.connectionName,
+				valueType: ServiceOptionType.string
+			},
 			{
 				name: 'serverName',
 				displayName: undefined,

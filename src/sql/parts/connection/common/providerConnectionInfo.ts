@@ -45,6 +45,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 				this.databaseName = model.databaseName;
 				this.password = model.password;
 				this.userName = model.userName;
+				this.connectionName = model.connectionName;
 			}
 		}
 	}
@@ -78,6 +79,10 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 		return this._serverCapabilities;
 	}
 
+	public get connectionName(): string {
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.connectionName);
+	}
+
 	public get serverName(): string {
 		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.serverName);
 	}
@@ -96,6 +101,10 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 
 	public get authenticationType(): string {
 		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.authType);
+	}
+
+	public set connectionName(value: string) {
+		this.setSpecialTypeOptionName(ConnectionOptionSpecialType.connectionName, value);
 	}
 
 	public set serverName(value: string) {
@@ -127,14 +136,28 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 		this.options[name] = value;
 	}
 
+	private getServerInfo() {
+		let databaseName = this.databaseName ? this.databaseName : '<default>';
+		let userName = this.userName ? this.userName : 'Windows Authentication';
+		return this.serverName + ', ' + databaseName + ' (' + userName + ')';
+	}
+
 	/**
 	 * Returns the title of the connection
 	 */
 	public get title(): string {
-		let databaseName = this.databaseName ? this.databaseName : '<default>';
-		let userName = this.userName ? this.userName : 'Windows Authentication';
-		let label = this.serverName + ', ' + databaseName + ' (' + userName + ')';
+		let label = '';
+
+		if (this.connectionName) {
+			label = this.connectionName;
+		} else {
+			label = this.getServerInfo();
+		}
 		return label;
+	}
+
+	public get serverInfo(): string {
+		return this.getServerInfo();
 	}
 
 	/**
@@ -179,7 +202,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 			});
 		} else {
 			// This should never happen but just incase the serverCapabilities was not ready at this time
-			idNames = ['authenticationType', 'database', 'server', 'user'];
+			idNames = ['authenticationType', 'database', 'server', 'user', 'connectionName'];
 		}
 
 		idNames = idNames.filter(x => x !== undefined);
@@ -267,6 +290,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 				element.specialValueType !== ConnectionOptionSpecialType.databaseName &&
 				element.specialValueType !== ConnectionOptionSpecialType.authType &&
 				element.specialValueType !== ConnectionOptionSpecialType.password &&
+				element.specialValueType !== ConnectionOptionSpecialType.connectionName &&
 				element.isIdentity && element.valueType === ServiceOptionType.string) {
 				let value = this.getOptionValue(element.name);
 				if (value) {
