@@ -16,9 +16,11 @@ import { toErrorMessage } from 'vs/base/common/errorMessage';
 import product from 'vs/platform/node/product';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import pkg from 'vs/platform/node/package';
+import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { Workbench, IWorkbenchStartedInfo } from 'vs/workbench/electron-browser/workbench';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { NullTelemetryService, configurationTelemetry, combinedAppender, LogAppender } from 'vs/platform/telemetry/common/telemetryUtils';
+import { NullTelemetryService, configurationTelemetry } from 'vs/platform/telemetry/common/telemetryUtils';
+import { IExperimentService, ExperimentService } from 'vs/platform/telemetry/common/experiments';
 import { ITelemetryAppenderChannel, TelemetryAppenderClient } from 'vs/platform/telemetry/common/telemetryIpc';
 import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
@@ -269,6 +271,35 @@ export class WorkbenchShell extends Disposable {
 		perf.mark('didStartWorkbench');
 	}
 
+	// {{SQL CARBON EDIT}}
+	private sendUsageEvents(): void {
+		const dailyLastUseDate = Date.parse(this.storageService.get('telemetry.dailyLastUseDate'));
+		const weeklyLastUseDate = Date.parse(this.storageService.get('telemetry.weeklyLastUseDate'));
+		const monthlyLastUseDate = Date.parse(this.storageService.get('telemetry.monthlyLastUseDate'));
+
+		let today = new Date().toUTCString();
+
+		// daily user event
+		if (this.diffInDays(Date.parse(today), dailyLastUseDate) >= 1) {
+			// daily first use
+			this.telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
+			this.storageService.store('telemetry.dailyLastUseDate', today);
+		}
+
+		// weekly user event
+		if (this.diffInDays(Date.parse(today), weeklyLastUseDate) >= 7) {
+			// weekly first use
+			this.telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
+			this.storageService.store('telemetry.weeklyLastUseDate', today);
+		}
+
+		// monthly user events
+		if (this.diffInDays(Date.parse(today), monthlyLastUseDate) >= 30) {
+			this.telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
+			this.storageService.store('telemetry.monthlyLastUseDate', today);
+		}
+	}
+
 	private logLocalStorageMetrics(): void {
 		if (this.lifecycleService.startupKind === StartupKind.ReloadedWindow || this.lifecycleService.startupKind === StartupKind.ReopenedWindow) {
 			return; // avoid logging localStorage metrics for reload/reopen, we prefer cold startup numbers
@@ -368,6 +399,9 @@ export class WorkbenchShell extends Disposable {
 
 			this.telemetryService = this._register(instantiationService.createInstance(TelemetryService, config));
 			this._register(new ErrorTelemetry(this.telemetryService));
+			
+			// {{SQL CARBON EDIT}}
+			this.sendUsageEvents();
 		} else {
 			this.telemetryService = NullTelemetryService;
 		}
@@ -480,6 +514,11 @@ export class WorkbenchShell extends Disposable {
 				this.layout();
 			}
 		}));
+	}
+
+	// {{SQL CARBON EDIT}}
+	private diffInDays(nowDate: number, lastUseDate: number): number {
+		return (nowDate - lastUseDate)/(24*3600*1000);
 	}
 
 	onUnexpectedError(error: any): void {
