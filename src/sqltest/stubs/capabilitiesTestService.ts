@@ -36,6 +36,18 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 				valueType: ServiceOptionType.string
 			},
 			{
+				name: 'serverName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.serverName,
+				valueType: ServiceOptionType.string
+			},
+			{
 				name: 'databaseName',
 				displayName: undefined,
 				description: undefined,

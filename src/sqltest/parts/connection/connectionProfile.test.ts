@@ -40,6 +40,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		groupId: 'groupId',
 		id: 'id',
 		options: {
+			connectionName: 'new name',
 			serverName: 'new server',
 			databaseName: 'database',
 			userName: 'user',
@@ -137,6 +138,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	test('set properties should set the values correctly', () => {
 		let conn = new ConnectionProfile(capabilitiesService, undefined);
 		assert.equal(conn.serverName, undefined);
+		conn.connectionName = connectionProfile.connectionName;
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName;
 		conn.authenticationType = connectionProfile.authenticationType;
@@ -145,6 +147,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		conn.groupId = connectionProfile.groupId;
 		conn.groupFullName = connectionProfile.groupFullName;
 		conn.savePassword = connectionProfile.savePassword;
+		assert.equal(conn.connectionName, connectionProfile.connectionName);
 		assert.equal(conn.serverName, connectionProfile.serverName);
 		assert.equal(conn.databaseName, connectionProfile.databaseName);
 		assert.equal(conn.authenticationType, connectionProfile.authenticationType);
@@ -158,6 +161,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	test('constructor should initialize the options given a valid model', () => {
 		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 
+		assert.equal(conn.connectionName, connectionProfile.connectionName);
 		assert.equal(conn.serverName, connectionProfile.serverName);
 		assert.equal(conn.databaseName, connectionProfile.databaseName);
 		assert.equal(conn.authenticationType, connectionProfile.authenticationType);

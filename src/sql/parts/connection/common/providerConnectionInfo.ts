@@ -194,7 +194,9 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 		let idNames = [];
 		if (this._serverCapabilities) {
 			idNames = this._serverCapabilities.connectionOptions.map(o => {
-				if ((o.specialValueType || o.isIdentity) && o.specialValueType !== ConnectionOptionSpecialType.password) {
+				if ((o.specialValueType || o.isIdentity)
+				&& o.specialValueType !== ConnectionOptionSpecialType.password
+				&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
 					return o.name;
 				} else {
 					return undefined;
@@ -202,7 +204,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 			});
 		} else {
 			// This should never happen but just incase the serverCapabilities was not ready at this time
-			idNames = ['authenticationType', 'database', 'server', 'user', 'connectionName'];
+			idNames = ['authenticationType', 'database', 'server', 'user'];
 		}
 
 		idNames = idNames.filter(x => x !== undefined);
