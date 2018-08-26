@@ -194,8 +194,8 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 	}
 
 	// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput
-	private getOpenedFileEditors(dirtyState: boolean): FileEditorInput[] {
-		const editors: FileEditorInput[] = [];
+	private getOpenedFileEditors(dirtyState: boolean): (FileEditorInput | QueryInput)[] {
+		const editors: (FileEditorInput | QueryInput)[] = [];
 
 		this.editorService.editors.forEach(editor => {
 			// {{SQL CARBON EDIT}} - Support FileEditorInput or QueryInput

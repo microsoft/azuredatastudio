@@ -161,8 +161,6 @@ export interface IEditorService {
 	/**
 	 * Invoke a function in the context of the services of the active editor.
 	 */
-			// {{SQL CARBON EDIT}}
-			return this.untitledEditorService.createOrGet(untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource, untitledInput.language, untitledInput.contents, untitledInput.encoding);
 	invokeWithinEditorContext<T>(fn: (accessor: ServicesAccessor) => T): T;
 
 	/**

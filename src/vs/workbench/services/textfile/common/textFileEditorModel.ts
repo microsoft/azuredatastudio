@@ -801,11 +801,13 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 		// Check for workspace settings file
 		const folders = this.contextService.getWorkspace().folders;
+		for (let i = 0; i < folders.length; i++) {
 			// {{SQL CARBON EDIT}}
-			return path.isEqualOrParent(this.resource.fsPath, path.join(folder.uri.fsPath, '.sqlops'));
+			if (isEqualOrParent(this.resource, folders[i].toResource('.sqlops'), hasToIgnoreCase(this.resource))) {
 				const filename = path.basename(this.resource.fsPath);
 				if (TextFileEditorModel.WHITELIST_WORKSPACE_JSON.indexOf(filename) > -1) {
-					return `.vscode/${filename}`;
+					// {{SQL CARBON EDIT}}
+					return `.sqlops/${filename}`;
 				}
 			}
 		}

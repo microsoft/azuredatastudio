@@ -494,9 +494,10 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		// Untitled file support
 		const untitledInput = <IUntitledResourceInput>input;
 		if (!untitledInput.resource || typeof untitledInput.filePath === 'string' || (untitledInput.resource instanceof URI && untitledInput.resource.scheme === Schemas.untitled)) {
+			// {{SQL CARBON EDIT}}
 			return this.untitledEditorService.createOrGet(
 				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
-				untitledInput.language,
+				'sql',
 				untitledInput.contents,
 				untitledInput.encoding
 			);

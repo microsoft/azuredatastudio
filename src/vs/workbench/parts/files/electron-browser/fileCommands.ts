@@ -96,12 +96,13 @@ function save(
 	fileService: IFileService,
 	untitledEditorService: IUntitledEditorService,
 	textFileService: ITextFileService,
-	textFileService: ITextFileService, editorGroupService: IEditorGroupService): TPromise<any> {
+	editorGroupService: IEditorGroupsService,
+	queryEditorService: IQueryEditorService
 ): TPromise<any> {
 
 	if (resource && (fileService.canHandleResource(resource) || resource.scheme === Schemas.untitled)) {
 		// {{SQL CARBON EDIT}}
-		let editorInput = editorService.getActiveEditorInput();
+		let editorInput = editorService.activeEditor;
 		if (editorInput instanceof EditorInput && !(<EditorInput>editorInput).savingSupported) {
 			return TPromise.as(false);
 		}
@@ -161,9 +162,9 @@ function save(
 						editor: { resource },
 						replacement
 					}], g))).then(() => {
-					// {{SQL CARBON EDIT}}
-					queryEditorService.onSaveAsCompleted(resource, target);
-					return true;
+						// {{SQL CARBON EDIT}}
+						queryEditorService.onSaveAsCompleted(resource, target);
+						return true;
 				});
 
 			});
@@ -513,7 +514,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		}
 
 		// {{SQL CARBON EDIT}}
-		return save(resource, true, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupService), accessor.get(IQueryEditorService));
+		return save(resource, true, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService));
 	}
 });
 
@@ -529,7 +530,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		if (resources.length === 1) {
 			// If only one resource is selected explictly call save since the behavior is a bit different than save all #41841
 			// {{SQL CARBON EDIT}}
-			return save(resources[0], false, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupService), accessor.get(IQueryEditorService));
+			return save(resources[0], false, editorService, accessor.get(IFileService), accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService), accessor.get(IQueryEditorService));
 		}
 		return saveAll(resources, editorService, accessor.get(IUntitledEditorService), accessor.get(ITextFileService), accessor.get(IEditorGroupsService));
 	}

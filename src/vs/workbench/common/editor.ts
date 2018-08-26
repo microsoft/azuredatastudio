@@ -466,6 +466,16 @@ export abstract class EditorInput extends Disposable implements IEditorInput {
 
 		super.dispose();
 	}
+
+	// {{SQL CARBON EDIT}}
+	// Saving is not supported in the EditData query editor, so this can be overriden in its Input.
+	private _savingSupported: boolean = true;
+	public get savingSupported(): boolean {
+		return this._savingSupported;
+	}
+	public disableSaving() {
+		this._savingSupported = false;
+	}
 }
 
 export enum ConfirmResult {
