@@ -540,6 +540,51 @@ export class Workbench extends Disposable implements IPartService {
 		this.instantiationService.createInstance(DefaultConfigurationExportHelper);
 
 		this.configurationService.acquireInstantiationService(this.getInstantiationService());
+
+		// {{SQL CARBON EDIT}}
+		// SQL Tools services
+		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
+		serviceCollection.set(IDashboardViewService, this.instantiationService.createInstance(DashboardViewService));
+		serviceCollection.set(IModelViewService, this.instantiationService.createInstance(ModelViewService));
+		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
+		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));
+		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
+		serviceCollection.set(sqlIClipboardService, this.instantiationService.createInstance(sqlClipboardService));
+		let capabilitiesService = this.instantiationService.createInstance(CapabilitiesService);
+		serviceCollection.set(ICapabilitiesService, capabilitiesService);
+		serviceCollection.set(IErrorMessageService, this.instantiationService.createInstance(ErrorMessageService));
+		serviceCollection.set(IConnectionDialogService, this.instantiationService.createInstance(ConnectionDialogService));
+		serviceCollection.set(IServerGroupController, this.instantiationService.createInstance(ServerGroupController));
+		serviceCollection.set(ICredentialsService, this.instantiationService.createInstance(CredentialsService));
+		serviceCollection.set(IResourceProviderService, this.instantiationService.createInstance(ResourceProviderService));
+		let connectionManagementService = this.instantiationService.createInstance(ConnectionManagementService, undefined, undefined);
+		serviceCollection.set(IConnectionManagementService, connectionManagementService);
+		serviceCollection.set(ISerializationService, this.instantiationService.createInstance(SerializationService));
+		serviceCollection.set(IQueryManagementService, this.instantiationService.createInstance(QueryManagementService));
+		serviceCollection.set(IQueryModelService, this.instantiationService.createInstance(QueryModelService));
+		serviceCollection.set(IQueryEditorService, this.instantiationService.createInstance(QueryEditorService));
+		serviceCollection.set(IEditorDescriptorService, this.instantiationService.createInstance(EditorDescriptorService));
+		serviceCollection.set(ITaskService, this.instantiationService.createInstance(TaskService));
+		serviceCollection.set(IMetadataService, this.instantiationService.createInstance(MetadataService));
+		serviceCollection.set(IObjectExplorerService, this.instantiationService.createInstance(ObjectExplorerService));
+		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
+		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
+		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));
+		serviceCollection.set(IBackupService, this.instantiationService.createInstance(BackupService));
+		serviceCollection.set(IBackupUiService, this.instantiationService.createInstance(BackupUiService));
+		serviceCollection.set(IRestoreService, this.instantiationService.createInstance(RestoreService));
+		serviceCollection.set(IRestoreDialogController, this.instantiationService.createInstance(RestoreDialogController));
+		serviceCollection.set(IFileBrowserService, this.instantiationService.createInstance(FileBrowserService));
+		serviceCollection.set(IFileBrowserDialogController, this.instantiationService.createInstance(FileBrowserDialogController));
+		serviceCollection.set(IInsightsDialogService, this.instantiationService.createInstance(InsightsDialogService));
+		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
+		serviceCollection.set(IAccountManagementService, accountManagementService);
+		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
+		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
+
+		this.toUnbind.push({ dispose: () => connectionManagementService.shutdown() });
+		this.toUnbind.push({ dispose: () => accountManagementService.shutdown() });
+		this.toUnbind.push({ dispose: () => capabilitiesService.shutdown() });
 	}
 
 	//#region event handling
@@ -900,50 +945,6 @@ export class Workbench extends Disposable implements IPartService {
 		return startupEditor.value === 'newUntitledFile';
 	}
 
-		// {{SQL CARBON EDIT}}
-		// SQL Tools services
-		serviceCollection.set(IDashboardService, this.instantiationService.createInstance(DashboardService));
-		serviceCollection.set(IDashboardViewService, this.instantiationService.createInstance(DashboardViewService));
-		serviceCollection.set(IModelViewService, this.instantiationService.createInstance(ModelViewService));
-		serviceCollection.set(IAngularEventingService, this.instantiationService.createInstance(AngularEventingService));
-		serviceCollection.set(INewDashboardTabDialogService, this.instantiationService.createInstance(NewDashboardTabDialogService));
-		serviceCollection.set(ISqlOAuthService, this.instantiationService.createInstance(SqlOAuthService));
-		serviceCollection.set(sqlIClipboardService, this.instantiationService.createInstance(sqlClipboardService));
-		let capabilitiesService = this.instantiationService.createInstance(CapabilitiesService);
-		serviceCollection.set(ICapabilitiesService, capabilitiesService);
-		serviceCollection.set(IErrorMessageService, this.instantiationService.createInstance(ErrorMessageService));
-		serviceCollection.set(IConnectionDialogService, this.instantiationService.createInstance(ConnectionDialogService));
-		serviceCollection.set(IServerGroupController, this.instantiationService.createInstance(ServerGroupController));
-		serviceCollection.set(ICredentialsService, this.instantiationService.createInstance(CredentialsService));
-		serviceCollection.set(IResourceProviderService, this.instantiationService.createInstance(ResourceProviderService));
-		let connectionManagementService = this.instantiationService.createInstance(ConnectionManagementService, undefined, undefined);
-		serviceCollection.set(IConnectionManagementService, connectionManagementService);
-		serviceCollection.set(ISerializationService, this.instantiationService.createInstance(SerializationService));
-		serviceCollection.set(IQueryManagementService, this.instantiationService.createInstance(QueryManagementService));
-		serviceCollection.set(IQueryModelService, this.instantiationService.createInstance(QueryModelService));
-		serviceCollection.set(IQueryEditorService, this.instantiationService.createInstance(QueryEditorService));
-		serviceCollection.set(IEditorDescriptorService, this.instantiationService.createInstance(EditorDescriptorService));
-		serviceCollection.set(ITaskService, this.instantiationService.createInstance(TaskService));
-		serviceCollection.set(IMetadataService, this.instantiationService.createInstance(MetadataService));
-		serviceCollection.set(IObjectExplorerService, this.instantiationService.createInstance(ObjectExplorerService));
-		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
-		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
-		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));
-		serviceCollection.set(IBackupService, this.instantiationService.createInstance(BackupService));
-		serviceCollection.set(IBackupUiService, this.instantiationService.createInstance(BackupUiService));
-		serviceCollection.set(IRestoreService, this.instantiationService.createInstance(RestoreService));
-		serviceCollection.set(IRestoreDialogController, this.instantiationService.createInstance(RestoreDialogController));
-		serviceCollection.set(IFileBrowserService, this.instantiationService.createInstance(FileBrowserService));
-		serviceCollection.set(IFileBrowserDialogController, this.instantiationService.createInstance(FileBrowserDialogController));
-		serviceCollection.set(IInsightsDialogService, this.instantiationService.createInstance(InsightsDialogService));
-		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
-		serviceCollection.set(IAccountManagementService, accountManagementService);
-		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
-		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
-
-		this.toUnbind.push({ dispose: () => connectionManagementService.shutdown() });
-		this.toUnbind.push({ dispose: () => accountManagementService.shutdown() });
-		this.toUnbind.push({ dispose: () => capabilitiesService.shutdown() });
 	private initSettings(): void {
 
 		// Sidebar visibility

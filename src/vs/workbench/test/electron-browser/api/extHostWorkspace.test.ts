@@ -14,6 +14,7 @@ import { normalize } from 'vs/base/common/paths';
 import { IWorkspaceFolderData } from 'vs/platform/workspace/common/workspace';
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { NullLogService } from 'vs/platform/log/common/log';
+import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 
 suite('ExtHostWorkspace', function () {
 
@@ -23,8 +24,9 @@ suite('ExtHostWorkspace', function () {
 		publisher: 'vscode',
 		enableProposedApi: false,
 		engines: undefined,
-		extensionFolderPath: undefined,
+		extensionLocation: undefined,
 		isBuiltin: false,
+		isUnderDevelopment: false,
 		version: undefined
 	};
 
@@ -176,7 +178,7 @@ suite('ExtHostWorkspace', function () {
 		let ws = new ExtHostWorkspace(new TestRPCProtocol(), { id: 'foo', name: 'Test', folders: [] }, new NullLogService());
 
 		let finished = false;
-		const finish = (error?) => {
+		const finish = (error?: any) => {
 			if (!finished) {
 				finished = true;
 				done(error);
@@ -510,6 +512,8 @@ suite('ExtHostWorkspace', function () {
 
 		finish();
 	});
+	
+	// {{SQL CARBON EDIT}} remove broken test
 
 	test('`vscode.workspace.getWorkspaceFolder(file)` don\'t return workspace folder when file open from command line. #36221', function () {
 		let ws = new ExtHostWorkspace(new TestRPCProtocol(), {

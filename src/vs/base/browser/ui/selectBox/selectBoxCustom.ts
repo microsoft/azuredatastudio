@@ -646,6 +646,7 @@ export class SelectBoxList implements ISelectBoxDelegate, IVirtualDelegate<ISele
 
 	// List Exit - passive - implicit no selection change, hide drop-down
 	private onListBlur(): void {
+
 		if (this.selected !== this._currentSelection) {
 			// Reset selected to current if no change
 			this.select(this._currentSelection);

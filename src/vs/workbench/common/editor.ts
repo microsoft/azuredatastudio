@@ -314,19 +314,22 @@ export interface IEditorInput extends IDisposable {
 	matches(other: any): boolean;
 }
 
+/**
+ * Editor inputs are lightweight objects that can be passed to the workbench API to open inside the editor part.
+ * Each editor input is mapped to an editor that is capable of opening it through the Platform facade.
  */
 export abstract class EditorInput extends Disposable implements IEditorInput {
-	public get savingSupported(): boolean {
+
 	protected readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	get onDidChangeDirty(): Event<void> { return this._onDidChangeDirty.event; }
-		return this._savingSupported;
+
 	protected readonly _onDidChangeLabel: Emitter<void> = this._register(new Emitter<void>());
 	get onDidChangeLabel(): Event<void> { return this._onDidChangeLabel.event; }
-	}
+
 	private readonly _onDispose: Emitter<void> = this._register(new Emitter<void>());
 	get onDispose(): Event<void> { return this._onDispose.event; }
-	public disableSaving() {
-	}
+
+	private disposed: boolean = false;
 
 	/**
 	 * Returns the unique type identifier of this input.

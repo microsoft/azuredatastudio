@@ -93,20 +93,6 @@
 			"timeout": 15000
 		},
 		{
-			"type": "extensionHost",
-			"request": "launch",
-			"name": "TypeScript Extension Tests",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"${workspaceFolder}/extensions/typescript-language-features/test-fixtures",
-				"--extensionDevelopmentPath=${workspaceFolder}/extensions/typescript-language-features",
-				"--extensionTestsPath=${workspaceFolder}/extensions/typescript-language-features/out/test"
-			],
-			"outFiles": [
-				"${workspaceFolder}/extensions/typescript-language-features/out/**/*.js"
-			]
-		},
-		{
 			"type": "node",
 			"request": "launch",
 			"name": "Unit Tests",
@@ -162,7 +148,7 @@
 		{
 			"name": "Renderer and Extension Host processes",
 			"configurations": [
-				"Launch VS Code",
+				"Launch SQL Ops",
 				"Attach to Extension Host"
 			]
 		}

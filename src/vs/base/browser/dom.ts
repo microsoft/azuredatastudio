@@ -539,7 +539,6 @@ const sizeUtils = {
 	getMarginBottom: function (element: HTMLElement): number {
 		return getDimension(element, 'margin-bottom', 'marginBottom');
 	},
-
 	__commaSentinel: false
 };
 

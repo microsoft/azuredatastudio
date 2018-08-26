@@ -8,7 +8,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as dom from 'vs/base/browser/dom';
 import * as arrays from 'vs/base/common/arrays';
-import { ISelectBoxDelegate, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
+import { ISelectBoxDelegate, ISelectBoxOptions, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { isMacintosh } from 'vs/base/common/platform';
 
 export class SelectBoxNative implements ISelectBoxDelegate {
@@ -22,7 +22,6 @@ export class SelectBoxNative implements ISelectBoxDelegate {
 	private toDispose: IDisposable[];
 	private styles: ISelectBoxStyles;
 
-	// {{SQL CARBON EDIT}}
 	constructor(options: string[], selected: number, styles: ISelectBoxStyles, selectBoxOptions?: ISelectBoxOptions) {
 
 		this.toDispose = [];

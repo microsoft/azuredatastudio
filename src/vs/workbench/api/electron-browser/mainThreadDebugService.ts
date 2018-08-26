@@ -159,10 +159,10 @@ export class MainThreadDebugService implements MainThreadDebugServiceShape, IDeb
 					type: 'function',
 					id: fbp.getId(),
 					enabled: fbp.enabled,
-					functionName: fbp.name,
-					hitCondition: bp.hitCondition,
-					// {{SQL CARBON EDIT}}
-					// condition: bp.condition
+					condition: fbp.condition,
+					hitCondition: fbp.hitCondition,
+					logMessage: fbp.logMessage,
+					functionName: fbp.name
 				};
 			} else {
 				const sbp = <IBreakpoint>bp;

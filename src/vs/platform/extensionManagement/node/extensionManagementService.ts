@@ -104,11 +104,6 @@ interface InstallableExtension {
 	metadata?: IGalleryMetadata;
 }
 
-enum Operation {
-	Install = 1,
-	Update
-}
-
 export class ExtensionManagementService extends Disposable implements IExtensionManagementService {
 
 	_serviceBrand: any;

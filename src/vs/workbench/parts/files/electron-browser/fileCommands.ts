@@ -160,7 +160,7 @@ function save(
 					editorService.replaceEditors([{
 						editor: { resource },
 						replacement
-				}]).then(() => true);
+					}], g))).then(() => {
 					// {{SQL CARBON EDIT}}
 					queryEditorService.onSaveAsCompleted(resource, target);
 					return true;

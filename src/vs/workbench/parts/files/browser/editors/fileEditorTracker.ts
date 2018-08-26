@@ -224,7 +224,6 @@ export class FileEditorTracker extends Disposable implements IWorkbenchContribut
 		return editors;
 	}
 
-
 	private handleMovedFileInOpenedEditors(oldResource: URI, newResource: URI): void {
 		this.editorGroupService.groups.forEach(group => {
 			group.editors.forEach(input => {

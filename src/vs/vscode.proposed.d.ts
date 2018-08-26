@@ -384,6 +384,7 @@ declare module 'vscode' {
 
 	//#endregion
 
+	//#region André: debug
 	// {{SQL CARBON EDIT}}
 	// remove debug namespace
 

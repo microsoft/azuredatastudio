@@ -1223,8 +1223,6 @@ export class SCMViewlet extends PanelViewlet implements IViewModel, IViewsViewle
 		} else {
 			return this.menus.getTitleSecondaryActions();
 		}
-		// {{SQL CARBON EDIT}}
-		result.push(this.instantiationService.createInstance(InstallAdditionalSCMProvidersAction));
 	}
 
 	getActionItem(action: IAction): IActionItem {

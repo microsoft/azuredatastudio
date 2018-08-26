@@ -41,7 +41,6 @@ import { fillResourceDataTransfers, ResourcesDropHandler, LocalSelectionTransfer
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 
-
 const $ = dom.$;
 
 export class OpenEditorsView extends ViewletPanel {

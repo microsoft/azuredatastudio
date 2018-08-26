@@ -84,7 +84,7 @@ const indentationFilter = [
 	'!build/tfs/**/*.js',
 	'!build/tfs/**/*.config',
 	'!**/Dockerfile',
-	'!extensions/markdown/media/*.js'
+	'!extensions/markdown-language-features/media/*.js'
 ];
 
 const copyrightFilter = [
@@ -139,6 +139,7 @@ const tslintFilter = [
 	'!extensions/html-language-features/server/lib/jquery.d.ts'
 ];
 
+// {{SQL CARBON EDIT}}
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
 	' *  Copyright (c) Microsoft Corporation. All rights reserved.',

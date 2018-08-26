@@ -313,7 +313,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	}
 
 	private resolveWorkspaceFolderExtensionConfig(workspaceFolder: IWorkspaceFolder): TPromise<IExtensionsConfigContent | null> {
-				// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		const extensionsJsonUri = workspaceFolder.toResource(paths.join('.sqlops', 'extensions.json'));
 
 		return this.fileService.resolveFile(extensionsJsonUri)

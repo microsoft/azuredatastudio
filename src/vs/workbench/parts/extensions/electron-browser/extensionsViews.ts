@@ -796,7 +796,8 @@ export class RecommendedExtensionsView extends ExtensionsListView {
 	private readonly recommendedExtensionsQuery = '@recommended';
 
 	renderBody(container: HTMLElement): void {
-		return super.show(!query.trim() ? '@recommended:all' : '@recommended');
+		super.renderBody(container);
+
 		this.disposables.push(this.tipsService.onRecommendationChange(() => {
 			this.show('');
 		}));
