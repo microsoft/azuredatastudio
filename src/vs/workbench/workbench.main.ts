@@ -64,10 +64,11 @@ import 'vs/workbench/parts/search/browser/openAnythingHandler'; // can be packag
 import 'vs/workbench/parts/scm/electron-browser/scm.contribution';
 import 'vs/workbench/parts/scm/electron-browser/scmViewlet'; // can be packaged separately
 
-import 'vs/workbench/parts/debug/electron-browser/debug.contribution';
-import 'vs/workbench/parts/debug/browser/debugQuickOpen';
-import 'vs/workbench/parts/debug/electron-browser/repl';
-import 'vs/workbench/parts/debug/browser/debugViewlet'; // can be packaged separately
+// {{SQL CARBON EDIT}}
+// import 'vs/workbench/parts/debug/electron-browser/debug.contribution';
+// import 'vs/workbench/parts/debug/browser/debugQuickOpen';
+// import 'vs/workbench/parts/debug/electron-browser/repl';
+// import 'vs/workbench/parts/debug/browser/debugViewlet'; // can be packaged separately
 
 import 'vs/workbench/parts/markers/electron-browser/markers.contribution';
 import 'vs/workbench/parts/comments/electron-browser/comments.contribution';
@@ -77,13 +78,15 @@ import 'vs/workbench/parts/html/electron-browser/html.contribution';
 import 'vs/workbench/parts/url/electron-browser/url.contribution';
 import 'vs/workbench/parts/webview/electron-browser/webview.contribution';
 
-import 'vs/workbench/parts/welcome/walkThrough/electron-browser/walkThrough.contribution';
+// {{SQL CARBON EDIT}}
+// import 'vs/workbench/parts/welcome/walkThrough/electron-browser/walkThrough.contribution';
 
 import 'vs/workbench/parts/extensions/electron-browser/extensions.contribution';
 import 'vs/workbench/parts/extensions/browser/extensionsQuickOpen';
 import 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet'; // can be packaged separately
 
-import 'vs/workbench/parts/welcome/page/electron-browser/welcomePage.contribution';
+// {{SQL CARBON EDIT}}
+// import 'vs/workbench/parts/welcome/page/electron-browser/welcomePage.contribution';
 
 import 'vs/workbench/parts/output/electron-browser/output.contribution';
 import 'vs/workbench/parts/output/browser/outputPanel'; // can be packaged separately
@@ -98,8 +101,9 @@ import 'vs/workbench/parts/relauncher/electron-browser/relauncher.contribution';
 
 import 'vs/workbench/parts/tasks/electron-browser/task.contribution';
 
-import 'vs/workbench/parts/emmet/browser/emmet.browser.contribution';
-import 'vs/workbench/parts/emmet/electron-browser/emmet.contribution';
+// {{SQL CARBON EDIT}}
+// import 'vs/workbench/parts/emmet/browser/emmet.browser.contribution';
+// import 'vs/workbench/parts/emmet/electron-browser/emmet.contribution';
 
 // Code Editor enhacements
 import 'vs/workbench/parts/codeEditor/codeEditor.contribution';
@@ -144,7 +148,9 @@ import 'vs/workbench/parts/navigation/common/navigation.contribution';
 
 // services
 import 'vs/workbench/services/bulkEdit/electron-browser/bulkEditService';
-import 'vs/workbench/parts/experiments/electron-browser/experiments.contribution';
+
+// {{SQL CARBON EDIT}}
+//import 'vs/workbench/parts/experiments/electron-browser/experiments.contribution';
 
 
 

@@ -5,8 +5,6 @@
 
 import { NgModuleRef, enableProdMode, InjectionToken, Type, PlatformRef, Provider, Injector, Optional, Inject, ComponentFactoryResolver } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { IEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 
 const selectorCounter = new Map<string, number>();

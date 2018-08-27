@@ -750,7 +750,7 @@ export class CodeMenu {
 			__separator__(),
 			moveSidebar,
 			toggleSidebar,
-			togglePanel,
+			//togglePanel,
 			toggleStatusbar,
 			toggleActivtyBar,
 			__separator__(),
@@ -826,8 +826,8 @@ export class CodeMenu {
 			terminal,
 			__separator__(),
 			// {{SQL CARBON EDIT}}
-			splitEditor,
-			togglePanel,
+			//splitEditor,
+			//togglePanel,
 			// {{SQL CARBON EDIT}}
 			__separator__(),
 			// toggleWordWrap,

@@ -725,22 +725,6 @@ export namespace FoldingRangeKind {
 	}
 }
 
-export namespace FoldingRangeKind {
-	export function from(kind: vscode.FoldingRangeKind | undefined): modes.FoldingRangeKind | undefined {
-		if (kind) {
-			switch (kind) {
-				case types.FoldingRangeKind.Comment:
-					return modes.FoldingRangeKind.Comment;
-				case types.FoldingRangeKind.Imports:
-					return modes.FoldingRangeKind.Imports;
-				case types.FoldingRangeKind.Region:
-					return modes.FoldingRangeKind.Region;
-			}
-		}
-		return void 0;
-	}
-}
-
 export namespace TextEditorOptions {
 
 	export function from(options?: vscode.TextDocumentShowOptions): ITextEditorOptions {
@@ -790,8 +774,8 @@ export namespace LanguageSelector {
 			return <languageSelector.LanguageFilter>{
 				language: selector.language,
 				scheme: selector.scheme,
-			pattern: toGlobPattern(selector.pattern)
-			exclusive: selector.exclusive
+				pattern: GlobPattern.from(selector.pattern),
+				exclusive: selector.exclusive
 			};
 		}
 	}

@@ -19,8 +19,7 @@ import pkg from 'vs/platform/node/package';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { Workbench, IWorkbenchStartedInfo } from 'vs/workbench/electron-browser/workbench';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { NullTelemetryService, configurationTelemetry } from 'vs/platform/telemetry/common/telemetryUtils';
-import { IExperimentService, ExperimentService } from 'vs/platform/telemetry/common/experiments';
+import { NullTelemetryService, configurationTelemetry, LogAppender, combinedAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITelemetryAppenderChannel, TelemetryAppenderClient } from 'vs/platform/telemetry/common/telemetryIpc';
 import { TelemetryService, ITelemetryServiceConfig } from 'vs/platform/telemetry/common/telemetryService';
 import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
@@ -388,8 +387,7 @@ export class WorkbenchShell extends Disposable {
 			let telemetryOutput = this.environmentService.args['telemetry-output'];
 			this.telemetryService = new FileTelemetryService(telemetryOutput);
 		// Telemetry
-
-		if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
+		} else if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
 			const channel = getDelayedChannel<ITelemetryAppenderChannel>(sharedProcess.then(c => c.getChannel('telemetryAppender')));
 			const config: ITelemetryServiceConfig = {
 				appender: combinedAppender(new TelemetryAppenderClient(channel), new LogAppender(this.logService)),
@@ -399,7 +397,7 @@ export class WorkbenchShell extends Disposable {
 
 			this.telemetryService = this._register(instantiationService.createInstance(TelemetryService, config));
 			this._register(new ErrorTelemetry(this.telemetryService));
-			
+
 			// {{SQL CARBON EDIT}}
 			this.sendUsageEvents();
 		} else {

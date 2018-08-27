@@ -174,8 +174,8 @@ export class ExtensionManagementService extends Disposable implements IExtension
 								// Until there's a gallery for SQL Ops Studio, skip retrieving the metadata from the gallery
 								return this.installExtension({ zipPath, id: identifier.id, metadata: null })
 									.then(
-									local => this._onDidInstallExtension.fire({ identifier, zipPath, local }),
-									error => { this._onDidInstallExtension.fire({ identifier, zipPath, error }); return TPromise.wrapError(error); }
+									local => this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install }),
+									error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return TPromise.wrapError(error); }
 									);
 								/*
 								return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
@@ -220,18 +220,18 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			});
 	}
 
-	private installFromZipPath(identifier: IExtensionIdentifier, zipPath: string, metadata: IGalleryMetadata, manifest: IExtensionManifest): TPromise<ILocalExtension> {
-		return this.toNonCancellablePromise(this.getInstalled()
-			.then(installed => {
-				const operation = this.getOperation({ id: getIdFromLocalExtensionId(identifier.id), uuid: identifier.uuid }, installed);
-				return this.installExtension({ zipPath, id: identifier.id, metadata })
-					.then(local => this.installDependenciesAndPackExtensions(local, null).then(() => local, error => this.uninstall(local, true).then(() => TPromise.wrapError(error), () => TPromise.wrapError(error))))
-					.then(
-						local => { this._onDidInstallExtension.fire({ identifier, zipPath, local, operation }); return local; },
-						error => { this._onDidInstallExtension.fire({ identifier, zipPath, operation, error }); return TPromise.wrapError(error); }
-					);
-			}));
-	}
+	// private installFromZipPath(identifier: IExtensionIdentifier, zipPath: string, metadata: IGalleryMetadata, manifest: IExtensionManifest): TPromise<ILocalExtension> {
+	// 	return this.toNonCancellablePromise(this.getInstalled()
+	// 		.then(installed => {
+	// 			const operation = this.getOperation({ id: getIdFromLocalExtensionId(identifier.id), uuid: identifier.uuid }, installed);
+	// 			return this.installExtension({ zipPath, id: identifier.id, metadata })
+	// 				.then(local => this.installDependenciesAndPackExtensions(local, null).then(() => local, error => this.uninstall(local, true).then(() => TPromise.wrapError(error), () => TPromise.wrapError(error))))
+	// 				.then(
+	// 					local => { this._onDidInstallExtension.fire({ identifier, zipPath, local, operation }); return local; },
+	// 					error => { this._onDidInstallExtension.fire({ identifier, zipPath, operation, error }); return TPromise.wrapError(error); }
+	// 				);
+	// 		}));
+	// }
 
 	installFromGallery(extension: IGalleryExtension): TPromise<void> {
 		let installingExtension = this.installingExtensions.get(extension.identifier.id);
@@ -303,9 +303,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			});
 	}
 
-	private getOperation(extensionToInstall: IGalleryExtension, installed: ILocalExtension[]): Operation {
-		return installed.some(i => areSameExtensions({ id: getGalleryExtensionIdFromLocal(i), uuid: i.identifier.uuid }, extensionToInstall.identifier)) ? Operation.Update : Operation.Install;
-	}
+	// private getOperation(extensionToInstall: IGalleryExtension, installed: ILocalExtension[]): Operation {
+	// 	return installed.some(i => areSameExtensions({ id: getGalleryExtensionIdFromLocal(i), uuid: i.identifier.uuid }, extensionToInstall.identifier)) ? Operation.Update : Operation.Install;
+	// }
 
 	private getTelemetryEvent(operation: InstallOperation): string {
 		return operation === InstallOperation.Update ? 'extensionGallery:update' : 'extensionGallery:install';
@@ -350,9 +350,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 					}
 				},
 				error => TPromise.wrapError<InstallableExtension>(new ExtensionManagementError(this.joinErrors(error).message, INSTALL_ERROR_GALLERY)));
-	private onDidInstallExtensions(extensions: IGalleryExtension[], locals: ILocalExtension[], errors: Error[]): TPromise<any> {
-			this.reportTelemetry('extensionGallery:install', getGalleryExtensionTelemetryData(gallery), startTime ? new Date().getTime() - startTime : void 0, error);
-	}
+
+			}
+
 
 	private installExtension(installableExtension: InstallableExtension): TPromise<ILocalExtension> {
 		return this.unsetUninstalledAndGetLocal(installableExtension.id)

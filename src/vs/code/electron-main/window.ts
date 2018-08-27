@@ -166,8 +166,8 @@ export class CodeWindow implements ICodeWindow {
 		}
 
 		let useCustomTitleStyle = false;
-		if (isMacintosh) {
 		// {{SQL CARBON EDIT}}
+		// if (isMacintosh) {
 		// turn-off custom menus to avoid bug calculating size of SQL editor
 		//
 		// if (isMacintosh && (!windowConfig || !windowConfig.titleBarStyle || windowConfig.titleBarStyle === 'custom')) {
