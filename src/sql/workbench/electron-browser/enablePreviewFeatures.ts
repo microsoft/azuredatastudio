@@ -4,19 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-// TODO: Move this to sql code
-
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import product from 'vs/platform/node/product';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import URI from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
-import { IConfigurationService } from '../../../../../platform/configuration/common/configuration';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class EnablePreviewFeatures implements IWorkbenchContribution {
 

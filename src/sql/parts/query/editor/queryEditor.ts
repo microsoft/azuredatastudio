@@ -488,6 +488,7 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._estimatedQueryPlanAction }
 		];
 
+		// Remove the estimated query plan action if preview features are not enabled
 		let previewFeaturesEnabled = this._configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
 			content = content.slice(0, -2);
