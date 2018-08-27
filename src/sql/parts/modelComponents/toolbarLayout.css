@@ -31,10 +31,9 @@
 }
 
 .modelview-toolbar-container .modelview-toolbar-title {
-	padding-right: 5px;
+	padding: 4px;
 	font-size: 14px;
 	cursor: pointer;
-	margin: auto;
 }
 
 .modelview-toolbar-container .modelview-toolbar-component select,
