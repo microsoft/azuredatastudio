@@ -168,9 +168,7 @@ export class GetCurrentConnectionStringAction extends Action {
 					this._clipboardService.writeText(result);
 
 					let message = result
-						? nls.localize('connectionAction.copyConnectionString', 'Connection string to ') +
-						connectionProfile.serverName +
-						nls.localize('connectionAction.copiedToClipboard', ' was copied to clipboard')
+						? result
 						: nls.localize('connectionAction.connectionString', "Connection string not available");
 					this._notificationService.info(message);
 				});
