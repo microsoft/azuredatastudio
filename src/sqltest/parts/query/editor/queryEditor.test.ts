@@ -32,6 +32,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
+import { Emitter } from 'vs/base/common/event';
 
 suite('SQL QueryEditor Tests', () => {
 	let queryModelService: QueryModelService;
@@ -40,6 +42,7 @@ suite('SQL QueryEditor Tests', () => {
 	let notificationService: TypeMoq.Mock<INotificationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
+	let configurationService: TypeMoq.Mock<ConfigurationService>;
 	let memento: TypeMoq.Mock<Memento>;
 
 	let queryInput: QueryInput;
@@ -59,7 +62,7 @@ suite('SQL QueryEditor Tests', () => {
 			undefined,
 			undefined,
 			undefined,
-			undefined);
+			configurationService.object);
 	};
 
 	setup(() => {
@@ -136,6 +139,14 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Create a QueryModelService
 		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
+
+		configurationService = TypeMoq.Mock.ofInstance({
+			getValue: () => undefined,
+			onDidChangeConfiguration: () => undefined
+		} as any);
+		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
+			return { enablePreviewFeatures: true };
+		});
 	});
 
 	test('createEditor creates only the taskbar', (done) => {
