@@ -78,7 +78,7 @@ export class MessagePanel extends ViewletPanel {
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
 		this.controller.toFocusOnClick = this.model;
 		this.tree = new Tree(this.container, {
@@ -283,7 +283,7 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let control = this.workbenchEditorService.getActiveEditor().getControl() as IEditor;
+			let control = this.workbenchEditorService.activeControl.getControl() as IEditor;
 			control.setSelection({
 				startColumn: selection.startColumn + 1,
 				endColumn: selection.endColumn + 1,

@@ -155,7 +155,7 @@ export class GetCurrentConnectionStringAction extends Action {
 
 	public run(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			let activeInput = this._editorService.getActiveEditorInput();
+			let activeInput = this._editorService.activeEditor;
 			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
 					&& this._connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;

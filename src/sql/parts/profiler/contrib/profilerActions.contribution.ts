@@ -4,27 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { GlobalNewProfilerAction } from './profilerWorkbenchActions';
-
-import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
-import { NewProfilerAction } from './profilerActions';
-
-import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as nls from 'vs/nls';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IProfilerService } from '../service/interfaces';
-import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/editor/editor.api';
 import { ProfilerEditor } from '../editor/profilerEditor';
 
@@ -47,13 +38,13 @@ CommandsRegistry.registerCommand({
 
 		let connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService);
 		let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
-		return editorService.openEditor(profilerInput, { pinned: true }, false).then(() => TPromise.as(true));
+		return editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => TPromise.as(true));
 	}
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: 'profiler.newProfiler',
-	weight: KeybindingsRegistry.WEIGHT.builtinExtension(),
+	weight: KeybindingWeight.BuiltinExtension,
 	when: undefined,
 	primary: KeyMod.Alt | KeyCode.KEY_P,
 	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_P },
@@ -62,7 +53,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: 'profiler.toggleStartStop',
-	weight: KeybindingsRegistry.WEIGHT.editorContrib(),
+	weight: KeybindingWeight.EditorContrib,
 	when: undefined,
 	primary: KeyMod.Alt | KeyCode.KEY_S,
 	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_S },
@@ -70,7 +61,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		let profilerService: IProfilerService = accessor.get(IProfilerService);
 		let editorService: IEditorService = accessor.get(IEditorService);
 
-		let activeEditor = editorService.getActiveEditor();
+		let activeEditor = editorService.activeControl;
 		if (activeEditor instanceof ProfilerEditor) {
 			let profilerInput = activeEditor.input;
 			if (profilerInput.state.isRunning) {

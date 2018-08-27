@@ -15,7 +15,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 function runActionOnActiveResultsEditor	(accessor: ServicesAccessor, eventName: string): void {
 	let editorService = accessor.get(IEditorService);
-	const candidates = [editorService.activeEditor, ...editorService.getVisibleEditors()].filter(e => {
+	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => {
 		if (e) {
 			let id = e.getId();
 			if (id === QueryEditor.ID || id === EditDataEditor.ID) {

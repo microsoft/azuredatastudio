@@ -738,7 +738,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 			window.open(ext.gallery.assets.downloadPage.uri);
 			return TPromise.wrap<void>(void 0);
 		} else {
-		}, () => this.extensionService.installFromGallery(gallery).then(() => null));
+			return this.extensionService.installFromGallery(ext.gallery);
 		}
 	}
 
@@ -962,8 +962,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 		const extension: Extension = installingExtension ? installingExtension : zipPath ? new Extension(this.galleryService, this.stateProvider, [local], null, this.telemetryService) : null;
 		if (extension) {
 			this.installing = installingExtension ? this.installing.filter(e => e !== installingExtension) : this.installing;
-			const installed = this.installed.filter(e => e.id === extension.id)[0];
 			if (!error) {
+				const installed = this.installed.filter(e => e.id === extension.id)[0];
 				if (installed) {
 					const server = this.extensionManagementServerService.getExtensionManagementServer(local.location);
 					const existingLocal = installed.locals.filter(l => this.extensionManagementServerService.getExtensionManagementServer(l.location).location.toString() === server.location.toString())[0];
@@ -978,10 +978,6 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 					extension.locals = [local];
 					this.installed.push(extension);
 				}
-			}
-			if (extension.gallery && !installed) {
-				// Report recommendation telemetry only for gallery extensions that are first time installs
-				this.reportExtensionRecommendationsTelemetry(installingExtension);
 			}
 		}
 		this._onChange.fire();

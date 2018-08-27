@@ -37,27 +37,6 @@ export class WorkbenchEditorTestService implements IEditorService {
 
 
 	/**
-	 * Returns the currently active editor or null if none.
-	 */
-	getActiveEditor(): IEditor {
-		return undefined;
-	}
-
-	/**
-	 * Returns the currently active editor input or null if none.
-	 */
-	getActiveEditorInput(): IEditorInput {
-		return undefined;
-	}
-
-	/**
-	 * Returns an array of visible editors.
-	 */
-	getVisibleEditors(): IEditor[] {
-		return undefined;
-	}
-
-	/**
 	 * Returns iff the provided input is currently visible.
 	 *
 	 * @param includeDiff iff set to true, will also consider diff editors to find out if the provided

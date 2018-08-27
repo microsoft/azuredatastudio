@@ -407,22 +407,17 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	getOtherRecommendations(): TPromise<IExtensionRecommendation[]> {
 		// {{SQL CARBON EDIT}}
 		let recommendations =  Object.keys(this._exeBasedRecommendations);
-			const others = distinct([
-				...Object.keys(this._exeBasedRecommendations),
-				...this._dynamicWorkspaceRecommendations,
-				...Object.keys(this._experimentalRecommendations),
-			const others = distinct([...Object.keys(this._exeBasedRecommendations), ...this._dynamicWorkspaceRecommendations]);
-			shuffle(others);
-			return others;
-				const sources: ExtensionRecommendationSource[] = [];
-				if (this._exeBasedRecommendations[extensionId]) {
-					sources.push('executable');
-				}
-				if (this._dynamicWorkspaceRecommendations.indexOf(extensionId) !== -1) {
-					sources.push('dynamic');
-				}
-				return (<IExtensionRecommendation>{ extensionId, sources });
-			});
+		shuffle(recommendations, this.sessionSeed);
+		return TPromise.as(recommendations.map(extensionId => {
+			const sources: ExtensionRecommendationSource[] = [];
+			if (this._exeBasedRecommendations[extensionId]) {
+				sources.push('executable');
+			}
+			if (this._dynamicWorkspaceRecommendations.indexOf(extensionId) !== -1) {
+				sources.push('dynamic');
+			}
+			return (<IExtensionRecommendation>{ extensionId, sources });
+		}));
 	}
 
 	getKeymapRecommendations(): IExtensionRecommendation[] {

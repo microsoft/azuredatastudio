@@ -41,7 +41,7 @@ import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -53,12 +53,12 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
-import { EditorGroup } from 'vs/workbench/common/editor/editorStacksModel';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -562,7 +562,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!this.focusDashboard(connectionProfile)) {
 			let dashboardInput: DashboardInput = this._instantiationService ? this._instantiationService.createInstance(DashboardInput, connectionProfile) : undefined;
 			return dashboardInput.initializedPromise.then(() => {
-				this._editorService.openEditor(dashboardInput, { pinned: true }, false);
+				this._editorService.openEditor(dashboardInput, { pinned: true }, ACTIVE_GROUP);
 			}).then(() => true);
 		} else {
 			return Promise.resolve(true);
@@ -577,54 +577,29 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			revealInCenterIfOutsideViewport: true,
 			pinned: true
 		};
-		let model = this._editorGroupService.getStacksModel();
-		// check if editor is already present
-		if (model) {
-			model.groups.map(group => {
-				if (group instanceof EditorGroup) {
-					group.getEditors().map(editor => {
-						if (editor instanceof DashboardInput) {
-							if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
-								editor.connectionProfile.databaseName = profile.databaseName;
-								// change focus to the matched editor
-								let position = model.positionOfGroup(group);
-								this._editorGroupService.activateGroup(model.groupAt(position));
-								this._editorService.openEditor(editor, options, position)
-									.done(() => {
-										this._editorGroupService.activateGroup(model.groupAt(position));
-										if (!profile.databaseName || Utils.isMaster(profile)) {
-											this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_SERVER);
-										} else {
-											this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_DATABASE);
-										}
-										found = true;
-									}, errors.onUnexpectedError);
+
+		this._editorService.editors.map(editor => {
+			if (editor instanceof DashboardInput) {
+				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
+					editor.connectionProfile.databaseName = profile.databaseName;
+					this._editorService.openEditor(editor)
+						.done(() => {
+							if (!profile.databaseName || Utils.isMaster(profile)) {
+								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_SERVER);
+							} else {
+								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_DATABASE);
 							}
-						}
-					});
+							found = true;
+						}, errors.onUnexpectedError);
 				}
-			});
-		}
+			}
+		});
+
 		return found;
 	}
 
 	public closeDashboard(uri: string): void {
-		let model = this._editorGroupService.getStacksModel();
-		if (model) {
-			model.groups.map(group => {
-				if (group instanceof EditorGroup) {
-					group.getEditors().map(editor => {
-						if (editor instanceof DashboardInput) {
-							if (editor.uri === uri && this._editorGroupService instanceof EditorPart) {
-								// close matched editor
-								let position = model.positionOfGroup(group);
-								this._editorGroupService.closeEditor(position, editor);
-							}
-						}
-					});
-				}
-			});
-		}
+
 	}
 
 	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {

@@ -294,7 +294,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 	private getActiveUriString(): string {
 		let editorService = this.editorService;
-		let editor = editorService.getActiveEditor();
+		let editor = editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			return queryEditor.uri;

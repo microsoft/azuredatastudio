@@ -32,7 +32,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	private _refreshButtonEnabled: boolean;
 	private _stopButtonEnabled: boolean;
 	private _setup: boolean;
-	private _toDispose: IDisposable[];
 	private _rowLimit: number;
 	private _objectType: string;
 	private _css: HTMLStyleElement;

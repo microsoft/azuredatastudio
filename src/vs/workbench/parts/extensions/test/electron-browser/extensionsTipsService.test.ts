@@ -5,13 +5,7 @@
 
 'use strict';
 
-import * as assert from 'assert';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as os from 'os';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as uuid from 'vs/base/common/uuid';
-import { mkdirp } from 'vs/base/node/pfs';
 import {
 	IExtensionGalleryService, IGalleryExtensionAssets, IGalleryExtension, IExtensionManagementService, LocalExtensionType,
 	IExtensionEnablementService, DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IExtensionIdentifier
@@ -37,7 +31,6 @@ import { assign } from 'vs/base/common/objects';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IStorageService, StorageScope  } from 'vs/platform/storage/common/storage';
-import { ConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
 import { IExtensionsWorkbenchService, ConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import { ExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/node/extensionsWorkbenchService';

@@ -10,7 +10,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -47,6 +47,6 @@ export class GlobalNewProfilerAction extends Action {
 		}
 
 		let profilerInput = this._instantiationService.createInstance(ProfilerInput, connectionProfile);
-		return this._editorService.openEditor(profilerInput, { pinned: true }, false).then(() => TPromise.as(true));
+		return this._editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => TPromise.as(true));
 	}
 }

@@ -949,7 +949,7 @@ export class ChangeModeAction extends Action {
 			}
 
 			// Change mode for active editor
-			const activeEditor = this.editorService.activeEditor;
+			const activeEditor = this.editorService.activeControl;
 			const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
 			const models: ITextModel[] = [];
 			if (isCodeEditor(activeTextEditorWidget)) {
@@ -972,7 +972,7 @@ export class ChangeModeAction extends Action {
 			// Find mode
 			let mode: TPromise<IMode>;
 			if (pick === autoDetectMode) {
-				mode = this.modeService.getOrCreateModeByFilenameOrFirstLine(toResource(activeEditor, { supportSideBySide: true }).fsPath, textModel.getLineContent(1));
+				mode = this.modeService.getOrCreateModeByFilenameOrFirstLine(toResource(activeEditor.input, { supportSideBySide: true }).fsPath, textModel.getLineContent(1));
 			} else {
 				mode = this.modeService.getOrCreateModeByLanguageName(pick.label);
 			}

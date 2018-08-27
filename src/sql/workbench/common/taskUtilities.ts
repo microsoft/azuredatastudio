@@ -395,7 +395,7 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 		}
 	}
 
-	let activeInput = workbenchEditorService.getActiveEditorInput();
+	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
 		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
 			connection = connectionManagementService.getConnectionProfile(activeInput.uri);

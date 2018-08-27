@@ -15,7 +15,6 @@ import * as PathUtilities from 'sql/common/pathUtilities';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -31,6 +30,7 @@ import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 let prevSavePath: string;
 

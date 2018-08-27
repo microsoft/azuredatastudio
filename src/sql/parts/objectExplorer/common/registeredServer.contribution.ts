@@ -16,6 +16,7 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 
 import { VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 // Viewlet Action
 export class OpenConnectionsViewletAction extends ToggleViewletAction {
@@ -26,9 +27,9 @@ export class OpenConnectionsViewletAction extends ToggleViewletAction {
 		id: string,
 		label: string,
 		@IViewletService viewletService: IViewletService,
-		@IEditorService editorService: IEditorService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
-		super(id, label, VIEWLET_ID, viewletService, editorService);
+		super(id, label, VIEWLET_ID, viewletService, editorGroupService);
 	}
 }
 

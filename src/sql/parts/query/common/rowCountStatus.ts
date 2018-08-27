@@ -14,6 +14,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { append, $, hide, show } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
+import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 export class RowCountStatusBarItem implements IStatusbarItem {
 
@@ -23,15 +24,15 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 	private dispose: IDisposable;
 
 	constructor(
-		@IEditorService private _editorService: IEditorService,
+		@IEditorService private _editorService: EditorServiceImpl,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IQueryModelService private _queryModelService: IQueryModelService
 	) { }
 
 	render(container: HTMLElement): IDisposable {
 		let disposables = [
-			this._editorGroupService.onEditorsChanged(this._onEditorsChanged, this),
-			this._editorGroupService.getStacksModel().onEditorClosed(this._onEditorClosed, this)
+			this._editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()),
+			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
 		];
 
 		this._element = append(container, $('.query-statusbar-group'));
@@ -56,7 +57,7 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 	private _showStatus(): void {
 		hide(this._flavorElement);
 		dispose(this.dispose);
-		let activeEditor = this._editorService.getActiveEditor();
+		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (currentUri) {

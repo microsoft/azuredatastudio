@@ -12,6 +12,7 @@ import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesServ
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem implements IStatusbarItem {
@@ -23,7 +24,7 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IEditorService private _editorService: IEditorService,
+		@IEditorService private _editorService: EditorServiceImpl,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 	) {
@@ -39,8 +40,8 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 			this._connectionManagementService.onConnect(() => this._updateStatus()),
 			this._connectionManagementService.onConnectionChanged(() => this._updateStatus()),
 			this._connectionManagementService.onDisconnect(() => this._updateStatus()),
-			this._editorGroupService.onEditorsChanged(() => this._updateStatus()),
-			this._editorGroupService.getStacksModel().onEditorClosed(() => this._updateStatus()),
+			this._editorService.onDidVisibleEditorsChange(() => this._updateStatus()),
+			this._editorService.onDidCloseEditor(() => this._updateStatus()),
 			this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus())
 		);
 

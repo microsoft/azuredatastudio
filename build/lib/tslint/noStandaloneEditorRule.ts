@@ -59,7 +59,8 @@ class NoStandaloneEditorRuleWalker extends Lint.RuleWalker {
 			|| /vs(\/|\\)editor(\/|\\)editor.main/.test(path)
 			|| /vs(\/|\\)editor(\/|\\)editor.worker/.test(path)
 		) {
-			this.addFailure(this.createFailure(node.getStart(), node.getWidth(), `Not allowed to import standalone editor modules. See https://github.com/Microsoft/vscode/wiki/Code-Organization`));
+			// {{SQL CARBON EDIT}}
+			//this.addFailure(this.createFailure(node.getStart(), node.getWidth(), `Not allowed to import standalone editor modules. See https://github.com/Microsoft/vscode/wiki/Code-Organization`));
 		}
 	}
 }

@@ -39,12 +39,13 @@ import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -143,17 +144,23 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (_editorGroupService) {
-			_editorGroupService.onEditorOpening(e => {
-				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
-					this.saveEditorViewState();
-				}
+		if (this._editorGroupService) {
+			const toDispose = this._editorService.overrideOpenEditor((editor, options, group) => {
+				toDispose.dispose();
+				return void 0;
 			});
+
+			// _editorGroupService.onEditorOpening(e => {
+			// 	if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+			// 		this.saveEditorViewState();
+			// 	}
+			// });
 		}
 	}
 
@@ -373,7 +380,7 @@ export class ProfilerEditor extends BaseEditor {
 		return this._input as ProfilerInput;
 	}
 
-	public setInput(input: ProfilerInput, options?: EditorOptions): TPromise<void> {
+	public setInput(input: ProfilerInput, options?: EditorOptions): Thenable<void> {
 		let savedViewState = this._savedTableViewStates.get(input);
 
 		this._profilerEditorContextKey.set(true);
@@ -384,7 +391,7 @@ export class ProfilerEditor extends BaseEditor {
 			return TPromise.as(null);
 		}
 
-		return super.setInput(input, options).then(() => {
+		return super.setInput(input, options, CancellationToken.None).then(() => {
 			this._profilerTableEditor.setInput(input);
 
 			if (input.viewTemplate) {
@@ -422,7 +429,7 @@ export class ProfilerEditor extends BaseEditor {
 	}
 
 	public toggleSearch(): void {
-		if (this._editor.getControl().isFocused()) {
+		if (this._editor.getControl().hasTextFocus()) {
 			let editor = this._editor.getControl() as ICodeEditor;
 			let controller = CommonFindController.get(editor);
 			if (controller) {
@@ -549,7 +556,7 @@ export class ProfilerEditor extends BaseEditor {
 abstract class SettingsCommand extends Command {
 
 	protected getProfilerEditor(accessor: ServicesAccessor): ProfilerEditor {
-		const activeEditor = accessor.get(IEditorService).getActiveEditor();
+		const activeEditor = accessor.get(IEditorService).activeControl;
 		if (activeEditor instanceof ProfilerEditor) {
 			return activeEditor;
 		}
@@ -572,7 +579,9 @@ class StartSearchProfilerTableCommand extends SettingsCommand {
 const command = new StartSearchProfilerTableCommand({
 	id: PROFILER_TABLE_COMMAND_SEARCH,
 	precondition: ContextKeyExpr.and(CONTEXT_PROFILER_EDITOR),
-	kbOpts: { primary: KeyMod.CtrlCmd | KeyCode.KEY_F }
+	kbOpts: {
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		weight: KeybindingWeight.EditorContrib
+	}
 });
-
-KeybindingsRegistry.registerCommandAndKeybindingRule(command.toCommandAndKeybindingRule(KeybindingsRegistry.WEIGHT.editorContrib()));
+command.register();

@@ -32,7 +32,7 @@ export function isConnected(editor: QueryEditor, connectionManagementService: IC
 }
 
 function runActionOnActiveQueryEditor(editorService: IEditorService, action: (QueryEditor) => void): void {
-	const candidates = [editorService.getActiveEditor(), ...editorService.getVisibleEditors()].filter(e => e instanceof QueryEditor);
+	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => e instanceof QueryEditor);
 	if (candidates.length > 0) {
 		action(candidates[0]);
 	}
@@ -72,7 +72,7 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.focus();
@@ -99,7 +99,7 @@ export class RunQueryKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
 			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.runQuery();
@@ -125,7 +125,7 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.runCurrentQuery();
@@ -148,7 +148,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.runCurrentQueryWithActualPlan();
@@ -175,7 +175,7 @@ export class CancelQueryKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
 			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.cancelQuery();
@@ -201,7 +201,7 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.rebuildIntelliSenseCache();
@@ -228,7 +228,7 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.toggleResultsEditorVisibility();
@@ -411,7 +411,7 @@ export class ParseSyntaxAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			if (!queryEditor.isSelectionEmpty()) {

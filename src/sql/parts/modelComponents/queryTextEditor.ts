@@ -21,19 +21,20 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
 import { FoldingController } from 'vs/editor/contrib/folding/folding';
 import { RenameController } from 'vs/editor/contrib/rename/rename';
+import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
-class QueryCodeEditor extends CodeEditor {
-
-	protected _getContributions(): IEditorContributionCtor[] {
-		let contributions = super._getContributions();
-		let skipContributions = [FoldingController.prototype, RenameController.prototype];
-		contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
-		return contributions;
-	}
+class QueryCodeEditor extends StandaloneCodeEditor {
+	// protected _getContributions(): IEditorContributionCtor[] {
+	// 	let contributions = super._getContributions();
+	// 	let skipContributions = [FoldingController.prototype, RenameController.prototype];
+	// 	contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
+	// 	return contributions;
+	// }
 }
 
 /**
@@ -51,10 +52,13 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IThemeService themeService: IThemeService,
 		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IEditorService protected editorService: IEditorService,
 
 	) {
-		super(QueryTextEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
+		super(
+			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
+			configurationService, themeService, textFileService, editorService, editorGroupService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
@@ -79,8 +83,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): TPromise<void> {
-		return super.setInput(input, options)
+	setInput(input: UntitledEditorInput, options: EditorOptions): Thenable<void> {
+		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())
 				.then(editorModel => this.getControl().setModel((<ResourceEditorModel>editorModel).textEditorModel)));

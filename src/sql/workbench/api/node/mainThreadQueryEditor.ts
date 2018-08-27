@@ -5,8 +5,6 @@
 'use strict';
 
 import { SqlExtHostContext, SqlMainContext, ExtHostQueryEditorShape, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
@@ -39,7 +37,10 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
-			let editor = this._editorService.getVisibleEditors().find(editor => editor.input.getResource().toString() === fileUri);
+			let editors = this._editorService.visibleControls.filter(resource => {
+				return !!resource && resource.input.getResource().toString() === fileUri;
+			});
+			let editor = editors && editors.length > 0 ? editors[0] : undefined;
 			let options: IConnectionCompletionOptions = {
 				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
 				saveTheConnection: false,
@@ -65,7 +66,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 	}
 
 	public $runQuery(fileUri: string): void {
-		let filteredEditors = this._editorService.getVisibleEditors().filter(editor => editor.input.getResource().toString() === fileUri);
+		let filteredEditors = this._editorService.visibleControls.filter(editor => editor.input.getResource().toString() === fileUri);
 		if (filteredEditors && filteredEditors.length > 0) {
 			let editor = filteredEditors[0];
 			if (editor instanceof QueryEditor) {
