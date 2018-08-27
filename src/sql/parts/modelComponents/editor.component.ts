@@ -78,6 +78,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	private createUri(): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}` });
+		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this._uri = uri.toString();
 		this.uri = this._uri;
 		return uri;
@@ -132,10 +133,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		if (this.languageMode !== this._languageMode) {
 			this.updateLanguageMode();
 		}
-		if (this.uri !== this._uri) {
-			// For now we are always using the readonly Uri value
-			this.uri = this._uri;
-		}
+		// Intentionally not setting URI for now as it is readonly.
 	}
 
 	// CSS-bound properties

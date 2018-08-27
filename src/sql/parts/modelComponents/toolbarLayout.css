@@ -16,7 +16,6 @@
 	border-bottom-width: .5px;
 	border-bottom-style: solid;
 	box-sizing: border-box;
-	align-items: center;
 	border-bottom-color: rgba(128, 128, 128, 0.35);
 }
 
@@ -32,10 +31,9 @@
 }
 
 .modelview-toolbar-container .modelview-toolbar-title {
-	padding-right: 5px;
+	padding: 4px;
 	font-size: 14px;
 	cursor: pointer;
-	margin: auto;
 }
 
 .modelview-toolbar-container .modelview-toolbar-component select,
