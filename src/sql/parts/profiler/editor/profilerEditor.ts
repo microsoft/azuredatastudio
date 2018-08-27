@@ -36,7 +36,7 @@ import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Command } from 'vs/editor/browser/editorExtensions';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -44,7 +44,7 @@ import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/fi
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -143,7 +143,7 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -549,7 +549,7 @@ export class ProfilerEditor extends BaseEditor {
 abstract class SettingsCommand extends Command {
 
 	protected getProfilerEditor(accessor: ServicesAccessor): ProfilerEditor {
-		const activeEditor = accessor.get(IWorkbenchEditorService).getActiveEditor();
+		const activeEditor = accessor.get(IEditorService).getActiveEditor();
 		if (activeEditor instanceof ProfilerEditor) {
 			return activeEditor;
 		}

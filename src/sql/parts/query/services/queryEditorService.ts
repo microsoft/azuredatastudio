@@ -7,7 +7,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
@@ -19,7 +19,7 @@ import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/edito
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorGroup } from 'vs/workbench/common/editor';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import Severity from 'vs/base/common/severity';
@@ -51,16 +51,16 @@ export class QueryEditorService implements IQueryEditorService {
 	);
 
 	// service references for static functions
-	private static editorService: IWorkbenchEditorService;
+	private static editorService: IEditorService;
 	private static instantiationService: IInstantiationService;
-	private static editorGroupService: IEditorGroupService;
+	private static editorGroupService: IEditorGroupsService;
 	private static notificationService: INotificationService;
 
 	constructor(
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {

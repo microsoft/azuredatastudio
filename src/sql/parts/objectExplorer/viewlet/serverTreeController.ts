@@ -6,7 +6,7 @@
 'use strict';
 import { ITree, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
 import treedefaults = require('vs/base/parts/tree/browser/treeDefaults');
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -26,7 +26,7 @@ import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtil
 export class ServerTreeController extends treedefaults.DefaultController {
 
 	constructor(private actionProvider: ServerTreeActionProvider,
-		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
+		@IEditorService private editorService: IEditorService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IKeybindingService private keybindingService: IKeybindingService

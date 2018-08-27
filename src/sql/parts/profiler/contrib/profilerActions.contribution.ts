@@ -16,7 +16,7 @@ import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as nls from 'vs/nls';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
@@ -40,7 +40,7 @@ const newProfilerSchema: IJSONSchema = {
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',
 	handler: (accessor: ServicesAccessor) => {
-		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
+		let editorService: IEditorService = accessor.get(IEditorService);
 		let instantiationService: IInstantiationService = accessor.get(IInstantiationService);
 		let connectionService: IConnectionManagementService = accessor.get(IConnectionManagementService);
 		let objectExplorerService: IObjectExplorerService = accessor.get(IObjectExplorerService);
@@ -68,7 +68,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	mac: { primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_S },
 	handler: (accessor: ServicesAccessor) => {
 		let profilerService: IProfilerService = accessor.get(IProfilerService);
-		let editorService: IWorkbenchEditorService = accessor.get(IWorkbenchEditorService);
+		let editorService: IEditorService = accessor.get(IEditorService);
 
 		let activeEditor = editorService.getActiveEditor();
 		if (activeEditor instanceof ProfilerEditor) {

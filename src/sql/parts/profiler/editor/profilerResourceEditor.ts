@@ -19,7 +19,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
@@ -50,7 +50,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		@IThemeService themeService: IThemeService,
 		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEditorGroupService editorGroupService: IEditorGroupService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 
 	) {
 		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);

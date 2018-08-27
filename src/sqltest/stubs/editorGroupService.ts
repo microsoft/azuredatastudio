@@ -9,10 +9,11 @@ import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/c
 import { Position, IEditorInput } from 'vs/platform/editor/common/editor';
 import { IEditorStacksModel, IEditorGroup, EditorInput, IEditorOpeningEvent } from 'vs/workbench/common/editor';
 import { Event } from 'vs/base/common/event';
-import { IEditorTabOptions, GroupArrangement, GroupOrientation, IEditorGroupService, IMoveOptions } from 'vs/workbench/services/group/common/groupService';
+import { IEditorTabOptions, GroupArrangement, GroupOrientation, IMoveOptions } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorGroup } from 'vs/workbench/common/editor/editorStacksModel';
 
-export class EditorGroupTestService implements IEditorGroupService {
+export class EditorGroupTestService implements IEditorGroupsService {
 	_serviceBrand: ServiceIdentifier<any>;
 
 	/**

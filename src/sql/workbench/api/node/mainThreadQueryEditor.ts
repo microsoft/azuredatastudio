@@ -12,7 +12,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
@@ -25,7 +25,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostQueryEditor);

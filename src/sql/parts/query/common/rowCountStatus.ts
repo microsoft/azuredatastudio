@@ -9,8 +9,8 @@ import QueryRunner from 'sql/parts/query/execution/queryRunner';
 
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { append, $, hide, show } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
@@ -23,8 +23,8 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 	private dispose: IDisposable;
 
 	constructor(
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IQueryModelService private _queryModelService: IQueryModelService
 	) { }
 

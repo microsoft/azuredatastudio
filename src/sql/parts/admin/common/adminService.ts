@@ -15,7 +15,7 @@ import { CreateLoginInput } from 'sql/parts/admin/security/createLoginInput';
 import { TaskDialogInput } from 'sql/parts/tasks/dialog/taskDialogInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
@@ -45,7 +45,7 @@ export class AdminService implements IAdminService {
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {

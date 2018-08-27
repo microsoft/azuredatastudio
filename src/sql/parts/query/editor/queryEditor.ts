@@ -21,13 +21,13 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { ISelectionData } from 'sqlops';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
@@ -93,11 +93,11 @@ export class QueryEditor extends BaseEditor {
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {

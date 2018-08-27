@@ -91,7 +91,8 @@ export function fillInActionBarActions(menu: IMenu, options: IMenuActionOptions,
 	fillInActions(groups, target, false, isPrimaryGroup);
 }
 
-function fillInActions(groups: [string, (MenuItemAction | SubmenuItemAction)[]][], target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, getAlternativeActions, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
+// {{SQL CARBON EDIT}} add export modifier
+export function fillInActions(groups: [string, (MenuItemAction | SubmenuItemAction)[]][], target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, getAlternativeActions, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
 	for (let tuple of groups) {
 		let [group, actions] = tuple;
 		if (getAlternativeActions) {

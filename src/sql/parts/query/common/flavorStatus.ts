@@ -8,8 +8,8 @@ import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQuickOpenService, IPickOpenEntry } from 'vs/platform/quickOpen/common/quickOpen';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
@@ -68,8 +68,8 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
@@ -172,7 +172,7 @@ export class ChangeFlavorAction extends Action {
 	constructor(
 		actionId: string,
 		actionLabel: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
 		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService

@@ -21,7 +21,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -38,7 +38,7 @@ import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ISelectionData } from 'sqlops';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IFlexibleSash, VerticalFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
@@ -85,11 +85,11 @@ export class EditDataEditor extends BaseEditor {
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {

@@ -41,7 +41,7 @@ import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -52,7 +52,7 @@ import { ConfigurationEditingService } from 'vs/workbench/services/configuration
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorGroup } from 'vs/workbench/common/editor/editorStacksModel';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
@@ -89,7 +89,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@ICommandService private _commandService: ICommandService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IStorageService private _storageService: IStorageService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
@@ -97,7 +97,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@ICredentialsService private _credentialsService: ICredentialsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,

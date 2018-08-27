@@ -26,7 +26,9 @@ import { IDisposable, dispose, combinedDisposable } from 'vs/base/common/lifecyc
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getOrSet } from 'vs/base/common/map';
-import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+
+// {{SQL CARBON EDIT}} -- Display the editor's tab color
+import { IThemeService, registerThemingParticipant, ITheme, ICssStyleCollector, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { TAB_INACTIVE_BACKGROUND, TAB_ACTIVE_BACKGROUND, TAB_ACTIVE_FOREGROUND, TAB_INACTIVE_FOREGROUND, TAB_BORDER, EDITOR_DRAG_AND_DROP_BACKGROUND, TAB_UNFOCUSED_ACTIVE_FOREGROUND, TAB_UNFOCUSED_INACTIVE_FOREGROUND, TAB_UNFOCUSED_ACTIVE_BORDER, TAB_ACTIVE_BORDER, TAB_HOVER_BACKGROUND, TAB_HOVER_BORDER, TAB_UNFOCUSED_HOVER_BACKGROUND, TAB_UNFOCUSED_HOVER_BORDER, EDITOR_GROUP_HEADER_TABS_BACKGROUND, WORKBENCH_BACKGROUND, TAB_ACTIVE_BORDER_TOP, TAB_UNFOCUSED_ACTIVE_BORDER_TOP } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { ResourcesDropHandler, fillResourceDataTransfers, DraggedEditorIdentifier, DraggedEditorGroupIdentifier, DragAndDropObserver } from 'vs/workbench/browser/dnd';
@@ -41,14 +43,11 @@ import { IEditorGroupsAccessor, IEditorPartOptions, IEditorGroupView } from 'vs/
 import { CloseOneEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
-
-
-// {{SQL CARBON EDIT}} -- Display the editor's tab color
-import {  HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+
+// {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
@@ -697,7 +696,7 @@ export class TabsTitleControl extends TitleControl {
 		if (isTab) {
 			const tabContainer = this.tabsContainer.children[index];
 			if (tabContainer instanceof HTMLElement) {
-				let editor = this.context.getEditor(index);
+				let editor = this.group.getEditor(index);
 				if (editor) {
 					this.setEditorTabColor(editor, tabContainer, isActiveTab);
 				}
@@ -706,10 +705,6 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	private computeTabLabels(): void {
-			// {{SQL CARBON EDIT}} -- add title in options passed
-			tabLabel.setLabel({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { extraClasses: ['tab-label'], italic: !isPinned });
-			// {{SQL CARBON EDIT}} -- Display the editor's tab color
-			this.setEditorTabColor(editor, tabContainer, isTabActive);
 		const { labelFormat } = this.accessor.partOptions;
 		const { verbosity, shortenDuplicates } = this.getLabelConfigFlags(labelFormat);
 
@@ -883,6 +878,10 @@ export class TabsTitleControl extends TitleControl {
 
 		// Label
 		tabLabelWidget.setLabel({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) });
+
+		// {{SQL CARBON EDIT}} -- Display the editor's tab color
+		const isTabActive = this.group.isActive(editor);
+		this.setEditorTabColor(editor, tabContainer, isTabActive);
 	}
 
 	private redrawEditorActive(isGroupActive: boolean, editor: IEditorInput, tabContainer: HTMLElement, tabLabelWidget: ResourceLabel): void {

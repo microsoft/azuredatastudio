@@ -15,7 +15,7 @@ import * as PathUtilities from 'sql/common/pathUtilities';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -49,7 +49,7 @@ export class ResultSerializer {
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
 		@IWindowService private _windowService: IWindowService,

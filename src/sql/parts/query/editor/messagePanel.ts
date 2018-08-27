@@ -28,7 +28,7 @@ import { $ } from 'vs/base/browser/builder';
 import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
 
 export interface IResultMessageIntern extends IResultMessage {
@@ -257,7 +257,7 @@ export class MessageController extends WorkbenchTreeController {
 	constructor(
 		options: IControllerOptions,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
+		@IEditorService private workbenchEditorService: IEditorService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {

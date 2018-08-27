@@ -112,12 +112,6 @@ import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/co
 import { IEditorGroupsService, GroupDirection, preferredSideBySideGroupDirection } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorService } from 'vs/workbench/services/editor/browser/editorService';
 import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/platform/url/electron-browser/inactiveExtensionUrlHandler';
-import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
 
 // {{SQL CARBON EDIT}}
 import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService, IServerGroupController } from 'sql/parts/connection/common/connectionManagement';
@@ -582,9 +576,9 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
 
-		this.toUnbind.push({ dispose: () => connectionManagementService.shutdown() });
-		this.toUnbind.push({ dispose: () => accountManagementService.shutdown() });
-		this.toUnbind.push({ dispose: () => capabilitiesService.shutdown() });
+		this._register(toDisposable(() => connectionManagementService.shutdown()));
+		this._register(toDisposable(() => accountManagementService.shutdown()));
+		this._register(toDisposable(() => capabilitiesService.shutdown()));
 	}
 
 	//#region event handling

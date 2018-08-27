@@ -45,7 +45,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -106,7 +106,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
 		@Inject(IWindowService) private windowService: IWindowService,
 		@Inject(IQueryModelService) private queryModelService: IQueryModelService,
-		@Inject(IWorkbenchEditorService) private editorService: IWorkbenchEditorService
+		@Inject(IEditorService) private editorService: IEditorService
 	) {
 		this.setDefaultChartConfig();
 	}

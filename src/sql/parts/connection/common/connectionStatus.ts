@@ -5,8 +5,8 @@
 import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -22,8 +22,8 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IEditorService private _editorService: IEditorService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 	) {

@@ -461,7 +461,7 @@ export class GlobalNewUntitledFileAction extends Action {
 		id: string,
 		label: string,
 		// {{SQL CARBON EDIT}}
-		@IWorkbenchEditorService protected editorService: IWorkbenchEditorService
+		@IEditorService protected editorService: IEditorService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
