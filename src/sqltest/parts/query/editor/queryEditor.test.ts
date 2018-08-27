@@ -6,7 +6,6 @@
 'use strict';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import URI from 'vs/base/common/uri';
@@ -30,10 +29,9 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
-import { Emitter } from 'vs/base/common/event';
 
 suite('SQL QueryEditor Tests', () => {
 	let queryModelService: QueryModelService;
