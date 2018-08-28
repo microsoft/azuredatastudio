@@ -81,10 +81,6 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 	/// IComponent implementation
 
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout (layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();

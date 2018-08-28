@@ -46,7 +46,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	protected _onEventEmitter = new Emitter<IComponentEventArgs>();
 
 	public layout(): void {
-		this._changeRef.detectChanges();
+		if (!this._changeRef['destroyed']) {
+			this._changeRef.detectChanges();
+		}
 	}
 
 	protected baseInit(): void {
@@ -222,17 +224,30 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	}
 
 	/// IComponent container-related implementation
-	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
+	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): boolean {
 		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
-			return;
+			return false;
 		}
-		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		if (index !== undefined && index !== null && index >= 0 && index < this.items.length) {
+			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
+		} else {
+			this.items.push(new ItemDescriptor(componentDescriptor, config));
+		}
 		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {
 				this.validate();
 			}
 		}));
 		this._changeRef.detectChanges();
+		return true;
+	}
+
+	public removeFromContainer(componentDescriptor: IComponentDescriptor): void {
+		let index = this.items.findIndex(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
+		if (index >= 0) {
+			this.items.splice(index, 1);
+			this._changeRef.detectChanges();
+		}
 	}
 
 	public clearContainer(): void {

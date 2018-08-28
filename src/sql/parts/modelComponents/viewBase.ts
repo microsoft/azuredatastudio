@@ -42,10 +42,21 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	initializeModel(rootComponent: IComponentShape, validationCallback: (componentId: string) => Thenable<boolean>): void {
 		let descriptor = this.defineComponent(rootComponent);
+		this.refreshComponent(rootComponent);
 		this.rootDescriptor = descriptor;
 		this.modelStore.registerValidationCallback(validationCallback);
 		// Kick off the build by detecting changes to the model
 		this.changeRef.detectChanges();
+	}
+	private refreshComponent(component: IComponentShape): void {
+		this.setProperties(component.id, component.properties);
+		this.setLayout(component.id, component.layout);
+		this.registerEvent(component.id);
+		if (component.itemConfigs) {
+			for (let item of component.itemConfigs) {
+				this.addToContainer(component.id, item);
+			}
+		}
 	}
 
 	private defineComponent(component: IComponentShape): IComponentDescriptor {
@@ -59,14 +70,6 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 			throw new Error(nls.localize('componentTypeNotRegistered', "Could not find component for type {0}", ModelComponentTypes[component.type]));
 		}
 		let descriptor = this.modelStore.createComponentDescriptor(typeId, component.id);
-		this.setProperties(component.id, component.properties);
-		this.setLayout(component.id, component.layout);
-		this.registerEvent(component.id);
-		if (component.itemConfigs) {
-			for (let item of component.itemConfigs) {
-				this.addToContainer(component.id, item);
-			}
-		}
 
 		return descriptor;
 	}
@@ -75,11 +78,20 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => component.clearContainer());
 	}
 
-	addToContainer(containerId: string, itemConfig: IItemConfig): void {
+	addToContainer(containerId: string, itemConfig: IItemConfig, index?: number): void {
 		// Do not return the promise as this should be non-blocking
 		this.queueAction(containerId, (component) => {
 			let childDescriptor = this.defineComponent(itemConfig.componentShape);
-			component.addToContainer(childDescriptor, itemConfig.config);
+			if (component.addToContainer(childDescriptor, itemConfig.config, index)) {
+				this.refreshComponent(itemConfig.componentShape);
+			}
+		});
+	}
+
+	removeFromContainer(containerId: string, itemConfig: IItemConfig): void {
+		let childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
+		this.queueAction(containerId, (component) => {
+			component.removeFromContainer(childDescriptor);
 		});
 	}
 

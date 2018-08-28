@@ -119,6 +119,20 @@ declare module 'sqlops' {
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
+
+		/**
+		 * Inserts a from component in a given position in the form
+		 * @param formComponent Form component
+		 * @param index index to insert the component to
+		 * @param itemLayout Item Layout
+		 */
+		insertFormItem(formComponent: FormComponent | FormComponentGroup, index?: number, itemLayout?: FormItemLayout);
+
+		/**
+		 * Removes a from item from the from
+		 * @param formComponent
+		 */
+		removeFormItem(formComponent: FormComponent | FormComponentGroup): void;
 	}
 
 	export interface Component {
@@ -206,6 +220,20 @@ declare module 'sqlops' {
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addItem(component: Component, itemLayout?: TItemLayout): void;
+
+		/**
+		 * Creates a child component and inserts it to this container.
+		 * @param component the component to be added
+		 * @param index the index to insert the component to
+		 * @param {*} [itemLayout] Optional layout for this child item
+		 */
+		insertItem(component: Component, index: number, itemLayout?: TItemLayout): void;
+
+		/**
+		 *
+		 * @param component Removes a component from this container
+		 */
+		removeItem(component: Component): void;
 
 		/**
 		 * Defines the layout for this container

@@ -305,6 +305,15 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		}
 	}
 
+	private removeComponentActions(formComponent: sqlops.FormComponent): void {
+		if (formComponent.actions) {
+			formComponent.actions.forEach(component => {
+				let componentWrapper = component as ComponentWrapper;
+				this._component.removeItem(componentWrapper);
+			});
+		}
+	}
+
 	addFormItems(formComponents: Array<sqlops.FormComponent | sqlops.FormComponentGroup>, itemLayout?: sqlops.FormItemLayout): void {
 		formComponents.forEach(formComponent => {
 			this.addFormItem(formComponent, itemLayout);
@@ -312,23 +321,52 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 	}
 
 	addFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup, itemLayout?: sqlops.FormItemLayout): void {
+		this.insertFormItem(formComponent, undefined, itemLayout);
+	}
+
+	insertFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup, index?: number, itemLayout?: sqlops.FormItemLayout): void {
 		let componentGroup = formComponent as sqlops.FormComponentGroup;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let labelComponent = this._builder.text().component();
 			labelComponent.value = componentGroup.title;
-			this._component.addItem(labelComponent, { isGroupLabel: true });
+			this._component.addItem(labelComponent, { isGroupLabel: true }, index);
+			let componentIndex = index ? index + 1 : undefined;
 			componentGroup.components.forEach(component => {
 				let layout = component.layout || itemLayout;
 				let itemConfig = this.convertToItemConfig(component, layout);
 				itemConfig.config.isInGroup = true;
-				this._component.addItem(component.component as ComponentWrapper, itemConfig.config);
+				this._component.addItem(component.component as ComponentWrapper, itemConfig.config, componentIndex);
+				if (componentIndex) {
+					componentIndex ++;
+				}
 				this.addComponentActions(component, layout);
 			});
 		} else {
 			formComponent = formComponent as sqlops.FormComponent;
 			let itemImpl = this.convertToItemConfig(formComponent, itemLayout);
-			this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config);
+			this._component.addItem(formComponent.component as ComponentWrapper, itemImpl.config, index);
 			this.addComponentActions(formComponent, itemLayout);
+		}
+	}
+
+	removeFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup): void {
+		let componentGroup = formComponent as sqlops.FormComponentGroup;
+		if (componentGroup && componentGroup.components !== undefined) {
+			let firstComponent = componentGroup.components[0];
+			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
+			if (index) {
+				this._component.removeItemAt(index - 1);
+			}
+			componentGroup.components.forEach(element => {
+				this.removeComponentActions(element);
+				this._component.removeItem(element.component);
+			});
+		} else {
+			formComponent = formComponent as sqlops.FormComponent;
+			if (formComponent) {
+				this._component.removeItem(formComponent.component as ComponentWrapper);
+				this.removeComponentActions(formComponent);
+			}
 		}
 	}
 }
@@ -470,14 +508,38 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
-	public addItem(item: sqlops.Component, itemLayout?: any): void {
+	public removeItemAt(index: number): void {
+		if (index >= 0 && index < this.itemConfigs.length) {
+			let itemConfig = this.itemConfigs[index];
+			this._proxy.$removeFromContainer(this._handle, this.id, itemConfig.toIItemConfig());
+			this.itemConfigs.splice(index, 1);
+		}
+	}
+
+	public removeItem(item: sqlops.Component): void {
+		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
+		if (index >= 0 && index < this.itemConfigs.length) {
+			this.removeItemAt(index);
+		}
+
+	}
+
+	public insertItem(item: sqlops.Component, index: number, itemLayout?: any) {
+		this.addItem(item, itemLayout, index);
+	}
+
+	public addItem(item: sqlops.Component, itemLayout?: any, index?: number): void {
 		let itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
 			throw new Error(nls.localize('unknownComponentType', 'Unkown component type. Must use ModelBuilder to create objects'));
 		}
 		let config = new InternalItemConfig(itemImpl, itemLayout);
-		this.itemConfigs.push(config);
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig()).then(undefined, this.handleError);
+		if (index !== undefined && index >= 0 && index < this.items.length) {
+			this.itemConfigs.splice(index, 0, config);
+		} else {
+			this.itemConfigs.push(config);
+		}
+		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, this.handleError);
 	}
 
 	public setLayout(layout: any): Thenable<void> {
