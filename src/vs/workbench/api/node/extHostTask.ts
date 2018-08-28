@@ -23,7 +23,10 @@ import {
 	TaskDefinitionDTO, TaskExecutionDTO, TaskPresentationOptionsDTO, ProcessExecutionOptionsDTO, ProcessExecutionDTO,
 	ShellExecutionOptionsDTO, ShellExecutionDTO, TaskDTO, TaskHandleDTO, TaskFilterDTO, TaskProcessStartedDTO, TaskProcessEndedDTO, TaskSystemInfoDTO
 } from '../shared/tasks';
-import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
+
+// {{SQL CARBON EDIT}}
+// import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
+
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
@@ -884,23 +887,25 @@ export class ExtHostTask implements ExtHostTaskShape {
 		});
 	}
 
+	// {{SQL CARBON EDIT}} disable debug related method
 	public $resolveVariables(uriComponents: UriComponents, variables: string[]): any {
-		let uri: URI = URI.revive(uriComponents);
-		let result: { [key: string]: string; } = Object.create(null);
-		let workspaceFolder = this._workspaceService.resolveWorkspaceFolder(uri);
-		let resolver = new ExtHostVariableResolverService(this._workspaceService, this._editorService, this._configurationService);
-		let ws: IWorkspaceFolder = {
-			uri: workspaceFolder.uri,
-			name: workspaceFolder.name,
-			index: workspaceFolder.index,
-			toResource: () => {
-				throw new Error('Not implemented');
-			}
-		};
-		for (let variable of variables) {
-			result[variable] = resolver.resolve(ws, variable);
-		}
-		return result;
+		// let uri: URI = URI.revive(uriComponents);
+		// let result: { [key: string]: string; } = Object.create(null);
+		// let workspaceFolder = this._workspaceService.resolveWorkspaceFolder(uri);
+		// let resolver = new ExtHostVariableResolverService(this._workspaceService, this._editorService, this._configurationService);
+		// let ws: IWorkspaceFolder = {
+		// 	uri: workspaceFolder.uri,
+		// 	name: workspaceFolder.name,
+		// 	index: workspaceFolder.index,
+		// 	toResource: () => {
+		// 		throw new Error('Not implemented');
+		// 	}
+		// };
+		// for (let variable of variables) {
+		// 	result[variable] = resolver.resolve(ws, variable);
+		// }
+		// return result;
+		return undefined;
 	}
 
 	private nextHandle(): number {

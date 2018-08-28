@@ -445,7 +445,7 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 			return undefined;
 		}
 		return new TPromise((resolve, reject) => {
-			realpath(ext.extensionFolderPath, (err, path) => {
+			realpath(ext.extensionLocation.fsPath, (err, path) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -527,8 +527,9 @@ const nullExtensionDescription: IExtensionDescription = {
 	enableProposedApi: false,
 	engines: undefined,
 	extensionDependencies: undefined,
-	extensionFolderPath: undefined,
+	extensionLocation: undefined,
 	isBuiltin: false,
 	main: undefined,
-	version: undefined
+	version: undefined,
+	isUnderDevelopment: true
 };

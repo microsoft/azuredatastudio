@@ -95,7 +95,7 @@ export class GridPanel extends ViewletPanel {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
 	}
 
@@ -212,6 +212,7 @@ class GridTable<T> extends Disposable implements IView {
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
 	public id = generateUuid();
+	readonly element: HTMLElement = this.container;
 
 	constructor(
 		private runner: QueryRunner,

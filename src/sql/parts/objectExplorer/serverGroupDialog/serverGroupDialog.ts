@@ -232,11 +232,11 @@ export class ServerGroupDialog extends Modal {
 			let colorCheckBox = new Checkbox({
 				actionClassName: 'server-group-color',
 				title: color,
-				isChecked: false,
-				onChange: (viaKeyboard) => {
-					this.onSelectGroupColor(color);
-				}
+				isChecked: false
 			});
+			this._register(colorCheckBox.onChange((viaKeyboard) => {
+				this.onSelectGroupColor(color);
+			}));
 			colorCheckBox.domNode.style.backgroundColor = color;
 			container.appendChild(colorCheckBox.domNode);
 

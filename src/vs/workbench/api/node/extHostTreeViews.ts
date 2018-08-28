@@ -169,7 +169,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			}, 200)(elements => {
 				const _promiseCallback = promiseCallback;
 				refreshingPromise = null;
-				this.refresh(elements).then(() => _promiseCallback());
+				this.refresh(elements);
 			}));
 		}
 	}
@@ -303,14 +303,13 @@ export class ExtHostTreeView<T> extends Disposable {
 		const hasRoot = elements.some(element => !element);
 		if (hasRoot) {
 			this.clearAll(); // clear cache
-			return this.proxy.$refresh(this.viewId);
+			this.proxy.$refresh(this.viewId);
 		} else {
 			const handlesToRefresh = this.getHandlesToRefresh(elements);
 			if (handlesToRefresh.length) {
-				return this.refreshHandles(handlesToRefresh);
+				this.refreshHandles(handlesToRefresh);
 			}
 		}
-		return TPromise.as(null);
 	}
 
 	// {{SQL CARBON EDIT}}

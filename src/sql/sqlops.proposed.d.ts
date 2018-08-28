@@ -51,7 +51,7 @@ declare module 'sqlops' {
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
 		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<T[]>;
+		onDidChangeSelection:  vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
