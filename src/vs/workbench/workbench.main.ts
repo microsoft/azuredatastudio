@@ -149,10 +149,7 @@ import 'vs/workbench/parts/navigation/common/navigation.contribution';
 // services
 import 'vs/workbench/services/bulkEdit/electron-browser/bulkEditService';
 
-// {{SQL CARBON EDIT}}
-//import 'vs/workbench/parts/experiments/electron-browser/experiments.contribution';
-
-
+import 'vs/workbench/parts/experiments/electron-browser/experiments.contribution';
 
 // {{SQL CARBON EDIT}}
 // SQL

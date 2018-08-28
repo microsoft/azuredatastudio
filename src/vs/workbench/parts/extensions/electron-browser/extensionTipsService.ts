@@ -945,15 +945,16 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	}
 
 	private fetchExperimentalRecommendations() {
-		this.experimentService.getExperimentsByType(ExperimentActionType.AddToRecommendations).then(experiments => {
-			(experiments || []).forEach(experiment => {
-				if (experiment.state === ExperimentState.Run && experiment.action.properties && Array.isArray(experiment.action.properties.recommendations) && experiment.action.properties.recommendationReason) {
-					experiment.action.properties.recommendations.forEach(id => {
-						this._experimentalRecommendations[id] = experiment.action.properties.recommendationReason;
-					});
-				}
-			});
-		});
+		// // {{SQL CARBON EDIT}} disable experiements
+		// this.experimentService.getExperimentsByType(ExperimentActionType.AddToRecommendations).then(experiments => {
+		// 	(experiments || []).forEach(experiment => {
+		// 		if (experiment.state === ExperimentState.Run && experiment.action.properties && Array.isArray(experiment.action.properties.recommendations) && experiment.action.properties.recommendationReason) {
+		// 			experiment.action.properties.recommendations.forEach(id => {
+		// 				this._experimentalRecommendations[id] = experiment.action.properties.recommendationReason;
+		// 			});
+		// 		}
+		// 	});
+		// });
 	}
 
 	getKeywordsForExtension(extension: string): string[] {
