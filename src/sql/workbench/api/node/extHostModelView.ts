@@ -521,7 +521,6 @@ class ComponentWrapper implements sqlops.Component {
 		if (index >= 0 && index < this.itemConfigs.length) {
 			this.removeItemAt(index);
 		}
-
 	}
 
 	public insertItem(item: sqlops.Component, index: number, itemLayout?: any) {
