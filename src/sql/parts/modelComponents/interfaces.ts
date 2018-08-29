@@ -20,7 +20,7 @@ export interface IComponent extends IDisposable {
 	layout();
 	registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable;
 	clearContainer?: () => void;
-	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => boolean;
+	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
 	removeFromContainer?: (componentDescriptor: IComponentDescriptor) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;

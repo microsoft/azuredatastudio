@@ -77,9 +77,8 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 		this.layout();
 	}
 
-	public addToContainer(componentDescriptor: IComponentDescriptor): boolean {
+	public addToContainer(componentDescriptor: IComponentDescriptor): void {
 		this._component = componentDescriptor;
 		this.layout();
-		return true;
 	}
 }

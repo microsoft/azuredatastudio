@@ -297,6 +297,10 @@ export default class MainController implements vscode.Disposable {
 			}).withItems([
 				radioButton, groupModel1, radioButton2]
 				, { flex: '1 1 50%' }).component();
+		let formItemLayout = {
+			horizontal: false,
+			componentWidth: componentWidth
+		};
 		let formBuilder = view.modelBuilder.formContainer()
 			.withFormItems([{
 				component: checkbox,
@@ -311,10 +315,7 @@ export default class MainController implements vscode.Disposable {
 			}, {
 				component: declarativeTable,
 				title: 'Declarative Table'
-			}], {
-					horizontal: false,
-					componentWidth: componentWidth
-				});
+			}], formItemLayout);
 		let groupItems = {
 				components: [{
 					component: table,
@@ -323,20 +324,20 @@ export default class MainController implements vscode.Disposable {
 							component: listBox,
 							title: 'List Box'
 				}], title: 'group'};
-		formBuilder.addFormItem(groupItems);
+		formBuilder.addFormItem(groupItems, formItemLayout);
 
 		formBuilder.insertFormItem({
 			component: inputBoxWrapper,
 			title: 'Backup name'
-			}, 0);
+			}, 0, formItemLayout);
 		formBuilder.insertFormItem({
 			component: inputBox2,
 			title: 'Recovery model'
-			}, 1);
+			}, 1, formItemLayout);
 		formBuilder.insertFormItem({
 			component: dropdown,
 			title: 'Backup type'
-		}, 2);
+		}, 2, formItemLayout);
 		let formModel = formBuilder.component();
 		let inputBox6 = view.modelBuilder.inputBox().component();
 		inputBox6.onTextChanged(e => {
@@ -347,22 +348,19 @@ export default class MainController implements vscode.Disposable {
 			groupModel1.enabled = true;
 
 			formBuilder.insertFormItem({
-				component: backupFilesInputBox,
-				title: 'Backup files',
-				actions: [button, button3]
-			}, 4);
+				component: dropdown,
+				title: 'Backup type'
+			}, 2, formItemLayout);
 			flexRadioButtonsModel.addItem(inputBox6, { flex: '1 1 50%' });
-			formBuilder.addFormItem(groupItems);
-
+			formBuilder.addFormItem(groupItems, formItemLayout);
 		});
 
 		radioButton2.onDidClick(() => {
 			inputBox.value = radioButton.value;
 			groupModel1.enabled = false;
 			formBuilder.removeFormItem({
-				component: backupFilesInputBox,
-				title: 'Backup files',
-				actions: [button, button3]
+				component: dropdown,
+				title: 'Backup type'
 			});
 			flexRadioButtonsModel.removeItem(inputBox6);
 			formBuilder.removeFormItem(groupItems);

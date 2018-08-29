@@ -224,9 +224,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	}
 
 	/// IComponent container-related implementation
-	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): boolean {
+	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
 		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
-			return false;
+			return;
 		}
 		if (index !== undefined && index !== null && index >= 0 && index < this.items.length) {
 			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
@@ -239,7 +239,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 			}
 		}));
 		this._changeRef.detectChanges();
-		return true;
+		return;
 	}
 
 	public removeFromContainer(componentDescriptor: IComponentDescriptor): void {
