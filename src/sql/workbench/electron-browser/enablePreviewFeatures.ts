@@ -39,17 +39,29 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 				return null;
 			}
 			configurationService.updateValue('workbench.enablePreviewFeatures', false);
-			storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
 
-			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Unreleased preview features like backup/restore, query plan, and dashboard extension tabs are disabled by default. Enable them?");
+			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Would you like to enable preview features?");
 			notificationService.prompt(
 				Severity.Info,
 				enablePreviewFeaturesNotice,
 				[{
-					label: localize('enablePreviewFeatures.enable', "Enable preview features"),
+					label: localize('enablePreviewFeatures.yes', "Yes"),
 					run: () => {
 						configurationService.updateValue('workbench.enablePreviewFeatures', true);
+						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
 					}
+				}, {
+					label: localize('enablePreviewFeatures.no', "No"),
+					run: () => {
+						configurationService.updateValue('workbench.enablePreviewFeatures', false);
+					}
+				}, {
+					label: localize('enablePreviewFeatures.never', "No, never ask again"),
+					run: () => {
+						configurationService.updateValue('workbench.enablePreviewFeatures', false);
+						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
+					},
+					isSecondary: true
 				}]
 			);
 		})
