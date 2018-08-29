@@ -133,7 +133,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		if (this.languageMode !== this._languageMode) {
 			this.updateLanguageMode();
 		}
-		// Intentionally not setting URI for now as it is readonly.
+		// Intentionally always updating editorUri as it's wiped out by parent setProperties call.
 		this.editorUri = this._uri;
 	}
 
