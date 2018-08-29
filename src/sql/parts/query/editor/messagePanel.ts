@@ -71,7 +71,7 @@ export class MessagePanel extends ViewletPanel {
 	private tree: ITree;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,

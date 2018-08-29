@@ -89,7 +89,7 @@ export class GridPanel extends ViewletPanel {
 	private maximizedGrid: GridTable<any>;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
