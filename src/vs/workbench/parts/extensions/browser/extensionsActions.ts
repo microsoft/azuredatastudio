@@ -126,7 +126,7 @@ export class InstallAction extends Action {
 			this.windowService.showMessageBox({
 				type: 'warning',
 				buttons: [localize('thirdPartExt.yes', 'Yes'), localize('thirdPartyExt.no', 'No')],
-				message: localize('thirdPartyExtension', 'Disclaimer: "{0}" is a third party extension and might involve security risks involved. Are you sure you want to install this extension?', this.extension.displayName)
+				message: localize('thirdPartyExtension', 'Disclaimer: "{0}" is a third party extension and might involve security risks. Are you sure you want to install this extension?', this.extension.displayName)
 			}).then(userChoice => {
 				// if the user decides not to install the extension
 				if (userChoice.button === 1) {
