@@ -15,38 +15,28 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import { ChartType, DataDirection, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { IInsightOptions, IInsight, IInsightCtor } from './insight';
 
-export interface IChartOptions {
-	type: ChartType;
-	dataDirection?: DataDirection;
-	labelFirstColumn?: boolean;
-	columnsAsLabels?: boolean;
-	legendPosition?: LegendPosition;
-	yAxisLabel?: string;
-	yAxisMin?: number;
-	yAxisMax?: number;
-	xAxisLabel?: string;
-	xAxisMin?: number;
-	xAxisMax?: number;
-}
+const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
-const defaultOptions: IChartOptions = {
+const defaultOptions: IInsightOptions = {
 	type: ChartType.Bar,
 	dataDirection: DataDirection.Horizontal
 };
 
-const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
-
-export class Graph {
-	private _options: IChartOptions;
+export class Graph implements IInsight {
+	private _options: IInsightOptions;
 	private canvas: HTMLCanvasElement;
 	private chartjs: ChartJs;
 	private _data: IInsightData;
 
+	public static readonly types = [ChartType.Bar, ChartType.Doughnut, ChartType.HorizontalBar, ChartType.Line, ChartType.Pie, ChartType.Scatter, ChartType.TimeSeries];
+	public readonly types = Graph.types;
+
 	private _theme: ITheme;
 
 	constructor(
-		container: HTMLElement, options: IChartOptions = defaultOptions,
+		container: HTMLElement, options: IInsightOptions = defaultOptions,
 		@IThemeService themeService: IThemeService
 	) {
 		this._theme = themeService.getTheme();
@@ -64,6 +54,10 @@ export class Graph {
 		canvasContainer.appendChild(this.canvas);
 
 		container.appendChild(canvasContainer);
+	}
+
+	public dispose() {
+
 	}
 
 	public set data(data: IInsightData) {
@@ -139,7 +133,7 @@ export class Graph {
 		}
 	}
 
-	private transformOptions(options: IChartOptions): ChartJs.ChartOptions {
+	private transformOptions(options: IInsightOptions): ChartJs.ChartOptions {
 		let retval: ChartJs.ChartOptions = {};
 		retval.maintainAspectRatio = false;
 
@@ -151,7 +145,7 @@ export class Graph {
 		if (options) {
 			retval.scales = {};
 			// we only want to include axis if it is a axis based graph type
-			if (!noneLineGraphs.includes(options.type)) {
+			if (!noneLineGraphs.includes(options.type as ChartType)) {
 				retval.scales.xAxes = [{
 					scaleLabel: {
 						fontColor: foreground,
@@ -194,12 +188,12 @@ export class Graph {
 		return retval;
 	}
 
-	public set options(options: IChartOptions) {
+	public set options(options: IInsightOptions) {
 		this._options = options;
 		this.data = this._data;
 	}
 
-	public get options(): IChartOptions {
+	public get options(): IInsightOptions {
 		return this._options;
 	}
 }

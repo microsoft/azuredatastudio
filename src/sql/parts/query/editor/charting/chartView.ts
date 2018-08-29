@@ -8,11 +8,12 @@
 import 'vs/css!./chartView';
 
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { Graph, IChartOptions } from './graph';
+import { Insight, IInsightOptions } from './insights/insight';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
+import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 
 import { Dimension, $, addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
@@ -22,19 +23,20 @@ import { Builder } from 'vs/base/browser/builder';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 declare class Proxy {
 	constructor(object, handler);
 }
 
 export class ChartView implements IPanelView {
-	private graph: Graph;
+	private insight: Insight;
 	private _queryRunner: QueryRunner;
 	private _data: IInsightData;
 
 	private optionsControl: HTMLElement;
 
-	private options: IChartOptions = {
+	private options: IInsightOptions = {
 		type: ChartType.Bar
 	};
 
@@ -45,7 +47,8 @@ export class ChartView implements IPanelView {
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IThemeService private _themeService: IThemeService
+		@IThemeService private _themeService: IThemeService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this.optionsControl = $('div.options-container');
 		let generalControls = $('div.general-controls');
@@ -67,7 +70,7 @@ export class ChartView implements IPanelView {
 					return Reflect.set(target, key, value, receiver);
 				}
 			}
-		}) as IChartOptions;
+		}) as IInsightOptions;
 
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
@@ -80,11 +83,11 @@ export class ChartView implements IPanelView {
 			let graphContainer = $('div.graph-container');
 			this.container.appendChild(graphContainer);
 			this.container.appendChild(this.optionsControl);
-			this.graph = new Graph(graphContainer, this.options, this._themeService);
+			this.insight = new Insight(graphContainer, this.options, this._instantiationService);
 		}
 
 		if (this._data) {
-			this.graph.data = this._data;
+			this.insight.data = this._data;
 		} else {
 			this.queryRunner = this._queryRunner;
 		}
@@ -108,8 +111,8 @@ export class ChartView implements IPanelView {
 					columns: summary.columnInfo.map(c => c.columnName),
 					rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
 				};
-				if (this.graph) {
-					this.graph.data = this._data;
+				if (this.insight) {
+					this.insight.data = this._data;
 				}
 			});
 		}
@@ -123,8 +126,8 @@ export class ChartView implements IPanelView {
 		ChartOptions[this.options.type].map(o => {
 			this.createOption(o, this.typeControls);
 		});
-		if (this.graph) {
-			this.graph.options = this.options;
+		if (this.insight) {
+			this.insight.options = this.options;
 		}
 	}
 
@@ -135,13 +138,15 @@ export class ChartView implements IPanelView {
 		optionContainer.appendChild(label);
 		switch(option.type) {
 			case ControlType.checkbox:
-				let checkbox: HTMLInputElement = $('input', { 'type': 'checkbox' });
-				optionContainer.appendChild($('input', { 'type': 'checkbox' }));
-				checkbox.value = option.default;
-				addDisposableListener(checkbox, EventType.CHANGE, () => {
-					if (this.options[option.configEntry] !== checkbox.value) {
-						this.options[option.configEntry] = checkbox.value;
-						this.graph.options = this.options;
+				let checkbox = new Checkbox(optionContainer, {
+					label: '',
+					ariaLabel: option.label,
+					checked: option.default,
+					onChange: () => {
+						if (this.options[option.configEntry] !== checkbox.checked) {
+							this.options[option.configEntry] = checkbox.checked;
+							this.insight.options = this.options;
+						}
 					}
 				});
 				break;
@@ -152,7 +157,7 @@ export class ChartView implements IPanelView {
 				dropdown.onDidSelect(e => {
 					if (this.options[option.configEntry] !== option.options[e.index]) {
 						this.options[option.configEntry] = option.options[e.index];
-						this.graph.options = this.options;
+						this.insight.options = this.options;
 					}
 				});
 				this.optionDisposables.push(attachSelectBoxStyler(dropdown, this._themeService));
@@ -163,7 +168,7 @@ export class ChartView implements IPanelView {
 				input.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
 						this.options[option.configEntry] = e;
-						this.graph.options = this.options;
+						this.insight.options = this.options;
 					}
 				});
 				this.optionDisposables.push(attachInputBoxStyler(input, this._themeService));
@@ -174,7 +179,7 @@ export class ChartView implements IPanelView {
 				numberInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
 						this.options[option.configEntry] = e;
-						this.graph.options = this.options;
+						this.insight.options = this.options;
 					}
 				});
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
