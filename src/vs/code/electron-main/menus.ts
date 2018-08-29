@@ -719,8 +719,7 @@ export class CodeMenu {
 		}
 
 		const moveSidebar = this.createMenuItem(moveSideBarLabel, 'workbench.action.toggleSidebarPosition');
-		// {{SQL CARBON EDIT}}
-		// const togglePanel = this.createMenuItem(nls.localize({ key: 'miTogglePanel', comment: ['&& denotes a mnemonic'] }, "Toggle &&Panel"), 'workbench.action.togglePanel');
+		const togglePanel = this.createMenuItem(nls.localize({ key: 'miTogglePanel', comment: ['&& denotes a mnemonic'] }, "Toggle &&Panel"), 'workbench.action.togglePanel');
 
 		let statusBarLabel: string;
 		if (this.currentStatusbarVisible) {
@@ -750,7 +749,7 @@ export class CodeMenu {
 			__separator__(),
 			moveSidebar,
 			toggleSidebar,
-			//togglePanel,
+			togglePanel,
 			toggleStatusbar,
 			toggleActivtyBar,
 			__separator__(),
@@ -805,13 +804,17 @@ export class CodeMenu {
 		// const toggleMinimap = this.createMenuItem(nls.localize({ key: 'miToggleMinimap', comment: ['&& denotes a mnemonic'] }, "Toggle &&Minimap"), 'editor.action.toggleMinimap');
 		// const toggleRenderWhitespace = this.createMenuItem(nls.localize({ key: 'miToggleRenderWhitespace', comment: ['&& denotes a mnemonic'] }, "Toggle &&Render Whitespace"), 'editor.action.toggleRenderWhitespace');
 		// const toggleRenderControlCharacters = this.createMenuItem(nls.localize({ key: 'miToggleRenderControlCharacters', comment: ['&& denotes a mnemonic'] }, "Toggle &&Control Characters"), 'editor.action.toggleRenderControlCharacter');
-		const toggleBreadcrumbs = this.createMenuItem(nls.localize({ key: 'miToggleBreadcrumbs', comment: ['&& denotes a mnemonic'] }, "Toggle &&Breadcrumbs"), 'breadcrumbs.toggle');
+		// const toggleBreadcrumbs = this.createMenuItem(nls.localize({ key: 'miToggleBreadcrumbs', comment: ['&& denotes a mnemonic'] }, "Toggle &&Breadcrumbs"), 'breadcrumbs.toggle');
 
 		arrays.coalesce([
 			commands,
 			openView,
 			__separator__(),
+			appearance,
+			editorLayout,
 			__separator__(),
+			servers,
+			tasks,
 			explorer,
 			search,
 			scm,
@@ -824,17 +827,13 @@ export class CodeMenu {
 			// {{SQL CARBON EDIT}}
 			// debugConsole,
 			terminal,
-			__separator__(),
+			//__separator__(),
 			// {{SQL CARBON EDIT}}
-			//splitEditor,
-			//togglePanel,
-			// {{SQL CARBON EDIT}}
-			__separator__(),
 			// toggleWordWrap,
 			// toggleMinimap,
 			// toggleRenderWhitespace,
 			// toggleRenderControlCharacters,
-			toggleBreadcrumbs
+			// toggleBreadcrumbs
 		]).forEach(item => viewMenu.append(item));
 	}
 
