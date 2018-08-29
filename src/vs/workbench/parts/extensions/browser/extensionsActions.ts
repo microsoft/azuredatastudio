@@ -85,7 +85,9 @@ export class InstallAction extends Action {
 		@IExtensionsWorkbenchService private extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@INotificationService private notificationService: INotificationService,
-		@IOpenerService private openerService: IOpenerService
+		@IOpenerService private openerService: IOpenerService,
+		// {{SQL CARBON EDIT}}
+		@IWindowService private windowService: IWindowService,
 	) {
 		super('extensions.install', InstallAction.InstallLabel, InstallAction.Class, false);
 
@@ -100,9 +102,7 @@ export class InstallAction extends Action {
 			this.label = InstallAction.InstallLabel;
 			return;
 		}
-
 		this.enabled = this.extensionsWorkbenchService.canInstall(this.extension) && this.extension.state === ExtensionState.Uninstalled;
-
 		if (this.extension.state === ExtensionState.Installing) {
 			this.label = InstallAction.InstallingLabel;
 			this.class = InstallAction.InstallingClass;
@@ -121,6 +121,28 @@ export class InstallAction extends Action {
 	}
 
 	private install(extension: IExtension): TPromise<void> {
+		// {{SQL CARBON EDIT}}
+		if (this.extension.publisher !== 'Microsoft') {
+			this.windowService.showMessageBox({
+				type: 'warning',
+				buttons: ['ok', 'no'],
+				message: localize('thirdPartyExtension', 'Disclaimer: "{0}" is a third party extension and might involve security risks involved. Are you sure you want to install this extension?', this.extension.displayName)
+			}).then(userChoice => {
+				// if the user decides not to install the extension
+				if (userChoice.button === 1) {
+					return TPromise.as(null);
+				} else {
+					return this.installExtension(extension);
+				}
+			});
+		} else {
+			return this.installExtension(extension);
+		}
+		return TPromise.as(null);
+	}
+
+	// {{SQL CARBON EDIT}}
+	private installExtension(extension: IExtension): TPromise<void> {
 		return this.extensionsWorkbenchService.install(extension).then(null, err => {
 			if (!extension.downloadUrl) {
 				return this.notificationService.error(err);

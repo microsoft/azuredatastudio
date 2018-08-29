@@ -237,10 +237,6 @@ export class ExtensionsActivator {
 	 * semantics: `redExtensions` must wait for `greenExtensions`.
 	 */
 	private _handleActivateRequest(currentExtension: IExtensionDescription, greenExtensions: { [id: string]: IExtensionDescription; }, redExtensions: IExtensionDescription[]): void {
-		// {{SQL CARBON EDIT}}
-		if (currentExtension.publisher !== 'Microsoft') {
-			this._host.showMessage(Severity.Warning, nls.localize('thirdPartyExtension', "Disclaimer: '{0}' is a third party extension and might have security risks involved.", currentExtension.displayName));
-		}
 		let depIds = (typeof currentExtension.extensionDependencies === 'undefined' ? [] : currentExtension.extensionDependencies);
 		let currentExtensionGetsGreenLight = true;
 
