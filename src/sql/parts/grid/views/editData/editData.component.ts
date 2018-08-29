@@ -60,7 +60,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
 	private complete = false;
-	private idMapping: { [row: number]: number } = {};
 
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean };
@@ -185,7 +184,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				self.dataService.getEditRows(offset, count).subscribe(result => {
 					let rowIndex = offset;
 					let gridData: IGridDataRow[] = result.subset.map(row => {
-						self.idMapping[rowIndex] = row.id;
+						self.rowIdMappings[rowIndex] = row.id;
 						rowIndex++;
 						return {
 							values: [{}].concat(row.cells.map(c => {
@@ -444,7 +443,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			// revert our last new row
 			this.removingNewRow = true;
 
-			this.dataService.revertRow(this.idMapping[currentNewRowIndex])
+			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
 					this.removeRow(currentNewRowIndex);
 					this.newRowVisible = false;
