@@ -5,6 +5,14 @@
  
  ![image](https://user-images.githubusercontent.com/30873802/43433347-c958ed28-942b-11e8-8bbc-f4f2529c3978.png)
  
+ ## Requirements
+ * This wizard requires an active connection to a SQL Server instance to start.
+ * This wizard only works on .txt and .csv files.
+ 
+ ## How do I start the wizard?
+ * The main entry point for the wizard is to right click a database in the Object Explorer, and click **Import wizard**. 
+ * If a user is connected to a SQL Server instance, the user can also press **Ctrl**+**I** to start the wizard.
+ 
  ## Why would I use this wizard?
  This wizard was created to improve the current import experience leveraging an intelligent framework known as Program Synthesis using Examples ([PROSE](https://microsoft.github.io/prose/)). For a user without specialized domain knowledge, importing data can often be a complex, error prone, and tedious task. This wizard streamlines the import process as simple as selecting an input file and unique table name, and the PROSE framework handles the rest.
  
