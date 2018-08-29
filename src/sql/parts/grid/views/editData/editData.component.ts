@@ -184,7 +184,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				self.dataService.getEditRows(offset, count).subscribe(result => {
 					let rowIndex = offset;
 					let gridData: IGridDataRow[] = result.subset.map(row => {
-						self.idMapping[rowIndex] = row.id;
+						self.rowIdMappings[rowIndex] = row.id;
 						rowIndex++;
 						return {
 							values: [{}].concat(row.cells.map(c => {
