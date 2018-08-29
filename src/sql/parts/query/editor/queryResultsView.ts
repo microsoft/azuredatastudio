@@ -16,8 +16,7 @@ import * as UUID from 'vs/base/common/uuid';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { Emitter } from 'vs/base/common/event';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { ChartTab } from './charting/chartTab';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -73,6 +72,7 @@ export class QueryResultsView {
 	private _panelView: TabbedPanel;
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
+	private chartTab: ChartTab;
 
 	constructor(
 		container: HTMLElement,
@@ -80,17 +80,21 @@ export class QueryResultsView {
 		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		this.resultsTab = new ResultsTab(instantiationService);
+		this.chartTab = new ChartTab(instantiationService);
 		this._panelView = new TabbedPanel(container, { showHeaderWhenSingleView: false });
 	}
 
 	public style() {
-
 	}
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
-		this.resultsTab.queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
+		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
+		this.resultsTab.queryRunner = queryRunner;
+		this.chartTab.queryRunner = queryRunner;
+
 		this._panelView.pushTab(this.resultsTab);
+		this._panelView.pushTab(this.chartTab);
 	}
 
 	public get input(): QueryResultsInput {

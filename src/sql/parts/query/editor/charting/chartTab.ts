@@ -7,12 +7,22 @@
 
 import { IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { ChartView } from './chartView';
+import QueryRunner from 'sql/parts/query/execution/queryRunner';
 
 import { localize } from 'vs/nls';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ChartTab implements IPanelTab {
-	public readonly title = localize('resultsTabTitle', 'Results');
+	public readonly title = localize('chartTabTitle', 'Chart');
 	public readonly identifier = generateUuid();
 	public readonly view: ChartView;
+
+	constructor(@IInstantiationService instantiationService: IInstantiationService) {
+		this.view = instantiationService.createInstance(ChartView);
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.view.queryRunner = runner;
+	}
 }
