@@ -332,4 +332,58 @@ suite('ExtHostModelView Validation Tests', () => {
 		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
 		assert.equal((flex as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox);
 	});
+
+
+	test('Inserting and removing component in a form should work correctly', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+		let checkBox = modelView.modelBuilder.checkBox().component();
+
+		let groupItems: sqlops.FormComponentGroup = {
+			title: 'Group',
+			components: [{
+				title: 'Drop Down',
+				component: dropDown
+			}, {
+				title: 'Check Box',
+				component: checkBox
+			}]
+		};
+		let listBoxFormItem: sqlops.FormComponent = {
+			title: 'List Box',
+			component: listBox
+		};
+		let inputBoxFormItem: sqlops.FormComponent = {
+			title: 'Input Box',
+			component: inputBox
+		};
+
+		let formBuilder = modelView.modelBuilder.formContainer();
+		formBuilder.addFormItem(listBoxFormItem);
+		let form = formBuilder.component();
+		modelView.initializeModel(formBuilder.component());
+
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 1);
+		formBuilder.insertFormItem(inputBoxFormItem, 0);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 2);
+		assert.equal((form as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.InputBox);
+		formBuilder.insertFormItem(groupItems, 0);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 5);
+		formBuilder.removeFormItem(listBoxFormItem);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 4);
+		formBuilder.removeFormItem(groupItems);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 1);
+		formBuilder.insertFormItem(listBoxFormItem, 1);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 2);
+		assert.equal((form as IWithItemConfig).itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox);
+	});
 });
