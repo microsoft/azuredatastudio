@@ -92,7 +92,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			hoverText: () => { return LocalizedConstants.saveCSVLabel; },
 			functionality: (batchId, resultId, index) => {
 				let selection = this.getSelection(index);
-				if (selection.length <= 1) {
+				if (selection.length <= 1 || this.isSelectAll(selection.length)) {
 					this.handleContextClick({ type: 'savecsv', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
 					this.dataService.showWarning(LocalizedConstants.msgCannotSaveMultipleSelections);

@@ -236,6 +236,11 @@ export abstract class GridParentComponent {
 		}
 	}
 
+	protected isSelectAll(selectedRows: number): boolean {
+		let totalRows = this.slickgrids.toArray()[0].dataRows.getLength();
+		return selectedRows === totalRows;
+	}
+
 	private copySelection(): void {
 		let messageText = this.getMessageText();
 		if (messageText.length > 0) {
