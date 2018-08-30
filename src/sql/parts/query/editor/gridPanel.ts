@@ -169,8 +169,13 @@ export class GridPanel extends ViewletPanel {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
+
 		dispose(this.tables);
 		this.tables = [];
+
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
 	}
 
 	private maximizeTable(tableid: string): void {
