@@ -52,6 +52,10 @@ class ResultsView implements IPanelView {
 		this.gridPanel.queryRunner = runner;
 		this.messagePanel.queryRunner = runner;
 	}
+
+	public hideResultHeader() {
+		this.gridPanel.headerVisible = false;
+	}
 }
 
 class ResultsTab implements IPanelTab {
@@ -94,7 +98,6 @@ export class QueryResultsView {
 		this.chartTab.queryRunner = queryRunner;
 
 		this._panelView.pushTab(this.resultsTab);
-		this._panelView.pushTab(this.chartTab);
 	}
 
 	public get input(): QueryResultsInput {
@@ -103,5 +106,15 @@ export class QueryResultsView {
 
 	public layout(dimension: DOM.Dimension) {
 		this._panelView.layout(dimension);
+	}
+
+	public chartData(dataId: { resultId: number, batchId: number }): void {
+		if (!this._panelView.contains(this.chartTab)) {
+			this._panelView.pushTab(this.chartTab);
+			this.resultsTab.view.hideResultHeader();
+		}
+
+		this._panelView.showTab(this.chartTab.identifier);
+		this.chartTab.chart(dataId);
 	}
 }

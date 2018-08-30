@@ -11,6 +11,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ChartType, DataDirection, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
+import { InsightType, IInsightOptions } from './insights/interfaces';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -28,6 +29,7 @@ export interface IChartOption {
 	default: any;
 	options?: any[];
 	displayableOptions?: string[];
+	if?: (options: IInsightOptions) => boolean;
 }
 
 export interface IChartOptions {
@@ -48,14 +50,20 @@ const columnsAsLabelsInput: IChartOption = {
 	label: localize('columnsAsLabelsLabel', 'Use column names as labels'),
 	type: ControlType.checkbox,
 	configEntry: 'columnsAsLabels',
-	default: false
+	default: false,
+	if: (options: IInsightOptions) => {
+		return options.dataDirection === DataDirection.Vertical && options.dataType !== DataType.Point;
+	}
 };
 
 const labelFirstColumnInput: IChartOption = {
 	label: localize('labelFirstColumnLabel', 'Use first column as row label'),
 	type: ControlType.checkbox,
 	configEntry: 'labelFirstColumn',
-	default: false
+	default: false,
+	if: (options: IInsightOptions) => {
+		return options.dataDirection === DataDirection.Horizontal && options.dataType !== DataType.Point;
+	}
 };
 
 const legendInput: IChartOption = {
@@ -129,7 +137,6 @@ export const ChartOptions: IChartOptions = {
 	],
 	[ChartType.Line]: [
 		dataTypeInput,
-		dataDirectionOption,
 		columnsAsLabelsInput,
 		labelFirstColumnInput,
 		yAxisLabelInput,
@@ -177,5 +184,21 @@ export const ChartOptions: IChartOptions = {
 		columnsAsLabelsInput,
 		labelFirstColumnInput,
 		legendInput
+	],
+	[InsightType.Table]: [],
+	[InsightType.Count]: [],
+	[InsightType.Image]: [
+		{
+			configEntry: 'encoding',
+			label: localize('encodingOption', 'Encoding'),
+			type: ControlType.input,
+			default: 'hex'
+		},
+		{
+			configEntry: 'imageFormat',
+			label: localize('imageFormatOption', 'Image Format'),
+			type: ControlType.input,
+			default: 'jpeg'
+		}
 	]
 };

@@ -142,3 +142,8 @@ panel {
 .visibility.hidden {
 	visibility: hidden;
 }
+
+.tabBody {
+	width: 100%;
+	height: 100%;
+}

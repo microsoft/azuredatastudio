@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsight, IInsightOptions, InsightType } from './insight';
+import { IInsight, IInsightOptions, InsightType } from './interfaces';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { $ } from 'vs/base/browser/dom';
 
+import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
 
 export interface IConfig extends IInsightOptions {
@@ -15,14 +15,14 @@ export interface IConfig extends IInsightOptions {
 }
 
 const defaultConfig: IConfig = {
-	type: InsightType.image,
+	type: InsightType.Image,
 	encoding: 'hex',
 	imageFormat: 'jpeg'
 };
 
 export class ImageInsight implements IInsight {
 
-	public static readonly types = [InsightType.image];
+	public static readonly types = [InsightType.Image];
 	public readonly types = ImageInsight.types;
 
 	private _options: IConfig;
@@ -32,6 +32,10 @@ export class ImageInsight implements IInsight {
 	constructor(container: HTMLElement, options: IConfig) {
 		this.imageEle = $('img');
 		container.appendChild(this.imageEle);
+	}
+
+	public layout() {
+
 	}
 
 	public dispose() {

@@ -6,56 +6,28 @@
 'use strict';
 
 import { Graph } from './graphInsight';
-import { ChartType, DataDirection, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
+import { ChartType, DataDirection } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 
 import { Builder } from 'vs/base/browser/builder';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
-export interface IInsightOptions {
-	type: InsightType | ChartType;
-	dataDirection?: DataDirection;
-	labelFirstColumn?: boolean;
-	columnsAsLabels?: boolean;
-	legendPosition?: LegendPosition;
-	yAxisLabel?: string;
-	yAxisMin?: number;
-	yAxisMax?: number;
-	xAxisLabel?: string;
-	xAxisMin?: number;
-	xAxisMax?: number;
-	encoding?: string;
-	imageFormat?: string;
-}
-
-export interface IInsight {
-	options: IInsightOptions;
-	data: IInsightData;
-	readonly types: Array<InsightType | ChartType>;
-	dispose();
-}
-
-export interface IInsightCtor {
-	new (container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
-	readonly types: Array<InsightType | ChartType>;
-}
-
-export enum InsightType {
-	image = 'image',
-	table = 'table'
-}
+import { ImageInsight } from './imageInsight';
+import { TableInsight } from './tableInsight';
+import { IInsightOptions, IInsight, InsightType, IInsightCtor } from './interfaces';
+import { CountInsight } from './countInsight';
+import { Dimension } from 'vs/base/browser/dom';
 
 const defaultOptions: IInsightOptions = {
 	type: ChartType.Bar,
 	dataDirection: DataDirection.Horizontal
 };
 
-
 export class Insight {
 	private insight: IInsight;
 
 	private _options: IInsightOptions;
 	private _data: IInsightData;
+	private dim: Dimension
 
 	constructor(
 		private container: HTMLElement, options: IInsightOptions = defaultOptions,
@@ -63,6 +35,11 @@ export class Insight {
 	) {
 		this.options = options;
 		this.buildInsight();
+	}
+
+	public layout(dim: Dimension) {
+		this.dim = dim;
+		this.insight.layout(dim);
 	}
 
 	public set options(val: IInsightOptions) {
@@ -99,6 +76,7 @@ export class Insight {
 
 		if (ctor) {
 			this.insight = this._instantiationService.createInstance(ctor, this.container, this.options);
+			this.insight.layout(this.dim);
 			if (this._data) {
 				this.insight.data = this._data;
 			}
@@ -108,6 +86,12 @@ export class Insight {
 	private findctor(type: ChartType | InsightType): IInsightCtor {
 		if (Graph.types.includes(type as ChartType)) {
 			return Graph;
+		} else if (ImageInsight.types.includes(type as InsightType)) {
+			return ImageInsight;
+		} else if (TableInsight.types.includes(type as InsightType)) {
+			return TableInsight;
+		} else if (CountInsight.types.includes(type as InsightType)) {
+			return CountInsight;
 		}
 		return undefined;
 	}

@@ -15,7 +15,7 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import { ChartType, DataDirection, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { IInsightOptions, IInsight, IInsightCtor } from './insight';
+import { IInsightOptions, IInsight } from './interfaces';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
@@ -44,7 +44,7 @@ export class Graph implements IInsight {
 			this._theme = e;
 			this.data = this._data;
 		});
-		this._options = mixin(options, defaultOptions);
+		this._options = mixin(options, defaultOptions, false);
 
 		let canvasContainer = document.createElement('div');
 		canvasContainer.style.width = '100%';
@@ -57,6 +57,10 @@ export class Graph implements IInsight {
 	}
 
 	public dispose() {
+
+	}
+
+	public layout() {
 
 	}
 

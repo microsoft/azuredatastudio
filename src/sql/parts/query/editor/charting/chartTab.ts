@@ -25,4 +25,8 @@ export class ChartTab implements IPanelTab {
 	public set queryRunner(runner: QueryRunner) {
 		this.view.queryRunner = runner;
 	}
+
+	public chart(dataId: { batchId: number, resultId: number}): void {
+		this.view.chart(dataId);
+	}
 }
