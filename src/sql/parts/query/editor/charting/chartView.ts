@@ -49,7 +49,7 @@ export class ChartView implements IPanelView {
 
 	private optionDisposables: IDisposable[] = [];
 
-	private optionMap: {[x: string]: HTMLElement } = {};
+	private optionMap: { [x: string]: HTMLElement } = {};
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
@@ -64,10 +64,10 @@ export class ChartView implements IPanelView {
 
 		let self = this;
 		this.options = new Proxy(this.options, {
-			get: function(target, key, receiver) {
+			get: function (target, key, receiver) {
 				return Reflect.get(target, key, receiver);
 			},
-			set: function(target, key, value, receiver) {
+			set: function (target, key, value, receiver) {
 				let change = false;
 				if (target[key] !== value) {
 					change = true;
@@ -189,7 +189,7 @@ export class ChartView implements IPanelView {
 		label.innerText = option.label;
 		let optionContainer = $('div.option-container');
 		optionContainer.appendChild(label);
-		switch(option.type) {
+		switch (option.type) {
 			case ControlType.checkbox:
 				let checkbox = new Checkbox(optionContainer, {
 					label: '',

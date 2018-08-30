@@ -22,7 +22,7 @@ export class CountInsight implements IInsight {
 		container.appendChild(this.countImage);
 	}
 
-	public layout() {}
+	public layout() { }
 
 	set data(data: IInsightData) {
 		new Builder(this.countImage).empty();

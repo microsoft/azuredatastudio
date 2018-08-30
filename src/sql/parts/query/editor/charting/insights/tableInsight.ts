@@ -16,7 +16,7 @@ import { $, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
-export class TableInsight extends Disposable implements IInsight  {
+export class TableInsight extends Disposable implements IInsight {
 	public static readonly types = [InsightType.Table];
 	public readonly types = TableInsight.types;
 
