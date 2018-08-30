@@ -417,14 +417,6 @@ export default class QueryRunner {
 		let copyString = '';
 		const eol = this.getEolString();
 
-
-		if (self.shouldIncludeHeaders(includeHeaders)) {
-			let columnHeaders = self.getColumnHeaders(batchId, resultId, selection[0]);
-			if (columnHeaders !== undefined) {
-				copyString += columnHeaders.join('\t') + eol;
-			}
-		}
-
 		// create a mapping of the ranges to get promises
 		let tasks = selection.map((range, i) => {
 			return () => {
@@ -433,6 +425,13 @@ export default class QueryRunner {
 					// when there are multiple selections they are never on the same line
 					if (i > 0) {
 						copyString += eol;
+					}
+
+					if (self.shouldIncludeHeaders(includeHeaders)) {
+						let columnHeaders = self.getColumnHeaders(batchId, resultId, range);
+						if (columnHeaders !== undefined) {
+							copyString += columnHeaders.join('\t') + eol;
+						}
 					}
 
 					// Iterate over the rows to paste into the copy string
