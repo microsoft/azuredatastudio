@@ -80,7 +80,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this._uri = uri.toString();
-		this.uri = this._uri;
+		this.editorUri = this._uri;
 		return uri;
 	}
 
@@ -133,7 +133,8 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		if (this.languageMode !== this._languageMode) {
 			this.updateLanguageMode();
 		}
-		// Intentionally not setting URI for now as it is readonly.
+		// Intentionally always updating editorUri as it's wiped out by parent setProperties call.
+		this.editorUri = this._uri;
 	}
 
 	// CSS-bound properties
@@ -161,11 +162,11 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
 	}
 
-	public get uri(): string {
+	public get editorUri(): string {
 		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUri, '');
 	}
 
-	public set uri(newValue: string) {
+	public set editorUri(newValue: string) {
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
 	}
 }
