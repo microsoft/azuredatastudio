@@ -575,13 +575,61 @@
                     ],
                     "statistics": [],
                     "flags": "preview"
+				  },
+				  {
+                    "extensionId": "23",
+                    "extensionName": "import",
+                    "displayName": "SQL Server Import",
+                    "shortDescription": "SQL Server Import for SQL Operations Studio supports importing CSV or JSON files into SQL Server.",
+					"publisher": {
+						"displayName":"Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName":"Microsoft"
+					},
+                    "versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "8/29/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+								"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
+								}
+							],
+							"properties": [
+							{ "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
+							{ "key": "Microsoft.VisualStudio.Code.Engine", "value": ">=0.32.1" },
+							{ "key": "Microsoft.VisualStudio.Services.Links.Source", "value":"https://github.com/Microsoft/sqlopsstudio"}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
                   }
 		],
 		"resultMetadata": [{
 			"metadataType": "ResultCount",
 			"metadataItems": [{
 				"name": "TotalCount",
-				"count": 8
+				"count": 13
 			}]
 		}]
 	}]
