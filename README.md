@@ -4,7 +4,7 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio June Public Preview**
+**Download SQL Operations Studio August Public Preview**
 
 Platform | Link
 -- | --
