@@ -67,13 +67,13 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
-		if (!configuration || isArray(configuration.dataProvider)) {
+		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
 		} else {
 			this._data = configuration.dataProvider;
 		}
 
-		if (configuration.columns) {
+		if (configuration && configuration.columns) {
 			this._columns = configuration.columns;
 		} else {
 			this._columns = new Array<Slick.Column<T>>();
@@ -105,7 +105,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
 		DOM.addClass(this._container, this.idPrefix);
-		if (configuration.sorter) {
+		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
 				this._sorter.sort(args);
