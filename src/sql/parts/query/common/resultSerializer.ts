@@ -68,7 +68,13 @@ export class ResultSerializer {
 		// prompt for filepath
 		return self.promptForFilepath(saveRequest).then(filePath => {
 			if (filePath) {
-				return self.sendRequestToService(filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
+				let selection: Slick.Range = undefined;
+				if (saveRequest.selection) {
+					let fromSelection = saveRequest.selection[0];
+					let toSelection = saveRequest.selection[saveRequest.selection.length - 1];
+					selection = new Slick.Range(fromSelection.fromRow, fromSelection.fromCell, toSelection.toRow, toSelection.toCell);
+				}
+				return self.sendRequestToService(filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, selection);
 			}
 			return Promise.resolve(undefined);
 		});
