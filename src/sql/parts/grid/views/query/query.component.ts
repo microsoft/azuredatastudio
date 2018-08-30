@@ -92,7 +92,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			hoverText: () => { return LocalizedConstants.saveCSVLabel; },
 			functionality: (batchId, resultId, index) => {
 				let selection = this.getSelection(index);
-				if (selection.length <= 1 || this.isSelectAll(selection.length)) {
+				let columns = selection[0].toCell - selection[0].fromCell + 1;
+				if (selection.length <= 1 || this.isSelectAll(selection.length, columns)) {
 					this.handleContextClick({ type: 'savecsv', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
 					this.dataService.showWarning(LocalizedConstants.msgCannotSaveMultipleSelections);
@@ -105,7 +106,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			hoverText: () => { return LocalizedConstants.saveJSONLabel; },
 			functionality: (batchId, resultId, index) => {
 				let selection = this.getSelection(index);
-				if (selection.length <= 1 || this.isSelectAll(selection.length)) {
+				let columns = selection[0].toCell - selection[0].fromCell + 1;
+				if (selection.length <= 1 || this.isSelectAll(selection.length, columns)) {
 					this.handleContextClick({ type: 'savejson', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
 					this.dataService.showWarning(LocalizedConstants.msgCannotSaveMultipleSelections);
@@ -118,7 +120,8 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			hoverText: () => { return LocalizedConstants.saveExcelLabel; },
 			functionality: (batchId, resultId, index) => {
 				let selection = this.getSelection(index);
-				if (selection.length <= 1 || this.isSelectAll(selection.length)) {
+				let columns = selection[0].toCell - selection[0].fromCell + 1;
+				if (selection.length <= 1 || this.isSelectAll(selection.length, columns)) {
 					this.handleContextClick({ type: 'saveexcel', batchId: batchId, resultId: resultId, index: index, selection: selection });
 				} else {
 					this.dataService.showWarning(LocalizedConstants.msgCannotSaveMultipleSelections);
