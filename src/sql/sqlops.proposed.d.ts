@@ -121,7 +121,7 @@ declare module 'sqlops' {
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
 
 		/**
-		 * Inserts a from component in a given position in the form
+		 * Inserts a from component in a given position in the form. Returns error given invalid index
 		 * @param formComponent Form component
 		 * @param index index to insert the component to
 		 * @param itemLayout Item Layout
@@ -132,7 +132,7 @@ declare module 'sqlops' {
 		 * Removes a from item from the from
 		 * @param formComponent
 		 */
-		removeFormItem(formComponent: FormComponent | FormComponentGroup): void;
+		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
 	export interface Component {
@@ -215,6 +215,7 @@ declare module 'sqlops' {
 
 		/**
 		 * Creates a child component and adds it to this container.
+		 * Adding component to multiple containers is not supported
 		 *
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
@@ -222,7 +223,8 @@ declare module 'sqlops' {
 		addItem(component: Component, itemLayout?: TItemLayout): void;
 
 		/**
-		 * Creates a child component and inserts it to this container.
+		 * Creates a child component and inserts it to this container. Returns error given invalid index
+		 * Adding component to multiple containers is not supported
 		 * @param component the component to be added
 		 * @param index the index to insert the component to
 		 * @param {*} [itemLayout] Optional layout for this child item
@@ -233,7 +235,7 @@ declare module 'sqlops' {
 		 *
 		 * @param component Removes a component from this container
 		 */
-		removeItem(component: Component): void;
+		removeItem(component: Component): boolean;
 
 		/**
 		 * Defines the layout for this container

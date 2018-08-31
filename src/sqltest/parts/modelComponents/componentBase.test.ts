@@ -145,30 +145,24 @@ suite('ComponentBase Tests', () => {
 		done();
 	});
 
-	test('Inserting a component to a container given negative index adds the component to the end of the list', done => {
+	test('Inserting a component to a container given negative index fails', done => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		assert.equal(testContainer.TestItems.length, 1);
-		testContainer.addToContainer(testComponent2.descriptor, undefined, -1);
-		assert.equal(testContainer.TestItems.length, 2);
-		assert.equal(testContainer.TestItems[1].descriptor.id, testComponent2.descriptor.id);
+		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, -1));
 		done();
 	});
 
-	test('Inserting a component to a container given wrong index adds the component to the end of the list', done => {
+	test('Inserting a component to a container given wrong index fails', done => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		assert.equal(testContainer.TestItems.length, 1);
-		testContainer.addToContainer(testComponent2.descriptor, undefined, 10);
-		assert.equal(testContainer.TestItems.length, 2);
-		assert.equal(testContainer.TestItems[1].descriptor.id, testComponent2.descriptor.id);
+		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 10));
 		done();
 	});
 
-	test('Inserting a component to a container given end of list index adds the component to the end of the list', done => {
+	test('Inserting a component to a container given end of list fails', done => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		assert.equal(testContainer.TestItems.length, 1);
-		testContainer.addToContainer(testComponent2.descriptor, undefined, 1);
-		assert.equal(testContainer.TestItems.length, 2);
-		assert.equal(testContainer.TestItems[1].descriptor.id, testComponent2.descriptor.id);
+		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 1));
 		done();
 	});
 

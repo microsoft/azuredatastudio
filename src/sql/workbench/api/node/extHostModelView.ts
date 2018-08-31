@@ -335,7 +335,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 				let layout = component.layout || itemLayout;
 				let itemConfig = this.convertToItemConfig(component, layout);
 				itemConfig.config.isInGroup = true;
-				this._component.addItem(component.component as ComponentWrapper, itemConfig.config, componentIndex);
+				this._component.insertItem(component.component as ComponentWrapper, componentIndex, itemConfig.config);
 				if (componentIndex) {
 					componentIndex ++;
 				}
@@ -349,13 +349,14 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		}
 	}
 
-	removeFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup): void {
+	removeFormItem(formComponent: sqlops.FormComponent | sqlops.FormComponentGroup): boolean {
 		let componentGroup = formComponent as sqlops.FormComponentGroup;
+		let result: boolean = false;
 		if (componentGroup && componentGroup.components !== undefined) {
 			let firstComponent = componentGroup.components[0];
 			let index = this._component.itemConfigs.findIndex(x => x.component.id === firstComponent.component.id);
 			if (index) {
-				this._component.removeItemAt(index - 1);
+				result = this._component.removeItemAt(index - 1);
 			}
 			componentGroup.components.forEach(element => {
 				this.removeComponentActions(element);
@@ -364,10 +365,11 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 		} else {
 			formComponent = formComponent as sqlops.FormComponent;
 			if (formComponent) {
-				this._component.removeItem(formComponent.component as ComponentWrapper);
+				result = this._component.removeItem(formComponent.component as ComponentWrapper);
 				this.removeComponentActions(formComponent);
 			}
 		}
+		return result;
 	}
 }
 
@@ -508,19 +510,22 @@ class ComponentWrapper implements sqlops.Component {
 		}
 	}
 
-	public removeItemAt(index: number): void {
+	public removeItemAt(index: number): boolean {
 		if (index >= 0 && index < this.itemConfigs.length) {
 			let itemConfig = this.itemConfigs[index];
 			this._proxy.$removeFromContainer(this._handle, this.id, itemConfig.toIItemConfig());
 			this.itemConfigs.splice(index, 1);
+			return true;
 		}
+		return false;
 	}
 
-	public removeItem(item: sqlops.Component): void {
+	public removeItem(item: sqlops.Component): boolean {
 		let index = this.itemConfigs.findIndex(c => c.component.id === item.id);
 		if (index >= 0 && index < this.itemConfigs.length) {
-			this.removeItemAt(index);
+			return this.removeItemAt(index);
 		}
+		return false;
 	}
 
 	public insertItem(item: sqlops.Component, index: number, itemLayout?: any) {
@@ -535,8 +540,10 @@ class ComponentWrapper implements sqlops.Component {
 		let config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index < this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
-		} else {
+		} else if (!index) {
 			this.itemConfigs.push(config);
+		} else {
+			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
 		}
 		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, this.handleError);
 	}

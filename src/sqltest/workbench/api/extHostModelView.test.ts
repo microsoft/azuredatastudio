@@ -18,7 +18,6 @@ interface InternalItemConfig {
 	toIItemConfig(): IItemConfig;
 }
 interface IWithItemConfig {
-
 	itemConfigs?: InternalItemConfig[];
 }
 
@@ -247,7 +246,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		assert.equal((flex as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown);
 	});
 
-	test('Inserting component give negative number inserts to the end', () => {
+	test('Inserting component give negative number fails', () => {
 		// Set up the mock proxy to save the component that gets initialized so that it can be verified
 		let rootComponent: IComponentShape;
 		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
@@ -264,12 +263,10 @@ suite('ExtHostModelView Validation Tests', () => {
 		modelView.initializeModel(flex);
 
 		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
-		flex.insertItem(dropDown, -1);
-		assert.equal((flex as IWithItemConfig).itemConfigs.length, 3);
-		assert.equal((flex as IWithItemConfig).itemConfigs[2].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown);
+		assert.throws(() => flex.insertItem(dropDown, -1));
 	});
 
-	test('Inserting component give wrong number inserts to the end', () => {
+	test('Inserting component give wrong number fails', () => {
 		// Set up the mock proxy to save the component that gets initialized so that it can be verified
 		let rootComponent: IComponentShape;
 		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
@@ -286,12 +283,10 @@ suite('ExtHostModelView Validation Tests', () => {
 		modelView.initializeModel(flex);
 
 		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
-		flex.insertItem(dropDown, 10);
-		assert.equal((flex as IWithItemConfig).itemConfigs.length, 3);
-		assert.equal((flex as IWithItemConfig).itemConfigs[2].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown);
+		assert.throws(() => flex.insertItem(dropDown, 10));
 	});
 
-	test('Inserting component give end of the list inserts to the end', () => {
+	test('Inserting component give end of the list fails', () => {
 		// Set up the mock proxy to save the component that gets initialized so that it can be verified
 		let rootComponent: IComponentShape;
 		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
@@ -308,9 +303,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		modelView.initializeModel(flex);
 
 		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
-		flex.insertItem(dropDown, 2);
-		assert.equal((flex as IWithItemConfig).itemConfigs.length, 3);
-		assert.equal((flex as IWithItemConfig).itemConfigs[2].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown);
+		assert.throws(() => flex.insertItem(dropDown, 2));
 	});
 
 	test('Removing a component that does not exist does not fail', () => {
@@ -328,7 +321,8 @@ suite('ExtHostModelView Validation Tests', () => {
 		let flex = modelView.modelBuilder.flexContainer().withItems([listBox, inputBox]).component();
 		modelView.initializeModel(flex);
 
-		flex.removeItem(dropDown);
+		let result = flex.removeItem(dropDown);
+		assert.equal(result, false);
 		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
 		assert.equal((flex as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox);
 	});
@@ -382,7 +376,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		assert.equal((form as IWithItemConfig).itemConfigs.length, 4);
 		formBuilder.removeFormItem(groupItems);
 		assert.equal((form as IWithItemConfig).itemConfigs.length, 1);
-		formBuilder.insertFormItem(listBoxFormItem, 1);
+		formBuilder.addFormItem(listBoxFormItem);
 		assert.equal((form as IWithItemConfig).itemConfigs.length, 2);
 		assert.equal((form as IWithItemConfig).itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox);
 	});

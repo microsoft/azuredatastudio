@@ -132,7 +132,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public layout(): void {
 		this.layoutTable();
-
 		super.layout();
 	}
 
