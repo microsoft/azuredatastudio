@@ -71,7 +71,16 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent);
+		this._profilerTable = new Table(parent, {
+			sorter: {
+				sort: (args) => {
+					let input = this.input as ProfilerInput;
+					if (input && input.data) {
+						input.data.sort(args);
+					}
+				}
+			}
+		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		attachTableStyler(this._profilerTable, this._themeService);
 
