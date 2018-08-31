@@ -30,6 +30,7 @@ export class ImageInsight implements IInsight {
 	private imageEle: HTMLImageElement;
 
 	constructor(container: HTMLElement, options: IConfig) {
+		this._options = mixin(options, defaultConfig, false);
 		this.imageEle = $('img');
 		container.appendChild(this.imageEle);
 	}
