@@ -132,8 +132,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public layout(): void {
 		this.layoutTable();
-
-		this._changeRef.detectChanges();
+		super.layout();
 	}
 
 	private layoutTable(): void {

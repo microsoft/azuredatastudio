@@ -104,10 +104,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 
 	/// IComponent implementation
 
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout(): void {
 		// TODO allow configuring the look and feel
 		this.layout();
