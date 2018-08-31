@@ -1,15 +1,15 @@
 {
   "name": "import",
   "displayName": "SQL Server Import",
-  "description": "Imports data from a flat file.",
-  "version": "0.0.1",
+  "description": "SQL Server Import for SQL Operations Studio supports importing CSV or JSON files into SQL Server.",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
     "sqlops": "*"
   },
-  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "activationEvents": [
