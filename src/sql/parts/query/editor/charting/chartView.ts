@@ -81,7 +81,7 @@ export class ChartView implements IPanelView {
 		this._copyAction = this._instantiationService.createInstance(CopyAction);
 		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
 
-		this.taskbar.setContent([ { action: this._createInsightAction }]);
+		this.taskbar.setContent([{ action: this._createInsightAction }]);
 
 		let self = this;
 		this.options = new Proxy(this.options, {
@@ -221,7 +221,7 @@ export class ChartView implements IPanelView {
 				{ action: this._saveAction }
 			]);
 		} else {
-			this.taskbar.setContent([ { action: this._createInsightAction }]);
+			this.taskbar.setContent([{ action: this._createInsightAction }]);
 		}
 	}
 
