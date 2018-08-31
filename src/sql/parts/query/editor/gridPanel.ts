@@ -35,10 +35,19 @@ import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/act
 import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-const rowHeight = 29;
-const columnHeight = 26;
-const minGridHeightInRows = 8;
-const estimatedScrollBarHeight = 10;
+const ROW_HEIGHT = 29;
+const HEADER_HEIGHT = 26;
+const MIN_GRID_HEIGHT_ROWS = 8;
+const ESTIMATED_SCROLL_BAR_HEIGHT = 10;
+const BOTTOM_PADDING = 5;
+const ACTIONBAR_WIDTH = 26;
+
+// minimum height needed to show the full actionbar
+const ACTIONBAR_HEIGHT = 100;
+
+// this handles min size if rows is greater than the min grid visible rows
+const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
+
 
 export interface IGridTableState {
 	canBeMaximized: boolean;
@@ -196,6 +205,10 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
+	public layout(size: number) {
+		this.splitView.layout(size);
+	}
+
 	private minimizeTables(): void {
 		if (this.maximizedGrid) {
 			this.maximizedGrid.state.maximized = false;
@@ -207,10 +220,6 @@ export class GridPanel extends ViewletPanel {
 }
 
 class GridTable<T> extends Disposable implements IView {
-	private static BOTTOMPADDING = 5;
-	private static ACTIONBAR_WIDTH = 26;
-	// this is the min height for grids
-	private static MIN_GRID_HEIGHT = (minGridHeightInRows * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -224,6 +233,9 @@ class GridTable<T> extends Disposable implements IView {
 
 	public id = generateUuid();
 
+	// this handles if the row count is small, like 4-5 rows
+	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
+
 	constructor(
 		private runner: QueryRunner,
 		public state: GridTableState,
@@ -234,7 +246,7 @@ class GridTable<T> extends Disposable implements IView {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.container.style.marginBottom = GridTable.BOTTOMPADDING + 'px';
+		this.container.style.marginBottom = BOTTOM_PADDING + 'px';
 		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
@@ -266,7 +278,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		let numberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		this.columns.unshift(numberColumn.getColumnDefinition());
-		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection), columns: this.columns }, { rowHeight, showRowNumber: true }));
+		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection), columns: this.columns }, { rowHeight: ROW_HEIGHT, showRowNumber: true }));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize());
@@ -295,7 +307,7 @@ class GridTable<T> extends Disposable implements IView {
 		);
 
 		let actionBarContainer = document.createElement('div');
-		actionBarContainer.style.width = GridTable.ACTIONBAR_WIDTH + 'px';
+		actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
 		actionBarContainer.style.display = 'inline-block';
 		actionBarContainer.style.height = '100%';
 		actionBarContainer.style.verticalAlign = 'top';
@@ -318,20 +330,19 @@ class GridTable<T> extends Disposable implements IView {
 		}
 		this.table.layout(
 			new Dimension(
-				getContentWidth(this.container) - GridTable.ACTIONBAR_WIDTH,
-				size - GridTable.BOTTOMPADDING
+				getContentWidth(this.container) - ACTIONBAR_WIDTH,
+				size - BOTTOM_PADDING
 			)
 		);
 	}
 
 	public get minimumSize(): number {
-		// this handles if the row count is small, like 4-5 rows
-		let smallestRows = ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
-		return Math.min(smallestRows, GridTable.MIN_GRID_HEIGHT);
+		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
+		return Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT);
 	}
 
 	public get maximumSize(): number {
-		return ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
+		return Math.max(this.maxSize, ACTIONBAR_HEIGHT);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {

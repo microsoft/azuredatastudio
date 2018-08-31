@@ -510,6 +510,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		}
 
 		if (delta !== 0) {
+			this.dirtyState = true;
 			let upIndexes = range(index, -1);
 			let downIndexes = range(index + 1, this.viewItems.length);
 
