@@ -26,7 +26,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { ISelectionData } from 'sqlops';
-import { IEditorGroupsService, IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
+import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
 
@@ -95,7 +95,6 @@ export class QueryEditor extends BaseEditor {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
@@ -107,17 +106,13 @@ export class QueryEditor extends BaseEditor {
 			this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
 
-		if (_editorGroupService) {
-			const toDispose = this._editorService.overrideOpenEditor((editor, options, group) => {
-				toDispose.dispose();
-				return void 0;
+		if (_editorService) {
+			_editorService.overrideOpenEditor((editor, options, group) => {
+				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+					this.saveEditorViewState();
+				}
+				return {};
 			});
-
-			// _editorGroupService.onEditorOpening(e => {
-			// 	if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
-			// 		this.saveEditorViewState();
-			// 	}
-			// });
 		}
 	}
 
