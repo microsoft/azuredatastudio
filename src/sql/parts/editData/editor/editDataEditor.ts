@@ -9,7 +9,6 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
-import { Builder } from 'vs/base/browser/builder';
 
 import { EditorOptions, EditorInput, IEditorControl, IEditor } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -28,22 +27,17 @@ import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import {
 	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
 } from 'sql/parts/editData/execution/editDataActions';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ISelectionData } from 'sqlops';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IEditorGroupsService, IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
-import { IFlexibleSash, VerticalFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
-import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
+import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
-import { IEditorViewState } from 'vs/editor/common/editorCommon';
-import { Emitter } from 'vs/base/common/event';
 import { CancellationToken } from 'vs/base/common/cancellation';
 
 /**
@@ -89,9 +83,7 @@ export class EditDataEditor extends BaseEditor {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService);
 
@@ -99,17 +91,13 @@ export class EditDataEditor extends BaseEditor {
 			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
 
-		if (_editorGroupService) {
-			const toDispose = this._editorService.overrideOpenEditor((editor, options, group) => {
-				toDispose.dispose();
-				return void 0;
+		if (_editorService) {
+			_editorService.overrideOpenEditor((editor, options, group) => {
+				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+					this.saveEditorViewState();
+				}
+				return {};
 			});
-
-			//_editorGroupService.onEditorOpening(e => {
-				// if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
-				// 	this.saveEditorViewState();
-				// }
-			//});
 		}
 	}
 

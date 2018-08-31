@@ -150,17 +150,13 @@ export class ProfilerEditor extends BaseEditor {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (this._editorGroupService) {
-			const toDispose = this._editorService.overrideOpenEditor((editor, options, group) => {
-				toDispose.dispose();
-				return void 0;
+		if (_editorService) {
+			_editorService.overrideOpenEditor((editor, options, group) => {
+				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+					this.saveEditorViewState();
+				}
+				return {};
 			});
-
-			// _editorGroupService.onEditorOpening(e => {
-			// 	if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
-			// 		this.saveEditorViewState();
-			// 	}
-			// });
 		}
 	}
 
@@ -331,20 +327,22 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableContainer.style.width = '100%';
 		detailTableContainer.style.height = '100%';
 		this._detailTableData = new TableDataView<IDetailData>();
-		this._detailTable = new Table(detailTableContainer, { dataProvider: this._detailTableData, columns: [
-			{
-				id: 'label',
-				name: nls.localize('label', "Label"),
-				field: 'label',
-				formatter: textFormatter
-			},
-			{
-				id: 'value',
-				name: nls.localize('profilerEditor.value', "Value"),
-				field: 'value',
-				formatter: textFormatter
-			}
-		]}, { forceFitColumns: true });
+		this._detailTable = new Table(detailTableContainer, {
+			dataProvider: this._detailTableData, columns: [
+				{
+					id: 'label',
+					name: nls.localize('label', "Label"),
+					field: 'label',
+					formatter: textFormatter
+				},
+				{
+					id: 'value',
+					name: nls.localize('profilerEditor.value', "Value"),
+					field: 'value',
+					formatter: textFormatter
+				}
+			]
+		}, { forceFitColumns: true });
 
 		this._tabbedPanel.pushTab({
 			identifier: 'detailTable',
@@ -549,6 +547,14 @@ export class ProfilerEditor extends BaseEditor {
 	private saveEditorViewState(): void {
 		if (this.input && this._profilerTableEditor) {
 			this._savedTableViewStates.set(this.input, this._profilerTableEditor.saveViewState());
+		}
+	}
+
+	public focus() {
+		super.focus();
+		let savedViewState = this._savedTableViewStates.get(this.input);
+		if (savedViewState) {
+			this._profilerTableEditor.restoreViewState(savedViewState);
 		}
 	}
 }
