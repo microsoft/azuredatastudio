@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { Mock, It, Times, MockBehavior } from 'typemoq';
-import { ComponentBase, ContainerBase } from 'sql/parts/modelComponents/componentBase';
+import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/parts/modelComponents/componentBase';
 import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';
 import { ChangeDetectorRef } from '@angular/core';
@@ -41,6 +41,10 @@ class TestContainer extends ContainerBase<TestComponent> {
 		this.baseInit();
 	}
 
+	public get TestItems(): ItemDescriptor<TestComponent>[] {
+		return this.items;
+	}
+
 	ngOnInit() { }
 	setLayout() { }
 
@@ -51,12 +55,14 @@ class TestContainer extends ContainerBase<TestComponent> {
 
 suite('ComponentBase Tests', () => {
 	let testComponent: TestComponent;
+	let testComponent2: TestComponent;
 	let testContainer: TestContainer;
 	let modelStore: IModelStore;
 
 	setup(() => {
 		modelStore = new ModelStore();
 		testComponent = new TestComponent(modelStore, 'testComponent');
+		testComponent2 = new TestComponent(modelStore, 'testComponent2');
 		testContainer = new TestContainer(modelStore, 'testContainer');
 	});
 
@@ -129,6 +135,63 @@ suite('ComponentBase Tests', () => {
 		testContainer.addToContainer(testComponent.descriptor, undefined);
 		testComponent.validate();
 	});
+
+	test('Inserting a component to a container adds the component to the right place', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 1);
+		testContainer.addToContainer(testComponent2.descriptor, undefined, 0);
+		assert.equal(testContainer.TestItems.length, 2);
+		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
+		done();
+	});
+
+	test('Inserting a component to a container given negative index fails', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 1);
+		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, -1));
+		done();
+	});
+
+	test('Inserting a component to a container given wrong index fails', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 1);
+		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 10));
+		done();
+	});
+
+	test('Inserting a component to a container given end of list fails', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 1);
+		assert.throws(() => testContainer.addToContainer(testComponent2.descriptor, undefined, 1));
+		done();
+	});
+
+	test('Removing a component the does not exist does not make change in the items', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 1);
+		testContainer.removeFromContainer(testComponent2.descriptor);
+		assert.equal(testContainer.TestItems.length, 1);
+		done();
+	});
+
+	test('Removing a component removes it from items', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		testContainer.addToContainer(testComponent2.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 2);
+		testContainer.removeFromContainer(testComponent.descriptor);
+		assert.equal(testContainer.TestItems.length, 1);
+		assert.equal(testContainer.TestItems[0].descriptor.id, testComponent2.descriptor.id);
+		done();
+	});
+
+	test('Container dost not add same component twice', done => {
+		testContainer.addToContainer(testComponent.descriptor, undefined);
+		assert.equal(testContainer.TestItems.length, 1);
+		testContainer.addToContainer(testComponent.descriptor, 0);
+		assert.equal(testContainer.TestItems.length, 1);
+		done();
+	});
+
 
 	test('Component convert size should add px', done => {
 		let expected = '100px';

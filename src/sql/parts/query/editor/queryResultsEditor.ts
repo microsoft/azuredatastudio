@@ -151,6 +151,10 @@ export class QueryResultsEditor extends BaseEditor {
 		return TPromise.wrap<void>(null);
 	}
 
+	public chart(dataId: { batchId: number, resultId: number }) {
+		this.resultsView.chartData(dataId);
+	}
+
 	public dispose(): void {
 		super.dispose();
 	}

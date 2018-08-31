@@ -16,22 +16,13 @@ import * as UUID from 'vs/base/common/uuid';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { Emitter } from 'vs/base/common/event';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { ChartTab } from './charting/chartTab';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
 	private gridPanel: GridPanel;
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
-
-	private _onRemove = new Emitter<void>();
-	public readonly onRemove = this._onRemove.event;
-
-	private _onLayout = new Emitter<void>();
-	public readonly onLayout = this._onLayout.event;
-
-	private queryRunnerDisposable: IDisposable[] = [];
 
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
@@ -61,6 +52,10 @@ class ResultsView implements IPanelView {
 		this.gridPanel.queryRunner = runner;
 		this.messagePanel.queryRunner = runner;
 	}
+
+	public hideResultHeader() {
+		this.gridPanel.headerVisible = false;
+	}
 }
 
 class ResultsTab implements IPanelTab {
@@ -68,17 +63,8 @@ class ResultsTab implements IPanelTab {
 	public readonly identifier = UUID.generateUuid();
 	public readonly view: ResultsView;
 
-	private _isAttached = false;
-
 	constructor(instantiationService: IInstantiationService) {
 		this.view = new ResultsView(instantiationService);
-
-		this.view.onLayout(() => this._isAttached = true, this);
-		this.view.onRemove(() => this._isAttached = false, this);
-	}
-
-	public isAttached(): boolean {
-		return this._isAttached;
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -90,6 +76,7 @@ export class QueryResultsView {
 	private _panelView: TabbedPanel;
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
+	private chartTab: ChartTab;
 
 	constructor(
 		container: HTMLElement,
@@ -97,19 +84,20 @@ export class QueryResultsView {
 		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		this.resultsTab = new ResultsTab(instantiationService);
+		this.chartTab = new ChartTab(instantiationService);
 		this._panelView = new TabbedPanel(container, { showHeaderWhenSingleView: false });
 	}
 
 	public style() {
-
 	}
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
-		this.resultsTab.queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
-		// if (!this.resultsTab.isAttached) {
+		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
+		this.resultsTab.queryRunner = queryRunner;
+		this.chartTab.queryRunner = queryRunner;
+
 		this._panelView.pushTab(this.resultsTab);
-		// }
 	}
 
 	public get input(): QueryResultsInput {
@@ -118,5 +106,15 @@ export class QueryResultsView {
 
 	public layout(dimension: DOM.Dimension) {
 		this._panelView.layout(dimension);
+	}
+
+	public chartData(dataId: { resultId: number, batchId: number }): void {
+		if (!this._panelView.contains(this.chartTab)) {
+			this._panelView.pushTab(this.chartTab);
+			this.resultsTab.view.hideResultHeader();
+		}
+
+		this._panelView.showTab(this.chartTab.identifier);
+		this.chartTab.chart(dataId);
 	}
 }

@@ -123,12 +123,11 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	/// IComponent implementation
 
 	public layout(): void {
-		this._changeRef.detectChanges();
 		if (this._tree) {
-
 			this.layoutTree();
 			this._tree.refresh();
 		}
+		super.layout();
 	}
 
 	private layoutTree(): void {

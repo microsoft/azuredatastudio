@@ -53,6 +53,10 @@
     normalize-path "^2.0.1"
     through2 "^2.0.3"
 
+"@types/chart.js@^2.7.31":
+  version "2.7.31"
+  resolved "https://registry.yarnpkg.com/@types/chart.js/-/chart.js-2.7.31.tgz#fe2c28d3defa461f5d5cd01f1fac635df649472b"
+
 "@types/commander@^2.11.0":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@types/commander/-/commander-2.12.2.tgz#183041a23842d4281478fa5d23c5ca78e6fd08ae"
