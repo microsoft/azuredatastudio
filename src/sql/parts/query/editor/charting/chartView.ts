@@ -25,7 +25,6 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Emitter, Event } from 'vs/base/common/event';
 
 declare class Proxy {
 	constructor(object, handler);
@@ -120,10 +119,6 @@ export class ChartView implements IPanelView {
 		if (this.insight) {
 			this.insight.layout(new Dimension(getContentWidth(this.graphContainer), getContentHeight(this.graphContainer)));
 		}
-	}
-
-	remove?(): void {
-		// throw new Error("Method not implemented.");
 	}
 
 	public set queryRunner(runner: QueryRunner) {
