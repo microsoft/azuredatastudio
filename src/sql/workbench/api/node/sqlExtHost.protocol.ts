@@ -446,6 +446,8 @@ export interface MainThreadAccountManagementShape extends IDisposable {
 	$endAutoOAuthDeviceCode(): void;
 
 	$accountUpdated(updatedAccount: sqlops.Account): void;
+
+	$getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
 }
 
 export interface MainThreadResourceProviderShape extends IDisposable {
@@ -499,7 +501,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
-	$openConnectionDialog(providers: string[]): Thenable<sqlops.connection.Connection>;
+	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile): Thenable<sqlops.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;

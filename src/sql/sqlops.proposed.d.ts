@@ -1179,6 +1179,6 @@ declare module 'sqlops' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
+		export function openConnectionDialog(provider?: string[], initialConnectionProfile?: IConnectionProfile): Thenable<connection.Connection>;
 	}
 }
