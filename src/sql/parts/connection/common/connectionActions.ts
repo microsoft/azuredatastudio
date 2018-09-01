@@ -18,6 +18,7 @@ import { IObjectExplorerService } from '../../objectExplorer/common/objectExplor
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -147,7 +148,8 @@ export class GetCurrentConnectionStringAction extends Action {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorService private _editorService: IEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@INotificationService private readonly _notificationService: INotificationService
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IClipboardService private _clipboardService: IClipboardService,
 	) {
 		super(GetCurrentConnectionStringAction.ID, GetCurrentConnectionStringAction.LABEL);
 		this.enabled = true;
@@ -161,6 +163,10 @@ export class GetCurrentConnectionStringAction extends Action {
 				let includePassword = false;
 				let connectionProfile = this._connectionManagementService.getConnectionProfile(activeInput.uri);
 				this._connectionManagementService.getConnectionString(connectionProfile.id, includePassword).then(result => {
+
+					//Copy to clipboard
+					this._clipboardService.writeText(result);
+
 					let message = result
 						? result
 						: nls.localize('connectionAction.connectionString', "Connection string not available");

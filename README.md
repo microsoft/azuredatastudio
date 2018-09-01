@@ -4,16 +4,16 @@
 
 SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio June Public Preview**
+**Download SQL Operations Studio August Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2005949
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2005950
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2005959
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2005960
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2006083
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2006084
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2013365
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2013712
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2013715
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2013718
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2013830
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2013833
 
 Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
 
@@ -61,6 +61,16 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* SebastianPfliegel `Added more saveAsCsv options #2099`
+* ianychoi `Fixes a typo: Mimunum -> Minimum #1994`
+* AlexFsmn `Fixed bug where proper file extension wasn't appended to filename. #2151`
+* AlexFsmn `Added functionality for adding any file to import wizard #2329`
+* AlexFsmn `Fixed background issue when copying a chart to clipboard #2215`
+* AlexFsmn `Fixed problem where vertical charts didn't display labels correctly. #2263`
+* AlexFsmn `Fixed Initial values for charts to match visuals #2266`
+* AlexFsmn `Renamed chart option labels #2264`
+* AlexFsmn `Added feature for opening file after exporting to CSV/XLS/JSON & query files #2216`
+* AlexFsmm `Get Connection String should copy to clipboard #2175`
 * lanceklinger `Fix for double clicking column handle in results table #1504`
 * westerncj for `Removed duplicate contribution from README.md (#753)`
 * ntovas for `Fix for duplicate extensions shown in "Save File" dialog. (#779)`
