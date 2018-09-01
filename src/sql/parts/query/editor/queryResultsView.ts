@@ -10,13 +10,14 @@ import { IQueryModelService } from '../execution/queryModel';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { MessagePanel } from './messagePanel';
 import { GridPanel } from './gridPanel';
+import { ChartTab } from './charting/chartTab';
+import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
 
 import * as nls from 'vs/nls';
 import * as UUID from 'vs/base/common/uuid';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { ChartTab } from './charting/chartTab';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -77,6 +78,7 @@ export class QueryResultsView {
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
 	private chartTab: ChartTab;
+	private qpTab: QueryPlanTab;
 
 	constructor(
 		container: HTMLElement,
@@ -86,6 +88,7 @@ export class QueryResultsView {
 		this.resultsTab = new ResultsTab(instantiationService);
 		this.chartTab = new ChartTab(instantiationService);
 		this._panelView = new TabbedPanel(container, { showHeaderWhenSingleView: false });
+		this.qpTab = new QueryPlanTab();
 	}
 
 	public style() {
@@ -116,5 +119,13 @@ export class QueryResultsView {
 
 		this._panelView.showTab(this.chartTab.identifier);
 		this.chartTab.chart(dataId);
+	}
+
+	public showPlan() {
+		if (!this._panelView.contains(this.qpTab)) {
+			this._panelView.pushTab(this.qpTab);
+		}
+
+		this._panelView.showTab(this.qpTab.identifier);
 	}
 }
