@@ -416,7 +416,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	private placeholdGenerator(index: number): any {
-		return { };
+		return {};
 	}
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {
