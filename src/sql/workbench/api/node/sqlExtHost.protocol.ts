@@ -604,7 +604,7 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void;
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionFolderPath: string): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);

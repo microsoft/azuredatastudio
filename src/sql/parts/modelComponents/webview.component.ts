@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 import { Event, Emitter } from 'vs/base/common/event';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
@@ -16,7 +17,10 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
+import { WebviewElement, WebviewOptions } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
+import URI from 'vs/base/common/uri';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
@@ -29,6 +33,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
+	private static readonly standardSupportedLinkSchemes = ['http', 'https', 'mailto'];
+
 	private _webview: WebviewElement;
 	private _onMessage = new Emitter<any>();
 	private _renderedHtml: string;
@@ -40,7 +46,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(IPartService) private partService: IPartService,
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(IOpenerService) private readonly _openerService: IOpenerService,
+		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService
+
+
 	) {
 		super(changeRef);
 	}
@@ -67,6 +77,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			}
 		));
 		this._webview.mountTo(this._el.nativeElement);
+
+		this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
 
 		this._register(this._webview.onMessage(e => {
 			this._onEventEmitter.fire({
@@ -99,6 +111,23 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		}
 	}
 
+	private onDidClickLink(link: URI): any {
+		if (!link) {
+			return;
+		}
+		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0 || this.enableCommandUris() && link.scheme === 'command') {
+			this._openerService.open(link);
+		}
+	}
+
+	private enableCommandUris(): boolean {
+		if (this.options && this.options.enableCommandUris) {
+			return true;
+		}
+		return false;
+	}
+
+
 	/// IComponent implementation
 
 	public layout(): void {
@@ -112,10 +141,14 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		if (this.options) {
+			this._webview.options = this.getExtendedOptions();
+		}
 		if (this.html !== this._renderedHtml) {
 			this.setHtml();
 		}
 		this.sendMessage();
+
 	}
 
 	// CSS-bound properties
@@ -134,5 +167,32 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	public set html(newValue: string) {
 		this.setPropertyFromUI<sqlops.WebViewProperties, string>((properties, html) => { properties.html = html; }, newValue);
+	}
+
+	public get options(): vscode.WebviewOptions {
+		return this.getPropertyOrDefault<sqlops.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
+	}
+
+	public get extensionFolderPath(): string {
+		return this.getPropertyOrDefault<sqlops.WebViewProperties, string>((props) => props.extensionFolderPath, '');
+	}
+
+	private getExtendedOptions(): WebviewOptions {
+		let options = this.options || { enableScripts: true };
+		return {
+			allowScripts: options.enableScripts,
+			allowSvgs: true,
+			enableWrappedPostMessage: true,
+			useSameOriginForRoot: false,
+			localResourceRoots: options!.localResourceRoots || this.getDefaultLocalResourceRoots()
+		};
+	}
+
+	private getDefaultLocalResourceRoots(): URI[] {
+		const rootPaths = this._contextService.getWorkspace().folders.map(x => x.uri);
+		if (this.extensionFolderPath) {
+			rootPaths.push(URI.parse(this.extensionFolderPath));
+		}
+		return rootPaths;
 	}
 }

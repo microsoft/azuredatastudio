@@ -500,7 +500,18 @@ declare module 'sqlops' {
 
 	export interface WebViewProperties {
 		message?: any;
+
+		/**
+		 * Contents of the webview.
+		 *
+		 * Should be a complete html document.
+		 */
 		html?: string;
+		/**
+		 * Content settings for the webview.
+		 */
+		options: vscode.WebviewOptions;
+
 	}
 
 	/**
@@ -595,6 +606,7 @@ declare module 'sqlops' {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
+		readonly options: vscode.WebviewOptions;
 	}
 
 	/**

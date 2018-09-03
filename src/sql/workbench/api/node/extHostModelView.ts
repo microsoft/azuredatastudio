@@ -24,7 +24,9 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
 		private readonly _mainContext: IMainContext,
-		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape) {
+		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		private readonly _extensionFolderPath: string
+	) {
 		this.nextComponentId = 0;
 	}
 
@@ -107,7 +109,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	webView(): sqlops.ComponentBuilder<sqlops.WebViewComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extensionFolderPath), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -804,10 +806,11 @@ class CheckBoxWrapper extends ComponentWrapper implements sqlops.CheckBoxCompone
 }
 
 class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, private _extensionFolderPath: string) {
 		super(proxy, handle, ModelComponentTypes.WebView, id);
-		this.properties = {};
+		this.properties = {
+			'extensionFolderPath': this._extensionFolderPath
+		};
 		this._emitterMap.set(ComponentEventType.onMessage, new Emitter<any>());
 	}
 
@@ -829,6 +832,16 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 		let emitter = this._emitterMap.get(ComponentEventType.onMessage);
 		return emitter && emitter.event;
 	}
+
+	public get options(): vscode.WebviewOptions {
+		return this.properties['options'];
+	}
+	public set options(o: vscode.WebviewOptions) {
+		this.setProperty('options', o);
+	}
+
+
+
 }
 
 class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
@@ -1168,9 +1181,10 @@ class ModelViewImpl implements sqlops.ModelView {
 		private readonly _connection: sqlops.connection.Connection,
 		private readonly _serverInfo: sqlops.ServerInfo,
 		private readonly mainContext: IMainContext,
-		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape
+		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		private readonly _extensionFolderPath: string
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree, _extensionFolderPath);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1221,7 +1235,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	private readonly _modelViews = new Map<number, ModelViewImpl>();
 	private readonly _handlers = new Map<string, (view: sqlops.ModelView) => void>();
-
+	private readonly _handlerToExtensionPath = new Map<string, string>();
 	constructor(
 		private _mainContext: IMainContext,
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
@@ -1235,13 +1249,15 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		this._modelViews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionFolderPath: string): void {
 		this._handlers.set(widgetId, handler);
+		this._handlerToExtensionPath.set(widgetId, extensionFolderPath);
 		this._proxy.$registerProvider(widgetId);
 	}
 
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void {
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree);
+		let extensionfolderPath = this._handlerToExtensionPath.get(id);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree, extensionfolderPath);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}
