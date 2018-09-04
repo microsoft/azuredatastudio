@@ -33,7 +33,6 @@ VersionInfoVersion={#RawVersion}
 ShowLanguageDialog=auto
 ArchitecturesAllowed={#ArchitecturesAllowed}
 ArchitecturesInstallIn64BitMode={#ArchitecturesInstallIn64BitMode}
-SignTool=esrp
 
 #if "user" == InstallTarget
 DefaultDirName={userpf}\{#DirName}
@@ -75,7 +74,6 @@ Name: "runcode"; Description: "{cm:RunAfter,{#NameShort}}"; GroupDescription: "{
 
 [Files]
 Source: "*"; Excludes: "\tools,\tools\*,\resources\app\product.json"; DestDir: "{code:GetDestDir}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "tools\*"; DestDir: "{app}\tools"; Flags: ignoreversion
 Source: "{#ProductJsonPath}"; DestDir: "{code:GetDestDir}\resources\app"; Flags: ignoreversion
 
 [Icons]
@@ -88,6 +86,11 @@ Filename: "{app}\{#ExeBasename}.exe"; Description: "{cm:LaunchProgram,{#NameLong
 Filename: "{app}\{#ExeBasename}.exe"; Description: "{cm:LaunchProgram,{#NameLong}}"; Flags: nowait postinstall; Check: WizardNotSilent
 
 [Registry]
+#if "user" == InstallTarget
+#define SoftwareClassesRootKey "HKCU"
+#else
+#define SoftwareClassesRootKey "HKLM"
+#endif
 Root: HKCR; Subkey: "{#RegValueName}SourceFile"; ValueType: string; ValueName: ""; ValueData: "{cm:SourceFile,{#NameLong}}"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "{#RegValueName}SourceFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\resources\app\resources\win32\code_file.ico"
 Root: HKCR; Subkey: "{#RegValueName}SourceFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeBasename}.exe"" ""%1"""
@@ -99,6 +102,20 @@ Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql"; ValueType: string; V
 Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql"; ValueType: string; ValueName: "AppUserModelID"; ValueData: "{#AppUserId}"; Flags: uninsdeletekey; Tasks: associatewithfiles
 Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\resources\app\resources\win32\code_file.ico"; Tasks: associatewithfiles
 Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeBasename}.exe"" ""%1"""; Tasks: associatewithfiles
+; Environment
+#if "user" == InstallTarget
+#define EnvironmentRootKey "HKCU"
+#define EnvironmentKey "Environment"
+#define Uninstall64RootKey "HKCU64"
+#define Uninstall32RootKey "HKCU32"
+#else
+#define EnvironmentRootKey "HKLM"
+#define EnvironmentKey "System\CurrentControlSet\Control\Session Manager\Environment"
+#define Uninstall64RootKey "HKLM64"
+#define Uninstall32RootKey "HKLM32"
+#endif
+
+Root: {#EnvironmentRootKey}; Subkey: "{#EnvironmentKey}"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}\bin"; Tasks: addtopath; Check: NeedsAddPath(ExpandConstant('{app}\bin'))
 
 [Code]
 // Don't allow installing conflicting architectures

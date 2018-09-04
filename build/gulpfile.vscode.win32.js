@@ -44,8 +44,9 @@ function packageInnoSetup(iss, options, cb) {
 	const defs = keys.map(key => `/d${key}=${definitions[key]}`);
 	const args = [
 		iss,
-		...defs,
-		`/sesrp=powershell.exe -ExecutionPolicy bypass ${signPS1} $f`
+		...defs
+		//,
+		//`/sesrp=powershell.exe -ExecutionPolicy bypass ${signPS1} $f`
 	];
 
 	cp.spawn(innoSetupPath, args, { stdio: ['ignore', 'inherit', 'inherit'] })

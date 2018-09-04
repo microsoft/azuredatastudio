@@ -776,7 +776,8 @@ export class BuiltInBasicsExtensionsView extends ExtensionsListView {
 }
 
 export class DefaultRecommendedExtensionsView extends ExtensionsListView {
-	private readonly recommendedExtensionsQuery = '@recommended:all';
+	// {{SQL CARBON EDIT}}
+	private readonly recommendedExtensionsQuery = '@allmarketplace';
 
 	renderBody(container: HTMLElement): void {
 		super.renderBody(container);
