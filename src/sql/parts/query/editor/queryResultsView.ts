@@ -121,11 +121,12 @@ export class QueryResultsView {
 		this.chartTab.chart(dataId);
 	}
 
-	public showPlan() {
+	public showPlan(xml: string) {
 		if (!this._panelView.contains(this.qpTab)) {
 			this._panelView.pushTab(this.qpTab);
 		}
 
 		this._panelView.showTab(this.qpTab.identifier);
+		this.qpTab.view.showPlan(xml);
 	}
 }

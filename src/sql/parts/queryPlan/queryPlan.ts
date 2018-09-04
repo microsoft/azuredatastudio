@@ -25,19 +25,34 @@ export class QueryPlanTab implements IPanelTab {
 
 export class QueryPlanView implements IPanelView {
 	private qp: QueryPlan;
+	private xml: string;
+	private container = document.createElement('div');
 
 	public render(container: HTMLElement): void {
-		this.qp = new QueryPlan(container);
+		if (!this.qp) {
+			this.qp = new QueryPlan(this.container);
+			if (this.xml) {
+				this.qp.xml = this.xml;
+			}
+		}
+		container.appendChild(this.container);
 	}
 
 	public layout(dimension: Dimension): void {
+	}
+
+	public showPlan(xml: string) {
+		if (this.qp) {
+			this.qp.xml = xml;
+		} else {
+			this.xml = xml;
+		}
 	}
 }
 
 export class QueryPlan {
 	private _xml: string;
 	constructor(private container: HTMLElement) {
-
 	}
 
 	public set xml(xml: string) {

@@ -183,3 +183,25 @@ export class ChartDataAction extends Action {
 		}
 	}
 }
+
+export class ShowQueryPlanAction extends Action {
+	public static ID = 'showQueryPlan';
+	public static LABEL = localize('showQueryPlan', 'Show Query Plan');
+
+	constructor(
+		@IWorkbenchEditorService private editorService: IWorkbenchEditorService
+	) {
+		super(ShowQueryPlanAction.ID, ShowQueryPlanAction.LABEL);
+	}
+
+	public run(xml: string): TPromise<boolean> {
+		let activeEditor = this.editorService.getActiveEditor();
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.showQueryPlan(xml);
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+
+}
