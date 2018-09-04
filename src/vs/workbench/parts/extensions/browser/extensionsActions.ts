@@ -121,21 +121,7 @@ export class InstallAction extends Action {
 	}
 
 	private install(extension: IExtension): TPromise<void> {
-		// {{SQL CARBON EDIT}}
-		if (this.extension.publisher !== 'Microsoft') {
-			this.windowService.showMessageBox({
-				type: 'warning',
-				buttons: [localize('thirdPartExt.yes', 'Yes'), localize('thirdPartyExt.no', 'No')],
-				message: localize('thirdPartyExtension', 'Disclaimer: "{0}" is a third party extension and might involve security risks. Are you sure you want to install this extension?', this.extension.displayName)
-			}).then(userChoice => {
-				// if the user decides not to install the extension
-				if (userChoice.button === 1) {
-					return TPromise.as(null);
-				} else {
-					return this.installExtension(extension);
-				}
-			});
-		} else {
+		if (extension) {
 			return this.installExtension(extension);
 		}
 		return TPromise.as(null);
@@ -1923,17 +1909,29 @@ export class InstallVSIXAction extends Action {
 			if (!result) {
 				return TPromise.as(null);
 			}
-
-			return TPromise.join(result.map(vsix => this.extensionsWorkbenchService.install(vsix))).then(() => {
-				this.notificationService.prompt(
-					Severity.Info,
-					localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
-					[{
-						label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-						run: () => this.windowService.reloadWindow()
-					}]
-				);
-			});
+			return TPromise.join(result.map(vsix => {
+				this.windowService.showMessageBox({
+					type: 'warning',
+					buttons: [localize('thirdPartExt.yes', 'Yes'), localize('thirdPartyExt.no', 'No')],
+					message: localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?')
+				}).then(userChoice => {
+					// if the user decides not to install the extension
+					if (userChoice.button === 1) {
+						return TPromise.as(null);
+					} else {
+						return this.extensionsWorkbenchService.install(vsix).then(() => {
+							this.notificationService.prompt(
+								Severity.Info,
+								localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
+								[{
+									label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
+									run: () => this.windowService.reloadWindow()
+								}]
+							);
+						});
+					}
+				});
+			}));
 		});
 	}
 }
