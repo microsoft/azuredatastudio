@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -107,7 +107,7 @@ export class ActivitybarPart extends Part {
 		this.updateCompositebar();
 		this.updatePlaceholderComposites();
 	}
-	
+
 	// {{SQL CARBON EDIT}}
 	private getViewlets(): ViewletDescriptor[] {
 		const pinnedViewlets = JSON.parse(this.storageService.get(ActivitybarPart.PINNED_VIEWLETS, StorageScope.GLOBAL, null)) as string[];
