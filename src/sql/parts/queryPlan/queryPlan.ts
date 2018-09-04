@@ -23,7 +23,6 @@ export class QueryPlanTab implements IPanelTab {
 	}
 }
 
-
 export class QueryPlanView implements IPanelView {
 	private qp: QueryPlan;
 
