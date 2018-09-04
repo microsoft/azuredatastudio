@@ -202,6 +202,20 @@
       "displayName": "Microsoft SQL Server",
       "connectionOptions": [
         {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "Name (optional)",
+          "description": "Custom name of the connection",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
           "specialValueType": "serverName",
           "isIdentity": true,
           "name": "server",

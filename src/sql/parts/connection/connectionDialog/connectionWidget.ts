@@ -43,6 +43,7 @@ export class ConnectionWidget {
 	private _serverGroupSelectBox: SelectBox;
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
+	private _connectionNameInputBox: InputBox;
 	private _serverNameInputBox: InputBox;
 	private _databaseNameInputBox: Dropdown;
 	private _userNameInputBox: InputBox;
@@ -154,6 +155,12 @@ export class ConnectionWidget {
 	}
 
 	private fillInConnectionForm(): void {
+		// Connection name
+		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
+		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
+		this._connectionNameInputBox = new InputBox(connectionNameBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: connectionNameOption.displayName });
+
+		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
 		this._serverNameInputBox = new InputBox(serverNameBuilder.getHTMLElement(), this._contextViewService, {
@@ -170,11 +177,13 @@ export class ConnectionWidget {
 			ariaLabel: serverNameOption.displayName
 		});
 
+		// Authentication type
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
 			let authTypeBuilder = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input');
 			DialogHelper.appendInputSelectBox(authTypeBuilder, this._authTypeSelectBox);
 		}
 
+		// Username
 		let self = this;
 		let userNameOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
 		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input');
@@ -185,15 +194,18 @@ export class ConnectionWidget {
 			ariaLabel: userNameOption.displayName
 		});
 
+		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
 		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
 		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._passwordInputBox.inputElement.type = 'password';
 		this._password = '';
 
+		// Remember password
 		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
 		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', false);
 
+		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 
@@ -206,6 +218,7 @@ export class ConnectionWidget {
 			actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
 		});
 
+		// Server group
 		let serverGroupLabel = localize('serverGroup', 'Server group');
 		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, serverGroupLabel, 'connection-label', 'connection-input');
 		DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
@@ -257,6 +270,7 @@ export class ConnectionWidget {
 		// Theme styler
 		this._toDispose.push(attachInputBoxStyler(this._serverNameInputBox, this._themeService));
 		this._toDispose.push(attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+		this._toDispose.push(attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
 		this._toDispose.push(attachInputBoxStyler(this._userNameInputBox, this._themeService));
 		this._toDispose.push(attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
@@ -385,7 +399,7 @@ export class ConnectionWidget {
 
 	public focusOnOpen(): void {
 		this._handleClipboard();
-		this._serverNameInputBox.focus();
+		this._connectionNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();
 	}
@@ -403,6 +417,7 @@ export class ConnectionWidget {
 		if (connectionInfo) {
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
 			this._databaseNameInputBox.value = this.getModelValue(connectionInfo.databaseName);
+			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
 			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
 			this._password = this.getModelValue(connectionInfo.password);
@@ -507,6 +522,10 @@ export class ConnectionWidget {
 		}
 	}
 
+	public get connectionName(): string {
+		return this._connectionNameInputBox.value;
+	}
+
 	public get serverName(): string {
 		return this._serverNameInputBox.value;
 	}
@@ -550,6 +569,7 @@ export class ConnectionWidget {
 	public connect(model: IConnectionProfile): boolean {
 		let validInputs = this.validateInputs();
 		if (validInputs) {
+			model.connectionName = this.connectionName;
 			model.serverName = this.serverName;
 			model.databaseName = this.databaseName;
 			model.userName = this.userName;
