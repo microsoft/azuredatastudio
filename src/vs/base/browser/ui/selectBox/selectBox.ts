@@ -35,7 +35,6 @@ export interface ISelectBoxDelegate {
 }
 
 export interface ISelectBoxOptions {
-	// {{SQL CARBON EDIT}}
 	ariaLabel?: string;
 	minBottomMargin?: number;
 }
