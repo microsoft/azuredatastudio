@@ -229,8 +229,21 @@ export abstract class GridParentComponent {
 	protected getSelection(index?: number): ISlickRange[] {
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
-			selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
-			return selection;
+			// if an actual selection was made
+			if (selection.length > 0) {
+				selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
+				return selection;
+			} else {
+			// if the length of selection if 0, then it's select all
+				this.onSelectAllForActiveGrid();
+				selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
+				if (selection.length > 0) {
+					let fromSelection = selection[0];
+					let toSelection = selection[selection.length - 1];
+					selection = [new Slick.Range(fromSelection.fromRow, fromSelection.fromCell-1, toSelection.toRow, toSelection.toCell-1)];
+				}
+				return selection;
+			}
 		} else {
 			return undefined;
 		}

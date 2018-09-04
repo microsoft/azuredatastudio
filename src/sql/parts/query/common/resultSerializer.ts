@@ -69,7 +69,8 @@ export class ResultSerializer {
 		return self.promptForFilepath(saveRequest).then(filePath => {
 			if (filePath) {
 				let selection: Slick.Range = undefined;
-				if (saveRequest.selection) {
+				// some selection was made
+				if (saveRequest.selection.length > 0) {
 					let fromSelection = saveRequest.selection[0];
 					let toSelection = saveRequest.selection[saveRequest.selection.length - 1];
 					selection = new Slick.Range(fromSelection.fromRow, fromSelection.fromCell, toSelection.toRow, toSelection.toCell);
