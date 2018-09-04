@@ -90,14 +90,14 @@ export class GridPanel extends ViewletPanel {
 	private maximizedGrid: GridTable<any>;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
 	}
 
@@ -219,6 +219,7 @@ class GridTable<T> extends Disposable implements IView {
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
 	public id = generateUuid();
+	readonly element: HTMLElement = this.container;
 
 	constructor(
 		private runner: QueryRunner,

@@ -4,17 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./modelViewEditor';
 
-import { Builder, $ } from 'vs/base/browser/builder';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
-import { Position } from 'vs/platform/editor/common/editor';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class ModelViewEditor extends BaseEditor {
 
@@ -74,7 +72,7 @@ export class ModelViewEditor extends BaseEditor {
 		input.container.style.visibility = 'visible';
 		this._content.setAttribute('aria-flowto', input.container.id);
 
-		await super.setInput(input, options);
+		await super.setInput(input, options, CancellationToken.None);
 		this.doUpdateContainer();
 	}
 

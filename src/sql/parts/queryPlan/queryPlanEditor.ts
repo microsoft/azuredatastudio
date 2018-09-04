@@ -20,6 +20,7 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IQueryPlanParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/parts/queryPlan/queryPlan.component';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 declare let QP;
 
@@ -69,7 +70,7 @@ export class QueryPlanEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: QueryPlanInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: QueryPlanInput, options: EditorOptions): Thenable<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return TPromise.as(undefined);
 		}
@@ -79,7 +80,7 @@ export class QueryPlanEditor extends BaseEditor {
 		}
 		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
-		return super.setInput(input, options);
+		return super.setInput(input, options, CancellationToken.None);
 	}
 
 	/**

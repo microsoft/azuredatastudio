@@ -3,10 +3,10 @@
 		"c": "#",
 		"t": "text.html.markdown markup.heading.markdown heading.1.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -14,10 +14,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.1.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -25,10 +25,10 @@
 		"c": "Header 1",
 		"t": "text.html.markdown markup.heading.markdown heading.1.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -36,10 +36,10 @@
 		"c": " #",
 		"t": "text.html.markdown markup.heading.markdown heading.1.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -47,10 +47,10 @@
 		"c": "##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -58,10 +58,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -69,10 +69,10 @@
 		"c": "Header 2",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -80,10 +80,10 @@
 		"c": " ##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -91,10 +91,10 @@
 		"c": "###",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -102,10 +102,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -113,10 +113,10 @@
 		"c": "Header 3 ###             (Hashes on right are optional)",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -124,10 +124,10 @@
 		"c": "##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -135,10 +135,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -146,10 +146,10 @@
 		"c": "Markdown plus h2 with a custom ID ##   {#id-goes-here}",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -157,10 +157,10 @@
 		"c": "[",
 		"t": "text.html.markdown meta.paragraph.markdown meta.link.inline.markdown punctuation.definition.string.begin.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -168,10 +168,10 @@
 		"c": "Link back to H2",
 		"t": "text.html.markdown meta.paragraph.markdown meta.link.inline.markdown string.other.link.title.markdown",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -179,10 +179,10 @@
 		"c": "]",
 		"t": "text.html.markdown meta.paragraph.markdown meta.link.inline.markdown punctuation.definition.string.end.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -190,10 +190,10 @@
 		"c": "(",
 		"t": "text.html.markdown meta.paragraph.markdown meta.link.inline.markdown punctuation.definition.metadata.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -201,10 +201,10 @@
 		"c": "#id-goes-here",
 		"t": "text.html.markdown meta.paragraph.markdown meta.link.inline.markdown markup.underline.link.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -212,10 +212,10 @@
 		"c": ")",
 		"t": "text.html.markdown meta.paragraph.markdown meta.link.inline.markdown punctuation.definition.metadata.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -223,10 +223,10 @@
 		"c": "###",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -234,10 +234,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -245,10 +245,10 @@
 		"c": "Alternate heading styles:",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -256,10 +256,10 @@
 		"c": "Alternate Header 1",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -267,10 +267,10 @@
 		"c": "==================",
 		"t": "text.html.markdown meta.paragraph.markdown markup.heading.setext.1.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -278,10 +278,10 @@
 		"c": "Alternate Header 2",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -289,10 +289,10 @@
 		"c": "------------------",
 		"t": "text.html.markdown meta.paragraph.markdown markup.heading.setext.2.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -300,10 +300,10 @@
 		"c": "<!--",
 		"t": "text.html.markdown comment.block.html punctuation.definition.comment.html",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -311,10 +311,10 @@
 		"c": " html madness ",
 		"t": "text.html.markdown comment.block.html",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -322,923 +322,230 @@
 		"c": "-->",
 		"t": "text.html.markdown comment.block.html punctuation.definition.comment.html",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
 	{
-		"c": "<",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.begin.html",
+		"c": "<div class=\"custom-class\" markdown=\"1\">",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "div",
-		"t": "text.html.markdown meta.tag.block.any.html entity.name.tag.block.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.tag.block.any.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "class",
-		"t": "text.html.markdown meta.tag.block.any.html entity.other.attribute-name.html",
+		"c": "  <div>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "entity.other.attribute-name: #9CDCFE",
-			"light_plus": "entity.other.attribute-name: #FF0000",
-			"dark_vs": "entity.other.attribute-name: #9CDCFE",
-			"light_vs": "entity.other.attribute-name: #FF0000",
-			"hc_black": "entity.other.attribute-name: #9CDCFE"
-		}
-	},
-	{
-		"c": "=",
-		"t": "text.html.markdown meta.tag.block.any.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.tag.block.any.html string.quoted.double.html punctuation.definition.string.begin.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "custom-class",
-		"t": "text.html.markdown meta.tag.block.any.html string.quoted.double.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.tag.block.any.html string.quoted.double.html punctuation.definition.string.end.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.tag.block.any.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
-			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "markdown",
-		"t": "text.html.markdown meta.tag.block.any.html entity.other.attribute-name.html",
-		"r": {
-			"dark_plus": "entity.other.attribute-name: #9CDCFE",
-			"light_plus": "entity.other.attribute-name: #FF0000",
-			"dark_vs": "entity.other.attribute-name: #9CDCFE",
-			"light_vs": "entity.other.attribute-name: #FF0000",
-			"hc_black": "entity.other.attribute-name: #9CDCFE"
-		}
-	},
-	{
-		"c": "=",
-		"t": "text.html.markdown meta.tag.block.any.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
-			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.tag.block.any.html string.quoted.double.html punctuation.definition.string.begin.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "1",
-		"t": "text.html.markdown meta.tag.block.any.html string.quoted.double.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.tag.block.any.html string.quoted.double.html punctuation.definition.string.end.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "  ",
-		"t": "text.html.markdown",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
-			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "<",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.begin.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "div",
-		"t": "text.html.markdown meta.tag.block.any.html entity.name.tag.block.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
 		}
 	},
 	{
 		"c": "    nested div",
-		"t": "text.html.markdown",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "  ",
-		"t": "text.html.markdown",
+		"c": "  </div>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "</",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.begin.html",
+		"c": "  <script type='text/x-koka'>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "div",
-		"t": "text.html.markdown meta.tag.block.any.html entity.name.tag.block.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "  ",
-		"t": "text.html.markdown punctuation.whitespace.embedded.leading.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "<",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html punctuation.definition.tag.begin.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "script",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html entity.name.tag.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "type",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html entity.other.attribute-name.html",
-		"r": {
-			"dark_plus": "entity.other.attribute-name: #9CDCFE",
-			"light_plus": "entity.other.attribute-name: #FF0000",
-			"dark_vs": "entity.other.attribute-name: #9CDCFE",
-			"light_vs": "entity.other.attribute-name: #FF0000",
-			"hc_black": "entity.other.attribute-name: #9CDCFE"
-		}
-	},
-	{
-		"c": "=",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "'",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html string.quoted.single.html punctuation.definition.string.begin.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.single.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.single.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "text/x-koka",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html string.quoted.single.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.single.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.single.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "'",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html string.quoted.single.html punctuation.definition.string.end.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.single.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.single.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
 		}
 	},
 	{
 		"c": "    function( x: int ) { return x*x; }",
-		"t": "text.html.markdown meta.embedded.block.html source.unknown",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "  ",
-		"t": "text.html.markdown meta.embedded.block.html source.unknown",
+		"c": "  </script>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "</",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html punctuation.definition.tag.begin.html",
+		"c": "  This is a div ",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "script",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html entity.name.tag.html",
+		"c": "_",
+		"t": "text.html.markdown meta.paragraph.markdown markup.italic.markdown punctuation.definition.italic.markdown",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": ">",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.script.html punctuation.definition.tag.end.html",
+		"c": "with",
+		"t": "text.html.markdown meta.paragraph.markdown markup.italic.markdown",
 		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "  This is a div _with_ underscores",
-		"t": "text.html.markdown",
+		"c": "_",
+		"t": "text.html.markdown meta.paragraph.markdown markup.italic.markdown punctuation.definition.italic.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " underscores",
+		"t": "text.html.markdown meta.paragraph.markdown",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
 		"c": "  and a ",
-		"t": "text.html.markdown",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
 		"c": "&",
-		"t": "text.html.markdown invalid.illegal.bad-ampersand.html",
+		"t": "text.html.markdown meta.paragraph.markdown meta.other.valid-ampersand.markdown",
 		"r": {
-			"dark_plus": "invalid: #F44747",
-			"light_plus": "invalid: #CD3131",
-			"dark_vs": "invalid: #F44747",
-			"light_vs": "invalid: #CD3131",
-			"hc_black": "invalid: #F44747"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "<",
-		"t": "text.html.markdown meta.tag.inline.any.html punctuation.definition.tag.begin.html",
+		"c": " <b class=\"bold\">bold</b> element.",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "b",
-		"t": "text.html.markdown meta.tag.inline.any.html entity.name.tag.inline.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.tag.inline.any.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "class",
-		"t": "text.html.markdown meta.tag.inline.any.html entity.other.attribute-name.html",
+		"c": "  <style>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "entity.other.attribute-name: #9CDCFE",
-			"light_plus": "entity.other.attribute-name: #FF0000",
-			"dark_vs": "entity.other.attribute-name: #9CDCFE",
-			"light_vs": "entity.other.attribute-name: #FF0000",
-			"hc_black": "entity.other.attribute-name: #9CDCFE"
-		}
-	},
-	{
-		"c": "=",
-		"t": "text.html.markdown meta.tag.inline.any.html",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "\"",
-		"t": "text.html.markdown meta.tag.inline.any.html string.quoted.double.html punctuation.definition.string.begin.html",
+		"c": "    body { font: \"Consolas\" }",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "bold",
-		"t": "text.html.markdown meta.tag.inline.any.html string.quoted.double.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.tag.inline.any.html string.quoted.double.html punctuation.definition.string.end.html",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.quoted.double.html: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.quoted.double.html: #0000FF",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.tag.inline.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "bold",
-		"t": "text.html.markdown",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "</",
-		"t": "text.html.markdown meta.tag.inline.any.html punctuation.definition.tag.begin.html",
+		"c": "  </style>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "b",
-		"t": "text.html.markdown meta.tag.inline.any.html entity.name.tag.inline.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.tag.inline.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": " element.",
-		"t": "text.html.markdown",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "  ",
-		"t": "text.html.markdown punctuation.whitespace.embedded.leading.html",
+		"c": "</div>",
+		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "<",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html punctuation.definition.tag.begin.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "style",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html entity.name.tag.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "    ",
-		"t": "text.html.markdown meta.embedded.block.html source.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "body",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.selector.css entity.name.tag.css",
-		"r": {
-			"dark_plus": "entity.name.tag.css: #D7BA7D",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag.css: #D7BA7D",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag.css: #D7BA7D"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.embedded.block.html source.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "{",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css punctuation.section.property-list.begin.bracket.curly.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "font",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css meta.property-name.css support.type.property-name.css",
-		"r": {
-			"dark_plus": "support.type.property-name: #9CDCFE",
-			"light_plus": "support.type.property-name: #FF0000",
-			"dark_vs": "support.type.property-name: #9CDCFE",
-			"light_vs": "support.type.property-name: #FF0000",
-			"hc_black": "support.type.property-name: #D4D4D4"
-		}
-	},
-	{
-		"c": ":",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css punctuation.separator.key-value.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css meta.property-value.css string.quoted.double.css punctuation.definition.string.begin.css",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "Consolas",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css meta.property-value.css string.quoted.double.css",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": "\"",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css meta.property-value.css string.quoted.double.css punctuation.definition.string.end.css",
-		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
-			"hc_black": "string: #CE9178"
-		}
-	},
-	{
-		"c": " ",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "}",
-		"t": "text.html.markdown meta.embedded.block.html source.css meta.property-list.css punctuation.section.property-list.end.bracket.curly.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "  ",
-		"t": "text.html.markdown meta.embedded.block.html source.css",
-		"r": {
-			"dark_plus": "meta.embedded: #D4D4D4",
-			"light_plus": "meta.embedded: #000000",
-			"dark_vs": "meta.embedded: #D4D4D4",
-			"light_vs": "meta.embedded: #000000",
-			"hc_black": "meta.embedded: #FFFFFF"
-		}
-	},
-	{
-		"c": "<",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html punctuation.definition.tag.begin.html source.css",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "/",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html punctuation.definition.tag.begin.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "style",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html entity.name.tag.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.embedded.block.html meta.tag.metadata.style.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "</",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.begin.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "div",
-		"t": "text.html.markdown meta.tag.block.any.html entity.name.tag.block.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.tag.block.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
 		}
 	},
 	{
 		"c": "*",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1246,10 +553,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1257,10 +564,10 @@
 		"c": "Bullet lists are easy too",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1268,10 +575,10 @@
 		"c": "-",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1279,10 +586,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1290,10 +597,10 @@
 		"c": "Another one",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1301,10 +608,10 @@
 		"c": "+",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1312,10 +619,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1323,10 +630,10 @@
 		"c": "Another one",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1334,10 +641,10 @@
 		"c": "    ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1345,10 +652,10 @@
 		"c": "+",
 		"t": "text.html.markdown markup.list.unnumbered.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1356,10 +663,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1367,10 +674,10 @@
 		"c": "nested list",
 		"t": "text.html.markdown markup.list.unnumbered.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1378,10 +685,10 @@
 		"c": "This is a paragraph, which is text surrounded by",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1389,10 +696,10 @@
 		"c": "whitespace. Paragraphs can be on one",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1400,10 +707,10 @@
 		"c": "line (or many), and can drone on for hours.",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1411,10 +718,10 @@
 		"c": "Now some inline markup like ",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1422,10 +729,10 @@
 		"c": "_",
 		"t": "text.html.markdown meta.paragraph.markdown markup.italic.markdown punctuation.definition.italic.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1433,10 +740,10 @@
 		"c": "italics",
 		"t": "text.html.markdown meta.paragraph.markdown markup.italic.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1444,10 +751,10 @@
 		"c": "_",
 		"t": "text.html.markdown meta.paragraph.markdown markup.italic.markdown punctuation.definition.italic.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1455,10 +762,10 @@
 		"c": ",  ",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1466,10 +773,10 @@
 		"c": "**",
 		"t": "text.html.markdown meta.paragraph.markdown markup.bold.markdown punctuation.definition.bold.markdown",
 		"r": {
-			"dark_plus": "markup.bold: #569CD6",
-			"light_plus": "markup.bold: #000080",
-			"dark_vs": "markup.bold: #569CD6",
-			"light_vs": "markup.bold: #000080",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1477,10 +784,10 @@
 		"c": "bold",
 		"t": "text.html.markdown meta.paragraph.markdown markup.bold.markdown",
 		"r": {
-			"dark_plus": "markup.bold: #569CD6",
-			"light_plus": "markup.bold: #000080",
-			"dark_vs": "markup.bold: #569CD6",
-			"light_vs": "markup.bold: #000080",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1488,10 +795,10 @@
 		"c": "**",
 		"t": "text.html.markdown meta.paragraph.markdown markup.bold.markdown punctuation.definition.bold.markdown",
 		"r": {
-			"dark_plus": "markup.bold: #569CD6",
-			"light_plus": "markup.bold: #000080",
-			"dark_vs": "markup.bold: #569CD6",
-			"light_vs": "markup.bold: #000080",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1499,10 +806,10 @@
 		"c": ",",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1510,10 +817,10 @@
 		"c": "and ",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1521,10 +828,10 @@
 		"c": "`",
 		"t": "text.html.markdown meta.paragraph.markdown markup.inline.raw.string.markdown punctuation.definition.raw.markdown",
 		"r": {
-			"dark_plus": "markup.inline.raw: #CE9178",
-			"light_plus": "markup.inline.raw: #800000",
-			"dark_vs": "markup.inline.raw: #CE9178",
-			"light_vs": "markup.inline.raw: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1532,10 +839,10 @@
 		"c": "code()",
 		"t": "text.html.markdown meta.paragraph.markdown markup.inline.raw.string.markdown",
 		"r": {
-			"dark_plus": "markup.inline.raw: #CE9178",
-			"light_plus": "markup.inline.raw: #800000",
-			"dark_vs": "markup.inline.raw: #CE9178",
-			"light_vs": "markup.inline.raw: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1543,10 +850,10 @@
 		"c": "`",
 		"t": "text.html.markdown meta.paragraph.markdown markup.inline.raw.string.markdown punctuation.definition.raw.markdown",
 		"r": {
-			"dark_plus": "markup.inline.raw: #CE9178",
-			"light_plus": "markup.inline.raw: #800000",
-			"dark_vs": "markup.inline.raw: #CE9178",
-			"light_vs": "markup.inline.raw: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1554,10 +861,10 @@
 		"c": ". Note that underscores",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1565,10 +872,10 @@
 		"c": "in_words_are ignored.",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1576,10 +883,10 @@
 		"c": "````",
 		"t": "text.html.markdown markup.fenced_code.block.markdown punctuation.definition.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1587,10 +894,10 @@
 		"c": "application/json",
 		"t": "text.html.markdown markup.fenced_code.block.markdown fenced_code.block.language",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1598,10 +905,10 @@
 		"c": "  { value: [\"or with a mime type\"] }",
 		"t": "text.html.markdown markup.fenced_code.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1609,10 +916,10 @@
 		"c": "````",
 		"t": "text.html.markdown markup.fenced_code.block.markdown punctuation.definition.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1620,10 +927,10 @@
 		"c": ">",
 		"t": "text.html.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_plus": "beginning.punctuation.definition.quote.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_vs": "beginning.punctuation.definition.quote.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1631,10 +938,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.quote.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1642,10 +949,10 @@
 		"c": "Blockquotes are like quoted text in email replies",
 		"t": "text.html.markdown markup.quote.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1653,10 +960,10 @@
 		"c": ">",
 		"t": "text.html.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_plus": "beginning.punctuation.definition.quote.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_vs": "beginning.punctuation.definition.quote.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1664,10 +971,10 @@
 		"c": ">",
 		"t": "text.html.markdown markup.quote.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_plus": "beginning.punctuation.definition.quote.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_vs": "beginning.punctuation.definition.quote.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1675,10 +982,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.quote.markdown markup.quote.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1686,10 +993,10 @@
 		"c": "And, they can be nested",
 		"t": "text.html.markdown markup.quote.markdown markup.quote.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1697,10 +1004,10 @@
 		"c": "1.",
 		"t": "text.html.markdown markup.list.numbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1708,10 +1015,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.numbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1719,10 +1026,10 @@
 		"c": "A numbered list",
 		"t": "text.html.markdown markup.list.numbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1730,10 +1037,10 @@
 		"c": "    ",
 		"t": "text.html.markdown markup.list.numbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1741,10 +1048,10 @@
 		"c": ">",
 		"t": "text.html.markdown markup.list.numbered.markdown markup.quote.markdown beginning.punctuation.definition.quote.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_plus": "beginning.punctuation.definition.quote.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.quote.markdown: #608B4E",
-			"light_vs": "beginning.punctuation.definition.quote.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1752,10 +1059,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.numbered.markdown markup.quote.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1763,10 +1070,10 @@
 		"c": "Block quotes in list",
 		"t": "text.html.markdown markup.list.numbered.markdown markup.quote.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1774,10 +1081,10 @@
 		"c": "2.",
 		"t": "text.html.markdown markup.list.numbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1785,10 +1092,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.numbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1796,10 +1103,10 @@
 		"c": "Which is numbered",
 		"t": "text.html.markdown markup.list.numbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1807,10 +1114,10 @@
 		"c": "3.",
 		"t": "text.html.markdown markup.list.numbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1818,10 +1125,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.numbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1829,10 +1136,10 @@
 		"c": "With periods and a space",
 		"t": "text.html.markdown markup.list.numbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1840,10 +1147,10 @@
 		"c": "And now some code:",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1851,10 +1158,10 @@
 		"c": "    // Code is just text indented a bit",
 		"t": "text.html.markdown markup.raw.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1862,10 +1169,10 @@
 		"c": "    which(is_easy) to_remember();",
 		"t": "text.html.markdown markup.raw.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1873,10 +1180,10 @@
 		"c": "And a block",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1884,10 +1191,10 @@
 		"c": "~~~",
 		"t": "text.html.markdown markup.fenced_code.block.markdown punctuation.definition.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1895,10 +1202,10 @@
 		"c": "// Markdown extra adds un-indented code blocks too",
 		"t": "text.html.markdown markup.fenced_code.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1906,10 +1213,10 @@
 		"c": "if (this_is_more_code == true && !indented) {",
 		"t": "text.html.markdown markup.fenced_code.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1917,10 +1224,10 @@
 		"c": "    // tild wrapped code blocks, also not indented",
 		"t": "text.html.markdown markup.fenced_code.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1928,10 +1235,10 @@
 		"c": "}",
 		"t": "text.html.markdown markup.fenced_code.block.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1939,10 +1246,10 @@
 		"c": "~~~",
 		"t": "text.html.markdown markup.fenced_code.block.markdown punctuation.definition.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1950,10 +1257,10 @@
 		"c": "Text with",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1961,10 +1268,10 @@
 		"c": "two trailing spaces",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1972,10 +1279,10 @@
 		"c": "(on the right)",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1983,10 +1290,10 @@
 		"c": "can be used",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1994,10 +1301,10 @@
 		"c": "for things like poems",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2005,10 +1312,10 @@
 		"c": "###",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2016,10 +1323,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2027,10 +1334,10 @@
 		"c": "Horizontal rules",
 		"t": "text.html.markdown markup.heading.markdown heading.3.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2038,10 +1345,10 @@
 		"c": "* * * *",
 		"t": "text.html.markdown meta.separator.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2049,10 +1356,10 @@
 		"c": "****",
 		"t": "text.html.markdown meta.separator.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2060,10 +1367,10 @@
 		"c": "--------------------------",
 		"t": "text.html.markdown meta.separator.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2071,10 +1378,10 @@
 		"c": "![",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown punctuation.definition.string.begin.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2082,10 +1389,10 @@
 		"c": "picture alt",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown string.other.link.description.markdown",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -2093,10 +1400,10 @@
 		"c": "]",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown punctuation.definition.string.end.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2104,10 +1411,10 @@
 		"c": "(",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown punctuation.definition.metadata.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2115,10 +1422,10 @@
 		"c": "/images/photo.jpeg",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown markup.underline.link.image.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2126,10 +1433,10 @@
 		"c": " ",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2137,10 +1444,10 @@
 		"c": "\"",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown string.other.link.description.title.markdown punctuation.definition.string.markdown",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -2148,10 +1455,10 @@
 		"c": "Title is optional",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown string.other.link.description.title.markdown",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -2159,10 +1466,10 @@
 		"c": "\"",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown string.other.link.description.title.markdown punctuation.definition.string.markdown",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string: #A31515",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string: #A31515",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -2170,10 +1477,10 @@
 		"c": ")",
 		"t": "text.html.markdown meta.paragraph.markdown meta.image.inline.markdown punctuation.definition.metadata.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2181,10 +1488,10 @@
 		"c": "##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2192,10 +1499,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2203,10 +1510,10 @@
 		"c": "Markdown plus tables",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2214,10 +1521,10 @@
 		"c": " ##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2225,10 +1532,10 @@
 		"c": "| Header | Header | Right  |",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2236,10 +1543,10 @@
 		"c": "| ------ | ------ | -----: |",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2247,10 +1554,10 @@
 		"c": "|  Cell  |  Cell  |   $10  |",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2258,10 +1565,10 @@
 		"c": "|  Cell  |  Cell  |   $20  |",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2269,10 +1576,10 @@
 		"c": "*",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2280,10 +1587,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2291,10 +1598,10 @@
 		"c": "Outer pipes on tables are optional",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2302,10 +1609,10 @@
 		"c": "*",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2313,10 +1620,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2324,10 +1631,10 @@
 		"c": "Colon used for alignment (right versus left)",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2335,10 +1642,10 @@
 		"c": "##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2346,10 +1653,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2357,10 +1664,10 @@
 		"c": "Markdown plus definition lists",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown entity.name.section.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2368,10 +1675,10 @@
 		"c": " ##",
 		"t": "text.html.markdown markup.heading.markdown heading.2.markdown punctuation.definition.heading.markdown",
 		"r": {
-			"dark_plus": "markup.heading: #569CD6",
-			"light_plus": "markup.heading: #800000",
-			"dark_vs": "markup.heading: #569CD6",
-			"light_vs": "markup.heading: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "markup.heading: #6796E6"
 		}
 	},
@@ -2379,10 +1686,10 @@
 		"c": "Bottled water",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2390,10 +1697,10 @@
 		"c": ": $ 1.25",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2401,10 +1708,10 @@
 		"c": ": $ 1.55 (Large)",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2412,10 +1719,10 @@
 		"c": "Milk",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2423,10 +1730,10 @@
 		"c": "Pop",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2434,10 +1741,10 @@
 		"c": ": $ 1.75",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2445,10 +1752,10 @@
 		"c": "*",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2456,10 +1763,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2467,10 +1774,10 @@
 		"c": "Multiple definitions and terms are possible",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2478,10 +1785,10 @@
 		"c": "*",
 		"t": "text.html.markdown markup.list.unnumbered.markdown beginning.punctuation.definition.list.markdown",
 		"r": {
-			"dark_plus": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_plus": "beginning.punctuation.definition.list.markdown: #0451A5",
-			"dark_vs": "beginning.punctuation.definition.list.markdown: #6796E6",
-			"light_vs": "beginning.punctuation.definition.list.markdown: #0451A5",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2489,10 +1796,10 @@
 		"c": " ",
 		"t": "text.html.markdown markup.list.unnumbered.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -2500,65 +1807,21 @@
 		"c": "Definitions can include multiple paragraphs too",
 		"t": "text.html.markdown markup.list.unnumbered.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "*[ABBR]: Markdown plus abbreviations (produces an ",
+		"c": "*[ABBR]: Markdown plus abbreviations (produces an <abbr> tag)",
 		"t": "text.html.markdown meta.paragraph.markdown",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
-			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "<",
-		"t": "text.html.markdown meta.paragraph.markdown meta.tag.inline.any.html punctuation.definition.tag.begin.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": "abbr",
-		"t": "text.html.markdown meta.paragraph.markdown meta.tag.inline.any.html entity.name.tag.inline.any.html",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ">",
-		"t": "text.html.markdown meta.paragraph.markdown meta.tag.inline.any.html punctuation.definition.tag.end.html",
-		"r": {
-			"dark_plus": "punctuation.definition.tag: #808080",
-			"light_plus": "punctuation.definition.tag: #800000",
-			"dark_vs": "punctuation.definition.tag: #808080",
-			"light_vs": "punctuation.definition.tag: #800000",
-			"hc_black": "punctuation.definition.tag: #808080"
-		}
-	},
-	{
-		"c": " tag)",
-		"t": "text.html.markdown meta.paragraph.markdown",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	}

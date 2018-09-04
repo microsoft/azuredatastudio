@@ -106,6 +106,7 @@
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops"
 			},
 			"stopOnEntry": false,
+			"outputCapture": "std",
 			"args": [
 				"--delay",
 				"--timeout",
@@ -117,6 +118,15 @@
 			},
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
+			]
+		},
+		{
+			"name": "Launch Built-in Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/extensions/debug-auto-launch"
 			]
 		}
 	],
@@ -133,6 +143,13 @@
 			"configurations": [
 				"Launch sqlops",
 				"Attach to Search Process"
+			]
+		},
+		{
+			"name": "Renderer and Extension Host processes",
+			"configurations": [
+				"Launch SQL Ops",
+				"Attach to Extension Host"
 			]
 		}
 	]

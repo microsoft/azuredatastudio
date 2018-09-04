@@ -9,7 +9,7 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IModelViewTreeViewDataProvider, ITreeComponentItem } from 'sql/workbench/common/views';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import * as vsTreeView from 'vs/workbench/api/electron-browser/mainThreadTreeViews';
-
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implements IModelViewTreeViewDataProvider {
 	constructor(handle: number, treeViewId: string,
@@ -27,5 +27,13 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 		if (items) {
 			(<ExtHostModelViewTreeViewsShape>this._proxy).$onNodeSelected(this.treeViewId, items.map(i => i.handle));
 		}
+	}
+
+
+	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }) {
+	}
+
+	getChildren(element?: ITreeComponentItem): TPromise<ITreeComponentItem[]> {
+		return undefined;
 	}
 }

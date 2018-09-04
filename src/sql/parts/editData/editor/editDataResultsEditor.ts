@@ -24,6 +24,7 @@ import { EditDataModule } from 'sql/parts/grid/views/editData/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/parts/grid/views/editData/editData.component';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { Event } from 'vs/base/common/event';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class EditDataResultsEditor extends BaseEditor {
 
@@ -64,7 +65,7 @@ export class EditDataResultsEditor extends BaseEditor {
 	}
 
 	public setInput(input: EditDataResultsInput, options: EditorOptions): TPromise<void> {
-		super.setInput(input, options);
+		super.setInput(input, options, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {
 			this._bootstrapAngular();

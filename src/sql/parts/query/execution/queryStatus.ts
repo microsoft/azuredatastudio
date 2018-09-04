@@ -7,11 +7,12 @@ import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import LocalizedConstants = require('sql/parts/query/common/localizedConstants');
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
+import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 // Query execution status
 enum QueryExecutionStatus{
@@ -29,8 +30,8 @@ export class QueryStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorService private _editorService: EditorServiceImpl,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 	) {
 		this._queryStatusEditors = {};
 	}
@@ -44,8 +45,8 @@ export class QueryStatusbarItem implements IStatusbarItem {
 		this._toDispose.push(
 			this._queryModelService.onRunQueryStart((uri:string) => this._onRunQueryStart(uri)),
 			this._queryModelService.onRunQueryComplete((uri:string) => this._onRunQueryComplete(uri)),
-			this._editorGroupService.onEditorsChanged(() => this._onEditorsChanged()),
-			this._editorGroupService.getStacksModel().onEditorClosed(event => this._onEditorClosed(event))
+			this._editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()),
+			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
 		);
 
 		return combinedDisposable(this._toDispose);
@@ -55,7 +56,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 		let uri = WorkbenchUtils.getEditorUri(event.editor);
 		if (uri && uri in this._queryStatusEditors) {
 			// If active editor is being closed, hide the query status.
-			let activeEditor = this._editorService.getActiveEditor();
+			let activeEditor = this._editorService.activeControl;
 			if (activeEditor) {
 				let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 				if (uri === currentUri) {
@@ -67,7 +68,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 	}
 
 	private _onEditorsChanged(): void{
-		let activeEditor = this._editorService.getActiveEditor();
+		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
 
@@ -100,7 +101,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 
 	// Show/hide query status for active editor
 	private _showStatus(uri: string): void{
-		let activeEditor = this._editorService.getActiveEditor();
+		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (uri === currentUri) {
