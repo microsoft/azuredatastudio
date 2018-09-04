@@ -49,8 +49,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IOpenerService) private readonly _openerService: IOpenerService,
 		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService
-
-
 	) {
 		super(changeRef);
 	}

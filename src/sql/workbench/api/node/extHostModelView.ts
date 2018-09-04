@@ -226,7 +226,8 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 	}
 
 	withProperties<U>(properties: U): sqlops.ComponentBuilder<T> {
-		this._component.properties = properties;
+		// Keep any properties that may have been set during initial object construction
+		this._component.properties = Object.assign({}, this._component.properties, properties);
 		return this;
 	}
 
