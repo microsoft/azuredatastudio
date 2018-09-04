@@ -52,6 +52,7 @@ suite('Insights Dialog Controller Tests', () => {
 		);
 
 		let profile: IConnectionProfile = {
+			connectionName: 'newname',
 			serverName: 'server',
 			databaseName: 'database',
 			userName: 'user',

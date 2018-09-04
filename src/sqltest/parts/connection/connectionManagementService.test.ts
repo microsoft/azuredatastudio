@@ -50,6 +50,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	let none: void;
 
 	let connectionProfile: IConnectionProfile = {
+		connectionName: 'new name',
 		serverName: 'new server',
 		databaseName: 'database',
 		userName: 'user',

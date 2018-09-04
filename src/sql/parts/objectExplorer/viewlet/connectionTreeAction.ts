@@ -144,6 +144,7 @@ export class AddServerAction extends Action {
 
 	public run(element: ConnectionProfileGroup): TPromise<boolean> {
 		let connection: IConnectionProfile = element === undefined ? undefined : {
+			connectionName: undefined,
 			serverName: undefined,
 			databaseName: undefined,
 			userName: undefined,
