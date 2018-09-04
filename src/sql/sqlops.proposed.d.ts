@@ -510,7 +510,7 @@ declare module 'sqlops' {
 		/**
 		 * Content settings for the webview.
 		 */
-		options: vscode.WebviewOptions;
+		options?: vscode.WebviewOptions;
 
 	}
 
