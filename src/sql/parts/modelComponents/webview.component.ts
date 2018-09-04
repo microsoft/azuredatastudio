@@ -113,12 +113,12 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		if (!link) {
 			return;
 		}
-		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0 || this.enableCommandUris() && link.scheme === 'command') {
+		if (WebViewComponent.standardSupportedLinkSchemes.indexOf(link.scheme) >= 0 || this.enableCommandUris && link.scheme === 'command') {
 			this._openerService.open(link);
 		}
 	}
 
-	private enableCommandUris(): boolean {
+	private get enableCommandUris(): boolean {
 		if (this.options && this.options.enableCommandUris) {
 			return true;
 		}
