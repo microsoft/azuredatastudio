@@ -140,6 +140,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.state = State.Busy;
 
 		for (let i = 0; i < views.length; i++) {
+			let viewIndex = index + i;
 			let view = views[i], size = sizes[i];
 
 			// Add view
@@ -165,9 +166,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 			size = Math.round(size);
 			const item: IViewItem = { view, container, size, layout, disposable, height: size, top: 0, width: 0 };
-			this.viewItems.splice(index, 0, item);
+			this.viewItems.splice(viewIndex, 0, item);
 
-			this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
+			this.onInsertItems(new ArrayIterator([item]), viewIndex > 0 ? this.viewItems[viewIndex - 1].view.id : undefined);
 
 			// Add sash
 			if (this.options.enableResizing && this.viewItems.length > 1) {
@@ -190,13 +191,13 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				const disposable = combinedDisposable([onStartDisposable, onSashChangeDisposable, onEndDisposable, onDidResetDisposable, sash]);
 				const sashItem: ISashItem = { sash, disposable };
 
-				this.sashItems.splice(index - 1, 0, sashItem);
+				this.sashItems.splice(viewIndex - 1, 0, sashItem);
 			}
 
 			view.render(container, this.orientation);
 		}
 
-		this.relayout(index);
+		this.relayout();
 		this.state = State.Idle;
 	}
 
