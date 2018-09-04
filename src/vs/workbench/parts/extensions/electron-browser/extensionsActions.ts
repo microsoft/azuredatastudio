@@ -2672,6 +2672,7 @@ export class InstallVSIXAction extends Action {
 				return TPromise.as(null);
 			}
 			return TPromise.join(result.map(vsix => {
+				// {{SQL CARBON EDIT}}
 				this.windowService.showMessageBox({
 					type: 'warning',
 					buttons: [localize('thirdPartExt.yes', 'Yes'), localize('thirdPartyExt.no', 'No')],
