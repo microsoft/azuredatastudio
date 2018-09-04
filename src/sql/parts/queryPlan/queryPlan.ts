@@ -14,7 +14,7 @@ import * as UUID from 'vs/base/common/uuid';
 import { Builder } from 'vs/base/browser/builder';
 
 export class QueryPlanTab implements IPanelTab {
-	public readonly title = localize('resultsTabTitle', 'Results');
+	public readonly title = localize('queryPlanTitle', 'Query Plan');
 	public readonly identifier = UUID.generateUuid();
 	public readonly view: QueryPlanView;
 
