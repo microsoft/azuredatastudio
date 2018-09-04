@@ -18,6 +18,7 @@ export enum ServiceOptionType {
 }
 
 export enum ConnectionOptionSpecialType {
+	connectionName = 'connectionName',
 	serverName = 'serverName',
 	databaseName = 'databaseName',
 	authType = 'authType',

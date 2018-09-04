@@ -132,6 +132,18 @@ suite('SQL Object Explorer Service tests', () => {
 			displayName: 'MSSQL',
 			connectionOptions: [
 				{
+					name: 'connectionName',
+					displayName: undefined,
+					description: undefined,
+					groupName: undefined,
+					categoryValues: undefined,
+					defaultValue: undefined,
+					isIdentity: true,
+					isRequired: true,
+					specialValueType: ConnectionOptionSpecialType.connectionName,
+					valueType: ServiceOptionType.string
+				},
+				{
 					name: 'serverName',
 					displayName: undefined,
 					description: undefined,
@@ -210,6 +222,7 @@ suite('SQL Object Explorer Service tests', () => {
 		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		connection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'newName',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -228,6 +241,7 @@ suite('SQL Object Explorer Service tests', () => {
 		conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
 
 		connectionToFail = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'newName2',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName2',
