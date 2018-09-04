@@ -187,7 +187,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return this._onEventEmitter.event(handler);
 	}
 
-	private fireEvent(event: IComponentEventArgs) {
+	protected fireEvent(event: IComponentEventArgs) {
 		this._onEventEmitter.fire(event);
 		if (this._eventQueue) {
 			this._eventQueue.push(event);

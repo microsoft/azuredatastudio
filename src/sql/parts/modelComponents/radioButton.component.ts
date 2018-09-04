@@ -51,7 +51,7 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 			this._register(this._input);
 			this._register(this._input.onClicked(e => {
 				this.checked = this._input.checked;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onDidClick,
 					args: e
 				});

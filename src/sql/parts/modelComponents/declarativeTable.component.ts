@@ -139,7 +139,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 			column: cell,
 			value: newValue
 		};
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
 			args: newCellData
 		});

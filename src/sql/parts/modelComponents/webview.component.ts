@@ -69,7 +69,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		this._webview.mountTo(this._el.nativeElement);
 
 		this._register(this._webview.onMessage(e => {
-			this._onEventEmitter.fire({
+			this.fireEvent({
 				eventType: ComponentEventType.onMessage,
 				args: e
 			});

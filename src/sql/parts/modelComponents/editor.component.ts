@@ -61,7 +61,13 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		let uri = this.createUri();
 		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, uri, false, 'sql', '', '');
 		this._editor.setInput(this._editorInput, undefined);
-		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
+		this._editorInput.resolve().then(model => {
+			this._editorModel = model.textEditorModel;
+			this.fireEvent({
+				eventType: ComponentEventType.onComponentCreated,
+				args: this._uri
+			});
+		});
 
 		this._register(this._editor);
 		this._register(this._editorInput);
@@ -69,7 +75,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 			this.content = this._editorModel.getValue();
 
 			// Notify via an event so that extensions can detect and propagate changes
-			this._onEventEmitter.fire({
+			this.fireEvent({
 				eventType: ComponentEventType.onDidChange,
 				args: e
 			});
