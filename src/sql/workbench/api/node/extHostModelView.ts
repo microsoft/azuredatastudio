@@ -850,6 +850,7 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 		super(proxy, handle, ModelComponentTypes.Editor, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
 	}
 
 	public get content(): string {
@@ -872,6 +873,11 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 
 	public get onContentChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onEditorCreated(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
 		return emitter && emitter.event;
 	}
 }

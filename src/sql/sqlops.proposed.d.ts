@@ -641,6 +641,11 @@ declare module 'sqlops' {
 		 */
 		readonly onContentChanged: vscode.Event<any>;
 
+		/**
+		 * An event called when the editor is created
+		 */
+		readonly onEditorCreated: vscode.Event<any>;
+
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
