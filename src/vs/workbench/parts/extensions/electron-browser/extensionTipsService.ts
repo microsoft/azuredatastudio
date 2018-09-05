@@ -23,7 +23,8 @@ import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsA
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet } from 'vs/workbench/parts/extensions/common/extensions';
+// {{SQL CARBON EDIT}}
+import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDemandKey, IExtensionsViewlet, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/parts/extensions/common/extensions';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as pfs from 'vs/base/node/pfs';
@@ -111,7 +112,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	) {
 		super();
 
-		if (!this.isEnabled()) {
+		// {{SQL CARBON EDIT}}
+		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (!this.isEnabled() || extensionPolicy === ExtensionsPolicy.allowNone) {
 			return;
 		}
 
