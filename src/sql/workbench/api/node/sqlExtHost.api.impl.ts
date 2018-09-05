@@ -326,10 +326,10 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title);
+					return extHostModelViewDialog.createDialog(title, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					return extHostModelViewDialog.createTab(title);
+					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
 					return extHostModelViewDialog.createButton(label);
@@ -370,7 +370,7 @@ export function createApiFactory(
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
 				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, options);
+					return extHostModelViewDialog.createModelViewEditor(title, extension.extensionLocation, options);
 				}
 			};
 
@@ -382,7 +382,7 @@ export function createApiFactory(
 
 			const ui = {
 				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
-					extHostModelView.$registerProvider(modelViewId, handler);
+					extHostModelView.$registerProvider(modelViewId, handler, extension.extensionLocation);
 				}
 			};
 
@@ -451,7 +451,7 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 			return undefined;
 		}
 		return new TPromise((resolve, reject) => {
-			realpath(ext.extensionFolderPath, (err, path) => {
+			realpath(ext.extensionLocation.fsPath, (err, path) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -533,8 +533,9 @@ const nullExtensionDescription: IExtensionDescription = {
 	enableProposedApi: false,
 	engines: undefined,
 	extensionDependencies: undefined,
-	extensionFolderPath: undefined,
+	extensionLocation: undefined,
 	isBuiltin: false,
 	main: undefined,
-	version: undefined
+	version: undefined,
+	isUnderDevelopment: true
 };

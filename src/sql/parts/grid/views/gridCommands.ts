@@ -11,11 +11,11 @@ import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 function runActionOnActiveResultsEditor	(accessor: ServicesAccessor, eventName: string): void {
-	let editorService = accessor.get(IWorkbenchEditorService);
-	const candidates = [editorService.getActiveEditor(), ...editorService.getVisibleEditors()].filter(e => {
+	let editorService = accessor.get(IEditorService);
+	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => {
 		if (e) {
 			let id = e.getId();
 			if (id === QueryEditor.ID || id === EditDataEditor.ID) {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -17,16 +17,17 @@ import { MarkdownEngine } from './markdownEngine';
 import { getMarkdownExtensionContributions } from './markdownExtensions';
 import { ExtensionContentSecurityPolicyArbiter, PreviewSecuritySelector } from './security';
 import { loadDefaultTelemetryReporter } from './telemetryReporter';
+import { githubSlugifier } from './slugify';
 
 
 export function activate(context: vscode.ExtensionContext) {
 	const telemetryReporter = loadDefaultTelemetryReporter();
 	context.subscriptions.push(telemetryReporter);
 
-	const contributions = getMarkdownExtensionContributions();
+	const contributions = getMarkdownExtensionContributions(context);
 
 	const cspArbiter = new ExtensionContentSecurityPolicyArbiter(context.globalState, context.workspaceState);
-	const engine = new MarkdownEngine(contributions);
+	const engine = new MarkdownEngine(contributions, githubSlugifier);
 	const logger = new Logger();
 
 	const selector: vscode.DocumentSelector = [

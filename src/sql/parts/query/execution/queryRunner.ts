@@ -63,6 +63,9 @@ export default class QueryRunner {
 	private _hasCompleted: boolean = false;
 	private _batchSets: sqlops.BatchSummary[] = [];
 	private _eventEmitter = new EventEmitter();
+	private _isQueryPlan: boolean;
+
+	public get isQueryPlan(): boolean { return this._isQueryPlan; }
 
 	private _onMessage = new Emitter<sqlops.IResultMessage>();
 	public readonly onMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(echo(this._onMessage.event), (l, e) => {
@@ -170,6 +173,12 @@ export default class QueryRunner {
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 			// TODO issue #228 add statusview callbacks here
+
+			if (runOptions && (runOptions.displayActualQueryPlan || runOptions.displayEstimatedQueryPlan)) {
+				this._isQueryPlan = true;
+			} else {
+				this._isQueryPlan = false;
+			}
 
 			// Send the request to execute the query
 			return runCurrentStatement

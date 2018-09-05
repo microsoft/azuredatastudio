@@ -103,7 +103,9 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 		// Fill in all actions
 		let actions = getDefaultActions(context);
-		fillInActions(menu, { arg: undefined, shouldForwardArgs: true }, actions, this.contextMenuService);
+		let options = { arg: undefined, shouldForwardArgs: true };
+		const groups = menu.getActions(options);
+		fillInActions(groups, actions, this.contextMenuService);
 
 		// Cleanup
 		scopedContextService.dispose();

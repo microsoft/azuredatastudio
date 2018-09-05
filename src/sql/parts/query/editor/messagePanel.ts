@@ -28,7 +28,7 @@ import { $ } from 'vs/base/browser/builder';
 import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
 
 export interface IResultMessageIntern extends IResultMessage {
@@ -71,14 +71,14 @@ export class MessagePanel extends ViewletPanel {
 	private tree: ITree;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
 		this.controller.toFocusOnClick = this.model;
 		this.tree = new Tree(this.container, {
@@ -257,7 +257,7 @@ export class MessageController extends WorkbenchTreeController {
 	constructor(
 		options: IControllerOptions,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
+		@IEditorService private workbenchEditorService: IEditorService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
@@ -283,7 +283,7 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let control = this.workbenchEditorService.getActiveEditor().getControl() as IEditor;
+			let control = this.workbenchEditorService.activeControl.getControl() as IEditor;
 			control.setSelection({
 				startColumn: selection.startColumn + 1,
 				endColumn: selection.endColumn + 1,

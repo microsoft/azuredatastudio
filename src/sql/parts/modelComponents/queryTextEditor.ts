@@ -7,7 +7,6 @@ import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
@@ -19,22 +18,11 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
-import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
-import { FoldingController } from 'vs/editor/contrib/folding/folding';
-import { RenameController } from 'vs/editor/contrib/rename/rename';
-
-class QueryCodeEditor extends CodeEditor {
-
-	protected _getContributions(): IEditorContributionCtor[] {
-		let contributions = super._getContributions();
-		let skipContributions = [FoldingController.prototype, RenameController.prototype];
-		contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
-		return contributions;
-	}
-}
+import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -51,14 +39,17 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IThemeService themeService: IThemeService,
 		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEditorGroupService editorGroupService: IEditorGroupService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IEditorService protected editorService: IEditorService,
 
 	) {
-		super(QueryTextEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
+		super(
+			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
+			configurationService, themeService, textFileService, editorService, editorGroupService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(QueryCodeEditor, parent, configuration);
+		return this.instantiationService.createInstance(StandaloneCodeEditor, parent, configuration);
 	}
 
 	protected getConfigurationOverrides(): IEditorOptions {
@@ -79,8 +70,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): TPromise<void> {
-		return super.setInput(input, options)
+	setInput(input: UntitledEditorInput, options: EditorOptions): Thenable<void> {
+		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())
 				.then(editorModel => this.getControl().setModel((<ResourceEditorModel>editorModel).textEditorModel)));

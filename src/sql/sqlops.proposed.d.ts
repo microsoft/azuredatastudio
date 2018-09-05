@@ -51,7 +51,7 @@ declare module 'sqlops' {
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
 		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<T[]>;
+		onDidChangeSelection:  vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
@@ -287,7 +287,16 @@ declare module 'sqlops' {
 		/**
 		 *
 		 */
-		textAlign?: string
+		textAlign?: string;
+
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself.
+		 */
+		position?: string;
 	}
 
 	export interface FlexItemLayout {
@@ -410,6 +419,14 @@ declare module 'sqlops' {
 	export interface ComponentProperties {
 		height?: number | string;
 		width?: number | string;
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself
+		 */
+		position?: string;
 	}
 
 	export interface ComponentWithIcon {
@@ -498,15 +515,25 @@ declare module 'sqlops' {
 
 	}
 
-	export interface WebViewProperties {
+	export interface WebViewProperties extends ComponentProperties {
 		message?: any;
+
+		/**
+		 * Contents of the webview.
+		 *
+		 * Should be a complete html document.
+		 */
 		html?: string;
+		/**
+		 * Content settings for the webview.
+		 */
+		options?: vscode.WebviewOptions;
 	}
 
 	/**
 	 * Editor properties for the editor component
 	 */
-	export interface EditorProperties {
+	export interface EditorProperties extends ComponentProperties {
 		/**
 		 * The content inside the text editor
 		 */
@@ -515,13 +542,6 @@ declare module 'sqlops' {
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode?: string;
-		/**
-		 * The position CSS property for the editor. Empty by default.
-		 * If the editor is included inside a FlexContainer this must be
-		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
-		 * Without this the editor will fail to correctly size itself
-		 */
-		position?: string;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
@@ -595,6 +615,7 @@ declare module 'sqlops' {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
+		readonly options: vscode.WebviewOptions;
 	}
 
 	/**

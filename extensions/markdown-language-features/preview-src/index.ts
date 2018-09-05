@@ -1,13 +1,13 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ActiveLineMarker } from './activeLineMarker';
 import { onceDocumentLoaded } from './events';
 import { createPosterForVsCode } from './messaging';
 import { getEditorLineNumberForPageOffset, scrollToRevealSourceLine } from './scroll-sync';
-import { getSettings } from './settings';
+import { getSettings, getData } from './settings';
 import throttle = require('lodash.throttle');
 
 declare var acquireVsCodeApi: any;
@@ -17,7 +17,10 @@ const marker = new ActiveLineMarker();
 const settings = getSettings();
 
 const vscode = acquireVsCodeApi();
-vscode.postMessage({});
+
+// Set VS Code state
+const state = getData('data-state');
+vscode.setState(state);
 
 const messaging = createPosterForVsCode(vscode);
 
