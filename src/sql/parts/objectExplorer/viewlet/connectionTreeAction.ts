@@ -21,7 +21,7 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext, ObjectExplorerActionUtilities } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RefreshAction extends Action {
 
@@ -144,6 +144,7 @@ export class AddServerAction extends Action {
 
 	public run(element: ConnectionProfileGroup): TPromise<boolean> {
 		let connection: IConnectionProfile = element === undefined ? undefined : {
+			connectionName: undefined,
 			serverName: undefined,
 			databaseName: undefined,
 			userName: undefined,
@@ -322,7 +323,7 @@ export class NewQueryAction extends Action {
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
+		@IEditorService protected _workbenchEditorService: IEditorService
 	) {
 		super(id, label);
 		this.class = 'extension-action update';

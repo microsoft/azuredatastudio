@@ -20,7 +20,6 @@ function yarnInstall(location, opts) {
 	}
 }
 
-// {{SQL CARBON EDIT}}
 yarnInstall('extensions'); // node modules shared by all extensions
 
 const allExtensionFolders = fs.readdirSync('extensions');

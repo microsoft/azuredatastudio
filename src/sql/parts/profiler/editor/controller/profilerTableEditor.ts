@@ -27,7 +27,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
-import { IEditorInput } from 'vs/platform/editor/common/editor';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;

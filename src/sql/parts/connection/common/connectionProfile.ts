@@ -145,6 +145,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public toIConnectionProfile(): interfaces.IConnectionProfile {
 		let result: interfaces.IConnectionProfile = {
+			connectionName: this.connectionName,
 			serverName: this.serverName,
 			databaseName: this.databaseName,
 			authenticationType: this.authenticationType,

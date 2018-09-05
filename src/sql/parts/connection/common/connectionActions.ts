@@ -13,7 +13,7 @@ import { IConnectionManagementService } from 'sql/parts/connection/common/connec
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
@@ -146,7 +146,7 @@ export class GetCurrentConnectionStringAction extends Action {
 		id: string,
 		label: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
@@ -157,7 +157,7 @@ export class GetCurrentConnectionStringAction extends Action {
 
 	public run(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			let activeInput = this._editorService.getActiveEditorInput();
+			let activeInput = this._editorService.activeEditor;
 			if (activeInput && (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)
 					&& this._connectionManagementService.isConnected(activeInput.uri)) {
 				let includePassword = false;

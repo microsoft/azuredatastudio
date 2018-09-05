@@ -11,7 +11,9 @@ import URI from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileLabel } from 'vs/workbench/browser/labels';
 import { IFileTemplateData } from 'vs/workbench/parts/files/electron-browser/views/explorerViewer';
-import { empty as EmptyDisposable } from 'vs/base/common/lifecycle';
+import { toDisposable } from 'vs/base/common/lifecycle';
+
+const EmptyDisposable = toDisposable(() => null);
 
 /**
  * Renders the tree items.

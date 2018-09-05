@@ -16,6 +16,7 @@ import { repeat, pad } from 'vs/base/common/strings';
 import { isWindows } from 'vs/base/common/platform';
 import { app } from 'electron';
 import { basename } from 'path';
+import URI from 'vs/base/common/uri';
 
 export interface VersionInfo {
 	vscodeVersion: string;
@@ -49,39 +50,51 @@ export function getPerformanceInfo(info: IMainProcessInfo): Promise<PerformanceI
 		const workspaceInfoMessages = [];
 
 		// Workspace Stats
-		if (info.windows.some(window => window.folders && window.folders.length > 0)) {
+		const workspaceStatPromises = [];
+		if (info.windows.some(window => window.folderURIs && window.folderURIs.length > 0)) {
 			info.windows.forEach(window => {
-				if (window.folders.length === 0) {
+				if (window.folderURIs.length === 0) {
 					return;
 				}
 
 				workspaceInfoMessages.push(`|  Window (${window.title})`);
 
-				window.folders.forEach(folder => {
-					try {
-						const stats = collectWorkspaceStats(folder, ['node_modules', '.git']);
-						let countMessage = `${stats.fileCount} files`;
-						if (stats.maxFilesReached) {
-							countMessage = `more than ${countMessage}`;
-						}
-						workspaceInfoMessages.push(`|    Folder (${basename(folder)}): ${countMessage}`);
-						workspaceInfoMessages.push(formatWorkspaceStats(stats));
+				window.folderURIs.forEach(uriComponents => {
+					const folderUri = URI.revive(uriComponents);
+					if (folderUri.scheme === 'file') {
+						const folder = folderUri.fsPath;
+						workspaceStatPromises.push(collectWorkspaceStats(folder, ['node_modules', '.git']).then(async stats => {
 
-						const launchConfigs = collectLaunchConfigs(folder);
-						if (launchConfigs.length > 0) {
-							workspaceInfoMessages.push(formatLaunchConfigs(launchConfigs));
-						}
-					} catch (error) {
-						workspaceInfoMessages.push(`|      Error: Unable to collect workpsace stats for folder ${folder} (${error.toString()})`);
+							let countMessage = `${stats.fileCount} files`;
+							if (stats.maxFilesReached) {
+								countMessage = `more than ${countMessage}`;
+							}
+							workspaceInfoMessages.push(`|    Folder (${basename(folder)}): ${countMessage}`);
+							workspaceInfoMessages.push(formatWorkspaceStats(stats));
+
+							const launchConfigs = await collectLaunchConfigs(folder);
+							if (launchConfigs.length > 0) {
+								workspaceInfoMessages.push(formatLaunchConfigs(launchConfigs));
+							}
+						}));
+					} else {
+						workspaceInfoMessages.push(`|    Folder (${folderUri.toString()}): RPerformance stats not available.`);
 					}
 				});
 			});
 		}
 
-		return {
-			processInfo: formatProcessList(info, rootProcess),
-			workspaceInfo: workspaceInfoMessages.join('\n')
-		};
+		return Promise.all(workspaceStatPromises).then(() => {
+			return {
+				processInfo: formatProcessList(info, rootProcess),
+				workspaceInfo: workspaceInfoMessages.join('\n')
+			};
+		}).catch(error => {
+			return {
+				processInfo: formatProcessList(info, rootProcess),
+				workspaceInfo: `Unable to calculate workspace stats: ${error}`
+			};
+		});
 	});
 }
 
@@ -122,38 +135,48 @@ export function printDiagnostics(info: IMainProcessInfo): Promise<any> {
 		console.log(formatProcessList(info, rootProcess));
 
 		// Workspace Stats
-		if (info.windows.some(window => window.folders && window.folders.length > 0)) {
+		const workspaceStatPromises = [];
+		if (info.windows.some(window => window.folderURIs && window.folderURIs.length > 0)) {
 			console.log('');
 			console.log('Workspace Stats: ');
 			info.windows.forEach(window => {
-				if (window.folders.length === 0) {
+				if (window.folderURIs.length === 0) {
 					return;
 				}
 
 				console.log(`|  Window (${window.title})`);
 
-				window.folders.forEach(folder => {
-					try {
-						const stats = collectWorkspaceStats(folder, ['node_modules', '.git']);
-						let countMessage = `${stats.fileCount} files`;
-						if (stats.maxFilesReached) {
-							countMessage = `more than ${countMessage}`;
-						}
-						console.log(`|    Folder (${basename(folder)}): ${countMessage}`);
-						console.log(formatWorkspaceStats(stats));
+				window.folderURIs.forEach(uriComponents => {
+					const folderUri = URI.revive(uriComponents);
+					if (folderUri.scheme === 'file') {
+						const folder = folderUri.fsPath;
+						workspaceStatPromises.push(collectWorkspaceStats(folder, ['node_modules', '.git']).then(async stats => {
+							let countMessage = `${stats.fileCount} files`;
+							if (stats.maxFilesReached) {
+								countMessage = `more than ${countMessage}`;
+							}
+							console.log(`|    Folder (${basename(folder)}): ${countMessage}`);
+							console.log(formatWorkspaceStats(stats));
 
-						const launchConfigs = collectLaunchConfigs(folder);
-						if (launchConfigs.length > 0) {
-							console.log(formatLaunchConfigs(launchConfigs));
-						}
-					} catch (error) {
-						console.log(`|      Error: Unable to collect workpsace stats for folder ${folder} (${error.toString()})`);
+							await collectLaunchConfigs(folder).then(launchConfigs => {
+								if (launchConfigs.length > 0) {
+									console.log(formatLaunchConfigs(launchConfigs));
+								}
+							});
+						}).catch(error => {
+							console.log(`|      Error: Unable to collect workspace stats for folder ${folder} (${error.toString()})`);
+						}));
+					} else {
+						console.log(`|    Folder (${folderUri.toString()}): Workspace stats not available.`);
 					}
 				});
 			});
 		}
-		console.log('');
-		console.log('');
+
+		return Promise.all(workspaceStatPromises).then(() => {
+			console.log('');
+			console.log('');
+		});
 	});
 }
 

@@ -94,14 +94,14 @@ export class GridPanel extends ViewletPanel {
 	private maximizedGrid: GridTable<any>;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
 	}
 
@@ -162,6 +162,8 @@ export class GridPanel extends ViewletPanel {
 			tables.push(table);
 		}
 
+		// possible to need a sort?
+
 		if (isUndefinedOrNull(this.maximizedGrid)) {
 			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
 		}
@@ -211,6 +213,8 @@ export class GridPanel extends ViewletPanel {
 class GridTable<T> extends Disposable implements IView {
 	private static BOTTOMPADDING = 5;
 	private static ACTIONBAR_WIDTH = 26;
+	// this is the min height for grids
+	private static MIN_GRID_HEIGHT = (minGridHeightInRows * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -223,6 +227,7 @@ class GridTable<T> extends Disposable implements IView {
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
 	public id = generateUuid();
+	readonly element: HTMLElement = this.container;
 
 	constructor(
 		private runner: QueryRunner,
@@ -348,9 +353,9 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public get minimumSize(): number {
+		// this handles if the row count is small, like 4-5 rows
 		let smallestRows = ((this.resultSet.rowCount) * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
-		let smallestSize = (minGridHeightInRows * rowHeight) + columnHeight + estimatedScrollBarHeight + GridTable.BOTTOMPADDING;
-		return Math.min(smallestRows, smallestSize);
+		return Math.min(smallestRows, GridTable.MIN_GRID_HEIGHT);
 	}
 
 	public get maximumSize(): number {
