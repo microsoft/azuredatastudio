@@ -36,8 +36,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 const rowHeight = 29;
 const columnHeight = 26;
@@ -235,7 +235,7 @@ class GridTable<T> extends Disposable implements IView {
 		private resultSet: sqlops.ResultSetSummary,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
+		@IEditorService private editorService: IEditorService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
 	) {
 		super();
@@ -335,7 +335,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.runner.getQueryRows(event.cell.row, 1, this.resultSet.batchId, this.resultSet.id).then(d => {
 				let value = d.resultSubset.rows[0][event.cell.cell - 1];
 				let input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', value.displayValue);
-				this.workbenchEditorService.openEditor(input);
+				this.editorService.openEditor(input);
 			});
 		}
 	}
