@@ -60,7 +60,8 @@ suite('ExtensionsActions Test', () => {
 		instantiationService.stub(IWindowService, TestWindowService);
 
 		instantiationService.stub(IWorkspaceContextService, new TestContextService());
-		instantiationService.stub(IConfigurationService, { onDidUpdateConfiguration: () => { }, onDidChangeConfiguration: () => { }, getConfiguration: () => ({}) });
+		// {{SQL CARBON EDIT}}
+		instantiationService.stub(IConfigurationService, { onDidUpdateConfiguration: () => { }, onDidChangeConfiguration: () => { }, getConfiguration: () => ({}), getValue: () => { } });
 
 		instantiationService.stub(IExtensionGalleryService, ExtensionGalleryService);
 

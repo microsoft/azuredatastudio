@@ -2667,7 +2667,7 @@ export class InstallVSIXAction extends Action {
 	run(): TPromise<any> {
 		// {{SQL CARBON EDIT}}
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-		if (extensionPolicy !== ExtensionsPolicy.allowNone) {
+		if (extensionPolicy === ExtensionsPolicy.allowAll) {
 			return this.windowService.showOpenDialog({
 				title: localize('installFromVSIX', "Install from VSIX"),
 				filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],

@@ -705,17 +705,11 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 		// {{SQL CARBON EDIT}}
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (typeof extension === 'string') {
-			// {{SQL CARBON EDIT}}
-			if (extensionPolicy === ExtensionsPolicy.allowAll) {
-				return this.progressService.withProgress({
-					location: ProgressLocation.Extensions,
-					title: nls.localize('installingVSIXExtension', 'Installing extension from VSIX...'),
-					source: `${extension}`
-				}, () => this.extensionService.install(extension).then(() => null));
-				// {{SQL CARBON EDIT}}
-			} else {
-				return TPromise.wrapError<void>(new Error(nls.localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.')));
-			}
+			return this.progressService.withProgress({
+				location: ProgressLocation.Extensions,
+				title: nls.localize('installingVSIXExtension', 'Installing extension from VSIX...'),
+				source: `${extension}`
+			}, () => this.extensionService.install(extension).then(() => null));
 		}
 
 		if (!(extension instanceof Extension)) {
