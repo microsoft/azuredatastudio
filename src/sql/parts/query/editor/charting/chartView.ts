@@ -148,10 +148,6 @@ export class ChartView implements IPanelView {
 		}
 	}
 
-	remove?(): void {
-		// throw new Error("Method not implemented.");
-	}
-
 	public set queryRunner(runner: QueryRunner) {
 		this._queryRunner = runner;
 		this.shouldGraph();
