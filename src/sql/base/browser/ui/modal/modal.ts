@@ -291,7 +291,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected show() {
 		this._modalShowingContext.get().push(this._staticKey);
-		this._builder.appendTo(document.getElementById(this._partService.getWorkbenchElementId()).parentElement);
+		this._builder.appendTo(document.getElementById(this._partService.getWorkbenchElementId()));
 
 		this.setFocusableElements();
 

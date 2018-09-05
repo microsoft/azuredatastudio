@@ -46,6 +46,10 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 		this._accountManagementService.accountUpdated(updatedAccount);
 	}
 
+	public $getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
+		return this._accountManagementService.getAccountsForProvider(providerId);
+	}
+
 	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 

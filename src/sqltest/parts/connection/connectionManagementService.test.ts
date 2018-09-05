@@ -50,6 +50,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	let none: void;
 
 	let connectionProfile: IConnectionProfile = {
+		connectionName: 'new name',
 		serverName: 'new server',
 		databaseName: 'database',
 		userName: 'user',
@@ -98,7 +99,6 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.addActiveConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
 		workbenchEditorService.setup(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => TPromise.as(undefined));
-		editorGroupService.setup(x => x.getStacksModel()).returns(() => undefined);
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfile.serverName))).returns(() => Promise.resolve({ profile: connectionProfile, savedCred: true }));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(

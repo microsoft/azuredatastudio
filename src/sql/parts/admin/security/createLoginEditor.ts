@@ -19,6 +19,7 @@ import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { bootstrapAngular, IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { CREATELOGIN_SELECTOR } from 'sql/parts/admin/security/createLogin.component';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class CreateLoginEditor extends BaseEditor {
 
@@ -55,7 +56,7 @@ export class CreateLoginEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: CreateLoginInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: CreateLoginInput, options: EditorOptions): Thenable<void> {
 		if (this.input instanceof CreateLoginInput && this.input.matches(input)) {
 			return TPromise.as(undefined);
 		}
@@ -65,7 +66,7 @@ export class CreateLoginEditor extends BaseEditor {
 		}
 		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
-		return super.setInput(input, options);
+		return super.setInput(input, options, CancellationToken.None);
 	}
 
 	/**

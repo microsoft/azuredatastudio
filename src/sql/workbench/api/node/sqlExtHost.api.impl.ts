@@ -90,6 +90,12 @@ export function createApiFactory(
 				},
 				accountUpdated(updatedAccount: sqlops.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
+				},
+				getAllAccounts(): Thenable<sqlops.AccountWithProviderHandle[]> {
+					return extHostAccountManagement.$getAllAccounts();
+				},
+				getSecurityToken(account: sqlops.AccountWithProviderHandle): Thenable<{}> {
+					return extHostAccountManagement.$getSecurityToken(account.providerHandle, account.account);
 				}
 			};
 
@@ -104,8 +110,8 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
-				openConnectionDialog(providers?: string[]): Thenable<sqlops.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers);
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile): Thenable<sqlops.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -445,7 +451,7 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 			return undefined;
 		}
 		return new TPromise((resolve, reject) => {
-			realpath(ext.extensionFolderPath, (err, path) => {
+			realpath(ext.extensionLocation.fsPath, (err, path) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -527,8 +533,9 @@ const nullExtensionDescription: IExtensionDescription = {
 	enableProposedApi: false,
 	engines: undefined,
 	extensionDependencies: undefined,
-	extensionFolderPath: undefined,
+	extensionLocation: undefined,
 	isBuiltin: false,
 	main: undefined,
-	version: undefined
+	version: undefined,
+	isUnderDevelopment: true
 };

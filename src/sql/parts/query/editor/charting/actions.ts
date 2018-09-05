@@ -9,6 +9,8 @@ import { IInsightOptions, IInsight } from './insights/interfaces';
 import { Graph } from './insights/graphInsight';
 import * as PathUtilities from 'sql/common/pathUtilities';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
@@ -18,11 +20,9 @@ import { writeFile } from 'vs/base/node/pfs';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import URI from 'vs/base/common/uri';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -35,7 +35,7 @@ export class CreateInsightAction extends Action {
 	public static ICON = 'createInsight';
 
 	constructor(
-		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
+		@IEditorService private editorService: IEditorService,
 		@INotificationService private notificationService: INotificationService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
 	) {
@@ -90,7 +90,7 @@ export class CreateInsightAction extends Action {
 	}
 
 	private getActiveUriString(): string {
-		let editor = this.editorService.getActiveEditor();
+		let editor = this.editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			return queryEditor.uri;
@@ -149,7 +149,7 @@ export class SaveImageAction extends Action {
 		@IWindowsService private windowsService: IWindowsService,
 		@IWindowService private windowService: IWindowService,
 		@INotificationService private notificationService: INotificationService,
-		@IWorkbenchEditorService private editorService: IWorkbenchEditorService,
+		@IEditorService private editorService: IEditorService,
 		@IWorkspaceContextService private workspaceContextService: IWorkspaceContextService
 	) {
 		super(SaveImageAction.ID, SaveImageAction.LABEL, SaveImageAction.ICON);
@@ -206,7 +206,7 @@ export class SaveImageAction extends Action {
 	}
 
 	private getActiveUriString(): string {
-		let editor = this.editorService.getActiveEditor();
+		let editor = this.editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			return queryEditor.uri;

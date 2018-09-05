@@ -51,7 +51,7 @@ declare module 'sqlops' {
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
 		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<T[]>;
+		onDidChangeSelection:  vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
@@ -119,6 +119,20 @@ declare module 'sqlops' {
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
+
+		/**
+		 * Inserts a from component in a given position in the form. Returns error given invalid index
+		 * @param formComponent Form component
+		 * @param index index to insert the component to
+		 * @param itemLayout Item Layout
+		 */
+		insertFormItem(formComponent: FormComponent | FormComponentGroup, index?: number, itemLayout?: FormItemLayout);
+
+		/**
+		 * Removes a from item from the from
+		 * @param formComponent
+		 */
+		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
 	export interface Component {
@@ -201,11 +215,27 @@ declare module 'sqlops' {
 
 		/**
 		 * Creates a child component and adds it to this container.
+		 * Adding component to multiple containers is not supported
 		 *
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addItem(component: Component, itemLayout?: TItemLayout): void;
+
+		/**
+		 * Creates a child component and inserts it to this container. Returns error given invalid index
+		 * Adding component to multiple containers is not supported
+		 * @param component the component to be added
+		 * @param index the index to insert the component to
+		 * @param {*} [itemLayout] Optional layout for this child item
+		 */
+		insertItem(component: Component, index: number, itemLayout?: TItemLayout): void;
+
+		/**
+		 *
+		 * @param component Removes a component from this container
+		 */
+		removeItem(component: Component): boolean;
 
 		/**
 		 * Defines the layout for this container
@@ -1190,6 +1220,6 @@ declare module 'sqlops' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
+		export function openConnectionDialog(provider?: string[], initialConnectionProfile?: IConnectionProfile): Thenable<connection.Connection>;
 	}
 }

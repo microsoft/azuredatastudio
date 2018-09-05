@@ -80,9 +80,9 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	public refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
-		if (this._dataProvider) {
-			this._dataProvider.refresh(itemsToRefreshByHandle);
-		}
+		// if (this._dataProvider) {
+		// 	const itemsToRefresh = this._dataProvider.getItemsToRefresh(itemsToRefreshByHandle);
+		// }
 		if (this._tree) {
 			for (const item of Object.values(itemsToRefreshByHandle)) {
 				this._tree.refresh(<ITreeComponentItem>item);
@@ -123,12 +123,11 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	/// IComponent implementation
 
 	public layout(): void {
-		this._changeRef.detectChanges();
 		if (this._tree) {
-
 			this.layoutTree();
 			this._tree.refresh();
 		}
+		super.layout();
 	}
 
 	private layoutTree(): void {

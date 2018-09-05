@@ -10,7 +10,7 @@ import { Ref, RefType, Git, GitErrorCodes, Branch } from './git';
 import { Repository, Resource, Status, CommitOptions, ResourceGroupType } from './repository';
 import { Model } from './model';
 import { toGitUri, fromGitUri } from './uri';
-import { grep, isDescendant } from './util';
+import { grep, isDescendant, pathEquals } from './util';
 import { applyLineChanges, intersectDiffWithRange, toLineRanges, invertLineChange, getModifiedRange } from './staging';
 import * as path from 'path';
 import { lstat, Stats } from 'fs';
@@ -137,6 +137,22 @@ const ImageMimetypes = [
 	'image/bmp'
 ];
 
+async function categorizeResourceByResolution(resources: Resource[]): Promise<{ merge: Resource[], resolved: Resource[], unresolved: Resource[] }> {
+	const selection = resources.filter(s => s instanceof Resource) as Resource[];
+	const merge = selection.filter(s => s.resourceGroupType === ResourceGroupType.Merge);
+	const isBothAddedOrModified = (s: Resource) => s.type === Status.BOTH_MODIFIED || s.type === Status.BOTH_ADDED;
+	const possibleUnresolved = merge.filter(isBothAddedOrModified);
+	const promises = possibleUnresolved.map(s => grep(s.resourceUri.fsPath, /^<{7}|^={7}|^>{7}/));
+	const unresolvedBothModified = await Promise.all<boolean>(promises);
+	const resolved = possibleUnresolved.filter((s, i) => !unresolvedBothModified[i]);
+	const unresolved = [
+		...merge.filter(s => !isBothAddedOrModified(s)),
+		...possibleUnresolved.filter((s, i) => unresolvedBothModified[i])
+	];
+
+	return { merge, resolved, unresolved };
+}
+
 export class CommandCenter {
 
 	private disposables: Disposable[];
@@ -236,7 +252,7 @@ export class CommandCenter {
 				gitRef = indexStatus ? '' : 'HEAD';
 			}
 
-			const { size, object } = await repository.lstree(gitRef, uri.fsPath);
+			const { size, object } = await repository.getObjectDetails(gitRef, uri.fsPath);
 			const { mimetype } = await repository.detectObjectType(object);
 
 			if (mimetype === 'text/plain') {
@@ -485,7 +501,28 @@ export class CommandCenter {
 		}
 
 		await this.git.init(path);
-		await this.model.tryOpenRepository(path);
+		await this.model.openRepository(path);
+	}
+
+	@command('git.openRepository', { repository: false })
+	async openRepository(path?: string): Promise<void> {
+		if (!path) {
+			const result = await window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				defaultUri: Uri.file(os.homedir()),
+				openLabel: localize('open repo', "Open Repository")
+			});
+
+			if (!result || result.length === 0) {
+				return;
+			}
+
+			path = result[0].fsPath;
+		}
+
+		await this.model.openRepository(path);
 	}
 
 	@command('git.close', { repository: true })
@@ -612,8 +649,14 @@ export class CommandCenter {
 
 	@command('git.stage')
 	async stage(...resourceStates: SourceControlResourceState[]): Promise<void> {
+		this.outputChannel.appendLine(`git.stage ${resourceStates.length}`);
+
+		resourceStates = resourceStates.filter(s => !!s);
+
 		if (resourceStates.length === 0 || (resourceStates[0] && !(resourceStates[0].resourceUri instanceof Uri))) {
 			const resource = this.getSCMResource();
+
+			this.outputChannel.appendLine(`git.stage.getSCMResource ${resource ? resource.resourceUri.toString() : null}`);
 
 			if (!resource) {
 				return;
@@ -623,20 +666,12 @@ export class CommandCenter {
 		}
 
 		const selection = resourceStates.filter(s => s instanceof Resource) as Resource[];
-		const merge = selection.filter(s => s.resourceGroupType === ResourceGroupType.Merge);
-		const bothModified = merge.filter(s => s.type === Status.BOTH_MODIFIED);
-		const promises = bothModified.map(s => grep(s.resourceUri.fsPath, /^<{7}|^={7}|^>{7}/));
-		const unresolvedBothModified = await Promise.all<boolean>(promises);
-		const resolvedConflicts = bothModified.filter((s, i) => !unresolvedBothModified[i]);
-		const unresolvedConflicts = [
-			...merge.filter(s => s.type !== Status.BOTH_MODIFIED),
-			...bothModified.filter((s, i) => unresolvedBothModified[i])
-		];
+		const { resolved, unresolved } = await categorizeResourceByResolution(selection);
 
-		if (unresolvedConflicts.length > 0) {
-			const message = unresolvedConflicts.length > 1
-				? localize('confirm stage files with merge conflicts', "Are you sure you want to stage {0} files with merge conflicts?", unresolvedConflicts.length)
-				: localize('confirm stage file with merge conflicts', "Are you sure you want to stage {0} with merge conflicts?", path.basename(unresolvedConflicts[0].resourceUri.fsPath));
+		if (unresolved.length > 0) {
+			const message = unresolved.length > 1
+				? localize('confirm stage files with merge conflicts', "Are you sure you want to stage {0} files with merge conflicts?", unresolved.length)
+				: localize('confirm stage file with merge conflicts', "Are you sure you want to stage {0} with merge conflicts?", path.basename(unresolved[0].resourceUri.fsPath));
 
 			const yes = localize('yes', "Yes");
 			const pick = await window.showWarningMessage(message, { modal: true }, yes);
@@ -647,8 +682,9 @@ export class CommandCenter {
 		}
 
 		const workingTree = selection.filter(s => s.resourceGroupType === ResourceGroupType.WorkingTree);
-		const scmResources = [...workingTree, ...resolvedConflicts, ...unresolvedConflicts];
+		const scmResources = [...workingTree, ...resolved, ...unresolved];
 
+		this.outputChannel.appendLine(`git.stage.scmResources ${scmResources.length}`);
 		if (!scmResources.length) {
 			return;
 		}
@@ -660,12 +696,12 @@ export class CommandCenter {
 	@command('git.stageAll', { repository: true })
 	async stageAll(repository: Repository): Promise<void> {
 		const resources = repository.mergeGroup.resourceStates.filter(s => s instanceof Resource) as Resource[];
-		const mergeConflicts = resources.filter(s => s.resourceGroupType === ResourceGroupType.Merge);
+		const { merge, unresolved } = await categorizeResourceByResolution(resources);
 
-		if (mergeConflicts.length > 0) {
-			const message = mergeConflicts.length > 1
-				? localize('confirm stage files with merge conflicts', "Are you sure you want to stage {0} files with merge conflicts?", mergeConflicts.length)
-				: localize('confirm stage file with merge conflicts', "Are you sure you want to stage {0} with merge conflicts?", path.basename(mergeConflicts[0].resourceUri.fsPath));
+		if (unresolved.length > 0) {
+			const message = unresolved.length > 1
+				? localize('confirm stage files with merge conflicts', "Are you sure you want to stage {0} files with merge conflicts?", merge.length)
+				: localize('confirm stage file with merge conflicts', "Are you sure you want to stage {0} with merge conflicts?", path.basename(merge[0].resourceUri.fsPath));
 
 			const yes = localize('yes', "Yes");
 			const pick = await window.showWarningMessage(message, { modal: true }, yes);
@@ -768,24 +804,24 @@ export class CommandCenter {
 
 		const originalUri = toGitUri(modifiedUri, '~');
 		const originalDocument = await workspace.openTextDocument(originalUri);
-		const basename = path.basename(modifiedUri.fsPath);
-		const message = localize('confirm revert', "Are you sure you want to revert the selected changes in {0}?", basename);
-		const yes = localize('revert', "Revert Changes");
-		const pick = await window.showWarningMessage(message, { modal: true }, yes);
-
-		if (pick !== yes) {
-			return;
-		}
-
+		const selectionsBeforeRevert = textEditor.selections;
+		const visibleRangesBeforeRevert = textEditor.visibleRanges;
 		const result = applyLineChanges(originalDocument, modifiedDocument, changes);
+
 		const edit = new WorkspaceEdit();
 		edit.replace(modifiedUri, new Range(new Position(0, 0), modifiedDocument.lineAt(modifiedDocument.lineCount - 1).range.end), result);
 		workspace.applyEdit(edit);
+
 		await modifiedDocument.save();
+
+		textEditor.selections = selectionsBeforeRevert;
+		textEditor.revealRange(visibleRangesBeforeRevert[0]);
 	}
 
 	@command('git.unstage')
 	async unstage(...resourceStates: SourceControlResourceState[]): Promise<void> {
+		resourceStates = resourceStates.filter(s => !!s);
+
 		if (resourceStates.length === 0 || (resourceStates[0] && !(resourceStates[0].resourceUri instanceof Uri))) {
 			const resource = this.getSCMResource();
 
@@ -852,6 +888,8 @@ export class CommandCenter {
 
 	@command('git.clean')
 	async clean(...resourceStates: SourceControlResourceState[]): Promise<void> {
+		resourceStates = resourceStates.filter(s => !!s);
+
 		if (resourceStates.length === 0 || (resourceStates[0] && !(resourceStates[0].resourceUri instanceof Uri))) {
 			const resource = this.getSCMResource();
 
@@ -974,7 +1012,7 @@ export class CommandCenter {
 		getCommitMessage: () => Promise<string | undefined>,
 		opts?: CommitOptions
 	): Promise<boolean> {
-		const config = workspace.getConfiguration('git');
+		const config = workspace.getConfiguration('git', Uri.file(repository.root));
 		const promptToSaveFilesBeforeCommit = config.get<boolean>('promptToSaveFilesBeforeCommit') === true;
 
 		if (promptToSaveFilesBeforeCommit) {
@@ -983,8 +1021,8 @@ export class CommandCenter {
 
 			if (unsavedTextDocuments.length > 0) {
 				const message = unsavedTextDocuments.length === 1
-					? localize('unsaved files single', "The following file is unsaved: {0}.\n\nWould you like to save it before comitting?", path.basename(unsavedTextDocuments[0].uri.fsPath))
-					: localize('unsaved files', "There are {0} unsaved files.\n\nWould you like to save them before comitting?", unsavedTextDocuments.length);
+					? localize('unsaved files single', "The following file is unsaved: {0}.\n\nWould you like to save it before committing?", path.basename(unsavedTextDocuments[0].uri.fsPath))
+					: localize('unsaved files', "There are {0} unsaved files.\n\nWould you like to save them before committing?", unsavedTextDocuments.length);
 				const saveAndCommit = localize('save and commit', "Save All & Commit");
 				const commit = localize('commit', "Commit Anyway");
 				const pick = await window.showWarningMessage(message, { modal: true }, saveAndCommit, commit);
@@ -1027,6 +1065,10 @@ export class CommandCenter {
 
 		// enable signing of commits if configurated
 		opts.signCommit = enableCommitSigning;
+
+		if (config.get<boolean>('alwaysSignOff')) {
+			opts.signoff = true;
+		}
 
 		if (
 			// no changes
@@ -1130,11 +1172,19 @@ export class CommandCenter {
 		const HEAD = repository.HEAD;
 
 		if (!HEAD || !HEAD.commit) {
+			window.showWarningMessage(localize('no more', "Can't undo because HEAD doesn't point to any commit."));
 			return;
 		}
 
 		const commit = await repository.getCommit('HEAD');
-		await repository.reset('HEAD~');
+
+		if (commit.parents.length > 0) {
+			await repository.reset('HEAD~');
+		} else {
+			await repository.deleteRef('HEAD');
+			await this.unstageAll(repository);
+		}
+
 		repository.inputBox.value = commit.message;
 	}
 
@@ -1271,16 +1321,7 @@ export class CommandCenter {
 			return;
 		}
 
-		try {
-			await choice.run(repository);
-		} catch (err) {
-			if (err.gitErrorCode !== GitErrorCodes.Conflict) {
-				throw err;
-			}
-
-			const message = localize('merge conflicts', "There are merge conflicts. Resolve them before committing.");
-			await window.showWarningMessage(message);
-		}
+		await choice.run(repository);
 	}
 
 	@command('git.createTag', { repository: true })
@@ -1325,7 +1366,7 @@ export class CommandCenter {
 			return;
 		}
 
-		const remotePicks = remotes.map(r => ({ label: r.name, description: r.url }));
+		const remotePicks = remotes.filter(r => r.fetchUrl !== undefined).map(r => ({ label: r.name, description: r.fetchUrl! }));
 		const placeHolder = localize('pick remote pull repo', "Pick a remote to pull the branch from");
 		const remotePick = await window.showQuickPick(remotePicks, { placeHolder });
 
@@ -1344,7 +1385,7 @@ export class CommandCenter {
 
 		const remoteCharCnt = remotePick.label.length;
 
-		repository.pullFrom(false, remotePick.label, branchPick.label.slice(remoteCharCnt + 1));
+		await repository.pullFrom(false, remotePick.label, branchPick.label.slice(remoteCharCnt + 1));
 	}
 
 	@command('git.pull', { repository: true })
@@ -1432,7 +1473,7 @@ export class CommandCenter {
 		}
 
 		const branchName = repository.HEAD.name;
-		const picks = remotes.map(r => ({ label: r.name, description: r.url }));
+		const picks = remotes.filter(r => r.pushUrl !== undefined).map(r => ({ label: r.name, description: r.pushUrl! }));
 		const placeHolder = localize('pick remote', "Pick a remote to publish the branch '{0}' to:", branchName);
 		const pick = await window.showQuickPick(picks, { placeHolder });
 
@@ -1440,7 +1481,7 @@ export class CommandCenter {
 			return;
 		}
 
-		repository.pushTo(pick.label, branchName);
+		await repository.pushTo(pick.label, branchName);
 	}
 
 	private async _sync(repository: Repository, rebase: boolean): Promise<void> {
@@ -1450,8 +1491,12 @@ export class CommandCenter {
 			return;
 		}
 
+		const remoteName = HEAD.remote || HEAD.upstream.remote;
+		const remote = repository.remotes.find(r => r.name === remoteName);
+		const isReadonly = remote && remote.isReadOnly;
+
 		const config = workspace.getConfiguration('git');
-		const shouldPrompt = config.get<boolean>('confirmSync') === true;
+		const shouldPrompt = !isReadonly && config.get<boolean>('confirmSync') === true;
 
 		if (shouldPrompt) {
 			const message = localize('sync is unpredictable', "This action will push and pull commits to and from '{0}/{1}'.", HEAD.upstream.remote, HEAD.upstream.name);
@@ -1522,6 +1567,8 @@ export class CommandCenter {
 
 	@command('git.ignore')
 	async ignore(...resourceStates: SourceControlResourceState[]): Promise<void> {
+		resourceStates = resourceStates.filter(s => !!s);
+
 		if (resourceStates.length === 0 || (resourceStates[0] && !(resourceStates[0].resourceUri instanceof Uri))) {
 			const resource = this.getSCMResource();
 
@@ -1647,10 +1694,11 @@ export class CommandCenter {
 
 			return result.catch(async err => {
 				const options: MessageOptions = {
-					modal: err.gitErrorCode === GitErrorCodes.DirtyWorkTree
+					modal: true
 				};
 
 				let message: string;
+				let type: 'error' | 'warning' = 'error';
 
 				switch (err.gitErrorCode) {
 					case GitErrorCodes.DirtyWorkTree:
@@ -1658,6 +1706,11 @@ export class CommandCenter {
 						break;
 					case GitErrorCodes.PushRejected:
 						message = localize('cant push', "Can't push refs to remote. Try running 'Pull' first to integrate your changes.");
+						break;
+					case GitErrorCodes.Conflict:
+						message = localize('merge conflicts', "There are merge conflicts. Resolve them before committing.");
+						type = 'warning';
+						options.modal = false;
 						break;
 					default:
 						const hint = (err.stderr || err.message || String(err))
@@ -1679,11 +1732,11 @@ export class CommandCenter {
 					return;
 				}
 
-				options.modal = true;
-
 				const outputChannel = this.outputChannel as OutputChannel;
 				const openOutputChannelChoice = localize('open git log', "Open Git Log");
-				const choice = await window.showErrorMessage(message, options, openOutputChannelChoice);
+				const choice = type === 'error'
+					? await window.showErrorMessage(message, options, openOutputChannelChoice)
+					: await window.showWarningMessage(message, options, openOutputChannelChoice);
 
 				if (choice === openOutputChannelChoice) {
 					outputChannel.show();
@@ -1698,7 +1751,12 @@ export class CommandCenter {
 	}
 
 	private getSCMResource(uri?: Uri): Resource | undefined {
-		uri = uri ? uri : window.activeTextEditor && window.activeTextEditor.document.uri;
+		uri = uri ? uri : (window.activeTextEditor && window.activeTextEditor.document.uri);
+
+		this.outputChannel.appendLine(`git.getSCMResource.uri ${uri && uri.toString()}`);
+		for (const r of this.model.repositories.map(r => r.root)) {
+			this.outputChannel.appendLine(`repo root ${r}`);
+		}
 
 		if (!uri) {
 			return undefined;
@@ -1737,7 +1795,7 @@ export class CommandCenter {
 			}
 
 			// Could it be a submodule?
-			if (resource.fsPath === repository.root) {
+			if (pathEquals(resource.fsPath, repository.root)) {
 				repository = this.model.getRepositoryForSubmodule(resource) || repository;
 			}
 
