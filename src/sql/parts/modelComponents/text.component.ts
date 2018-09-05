@@ -43,10 +43,6 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 
 	/// IComponent implementation
 
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();

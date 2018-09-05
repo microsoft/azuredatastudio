@@ -16,6 +16,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Color } from 'vs/base/common/color';
+import { SashState } from 'vs/base/browser/ui/sash/sash';
 
 export enum Orientation {
 	VERTICAL,
@@ -928,9 +929,9 @@ export class SplitView extends lifecycle.Disposable implements
 
 		this.sashes.forEach((s, i) => {
 			if ((collapsesDown[i] && expandsUp[i + 1]) || (expandsDown[i] && collapsesUp[i + 1])) {
-				s.enable();
+				s.state = SashState.Enabled;
 			} else {
-				s.disable();
+				s.state = SashState.Disabled;
 			}
 		});
 	}

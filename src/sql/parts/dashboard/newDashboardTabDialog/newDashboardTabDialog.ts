@@ -20,9 +20,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IDelegate, IRenderer, IListMouseEvent } from 'vs/base/browser/ui/list/list';
+import { IVirtualDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
@@ -33,7 +33,7 @@ import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 
-class ExtensionListDelegate implements IDelegate<IDashboardUITab> {
+class ExtensionListDelegate implements IVirtualDelegate<IDashboardUITab> {
 
 	constructor(
 		private _height: number
@@ -88,6 +88,10 @@ class ExtensionListRenderer implements IRenderer<IDashboardUITab, ExtensionListT
 	}
 
 	public disposeTemplate(template: ExtensionListTemplate): void {
+		// noop
+	}
+
+	public disposeElement(element: IDashboardUITab, index: number, templateData: ExtensionListTemplate): void {
 		// noop
 	}
 }

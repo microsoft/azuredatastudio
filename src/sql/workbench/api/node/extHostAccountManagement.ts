@@ -64,6 +64,33 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
+	public $getAllAccounts(): Thenable<sqlops.AccountWithProviderHandle[]> {
+		if (Object.keys(this._providers).length === 0) {
+			throw new Error('No account providers registered.');
+		}
+
+		let accountWithProviderHandles: sqlops.AccountWithProviderHandle[] = [];
+		let promises: Thenable<void>[] = [];
+
+		for (let providerKey in this._providers) {
+			let providerHandle = parseInt(providerKey);
+			let provider = this._providers[providerHandle];
+
+			promises.push(this._proxy.$getAccountsForProvider(provider.metadata.id).then(
+				(accounts) => {
+					accounts.forEach((account) => {
+						accountWithProviderHandles.push({
+							account: account,
+							providerHandle: providerHandle
+						});
+					});
+				}
+			));
+		}
+
+		return Promise.all(promises).then(() => accountWithProviderHandles);
+	}
+
 	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Disposable {
 		let self = this;
 

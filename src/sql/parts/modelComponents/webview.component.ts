@@ -20,6 +20,8 @@ import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webv
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
 	template: '',
@@ -33,6 +35,9 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private _onMessage = new Emitter<any>();
 	private _renderedHtml: string;
 
+	protected contextKey: IContextKey<boolean>;
+	protected findInputFocusContextKey: IContextKey<boolean>;
+
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -40,7 +45,9 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(IPartService) private partService: IPartService,
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super(changeRef);
 	}
@@ -54,18 +61,15 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	private _createWebview(): void {
-		this._webview = this._register(new WebviewElement(
+		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.themeService,
-			this.environmentService,
-			this.contextViewService,
-			undefined,
-			undefined,
+			this.contextKey,
+			this.findInputFocusContextKey,
 			{
 				allowScripts: true,
 				enableWrappedPostMessage: true
-			}
-		));
+			});
+
 		this._webview.mountTo(this._el.nativeElement);
 
 		this._register(this._webview.onMessage(e => {

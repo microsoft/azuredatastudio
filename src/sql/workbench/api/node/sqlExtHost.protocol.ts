@@ -446,6 +446,8 @@ export interface MainThreadAccountManagementShape extends IDisposable {
 	$endAutoOAuthDeviceCode(): void;
 
 	$accountUpdated(updatedAccount: sqlops.Account): void;
+
+	$getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
 }
 
 export interface MainThreadResourceProviderShape extends IDisposable {
@@ -499,7 +501,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
-	$openConnectionDialog(providers: string[]): Thenable<sqlops.connection.Connection>;
+	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile): Thenable<sqlops.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -616,6 +618,10 @@ export interface ExtHostModelViewTreeViewsShape {
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;
+
+	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
+	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
+	$setVisible(treeViewId: string, visible: boolean): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {
@@ -634,7 +640,8 @@ export interface MainThreadModelViewShape extends IDisposable {
 	$registerProvider(id: string): void;
 	$initializeModel(handle: number, rootComponent: IComponentShape): Thenable<void>;
 	$clearContainer(handle: number, componentId: string): Thenable<void>;
-	$addToContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
+	$addToContainer(handle: number, containerId: string, item: IItemConfig, index?: number): Thenable<void>;
+	$removeFromContainer(handle: number, containerId: string, item: IItemConfig): Thenable<void>;
 	$setLayout(handle: number, componentId: string, layout: any): Thenable<void>;
 	$setProperties(handle: number, componentId: string, properties: { [key: string]: any }): Thenable<void>;
 	$registerEvent(handle: number, componentId: string): Thenable<void>;

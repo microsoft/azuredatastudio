@@ -7,7 +7,7 @@
 import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
-import { Table, ITableStyles, ITableContextMenuEvent } from 'sql/base/browser/ui/table/table';
+import { Table, ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
@@ -15,6 +15,8 @@ import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction, ChartDataAction } from 'sql/parts/query/editor/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { escape } from 'sql/base/common/strings';
+import { hyperLinkFormatter, textFormatter } from 'sql/parts/grid/services/sharedServices';
 
 import * as sqlops from 'sqlops';
 
@@ -34,6 +36,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -99,14 +103,14 @@ export class GridPanel extends ViewletPanel {
 	private maximizedGrid: GridTable<any>;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
 	}
 
@@ -154,7 +158,7 @@ export class GridPanel extends ViewletPanel {
 
 		for (let set of resultsToAdd) {
 			let tableState = new GridTableState();
-			let table = new GridTable(this.runner, tableState, set, this.contextMenuService, this.instantiationService);
+			let table = this.instantiationService.createInstance(GridTable, this.runner, tableState, set);
 			tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -232,6 +236,7 @@ class GridTable<T> extends Disposable implements IView {
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
 	public id = generateUuid();
+	readonly element: HTMLElement = this.container;
 
 	// this handles if the row count is small, like 4-5 rows
 	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
@@ -240,8 +245,10 @@ class GridTable<T> extends Disposable implements IView {
 		private runner: QueryRunner,
 		public state: GridTableState,
 		private resultSet: sqlops.ResultSetSummary,
-		private contextMenuService: IContextMenuService,
-		private instantiationService: IInstantiationService
+		@IContextMenuService private contextMenuService: IContextMenuService,
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@IEditorService private editorService: IEditorService,
+		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
 	) {
 		super();
 		this.container.style.width = '100%';
@@ -250,11 +257,15 @@ class GridTable<T> extends Disposable implements IView {
 		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
+			let isLinked = c.isXml || c.isJson;
+
 			return <Slick.Column<T>>{
 				id: i.toString(),
-				name: c.columnName,
+				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+					? 'XML Showplan'
+					: escape(c.columnName),
 				field: i.toString(),
-				width: 100
+				formatter: isLinked ? hyperLinkFormatter : textFormatter
 			};
 		});
 	}
@@ -284,6 +295,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table.registerPlugin(new AutoColumnSize());
 		this.table.registerPlugin(numberColumn);
 		this._register(this.table.onContextMenu(this.contextMenu, this));
+		this._register(this.table.onClick(this.onTableClick, this));
 
 		if (this.styles) {
 			this.table.style(this.styles);
@@ -324,6 +336,19 @@ class GridTable<T> extends Disposable implements IView {
 		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
+	private onTableClick(event: ITableMouseEvent) {
+		// account for not having the number column
+		let column = this.resultSet.columnInfo[event.cell.cell - 1];
+		// handle if a showplan link was clicked
+		if (column && (column.isXml || column.isJson)) {
+			this.runner.getQueryRows(event.cell.row, 1, this.resultSet.batchId, this.resultSet.id).then(d => {
+				let value = d.resultSubset.rows[0][event.cell.cell - 1];
+				let input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', value.displayValue);
+				this.editorService.openEditor(input);
+			});
+		}
+	}
+
 	public layout(size: number): void {
 		if (!this.table) {
 			this.build();
@@ -351,14 +376,18 @@ class GridTable<T> extends Disposable implements IView {
 				let dataWithSchema = {};
 				// skip the first column since its a number column
 				for (let i = 1; i < this.columns.length; i++) {
-					dataWithSchema[this.columns[i].field] = r[i - 1].displayValue;
+					dataWithSchema[this.columns[i].field] = {
+						displayValue: r[i - 1].displayValue,
+						ariaLabel: escape(r[i - 1].displayValue),
+						isNull: r[i - 1].isNull
+					};
 				}
 				return dataWithSchema as T;
 			});
 		});
 	}
 
-	private contextMenu(e: ITableContextMenuEvent): void {
+	private contextMenu(e: ITableMouseEvent): void {
 		const selection = this.selectionModel.getSelectedRanges();
 		const { cell } = e;
 		this.contextMenuService.showContextMenu({
@@ -400,7 +429,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	private placeholdGenerator(index: number): any {
-		return { values: [] };
+		return {};
 	}
 
 	private renderGridDataRowsRange(startIndex: number, count: number): void {

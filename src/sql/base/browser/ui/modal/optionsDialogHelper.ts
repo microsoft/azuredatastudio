@@ -153,7 +153,7 @@ export function findElement(container: Builder, className: string): HTMLElement 
 	var elementBuilder: Builder = container;
 	while (elementBuilder.getHTMLElement()) {
 		var htmlElement = elementBuilder.getHTMLElement();
-		if (htmlElement.className === className) {
+		if (htmlElement.className.startsWith(className)) {
 			break;
 		}
 		elementBuilder = elementBuilder.child(0);
