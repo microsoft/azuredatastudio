@@ -13,7 +13,6 @@ import { IdGenerator } from 'vs/base/common/idGenerator';
 import { NavSectionConfig, IUserFriendlyIcon } from 'sql/parts/dashboard/common/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
-import { WEBVIEW_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWebviewContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 
 export const NAV_SECTION = 'nav-section';
@@ -84,11 +83,11 @@ function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPoin
 	if (icon) {
 		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
-			const path = join(extension.description.extensionFolderPath, icon);
+			const path = join(extension.description.extensionLocation.fsPath, icon);
 			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
 		} else {
-			const light = join(extension.description.extensionFolderPath, icon.light);
-			const dark = join(extension.description.extensionFolderPath, icon.dark);
+			const light = join(extension.description.extensionLocation.fsPath, icon.light);
+			const dark = join(extension.description.extensionLocation.fsPath, icon.dark);
 			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
 			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
 		}

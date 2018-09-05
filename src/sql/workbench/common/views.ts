@@ -18,9 +18,5 @@ export interface IModelViewTreeViewDataProvider extends ITreeViewDataProvider {
 }
 
 export interface IModelViewTreeViewDataProvider {
-	onDidChange: Event<ITreeComponentItem[] | undefined | null>;
-
-	onDispose: Event<void>;
-
 	getChildren(element?: ITreeComponentItem): TPromise<ITreeComponentItem[]>;
 }
