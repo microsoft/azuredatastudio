@@ -21,6 +21,9 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServices';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
 	template: '',
@@ -55,11 +58,12 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	private _createEditor(): void {
-		this._editor = this._instantiationService.createInstance(QueryTextEditor);
+		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
+		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, uri, false, 'sql', '', '');
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'sql', '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
 

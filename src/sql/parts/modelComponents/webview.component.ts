@@ -10,7 +10,6 @@ import {
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { Event, Emitter } from 'vs/base/common/event';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
@@ -38,9 +37,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private static readonly standardSupportedLinkSchemes = ['http', 'https', 'mailto'];
 
 	private _webview: WebviewElement;
-	private _onMessage = new Emitter<any>();
 	private _renderedHtml: string;
-	private _extensionLocation: URI;
+	private _extensionLocationUri: URI;
 
 	protected contextKey: IContextKey<boolean>;
 	protected findInputFocusContextKey: IContextKey<boolean>;
@@ -153,7 +151,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			this.setHtml();
 		}
 		if (this.extensionLocation) {
-			this._extensionLocation = URI.revive(this.extensionLocation);
+			this._extensionLocationUri = URI.revive(this.extensionLocation);
 		}
 		this.sendMessage();
 
@@ -185,6 +183,13 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		return this.getPropertyOrDefault<sqlops.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
 	}
 
+	private get extensionLocationUri(): URI {
+		if (!this._extensionLocationUri && this.extensionLocation) {
+			this._extensionLocationUri = URI.revive(this.extensionLocation);
+		}
+		return this._extensionLocationUri;
+	}
+
 	private getExtendedOptions(): WebviewOptions {
 		let options = this.options || { enableScripts: true };
 		return {
@@ -198,8 +203,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private getDefaultLocalResourceRoots(): URI[] {
 		const rootPaths = this._contextService.getWorkspace().folders.map(x => x.uri);
-		if (this.extensionLocation) {
-			rootPaths.push(this._extensionLocation);
+		if (this.extensionLocationUri) {
+			rootPaths.push(this.extensionLocationUri);
 		}
 		return rootPaths;
 	}
