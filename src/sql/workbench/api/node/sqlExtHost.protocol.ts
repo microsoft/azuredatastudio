@@ -9,6 +9,7 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier, IRPCProtocol
 } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -606,7 +607,7 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void;
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: UriComponents): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
