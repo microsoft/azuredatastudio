@@ -154,14 +154,6 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
-	public get position(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
-	}
-
-	public set position(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
-	}
-
 	public get editorUri(): string {
 		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUri, '');
 	}
