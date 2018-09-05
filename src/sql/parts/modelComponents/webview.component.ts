@@ -18,12 +18,14 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { WebviewElement, WebviewOptions } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
-import URI from 'vs/base/common/uri';
+import URI, { UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
 	template: '',
@@ -38,6 +40,10 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private _webview: WebviewElement;
 	private _onMessage = new Emitter<any>();
 	private _renderedHtml: string;
+	private _extensionLocation: URI;
+
+	protected contextKey: IContextKey<boolean>;
+	protected findInputFocusContextKey: IContextKey<boolean>;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
@@ -48,7 +54,9 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IOpenerService) private readonly _openerService: IOpenerService,
-		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService
+		@Inject(IWorkspaceContextService) private readonly _contextService: IWorkspaceContextService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super(changeRef);
 	}
@@ -62,18 +70,15 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	private _createWebview(): void {
-		this._webview = this._register(new WebviewElement(
+		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.themeService,
-			this.environmentService,
-			this.contextViewService,
-			undefined,
-			undefined,
+			this.contextKey,
+			this.findInputFocusContextKey,
 			{
 				allowScripts: true,
 				enableWrappedPostMessage: true
-			}
-		));
+			});
+
 		this._webview.mountTo(this._el.nativeElement);
 
 		this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
@@ -147,6 +152,9 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		if (this.html !== this._renderedHtml) {
 			this.setHtml();
 		}
+		if (this.extensionLocation) {
+			this._extensionLocation = URI.revive(this.extensionLocation);
+		}
 		this.sendMessage();
 
 	}
@@ -173,8 +181,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		return this.getPropertyOrDefault<sqlops.WebViewProperties, vscode.WebviewOptions>((props) => props.options, undefined);
 	}
 
-	public get extensionFolderPath(): string {
-		return this.getPropertyOrDefault<sqlops.WebViewProperties, string>((props) => props.extensionFolderPath, '');
+	public get extensionLocation(): UriComponents {
+		return this.getPropertyOrDefault<sqlops.WebViewProperties, UriComponents>((props) => props.extensionLocation, undefined);
 	}
 
 	private getExtendedOptions(): WebviewOptions {
@@ -190,8 +198,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private getDefaultLocalResourceRoots(): URI[] {
 		const rootPaths = this._contextService.getWorkspace().folders.map(x => x.uri);
-		if (this.extensionFolderPath) {
-			rootPaths.push(URI.parse(this.extensionFolderPath));
+		if (this.extensionLocation) {
+			rootPaths.push(this._extensionLocation);
 		}
 		return rootPaths;
 	}

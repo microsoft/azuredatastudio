@@ -9,6 +9,7 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier, IRPCProtocol
 } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -446,6 +447,8 @@ export interface MainThreadAccountManagementShape extends IDisposable {
 	$endAutoOAuthDeviceCode(): void;
 
 	$accountUpdated(updatedAccount: sqlops.Account): void;
+
+	$getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
 }
 
 export interface MainThreadResourceProviderShape extends IDisposable {
@@ -499,7 +502,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
-	$openConnectionDialog(providers: string[]): Thenable<sqlops.connection.Connection>;
+	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile): Thenable<sqlops.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -604,7 +607,7 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionFolderPath: string): void;
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: UriComponents): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
@@ -616,6 +619,10 @@ export interface ExtHostModelViewTreeViewsShape {
 	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;
+
+	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
+	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
+	$setVisible(treeViewId: string, visible: boolean): void;
 }
 
 export interface ExtHostBackgroundTaskManagementShape {

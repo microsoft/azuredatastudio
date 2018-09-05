@@ -7,6 +7,18 @@
 import * as paths from 'vs/base/common/paths';
 import uri from 'vs/base/common/uri';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
+import { Schemas } from 'vs/base/common/network';
+import { isLinux } from 'vs/base/common/platform';
+
+export function getComparisonKey(resource: uri): string {
+	return hasToIgnoreCase(resource) ? resource.toString().toLowerCase() : resource.toString();
+}
+
+export function hasToIgnoreCase(resource: uri): boolean {
+	// A file scheme resource is in the same platform as code, so ignore case for non linux platforms
+	// Resource can be from another platform. Lowering the case as an hack. Should come from File system provider
+	return resource && resource.scheme === Schemas.file ? !isLinux : true;
+}
 
 export function basenameOrAuthority(resource: uri): string {
 	return paths.basename(resource.path) || resource.authority;
@@ -18,7 +30,7 @@ export function isEqualOrParent(resource: uri, candidate: uri, ignoreCase?: bool
 			return paths.isEqualOrParent(resource.fsPath, candidate.fsPath, ignoreCase);
 		}
 
-		return paths.isEqualOrParent(resource.path, candidate.path, ignoreCase);
+		return paths.isEqualOrParent(resource.path, candidate.path, ignoreCase, '/');
 	}
 
 	return false;
@@ -49,6 +61,13 @@ export function dirname(resource: uri): uri {
 
 	return resource.with({
 		path: dirname
+	});
+}
+
+export function joinPath(resource: uri, pathFragment: string): uri {
+	const joinedPath = paths.join(resource.path || '/', pathFragment);
+	return resource.with({
+		path: joinedPath
 	});
 }
 

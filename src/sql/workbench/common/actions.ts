@@ -25,7 +25,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import * as nls from 'vs/nls';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 export interface BaseActionContext {
@@ -63,7 +63,7 @@ export class NewQueryAction extends Task {
 				accessor.get<IConnectionManagementService>(IConnectionManagementService),
 				accessor.get<IQueryEditorService>(IQueryEditorService),
 				accessor.get<IObjectExplorerService>(IObjectExplorerService),
-				accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService)
+				accessor.get<IEditorService>(IEditorService)
 			).then(
 				result => {
 					resolve(void 0);

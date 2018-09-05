@@ -51,7 +51,7 @@ declare module 'sqlops' {
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
 		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<T[]>;
+		onDidChangeSelection:  vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
@@ -1241,6 +1241,6 @@ declare module 'sqlops' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
+		export function openConnectionDialog(provider?: string[], initialConnectionProfile?: IConnectionProfile): Thenable<connection.Connection>;
 	}
 }
