@@ -158,5 +158,8 @@ export class QueryResultsEditor extends BaseEditor {
 
 	public dispose(): void {
 		super.dispose();
+		if (this.resultsView) {
+			this.resultsView.dispose();
+		}
 	}
 }

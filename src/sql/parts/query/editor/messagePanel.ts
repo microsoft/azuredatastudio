@@ -109,53 +109,15 @@ export class MessagePanel extends ViewletPanel {
 		this.queryRunnerDisposables = [];
 		this.reset();
 		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.push(runner.onBatchStart(e => this.onBatchStart(e)));
 		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
-		this.queryRunnerDisposables.push(runner.onQueryEnd(e => this.onQueryEnd(e)));
 	}
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
 		if (isArray(message)) {
-			this.model.messages.push(...message.map(c => {
-				return <IMessagePanelMessage>{
-					isError: c.isError,
-					message: c.message
-				};
-			}));
+			this.model.messages.push(...message);
 		} else {
-			this.model.messages.push({
-				message: message.message,
-				isError: message.isError
-			});
+			this.model.messages.push(message);
 		}
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
-			}
-		});
-	}
-
-	private onBatchStart(batch: BatchSummary) {
-		this.model.messages.push({
-			message: localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine),
-			time: new Date(batch.executionStart).toLocaleTimeString(),
-			selection: batch.selection,
-			isError: false
-		});
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
-			}
-		});
-	}
-
-	private onQueryEnd(elapsedTime: string) {
-		this.model.totalExecuteMessage = {
-			message: localize('query.message.executionTime', 'Total execution time: {0}', elapsedTime),
-			isError: false
-		};
 		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
 			if (previousScrollPosition === 1) {
