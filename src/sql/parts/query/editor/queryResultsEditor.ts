@@ -152,6 +152,10 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.chartData(dataId);
 	}
 
+	public showQueryPlan(xml: string) {
+		this.resultsView.showPlan(xml);
+	}
+
 	public dispose(): void {
 		super.dispose();
 	}
