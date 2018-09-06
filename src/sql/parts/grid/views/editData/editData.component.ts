@@ -537,7 +537,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					self.windowSize,
 					self.dataSet.totalRows,
 					self.loadDataFunction,
-					index => { return { }; }
+					index => { return {}; }
 				);
 
 				// Refresh grid
@@ -559,7 +559,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			this.windowSize,
 			this.dataSet.totalRows,
 			this.loadDataFunction,
-			index => { return {  }; }
+			index => { return {}; }
 		);
 
 		// refresh results view
