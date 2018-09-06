@@ -12,6 +12,7 @@ import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionS
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
+import URI from 'vs/base/common/uri';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -482,7 +483,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 		setDefaultApiImpl: (defaultImpl: ApiImpl) => void,
 		parent: any): ApiImpl {
 		// get extension id from filename and api for extension
-		const ext = extensionPaths.findSubstr(parent.filename);
+		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
 			let apiImpl = apiMap.get(ext.id);
 			if (!apiImpl) {
@@ -494,6 +495,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 
 		// fall back to a default implementation
 		if (!defaultImpl) {
+			console.warn(`Could not identify extension for 'vscode' require call from ${parent.filename}`);
 			defaultImpl = createApi(nullExtensionDescription);
 			setDefaultApiImpl(defaultImpl);
 		}
