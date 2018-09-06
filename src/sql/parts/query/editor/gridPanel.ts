@@ -97,6 +97,7 @@ export class GridPanel extends ViewletPanel {
 	private tables: GridTable<any>[] = [];
 	private tableDisposable: IDisposable[] = [];
 	private queryRunnerDisposables: IDisposable[] = [];
+	private currentHeight: number;
 
 	private runner: QueryRunner;
 
@@ -123,6 +124,11 @@ export class GridPanel extends ViewletPanel {
 
 	protected layoutBody(size: number): void {
 		this.splitView.layout(size);
+		// if the size hasn't change it won't layout our table so we have to do it manually
+		if (size === this.currentHeight) {
+			this.tables.map(e => e.layout());
+		}
+		this.currentHeight = size;
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -229,6 +235,7 @@ class GridTable<T> extends Disposable implements IView {
 	private container = document.createElement('div');
 	private selectionModel = new CellSelectionModel();
 	private styles: ITableStyles;
+	private currentHeight: number;
 
 	private columns: Slick.Column<T>[];
 
@@ -349,9 +356,14 @@ class GridTable<T> extends Disposable implements IView {
 		}
 	}
 
-	public layout(size: number): void {
+	public layout(size?: number): void {
 		if (!this.table) {
 			this.build();
+		}
+		if (!size) {
+			size = this.currentHeight;
+		} else {
+			this.currentHeight = size;
 		}
 		this.table.layout(
 			new Dimension(

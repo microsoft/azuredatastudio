@@ -24,6 +24,7 @@ class ResultsView implements IPanelView {
 	private gridPanel: GridPanel;
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
+	private currentDimension: DOM.Dimension;
 
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
@@ -45,6 +46,11 @@ class ResultsView implements IPanelView {
 
 	layout(dimension: DOM.Dimension): void {
 		this.panelViewlet.layout(dimension);
+		// the grid won't be resize if the height has not changed so we need to do it manually
+		if (this.currentDimension && dimension.height === this.currentDimension.height) {
+			this.gridPanel.layout(dimension.height);
+		}
+		this.currentDimension = dimension;
 	}
 
 	remove(): void {
@@ -101,8 +107,13 @@ export class QueryResultsView {
 		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
 		this.resultsTab.queryRunner = queryRunner;
 		this.chartTab.queryRunner = queryRunner;
+		if (!this._panelView.contains(this.resultsTab)) {
+			this._panelView.pushTab(this.resultsTab);
+		}
+	}
 
-		this._panelView.pushTab(this.resultsTab);
+	public dispose() {
+		this._panelView.dispose();
 	}
 
 	public get input(): QueryResultsInput {
