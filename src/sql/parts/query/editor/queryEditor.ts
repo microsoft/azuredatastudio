@@ -295,7 +295,7 @@ export class QueryEditor extends BaseEditor {
 		let input = <QueryInput>this.input;
 		this._createResultsEditorContainer();
 
-		this._createEditor(<QueryResultsInput>input.results, this._resultsEditorContainer)
+		this._createEditor(<QueryResultsInput>input.results, this._resultsEditorContainer, this.group)
 			.then(result => {
 				this._onResultsEditorCreated(<any>result, input.results, this.options);
 				this.resultsEditorVisibility = true;
@@ -556,8 +556,8 @@ export class QueryEditor extends BaseEditor {
 		if (this._isResultsEditorVisible()) {
 			createEditors = () => {
 				return TPromise.join([
-					this._createEditor(<QueryResultsInput>newInput.results, this._resultsEditorContainer),
-					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer)
+					this._createEditor(<QueryResultsInput>newInput.results, this._resultsEditorContainer, this.group),
+					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer, this.group)
 				]);
 			};
 			onEditorsCreated = (result: IEditor[]) => {
@@ -570,7 +570,7 @@ export class QueryEditor extends BaseEditor {
 			// If only the sql editor exists, create a promise and wait for the sql editor to be created
 		} else {
 			createEditors = () => {
-				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer);
+				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer, this.group);
 			};
 			onEditorsCreated = (result: TextResourceEditor) => {
 				return TPromise.join([
@@ -602,7 +602,7 @@ export class QueryEditor extends BaseEditor {
 	/**
 	 * Create a single editor based on the type of the given EditorInput.
 	 */
-	private _createEditor(editorInput: EditorInput, container: HTMLElement): TPromise<BaseEditor> {
+	private _createEditor(editorInput: EditorInput, container: HTMLElement, group: IEditorGroup): TPromise<BaseEditor> {
 		const descriptor = this._editorDescriptorService.getEditor(editorInput);
 		if (!descriptor) {
 			return TPromise.wrapError(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
@@ -610,7 +610,7 @@ export class QueryEditor extends BaseEditor {
 
 		let editor = descriptor.instantiate(this._instantiationService);
 		editor.create(container);
-		editor.setVisible(this.isVisible(), editor.group);
+		editor.setVisible(this.isVisible(), group);
 		return TPromise.as(editor);
 	}
 
