@@ -67,8 +67,8 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 						let reader = new FileReader();
 						reader.onload = (e) => {
 							let text = (<FileReader>e.target).result;
-							self.fileContent = text;
-							self._onEventEmitter.fire({
+							self.fileContent = text.toString();
+							self.fireEvent({
 								eventType: ComponentEventType.onDidClick,
 								args: self.fileContent
 							});
@@ -76,7 +76,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 						reader.readAsText(file);
 					};
 				} else {
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidClick,
 						args: e
 					});

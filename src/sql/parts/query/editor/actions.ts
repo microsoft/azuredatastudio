@@ -171,7 +171,7 @@ export class ChartDataAction extends Action {
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		let activeEditor = this.editorService.activeEditor;
+		let activeEditor = this.editorService.activeControl;
 		if (activeEditor instanceof QueryEditor) {
 			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 			return TPromise.as(true);
@@ -179,4 +179,26 @@ export class ChartDataAction extends Action {
 			return TPromise.as(false);
 		}
 	}
+}
+
+export class ShowQueryPlanAction extends Action {
+	public static ID = 'showQueryPlan';
+	public static LABEL = localize('showQueryPlan', 'Show Query Plan');
+
+	constructor(
+		@IEditorService private editorService: IEditorService
+	) {
+		super(ShowQueryPlanAction.ID, ShowQueryPlanAction.LABEL);
+	}
+
+	public run(xml: string): TPromise<boolean> {
+		let activeEditor = this.editorService.activeControl;
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.showQueryPlan(xml);
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+
 }

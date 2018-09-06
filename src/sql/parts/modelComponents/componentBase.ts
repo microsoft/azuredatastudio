@@ -139,6 +139,14 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
 	}
 
+	public get position(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
+	}
+
+	public set position(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
+	}
+
 	public convertSizeToNumber(size: number | string): number {
 		if (size && typeof (size) === 'string') {
 			if (size.toLowerCase().endsWith('px')) {
@@ -187,7 +195,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return this._onEventEmitter.event(handler);
 	}
 
-	private fireEvent(event: IComponentEventArgs) {
+	protected fireEvent(event: IComponentEventArgs) {
 		this._onEventEmitter.fire(event);
 		if (this._eventQueue) {
 			this._eventQueue.push(event);

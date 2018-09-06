@@ -69,7 +69,8 @@ export enum ComponentEventType {
 	onDidClick,
 	validityChanged,
 	onMessage,
-	onSelectedRowChanged
+	onSelectedRowChanged,
+	onComponentCreated
 }
 
 export interface IModelStore {

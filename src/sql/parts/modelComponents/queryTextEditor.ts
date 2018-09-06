@@ -7,7 +7,6 @@ import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
@@ -21,21 +20,9 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
-import { FoldingController } from 'vs/editor/contrib/folding/folding';
-import { RenameController } from 'vs/editor/contrib/rename/rename';
 import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-
-class QueryCodeEditor extends StandaloneCodeEditor {
-	// protected _getContributions(): IEditorContributionCtor[] {
-	// 	let contributions = super._getContributions();
-	// 	let skipContributions = [FoldingController.prototype, RenameController.prototype];
-	// 	contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
-	// 	return contributions;
-	// }
-}
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -62,7 +49,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(QueryCodeEditor, parent, configuration);
+		return this.instantiationService.createInstance(StandaloneCodeEditor, parent, configuration);
 	}
 
 	protected getConfigurationOverrides(): IEditorOptions {

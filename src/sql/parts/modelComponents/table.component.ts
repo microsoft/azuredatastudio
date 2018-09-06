@@ -109,7 +109,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._register(this._table.onSelectedRowsChanged((e, data) => {
 				this.selectedRows = data.rows;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
 					args: e
 				});

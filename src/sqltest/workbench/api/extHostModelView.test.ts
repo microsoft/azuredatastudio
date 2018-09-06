@@ -69,7 +69,7 @@ suite('ExtHostModelView Validation Tests', () => {
 				.component();
 			await view.initializeModel(flexContainer);
 			done();
-		});
+		}, undefined);
 
 		extHostModelView.$registerWidget(handle, widgetId, undefined, undefined);
 	});
