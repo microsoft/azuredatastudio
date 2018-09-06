@@ -362,6 +362,8 @@ function getMockAccountManagementService(accounts: sqlops.Account[]): TypeMoq.Mo
 
 	mockAccountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny()))
 		.returns(() => Promise.resolve(accounts));
+	mockAccountManagementService.setup(x => x.updateAccountListEvent)
+	    .returns(() => () => { return undefined; } );
 
 	return mockAccountManagementService;
 }
