@@ -1252,16 +1252,21 @@ declare namespace Slick {
 	export interface OnDragEndEventArgs<T extends SlickData> extends GridEventArgs<T> {
 		// todo: need to understand $canvas drag event parameter's 'dd' object
 		// the documentation is not enlightening
+		range: { start: Slick.Cell, end: Slick.Cell };
 	}
 
 	export interface OnDragEventArgs<T extends SlickData> extends GridEventArgs<T> {
 		// todo: need to understand $canvas drag event parameter's 'dd' object
 		// the documentation is not enlightening
+		range: { start: Slick.Cell, end: Slick.Cell };
 	}
 
 	export interface OnDragStartEventArgs<T extends SlickData> extends GridEventArgs<T> {
 		// todo: need to understand $canvas drag event parameter's 'dd' object
 		// the documentation is not enlightening
+		startX: number;
+		startY: number;
+		range: { start: Slick.Cell, end: Slick.Cell };
 	}
 
 	export interface OnDragInitEventArgs<T extends SlickData> extends GridEventArgs<T> {
