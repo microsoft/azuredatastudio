@@ -56,7 +56,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 						configurationService.updateValue('workbench.enablePreviewFeatures', false);
 					}
 				}, {
-					label: localize('enablePreviewFeatures.never', "No, never ask again"),
+					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
 						configurationService.updateValue('workbench.enablePreviewFeatures', false);
 						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
