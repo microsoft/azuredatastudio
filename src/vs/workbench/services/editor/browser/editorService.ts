@@ -29,6 +29,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { isCodeEditor, isDiffEditor, ICodeEditor, IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupView, IEditorOpeningEvent, EditorGroupsServiceImpl, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IUriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { convertEditorInput } from 'sql/parts/common/customInputConverter';
 
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 
@@ -232,12 +233,17 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			return this.doOpenEditor(targetGroup, editor, editorOptions);
 		}
 
+		// {{SQL CARBON EDIT}}
 		// Untyped Text Editor Support
 		const textInput = <IResourceEditor>editor;
-		const typedInput = this.createInput(textInput);
+		let typedInput = this.createInput(textInput);
 		if (typedInput) {
 			const editorOptions = TextEditorOptions.from(textInput);
 			const targetGroup = this.findTargetGroup(typedInput, editorOptions, optionsOrGroup as IEditorGroup | GroupIdentifier);
+
+			// {{SQL CARBON EDIT}}
+			// Convert input into custom type if it's one of the ones we support
+			typedInput = convertEditorInput(typedInput, editorOptions, this.instantiationService);
 
 			return this.doOpenEditor(targetGroup, typedInput, editorOptions);
 		}
