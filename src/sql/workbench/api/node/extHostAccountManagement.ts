@@ -20,6 +20,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
+	private _accounts: { [handle: number]: sqlops.Account[] } = {};
 	private readonly _onDidChangeAccounts = new Emitter<sqlops.DidChangeAccountsParams>();
 
 	constructor(mainContext: IMainContext) {
@@ -31,10 +32,6 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
 	public $clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> {
 		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.clear(accountKey));
-	}
-
-	public $getSecurityToken(handle: number, account: sqlops.Account): Thenable<{}> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
 	}
 
 	public $initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
@@ -66,31 +63,41 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		this._proxy.$accountUpdated(updatedAccount);
 	}
 
-	public $getAllAccounts(): Thenable<sqlops.AccountWithProviderHandle[]> {
+	public $getAllAccounts(): Thenable<sqlops.Account[]> {
 		if (Object.keys(this._providers).length === 0) {
 			throw new Error('No account providers registered.');
 		}
 
-		let accountWithProviderHandles: sqlops.AccountWithProviderHandle[] = [];
-		let promises: Thenable<void>[] = [];
+		this._accounts = {};
 
-		for (let providerKey in this._providers) {
-			let providerHandle = parseInt(providerKey);
-			let provider = this._providers[providerHandle];
+		const resultAccounts: sqlops.Account[] = [];
 
+		const promises: Thenable<void>[] = [];
+
+		for (const providerKey in this._providers) {
+			const providerHandle = parseInt(providerKey);
+
+			const provider = this._providers[providerHandle];
 			promises.push(this._proxy.$getAccountsForProvider(provider.metadata.id).then(
 				(accounts) => {
-					accounts.forEach((account) => {
-						accountWithProviderHandles.push({
-							account: account,
-							providerHandle: providerHandle
-						});
-					});
+					this._accounts[providerHandle] = accounts;
+					resultAccounts.push(...accounts);
 				}
 			));
 		}
 
-		return Promise.all(promises).then(() => accountWithProviderHandles);
+		return Promise.all(promises).then(() => resultAccounts);
+	}
+
+	public $getSecurityToken(account: sqlops.Account): Thenable<{}> {
+		for (const handle in this._accounts) {
+			const providerHandle = parseInt(handle);
+			if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
+				return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
+			}
+		}
+
+		throw new Error(`Account ${account.key.accountId} not found.`);
 	}
 
 	public get onDidChangeAccounts(): Event<sqlops.DidChangeAccountsParams> {
@@ -98,14 +105,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	}
 
 	public $accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> {
-		const accountsWithProviderHandle: sqlops.AccountWithProviderHandle[] = accounts.map((account) => {
-			return {
-				account: account,
-				providerHandle: handle
-			};
-		});
-
-		return this._onDidChangeAccounts.fire({ accounts: accountsWithProviderHandle });
+		return this._onDidChangeAccounts.fire({ accounts: accounts });
 	}
 
 	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Disposable {

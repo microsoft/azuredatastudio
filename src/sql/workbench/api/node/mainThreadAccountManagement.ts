@@ -77,7 +77,7 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 				return self._proxy.$clear(handle, accountKey);
 			},
 			getSecurityToken(account: sqlops.Account): Thenable<{}> {
-				return self._proxy.$getSecurityToken(handle, account);
+				return self._proxy.$getSecurityToken(account);
 			},
 			initialize(restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
 				return self._proxy.$initialize(handle, restoredAccounts);

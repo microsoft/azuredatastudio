@@ -1855,14 +1855,14 @@ declare module 'sqlops' {
 		 * Gets all added accounts.
 		 * @returns {Thenable<Account>} Promise to return the accounts
 		 */
-		export function getAllAccounts(): Thenable<AccountWithProviderHandle[]>;
+		export function getAllAccounts(): Thenable<Account[]>;
 
 		/**
 		 * Generates a security token by asking the account's provider
 		 * @param {Account} account Account to generate security token for
 		 * @return {Thenable<{}>} Promise to return the security token
 		 */
-		export function getSecurityToken(account: AccountWithProviderHandle): Thenable<{}>;
+		export function getSecurityToken(account: Account): Thenable<{}>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -1935,24 +1935,9 @@ declare module 'sqlops' {
 		isStale: boolean;
 	}
 
-	/**
-	 * Represents an account with account provider's handle
-	 */
-	export interface AccountWithProviderHandle {
-		/**
-		 * Account
-		 */
-		account: Account;
-
-		/**
-		 * Account's provider handle
-		 */
-		providerHandle: number;
-	}
-
 	export interface DidChangeAccountsParams {
-		// Updated accounts with provider handle
-		accounts: AccountWithProviderHandle[];
+		// Updated accounts
+		accounts: Account[];
 	}
 
 	// - ACCOUNT PROVIDER //////////////////////////////////////////////////

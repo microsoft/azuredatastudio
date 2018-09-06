@@ -27,7 +27,7 @@ import {
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
-	$getSecurityToken(handle: number, account: sqlops.Account): Thenable<{}> { throw ni(); }
+	$getSecurityToken(account: sqlops.Account): Thenable<{}> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> { throw ni(); }
 	$prompt(handle: number): Thenable<sqlops.Account> { throw ni(); }
 	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
