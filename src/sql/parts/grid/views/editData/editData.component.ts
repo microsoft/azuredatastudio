@@ -195,6 +195,15 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						}
 						return dataWithSchema;
 					});
+
+					// should add null row?
+					if (offset + count > this.dataSet.totalRows - 1) {
+						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+							p[c.field] = 'NULL';
+							return p;
+						}, {}));
+					}
+
 					// let rowIndex = offset;
 					// let gridData: IGridDataRow[] = result.subset.map(row => {
 					// 	self.idMapping[rowIndex] = row.id;
@@ -206,9 +215,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					// 	};
 					// });
 
-					// Append a NULL row to the end of gridData
-					// let newLastRow = gridData.length === 0 ? 0 : (gridData[gridData.length - 1].row + 1);
-					// gridData.push({ values: self.dataSet.columnDefinitions.map(cell => { return { displayValue: 'NULL', isNull: false }; }), row: newLastRow });
 					resolve(gridData);
 				});
 			});
@@ -371,17 +377,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				index => { return {}; }
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
-				let isLinked = c.isXml || c.isJson;
-				let linkType = c.isXml ? 'xml' : 'json';
-
 				return {
 					id: i.toString(),
-					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-						? 'XML Showplan'
-						: escape(c.columnName),
+					name: escape(c.columnName),
 					field: i.toString(),
-					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
-					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
+					formatter: Services.textFormatter,
 					isEditable: c.isUpdatable
 				};
 			}))
@@ -537,7 +537,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					self.windowSize,
 					self.dataSet.totalRows,
 					self.loadDataFunction,
-					index => { return { values: [] }; }
+					index => { return { }; }
 				);
 
 				// Refresh grid
@@ -559,7 +559,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			this.windowSize,
 			this.dataSet.totalRows,
 			this.loadDataFunction,
-			index => { return { values: [] }; }
+			index => { return {  }; }
 		);
 
 		// refresh results view
