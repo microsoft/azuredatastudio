@@ -121,7 +121,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 					if (input.hideErrors) {
 						input.hideErrors = false;
 					}
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
@@ -152,7 +152,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	/// IComponent implementation
 
 	public layout(): void {
-		this._changeRef.detectChanges();
+		super.layout();
 		this.layoutInputBox();
 	}
 

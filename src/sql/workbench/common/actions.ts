@@ -25,8 +25,10 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import * as nls from 'vs/nls';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -63,7 +65,7 @@ export class NewQueryAction extends Task {
 				accessor.get<IConnectionManagementService>(IConnectionManagementService),
 				accessor.get<IQueryEditorService>(IQueryEditorService),
 				accessor.get<IObjectExplorerService>(IObjectExplorerService),
-				accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService)
+				accessor.get<IEditorService>(IEditorService)
 			).then(
 				result => {
 					resolve(void 0);
@@ -300,6 +302,14 @@ export class BackupAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
+		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!previewFeaturesEnabled) {
+			return new TPromise<void>((resolve, reject) => {
+				accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
+			});
+		}
+
 		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.showBackup(
 				profile,
@@ -331,6 +341,14 @@ export class RestoreAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
+		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!previewFeaturesEnabled) {
+			return new TPromise<void>((resolve, reject) => {
+				accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
+			});
+		}
+
 		return new TPromise<void>((resolve, reject) => {
 			TaskUtilities.showRestore(
 				profile,

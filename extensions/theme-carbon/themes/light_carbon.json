@@ -40,7 +40,7 @@
 		"input.disabled.background": "#dcdcdc",
 		"input.disabled.foreground": "#888888",
 		"inputOption.activeBorder": "#666666",
-		"input.placeholderForeground": "#888888",
+		"input.placeholderForeground": "#767676",
 		"inputValidation.errorBackground": "#ffeaea",
 		"inputValidation.errorBorder": "#f1897f",
 

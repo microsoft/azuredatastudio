@@ -66,6 +66,15 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		}
 	}
 
+	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void {
+	}
+
+	$setSelection(treeViewId: string, treeItemHandles: string[]): void {
+	}
+
+	$setVisible(treeViewId: string, visible: boolean): void {
+	}
+
 	private createExtHostTreeViewer<T>(handle: number, id: string, dataProvider: sqlops.TreeComponentDataProvider<T>): ExtHostTreeView<T> {
 		const treeView = new ExtHostTreeView<T>(handle, id, dataProvider, this._proxy, undefined);
 		this.treeViews.set(`${handle}-${id}`, treeView);
@@ -76,11 +85,13 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
 	private _onNodeCheckedChanged = new Emitter<sqlops.NodeCheckedEventParameters<T>>();
-	private _onDidChangeSelection = new Emitter<T[]>();
+	private _onChangeSelection = new Emitter<vscode.TreeViewSelectionChangeEvent<T>>();
 	public readonly NodeCheckedChanged: vscode.Event<sqlops.NodeCheckedEventParameters<T>> = this._onNodeCheckedChanged.event;
-	public readonly ChangeSelection: vscode.Event<T[]> = this._onDidChangeSelection.event;
-	constructor(private handle: number, private componentId: string, private componentDataProvider: sqlops.TreeComponentDataProvider<T>, private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter) {
-		super(componentId, componentDataProvider, undefined, commands);
+	public readonly ChangeSelection: vscode.Event<vscode.TreeViewSelectionChangeEvent<T>> = this._onChangeSelection.event;
+	constructor(
+		private handle: number, private componentId: string, private componentDataProvider: sqlops.TreeComponentDataProvider<T>,
+		private modelViewProxy: MainThreadModelViewShape, commands: CommandsConverter) {
+		super(componentId, componentDataProvider, undefined, commands, undefined);
 	}
 
 	onNodeCheckedChanged(parentHandle?: vsTreeExt.TreeItemHandle, checked?: boolean): void {
@@ -97,7 +108,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			let nodes = parentHandles.map(parentHandle => {
 				return  parentHandle ? this.getExtensionElement(parentHandle) : void 0;
 			});
-			this._onDidChangeSelection.fire(nodes);
+			this._onChangeSelection.fire({ selection: nodes});
 		}
 	}
 
@@ -111,7 +122,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 				.then(treeNode => i));
 	}
 
-	protected refresh(elements: T[]): void {
+	protected refreshElements(elements: T[]): void {
 		const hasRoot = elements.some(element => !element);
 		if (hasRoot) {
 			this.clearAll(); // clear cache

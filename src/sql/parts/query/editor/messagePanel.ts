@@ -28,7 +28,7 @@ import { $ } from 'vs/base/browser/builder';
 import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
 
 export interface IResultMessageIntern extends IResultMessage {
@@ -71,14 +71,14 @@ export class MessagePanel extends ViewletPanel {
 	private tree: ITree;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
 		this.controller.toFocusOnClick = this.model;
 		this.tree = new Tree(this.container, {
@@ -109,53 +109,15 @@ export class MessagePanel extends ViewletPanel {
 		this.queryRunnerDisposables = [];
 		this.reset();
 		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.push(runner.onBatchStart(e => this.onBatchStart(e)));
 		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
-		this.queryRunnerDisposables.push(runner.onQueryEnd(e => this.onQueryEnd(e)));
 	}
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
 		if (isArray(message)) {
-			this.model.messages.push(...message.map(c => {
-				return <IMessagePanelMessage>{
-					isError: c.isError,
-					message: c.message
-				};
-			}));
+			this.model.messages.push(...message);
 		} else {
-			this.model.messages.push({
-				message: message.message,
-				isError: message.isError
-			});
+			this.model.messages.push(message);
 		}
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
-			}
-		});
-	}
-
-	private onBatchStart(batch: BatchSummary) {
-		this.model.messages.push({
-			message: localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine),
-			time: new Date(batch.executionStart).toLocaleTimeString(),
-			selection: batch.selection,
-			isError: false
-		});
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
-			}
-		});
-	}
-
-	private onQueryEnd(elapsedTime: string) {
-		this.model.totalExecuteMessage = {
-			message: localize('query.message.executionTime', 'Total execution time: {0}', elapsedTime),
-			isError: false
-		};
 		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
 			if (previousScrollPosition === 1) {
@@ -257,7 +219,7 @@ export class MessageController extends WorkbenchTreeController {
 	constructor(
 		options: IControllerOptions,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
+		@IEditorService private workbenchEditorService: IEditorService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
@@ -283,7 +245,7 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let control = this.workbenchEditorService.getActiveEditor().getControl() as IEditor;
+			let control = this.workbenchEditorService.activeControl.getControl() as IEditor;
 			control.setSelection({
 				startColumn: selection.startColumn + 1,
 				endColumn: selection.endColumn + 1,

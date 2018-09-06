@@ -21,6 +21,7 @@ import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentW
 import URI from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
+import * as nls from 'vs/nls';
 
 
 export type IUserFriendlyIcon = string | URI | { light: string | URI; dark: string | URI };
@@ -46,7 +47,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	protected _onEventEmitter = new Emitter<IComponentEventArgs>();
 
 	public layout(): void {
-		this._changeRef.detectChanges();
+		if (!this._changeRef['destroyed']) {
+			this._changeRef.detectChanges();
+		}
 	}
 
 	protected baseInit(): void {
@@ -136,6 +139,14 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		this.setPropertyFromUI<sqlops.ComponentProperties, number | string>((props, value) => props.width = value, newValue);
 	}
 
+	public get position(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
+	}
+
+	public set position(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
+	}
+
 	public convertSizeToNumber(size: number | string): number {
 		if (size && typeof (size) === 'string') {
 			if (size.toLowerCase().endsWith('px')) {
@@ -184,7 +195,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		return this._onEventEmitter.event(handler);
 	}
 
-	private fireEvent(event: IComponentEventArgs) {
+	protected fireEvent(event: IComponentEventArgs) {
 		this._onEventEmitter.fire(event);
 		if (this._eventQueue) {
 			this._eventQueue.push(event);
@@ -222,17 +233,34 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	}
 
 	/// IComponent container-related implementation
-	public addToContainer(componentDescriptor: IComponentDescriptor, config: any): void {
+	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
 		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
 			return;
 		}
-		this.items.push(new ItemDescriptor(componentDescriptor, config));
+		if (index !== undefined && index !== null && index >= 0 && index < this.items.length) {
+			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
+		} else if(!index) {
+			this.items.push(new ItemDescriptor(componentDescriptor, config));
+		} else {
+			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
+		}
 		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {
 				this.validate();
 			}
 		}));
 		this._changeRef.detectChanges();
+		return;
+	}
+
+	public removeFromContainer(componentDescriptor: IComponentDescriptor): boolean {
+		let index = this.items.findIndex(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
+		if (index >= 0) {
+			this.items.splice(index, 1);
+			this._changeRef.detectChanges();
+			return true;
+		}
+		return false;
 	}
 
 	public clearContainer(): void {

@@ -12,7 +12,6 @@ AppPublisherURL=https://github.com/Microsoft/sqlopsstudio
 AppSupportURL=https://github.com/Microsoft/sqlopsstudio
 AppUpdatesURL=https://github.com/Microsoft/sqlopsstudio
 
-DefaultDirName={pf}\{#DirName}
 DefaultGroupName={#NameLong}
 AllowNoIcons=yes
 OutputDir={#OutputDir}
@@ -34,6 +33,13 @@ VersionInfoVersion={#RawVersion}
 ShowLanguageDialog=auto
 ArchitecturesAllowed={#ArchitecturesAllowed}
 ArchitecturesInstallIn64BitMode={#ArchitecturesInstallIn64BitMode}
+
+#if "user" == InstallTarget
+DefaultDirName={userpf}\{#DirName}
+PrivilegesRequired=lowest
+#else
+DefaultDirName={pf}\{#DirName}
+#endif
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl,{#RepoDir}\build\win32\i18n\messages.en.isl" {#LocalizedLanguageFile}
@@ -60,18 +66,19 @@ Type: files; Name: "{app}\resources\app\Credits_45.0.2454.85.html"; Check: IsNot
 Type: filesandordirs; Name: "{app}\_"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce;
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce; Check: IsNotUpdate
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 Name: "associatewithfiles"; Description: "{cm:AssociateWithFiles,{#NameShort}}"; GroupDescription: "{cm:Other}"; Flags: unchecked
 Name: "addtopath"; Description: "{cm:AddToPath}"; GroupDescription: "{cm:Other}"
 Name: "runcode"; Description: "{cm:RunAfter,{#NameShort}}"; GroupDescription: "{cm:Other}"; Check: WizardSilent
 
 [Files]
-Source: "*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "*"; Excludes: "\tools,\tools\*,\resources\app\product.json"; DestDir: "{code:GetDestDir}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#ProductJsonPath}"; DestDir: "{code:GetDestDir}\resources\app"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; AppUserModelID: "{#AppUserId}"
-Name: "{commondesktop}\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; AppUserModelID: "{#AppUserId}"
+Name: "{commondesktop}\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; Tasks: desktopicon; AppUserModelID: "{#AppUserId}"
 Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#NameLong}"; Filename: "{app}\{#ExeBasename}.exe"; Tasks: quicklaunchicon; AppUserModelID: "{#AppUserId}"
 
 [Run]
@@ -79,6 +86,11 @@ Filename: "{app}\{#ExeBasename}.exe"; Description: "{cm:LaunchProgram,{#NameLong
 Filename: "{app}\{#ExeBasename}.exe"; Description: "{cm:LaunchProgram,{#NameLong}}"; Flags: nowait postinstall; Check: WizardNotSilent
 
 [Registry]
+#if "user" == InstallTarget
+#define SoftwareClassesRootKey "HKCU"
+#else
+#define SoftwareClassesRootKey "HKLM"
+#endif
 Root: HKCR; Subkey: "{#RegValueName}SourceFile"; ValueType: string; ValueName: ""; ValueData: "{cm:SourceFile,{#NameLong}}"; Flags: uninsdeletekey
 Root: HKCR; Subkey: "{#RegValueName}SourceFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\resources\app\resources\win32\code_file.ico"
 Root: HKCR; Subkey: "{#RegValueName}SourceFile\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeBasename}.exe"" ""%1"""
@@ -90,6 +102,20 @@ Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql"; ValueType: string; V
 Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql"; ValueType: string; ValueName: "AppUserModelID"; ValueData: "{#AppUserId}"; Flags: uninsdeletekey; Tasks: associatewithfiles
 Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\resources\app\resources\win32\code_file.ico"; Tasks: associatewithfiles
 Root: HKCU; Subkey: "Software\Classes\{#RegValueName}.sql\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#ExeBasename}.exe"" ""%1"""; Tasks: associatewithfiles
+; Environment
+#if "user" == InstallTarget
+#define EnvironmentRootKey "HKCU"
+#define EnvironmentKey "Environment"
+#define Uninstall64RootKey "HKCU64"
+#define Uninstall32RootKey "HKCU32"
+#else
+#define EnvironmentRootKey "HKLM"
+#define EnvironmentKey "System\CurrentControlSet\Control\Session Manager\Environment"
+#define Uninstall64RootKey "HKLM64"
+#define Uninstall32RootKey "HKLM32"
+#endif
+
+Root: {#EnvironmentRootKey}; Subkey: "{#EnvironmentKey}"; ValueType: expandsz; ValueName: "Path"; ValueData: "{olddata};{app}\bin"; Tasks: addtopath; Check: NeedsAddPath(ExpandConstant('{app}\bin'))
 
 [Code]
 // Don't allow installing conflicting architectures
@@ -101,15 +127,33 @@ var
 begin
   Result := True;
 
-  if IsWin64 then begin
-    RegKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + copy('{#IncompatibleAppId}', 2, 38) + '_is1';
+  #if "user" == InstallTarget
+    #if "ia32" == Arch
+      #define IncompatibleArchRootKey "HKLM32"
+    #else
+      #define IncompatibleArchRootKey "HKLM64"
+    #endif
+
+    if not WizardSilent() then begin
+      RegKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + copy('{#IncompatibleTargetAppId}', 2, 38) + '_is1';
+
+      if RegKeyExists({#IncompatibleArchRootKey}, RegKey) then begin
+        if MsgBox('{#NameShort} is already installed on this system for all users. We recommend first uninstalling that version before installing this one. Are you sure you want to continue the installation?', mbConfirmation, MB_YESNO) = IDNO then begin
+          Result := false;
+        end;
+      end;
+    end;
+  #endif
+
+  if Result and IsWin64 then begin
+    RegKey := 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\' + copy('{#IncompatibleArchAppId}', 2, 38) + '_is1';
 
     if '{#Arch}' = 'ia32' then begin
-      Result := not RegKeyExists(HKLM64, RegKey);
+      Result := not RegKeyExists({#Uninstall64RootKey}, RegKey);
       ThisArch := '32';
       AltArch := '64';
     end else begin
-      Result := not RegKeyExists(HKLM32, RegKey);
+      Result := not RegKeyExists({#Uninstall32RootKey}, RegKey);
       ThisArch := '64';
       AltArch := '32';
     end;
@@ -218,7 +262,7 @@ function NeedsAddPath(Param: string): boolean;
 var
   OrigPath: string;
 begin
-  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', OrigPath)
+  if not RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', OrigPath)
   then begin
     Result := True;
     exit;
@@ -237,7 +281,7 @@ begin
   if not CurUninstallStep = usUninstall then begin
     exit;
   end;
-  if not RegQueryStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', Path)
+  if not RegQueryStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', Path)
   then begin
     exit;
   end;
@@ -253,5 +297,9 @@ begin
       end;
     end;
   end;
-  RegWriteExpandStringValue(HKEY_CURRENT_USER, 'Environment', 'Path', NewPath);
+  RegWriteExpandStringValue({#EnvironmentRootKey}, '{#EnvironmentKey}', 'Path', NewPath);
 end;
+
+#ifdef Debug
+  #expr SaveToFile(AddBackslash(SourcePath) + "code-processed.iss")
+#endif

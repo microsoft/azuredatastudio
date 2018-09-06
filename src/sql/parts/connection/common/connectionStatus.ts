@@ -5,13 +5,14 @@
 import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 // Connection status bar showing the current global connection
 export class ConnectionStatusbarItem implements IStatusbarItem {
@@ -22,8 +23,8 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IEditorService private _editorService: EditorServiceImpl,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 	) {
@@ -39,8 +40,8 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 			this._connectionManagementService.onConnect(() => this._updateStatus()),
 			this._connectionManagementService.onConnectionChanged(() => this._updateStatus()),
 			this._connectionManagementService.onDisconnect(() => this._updateStatus()),
-			this._editorGroupService.onEditorsChanged(() => this._updateStatus()),
-			this._editorGroupService.getStacksModel().onEditorClosed(() => this._updateStatus()),
+			this._editorService.onDidVisibleEditorsChange(() => this._updateStatus()),
+			this._editorService.onDidCloseEditor(() => this._updateStatus()),
 			this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus())
 		);
 

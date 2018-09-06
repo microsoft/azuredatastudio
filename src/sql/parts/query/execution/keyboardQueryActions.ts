@@ -6,7 +6,7 @@
 import nls = require('vs/nls');
 
 import { Action } from 'vs/base/common/actions';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
@@ -31,8 +31,8 @@ export function isConnected(editor: QueryEditor, connectionManagementService: IC
 	return connectionManagementService.isConnected(editor.currentQueryInput.uri);
 }
 
-function runActionOnActiveQueryEditor(editorService: IWorkbenchEditorService, action: (QueryEditor) => void): void {
-	const candidates = [editorService.getActiveEditor(), ...editorService.getVisibleEditors()].filter(e => e instanceof QueryEditor);
+function runActionOnActiveQueryEditor(editorService: IEditorService, action: (QueryEditor) => void): void {
+	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => e instanceof QueryEditor);
 	if (candidates.length > 0) {
 		action(candidates[0]);
 	}
@@ -65,14 +65,14 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.focus();
@@ -92,14 +92,14 @@ export class RunQueryKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
 			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.runQuery();
@@ -118,14 +118,14 @@ export class RunCurrentQueryKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.runCurrentQuery();
@@ -141,14 +141,14 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.runCurrentQueryWithActualPlan();
@@ -168,14 +168,14 @@ export class CancelQueryKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
 			let queryEditor: QueryEditor | EditDataEditor = editor;
 			queryEditor.cancelQuery();
@@ -194,14 +194,14 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.rebuildIntelliSenseCache();
@@ -221,14 +221,14 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			queryEditor.toggleResultsEditorVisibility();
@@ -244,7 +244,7 @@ export class RunQueryShortcutAction extends Action {
 	public static ID = 'runQueryShortcutAction';
 
 	constructor(
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IQueryModelService protected _queryModelService: IQueryModelService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -403,7 +403,7 @@ export class ParseSyntaxAction extends Action {
 		label: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@INotificationService private _notificationService: INotificationService
 	) {
 		super(id, label);
@@ -411,7 +411,7 @@ export class ParseSyntaxAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.getActiveEditor();
+		let editor = this._editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			if (!queryEditor.isSelectionEmpty()) {

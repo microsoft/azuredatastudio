@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
@@ -26,6 +26,7 @@ const resolveExtensionResources = (extension: vscode.Extension<any>, resourcePat
 };
 
 export interface MarkdownContributions {
+	readonly extensionPath: string;
 	readonly previewScripts: vscode.Uri[];
 	readonly previewStyles: vscode.Uri[];
 	readonly markdownItPlugins: Thenable<(md: any) => any>[];
@@ -39,6 +40,10 @@ class MarkdownExtensionContributions implements MarkdownContributions {
 	private readonly _plugins: Thenable<(md: any) => any>[] = [];
 
 	private _loaded = false;
+
+	public constructor(
+		public readonly extensionPath: string,
+	) { }
 
 	public get previewScripts(): vscode.Uri[] {
 		this.ensureLoaded();
@@ -111,6 +116,6 @@ class MarkdownExtensionContributions implements MarkdownContributions {
 	}
 }
 
-export function getMarkdownExtensionContributions(): MarkdownContributions {
-	return new MarkdownExtensionContributions();
+export function getMarkdownExtensionContributions(context: vscode.ExtensionContext): MarkdownContributions {
+	return new MarkdownExtensionContributions(context.extensionPath);
 }

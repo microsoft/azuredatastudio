@@ -53,7 +53,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		if (this.selectable) {
 			this.selected = !this.selected;
 			this._changeRef.detectChanges();
-			this._onEventEmitter.fire({
+			this.fireEvent({
 				eventType: ComponentEventType.onDidClick,
 				args: this.selected
 			});
@@ -80,10 +80,6 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		}
 	}
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout (layout: any): void {
 		// TODO allow configuring the look and feel
@@ -162,7 +158,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	private onDidActionClick(action: ActionDescriptor): void {
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: action
 		});

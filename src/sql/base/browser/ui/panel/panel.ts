@@ -36,6 +36,7 @@ export interface IPanelTab {
 interface IInternalPanelTab extends IPanelTab {
 	header: Builder;
 	label: Builder;
+	dispose(): void;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -78,10 +79,14 @@ export class TabbedPanel extends Disposable implements IThemable {
 		} else {
 			this._headerVisible = false;
 		}
-		this.$body = $('tabBody');
+		this.$body = $('.tabBody');
 		this.$body.attr('role', 'tabpanel');
 		this.$body.attr('tabindex', '0');
 		this.$parent.append(this.$body);
+	}
+
+	public contains(tab: IPanelTab): boolean {
+		return this._tabMap.has(tab.identifier);
 	}
 
 	public pushTab(tab: IPanelTab): PanelTabIdentifier {
@@ -94,6 +99,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		if (this._tabMap.size > 1 && !this._headerVisible) {
 			this.$parent.append(this.$header, 0);
 			this._headerVisible = true;
+			this.layout(this._currentDimensions);
 		}
 		return tab.identifier as PanelTabIdentifier;
 	}
@@ -128,6 +134,11 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.$tabList.append(tabHeaderElement);
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
+		tab.dispose = () => {
+			tab.header.dispose();
+			tab.label.dispose();
+		};
+		this._register(tab);
 	}
 
 	public showTab(id: PanelTabIdentifier): void {
@@ -170,6 +181,8 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	public layout(dimension: Dimension): void {
 		this._currentDimensions = dimension;
+		this.$parent.style('height', dimension.height + 'px');
+		this.$parent.style('width', dimension.width + 'px');
 		this.$header.style('width', dimension.width + 'px');
 		this.$body.style('width', dimension.width + 'px');
 		const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);

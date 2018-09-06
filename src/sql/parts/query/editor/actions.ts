@@ -16,6 +16,8 @@ import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';
+import { QueryEditor } from './queryEditor';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };
@@ -157,4 +159,46 @@ export class MinimizeTableAction extends Action {
 		context.tableState.maximized = false;
 		return TPromise.as(true);
 	}
+}
+
+export class ChartDataAction extends Action {
+	public static ID = 'grid.chart';
+	public static LABEL = localize('chart', 'Chart');
+	public static ICON = 'viewChart';
+
+	constructor(@IEditorService private editorService: IEditorService) {
+		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
+	}
+
+	public run(context: IGridActionContext): TPromise<boolean> {
+		let activeEditor = this.editorService.activeControl;
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+}
+
+export class ShowQueryPlanAction extends Action {
+	public static ID = 'showQueryPlan';
+	public static LABEL = localize('showQueryPlan', 'Show Query Plan');
+
+	constructor(
+		@IEditorService private editorService: IEditorService
+	) {
+		super(ShowQueryPlanAction.ID, ShowQueryPlanAction.LABEL);
+	}
+
+	public run(xml: string): TPromise<boolean> {
+		let activeEditor = this.editorService.activeControl;
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.showQueryPlan(xml);
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+
 }

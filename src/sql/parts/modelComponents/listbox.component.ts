@@ -56,7 +56,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 			this._register(attachListBoxStyler(this._input, this.themeService));
 			this._register(this._input.onDidSelect(e => {
 				this.selectedRow = e.index;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
 					args: e
 				});
@@ -75,11 +75,6 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();

@@ -54,7 +54,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	private _showQueryResultsEditor: Emitter<void>;
 	private _updateSelection: Emitter<ISelectionData>;
 
-	private _toDispose: IDisposable[];
 	private _currentEventCallbacks: IDisposable[];
 
 	public savedViewState: IEditorViewState;
