@@ -15,10 +15,12 @@ import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions } from './insights/interfaces';
+import { CopyAction, SaveImageAction, CreateInsightAction, IChartActionContext } from './actions';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 
 import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Builder } from 'vs/base/browser/builder';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -35,31 +37,51 @@ export class ChartView implements IPanelView {
 	private _queryRunner: QueryRunner;
 	private _data: IInsightData;
 	private _currentData: { batchId: number, resultId: number };
+	private taskbar: Taskbar;
 
-	private optionsControl: HTMLElement;
+	private _createInsightAction: CreateInsightAction;
+	private _copyAction: CopyAction;
+	private _saveAction: SaveImageAction;
 
 	private options: IInsightOptions = {
 		type: ChartType.Bar
 	};
 
+	/** parent container */
 	private container: HTMLElement;
+	/** container for the options controls */
+	private optionsControl: HTMLElement;
+	/** container for type specific controls */
 	private typeControls: HTMLElement;
-	private graphContainer: HTMLElement;
+	/** container for the insight */
+	private insightContainer: HTMLElement;
+	/** container for the action bar */
+	private taskbarContainer: HTMLElement;
+	/** container for the charting (includes insight and options) */
+	private chartingContainer: HTMLElement;
 
 	private optionDisposables: IDisposable[] = [];
-
 	private optionMap: { [x: string]: HTMLElement } = {};
 
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IContextMenuService contextMenuService: IContextMenuService
 	) {
+		this.taskbarContainer = $('div.taskbar-container');
+		this.taskbar = new Taskbar(this.taskbarContainer, contextMenuService);
 		this.optionsControl = $('div.options-container');
 		let generalControls = $('div.general-controls');
 		this.optionsControl.appendChild(generalControls);
 		this.typeControls = $('div.type-controls');
 		this.optionsControl.appendChild(this.typeControls);
+
+		this._createInsightAction = this._instantiationService.createInstance(CreateInsightAction);
+		this._copyAction = this._instantiationService.createInstance(CopyAction);
+		this._saveAction = this._instantiationService.createInstance(SaveImageAction);
+
+		this.taskbar.setContent([{ action: this._createInsightAction }]);
 
 		let self = this;
 		this.options = new Proxy(this.options, {
@@ -75,6 +97,7 @@ export class ChartView implements IPanelView {
 				let result = Reflect.set(target, key, value, receiver);
 
 				if (change) {
+					self.taskbar.context = <IChartActionContext>{ options: self.options, insight: self.insight ? self.insight.insight : undefined };
 					if (key === 'type') {
 						self.buildOptions();
 					} else {
@@ -89,15 +112,19 @@ export class ChartView implements IPanelView {
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
 		});
+		this.buildOptions();
 	}
 
 	render(container: HTMLElement): void {
 		if (!this.container) {
-			this.container = $('div.chart-view-container');
-			this.graphContainer = $('div.graph-container');
-			this.container.appendChild(this.graphContainer);
-			this.container.appendChild(this.optionsControl);
-			this.insight = new Insight(this.graphContainer, this.options, this._instantiationService);
+			this.container = $('div.chart-parent-container');
+			this.insightContainer = $('div.insight-container');
+			this.chartingContainer = $('div.charting-container');
+			this.container.appendChild(this.taskbarContainer);
+			this.container.appendChild(this.chartingContainer);
+			this.chartingContainer.appendChild(this.insightContainer);
+			this.chartingContainer.appendChild(this.optionsControl);
+			this.insight = new Insight(this.insightContainer, this.options, this._instantiationService);
 		}
 
 		container.appendChild(this.container);
@@ -107,7 +134,7 @@ export class ChartView implements IPanelView {
 		} else {
 			this.queryRunner = this._queryRunner;
 		}
-
+		this.verifyOptions();
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }) {
@@ -117,7 +144,7 @@ export class ChartView implements IPanelView {
 
 	layout(dimension: Dimension): void {
 		if (this.insight) {
-			this.insight.layout(new Dimension(getContentWidth(this.graphContainer), getContentHeight(this.graphContainer)));
+			this.insight.layout(new Dimension(getContentWidth(this.insightContainer), getContentHeight(this.insightContainer)));
 		}
 	}
 
@@ -155,6 +182,8 @@ export class ChartView implements IPanelView {
 		this.optionDisposables = [];
 		this.optionMap = {};
 		new Builder(this.typeControls).clearChildren();
+
+		this.updateActionbar();
 		ChartOptions[this.options.type].map(o => {
 			this.createOption(o, this.typeControls);
 		});
@@ -165,6 +194,7 @@ export class ChartView implements IPanelView {
 	}
 
 	private verifyOptions() {
+		this.updateActionbar();
 		for (let key in this.optionMap) {
 			if (this.optionMap.hasOwnProperty(key)) {
 				let option = ChartOptions[this.options.type].find(e => e.configEntry === key);
@@ -176,6 +206,18 @@ export class ChartView implements IPanelView {
 					}
 				}
 			}
+		}
+	}
+
+	private updateActionbar() {
+		if (this.insight && this.insight.isCopyable) {
+			this.taskbar.setContent([
+				{ action: this._createInsightAction },
+				{ action: this._copyAction },
+				{ action: this._saveAction }
+			]);
+		} else {
+			this.taskbar.setContent([{ action: this._createInsightAction }]);
 		}
 	}
 

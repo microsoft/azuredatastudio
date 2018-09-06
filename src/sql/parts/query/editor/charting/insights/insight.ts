@@ -23,11 +23,15 @@ const defaultOptions: IInsightOptions = {
 };
 
 export class Insight {
-	private insight: IInsight;
+	private _insight: IInsight;
+
+	public get insight(): IInsight {
+		return this._insight;
+	}
 
 	private _options: IInsightOptions;
 	private _data: IInsightData;
-	private dim: Dimension
+	private dim: Dimension;
 
 	constructor(
 		private container: HTMLElement, options: IInsightOptions = defaultOptions,
@@ -75,12 +79,15 @@ export class Insight {
 		let ctor = this.findctor(this.options.type);
 
 		if (ctor) {
-			this.insight = this._instantiationService.createInstance(ctor, this.container, this.options);
+			this._insight = this._instantiationService.createInstance(ctor, this.container, this.options);
 			this.insight.layout(this.dim);
 			if (this._data) {
 				this.insight.data = this._data;
 			}
 		}
+	}
+	public get isCopyable(): boolean {
+		return Graph.types.includes(this.options.type as ChartType);
 	}
 
 	private findctor(type: ChartType | InsightType): IInsightCtor {

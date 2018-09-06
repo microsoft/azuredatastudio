@@ -171,7 +171,7 @@ export class ChartDataAction extends Action {
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		let activeEditor = this.editorService.activeEditor;
+		let activeEditor = this.editorService.activeControl;
 		if (activeEditor instanceof QueryEditor) {
 			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 			return TPromise.as(true);

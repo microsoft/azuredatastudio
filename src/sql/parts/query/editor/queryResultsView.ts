@@ -127,7 +127,6 @@ export class QueryResultsView {
 	public chartData(dataId: { resultId: number, batchId: number }): void {
 		if (!this._panelView.contains(this.chartTab)) {
 			this._panelView.pushTab(this.chartTab);
-			this.resultsTab.view.hideResultHeader();
 		}
 
 		this._panelView.showTab(this.chartTab.identifier);
