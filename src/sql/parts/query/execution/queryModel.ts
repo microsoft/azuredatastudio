@@ -5,7 +5,6 @@
 
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { DataService } from 'sql/parts/grid/services/dataService';
-import { ISlickRange } from 'angular2-slickgrid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -19,6 +18,7 @@ import {
 	EditRevertCellResult,
 	ExecutionPlanOptions
 } from 'sqlops';
+import { QueryInfo } from 'sql/parts/query/execution/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';
 
@@ -48,7 +48,7 @@ export interface IQueryModelService {
 	resizeResultsets(uri: string): void;
 	onAngularLoaded(uri: string): void;
 
-	copyResults(uri: string, selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void;
+	copyResults(uri: string, selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void;
 	setEditorSelection(uri: string, index: number): void;
 	showWarning(uri: string, message: string): void;
 	showError(uri: string, message: string): void;
@@ -69,6 +69,7 @@ export interface IQueryModelService {
 	revertRow(ownerUri: string, rowId: number): Thenable<void>;
 	getEditRows(ownerUri: string, rowStart: number, numberOfRows: number): Thenable<EditSubsetResult>;
 
+	_getQueryInfo(uri: string): QueryInfo;
 	// Edit Data Callbacks
 	onEditSessionReady: Event<EditSessionReadyParams>;
 }

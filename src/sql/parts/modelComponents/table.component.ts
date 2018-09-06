@@ -101,7 +101,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				forceFitColumns: true
 			};
 
-			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, this._tableData, this._tableColumns, options);
+			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
 			this._table.setData(this._tableData);
 			this._table.setSelectionModel(new RowSelectionModel({ selectActiveRow: true }));
 
@@ -109,7 +109,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._register(this._table.onSelectedRowsChanged((e, data) => {
 				this.selectedRows = data.rows;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
 					args: e
 				});
@@ -132,8 +132,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public layout(): void {
 		this.layoutTable();
-
-		this._changeRef.detectChanges();
+		super.layout();
 	}
 
 	private layoutTable(): void {

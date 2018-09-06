@@ -68,7 +68,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			this._register(this._editableDropdown.onValueChange(e => {
 				if (this.editable) {
 					this.setSelectedValue(this._editableDropdown.value);
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
@@ -83,7 +83,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			this._register(this._selectBox.onDidSelect(e => {
 				if (!this.editable) {
 					this.setSelectedValue(this._selectBox.value);
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
@@ -97,10 +97,6 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel

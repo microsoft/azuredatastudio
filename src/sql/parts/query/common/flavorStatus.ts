@@ -8,14 +8,14 @@ import { $, append, show, hide } from 'vs/base/browser/dom';
 import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQuickOpenService, IPickOpenEntry } from 'vs/platform/quickOpen/common/quickOpen';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
 import errors = require('vs/base/common/errors');
 import { TPromise } from 'vs/base/common/winjs.base';
-import { getCodeEditor as getEditorWidget } from 'vs/editor/browser/services/codeEditorService';
+import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import nls = require('vs/nls');
 
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
@@ -24,6 +24,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { DidChangeLanguageFlavorParams } from 'sqlops';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 export interface ISqlProviderEntry extends IPickOpenEntry {
 	providerId: string;
@@ -68,8 +69,8 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorService private _editorService: EditorServiceImpl,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
@@ -86,10 +87,9 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 		this._toDispose = [];
 		this._toDispose.push(
 			this._connectionManagementService.onLanguageFlavorChanged((changeParams: DidChangeLanguageFlavorParams) => this._onFlavorChanged(changeParams)),
-			this._editorGroupService.onEditorsChanged(() => this._onEditorsChanged()),
-			this._editorGroupService.getStacksModel().onEditorClosed(event => this._onEditorClosed(event))
+			this._editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()),
+			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
 		);
-
 		return combinedDisposable(this._toDispose);
 	}
 
@@ -104,7 +104,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 		let uri = WorkbenchUtils.getEditorUri(event.editor);
 		if (uri && uri in this._sqlStatusEditors) {
 			// If active editor is being closed, hide the query status.
-			let activeEditor = this._editorService.getActiveEditor();
+			let activeEditor = this._editorService.activeControl;
 			if (activeEditor) {
 				let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 				if (uri === currentUri) {
@@ -117,7 +117,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 	}
 
 	private _onEditorsChanged(): void {
-		let activeEditor = this._editorService.getActiveEditor();
+		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
 
@@ -148,7 +148,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 
 	// Show/hide query status for active editor
 	private _showStatus(uri: string): void {
-		let activeEditor = this._editorService.getActiveEditor();
+		let activeEditor = this._editorService.activeControl
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (uri === currentUri) {
@@ -172,7 +172,7 @@ export class ChangeFlavorAction extends Action {
 	constructor(
 		actionId: string,
 		actionLabel: string,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IQuickOpenService private _quickOpenService: IQuickOpenService,
 		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
@@ -181,14 +181,14 @@ export class ChangeFlavorAction extends Action {
 	}
 
 	public run(): TPromise<any> {
-		let activeEditor = this._editorService.getActiveEditor();
+		let activeEditor = this._editorService.activeControl;
 		let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 		if (this._connectionManagementService.isConnected(currentUri)) {
 			let currentProvider = this._connectionManagementService.getProviderIdFromUri(currentUri);
 			return this._showMessage(Severity.Info, nls.localize('alreadyConnected',
 				"A connection using engine {0} exists. To change please disconnect or change connection", currentProvider));
 		}
-		const editorWidget = getEditorWidget(activeEditor);
+		const editorWidget = getCodeEditor(activeEditor);
 		if (!editorWidget) {
 			return this._showMessage(Severity.Info, nls.localize('noEditor', "No text editor active at this time"));
 		}
@@ -202,8 +202,8 @@ export class ChangeFlavorAction extends Action {
 		// TODO: select the current language flavor
 		return this._quickOpenService.pick(ProviderOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider"), autoFocus: { autoFocusIndex: 0 } }).then(provider => {
 			if (provider) {
-				activeEditor = this._editorService.getActiveEditor();
-				const editorWidget = getEditorWidget(activeEditor);
+				activeEditor = this._editorService.activeControl;
+				const editorWidget = getCodeEditor(activeEditor);
 				if (editorWidget) {
 					if (currentUri) {
 						this._connectionManagementService.doChangeLanguageFlavor(currentUri, 'sql', provider.providerId);

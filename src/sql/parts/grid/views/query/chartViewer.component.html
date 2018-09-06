@@ -73,9 +73,6 @@
 -->
 <ng-template #lineInput>
 	<ng-container *ngTemplateOutlet="dataTypeInput"></ng-container>
-	<ng-template [ngIf]="showDataDirection">
-		<ng-container *ngTemplateOutlet="dataDirectionInput"></ng-container>
-	</ng-template>
 	<ng-template [ngIf]="showColumnsAsLabels">
 		<ng-container *ngTemplateOutlet="columnsAsLabelsInput"></ng-container>
 	</ng-template>

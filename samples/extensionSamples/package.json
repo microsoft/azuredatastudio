@@ -172,8 +172,7 @@
     "dependencies": {
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
-        "vscode-nls": "2.0.2",
-        "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
+        "vscode-nls": "2.0.2"
     },
     "devDependencies": {
         "@types/handlebars": "^4.0.11",
@@ -192,6 +191,7 @@
         "typemoq": "^2.1.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6",
+        "sqlops": "github:anthonydresser/sqlops-extension-sqlops",
         "vsce": "1.36.2"
     }
 }

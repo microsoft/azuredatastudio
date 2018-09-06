@@ -110,10 +110,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
 		this._table.grid.setData(this.dataView, true);
 
-		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 

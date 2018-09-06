@@ -8,21 +8,21 @@ import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, Elemen
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
-
-import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import * as sqlops from 'sqlops';
+import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
 	template: '',
@@ -40,15 +40,18 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	private _webview: WebviewElement;
 	private _html: string;
 
+	protected contextKey: IContextKey<boolean>;
+	protected findInputFocusContextKey: IContextKey<boolean>;
+
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
 		@Inject(IPartService) private partService: IPartService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService
+		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
 	}
@@ -108,18 +111,15 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = new WebviewElement(
+		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.themeService,
-			this.environmentService,
-			this.contextViewService,
-			undefined,
-			undefined,
+			this.contextKey,
+			this.findInputFocusContextKey,
 			{
-				allowScripts: true,
-				enableWrappedPostMessage: true
-			}
-		);
+				enableWrappedPostMessage: true,
+				allowScripts: true
+			});
+
 		this._webview.mountTo(this._el.nativeElement);
 
 		this._onMessageDisposable = this._webview.onMessage(e => {

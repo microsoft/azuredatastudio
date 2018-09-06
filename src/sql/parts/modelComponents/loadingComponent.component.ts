@@ -60,10 +60,6 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 
 	/// IComponent implementation
 
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout(): void {
 		this.layout();
 	}

@@ -1,0 +1,482 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+'use strict';
+
+import { attachTableStyler } from 'sql/common/theme/styler';
+import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
+import { Table, ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/table';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
+import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
+import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction, ChartDataAction, ShowQueryPlanAction } from 'sql/parts/query/editor/actions';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { escape } from 'sql/base/common/strings';
+import { hyperLinkFormatter, textFormatter } from 'sql/parts/grid/services/sharedServices';
+
+import * as sqlops from 'sqlops';
+
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Emitter, Event } from 'vs/base/common/event';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import { range } from 'vs/base/common/arrays';
+import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
+import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { $ } from 'vs/base/browser/builder';
+import { generateUuid } from 'vs/base/common/uuid';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Dimension, getContentWidth } from 'vs/base/browser/dom';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+
+const ROW_HEIGHT = 29;
+const HEADER_HEIGHT = 26;
+const MIN_GRID_HEIGHT_ROWS = 8;
+const ESTIMATED_SCROLL_BAR_HEIGHT = 10;
+const BOTTOM_PADDING = 5;
+const ACTIONBAR_WIDTH = 26;
+
+// minimum height needed to show the full actionbar
+const ACTIONBAR_HEIGHT = 100;
+
+// this handles min size if rows is greater than the min grid visible rows
+const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
+
+
+export interface IGridTableState {
+	canBeMaximized: boolean;
+	maximized: boolean;
+}
+
+export class GridTableState {
+
+	private _maximized: boolean;
+
+	private _onMaximizedChange = new Emitter<boolean>();
+	public onMaximizedChange: Event<boolean> = this._onMaximizedChange.event;
+
+	public canBeMaximized: boolean;
+
+	constructor(state?: IGridTableState) {
+		if (state) {
+			this._maximized = state.maximized;
+			this.canBeMaximized = state.canBeMaximized;
+		}
+	}
+
+	public get maximized(): boolean {
+		return this._maximized;
+	}
+
+	public set maximized(val: boolean) {
+		if (val === this._maximized) {
+			return;
+		}
+		this._maximized = val;
+		this._onMaximizedChange.fire(val);
+	}
+
+	public clone(): GridTableState {
+		return new GridTableState({ canBeMaximized: this.canBeMaximized, maximized: this.maximized });
+	}
+}
+
+export class GridPanel extends ViewletPanel {
+	private container = document.createElement('div');
+	private splitView: ScrollableSplitView;
+	private tables: GridTable<any>[] = [];
+	private tableDisposable: IDisposable[] = [];
+	private queryRunnerDisposables: IDisposable[] = [];
+	private currentHeight: number;
+
+	private runner: QueryRunner;
+
+	private maximizedGrid: GridTable<any>;
+
+	constructor(
+		options: IViewletPanelOptions,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IThemeService private themeService: IThemeService,
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
+		super(options, keybindingService, contextMenuService, configurationService);
+		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
+	}
+
+	protected renderBody(container: HTMLElement): void {
+		this.container.style.width = '100%';
+		this.container.style.height = '100%';
+
+		container.appendChild(this.container);
+	}
+
+	protected layoutBody(size: number): void {
+		this.splitView.layout(size);
+		// if the size hasn't change it won't layout our table so we have to do it manually
+		if (size === this.currentHeight) {
+			this.tables.map(e => e.layout());
+		}
+		this.currentHeight = size;
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		dispose(this.queryRunnerDisposables);
+		this.reset();
+		this.queryRunnerDisposables = [];
+		this.runner = runner;
+		this.queryRunnerDisposables.push(this.runner.onResultSet(e => this.onResultSet(e)));
+		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => this.reset()));
+	}
+
+	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
+		this.addResultSet(resultSet);
+
+		this.tables.map(t => {
+			t.state.canBeMaximized = this.tables.length > 1;
+		});
+
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
+	}
+
+	private addResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
+		let resultsToAdd: sqlops.ResultSetSummary[];
+		if (!Array.isArray(resultSet)) {
+			resultsToAdd = [resultSet];
+		} else {
+			resultsToAdd = resultSet;
+		}
+
+		let tables: GridTable<any>[] = [];
+
+		for (let set of resultsToAdd) {
+			let tableState = new GridTableState();
+			let table = this.instantiationService.createInstance(GridTable, this.runner, tableState, set);
+			tableState.onMaximizedChange(e => {
+				if (e) {
+					this.maximizeTable(table.id);
+				} else {
+					this.minimizeTables();
+				}
+			});
+			this.tableDisposable.push(attachTableStyler(table, this.themeService));
+
+			tables.push(table);
+		}
+
+		// possible to need a sort?
+
+		if (isUndefinedOrNull(this.maximizedGrid)) {
+			this.splitView.addViews(tables, tables.map(i => i.minimumSize), this.splitView.length);
+		}
+
+		this.tables = this.tables.concat(tables);
+	}
+
+	private reset() {
+		for (let i = this.splitView.length - 1; i >= 0; i--) {
+			this.splitView.removeView(i);
+		}
+
+		dispose(this.tables);
+		this.tables = [];
+
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
+	}
+
+	private maximizeTable(tableid: string): void {
+		if (!this.tables.find(t => t.id === tableid)) {
+			return;
+		}
+
+		for (let i = this.tables.length - 1; i >= 0; i--) {
+			if (this.tables[i].id === tableid) {
+				this.tables[i].state.maximized = true;
+				this.maximizedGrid = this.tables[i];
+				continue;
+			}
+
+			this.splitView.removeView(i);
+		}
+	}
+
+	public layout(size: number) {
+		this.splitView.layout(size);
+	}
+
+	private minimizeTables(): void {
+		if (this.maximizedGrid) {
+			this.maximizedGrid.state.maximized = false;
+			this.maximizedGrid = undefined;
+			this.splitView.removeView(0);
+			this.splitView.addViews(this.tables, this.tables.map(i => i.minimumSize));
+		}
+	}
+}
+
+class GridTable<T> extends Disposable implements IView {
+	private table: Table<T>;
+	private actionBar: ActionBar;
+	private container = document.createElement('div');
+	private selectionModel = new CellSelectionModel();
+	private styles: ITableStyles;
+	private currentHeight: number;
+
+	private columns: Slick.Column<T>[];
+
+	private _onDidChange = new Emitter<number>();
+	public readonly onDidChange: Event<number> = this._onDidChange.event;
+
+	public id = generateUuid();
+	readonly element: HTMLElement = this.container;
+
+	// this handles if the row count is small, like 4-5 rows
+	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
+
+	constructor(
+		private runner: QueryRunner,
+		public state: GridTableState,
+		private resultSet: sqlops.ResultSetSummary,
+		@IContextMenuService private contextMenuService: IContextMenuService,
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@IEditorService private editorService: IEditorService,
+		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
+	) {
+		super();
+		this.container.style.width = '100%';
+		this.container.style.height = '100%';
+		this.container.style.marginBottom = BOTTOM_PADDING + 'px';
+		this.container.className = 'grid-panel';
+
+		this.columns = this.resultSet.columnInfo.map((c, i) => {
+			let isLinked = c.isXml || c.isJson;
+
+			return <Slick.Column<T>>{
+				id: i.toString(),
+				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
+					? 'XML Showplan'
+					: escape(c.columnName),
+				field: i.toString(),
+				formatter: isLinked ? hyperLinkFormatter : textFormatter
+			};
+		});
+	}
+
+	public render(container: HTMLElement, orientation: Orientation): void {
+		container.appendChild(this.container);
+	}
+
+	private build(): void {
+		let tableContainer = document.createElement('div');
+		tableContainer.style.display = 'inline-block';
+
+		this.container.appendChild(tableContainer);
+
+		let collection = new VirtualizedCollection(50, this.resultSet.rowCount,
+			(offset, count) => this.loadData(offset, count),
+			index => this.placeholdGenerator(index)
+		);
+		collection.setCollectionChangedCallback((change, startIndex, count) => {
+			this.renderGridDataRowsRange(startIndex, count);
+		});
+		let numberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
+		this.columns.unshift(numberColumn.getColumnDefinition());
+		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection), columns: this.columns }, { rowHeight: ROW_HEIGHT, showRowNumber: true }));
+		this.table.setSelectionModel(this.selectionModel);
+		this.table.registerPlugin(new MouseWheelSupport());
+		this.table.registerPlugin(new AutoColumnSize());
+		this.table.registerPlugin(numberColumn);
+		this._register(this.table.onContextMenu(this.contextMenu, this));
+		this._register(this.table.onClick(this.onTableClick, this));
+
+		if (this.styles) {
+			this.table.style(this.styles);
+		}
+
+		let actions = [];
+
+		if (this.state.canBeMaximized) {
+			if (this.state.maximized) {
+				actions.splice(1, 0, new MinimizeTableAction());
+			} else {
+				actions.splice(1, 0, new MaximizeTableAction());
+			}
+		}
+
+		actions.push(
+			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(ChartDataAction)
+		);
+
+		let actionBarContainer = document.createElement('div');
+		actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+		actionBarContainer.style.display = 'inline-block';
+		actionBarContainer.style.height = '100%';
+		actionBarContainer.style.verticalAlign = 'top';
+		this.container.appendChild(actionBarContainer);
+		this.actionBar = new ActionBar(actionBarContainer, {
+			orientation: ActionsOrientation.VERTICAL, context: {
+				runner: this.runner,
+				batchId: this.resultSet.batchId,
+				resultId: this.resultSet.id,
+				table: this.table,
+				tableState: this.state
+			}
+		});
+		this.actionBar.push(actions, { icon: true, label: false });
+	}
+
+	private onTableClick(event: ITableMouseEvent) {
+		// account for not having the number column
+		let column = this.resultSet.columnInfo[event.cell.cell - 1];
+		// handle if a showplan link was clicked
+		if (column && (column.isXml || column.isJson)) {
+			this.runner.getQueryRows(event.cell.row, 1, this.resultSet.batchId, this.resultSet.id).then(d => {
+				let value = d.resultSubset.rows[0][event.cell.cell - 1];
+				let input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', value.displayValue);
+				this.editorService.openEditor(input);
+			});
+		}
+	}
+
+	public layout(size?: number): void {
+		if (!this.table) {
+			this.build();
+		}
+		if (!size) {
+			size = this.currentHeight;
+		} else {
+			this.currentHeight = size;
+		}
+		this.table.layout(
+			new Dimension(
+				getContentWidth(this.container) - ACTIONBAR_WIDTH,
+				size - BOTTOM_PADDING
+			)
+		);
+	}
+
+	public get minimumSize(): number {
+		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
+		return Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT);
+	}
+
+	public get maximumSize(): number {
+		return Math.max(this.maxSize, ACTIONBAR_HEIGHT);
+	}
+
+	private loadData(offset: number, count: number): Thenable<T[]> {
+		return this.runner.getQueryRows(offset, count, this.resultSet.batchId, this.resultSet.id).then(response => {
+			if (this.runner.isQueryPlan) {
+				this.instantiationService.createInstance(ShowQueryPlanAction).run(response.resultSubset.rows[0][0].displayValue);
+			}
+			return response.resultSubset.rows.map(r => {
+				let dataWithSchema = {};
+				// skip the first column since its a number column
+				for (let i = 1; i < this.columns.length; i++) {
+					dataWithSchema[this.columns[i].field] = {
+						displayValue: r[i - 1].displayValue,
+						ariaLabel: escape(r[i - 1].displayValue),
+						isNull: r[i - 1].isNull
+					};
+				}
+				return dataWithSchema as T;
+			});
+		});
+	}
+
+	private contextMenu(e: ITableMouseEvent): void {
+		const selection = this.selectionModel.getSelectedRanges();
+		const { cell } = e;
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => e.anchor,
+			getActions: () => {
+				let actions = [
+					new SelectAllGridAction(),
+					new Separator(),
+					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+					new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+					new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+					new Separator(),
+					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
+					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
+				];
+
+				if (this.state.canBeMaximized) {
+					if (this.state.maximized) {
+						actions.splice(1, 0, new MinimizeTableAction());
+					} else {
+						actions.splice(1, 0, new MaximizeTableAction());
+					}
+				}
+
+				return TPromise.as(actions);
+			},
+			getActionsContext: () => {
+				return <IGridActionContext>{
+					cell,
+					selection,
+					runner: this.runner,
+					batchId: this.resultSet.batchId,
+					resultId: this.resultSet.id,
+					table: this.table,
+					tableState: this.state
+				};
+			}
+		});
+	}
+
+	private placeholdGenerator(index: number): any {
+		return {};
+	}
+
+	private renderGridDataRowsRange(startIndex: number, count: number): void {
+		// let editor = this.table.getCellEditor();
+		// let oldValue = editor ? editor.getValue() : undefined;
+		// let wasValueChanged = editor ? editor.isValueChanged() : false;
+		this.invalidateRange(startIndex, startIndex + count);
+		// let activeCell = this._grid.getActiveCell();
+		// if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
+		//     if (oldValue && wasValueChanged) {
+		//         editor.setValue(oldValue);
+		//     }
+		// }
+	}
+
+	private invalidateRange(start: number, end: number): void {
+		let refreshedRows = range(start, end);
+		if (this.table) {
+			this.table.invalidateRows(refreshedRows, true);
+		}
+	}
+
+	public style(styles: ITableStyles) {
+		if (this.table) {
+			this.table.style(styles);
+		} else {
+			this.styles = styles;
+		}
+	}
+
+	public dispose() {
+		$(this.container).destroy();
+		super.dispose();
+	}
+}

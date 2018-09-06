@@ -14,6 +14,12 @@ import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs, 
 import { TitledFormItemLayout } from 'sql/parts/modelComponents/formContainer.component';
 
 'use strict';
+interface InternalItemConfig {
+	toIItemConfig(): IItemConfig;
+}
+interface IWithItemConfig {
+	itemConfigs?: InternalItemConfig[];
+}
 
 suite('ExtHostModelView Validation Tests', () => {
 	let extHostModelView: ExtHostModelView;
@@ -33,6 +39,7 @@ suite('ExtHostModelView Validation Tests', () => {
 			$initializeModel: (handle: number, rootComponent: IComponentShape) => undefined,
 			$clearContainer: (handle: number, componentId: string) => undefined,
 			$addToContainer: (handle: number, containerId: string, item: IItemConfig) => undefined,
+			$removeFromContainer: (handle: number, containerId: string, item: IItemConfig) => undefined,
 			$setLayout: (handle: number, componentId: string, layout: any) => undefined,
 			$setProperties: (handle: number, componentId: string, properties: { [key: string]: any }) => undefined,
 			$registerEvent: (handle: number, componentId: string) => undefined,
@@ -62,7 +69,7 @@ suite('ExtHostModelView Validation Tests', () => {
 				.component();
 			await view.initializeModel(flexContainer);
 			done();
-		});
+		}, undefined);
 
 		extHostModelView.$registerWidget(handle, widgetId, undefined, undefined);
 	});
@@ -132,7 +139,7 @@ suite('ExtHostModelView Validation Tests', () => {
 	});
 
 	test('Setting a form component as required initializes the model with the component required', () => {
-		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
 
 		// Set up the input component with required initially set to false
 		let inputComponent = modelView.modelBuilder.inputBox().component();
@@ -157,7 +164,7 @@ suite('ExtHostModelView Validation Tests', () => {
 		// Set up the mock proxy to save the component that gets initialized so that it can be verified
 		let rootComponent: IComponentShape;
 		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
-		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
 
 		// Set up the form with a top level component and a group
 		let topLevelList = modelView.modelBuilder.listBox().component();
@@ -212,5 +219,165 @@ suite('ExtHostModelView Validation Tests', () => {
 		assert.equal((listBoxConfig.config as sqlops.FormItemLayout).horizontal, defaultLayout.horizontal);
 		assert.equal((inputBoxConfig.config as sqlops.FormItemLayout).horizontal, groupInputLayout.horizontal);
 		assert.equal((dropdownConfig.config as sqlops.FormItemLayout).horizontal, defaultLayout.horizontal);
+	});
+
+	test('Inserting and removing components from a container should work correctly', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+
+		let flex = modelView.modelBuilder.flexContainer().withItems([listBox, inputBox]).component();
+		modelView.initializeModel(flex);
+
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
+		flex.insertItem(dropDown, 1);
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 3);
+		assert.equal((flex as IWithItemConfig).itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown);
+		flex.removeItem(listBox);
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
+		assert.equal((flex as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown);
+	});
+
+	test('Inserting component give negative number fails', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+
+		let flex = modelView.modelBuilder.flexContainer().withItems([listBox, inputBox]).component();
+		modelView.initializeModel(flex);
+
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
+		assert.throws(() => flex.insertItem(dropDown, -1));
+	});
+
+	test('Inserting component give wrong number fails', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+
+		let flex = modelView.modelBuilder.flexContainer().withItems([listBox, inputBox]).component();
+		modelView.initializeModel(flex);
+
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
+		assert.throws(() => flex.insertItem(dropDown, 10));
+	});
+
+	test('Inserting component give end of the list fails', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+
+		let flex = modelView.modelBuilder.flexContainer().withItems([listBox, inputBox]).component();
+		modelView.initializeModel(flex);
+
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
+		assert.throws(() => flex.insertItem(dropDown, 2));
+	});
+
+	test('Removing a component that does not exist does not fail', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+
+		let flex = modelView.modelBuilder.flexContainer().withItems([listBox, inputBox]).component();
+		modelView.initializeModel(flex);
+
+		let result = flex.removeItem(dropDown);
+		assert.equal(result, false);
+		assert.equal((flex as IWithItemConfig).itemConfigs.length, 2);
+		assert.equal((flex as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox);
+	});
+
+
+	test('Inserting and removing component in a form should work correctly', () => {
+		// Set up the mock proxy to save the component that gets initialized so that it can be verified
+		let rootComponent: IComponentShape;
+		mockProxy.setup(x => x.$initializeModel(It.isAny(), It.isAny())).callback((handle, componentShape) => rootComponent = componentShape);
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), undefined)).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$addToContainer(It.isAny(), It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+		mockProxy.setup(x => x.$removeFromContainer(It.isAny(), It.isAny(), It.isAny())).returns(() => Promise.resolve());
+
+		// Set up the form with a top level component and a group
+		let listBox = modelView.modelBuilder.listBox().component();
+		let inputBox = modelView.modelBuilder.inputBox().component();
+		let dropDown = modelView.modelBuilder.dropDown().component();
+		let checkBox = modelView.modelBuilder.checkBox().component();
+
+		let groupItems: sqlops.FormComponentGroup = {
+			title: 'Group',
+			components: [{
+				title: 'Drop Down',
+				component: dropDown
+			}, {
+				title: 'Check Box',
+				component: checkBox
+			}]
+		};
+		let listBoxFormItem: sqlops.FormComponent = {
+			title: 'List Box',
+			component: listBox
+		};
+		let inputBoxFormItem: sqlops.FormComponent = {
+			title: 'Input Box',
+			component: inputBox
+		};
+
+		let formBuilder = modelView.modelBuilder.formContainer();
+		formBuilder.addFormItem(listBoxFormItem);
+		let form = formBuilder.component();
+		modelView.initializeModel(formBuilder.component());
+
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 1);
+		formBuilder.insertFormItem(inputBoxFormItem, 0);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 2);
+		assert.equal((form as IWithItemConfig).itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.InputBox);
+		formBuilder.insertFormItem(groupItems, 0);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 5);
+		formBuilder.removeFormItem(listBoxFormItem);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 4);
+		formBuilder.removeFormItem(groupItems);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 1);
+		formBuilder.addFormItem(listBoxFormItem);
+		assert.equal((form as IWithItemConfig).itemConfigs.length, 2);
+		assert.equal((form as IWithItemConfig).itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox);
 	});
 });

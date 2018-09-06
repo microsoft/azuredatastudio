@@ -177,7 +177,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -186,7 +186,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			self._agentViewComponent.showHistory = true;
 		});
 
-		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 

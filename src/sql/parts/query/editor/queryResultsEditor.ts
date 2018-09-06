@@ -6,7 +6,6 @@
 'use strict';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Builder } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
@@ -14,19 +13,15 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
 import { getZoomLevel } from 'vs/base/browser/browser';
-import { Configuration } from 'vs/editor/browser/config/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
-import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { QueryOutputModule } from 'sql/parts/query/views/queryOutput.module';
-import { QUERY_OUTPUT_SELECTOR } from 'sql/parts/query/views/queryOutput.component';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Event } from 'vs/base/common/event';
+import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -97,6 +92,8 @@ export class QueryResultsEditor extends BaseEditor {
 	protected _rawOptions: BareResultsGridInfo;
 	protected _input: QueryResultsInput;
 
+	private resultsView: QueryResultsView;
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -106,12 +103,12 @@ export class QueryResultsEditor extends BaseEditor {
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-		this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('resultsGrid')) {
-				this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-				this.applySettings();
-			}
-		});
+		// this._configurationService.onDidChangeConfiguration(e => {
+		// 	if (e.affectsConfiguration('resultsGrid')) {
+		// 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
+		// 		this.applySettings();
+		// 	}
+		// });
 	}
 
 	public get input(): QueryResultsInput {
@@ -136,54 +133,33 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	createEditor(parent: HTMLElement): void {
+		if (!this.resultsView) {
+			this.resultsView = new QueryResultsView(parent, this._instantiationService, this._queryModelService);
+		}
 	}
 
 	layout(dimension: DOM.Dimension): void {
+		this.resultsView.layout(dimension);
 	}
 
 	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
-		super.setInput(input, options);
-		this.applySettings();
-		if (!input.hasBootstrapped) {
-			this._bootstrapAngular();
-		}
+		super.setInput(input, options, CancellationToken.None);
+		this.resultsView.input = input;
 		return TPromise.wrap<void>(null);
 	}
 
-	/**
-	 * Load the angular components and record for this input that we have done so
-	 */
-	private _bootstrapAngular(): void {
-		let input = <QueryResultsInput>this.input;
-		let uri = input.uri;
+	public chart(dataId: { batchId: number, resultId: number }) {
+		this.resultsView.chartData(dataId);
+	}
 
-		// Pass the correct DataService to the new angular component
-		let dataService = this._queryModelService.getDataService(uri);
-		if (!dataService) {
-			throw new Error('DataService not found for URI: ' + uri);
-		}
-
-		// Mark that we have bootstrapped
-		input.setBootstrappedTrue();
-
-		// Get the bootstrap params and perform the bootstrap
-		// Note: pass in input so on disposal this is cleaned up.
-		// Otherwise many components will be left around and be subscribed
-		// to events from the backing data service
-		let params: IQueryComponentParams = {
-			dataService: dataService,
-			onSaveViewState: this.input.onSaveViewStateEmitter.event,
-			onRestoreViewState: this.input.onRestoreViewStateEmitter.event
-		};
-		bootstrapAngular(this._instantiationService,
-			QueryOutputModule,
-			this.getContainer(),
-			QUERY_OUTPUT_SELECTOR,
-			params,
-			input);
+	public showQueryPlan(xml: string) {
+		this.resultsView.showPlan(xml);
 	}
 
 	public dispose(): void {
 		super.dispose();
+		if (this.resultsView) {
+			this.resultsView.dispose();
+		}
 	}
 }

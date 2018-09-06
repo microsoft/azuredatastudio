@@ -60,7 +60,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	private onClicked(selectedNode: FileNode) {
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
 			args: { fullPath: selectedNode.fullPath, isFile: selectedNode.isFile }
 		});
@@ -103,10 +103,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(): void {
 		// TODO allow configuring the look and feel

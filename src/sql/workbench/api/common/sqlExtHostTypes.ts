@@ -18,6 +18,7 @@ export enum ServiceOptionType {
 }
 
 export enum ConnectionOptionSpecialType {
+	connectionName = 'connectionName',
 	serverName = 'serverName',
 	databaseName = 'databaseName',
 	authType = 'authType',
@@ -172,7 +173,8 @@ export enum ComponentEventType {
 	onDidClick,
 	validityChanged,
 	onMessage,
-	onSelectedRowChanged
+	onSelectedRowChanged,
+	onComponentCreated
 }
 
 export interface IComponentEventArgs {

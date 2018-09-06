@@ -139,7 +139,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 			column: cell,
 			value: newValue
 		};
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
 			args: newCellData
 		});
@@ -188,10 +188,6 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel

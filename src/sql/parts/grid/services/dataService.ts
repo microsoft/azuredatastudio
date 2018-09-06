@@ -14,7 +14,6 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
 import { ISaveRequest } from 'sql/parts/grid/common/interfaces';
 
-import { ISlickRange } from 'angular2-slickgrid';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
@@ -184,7 +183,7 @@ export class DataService {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		this._queryModel.copyResults(this._uri, selection, batchId, resultId, includeHeaders);
 	}
 

@@ -19,7 +19,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands'
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -272,7 +272,7 @@ export class NewProfilerAction extends Task {
 
 	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
 		let profilerInput = accessor.get<IInstantiationService>(IInstantiationService).createInstance(ProfilerInput, profile);
-		return accessor.get<IWorkbenchEditorService>(IWorkbenchEditorService).openEditor(profilerInput, { pinned: true }, false).then(() => {
+		return accessor.get<IEditorService>(IEditorService).openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => {
 			let options: IConnectionCompletionOptions = {
 				params: undefined,
 				saveTheConnection: false,

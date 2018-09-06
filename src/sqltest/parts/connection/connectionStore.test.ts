@@ -41,6 +41,7 @@ suite('SQL ConnectionStore tests', () => {
 
 	setup(() => {
 		defaultNamedProfile = Object.assign({}, {
+			connectionName: 'new name',
 			serverName: 'namedServer',
 			databaseName: 'bcd',
 			authenticationType: 'SqlLogin',
@@ -58,6 +59,7 @@ suite('SQL ConnectionStore tests', () => {
 		});
 
 		defaultUnnamedProfile = Object.assign({}, {
+			connectionName: 'new name',
 			serverName: 'unnamedServer',
 			databaseName: undefined,
 			authenticationType: 'SqlLogin',
@@ -75,6 +77,7 @@ suite('SQL ConnectionStore tests', () => {
 		});
 
 		profileForProvider2 = Object.assign({}, {
+			connectionName: 'new name',
 			serverName: 'unnamedServer',
 			databaseName: undefined,
 			authenticationType: 'SqlLogin',
@@ -117,6 +120,18 @@ suite('SQL ConnectionStore tests', () => {
 
 		capabilitiesService = new CapabilitiesTestService();
 		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'connectionName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.connectionName,
+				valueType: ServiceOptionType.string
+			},
 			{
 				name: 'serverName',
 				displayName: undefined,

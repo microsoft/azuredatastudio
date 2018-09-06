@@ -8,9 +8,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 
-import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
+import { EditorInput, EditorOptions, IEditorControl, IEditor } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IEditorControl, Position, IEditor, IEditorInput } from 'vs/platform/editor/common/editor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
@@ -21,18 +20,15 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { ISelectionData } from 'sqlops';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
+import { IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IRange } from 'vs/editor/common/core/range';
-import { IEditorViewState } from 'vs/editor/common/editorCommon';
-import { Emitter } from 'vs/base/common/event';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
@@ -49,6 +45,8 @@ import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescripto
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -94,11 +92,10 @@ export class QueryEditor extends BaseEditor {
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private _configurationService: IConfigurationService
@@ -111,11 +108,12 @@ export class QueryEditor extends BaseEditor {
 			this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
 
-		if (_editorGroupService) {
-			_editorGroupService.onEditorOpening(e => {
-				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+		if (_editorService) {
+			_editorService.overrideOpenEditor((editor, options, group) => {
+				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
 					this.saveEditorViewState();
 				}
+				return {};
 			});
 		}
 	}
@@ -159,7 +157,7 @@ export class QueryEditor extends BaseEditor {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public setInput(newInput: QueryInput, options?: EditorOptions): TPromise<void> {
+	public setInput(newInput: QueryInput, options?: EditorOptions): Thenable<void> {
 		const oldInput = <QueryInput>this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -173,21 +171,21 @@ export class QueryEditor extends BaseEditor {
 		let selectionCallback: IDisposable = newInput.updateSelectionEvent((selection) => this._setSelection(selection));
 		newInput.setEventCallbacks([taskbarCallback, showResultsCallback, selectionCallback]);
 
-		return super.setInput(newInput, options)
+		return super.setInput(newInput, options, CancellationToken.None)
 			.then(() => this._updateInput(oldInput, newInput, options));
 	}
 
 	/**
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
-	public setEditorVisible(visible: boolean, position: Position): void {
+	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		if (this._resultsEditor) {
-			this._resultsEditor.setVisible(visible, position);
+			this._resultsEditor.setVisible(visible, group);
 		}
 		if (this._sqlEditor) {
-			this._sqlEditor.setVisible(visible, position);
+			this._sqlEditor.setVisible(visible, group);
 		}
-		super.setEditorVisible(visible, position);
+		super.setEditorVisible(visible, group);
 
 		// Note: must update after calling super.setEditorVisible so that the accurate count is handled
 		this.updateQueryEditorVisible(visible);
@@ -199,7 +197,7 @@ export class QueryEditor extends BaseEditor {
 			let visible = currentEditorIsVisible;
 			if (!currentEditorIsVisible) {
 				// Current editor is closing but still tracked as visible. Check if any other editor is visible
-				const candidates = [...this._editorService.getVisibleEditors()].filter(e => {
+				const candidates = [...this._editorService.visibleControls].filter(e => {
 					if (e && e.getId) {
 						return e.getId() === QueryEditor.ID;
 					}
@@ -211,20 +209,6 @@ export class QueryEditor extends BaseEditor {
 			}
 			this.queryEditorVisible.set(visible);
 		}
-	}
-
-
-	/**
-	 * Changes the position of the editor.
-	 */
-	public changePosition(position: Position): void {
-		if (this._resultsEditor) {
-			this._resultsEditor.changePosition(position);
-		}
-		if (this._sqlEditor) {
-			this._sqlEditor.changePosition(position);
-		}
-		super.changePosition(position);
 	}
 
 	/**
@@ -305,7 +289,8 @@ export class QueryEditor extends BaseEditor {
 			return;
 		}
 
-		this._editorGroupService.pinEditor(this.position, this.input);
+		const activeControl = this._editorService.activeControl;
+		activeControl.group.pinEditor(activeControl.input);
 
 		let input = <QueryInput>this.input;
 		this._createResultsEditorContainer();
@@ -365,7 +350,7 @@ export class QueryEditor extends BaseEditor {
 	public isSelectionEmpty(): boolean {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
-			let codeEditor: CodeEditor = <CodeEditor>control;
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
 
 			if (codeEditor) {
 				let value = codeEditor.getValue();
@@ -380,7 +365,7 @@ export class QueryEditor extends BaseEditor {
 	public getAllText(): string {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
-			let codeEditor: CodeEditor = <CodeEditor>control;
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
 			if (codeEditor) {
 				let value = codeEditor.getValue();
 				if (value !== undefined && value.length > 0) {
@@ -396,7 +381,7 @@ export class QueryEditor extends BaseEditor {
 	public getSelectionText(): string {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
-			let codeEditor: CodeEditor = <CodeEditor>control;
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
 			let vscodeSelection = control.getSelection();
 
 			if (codeEditor && vscodeSelection) {
@@ -588,7 +573,9 @@ export class QueryEditor extends BaseEditor {
 				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer);
 			};
 			onEditorsCreated = (result: TextResourceEditor) => {
-				return this._onSqlEditorCreated(result, newInput.sql, options);
+				return TPromise.join([
+					this._onSqlEditorCreated(result, newInput.sql, options)
+				]);
 			};
 		}
 
@@ -623,16 +610,16 @@ export class QueryEditor extends BaseEditor {
 
 		let editor = descriptor.instantiate(this._instantiationService);
 		editor.create(container);
-		editor.setVisible(this.isVisible(), this.position);
+		editor.setVisible(this.isVisible(), editor.group);
 		return TPromise.as(editor);
 	}
 
 	/**
 	 * Sets input for the SQL editor after it has been created.
 	 */
-	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledEditorInput, options: EditorOptions): TPromise<void> {
+	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledEditorInput, options: EditorOptions): Thenable<void> {
 		this._sqlEditor = sqlEditor;
-		return this._sqlEditor.setInput(sqlInput, options);
+		return this._sqlEditor.setInput(sqlInput, options, CancellationToken.None);
 	}
 
 	/**

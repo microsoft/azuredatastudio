@@ -15,7 +15,6 @@ import * as PathUtilities from 'sql/common/pathUtilities';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -26,12 +25,12 @@ import * as paths from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
 
-import { ISlickRange } from 'angular2-slickgrid';
 import * as path from 'path';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 let prevSavePath: string;
 
@@ -50,7 +49,7 @@ export class ResultSerializer {
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
 		@IWindowService private _windowService: IWindowService,
@@ -255,7 +254,7 @@ export class ResultSerializer {
 		return config;
 	}
 
-	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: ISlickRange): SaveResultsRequestParams {
+	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams: SaveResultsRequestParams;
 		if (!path.isAbsolute(filePath)) {
 			this._filePath = PathUtilities.resolveFilePath(this._uri, filePath, this.rootPath);
@@ -287,7 +286,7 @@ export class ResultSerializer {
 	/**
 	 * Check if a range of cells were selected.
 	 */
-	private isSelected(selection: ISlickRange): boolean {
+	private isSelected(selection: Slick.Range): boolean {
 		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
@@ -319,7 +318,7 @@ export class ResultSerializer {
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
-	private sendRequestToService(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: ISlickRange): Thenable<void> {
+	private sendRequestToService(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): Thenable<void> {
 		let saveResultsParams = this.getParameters(filePath, batchIndex, resultSetNo, format, selection);
 
 		this.logToOutputChannel(LocalizedConstants.msgSaveStarted + this._filePath);

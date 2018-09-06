@@ -199,6 +199,7 @@ export default class MainController implements vscode.Disposable {
 		dropdown.onValueChanged((params) => {
 			vscode.window.showInformationMessage(inputBox2.value);
 			inputBox.value = dropdown.value.toString();
+			console.info('dropdown change ' + dropdown.value.toString());
 		});
 		let radioButton = view.modelBuilder.radioButton()
 			.withProperties({
@@ -231,14 +232,7 @@ export default class MainController implements vscode.Disposable {
 			}).withItems([
 				form2Model
 			]).component();
-		radioButton.onDidClick(() => {
-			inputBox.value = radioButton.value;
-			groupModel1.enabled = true;
-		});
-		radioButton2.onDidClick(() => {
-			inputBox.value = radioButton.value;
-			groupModel1.enabled = false;
-		});
+
 		let table = view.modelBuilder.table().withProperties({
 			data: [
 				['1', '2', '2'],
@@ -303,17 +297,12 @@ export default class MainController implements vscode.Disposable {
 			}).withItems([
 				radioButton, groupModel1, radioButton2]
 				, { flex: '1 1 50%' }).component();
-		let formModel = view.modelBuilder.formContainer()
+		let formItemLayout = {
+			horizontal: false,
+			componentWidth: componentWidth
+		};
+		let formBuilder = view.modelBuilder.formContainer()
 			.withFormItems([{
-				component: inputBoxWrapper,
-				title: 'Backup name'
-			}, {
-				component: inputBox2,
-				title: 'Recovery model'
-			}, {
-				component: dropdown,
-				title: 'Backup type'
-			}, {
 				component: checkbox,
 				title: ''
 			}, {
@@ -326,16 +315,56 @@ export default class MainController implements vscode.Disposable {
 			}, {
 				component: declarativeTable,
 				title: 'Declarative Table'
-			}, {
-				component: table,
-				title: 'Table'
-			}, {
-				component: listBox,
-				title: 'List Box'
-			}], {
-					horizontal: false,
-					componentWidth: componentWidth
-				}).component();
+			}], formItemLayout);
+		let groupItems = {
+				components: [{
+					component: table,
+					title: 'Table'
+					}, {
+							component: listBox,
+							title: 'List Box'
+				}], title: 'group'};
+		formBuilder.addFormItem(groupItems, formItemLayout);
+
+		formBuilder.insertFormItem({
+			component: inputBoxWrapper,
+			title: 'Backup name'
+			}, 0, formItemLayout);
+		formBuilder.insertFormItem({
+			component: inputBox2,
+			title: 'Recovery model'
+			}, 1, formItemLayout);
+		formBuilder.insertFormItem({
+			component: dropdown,
+			title: 'Backup type'
+		}, 2, formItemLayout);
+		let formModel = formBuilder.component();
+		let inputBox6 = view.modelBuilder.inputBox().component();
+		inputBox6.onTextChanged(e => {
+			console.info('textbox6 changed: ' + inputBox6.value);
+		});
+		radioButton.onDidClick(() => {
+			inputBox.value = radioButton.value;
+			groupModel1.enabled = true;
+
+			formBuilder.insertFormItem({
+				component: dropdown,
+				title: 'Backup type'
+			}, 2, formItemLayout);
+			flexRadioButtonsModel.addItem(inputBox6, { flex: '1 1 50%' });
+			formBuilder.addFormItem(groupItems, formItemLayout);
+		});
+
+		radioButton2.onDidClick(() => {
+			inputBox.value = radioButton.value;
+			groupModel1.enabled = false;
+			formBuilder.removeFormItem({
+				component: dropdown,
+				title: 'Backup type'
+			});
+			flexRadioButtonsModel.removeItem(inputBox6);
+			formBuilder.removeFormItem(groupItems);
+		});
 		let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 		formWrapper.loading = false;
 		customButton2.onClick(() => {
