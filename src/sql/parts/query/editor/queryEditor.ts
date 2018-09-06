@@ -44,6 +44,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
@@ -96,7 +97,8 @@ export class QueryEditor extends BaseEditor {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(QueryEditor.ID, _telemetryService, themeService);
 
@@ -446,6 +448,16 @@ export class QueryEditor extends BaseEditor {
 		this._estimatedQueryPlanAction = this._instantiationService.createInstance(EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this._instantiationService.createInstance(ActualQueryPlanAction, this);
 
+		this.setTaskbarContent();
+
+		this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent();
+			}
+		});
+	}
+
+	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
 
@@ -460,6 +472,13 @@ export class QueryEditor extends BaseEditor {
 			{ element: separator },
 			{ action: this._estimatedQueryPlanAction }
 		];
+
+		// Remove the estimated query plan action if preview features are not enabled
+		let previewFeaturesEnabled = this._configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!previewFeaturesEnabled) {
+			content = content.slice(0, -2);
+		}
+
 		this._taskbar.setContent(content);
 	}
 
