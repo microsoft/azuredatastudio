@@ -96,6 +96,9 @@ export function createApiFactory(
 				},
 				getSecurityToken(account: sqlops.AccountWithProviderHandle): Thenable<{}> {
 					return extHostAccountManagement.$getSecurityToken(account.providerHandle, account.account);
+				},
+				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
 				}
 			};
 

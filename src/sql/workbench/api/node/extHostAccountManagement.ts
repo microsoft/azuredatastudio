@@ -14,11 +14,13 @@ import {
 	SqlMainContext,
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
+	private readonly _onDidChangeAccounts = new Emitter<sqlops.DidChangeAccountsParams>();
 
 	constructor(mainContext: IMainContext) {
 		super();
@@ -89,6 +91,21 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		}
 
 		return Promise.all(promises).then(() => accountWithProviderHandles);
+	}
+
+	public get onDidChangeAccounts(): Event<sqlops.DidChangeAccountsParams> {
+		return this._onDidChangeAccounts.event;
+	}
+
+	public $accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> {
+		const accountsWithProviderHandle: sqlops.AccountWithProviderHandle[] = accounts.map((account) => {
+			return {
+				account: account,
+				providerHandle: handle
+			};
+		});
+
+		return this._onDidChangeAccounts.fire({ accounts: accountsWithProviderHandle });
 	}
 
 	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Disposable {

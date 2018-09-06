@@ -1863,6 +1863,11 @@ declare module 'sqlops' {
 		 * @return {Thenable<{}>} Promise to return the security token
 		 */
 		export function getSecurityToken(account: AccountWithProviderHandle): Thenable<{}>;
+
+		/**
+		 * An [event](#Event) which fires when the accounts have changed.
+		 */
+		export const onDidChangeAccounts: vscode.Event<DidChangeAccountsParams>;
 	}
 
 	/**
@@ -1943,6 +1948,11 @@ declare module 'sqlops' {
 		 * Account's provider handle
 		 */
 		providerHandle: number;
+	}
+
+	export interface DidChangeAccountsParams {
+		// Updated accounts with provider handle
+		accounts: AccountWithProviderHandle[];
 	}
 
 	// - ACCOUNT PROVIDER //////////////////////////////////////////////////

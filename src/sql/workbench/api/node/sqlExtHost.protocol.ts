@@ -30,6 +30,7 @@ export abstract class ExtHostAccountManagementShape {
 	$initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> { throw ni(); }
 	$prompt(handle: number): Thenable<sqlops.Account> { throw ni(); }
 	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
+	$accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> { throw ni(); }
 }
 
 export abstract class ExtHostConnectionManagementShape {
