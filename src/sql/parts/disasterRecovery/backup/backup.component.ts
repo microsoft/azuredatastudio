@@ -221,7 +221,7 @@ export class BackupComponent {
 			ariaLabel: LocalizedStrings.RECOVERY_MODEL
 		});
 		// Set backup type
-		this.backupTypeSelectBox = new SelectBox([], '', this.contextViewService);
+		this.backupTypeSelectBox = new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.BACKUP_TYPE });
 		this.backupTypeSelectBox.render(this.backupTypeElement.nativeElement);
 
 		// Set copy-only check box
@@ -283,13 +283,13 @@ export class BackupComponent {
 		this.removePathButton.title = localize('removeFile', 'Remove files');
 
 		// Set compression
-		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService);
+		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION });
 		this.compressionSelectBox.render(this.compressionElement.nativeElement);
 
 		// Set encryption
-		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this.contextViewService);
+		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.ALGORITHM });
 		this.algorithmSelectBox.render(this.encryptionAlgorithmElement.nativeElement);
-		this.encryptorSelectBox = new SelectBox([], '', this.contextViewService);
+		this.encryptorSelectBox = new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.CERTIFICATE_OR_ASYMMETRIC_KEY });
 		this.encryptorSelectBox.render(this.encryptorElement.nativeElement);
 
 		// Set media
