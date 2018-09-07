@@ -225,14 +225,14 @@ declare module 'sqlops' {
 		showDashboard?: boolean;
 
 		/**
-		 * If true, open the connection dialog if connection fails.
-		 * If undefined / false, connection dialog won't be opened even if connection fails.
+		 * If undefined / true, open the connection dialog if connection fails.
+		 * If false, connection dialog won't be opened even if connection fails.
 		 */
 		showConnectionDialogOnError?: boolean;
 
 		/**
-		 * If true, open the connection firewall rule dialog if connection fails.
-		 * If undefined / false, connection firewall rule dialog won't be opened even if connection fails.
+		 * If undefined / true, open the connection firewall rule dialog if connection fails.
+		 * If false, connection firewall rule dialog won't be opened even if connection fails.
 		 */
 		showFirewallRuleOnError?: boolean;
 	}

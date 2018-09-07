@@ -66,8 +66,8 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 				saveTheConnection: connectionCompletionOptions.saveConnection,
 				showDashboard: connectionCompletionOptions.showDashboard ? connectionCompletionOptions.showDashboard : false,
 				params: undefined,
-				showConnectionDialogOnError: connectionCompletionOptions.showConnectionDialogOnError ? connectionCompletionOptions.showConnectionDialogOnError : false,
-				showFirewallRuleOnError: connectionCompletionOptions.showFirewallRuleOnError ? connectionCompletionOptions.showFirewallRuleOnError : false
+				showConnectionDialogOnError: connectionCompletionOptions.showConnectionDialogOnError ? connectionCompletionOptions.showConnectionDialogOnError : true,
+				showFirewallRuleOnError: connectionCompletionOptions.showFirewallRuleOnError ? connectionCompletionOptions.showFirewallRuleOnError : true
 			});
 		}
 
