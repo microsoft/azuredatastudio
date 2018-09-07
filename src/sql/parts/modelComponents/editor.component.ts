@@ -63,7 +63,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'sql', '', '');
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'plaintext', '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model.textEditorModel;
