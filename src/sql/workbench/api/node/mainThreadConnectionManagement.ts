@@ -14,6 +14,8 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { isUndefined } from 'util';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -63,11 +65,11 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
 			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
-				saveTheConnection: connectionCompletionOptions.saveConnection,
-				showDashboard: connectionCompletionOptions.showDashboard ? connectionCompletionOptions.showDashboard : false,
+				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
+				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
 				params: undefined,
-				showConnectionDialogOnError: connectionCompletionOptions.showConnectionDialogOnError ? connectionCompletionOptions.showConnectionDialogOnError : true,
-				showFirewallRuleOnError: connectionCompletionOptions.showFirewallRuleOnError ? connectionCompletionOptions.showFirewallRuleOnError : true
+				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
+				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
 			});
 		}
 
