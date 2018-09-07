@@ -216,22 +216,25 @@ declare module 'sqlops' {
 		/**
 		 * save the connection to MRU and settings (only save to setting if profile.saveProfile is set to true)
 	 	*/
-		saveTheConnection: boolean;
+		saveConnection: boolean;
 
 		/**
-	 	* open the dashboard after connection is complete
+		 * If true, open the dashboard after connection is complete.
+		 * If undefined / false, dashboard won't be opened after connection completes.
 	 	*/
-		showDashboard: boolean;
+		showDashboard?: boolean;
 
 		/**
-		 * Open the connection dialog if connection fails
+		 * If true, open the connection dialog if connection fails.
+		 * If undefined / false, connection dialog won't be opened even if connection fails.
 		 */
-		showConnectionDialogOnError: boolean;
+		showConnectionDialogOnError?: boolean;
 
 		/**
-		 * Open the connection firewall rule dialog if connection fails
+		 * If true, open the connection firewall rule dialog if connection fails.
+		 * If undefined / false, connection firewall rule dialog won't be opened even if connection fails.
 		 */
-		showFirewallRuleOnError: boolean;
+		showFirewallRuleOnError?: boolean;
 	}
 
 	export interface ConnectionInfoSummary {

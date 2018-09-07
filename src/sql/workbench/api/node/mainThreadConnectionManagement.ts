@@ -63,11 +63,11 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
 			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
-				saveTheConnection: connectionCompletionOptions.saveTheConnection,
-				showDashboard: connectionCompletionOptions.showDashboard,
+				saveTheConnection: connectionCompletionOptions.saveConnection,
+				showDashboard: connectionCompletionOptions.showDashboard ? connectionCompletionOptions.showDashboard : false,
 				params: undefined,
-				showConnectionDialogOnError: connectionCompletionOptions.showConnectionDialogOnError,
-				showFirewallRuleOnError: connectionCompletionOptions.showFirewallRuleOnError
+				showConnectionDialogOnError: connectionCompletionOptions.showConnectionDialogOnError ? connectionCompletionOptions.showConnectionDialogOnError : false,
+				showFirewallRuleOnError: connectionCompletionOptions.showFirewallRuleOnError ? connectionCompletionOptions.showFirewallRuleOnError : false
 			});
 		}
 
