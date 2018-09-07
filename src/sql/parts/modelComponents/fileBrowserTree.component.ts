@@ -27,7 +27,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	@Input() modelStore: IModelStore;
 	private _treeView: FileBrowserTreeView;
 	private _viewModel: FileBrowserViewModel;
-	private _fileFilters: [{label: string, filters: string[]}] = [
+	private _fileFilters: [{ label: string, filters: string[] }] = [
 		{ label: 'All Files', filters: ['*'] }
 	];
 

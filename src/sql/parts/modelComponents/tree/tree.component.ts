@@ -114,7 +114,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 			this._tree.domFocus();
 			this._register(this._tree);
 			this._register(attachListStyler(this._tree, this.themeService));
-			this._register(this._tree.onDidChangeSelection( e => {
+			this._register(this._tree.onDidChangeSelection(e => {
 				this._dataProvider.onNodeSelected(e.selection);
 			}));
 			this._tree.refresh();

@@ -340,7 +340,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 				itemConfig.config.isInGroup = true;
 				this._component.insertItem(component.component as ComponentWrapper, componentIndex, itemConfig.config);
 				if (componentIndex) {
-					componentIndex ++;
+					componentIndex++;
 				}
 				this.addComponentActions(component, layout);
 			});

@@ -135,7 +135,7 @@ export default class DeclarativeTableComponent extends ComponentBase implements 
 	private onCellDataChanged(newValue: any, row: number, cell: number): void {
 		this.data[row][cell] = newValue;
 		this.data = this.data;
-		let newCellData : sqlops.TableCell = {
+		let newCellData: sqlops.TableCell = {
 			row: row,
 			column: cell,
 			value: newValue
