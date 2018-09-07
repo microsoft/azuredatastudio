@@ -548,7 +548,7 @@ class ComponentWrapper implements sqlops.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, this.handleError);
+		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
 
 	public setLayout(layout: any): Thenable<void> {

@@ -26,6 +26,13 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
+function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
+	return {
+		...options,
+		localResourceRoots: Array.isArray(options.localResourceRoots) ? options.localResourceRoots.map(URI.revive) : undefined
+	};
+}
+
 @Component({
 	template: '',
 	selector: 'modelview-webview-component'
@@ -192,6 +199,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private getExtendedOptions(): WebviewOptions {
 		let options = this.options || { enableScripts: true };
+		options = reviveWebviewOptions(options);
 		return {
 			allowScripts: options.enableScripts,
 			allowSvgs: true,
@@ -208,4 +216,5 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		}
 		return rootPaths;
 	}
+
 }
