@@ -14,7 +14,6 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { isUndefined } from 'util';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
