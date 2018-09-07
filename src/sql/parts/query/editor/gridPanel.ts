@@ -216,10 +216,6 @@ export class GridPanel extends ViewletPanel {
 		}
 	}
 
-	public layout(size: number) {
-		this.splitView.layout(size);
-	}
-
 	private minimizeTables(): void {
 		if (this.maximizedGrid) {
 			this.maximizedGrid.state.maximized = false;
