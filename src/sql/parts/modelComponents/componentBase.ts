@@ -19,6 +19,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
 import URI from 'vs/base/common/uri';
+import { Builder } from 'vs/base/browser/builder';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
@@ -84,13 +85,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public updateStyles() {
+		let element = new Builder(this._el.nativeElement);
 		this._CSSStyles = this.CSSStyles;
-		let styles = [];
-		for (var styleName in this._CSSStyles) {
-			styles.push(`${styleName}:${this._CSSStyles[styleName]}; `);
-		}
-		let element = <HTMLElement>this._el.nativeElement;
-		element.setAttribute('style', styles.join(''));
+		element.style(this._CSSStyles);
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {

@@ -193,7 +193,6 @@ export class ConnectionWidget {
 			},
 			ariaLabel: userNameOption.displayName
 		});
-
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
 		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
