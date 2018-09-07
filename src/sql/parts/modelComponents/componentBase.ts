@@ -89,7 +89,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 		for (var styleName in this._CSSStyles) {
 			styles.push(`${styleName}:${this._CSSStyles[styleName]}; `);
 		}
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.setAttribute('style', styles.join(''));
 	}
 
@@ -264,7 +264,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		}
 		if (index !== undefined && index !== null && index >= 0 && index < this.items.length) {
 			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
-		} else if(!index) {
+		} else if (!index) {
 			this.items.push(new ItemDescriptor(componentDescriptor, config));
 		} else {
 			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));

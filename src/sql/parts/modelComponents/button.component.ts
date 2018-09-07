@@ -64,7 +64,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 				if (this._fileInputContainer) {
 					const self = this;
 					this._fileInputContainer.nativeElement.onchange = () => {
-						let file  = self._fileInputContainer.nativeElement.files[0];
+						let file = self._fileInputContainer.nativeElement.files[0];
 						let reader = new FileReader();
 						reader.onload = (e) => {
 							let text = (<FileReader>e.target).result;
@@ -154,7 +154,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setFileContentProperties, newValue);
 	}
 
-	private setFileContentProperties(properties: sqlops.ButtonProperties, fileContent: string) : void {
+	private setFileContentProperties(properties: sqlops.ButtonProperties, fileContent: string): void {
 		properties.fileContent = fileContent;
 	}
 
