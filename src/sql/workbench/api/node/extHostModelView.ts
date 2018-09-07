@@ -340,7 +340,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 				itemConfig.config.isInGroup = true;
 				this._component.insertItem(component.component as ComponentWrapper, componentIndex, itemConfig.config);
 				if (componentIndex) {
-					componentIndex ++;
+					componentIndex++;
 				}
 				this.addComponentActions(component, layout);
 			});
@@ -548,7 +548,7 @@ class ComponentWrapper implements sqlops.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, this.handleError);
+		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -558,6 +558,10 @@ class ComponentWrapper implements sqlops.Component {
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
 		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
+	}
+
+	public updateProperty(key: string, value: any): Thenable<void> {
+		return this.setProperty(key, value);
 	}
 
 	protected notifyPropertyChanged(): Thenable<void> {

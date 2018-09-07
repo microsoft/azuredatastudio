@@ -35,8 +35,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService) {
-		super(changeRef);
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {

@@ -147,6 +147,15 @@ declare module 'sqlops' {
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<void>;
 
+		/**
+		 * Sends an updated property of the component to the UI
+		 *
+		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * has been applied in the UI
+		 * @memberof Component
+		 */
+		updateProperty(key: string, value: any): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -312,7 +321,7 @@ declare module 'sqlops' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string }
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface FormItemLayout {
@@ -427,6 +436,10 @@ declare module 'sqlops' {
 		 * Without this the component will fail to correctly size itself
 		 */
 		position?: string;
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface ComponentWithIcon {

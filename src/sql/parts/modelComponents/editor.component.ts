@@ -41,12 +41,12 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -107,7 +107,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.layout(new DOM.Dimension(
 			width && width > 0 ? width : DOM.getContentWidth(this._el.nativeElement),
 			height && height > 0 ? height : DOM.getContentHeight(this._el.nativeElement)));
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.style.position = this.position;
 	}
 
@@ -129,7 +129,6 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	/// IComponent implementation
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();

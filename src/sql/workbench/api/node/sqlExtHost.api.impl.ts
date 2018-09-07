@@ -92,11 +92,14 @@ export function createApiFactory(
 				accountUpdated(updatedAccount: sqlops.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
 				},
-				getAllAccounts(): Thenable<sqlops.AccountWithProviderHandle[]> {
+				getAllAccounts(): Thenable<sqlops.Account[]> {
 					return extHostAccountManagement.$getAllAccounts();
 				},
-				getSecurityToken(account: sqlops.AccountWithProviderHandle): Thenable<{}> {
-					return extHostAccountManagement.$getSecurityToken(account.providerHandle, account.account);
+				getSecurityToken(account: sqlops.Account): Thenable<{}> {
+					return extHostAccountManagement.$getSecurityToken(account);
+				},
+				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
 				}
 			};
 

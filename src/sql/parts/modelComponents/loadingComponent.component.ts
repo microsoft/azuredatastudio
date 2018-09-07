@@ -35,8 +35,9 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	@ViewChild('childElement', { read: ElementRef }) private _childElement: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 		this._validations.push(() => {
 			if (!this._component) {
 				return true;

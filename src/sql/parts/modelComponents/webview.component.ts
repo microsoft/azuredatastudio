@@ -26,6 +26,13 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
+function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
+	return {
+		...options,
+		localResourceRoots: Array.isArray(options.localResourceRoots) ? options.localResourceRoots.map(URI.revive) : undefined
+	};
+}
+
 @Component({
 	template: '',
 	selector: 'modelview-webview-component'
@@ -46,7 +53,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IPartService) private partService: IPartService,
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
@@ -56,7 +63,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -132,7 +139,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	/// IComponent implementation
 
 	public layout(): void {
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.style.position = this.position;
 		this._webview.layout();
 	}
@@ -192,6 +199,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private getExtendedOptions(): WebviewOptions {
 		let options = this.options || { enableScripts: true };
+		options = reviveWebviewOptions(options);
 		return {
 			allowScripts: options.enableScripts,
 			allowSvgs: true,
@@ -208,4 +216,5 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		}
 		return rootPaths;
 	}
+
 }

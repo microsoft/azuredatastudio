@@ -18,6 +18,7 @@ import * as UUID from 'vs/base/common/uuid';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
+import { once } from 'vs/base/common/event';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -37,6 +38,13 @@ class ResultsView implements IPanelView {
 				{ panel: this.gridPanel, size: 1000, index: 0 },
 				{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
 			]);
+		});
+		let gridResizeList = this.gridPanel.onDidChange(e => {
+			this.panelViewlet.resizePanel(this.gridPanel, this.gridPanel.maximumSize);
+		});
+		// once the user changes the sash we should stop trying to resize the grid
+		once(this.panelViewlet.onDidSashChange)(e => {
+			gridResizeList.dispose();
 		});
 	}
 

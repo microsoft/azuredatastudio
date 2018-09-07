@@ -274,7 +274,8 @@ export default class QueryRunner {
 		this.batchSets[batch.id] = batch;
 
 		let message = {
-			message: nls.localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine),
+			// account for index by 1
+			message: nls.localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine + 1),
 			time: new Date(batch.executionStart).toLocaleTimeString(),
 			selection: batch.selection,
 			isError: false

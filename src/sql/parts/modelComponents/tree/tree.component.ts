@@ -55,8 +55,10 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService) {
-		super(changeRef);
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+	) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -112,7 +114,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 			this._tree.domFocus();
 			this._register(this._tree);
 			this._register(attachListStyler(this._tree, this.themeService));
-			this._register(this._tree.onDidChangeSelection( e => {
+			this._register(this._tree.onDidChangeSelection(e => {
 				this._dataProvider.onNodeSelected(e.selection);
 			}));
 			this._tree.refresh();

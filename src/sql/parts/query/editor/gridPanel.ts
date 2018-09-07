@@ -38,6 +38,7 @@ import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -295,11 +296,24 @@ class GridTable<T> extends Disposable implements IView {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		let numberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
+		let copyHandler = new CopyKeybind();
+		copyHandler.onCopy(e => {
+			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run({
+				selection: e,
+				batchId: this.resultSet.batchId,
+				resultId: this.resultSet.id,
+				cell: this.table.grid.getActiveCell(),
+				runner: this.runner,
+				table: this.table,
+				tableState: this.state
+			});
+		});
 		this.columns.unshift(numberColumn.getColumnDefinition());
 		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection), columns: this.columns }, { rowHeight: ROW_HEIGHT, showRowNumber: true }));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize());
+		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(numberColumn);
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));

@@ -52,8 +52,9 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 		this._orientation = Orientation.Horizontal;
 	}
 
