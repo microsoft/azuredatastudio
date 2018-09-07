@@ -5,12 +5,21 @@ require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
 const defaultOptions: ICellRangeSelectorOptions = {
 	selectionCss: {
 		'border': '2px dashed blue'
-	}
+	},
+	offset: {
+		top: -1,
+		left: -1,
+		height: 2,
+		width: 2
+	},
+	dragClass: 'drag'
 };
 
 export interface ICellRangeSelectorOptions {
 	selectionCss?: { [key: string]: string };
 	cellDecorator?: ICellRangeDecorator;
+	offset?: { top: number, left: number, height: number, width: number };
+	dragClass?: string;
 }
 
 export interface ICellRangeSelector<T> extends Slick.Plugin<T> {
@@ -78,6 +87,8 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
+		this.canvas.classList.add(this.options.dragClass);
+
 		this.grid.focus();
 
 		let start = this.grid.getCellFromPoint(
@@ -114,6 +125,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
+		this.canvas.classList.remove(this.options.dragClass);
 		this.dragging = false;
 		e.stopImmediatePropagation();
 
