@@ -90,7 +90,7 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 	}
 
 	public get paddingTop(): string {
-		return this.isHorizontal() ? '' : '10px';
+		return this.isHorizontal() ? '' : '';
 	}
 
 	public get toolbarClass(): string {
