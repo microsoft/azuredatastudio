@@ -51,13 +51,27 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 
-	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile): Promise<sqlops.connection.Connection> {
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Promise<sqlops.connection.Connection> {
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }, initialConnectionProfile);
-		return connectionProfile ? {
+	    const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
 			providerName: connectionProfile.providerName
 		} : undefined;
+
+		if (connectionCompletionOptions) {
+			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
+			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
+			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+				saveTheConnection: connectionCompletionOptions.saveTheConnection,
+				showDashboard: connectionCompletionOptions.showDashboard,
+				params: undefined,
+				showConnectionDialogOnError: connectionCompletionOptions.showConnectionDialogOnError,
+				showFirewallRuleOnError: connectionCompletionOptions.showFirewallRuleOnError
+			});
+		}
+
+		return connection;
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

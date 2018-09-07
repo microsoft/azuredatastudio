@@ -209,6 +209,31 @@ declare module 'sqlops' {
 		id: string;
 	}
 
+	/**
+ 	* Options for the actions that could happen after connecting is complete
+ 	*/
+	export interface IConnectionCompletionOptions {
+		/**
+		 * save the connection to MRU and settings (only save to setting if profile.saveProfile is set to true)
+	 	*/
+		saveTheConnection: boolean;
+
+		/**
+	 	* open the dashboard after connection is complete
+	 	*/
+		showDashboard: boolean;
+
+		/**
+		 * Open the connection dialog if connection fails
+		 */
+		showConnectionDialogOnError: boolean;
+
+		/**
+		 * Open the connection firewall rule dialog if connection fails
+		 */
+		showFirewallRuleOnError: boolean;
+	}
+
 	export interface ConnectionInfoSummary {
 
 		/**
