@@ -321,7 +321,7 @@ declare module 'sqlops' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string }
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface FormItemLayout {
