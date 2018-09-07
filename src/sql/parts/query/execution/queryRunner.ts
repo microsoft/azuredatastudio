@@ -242,16 +242,18 @@ export default class QueryRunner {
 			}
 		});
 
-		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+		let timeStamp = Utils.parseNumAsTimeString(this._totalElapsedMilliseconds);
+
+		this._eventEmitter.emit(EventType.COMPLETE, timeStamp);
 		// We're done with this query so shut down any waiting mechanisms
 
 		let message = {
-			message: nls.localize('query.message.executionTime', 'Total execution time: {0}', this._totalElapsedMilliseconds),
+			message: nls.localize('query.message.executionTime', 'Total execution time: {0}', timeStamp),
 			isError: false,
 			time: undefined
 		};
 
-		this._onQueryEnd.fire(Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+		this._onQueryEnd.fire(timeStamp);
 		this._onMessage.fire(message);
 	}
 
