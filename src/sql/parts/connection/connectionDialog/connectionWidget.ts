@@ -65,6 +65,7 @@ export class ConnectionWidget {
 	private _databaseDropdownExpanded: boolean = false;
 	private _defaultDatabaseName: string = localize('defaultDatabaseOption', '<Default>');
 	private _loadingDatabaseName: string = localize('loadingDatabaseOption', 'Loading...');
+	private _serverGroupDisplayString: string = localize('serverGroup', 'Server group');
 	public DefaultServerGroup: IConnectionProfileGroup = {
 		id: '',
 		name: localize('defaultServerGroup', '<Default>'),
@@ -112,14 +113,14 @@ export class ConnectionWidget {
 			} else {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.sqlLogin);
 			}
-			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService);
+			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
 		this._providerName = providerName;
 	}
 
 	public createConnectionWidget(container: HTMLElement): void {
 		this._serverGroupOptions = [this.DefaultServerGroup];
-		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService);
+		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 		this._previousGroupOption = this._serverGroupSelectBox.value;
 		this._builder = $().div({ class: 'connection-table' }, (modelTableContent) => {
 			modelTableContent.element('table', { class: 'connection-table-content' }, (tableContainer) => {
@@ -193,7 +194,6 @@ export class ConnectionWidget {
 			},
 			ariaLabel: userNameOption.displayName
 		});
-
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
 		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
@@ -219,8 +219,7 @@ export class ConnectionWidget {
 		});
 
 		// Server group
-		let serverGroupLabel = localize('serverGroup', 'Server group');
-		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, serverGroupLabel, 'connection-label', 'connection-input');
+		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
 		DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
 
 		let AdvancedLabel = localize('advanced', 'Advanced...');

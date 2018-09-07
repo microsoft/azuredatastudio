@@ -24,7 +24,9 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		private readonly _proxy: MainThreadModelViewShape,
 		private readonly _handle: number,
 		private readonly _mainContext: IMainContext,
-		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape) {
+		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		private readonly _extensionLocation: URI
+	) {
 		this.nextComponentId = 0;
 	}
 
@@ -107,7 +109,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	webView(): sqlops.ComponentBuilder<sqlops.WebViewComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<sqlops.WebViewComponent> = this.getComponentBuilder(new WebViewWrapper(this._proxy, this._handle, id, this._extensionLocation), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -224,7 +226,8 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 	}
 
 	withProperties<U>(properties: U): sqlops.ComponentBuilder<T> {
-		this._component.properties = properties;
+		// Keep any properties that may have been set during initial object construction
+		this._component.properties = Object.assign({}, this._component.properties, properties);
 		return this;
 	}
 
@@ -337,7 +340,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 				itemConfig.config.isInGroup = true;
 				this._component.insertItem(component.component as ComponentWrapper, componentIndex, itemConfig.config);
 				if (componentIndex) {
-					componentIndex ++;
+					componentIndex++;
 				}
 				this.addComponentActions(component, layout);
 			});
@@ -545,7 +548,7 @@ class ComponentWrapper implements sqlops.Component {
 		} else {
 			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
 		}
-		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, this.handleError);
+		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
 
 	public setLayout(layout: any): Thenable<void> {
@@ -555,6 +558,10 @@ class ComponentWrapper implements sqlops.Component {
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
 		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
+	}
+
+	public updateProperty(key: string, value: any): Thenable<void> {
+		return this.setProperty(key, value);
 	}
 
 	protected notifyPropertyChanged(): Thenable<void> {
@@ -804,10 +811,11 @@ class CheckBoxWrapper extends ComponentWrapper implements sqlops.CheckBoxCompone
 }
 
 class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent {
-
-	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string, private _extensionLocation: URI) {
 		super(proxy, handle, ModelComponentTypes.WebView, id);
-		this.properties = {};
+		this.properties = {
+			'extensionLocation': this._extensionLocation
+		};
 		this._emitterMap.set(ComponentEventType.onMessage, new Emitter<any>());
 	}
 
@@ -829,6 +837,16 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 		let emitter = this._emitterMap.get(ComponentEventType.onMessage);
 		return emitter && emitter.event;
 	}
+
+	public get options(): vscode.WebviewOptions {
+		return this.properties['options'];
+	}
+	public set options(o: vscode.WebviewOptions) {
+		this.setProperty('options', o);
+	}
+
+
+
 }
 
 class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
@@ -836,6 +854,7 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 		super(proxy, handle, ModelComponentTypes.Editor, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
 	}
 
 	public get content(): string {
@@ -858,6 +877,11 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 
 	public get onContentChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onEditorCreated(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
 		return emitter && emitter.event;
 	}
 }
@@ -1168,9 +1192,10 @@ class ModelViewImpl implements sqlops.ModelView {
 		private readonly _connection: sqlops.connection.Connection,
 		private readonly _serverInfo: sqlops.ServerInfo,
 		private readonly mainContext: IMainContext,
-		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape
+		private readonly _extHostModelViewTree: ExtHostModelViewTreeViewsShape,
+		private readonly _extensionLocation: URI
 	) {
-		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree);
+		this._modelBuilder = new ModelBuilderImpl(this._proxy, this._handle, this.mainContext, this._extHostModelViewTree, _extensionLocation);
 	}
 
 	public get onClosed(): vscode.Event<any> {
@@ -1221,7 +1246,7 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 
 	private readonly _modelViews = new Map<number, ModelViewImpl>();
 	private readonly _handlers = new Map<string, (view: sqlops.ModelView) => void>();
-
+	private readonly _handlerToExtensionPath = new Map<string, URI>();
 	constructor(
 		private _mainContext: IMainContext,
 		private _extHostModelViewTree: ExtHostModelViewTreeViewsShape
@@ -1235,13 +1260,15 @@ export class ExtHostModelView implements ExtHostModelViewShape {
 		this._modelViews.delete(handle);
 	}
 
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void {
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: URI): void {
 		this._handlers.set(widgetId, handler);
+		this._handlerToExtensionPath.set(widgetId, extensionLocation);
 		this._proxy.$registerProvider(widgetId);
 	}
 
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void {
-		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree);
+		let extensionLocation = this._handlerToExtensionPath.get(id);
+		let view = new ModelViewImpl(this._proxy, handle, connection, serverInfo, this._mainContext, this._extHostModelViewTree, extensionLocation);
 		this._modelViews.set(handle, view);
 		this._handlers.get(id)(view);
 	}

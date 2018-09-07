@@ -308,10 +308,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 		if (styles.listHoverBackground) {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { background-color:  ${styles.listHoverBackground}; }`);
+			// handle no coloring during drag
+			content.push(`.monaco-table.${this.idPrefix} .drag .slick-row:hover { background-color: inherit; }`);
+
 		}
 
 		if (styles.listHoverForeground) {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { color:  ${styles.listHoverForeground}; }`);
+			// handle no coloring during drag
+			content.push(`.monaco-table.${this.idPrefix} .drag .slick-row:hover { color: inherit; }`);
 		}
 
 		if (styles.listSelectionOutline) {

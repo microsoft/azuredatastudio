@@ -16,7 +16,7 @@ class TestComponent extends ComponentBase {
 	public descriptor: IComponentDescriptor;
 
 	constructor(public modelStore: IModelStore, id: string) {
-		super(undefined);
+		super(undefined, undefined);
 		this.descriptor = modelStore.createComponentDescriptor('TestComponent', id);
 		this.baseInit();
 	}
@@ -33,7 +33,7 @@ class TestContainer extends ContainerBase<TestComponent> {
 	public descriptor: IComponentDescriptor;
 
 	constructor(public modelStore: IModelStore, id: string) {
-		super(undefined);
+		super(undefined, undefined);
 		this.descriptor = modelStore.createComponentDescriptor('TestContainer', id);
 		this._changeRef = {
 			detectChanges: () => undefined

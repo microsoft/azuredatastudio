@@ -69,6 +69,9 @@ export class SelectBox extends vsSelectBox {
 		if (container) {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
 		}
+
+		// explicitly set the accessible role so that the screen readers can read the control type properly
+		this.selectElement.setAttribute('role', 'combobox');
 	}
 
 	public style(styles: ISelectBoxStyles): void {

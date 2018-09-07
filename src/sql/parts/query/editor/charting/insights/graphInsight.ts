@@ -64,6 +64,10 @@ export class Graph implements IInsight {
 
 	}
 
+	public getCanvasData(): string {
+		return this.chartjs.toBase64Image();
+	}
+
 	public set data(data: IInsightData) {
 		this._data = data;
 		let chartData: Array<ChartJs.ChartDataSets>;

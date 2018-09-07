@@ -53,6 +53,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { ExtensionsInput } from 'vs/workbench/parts/extensions/common/extensionsInput';
 import product from 'vs/platform/node/product';
 import { ContextSubMenu } from 'vs/base/browser/contextmenu';
+// {{SQL CARBON EDIT}}
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 const promptDownloadManually = (extension: IGalleryExtension, message: string, instantiationService: IInstantiationService, notificationService: INotificationService, openerService: IOpenerService) => {
 	const downloadUrl = `${product.extensionsGallery.serviceUrl}/publishers/${extension.publisher}/vsextensions/${extension.name}/${extension.version}/vspackage`;
@@ -2659,7 +2661,8 @@ export class InstallVSIXAction extends Action {
 		@INotificationService private notificationService: INotificationService,
 		@IWindowService private windowService: IWindowService,
 		// {{SQL CARBON EDIT}}
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
+		@IStorageService private storageService: IStorageService
 	) {
 		super(id, label, 'extension-action install-vsix', true);
 	}
@@ -2677,17 +2680,56 @@ export class InstallVSIXAction extends Action {
 				if (!result) {
 					return TPromise.as(null);
 				}
+				return TPromise.join(result.map(vsix => {
+					// {{SQL CARBON EDIT}}
+					if (!this.storageService.getBoolean(vsix)) {
+						this.notificationService.prompt(
+							Severity.Warning,
+							localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
+							[
+								{
+									label: localize('thirdPartExt.yes', 'Yes'),
+									run: () => {
+										this.extensionsWorkbenchService.install(vsix).then(() => {
+											this.notificationService.prompt(
+												Severity.Info,
+												localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
+												[{
+													label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
+													run: () => this.windowService.reloadWindow()
+												}]
+											);
+										});
+									}
+								},
+								{
+									label: localize('thirdPartyExt.no', 'No'),
+									run: () => { return TPromise.as(null); }
+								},
+								{
+									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
+									isSecondary: true,
+									run: () => {
+										this.storageService.store(vsix, true);
+										return TPromise.as(null);
+									}
+								}
+							]
+						);
+					} else {
+						this.extensionsWorkbenchService.install(vsix).then(() => {
+							this.notificationService.prompt(
+								Severity.Info,
+								localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
+								[{
+									label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
+									run: () => this.windowService.reloadWindow()
+								}]
+							);
+						});
+					}
 
-				return TPromise.join(result.map(vsix => this.extensionsWorkbenchService.install(vsix))).then(result => {
-					this.notificationService.prompt(
-						Severity.Info,
-						localize('InstallVSIXAction.success', "Successfully installed the extension. Reload to enable it."),
-						[{
-							label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-							run: () => this.windowService.reloadWindow()
-						}]
-					);
-				});
+				}));
 			});
 			// {{SQL CARBON EDIT}}
 		} else {

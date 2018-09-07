@@ -21,6 +21,9 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServices';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
 	template: '',
@@ -38,12 +41,12 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -55,13 +58,20 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	private _createEditor(): void {
-		this._editor = this._instantiationService.createInstance(QueryTextEditor);
+		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
+		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
 		let uri = this.createUri();
-		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, uri, false, 'sql', '', '');
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'plaintext', '', '');
 		this._editor.setInput(this._editorInput, undefined);
-		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
+		this._editorInput.resolve().then(model => {
+			this._editorModel = model.textEditorModel;
+			this.fireEvent({
+				eventType: ComponentEventType.onComponentCreated,
+				args: this._uri
+			});
+		});
 
 		this._register(this._editor);
 		this._register(this._editorInput);
@@ -69,7 +79,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 			this.content = this._editorModel.getValue();
 
 			// Notify via an event so that extensions can detect and propagate changes
-			this._onEventEmitter.fire({
+			this.fireEvent({
 				eventType: ComponentEventType.onDidChange,
 				args: e
 			});
@@ -97,7 +107,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.layout(new DOM.Dimension(
 			width && width > 0 ? width : DOM.getContentWidth(this._el.nativeElement),
 			height && height > 0 ? height : DOM.getContentHeight(this._el.nativeElement)));
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.style.position = this.position;
 	}
 
@@ -119,7 +129,6 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	/// IComponent implementation
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();
@@ -152,14 +161,6 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	public set languageMode(newValue: string) {
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
-	}
-
-	public get position(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
-	}
-
-	public set position(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
 	}
 
 	public get editorUri(): string {

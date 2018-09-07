@@ -9,6 +9,7 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier, IRPCProtocol
 } from 'vs/workbench/services/extensions/node/proxyIdentifier';
+import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -26,10 +27,11 @@ import {
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
-	$getSecurityToken(handle: number, account: sqlops.Account): Thenable<{}> { throw ni(); }
+	$getSecurityToken(account: sqlops.Account): Thenable<{}> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> { throw ni(); }
 	$prompt(handle: number): Thenable<sqlops.Account> { throw ni(); }
 	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
+	$accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> { throw ni(); }
 }
 
 export abstract class ExtHostConnectionManagementShape {
@@ -501,7 +503,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
-	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile): Thenable<sqlops.connection.Connection>;
+	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
@@ -606,7 +608,7 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void): void;
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: UriComponents): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);

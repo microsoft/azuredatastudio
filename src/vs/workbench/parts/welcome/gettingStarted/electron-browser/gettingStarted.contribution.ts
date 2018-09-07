@@ -9,6 +9,8 @@ import { GettingStarted } from './gettingStarted';
 import { TelemetryOptOut } from './telemetryOptOut';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+// {{SQL CARBON EDIT}} - Add preview feature switch
+import { EnablePreviewFeatures } from 'sql/workbench/electron-browser/enablePreviewFeatures';
 
 // {{SQL CARBON EDIT}}
 // Registry
@@ -22,3 +24,8 @@ Registry
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(TelemetryOptOut, LifecyclePhase.Eventually);
+
+// {{SQL CARBON EDIT}} - Add preview feature switch
+Registry
+	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+	.registerWorkbenchContribution(EnablePreviewFeatures, LifecyclePhase.Eventually);

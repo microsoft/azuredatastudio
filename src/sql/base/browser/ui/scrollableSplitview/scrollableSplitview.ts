@@ -531,6 +531,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 				deltaUp -= viewDelta;
 				item.size = size;
+				this.dirtyState = true;
 			}
 
 			for (let i = 0, deltaDown = delta; deltaDown !== 0 && i < downItems.length; i++) {
@@ -540,6 +541,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 				deltaDown += viewDelta;
 				item.size = size;
+				this.dirtyState = true;
 			}
 		}
 
@@ -553,6 +555,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 			emptyDelta -= viewDelta;
 			item.size = size;
+			this.dirtyState = true;
 		}
 
 		this.contentSize = this.viewItems.reduce((r, i) => r + i.size, 0);

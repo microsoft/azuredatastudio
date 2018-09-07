@@ -618,7 +618,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				*/
 				const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
 
-				const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
+				// {{SQL Carbon Edit}} - Don't append install or update on to the URL
+				// const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
+				const operationParam = undefined;
 				const downloadAsset = operationParam ? {
 					uri: `${extension.assets.download.uri}&${operationParam}=true`,
 					fallbackUri: `${extension.assets.download.fallbackUri}?${operationParam}=true`

@@ -34,6 +34,14 @@ export interface IMessagesActionContext {
 	tree: ITree;
 }
 
+function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
+	if (ranges) {
+		return ranges.map(e => new Slick.Range(e.fromRow, e.fromCell - 1, e.toRow, e.toCell ? e.toCell - 1 : undefined));
+	} else {
+		return undefined;
+	}
+}
+
 export class SaveResultAction extends Action {
 	public static SAVECSV_ID = 'grid.saveAsCsv';
 	public static SAVECSV_LABEL = localize('saveAsCsv', 'Save As CSV');
@@ -51,13 +59,19 @@ export class SaveResultAction extends Action {
 		id: string,
 		label: string,
 		icon: string,
-		private format: SaveFormat
+		private format: SaveFormat,
+		private accountForNumberColumn = true
 	) {
 		super(id, label, icon);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		context.runner.serializeResults(context.batchId, context.resultId, this.format, context.selection);
+		if (this.accountForNumberColumn) {
+			context.runner.serializeResults(context.batchId, context.resultId, this.format,
+				mapForNumberColumn(context.selection));
+		} else {
+			context.runner.serializeResults(context.batchId, context.resultId, this.format, context.selection);
+		}
 		return TPromise.as(true);
 	}
 }
@@ -73,12 +87,19 @@ export class CopyResultAction extends Action {
 		id: string,
 		label: string,
 		private copyHeader: boolean,
+		private accountForNumberColumn = true
 	) {
 		super(id, label);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		context.runner.copyResults(context.selection, context.batchId, context.resultId, this.copyHeader);
+		if (this.accountForNumberColumn) {
+			context.runner.copyResults(
+				mapForNumberColumn(context.selection),
+				context.batchId, context.resultId, this.copyHeader);
+		} else {
+			context.runner.copyResults(context.selection, context.batchId, context.resultId, this.copyHeader);
+		}
 		return TPromise.as(true);
 	}
 }
@@ -171,7 +192,7 @@ export class ChartDataAction extends Action {
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		let activeEditor = this.editorService.activeEditor;
+		let activeEditor = this.editorService.activeControl;
 		if (activeEditor instanceof QueryEditor) {
 			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 			return TPromise.as(true);
@@ -179,4 +200,26 @@ export class ChartDataAction extends Action {
 			return TPromise.as(false);
 		}
 	}
+}
+
+export class ShowQueryPlanAction extends Action {
+	public static ID = 'showQueryPlan';
+	public static LABEL = localize('showQueryPlan', 'Show Query Plan');
+
+	constructor(
+		@IEditorService private editorService: IEditorService
+	) {
+		super(ShowQueryPlanAction.ID, ShowQueryPlanAction.LABEL);
+	}
+
+	public run(xml: string): TPromise<boolean> {
+		let activeEditor = this.editorService.activeControl;
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.showQueryPlan(xml);
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+
 }

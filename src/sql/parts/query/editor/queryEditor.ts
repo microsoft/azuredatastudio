@@ -44,6 +44,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
@@ -96,7 +97,8 @@ export class QueryEditor extends BaseEditor {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super(QueryEditor.ID, _telemetryService, themeService);
 
@@ -293,7 +295,7 @@ export class QueryEditor extends BaseEditor {
 		let input = <QueryInput>this.input;
 		this._createResultsEditorContainer();
 
-		this._createEditor(<QueryResultsInput>input.results, this._resultsEditorContainer)
+		this._createEditor(<QueryResultsInput>input.results, this._resultsEditorContainer, this.group)
 			.then(result => {
 				this._onResultsEditorCreated(<any>result, input.results, this.options);
 				this.resultsEditorVisibility = true;
@@ -446,6 +448,16 @@ export class QueryEditor extends BaseEditor {
 		this._estimatedQueryPlanAction = this._instantiationService.createInstance(EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this._instantiationService.createInstance(ActualQueryPlanAction, this);
 
+		this.setTaskbarContent();
+
+		this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
+				this.setTaskbarContent();
+			}
+		});
+	}
+
+	private setTaskbarContent(): void {
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
 
@@ -460,6 +472,13 @@ export class QueryEditor extends BaseEditor {
 			{ element: separator },
 			{ action: this._estimatedQueryPlanAction }
 		];
+
+		// Remove the estimated query plan action if preview features are not enabled
+		let previewFeaturesEnabled = this._configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!previewFeaturesEnabled) {
+			content = content.slice(0, -2);
+		}
+
 		this._taskbar.setContent(content);
 	}
 
@@ -537,8 +556,8 @@ export class QueryEditor extends BaseEditor {
 		if (this._isResultsEditorVisible()) {
 			createEditors = () => {
 				return TPromise.join([
-					this._createEditor(<QueryResultsInput>newInput.results, this._resultsEditorContainer),
-					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer)
+					this._createEditor(<QueryResultsInput>newInput.results, this._resultsEditorContainer, this.group),
+					this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer, this.group)
 				]);
 			};
 			onEditorsCreated = (result: IEditor[]) => {
@@ -551,7 +570,7 @@ export class QueryEditor extends BaseEditor {
 			// If only the sql editor exists, create a promise and wait for the sql editor to be created
 		} else {
 			createEditors = () => {
-				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer);
+				return this._createEditor(<UntitledEditorInput>newInput.sql, this._sqlEditorContainer, this.group);
 			};
 			onEditorsCreated = (result: TextResourceEditor) => {
 				return TPromise.join([
@@ -583,7 +602,7 @@ export class QueryEditor extends BaseEditor {
 	/**
 	 * Create a single editor based on the type of the given EditorInput.
 	 */
-	private _createEditor(editorInput: EditorInput, container: HTMLElement): TPromise<BaseEditor> {
+	private _createEditor(editorInput: EditorInput, container: HTMLElement, group: IEditorGroup): TPromise<BaseEditor> {
 		const descriptor = this._editorDescriptorService.getEditor(editorInput);
 		if (!descriptor) {
 			return TPromise.wrapError(new Error(strings.format('Can not find a registered editor for the input {0}', editorInput)));
@@ -591,7 +610,7 @@ export class QueryEditor extends BaseEditor {
 
 		let editor = descriptor.instantiate(this._instantiationService);
 		editor.create(container);
-		editor.setVisible(this.isVisible(), editor.group);
+		editor.setVisible(this.isVisible(), group);
 		return TPromise.as(editor);
 	}
 

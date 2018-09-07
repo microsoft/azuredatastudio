@@ -82,12 +82,12 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 	}
 
 	private _displayValue(runner: QueryRunner) {
-		let number = runner.batchSets.reduce((p, c) => {
+		let rowCount = runner.batchSets.reduce((p, c) => {
 			return p + c.resultSetSummaries.reduce((rp, rc) => {
 				return rp + rc.rowCount;
 			}, 0);
 		}, 0);
-		this._flavorElement.innerText = nls.localize('rowCount', "{0} rows", number);
+		this._flavorElement.innerText = nls.localize('rowCount', "{0} rows", rowCount);
 		show(this._flavorElement);
 	}
 }

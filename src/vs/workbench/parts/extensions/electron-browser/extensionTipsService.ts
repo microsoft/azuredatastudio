@@ -411,7 +411,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	getOtherRecommendations(): TPromise<IExtensionRecommendation[]> {
 		// {{SQL CARBON EDIT}}
-		let recommendations =  Object.keys(this._exeBasedRecommendations);
+		let recommendations = Object.keys(this._exeBasedRecommendations).concat(this._recommendations);
 		shuffle(recommendations, this.sessionSeed);
 		return TPromise.as(recommendations.map(extensionId => {
 			const sources: ExtensionRecommendationSource[] = [];

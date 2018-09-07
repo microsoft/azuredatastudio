@@ -128,9 +128,11 @@ export default class MainController implements vscode.Disposable {
 			}
 		});
 		treeView.onDidChangeSelection(selectedNodes => {
-			selectedNodes.forEach(node => {
-				console.info('tree node selected: ' + node.label);
-			});
+			if (selectedNodes && selectedNodes.selection) {
+				selectedNodes.selection.forEach(node => {
+					console.info('tree node selected: ' + node.label);
+				});
+			}
 		});
 		let formModel = view.modelBuilder.formContainer()
 			.withFormItems([{
