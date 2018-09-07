@@ -273,7 +273,7 @@ export class RestoreDialog extends Modal {
 				labelContainer.hide();
 				this._restorePlanData = new TableDataView<Slick.SlickData>();
 				this._restorePlanTable = new Table<Slick.SlickData>(labelContainer.getHTMLElement(),
-				{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
+					{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
 				this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 				this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
 			});
@@ -330,7 +330,7 @@ export class RestoreDialog extends Modal {
 					}];
 					this._fileListData = new TableDataView<FileListElement>();
 					this._fileListTable = new Table<FileListElement>(fileNameContainer.getHTMLElement(),
-					{ dataProvider : this._fileListData, columns } , { enableColumnReorder: false });
+						{ dataProvider: this._fileListData, columns }, { enableColumnReorder: false });
 					this._fileListTable.setSelectionModel(new RowSelectionModel());
 				});
 			});
@@ -541,7 +541,7 @@ export class RestoreDialog extends Modal {
 			});
 
 			inputContainer.div({ class: 'dialog-input' }, (inputCellContainer) => {
-				selectBox = new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer.getHTMLElement());
+				selectBox = new SelectBox(options, selectedOption, this._contextViewService, inputCellContainer.getHTMLElement(), { ariaLabel: label });
 				selectBox.render(inputCellContainer.getHTMLElement());
 			});
 		});
