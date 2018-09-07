@@ -17,7 +17,8 @@ import { ExtensionTipsService } from 'vs/workbench/parts/extensions/electron-bro
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { VIEWLET_ID, IExtensionsWorkbenchService } from '../common/extensions';
+// {{SQL CARBON EDIT}}
+import { VIEWLET_ID, IExtensionsWorkbenchService, ExtensionsPolicy } from '../common/extensions';
 import { ExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/node/extensionsWorkbenchService';
 import {
 	OpenExtensionsViewletAction, InstallExtensionsAction, ShowOutdatedExtensionsAction, ShowRecommendedExtensionsAction, ShowRecommendedKeymapExtensionsAction, ShowPopularExtensionsAction,
@@ -231,6 +232,13 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				type: 'boolean',
 				description: localize('extensionsCloseExtensionDetailsOnViewChange', "When enabled, editors with extension details will be automatically closed upon navigating away from the Extensions View."),
 				default: false
+			},
+			// {{SQL CARBON EDIT}}
+			'extensions.extensionsPolicy': {
+				type: 'string',
+				description: localize('extensionsPolicy', "Sets the security policy for downloading extensions."),
+				scope: ConfigurationScope.APPLICATION,
+				default: ExtensionsPolicy.allowAll
 			}
 		}
 	});

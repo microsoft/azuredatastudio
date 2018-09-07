@@ -26,7 +26,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import Severity from 'vs/base/common/severity';
 import URI from 'vs/base/common/uri';
-import { IExtension, IExtensionDependencies, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
+// {{SQL CARBON EDIT}}
+import { IExtension, IExtensionDependencies, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/parts/extensions/common/extensions';
 import { IEditorService, SIDE_GROUP, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { ExtensionsInput } from 'vs/workbench/parts/extensions/common/extensionsInput';
@@ -701,6 +702,8 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 	}
 
 	install(extension: string | IExtension): TPromise<void> {
+		// {{SQL CARBON EDIT}}
+		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (typeof extension === 'string') {
 			return this.progressService.withProgress({
 				location: ProgressLocation.Extensions,
@@ -729,7 +732,16 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 			title: nls.localize('installingMarketPlaceExtension', 'Installing extension from Marketplace....'),
 			source: `${extension.id}`
 			// {{SQL CARBON EDIT}}
-		}, () => this.downloadOrBrowse(ext));
+		}, () => {
+			if (extensionPolicy === ExtensionsPolicy.allowMicrosoft) {
+				if (ext.publisherDisplayName === 'Microsoft') {
+					return this.downloadOrBrowse(ext);
+				} else {
+					return TPromise.as(null);
+				}
+			}
+			return this.downloadOrBrowse(ext);
+		});
 	}
 
 	// {{SQL CARBON EDIT}}

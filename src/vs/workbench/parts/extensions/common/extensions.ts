@@ -101,6 +101,8 @@ export const AutoUpdateConfigurationKey = 'extensions.autoUpdate';
 export const AutoCheckUpdatesConfigurationKey = 'extensions.autoCheckUpdates';
 export const ShowRecommendationsOnlyOnDemandKey = 'extensions.showRecommendationsOnlyOnDemand';
 export const CloseExtensionDetailsOnViewChangeKey = 'extensions.closeExtensionDetailsOnViewChange';
+// {{SQL CARBON EDIT}}
+export const ExtensionsPolicyKey = 'extensions.extensionsPolicy';
 
 export interface IExtensionsConfiguration {
 	autoUpdate: boolean;
@@ -108,4 +110,13 @@ export interface IExtensionsConfiguration {
 	ignoreRecommendations: boolean;
 	showRecommendationsOnlyOnDemand: boolean;
 	closeExtensionDetailsOnViewChange: boolean;
+	// {{SQL CARBON EDIT}}
+	extensionsPolicy: string;
+}
+
+// {{SQL CARBON EDIT}}
+export enum ExtensionsPolicy {
+	allowAll = 'allowAll',
+	allowNone = 'allowNone',
+	allowMicrosoft = 'allowMicrosoft'
 }

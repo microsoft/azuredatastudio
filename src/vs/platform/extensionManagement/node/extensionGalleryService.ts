@@ -24,6 +24,9 @@ import { readFile } from 'vs/base/node/pfs';
 import { writeFileAndFlushSync } from 'vs/base/node/extfs';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
+// {{SQL CARBON EDIT}}
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/parts/extensions/common/extensions';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -367,7 +370,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	constructor(
 		@IRequestService private requestService: IRequestService,
 		@IEnvironmentService private environmentService: IEnvironmentService,
-		@ITelemetryService private telemetryService: ITelemetryService
+		@ITelemetryService private telemetryService: ITelemetryService,
+		// {{SQL CARBON EDIT}}
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		const config = product.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
@@ -508,6 +513,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		}
 
 		let actualTotal = filteredExtensions.length;
+
+		// {{SQL CARBON EDIT}}
+		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (extensionPolicy === ExtensionsPolicy.allowMicrosoft) {
+			filteredExtensions = filteredExtensions.filter(ext => ext.publisher && ext.publisher.displayName === 'Microsoft');
+		}
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
 	}
 
@@ -551,7 +562,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				headers
 			}).then(context => {
 
-				if (context.res.statusCode >= 400 && context.res.statusCode < 500) {
+				// {{SQL CARBON EDIT}}
+				let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+				if (context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
 					return { galleryExtensions: [], total: 0 };
 				}
 
