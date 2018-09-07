@@ -340,7 +340,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 				itemConfig.config.isInGroup = true;
 				this._component.insertItem(component.component as ComponentWrapper, componentIndex, itemConfig.config);
 				if (componentIndex) {
-					componentIndex ++;
+					componentIndex++;
 				}
 				this.addComponentActions(component, layout);
 			});
@@ -558,6 +558,10 @@ class ComponentWrapper implements sqlops.Component {
 	public updateProperties(properties: { [key: string]: any }): Thenable<void> {
 		this.properties = Object.assign(this.properties, properties);
 		return this.notifyPropertyChanged();
+	}
+
+	public updateProperty(key: string, value: any): Thenable<void> {
+		return this.setProperty(key, value);
 	}
 
 	protected notifyPropertyChanged(): Thenable<void> {

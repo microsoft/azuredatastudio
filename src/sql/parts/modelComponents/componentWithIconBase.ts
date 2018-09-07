@@ -27,8 +27,9 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 	protected _iconClass: string;
 	protected _iconPath: IUserFriendlyIcon;
 	constructor(
-		changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		changeRef: ChangeDetectorRef,
+		el: ElementRef, ) {
+		super(changeRef, el);
 	}
 
 	/// IComponent implementation

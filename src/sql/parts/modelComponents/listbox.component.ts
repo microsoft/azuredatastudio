@@ -37,9 +37,10 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IClipboardService) private clipboardService: IClipboardService
+		@Inject(IClipboardService) private clipboardService: IClipboardService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {

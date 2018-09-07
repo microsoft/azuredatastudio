@@ -6,7 +6,7 @@
 import 'vs/css!./radioButton';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	OnDestroy, AfterViewInit
+	OnDestroy, AfterViewInit, ElementRef
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -26,8 +26,9 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {

@@ -53,7 +53,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IPartService) private partService: IPartService,
 		@Inject(IThemeService) private themeService: IThemeService,
 		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
@@ -63,7 +63,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -139,7 +139,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	/// IComponent implementation
 
 	public layout(): void {
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.style.position = this.position;
 		this._webview.layout();
 	}
