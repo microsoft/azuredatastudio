@@ -14,6 +14,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -51,13 +52,27 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 
-	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile): Promise<sqlops.connection.Connection> {
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Promise<sqlops.connection.Connection> {
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }, initialConnectionProfile);
-		return connectionProfile ? {
+	    const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
 			providerName: connectionProfile.providerName
 		} : undefined;
+
+		if (connectionCompletionOptions) {
+			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
+			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
+			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
+				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
+				params: undefined,
+				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
+				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
+			});
+		}
+
+		return connection;
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {
