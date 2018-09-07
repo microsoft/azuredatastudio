@@ -87,7 +87,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
-		this.grid.getCanvasNode().classList.add(this.options.dragClass);
+		this.canvas.classList.add(this.options.dragClass);
 
 		this.grid.focus();
 
@@ -125,7 +125,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 			return;
 		}
 
-		this.grid.getCanvasNode().classList.remove(this.options.dragClass);
+		this.canvas.classList.remove(this.options.dragClass);
 		this.dragging = false;
 		e.stopImmediatePropagation();
 
