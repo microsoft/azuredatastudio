@@ -474,8 +474,7 @@ export default class MainController implements vscode.Disposable {
 
 			let editor1 = view.modelBuilder.editor()
 				.withProperties({
-					content: '# this is awesome',
-					languageMode: 'markdown'
+					content: 'select * from sys.tables'
 				})
 				.component();
 
