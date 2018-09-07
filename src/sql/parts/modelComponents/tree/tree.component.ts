@@ -55,8 +55,10 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService) {
-		super(changeRef);
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+	) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {

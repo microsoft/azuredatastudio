@@ -29,10 +29,10 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	private backgroundColor: string;
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {

@@ -560,6 +560,10 @@ class ComponentWrapper implements sqlops.Component {
 		return this.notifyPropertyChanged();
 	}
 
+	public updateProperty(key: string, value: any): Thenable<void> {
+		return this.setProperty(key, value);
+	}
+
 	protected notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}

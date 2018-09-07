@@ -34,8 +34,9 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	@ViewChild('fileBrowserTree', { read: ElementRef }) private _treeContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService) {
-		super(changeRef);
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {

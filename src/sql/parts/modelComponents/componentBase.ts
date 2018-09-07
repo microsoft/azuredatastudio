@@ -35,8 +35,11 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	private _valid: boolean = true;
 	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
 	private _eventQueue: IComponentEventArgs[] = [];
+	private _CSSStyles: { [key: string]: string } = {};
+
 	constructor(
-		protected _changeRef: ChangeDetectorRef) {
+		protected _changeRef: ChangeDetectorRef,
+		protected _el: ElementRef) {
 		super();
 	}
 
@@ -80,11 +83,24 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	public refreshDataProvider(item: any): void {
 	}
 
+	public updateStyles() {
+		this._CSSStyles = this.CSSStyles;
+		let styles = [];
+		for (var styleName in this._CSSStyles) {
+			styles.push(`${styleName}:${this._CSSStyles[styleName]}; `);
+		}
+		let element = <HTMLElement> this._el.nativeElement;
+		element.setAttribute('style', styles.join(''));
+	}
+
 	public setProperties(properties: { [key: string]: any; }): void {
 		if (!properties) {
 			this.properties = {};
 		}
 		this.properties = properties;
+		if (this.CSSStyles !== this._CSSStyles) {
+			this.updateStyles();
+		}
 		this.layout();
 		this.validate();
 	}
@@ -140,11 +156,19 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public get position(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
+		return this.getPropertyOrDefault<sqlops.ComponentProperties, string>((props) => props.position, '');
 	}
 
 	public set position(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.position = position; }, newValue);
+		this.setPropertyFromUI<sqlops.ComponentProperties, string>((properties, position) => { properties.position = position; }, newValue);
+	}
+
+	public get CSSStyles(): { [key: string]: string } {
+		return this.getPropertyOrDefault<sqlops.ComponentProperties, { [key: string]: string }>((props) => props.CSSStyles, {});
+	}
+
+	public set CSSStyles(newValue: { [key: string]: string }) {
+		this.setPropertyFromUI<sqlops.ComponentProperties, { [key: string]: string }>((properties, CSSStyles) => { properties.CSSStyles = CSSStyles; }, newValue);
 	}
 
 	public convertSizeToNumber(size: number | string): number {
@@ -223,9 +247,10 @@ export abstract class ContainerBase<T> extends ComponentBase {
 
 	@ViewChildren(ModelComponentWrapper) protected _componentWrappers: QueryList<ModelComponentWrapper>;
 	constructor(
-		_changeRef: ChangeDetectorRef
+		_changeRef: ChangeDetectorRef,
+		_el: ElementRef
 	) {
-		super(_changeRef);
+		super(_changeRef, _el);
 		this.items = [];
 		this._validations.push(() => this.items.every(item => {
 			return this.modelStore.getComponent(item.descriptor.id).valid;

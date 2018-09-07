@@ -45,8 +45,11 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _width: string;
 	private _position: string;
 
-	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+	) {
+		super(changeRef, el);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 	}
