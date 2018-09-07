@@ -100,10 +100,10 @@ export class ConnectionDialogWidget extends Modal {
 	public refresh(): void {
 		let filteredProviderTypes = this.providerTypeOptions;
 
-		if (this._newConnectionParams &&  this._newConnectionParams.providers) {
+		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			let validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find( v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
+				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
 			}
 		}
 		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
@@ -118,8 +118,8 @@ export class ConnectionDialogWidget extends Modal {
 		container.appendChild(connectionContainer.getHTMLElement());
 
 		this._bodyBuilder = new Builder(connectionContainer.getHTMLElement());
-		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType, this._contextViewService);
-
+		const connectTypeLabel = localize('connectType', 'Connection type');
+		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
 		let recentConnectionTab = $('.connection-recent-tab');
 		recentConnectionTab.div({ class: 'connection-recent', id: 'recentConnection' }, (builder) => {
@@ -182,7 +182,6 @@ export class ConnectionDialogWidget extends Modal {
 		});
 
 		this._bodyBuilder.div({ class: 'connection-type' }, (modelTableContent) => {
-			let connectTypeLabel = localize('connectType', 'Connection type');
 			modelTableContent.element('table', { class: 'connection-table-content' }, (tableContainer) => {
 				DialogHelper.appendInputSelectBox(
 					DialogHelper.appendRow(tableContainer, connectTypeLabel, 'connection-label', 'connection-input'), this._providerTypeSelectBox);
