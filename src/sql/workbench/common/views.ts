@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TPromise } from 'vs/base/common/winjs.base';
-import { Event } from 'vs/base/common/event';
 import { ITreeViewDataProvider, ITreeItem } from 'vs/workbench/common/views';
 
 export interface ITreeComponentItem extends ITreeItem {
@@ -15,8 +13,4 @@ export interface ITreeComponentItem extends ITreeItem {
 
 export interface IModelViewTreeViewDataProvider extends ITreeViewDataProvider {
 	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem });
-}
-
-export interface IModelViewTreeViewDataProvider {
-	getChildren(element?: ITreeComponentItem): TPromise<ITreeComponentItem[]>;
 }

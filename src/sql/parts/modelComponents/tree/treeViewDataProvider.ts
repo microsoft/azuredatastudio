@@ -29,11 +29,6 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 		}
 	}
 
-
 	refresh(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }) {
-	}
-
-	getChildren(element?: ITreeComponentItem): TPromise<ITreeComponentItem[]> {
-		return undefined;
 	}
 }
