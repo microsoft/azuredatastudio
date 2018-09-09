@@ -39,7 +39,8 @@ const viewletDescriptor = new ViewletDescriptor(
 	VIEWLET_ID,
 	localize('source control', "Source Control"),
 	'scm',
-	2
+	// {{SQL CARBON EDIT}}
+	12
 );
 
 Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets)

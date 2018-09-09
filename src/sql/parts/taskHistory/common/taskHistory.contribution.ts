@@ -93,7 +93,7 @@ const viewletDescriptor = new ViewletDescriptor(
 	VIEWLET_ID,
 	'Task History',
 	'taskHistoryViewlet',
-	-90
+	1
 );
 
 Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(viewletDescriptor);
