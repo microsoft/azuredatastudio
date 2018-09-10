@@ -25,7 +25,7 @@ classes should alter those!
 	overflow: hidden;
 	-o-text-overflow: ellipsis;
 	text-overflow: ellipsis;
-	height: 16px;
+	height: 28px;
 	line-height: 16px;
 	margin: 0;
 	padding: 4px;
@@ -35,7 +35,7 @@ classes should alter those!
 	border-bottom: 2px solid #bbb;
 	float: left;
 	background-color: #eee;
-	box-sizing: content-box;
+	box-sizing: border-box;
 }
 
 .slick-headerrow-column.ui-state-default, .slick-footerrow-column.ui-state-default {
