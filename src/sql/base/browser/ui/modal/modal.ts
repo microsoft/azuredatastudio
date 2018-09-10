@@ -215,17 +215,17 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
-			let builder = errorMessagesInFooter ? this._leftFooter : body;
-			builder.div({ class: 'dialogErrorMessage', id: 'dialogErrorMessage' }, (errorMessageContainer) => {
-				errorMessageContainer.div({ class: 'icon error' }, (iconContainer) => {
-					this._errorIconElement = iconContainer.getHTMLElement();
-					this._errorIconElement.style.visibility = 'hidden';
-				});
-				errorMessageContainer.div({ class: 'errorMessage' }, (messageContainer) => {
-					this._errorMessage = messageContainer;
-				});
+		let builder = errorMessagesInFooter ? this._leftFooter : body;
+		builder.div({ class: 'dialogErrorMessage', id: 'dialogErrorMessage' }, (errorMessageContainer) => {
+			errorMessageContainer.div({ class: 'sql icon error' }, (iconContainer) => {
+				this._errorIconElement = iconContainer.getHTMLElement();
+				this._errorIconElement.style.visibility = 'hidden';
 			});
-		}
+			errorMessageContainer.div({ class: 'errorMessage' }, (messageContainer) => {
+				this._errorMessage = messageContainer;
+			});
+		});
+	}
 
 		// The builder builds the dialog. It append header, body and footer sections.
 		this._builder = $().div({ class: builderClass, 'role': 'dialog', 'aria-label': this._title }, (dialogContainer) => {
