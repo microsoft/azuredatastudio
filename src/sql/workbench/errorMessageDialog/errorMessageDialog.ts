@@ -108,13 +108,13 @@ export class ErrorMessageDialog extends Modal {
 	private updateIconTitle(): void {
 		switch (this._severity) {
 			case Severity.Error:
-				this.titleIconClassName = 'icon error';
+				this.titleIconClassName = 'sql icon error';
 				break;
 			case Severity.Warning:
-				this.titleIconClassName = 'icon warning';
+				this.titleIconClassName = 'sql icon warning';
 				break;
 			case Severity.Info:
-				this.titleIconClassName = 'icon info';
+				this.titleIconClassName = 'sql icon info';
 				break;
 		}
 	}
