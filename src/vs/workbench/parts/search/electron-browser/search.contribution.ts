@@ -455,7 +455,8 @@ Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(new Vie
 	VIEW_ID,
 	nls.localize('name', "Search"),
 	'search',
-	1
+	// {{SQL CARBON EDIT}}
+	11
 ));
 
 Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescriptor(
