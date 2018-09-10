@@ -244,7 +244,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			}
 		}
 		this.resizeCanvas();
-		this.autosizeColumns();
 	}
 
 	autosizeColumns() {
