@@ -56,7 +56,8 @@ interface IBatchTemplate extends IMessageTemplate {
 const TemplateIds = {
 	MESSAGE: 'message',
 	BATCH: 'batch',
-	MODEL: 'model'
+	MODEL: 'model',
+	ERROR: 'error'
 };
 
 export class MessagePanel extends ViewletPanel {
@@ -176,6 +177,8 @@ class MessageRenderer implements IRenderer {
 			return TemplateIds.MODEL;
 		} else if (element.selection) {
 			return TemplateIds.BATCH;
+		} else if (element.isError) {
+			return TemplateIds.ERROR;
 		} else {
 			return TemplateIds.MESSAGE;
 		}
@@ -191,15 +194,19 @@ class MessageRenderer implements IRenderer {
 			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
 			const message = $('div.batch-start').appendTo(container).getHTMLElement();
 			return { message, timeStamp };
+		} else if (templateId === TemplateIds.ERROR) {
+			$('div.time-stamp').appendTo(container);
+			const message = $('div.error-message').appendTo(container).getHTMLElement();
+			return { message };
 		} else {
 			return undefined;
 		}
 	}
 
 	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
-		if (templateId === TemplateIds.MESSAGE) {
+		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
 			let data: IMessageTemplate = templateData;
-			data.message.innerText = element.message;
+			data.message.innerText = element.message.replace(/(\r\n|\n|\r)/g, ' ');
 		} else if (templateId === TemplateIds.BATCH) {
 			let data = templateData as IBatchTemplate;
 			data.timeStamp.innerText = element.time;
