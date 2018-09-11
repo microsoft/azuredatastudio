@@ -344,6 +344,10 @@ class GridTable<T> extends Disposable implements IView {
 				tableState: this.state
 			}
 		});
+		// update context before we run an action
+		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
+			this.actionBar.context = this.generateContext();
+		});
 		this.actionBar.push(actions, { icon: true, label: false });
 
 		// change actionbar on maximize change
@@ -365,6 +369,19 @@ class GridTable<T> extends Disposable implements IView {
 				this.editorService.openEditor(input);
 			});
 		}
+	}
+
+	private generateContext(cell?: Slick.Cell): IGridActionContext {
+		const selection = this.selectionModel.getSelectedRanges();
+		return <IGridActionContext>{
+			cell,
+			selection,
+			runner: this.runner,
+			batchId: this.resultSet.batchId,
+			resultId: this.resultSet.id,
+			table: this.table,
+			tableState: this.state
+		};
 	}
 
 	private getCurrentActions(): IAction[] {
@@ -436,7 +453,6 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	private contextMenu(e: ITableMouseEvent): void {
-		const selection = this.selectionModel.getSelectedRanges();
 		const { cell } = e;
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
@@ -463,15 +479,7 @@ class GridTable<T> extends Disposable implements IView {
 				return TPromise.as(actions);
 			},
 			getActionsContext: () => {
-				return <IGridActionContext>{
-					cell,
-					selection,
-					runner: this.runner,
-					batchId: this.resultSet.batchId,
-					resultId: this.resultSet.id,
-					table: this.table,
-					tableState: this.state
-				};
+				return this.generateContext(cell);
 			}
 		});
 	}
