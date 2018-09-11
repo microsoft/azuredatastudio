@@ -39,6 +39,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -317,6 +318,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table.registerPlugin(new AutoColumnSize());
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(numberColumn);
+		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
 
