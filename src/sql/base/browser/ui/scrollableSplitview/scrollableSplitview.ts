@@ -331,8 +331,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	}
 
 	layout(size: number): void {
-		const previousSize = Math.max(this.size, this.contentSize);
+		const previousSize = this.size;
 		this.size = size;
+		this.contentSize = 0;
+		this.lastRenderHeight = undefined;
+		this.lastRenderTop = undefined;
 		this.resize(this.viewItems.length - 1, size - previousSize);
 	}
 
