@@ -82,9 +82,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 						args: e
 					});
 				}
-
-				// unfocus the button when it is already clicked
-				this._button.blur();
 			}));
 		}
 	}

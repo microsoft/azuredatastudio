@@ -53,8 +53,4 @@ export class Button extends vsButton {
 	public setWidth(value: string) {
 		this.$el.style('width', value);
 	}
-
-	public blur() {
-		this.$el.domBlur();
-	}
 }
