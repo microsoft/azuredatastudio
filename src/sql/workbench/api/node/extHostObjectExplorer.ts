@@ -9,7 +9,7 @@ import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerSha
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape  {
+export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
 	private _proxy: MainThreadObjectExplorerShape;
 

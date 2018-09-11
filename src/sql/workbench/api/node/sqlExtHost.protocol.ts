@@ -36,7 +36,7 @@ export abstract class ExtHostAccountManagementShape {
 
 export abstract class ExtHostConnectionManagementShape {
 	$onConnectionOpened(handleId: string, connection: sqlops.connection.Connection): void { throw ni; }
- }
+}
 
 export abstract class ExtHostDataProtocolShape {
 

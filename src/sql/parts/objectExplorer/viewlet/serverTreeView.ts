@@ -138,7 +138,7 @@ export class ServerTreeView {
 
 			let expandGroups: boolean = self._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				 self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
