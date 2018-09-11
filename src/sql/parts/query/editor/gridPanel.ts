@@ -46,14 +46,14 @@ const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 10;
-const BOTTOM_PADDING = 5;
+const BOTTOM_PADDING = 10;
 const ACTIONBAR_WIDTH = 26;
 
 // minimum height needed to show the full actionbar
 const ACTIONBAR_HEIGHT = 100;
 
 // this handles min size if rows is greater than the min grid visible rows
-const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
+const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
 
 export interface IGridTableState {
@@ -245,7 +245,7 @@ class GridTable<T> extends Disposable implements IView {
 	readonly element: HTMLElement = this.container;
 
 	// this handles if the row count is small, like 4-5 rows
-	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT + BOTTOM_PADDING;
+	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
 	constructor(
 		private runner: QueryRunner,
@@ -408,11 +408,11 @@ class GridTable<T> extends Disposable implements IView {
 
 	public get minimumSize(): number {
 		// clamp between ensuring we can show the actionbar, while also making sure we don't take too much space
-		return Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT);
+		return Math.max(Math.min(this.maxSize, MIN_GRID_HEIGHT), ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
 	public get maximumSize(): number {
-		return Math.max(this.maxSize, ACTIONBAR_HEIGHT);
+		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
