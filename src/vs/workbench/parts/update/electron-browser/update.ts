@@ -284,47 +284,48 @@ export class WinUserSetupContribution implements IWorkbenchContribution {
 	}
 
 	private onUpdateStateChange(state: UpdateState): void {
-		if (state.type !== StateType.Idle) {
-			return;
-		}
+		// {{SQL CARBON EDIT}}
+		return;
+		// if (state.type !== StateType.Idle) {
+		// 	return;
+		// }
 
-		if (state.updateType !== UpdateType.Setup) {
-			return;
-		}
+		// if (state.updateType !== UpdateType.Setup) {
+		// 	return;
+		// }
 
-		if (!this.environmentService.isBuilt || this.environmentService.disableUpdates) {
-			return;
-		}
+		// if (!this.environmentService.isBuilt || this.environmentService.disableUpdates) {
+		// 	return;
+		// }
 
-		const neverShowAgain = new NeverShowAgain(WinUserSetupContribution.KEY, this.storageService);
+		// const neverShowAgain = new NeverShowAgain(WinUserSetupContribution.KEY, this.storageService);
+		// if (!neverShowAgain.shouldShow()) {
+		// 	return;
+		// }
 
-		if (!neverShowAgain.shouldShow()) {
-			return;
-		}
+		// const handle = this.notificationService.prompt(
+		// 	severity.Info,
+		// 	nls.localize('usersetup', "We recommend switching to our new User Setup distribution of {0} for Windows! Click [here]({1}) to learn more.", product.nameShort, WinUserSetupContribution.READ_MORE),
+		// 	[
+		// 		{
+		// 			label: nls.localize('downloadnow', "Download"),
+		// 			run: () => {
+		// 				const url = product.quality === 'insider'
+		// 					? (process.arch === 'ia32' ? WinUserSetupContribution.INSIDER_URL_32BIT : WinUserSetupContribution.INSIDER_URL)
+		// 					: (process.arch === 'ia32' ? WinUserSetupContribution.STABLE_URL_32BIT : WinUserSetupContribution.STABLE_URL);
 
-		const handle = this.notificationService.prompt(
-			severity.Info,
-			nls.localize('usersetup', "We recommend switching to our new User Setup distribution of {0} for Windows! Click [here]({1}) to learn more.", product.nameShort, WinUserSetupContribution.READ_MORE),
-			[
-				{
-					label: nls.localize('downloadnow', "Download"),
-					run: () => {
-						const url = product.quality === 'insider'
-							? (process.arch === 'ia32' ? WinUserSetupContribution.INSIDER_URL_32BIT : WinUserSetupContribution.INSIDER_URL)
-							: (process.arch === 'ia32' ? WinUserSetupContribution.STABLE_URL_32BIT : WinUserSetupContribution.STABLE_URL);
-
-						return this.openerService.open(URI.parse(url));
-					}
-				},
-				{
-					label: nls.localize('neveragain', "Don't Show Again"),
-					isSecondary: true,
-					run: () => {
-						neverShowAgain.action.run(handle);
-						neverShowAgain.action.dispose();
-					}
-				}]
-		);
+		// 				return this.openerService.open(URI.parse(url));
+		// 			}
+		// 		},
+		// 		{
+		// 			label: nls.localize('neveragain', "Don't Show Again"),
+		// 			isSecondary: true,
+		// 			run: () => {
+		// 				neverShowAgain.action.run(handle);
+		// 				neverShowAgain.action.dispose();
+		// 			}
+		// 		}]
+		// );
 	}
 
 	dispose(): void {
