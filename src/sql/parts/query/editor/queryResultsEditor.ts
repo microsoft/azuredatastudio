@@ -93,6 +93,7 @@ export class QueryResultsEditor extends BaseEditor {
 	protected _input: QueryResultsInput;
 
 	private resultsView: QueryResultsView;
+	private styleSheet = DOM.createStyleSheet();
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -103,12 +104,13 @@ export class QueryResultsEditor extends BaseEditor {
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-		// this._configurationService.onDidChangeConfiguration(e => {
-		// 	if (e.affectsConfiguration('resultsGrid')) {
-		// 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-		// 		this.applySettings();
-		// 	}
-		// });
+		this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('resultsGrid')) {
+				this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
+				this.applySettings();
+			}
+		});
+		this.applySettings();
 	}
 
 	public get input(): QueryResultsInput {
@@ -116,23 +118,20 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	private applySettings() {
-		if (this.input && this.input.container) {
-			if (!this.input.css) {
-				this.input.css = DOM.createStyleSheet(this.input.container);
-			}
-			let cssRuleText = '';
-			if (types.isNumber(this._rawOptions.cellPadding)) {
-				cssRuleText = this._rawOptions.cellPadding + 'px';
-			} else {
-				cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
-			}
-			let content = `.grid .slick-cell { padding: ${cssRuleText}; }`;
-			content += `.grid { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
-			this.input.css.innerHTML = content;
+		let cssRuleText = '';
+		if (types.isNumber(this._rawOptions.cellPadding)) {
+			cssRuleText = this._rawOptions.cellPadding + 'px';
+		} else {
+			cssRuleText = this._rawOptions.cellPadding.join('px ') + 'px;';
 		}
+		let content = `.grid-panel .monaco-table .slick-cell { padding: ${cssRuleText} }`;
+		content += `.grid-panel .monaco-table { ${getBareResultsGridInfoStyles(this._rawOptions)} }`;
+		this.styleSheet.innerHTML = content;
 	}
 
 	createEditor(parent: HTMLElement): void {
+		this.styleSheet.remove();
+		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
 			this.resultsView = new QueryResultsView(parent, this._instantiationService, this._queryModelService);
 		}
