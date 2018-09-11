@@ -1103,6 +1103,13 @@ class ButtonWrapper extends ComponentWrapper implements sqlops.ButtonComponent {
 		this.setProperty('iconPath', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
