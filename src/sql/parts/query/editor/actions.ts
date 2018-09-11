@@ -43,7 +43,7 @@ function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
 }
 
 function selectedRowsToRange(selectedRows: number[], columns: number): Slick.Range[] {
-	if (selectedRows) {
+	if (selectedRows && selectedRows.length > 0) {
 		return [new Slick.Range(selectedRows[0], 0, selectedRows[selectedRows.length-1], columns)];
 	} else {
 		return undefined;
