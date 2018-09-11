@@ -12,11 +12,13 @@ import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scr
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction, ChartDataAction, ShowQueryPlanAction } from 'sql/parts/query/editor/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, ShowQueryPlanAction } from 'sql/parts/query/editor/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
 import { hyperLinkFormatter, textFormatter } from 'sql/parts/grid/services/sharedServices';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 
 import * as sqlops from 'sqlops';
 
@@ -38,8 +40,6 @@ import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
-import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { IAction } from 'vs/base/common/actions';
 
 const ROW_HEIGHT = 29;
@@ -373,7 +373,7 @@ class GridTable<T> extends Disposable implements IView {
 
 		if (this.state.canBeMaximized) {
 			if (this.state.maximized) {
-				actions.splice(1, 0, new MinimizeTableAction());
+				actions.splice(1, 0, new RestoreTableAction());
 			} else {
 				actions.splice(1, 0, new MaximizeTableAction());
 			}
@@ -454,7 +454,7 @@ class GridTable<T> extends Disposable implements IView {
 
 				if (this.state.canBeMaximized) {
 					if (this.state.maximized) {
-						actions.splice(1, 0, new MinimizeTableAction());
+						actions.splice(1, 0, new RestoreTableAction());
 					} else {
 						actions.splice(1, 0, new MaximizeTableAction());
 					}
