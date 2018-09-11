@@ -54,7 +54,7 @@ function setUpFolderWorkspace(folderName: string): TPromise<{ parentDir: string,
 function setUpFolder(folderName: string, parentDir: string): TPromise<string> {
 	const folderDir = path.join(parentDir, folderName);
 	// {{SQL CARBON EDIT}}
-	const workspaceSettingsDir = path.join(folderDir, '.sqlops');
+	const workspaceSettingsDir = path.join(folderDir, '.azuredatastudio');
 	return pfs.mkdirp(workspaceSettingsDir, 493).then(() => folderDir);
 }
 

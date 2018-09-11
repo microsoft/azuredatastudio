@@ -194,7 +194,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 
 	private getUpdatePackagePath(version: string): TPromise<string> {
 		// {{SQL CARBON EDIT}}
-		return this.cachePath.then(cachePath => path.join(cachePath, `SqlOpsStudioSetup-${product.quality}-${version}.exe`));
+		return this.cachePath.then(cachePath => path.join(cachePath, `AzureDataStudioSetup-${product.quality}-${version}.exe`));
 	}
 
 	private cleanup(exceptVersion: string = null): Promise {

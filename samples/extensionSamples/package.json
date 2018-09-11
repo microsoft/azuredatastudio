@@ -9,7 +9,7 @@
         "sqlops": "*"
     },
     "license": "SEE LICENSE IN LICENSE.txt",
-    "repository": "https://github.com/Microsoft/sqlopsstudio",
+    "repository": "https://github.com/Microsoft/azuredatastudio",
     "categories": [
         "Other"
     ],

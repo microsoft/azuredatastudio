@@ -88,7 +88,8 @@ Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(new Vie
 	VIEWLET_ID,
 	nls.localize('debug', "Debug"),
 	'debug',
-	3
+	// {{SQL CARBON EDIT}}
+	13
 ));
 
 const openViewletKb: IKeybindings = {

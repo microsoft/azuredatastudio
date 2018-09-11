@@ -31,13 +31,13 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release status: Public Preview
 
 ## What's new in this version
-* SQL Server Agent for SQL Operations Studio extension improvements
+* SQL Server Agent for Azure Data Studio extension improvements
   * Added view of Alerts, Operators, and Proxies and icons on left pane
   * Added dialogs for New Job, New Job Step, New Alert, and New Operator
   * Added Delete Job, Delete Alert, and Delete Operator (right-click)
   * Added Previous Runs visualization
   * Added Filters for each column name
-* SQL Server Profiler for SQL Operations Studio extension improvements
+* SQL Server Profiler for Azure Data Studio extension improvements
   * Added Hotkeys to quickly launch and start/stop Profiler
   * Added 5 Default Templates to view Extended Events
   * Added Server/Database connection name
@@ -52,10 +52,10 @@ We would like to thank all our users who raised issues, and in particular the fo
 * Release status: Public Preview
 
 ## What's new in this version
-* **SQL Server Profiler for SQL Operations Studio  *Preview*** extension initial release
+* **SQL Server Profiler for Azure Data Studio  *Preview*** extension initial release
 * The new **SQL Data Warehouse** extension includes rich customizable dashboard widgets surfacing insights to your data warehouse. This unlocks key scenarios around managing and tuning your data warehouse to ensure it is optimized for consistent performance.
 * **Edit Data "Filtering and Sorting"** support
-* **SQL Server Agent for SQL Operations Studio *Preview*** extension enhancements for Jobs and Job History views
+* **SQL Server Agent for Azure Data Studio *Preview*** extension enhancements for Jobs and Job History views
 * Improved **Wizard & Dialog UI Builder Framework** extensibility APIs
 * Update VS Code Platform source code integrating [March 2018 (1.22)](https://code.visualstudio.com/updates/v1_22) and [April 2018 (1.23)](https://code.visualstudio.com/updates/v1_23)  releases
 * Fix GitHub Issues
@@ -69,7 +69,7 @@ The May release is focused on stabilization and bug fixes leading up to the Buil
 
 * Announcing **Redgate SQL Search** extension available in Extension Manager
 * Community Localization available for 10 languages: **German, Spanish, French, Italian, Japanese, Korean, Portuguese, Russian, Simplified Chinese and Traditional Chinese!**
-* Reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
+* Reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
 * Extension Manager has improved Marketplace experience to easily discover community extensions
 * SQL Agent extension Jobs and Job History view improvement
 * Updates for **whoisactive** and **Server Reports** extensions
@@ -95,8 +95,8 @@ The April Public Preview release contains some of the following highlights.
 * Release status: Public Preview
 
 ## What's new in this version
-The March Public Preview release enables some key aspects of the SQL Operations
-Studio extensibility story.  Here are some highlights in this release.
+The March Public Preview release enables some key aspects of the Azure Data Studio
+extensibility story.  Here are some highlights in this release.
 
 * Enhance the Manage Dashboard extensibility model to support tabbed Insights and Configuration panes
 * Dashboard Insights extensions for `sp_whoisactive` from [whoisactive.com](http://whoisactive.com)

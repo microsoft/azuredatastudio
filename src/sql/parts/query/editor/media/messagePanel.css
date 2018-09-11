@@ -19,12 +19,17 @@
 }
 
 .message-tree .message,
-.message-tree .batch-start {
+.message-tree .batch-start,
+.message-tree .error-message {
 	display: inline-block;
 }
 
 .message-tree .batch-start {
 	text-decoration: underline;
+}
+
+.message-tree .error-message {
+	color: red;
 }
 
 .message-tree .batch-start:hover {

@@ -36,7 +36,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 // implementation
 // {{SQL CARBON EDIT}}
 const DEFAULT_THEME_ID = 'vs sql-theme-carbon-themes-light_carbon-json';
-const DEFAULT_THEME_SETTING_VALUE = 'Default Light SQL Operations Studio';
+const DEFAULT_THEME_SETTING_VALUE = 'Default Light Azure Data Studio';
 
 const PERSISTED_THEME_STORAGE_KEY = 'colorThemeData';
 const PERSISTED_ICON_THEME_STORAGE_KEY = 'iconThemeData';

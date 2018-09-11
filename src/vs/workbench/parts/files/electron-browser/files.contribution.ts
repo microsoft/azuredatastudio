@@ -71,7 +71,8 @@ Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(new Vie
 	VIEWLET_ID,
 	nls.localize('explore', "Explorer"),
 	'explore',
-	0
+	// {{SQL CARBON EDIT}}
+	10
 ));
 
 // {{SQL CARBON EDIT}}
