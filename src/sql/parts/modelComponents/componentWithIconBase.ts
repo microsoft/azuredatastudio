@@ -22,8 +22,6 @@ export class ItemDescriptor<T> {
 	constructor(public descriptor: IComponentDescriptor, public config: T) { }
 }
 
-const ids = new IdGenerator('model-view-component-icon-');
-
 export abstract class ComponentWithIconBase extends ComponentBase {
 
 	protected _iconClass: string;
@@ -44,6 +42,7 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 		if (this.iconPath && this.iconPath !== this._iconPath) {
 			this._iconPath = this.iconPath;
 			if (!this._iconClass) {
+				const ids = new IdGenerator('model-view-component-icon-' + Math.round(Math.random() * 1000));
 				this._iconClass = ids.nextId();
 			}
 
