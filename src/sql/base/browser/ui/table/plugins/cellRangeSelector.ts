@@ -128,8 +128,11 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		this.canvas.classList.remove(this.options.dragClass);
 		this.dragging = false;
 		e.stopImmediatePropagation();
-
 		this.decorator.hide();
+		// if this happens to fast there is a chance we don't have the necessary information to actually do proper selection
+		if (!dd || !dd.range || !dd.range.start || !dd.range.end) {
+			return;
+		}
 		this.onCellRangeSelected.notify({
 			range: new Slick.Range(
 				dd.range.start.row,
