@@ -167,13 +167,13 @@ export class MaximizeTableAction extends Action {
 	}
 }
 
-export class MinimizeTableAction extends Action {
-	public static ID = 'grid.minimize';
-	public static LABEL = localize('minimize', 'Minimize');
+export class RestoreTableAction extends Action {
+	public static ID = 'grid.restore';
+	public static LABEL = localize('restore', 'Restore');
 	public static ICON = 'exitFullScreen';
 
 	constructor() {
-		super(MinimizeTableAction.ID, MinimizeTableAction.LABEL, MinimizeTableAction.ICON);
+		super(RestoreTableAction.ID, RestoreTableAction.LABEL, RestoreTableAction.ICON);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {

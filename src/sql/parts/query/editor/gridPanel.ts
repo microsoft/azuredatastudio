@@ -12,7 +12,7 @@ import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scr
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, MinimizeTableAction, ChartDataAction, ShowQueryPlanAction } from 'sql/parts/query/editor/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, ShowQueryPlanAction } from 'sql/parts/query/editor/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
@@ -40,6 +40,7 @@ import { Dimension, getContentWidth } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IAction } from 'vs/base/common/actions';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -326,22 +327,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.table.style(this.styles);
 		}
 
-		let actions = [];
-
-		if (this.state.canBeMaximized) {
-			if (this.state.maximized) {
-				actions.splice(1, 0, new MinimizeTableAction());
-			} else {
-				actions.splice(1, 0, new MaximizeTableAction());
-			}
-		}
-
-		actions.push(
-			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(ChartDataAction)
-		);
+		let actions = this.getCurrentActions();
 
 		let actionBarContainer = document.createElement('div');
 		actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
@@ -359,6 +345,13 @@ class GridTable<T> extends Disposable implements IView {
 			}
 		});
 		this.actionBar.push(actions, { icon: true, label: false });
+
+		// change actionbar on maximize change
+		this.state.onMaximizedChange(e => {
+			let actions = this.getCurrentActions();
+			this.actionBar.clear();
+			this.actionBar.push(actions, { icon: true, label: false });
+		});
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
@@ -372,6 +365,28 @@ class GridTable<T> extends Disposable implements IView {
 				this.editorService.openEditor(input);
 			});
 		}
+	}
+
+	private getCurrentActions(): IAction[] {
+
+		let actions = [];
+
+		if (this.state.canBeMaximized) {
+			if (this.state.maximized) {
+				actions.splice(1, 0, new RestoreTableAction());
+			} else {
+				actions.splice(1, 0, new MaximizeTableAction());
+			}
+		}
+
+		actions.push(
+			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(ChartDataAction)
+		);
+
+		return actions;
 	}
 
 	public layout(size?: number): void {
@@ -439,7 +454,7 @@ class GridTable<T> extends Disposable implements IView {
 
 				if (this.state.canBeMaximized) {
 					if (this.state.maximized) {
-						actions.splice(1, 0, new MinimizeTableAction());
+						actions.splice(1, 0, new RestoreTableAction());
 					} else {
 						actions.splice(1, 0, new MaximizeTableAction());
 					}
