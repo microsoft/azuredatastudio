@@ -208,7 +208,7 @@ function getElectron(arch) {
 		});
 
 		return gulp.src('package.json')
-			.pipe(json({ name: product.nameShort }))
+		.pipe(json({ name: product.nameShort }))
 			.pipe(electron(electronOpts))
 			.pipe(filter(['**', '!**/app/package.json']))
 			.pipe(vfs.dest('.build/electron'));
@@ -338,7 +338,8 @@ function packageTask(platform, arch, opts) {
 			version += '-' + quality;
 		}
 
-		const name = product.nameShort;
+		// {{SQL CARBON EDIT}}
+		const name = (platform === 'darwin') ? 'Azure Data Studio' : product.nameShort;
 		const packageJsonStream = gulp.src(['package.json'], { base: '.' })
 			.pipe(json({ name, version }));
 
