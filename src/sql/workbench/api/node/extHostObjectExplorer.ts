@@ -71,4 +71,8 @@ class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerN
 		}
 		return this._proxy.$getNode(this.connectionId, this.nodePath.slice(0, parentPathEndIndex)).then(nodeInfo => nodeInfo ? new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy) : undefined);
 	}
+
+	refresh(): Thenable<void> {
+		return this._proxy.$refresh(this.connectionId, this.nodePath);
+	}
 }

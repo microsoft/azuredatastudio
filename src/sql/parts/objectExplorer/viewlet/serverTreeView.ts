@@ -244,6 +244,10 @@ export class ServerTreeView {
 		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
+	public refreshElement(element: any): void {
+		this._tree.refresh(element);
+	}
+
 	/**
 	 * Filter connections based on view (recent/active)
 	 */
