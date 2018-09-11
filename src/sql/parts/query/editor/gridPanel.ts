@@ -296,15 +296,7 @@ class GridTable<T> extends Disposable implements IView {
 		let numberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind();
 		copyHandler.onCopy(e => {
-			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run({
-				selection: e,
-				batchId: this.resultSet.batchId,
-				resultId: this.resultSet.id,
-				cell: this.table.grid.getActiveCell(),
-				runner: this.runner,
-				table: this.table,
-				tableState: this.state
-			});
+			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
 		});
 		this.columns.unshift(numberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
@@ -380,7 +372,8 @@ class GridTable<T> extends Disposable implements IView {
 			batchId: this.resultSet.batchId,
 			resultId: this.resultSet.id,
 			table: this.table,
-			tableState: this.state
+			tableState: this.state,
+			selectionModel: this.selectionModel
 		};
 	}
 
