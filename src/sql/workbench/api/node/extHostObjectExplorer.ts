@@ -44,7 +44,7 @@ class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerN
 	public errorMessage: string;
 
 	constructor(nodeInfo: sqlops.NodeInfo, connectionId: string, private _proxy: MainThreadObjectExplorerShape) {
-		Object.entries(nodeInfo).forEach(([key, value]) => this[key] = value);
+		this.getDetailsFromInfo(nodeInfo);
 		this.connectionId = connectionId;
 	}
 
@@ -73,6 +73,10 @@ class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerN
 	}
 
 	refresh(): Thenable<void> {
-		return this._proxy.$refresh(this.connectionId, this.nodePath);
+		return this._proxy.$refresh(this.connectionId, this.nodePath).then(nodeInfo => this.getDetailsFromInfo(nodeInfo));
+	}
+
+	private getDetailsFromInfo(nodeInfo: sqlops.NodeInfo): void {
+		Object.entries(nodeInfo).forEach(([key, value]) => this[key] = value);
 	}
 }

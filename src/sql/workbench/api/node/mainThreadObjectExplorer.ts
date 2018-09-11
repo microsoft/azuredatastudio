@@ -75,7 +75,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		return this._objectExplorerService.findNodes(connectionId, type, schema, name, database, parentObjectNames);
 	}
 
-	public $refresh(connectionId: string, nodePath: string): Thenable<void> {
-		return this._objectExplorerService.refreshNodeInView(connectionId, nodePath).then(() => undefined);
+	public $refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo> {
+		return this._objectExplorerService.refreshNodeInView(connectionId, nodePath).then(node => node.toNodeInfo());
 	}
 }

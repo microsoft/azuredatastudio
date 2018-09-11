@@ -479,12 +479,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> {
+		// Get the tree node and call refresh from the provider
 		let treeNode = await this.getTreeNode(connectionId, nodePath);
 		await this.refreshTreeNode(treeNode.getSession(), treeNode);
 
 		// Get the new tree node, refresh it in the view, and expand it if needed
 		treeNode = await this.getTreeNode(connectionId, nodePath);
-		this._serverTreeView.refreshElement(treeNode);
+		await this._serverTreeView.refreshElement(treeNode);
 		if (treeNode.children.length > 0) {
 			await treeNode.setExpandedState(TreeItemCollapsibleState.Expanded);
 		}

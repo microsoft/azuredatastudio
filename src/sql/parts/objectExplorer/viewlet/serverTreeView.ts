@@ -244,8 +244,8 @@ export class ServerTreeView {
 		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
 	}
 
-	public refreshElement(element: any): void {
-		this._tree.refresh(element);
+	public refreshElement(element: any): Thenable<void> {
+		return this._tree.refresh(element);
 	}
 
 	/**
