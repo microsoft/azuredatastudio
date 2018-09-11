@@ -42,7 +42,7 @@ function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
 	}
 }
 
-function selectedRowsToRanges(selectedRows: number[], columns: number): Slick.Range[] {
+function selectedRowsToRange(selectedRows: number[], columns: number): Slick.Range[] {
 	if (selectedRows) {
 		return [new Slick.Range(selectedRows[0], 0, selectedRows[selectedRows.length-1], columns)];
 	} else {
@@ -122,7 +122,7 @@ export class SelectAllGridAction extends Action {
 
 	public run(context: IGridActionContext): TPromise<boolean> {
 		context.table.setSelectedRows(true);
-		context.selection = selectedRowsToRanges(context.table.getSelectedRows(), context.table.columns.length);
+		context.selection = selectedRowsToRange(context.table.getSelectedRows(), context.table.columns.length);
 		return TPromise.as(true);
 	}
 }
