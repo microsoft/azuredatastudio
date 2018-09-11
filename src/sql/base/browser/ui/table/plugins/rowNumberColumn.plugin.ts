@@ -48,7 +48,8 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	}
 
 	public getColumnDefinition(): Slick.Column<T> {
-		let columnWidth = this.options.numberOfRows.toString().length * sizePerDigit;
+		// that smallest we can make it is 22 due to padding and margins in the cells
+		let columnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
 		return {
 			id: 'rowNumber',
 			name: '',
