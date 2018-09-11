@@ -156,11 +156,6 @@ export class ConnectionWidget {
 	}
 
 	private fillInConnectionForm(): void {
-		// Connection name
-		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
-		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
-		this._connectionNameInputBox = new InputBox(connectionNameBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: connectionNameOption.displayName });
-
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
 		let serverNameBuilder = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
@@ -221,6 +216,11 @@ export class ConnectionWidget {
 		// Server group
 		let serverGroupBuilder = DialogHelper.appendRow(this._tableContainer, this._serverGroupDisplayString, 'connection-label', 'connection-input');
 		DialogHelper.appendInputSelectBox(serverGroupBuilder, this._serverGroupSelectBox);
+
+		// Connection name
+		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
+		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
+		this._connectionNameInputBox = new InputBox(connectionNameBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: connectionNameOption.displayName });
 
 		let AdvancedLabel = localize('advanced', 'Advanced...');
 		this._advancedButton = this.createAdvancedButton(this._tableContainer, AdvancedLabel);
@@ -398,7 +398,7 @@ export class ConnectionWidget {
 
 	public focusOnOpen(): void {
 		this._handleClipboard();
-		this._connectionNameInputBox.focus();
+		this._serverNameInputBox.focus();
 		this.focusPasswordIfNeeded();
 		this.clearValidationMessages();
 	}

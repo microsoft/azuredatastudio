@@ -26,6 +26,7 @@ class ResultsView implements IPanelView {
 	private messagePanel: MessagePanel;
 	private container = document.createElement('div');
 	private currentDimension: DOM.Dimension;
+	private isGridRendered = false;
 
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
@@ -35,9 +36,26 @@ class ResultsView implements IPanelView {
 		this.messagePanel.render();
 		this.panelViewlet.create(this.container).then(() => {
 			this.panelViewlet.addPanels([
-				{ panel: this.gridPanel, size: 1000, index: 0 },
 				{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
 			]);
+		});
+		this.gridPanel.onDidChange(e => {
+			let size = this.gridPanel.maximumBodySize;
+			if (this.isGridRendered) {
+				if (size < 1) {
+					this.panelViewlet.removePanels([this.gridPanel]);
+					// tell the panel is has been removed.
+					this.gridPanel.layout(0);
+					this.isGridRendered = false;
+				}
+			} else {
+				if (size > 0) {
+					this.panelViewlet.addPanels([
+						{ panel: this.gridPanel, index: 0, size: this.gridPanel.maximumSize }
+					]);
+					this.isGridRendered = true;
+				}
+			}
 		});
 		let gridResizeList = this.gridPanel.onDidChange(e => {
 			this.panelViewlet.resizePanel(this.gridPanel, this.gridPanel.maximumSize);

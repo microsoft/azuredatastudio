@@ -7,6 +7,7 @@
 
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { range } from 'vs/base/common/arrays';
 
 /**
  * Implements the various additional navigation  keybindings we want out of slickgrid
@@ -50,6 +51,8 @@ export class AdditionalKeyBindings<T> implements Slick.Plugin<T> {
 			}
 		} else if (event.equals(KeyCode.End | KeyMod.CtrlCmd)) {
 			this.grid.setActiveCell(this.grid.getDataLength() - 1, this.grid.getColumns().length - 1);
+		} else if (event.equals(KeyCode.KEY_A | KeyMod.CtrlCmd)) {
+			this.grid.setSelectedRows(range(this.grid.getDataLength()));
 		} else {
 			handled = false;
 		}

@@ -13,11 +13,11 @@ import * as sqlops from 'sqlops';
 import { ComponentWithIconBase } from 'sql/parts/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { attachButtonStyler } from 'sql/common/theme/styler';
-import { Button } from 'sql/base/browser/ui/button/button';
 
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
 
 
@@ -101,6 +101,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		super.setProperties(properties);
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
+		this._button.title = this.title;
 		if (this.width) {
 			this._button.setWidth(this.convertSize(this.width.toString()));
 		}
@@ -165,4 +166,13 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	private setFileProperties(properties: sqlops.ButtonProperties, isFile: boolean): void {
 		properties.isFile = isFile;
 	}
+
+	private get title(): string {
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.title, '');
+	}
+
+	private set title(newValue: string) {
+		this.setPropertyFromUI<sqlops.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
+	}
+
 }
