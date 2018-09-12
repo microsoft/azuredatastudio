@@ -68,13 +68,28 @@ export class GridTableState {
 	private _onMaximizedChange = new Emitter<boolean>();
 	public onMaximizedChange: Event<boolean> = this._onMaximizedChange.event;
 
-	public canBeMaximized: boolean;
+	private _onCanBeMaximizedChange = new Emitter<boolean>();
+	public onCanBeMaximizedChange: Event<boolean> = this._onCanBeMaximizedChange.event;
+
+	private _canBeMaximized: boolean;
 
 	constructor(state?: IGridTableState) {
 		if (state) {
 			this._maximized = state.maximized;
-			this.canBeMaximized = state.canBeMaximized;
+			this._canBeMaximized = state.canBeMaximized;
 		}
+	}
+
+	public get canBeMaximized(): boolean {
+		return this._canBeMaximized;
+	}
+
+	public set canBeMaximized(val: boolean) {
+		if (val === this._canBeMaximized) {
+			return;
+		}
+		this._canBeMaximized = val;
+		this._onCanBeMaximizedChange.fire(val);
 	}
 
 	public get maximized(): boolean {
@@ -343,11 +358,9 @@ class GridTable<T> extends Disposable implements IView {
 		this.actionBar.push(actions, { icon: true, label: false });
 
 		// change actionbar on maximize change
-		this.state.onMaximizedChange(e => {
-			let actions = this.getCurrentActions();
-			this.actionBar.clear();
-			this.actionBar.push(actions, { icon: true, label: false });
-		});
+		this.state.onMaximizedChange(this.rebuildActionBar, this);
+
+		this.state.onCanBeMaximizedChange(this.rebuildActionBar, this);
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
@@ -375,6 +388,12 @@ class GridTable<T> extends Disposable implements IView {
 			tableState: this.state,
 			selectionModel: this.selectionModel
 		};
+	}
+
+	private rebuildActionBar() {
+		let actions = this.getCurrentActions();
+		this.actionBar.clear();
+		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
 	private getCurrentActions(): IAction[] {
