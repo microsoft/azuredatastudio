@@ -131,7 +131,7 @@ export class ModelViewInput extends EditorInput {
 	 * Subclasses should bring up a proper dialog for the user if the editor is dirty and return the result.
 	 */
 	confirmSave(): TPromise<ConfirmResult> {
-		// TODO support save on close / confirm save. This is significantly more work
+		// TODO #2530 support save on close / confirm save. This is significantly more work
 		// as we need to either integrate with textFileService (seems like this isn't viable)
 		// or register our own complimentary service that handles the lifecycle operations such
 		// as close all, auto save etc.
