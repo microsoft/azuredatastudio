@@ -89,7 +89,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 
 		this.canvas.classList.add(this.options.dragClass);
 
-		this.grid.focus();
+		this.grid.setActiveCell(cell.row, cell.cell);
 
 		let start = this.grid.getCellFromPoint(
 			dd.startX - $(this.canvas).offset().left,
