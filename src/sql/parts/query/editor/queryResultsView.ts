@@ -42,32 +42,32 @@ class ResultsView implements IPanelView {
 			]);
 		});
 		this.gridPanel.onDidChange(e => {
-				let size = this.gridPanel.maximumBodySize;
-				if (this.isGridRendered) {
-					if (size < 1) {
-						this.lastGridHeight = this.panelViewlet.getPanelSize(this.gridPanel);
-						this.panelViewlet.removePanels([this.gridPanel]);
-						// tell the panel is has been removed.
-						this.gridPanel.layout(0);
-						this.isGridRendered = false;
-					}
-				} else {
-					if (this.currentDimension) {
-						this.needsGridResize = false;
-						if (size > 0) {
-							this.panelViewlet.addPanels([
-								{ panel: this.gridPanel, index: 0, size: this.lastGridHeight || Math.round(this.currentDimension.height * .7) }
-							]);
-							this.isGridRendered = true;
-						}
-					} else {
+			let size = this.gridPanel.maximumBodySize;
+			if (this.isGridRendered) {
+				if (size < 1) {
+					this.lastGridHeight = this.panelViewlet.getPanelSize(this.gridPanel);
+					this.panelViewlet.removePanels([this.gridPanel]);
+					// tell the panel is has been removed.
+					this.gridPanel.layout(0);
+					this.isGridRendered = false;
+				}
+			} else {
+				if (this.currentDimension) {
+					this.needsGridResize = false;
+					if (size > 0) {
 						this.panelViewlet.addPanels([
-							{ panel: this.gridPanel, index: 0, size: this.lastGridHeight || 200 }
+							{ panel: this.gridPanel, index: 0, size: this.lastGridHeight || Math.round(this.currentDimension.height * .7) }
 						]);
 						this.isGridRendered = true;
-						this.needsGridResize = true;
 					}
+				} else {
+					this.panelViewlet.addPanels([
+						{ panel: this.gridPanel, index: 0, size: this.lastGridHeight || 200 }
+					]);
+					this.isGridRendered = true;
+					this.needsGridResize = true;
 				}
+			}
 		});
 		let gridResizeList = this.gridPanel.onDidChange(e => {
 			if (this.currentDimension) {
