@@ -39,6 +39,9 @@ export function echo<T>(event: Event<T>, nextTick = false, buffer: T[] = []): { 
 	};
 }
 
+/**
+ * Implementation of vs/base/common/event/debounceEvent that is clearable
+ */
 export function debounceEvent<T>(event: Event<T>, merger: (last: T, event: T) => T, delay?: number, leading?: boolean): { clear: () => void; event: Event<T> };
 export function debounceEvent<I, O>(event: Event<I>, merger: (last: O, event: I) => O, delay?: number, leading?: boolean): { clear: () => void; event: Event<O> };
 export function debounceEvent<I, O>(event: Event<I>, merger: (last: O, event: I) => O, delay: number = 100, leading = false): { clear: () => void; event: Event<O> } {
