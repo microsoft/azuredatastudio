@@ -233,18 +233,12 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			return this.doOpenEditor(targetGroup, editor, editorOptions);
 		}
 
-		// {{SQL CARBON EDIT}}
 		// Untyped Text Editor Support
 		const textInput = <IResourceEditor>editor;
-		let typedInput = this.createInput(textInput);
+		const typedInput = this.createInput(textInput);
 		if (typedInput) {
 			const editorOptions = TextEditorOptions.from(textInput);
 			const targetGroup = this.findTargetGroup(typedInput, editorOptions, optionsOrGroup as IEditorGroup | GroupIdentifier);
-
-			// {{SQL CARBON EDIT}}
-			// Convert input into custom type if it's one of the ones we support
-			typedInput = convertEditorInput(typedInput, editorOptions, this.instantiationService);
-
 			return this.doOpenEditor(targetGroup, typedInput, editorOptions);
 		}
 
@@ -501,12 +495,12 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		const untitledInput = <IUntitledResourceInput>input;
 		if (!untitledInput.resource || typeof untitledInput.filePath === 'string' || (untitledInput.resource instanceof URI && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
-			return this.untitledEditorService.createOrGet(
+			return convertEditorInput(this.untitledEditorService.createOrGet(
 				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
 				'sql',
 				untitledInput.contents,
 				untitledInput.encoding
-			);
+			), undefined, this.instantiationService);
 		}
 
 		// Resource Editor Support
@@ -516,8 +510,9 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			if (!label && resourceInput.resource.scheme !== Schemas.data) {
 				label = basename(resourceInput.resource.fsPath); // derive the label from the path (but not for data URIs)
 			}
-
-			return this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, options && options.forceFileInput) as EditorInput;
+			// {{SQL CARBON EDIT}}
+			return convertEditorInput(this.createOrGet(resourceInput.resource, this.instantiationService, label, resourceInput.description, resourceInput.encoding, options && options.forceFileInput) as EditorInput,
+				undefined, this.instantiationService);
 		}
 
 		return null;
