@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
+import { QueryResultsInput, ResultsViewState } from 'sql/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from '../execution/queryModel';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
@@ -28,6 +28,7 @@ class ResultsView implements IPanelView {
 	private currentDimension: DOM.Dimension;
 	private isGridRendered = false;
 	private lastGridHeight: number;
+	private _state: ResultsViewState;
 
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
@@ -93,6 +94,11 @@ class ResultsView implements IPanelView {
 	public hideResultHeader() {
 		this.gridPanel.headerVisible = false;
 	}
+
+	public set state(val: ResultsViewState) {
+		this._state = val;
+		this.gridPanel.state = val.gridPanelState;
+	}
 }
 
 class ResultsTab implements IPanelTab {
@@ -132,6 +138,7 @@ export class QueryResultsView {
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
+		this.resultsTab.view.state = this._input.state;
 		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
 		this.resultsTab.queryRunner = queryRunner;
 		this.chartTab.queryRunner = queryRunner;

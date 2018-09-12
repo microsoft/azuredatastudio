@@ -9,6 +9,11 @@ import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
+import { GridPanelState } from 'sql/parts/query/editor/gridPanel';
+
+export class ResultsViewState {
+	public gridPanelState: GridPanelState;
+}
 
 /**
  * Input for the QueryResultsEditor. This input helps with logic for the viewing and editing of
@@ -28,6 +33,8 @@ export class QueryResultsInput extends EditorInput {
 
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
+
+	public readonly state = new ResultsViewState();
 
 	constructor(private _uri: string) {
 		super();

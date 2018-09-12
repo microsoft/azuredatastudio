@@ -109,6 +109,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	private _onDidSashReset = new Emitter<void>();
 	readonly onDidSashReset = this._onDidSashReset.event;
 
+	private _onScroll = new Emitter<number>();
+	readonly onScroll = this._onScroll.event;
+
 	get length(): number {
 		return this.viewItems.length;
 	}
@@ -124,6 +127,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		debounceEvent(this.scrollable.onScroll, (l, e) => e, 25)(e => {
 			this.render(e.scrollTop, e.height);
 			this.relayout();
+			this._onScroll.fire(e.scrollTop);
 		});
 		let domNode = this.scrollable.getDomNode();
 		dom.addClass(this.el, 'monaco-scroll-split-view');
@@ -328,6 +332,10 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	private relayout(lowPriorityIndex?: number): void {
 		const contentSize = this.viewItems.reduce((r, i) => r + i.size, 0);
 		this.resize(this.viewItems.length - 1, this.size - contentSize, undefined, lowPriorityIndex);
+	}
+
+	public setScrollPosition(position: number) {
+		this.scrollable.setScrollPosition({ scrollTop: position });
 	}
 
 	layout(size: number): void {
