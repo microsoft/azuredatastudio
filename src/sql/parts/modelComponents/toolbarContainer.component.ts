@@ -29,7 +29,7 @@ export class ToolbarItem {
 	template: `
 		<div #container *ngIf="items" [class]="toolbarClass" >
 			<ng-container *ngFor="let item of items">
-			<div class="modelview-toolbar-item" [title]="getItemTitle(item)" [style.paddingTop]="paddingTop" tabindex="0">
+			<div class="modelview-toolbar-item" [style.paddingTop]="paddingTop">
 				<div *ngIf="shouldShowTitle(item)" class="modelview-toolbar-title" >
 					{{getItemTitle(item)}}
 				</div>

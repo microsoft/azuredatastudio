@@ -11,13 +11,14 @@ import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';
 import { QueryEditor } from './queryEditor';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };
@@ -26,6 +27,7 @@ export interface IGridActionContext {
 	batchId: number;
 	resultId: number;
 	table: Table<any>;
+	selectionModel: CellSelectionModel<any>;
 	tableState: GridTableState;
 }
 
@@ -113,7 +115,7 @@ export class SelectAllGridAction extends Action {
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		context.table.setSelectedRows(true);
+		context.selectionModel.setSelectedRanges([new Slick.Range(0, 0, context.table.getData().getLength() - 1, context.table.columns.length - 1)]);
 		return TPromise.as(true);
 	}
 }
@@ -167,13 +169,13 @@ export class MaximizeTableAction extends Action {
 	}
 }
 
-export class MinimizeTableAction extends Action {
-	public static ID = 'grid.minimize';
-	public static LABEL = localize('minimize', 'Minimize');
+export class RestoreTableAction extends Action {
+	public static ID = 'grid.restore';
+	public static LABEL = localize('restore', 'Restore');
 	public static ICON = 'exitFullScreen';
 
 	constructor() {
-		super(MinimizeTableAction.ID, MinimizeTableAction.LABEL, MinimizeTableAction.ICON);
+		super(RestoreTableAction.ID, RestoreTableAction.LABEL, RestoreTableAction.ICON);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {

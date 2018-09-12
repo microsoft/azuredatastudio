@@ -561,6 +561,7 @@ declare module 'sqlops' {
 		label?: string;
 		isFile?: boolean;
 		fileContent?: string;
+		title?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -662,8 +663,22 @@ declare module 'sqlops' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
+		/**
+		 * The label for the button
+		 */
 		label: string;
+		/**
+		 * The title for the button. This title will show when it hovers
+		 */
+		title: string;
+		/**
+		 * Icon Path for the button.
+		 */
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+
+		/**
+		 * An event called when the button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 

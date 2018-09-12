@@ -518,7 +518,8 @@ export default class MainController implements vscode.Disposable {
 			let runButton = view.modelBuilder.button()
 				.withProperties({
 					label: 'Run',
-					iconPath: runIcon
+					iconPath: runIcon,
+					title: 'Run title'
 				}).component();
 
 			let monitorLightPath = vscode.Uri.file(path.join(__dirname, '..', 'media', 'monitor.svg'));
@@ -530,7 +531,8 @@ export default class MainController implements vscode.Disposable {
 			let monitorButton = view.modelBuilder.button()
 				.withProperties({
 					label: 'Monitor',
-					iconPath: monitorIcon
+					iconPath: monitorIcon,
+					title: 'Monitor title'
 				}).component();
 			let toolbarModel = view.modelBuilder.toolbarContainer()
 				.withToolbarItems([{

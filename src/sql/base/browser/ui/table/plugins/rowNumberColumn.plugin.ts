@@ -36,19 +36,24 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handleClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>): void {
 		if (this.grid.getColumns()[args.cell].id === 'rowNumber') {
 			this.grid.setActiveCell(args.row, 1);
-			this.grid.setSelectedRows([args.row]);
+			if (this.grid.getSelectionModel()) {
+				this.grid.setSelectedRows([args.row]);
+			}
 		}
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>): void {
 		if (args.column.id === 'rowNumber') {
 			this.grid.setActiveCell(0, 1);
-			this.grid.setSelectedRows(range(this.grid.getDataLength()));
+			if (this.grid.getSelectionModel()) {
+				this.grid.setSelectedRows(range(this.grid.getDataLength()));
+			}
 		}
 	}
 
 	public getColumnDefinition(): Slick.Column<T> {
-		let columnWidth = this.options.numberOfRows.toString().length * sizePerDigit;
+		// that smallest we can make it is 22 due to padding and margins in the cells
+		let columnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
 		return {
 			id: 'rowNumber',
 			name: '',

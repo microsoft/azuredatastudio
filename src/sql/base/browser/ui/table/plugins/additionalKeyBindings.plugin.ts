@@ -52,7 +52,13 @@ export class AdditionalKeyBindings<T> implements Slick.Plugin<T> {
 		} else if (event.equals(KeyCode.End | KeyMod.CtrlCmd)) {
 			this.grid.setActiveCell(this.grid.getDataLength() - 1, this.grid.getColumns().length - 1);
 		} else if (event.equals(KeyCode.KEY_A | KeyMod.CtrlCmd)) {
-			this.grid.setSelectedRows(range(this.grid.getDataLength()));
+			// check if we can set the rows directly on the selectionModel, its cleaner
+			let selectionModel = this.grid.getSelectionModel();
+			if (selectionModel) {
+				selectionModel.setSelectedRanges([new Slick.Range(0, 0, this.grid.getDataLength() - 1, this.grid.getColumns().length - 1)]);
+			} else {
+				this.grid.setSelectedRows(range(this.grid.getDataLength()));
+			}
 		} else {
 			handled = false;
 		}
