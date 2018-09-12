@@ -53,7 +53,7 @@ class ResultsView implements IPanelView {
 			} else {
 				if (size > 0) {
 					this.panelViewlet.addPanels([
-						{ panel: this.gridPanel, index: 0, size: this.lastGridHeight ||Math.round(this.currentDimension.height * .8)  }
+						{ panel: this.gridPanel, index: 0, size: this.lastGridHeight || Math.round(this.currentDimension.height * .8) }
 					]);
 					this.isGridRendered = true;
 				}
