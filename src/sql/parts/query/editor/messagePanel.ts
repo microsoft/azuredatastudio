@@ -8,7 +8,7 @@ import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 
-import { IResultMessage, BatchSummary, ISelectionData } from 'sqlops';
+import { IResultMessage, ISelectionData } from 'sqlops';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
@@ -27,7 +27,6 @@ import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { $ } from 'vs/base/browser/builder';
 import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { localize } from 'vs/nls';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
 
@@ -114,10 +113,16 @@ export class MessagePanel extends ViewletPanel {
 	}
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
+		let hasError = false;
 		if (isArray(message)) {
+			hasError = message.find(e => e.isError) ? true : false;
 			this.model.messages.push(...message);
 		} else {
+			hasError = message.isError;
 			this.model.messages.push(message);
+		}
+		if (hasError) {
+			this.setExpanded(true);
 		}
 		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
