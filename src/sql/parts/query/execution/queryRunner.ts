@@ -12,7 +12,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
-import { echo } from 'sql/base/common/event';
+import { echo, debounceEvent } from 'sql/base/common/event';
 
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -22,9 +22,10 @@ import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { Emitter, debounceEvent, Event } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -73,25 +74,27 @@ export default class QueryRunner {
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
 
 	private _onMessage = new Emitter<sqlops.IResultMessage>();
-	private _echoedMessages = echo(debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(this._onMessage.event, (l, e) => {
+	private _debouncedMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(this._onMessage.event, (l, e) => {
 		// on first run
 		if (types.isUndefinedOrNull(l)) {
 			return [e];
 		} else {
 			return l.concat(e);
 		}
-	}));
+	});
+	private _echoedMessages = echo(this._debouncedMessage.event);
 	public readonly onMessage = this._echoedMessages.event;
 
 	private _onResultSet = new Emitter<sqlops.ResultSetSummary>();
-	private _echoedResultSet = echo(debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSet.event, (l, e) => {
+	private _debouncedResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSet.event, (l, e) => {
 		// on first run
 		if (types.isUndefinedOrNull(l)) {
 			return [e];
 		} else {
 			return l.concat(e);
 		}
-	}));
+	});
+	private _echoedResultSet = echo(this._debouncedResultSet.event);
 	public readonly onResultSet = this._echoedResultSet.event;
 
 	private _onQueryStart = new Emitter<void>();
@@ -171,8 +174,13 @@ export default class QueryRunner {
 	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input: sqlops.ISelectionData, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
+		if (this.isExecuting) {
+			return TPromise.as(undefined);
+		}
 		this._echoedMessages.clear();
 		this._echoedResultSet.clear();
+		this._debouncedMessage.clear();
+		this._debouncedResultSet.clear();
 		let ownerUri = this.uri;
 		this._batchSets = [];
 		this._hasCompleted = false;
