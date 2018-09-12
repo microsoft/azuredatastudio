@@ -672,10 +672,11 @@ export interface ExtHostModelViewDialogShape {
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
 	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
 	$validateDialogClose(handle: number): Thenable<boolean>;
+	$handleSave(handle: number): Thenable<boolean>;
 }
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
-	$openEditor(modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
+	$openEditor(handle: number, modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
 	$openDialog(handle: number): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
@@ -688,6 +689,7 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$addWizardPage(wizardHandle: number, pageHandle: number, pageIndex: number): Thenable<void>;
 	$removeWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
 	$setWizardPage(wizardHandle: number, pageIndex: number): Thenable<void>;
+	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
 }

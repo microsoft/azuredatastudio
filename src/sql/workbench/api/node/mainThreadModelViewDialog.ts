@@ -6,6 +6,7 @@
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IEditor } from 'vs/workbench/common/editor';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -14,7 +15,7 @@ import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogS
 import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ModelViewInput } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
+import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/parts/modelComponents/modelEditor/modelViewInput';
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
@@ -28,6 +29,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	private readonly _wizardPages = new Map<number, WizardPage>();
 	private readonly _wizardPageHandles = new Map<WizardPage, number>();
 	private readonly _wizards = new Map<number, Wizard>();
+	private readonly _editorInputModels = new Map<number, ModelViewInputModel>();
 	private _dialogService: CustomDialogService;
 
 	constructor(
@@ -43,20 +45,27 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		throw new Error('Method not implemented.');
 	}
 
-	public $openEditor(modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
+	public $openEditor(handle: number, modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {
 		return new Promise<void>((resolve, reject) => {
-			let input = this._instatiationService.createInstance(ModelViewInput, title, modelViewId, options);
+			let saveHandler: ModeViewSaveHandler = options && options.supportsSave ? (h) => this.handleSave(h) : undefined;
+			let model = new ModelViewInputModel(modelViewId, handle, saveHandler);
+			let input = this._instatiationService.createInstance(ModelViewInput, title, model, options);
 			let editorOptions = {
 				preserveFocus: true,
 				pinned: true
 			};
 
-			this._editorService.openEditor(input, editorOptions, position as any).then(() => {
+			this._editorService.openEditor(input, editorOptions, position as any).then((editor) => {
+				this._editorInputModels.set(handle, model);
 				resolve();
 			}, error => {
 				reject(error);
 			});
 		});
+	}
+
+	private handleSave(handle: number): Thenable<boolean> {
+		return this._proxy.$handleSave(handle);
 	}
 
 	public $openDialog(handle: number): Thenable<void> {
@@ -211,6 +220,21 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		let wizard = this.getWizard(handle);
 		this._dialogService.closeWizard(wizard);
 		return Promise.resolve();
+	}
+
+	$setDirty(handle: number, isDirty: boolean): void {
+		let model = this.getEditor(handle);
+		if (model) {
+			model.setDirty(isDirty);
+		}
+	}
+
+	private getEditor(handle: number): ModelViewInputModel {
+		let model = this._editorInputModels.get(handle);
+		if (!model) {
+			throw new Error('No editor matching the given handle');
+		}
+		return model;
 	}
 
 	private getDialog(handle: number): Dialog {

@@ -1115,11 +1115,22 @@ declare module 'sqlops' {
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+			/**
+			 * `true` if there are unpersisted changes.
+			 * This is editable to support extensions updating the dirty status.
+			 */
+			isDirty: boolean;
 
 			/**
 			 * Opens the editor
 			 */
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
+
+			/**
+			 * Registers a save handler for this editor. This will be called if [supportsSave](#ModelViewEditorOptions.supportsSave)
+			 * is set to true and the editor is marked as dirty
+			 */
+			registerSaveHandler(handler: () => Thenable<boolean>);
 		}
 	}
 
@@ -1128,6 +1139,11 @@ declare module 'sqlops' {
 		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
 		 */
 		readonly retainContextWhenHidden?: boolean;
+
+		/**
+		 * Does this model view editor support save?
+		 */
+		readonly supportsSave?: boolean;
 	}
 
 	export enum DataProviderType {
