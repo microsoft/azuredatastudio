@@ -46,7 +46,7 @@ const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 10;
-const BOTTOM_PADDING = 10;
+const BOTTOM_PADDING = 15;
 const ACTIONBAR_WIDTH = 26;
 
 // minimum height needed to show the full actionbar
@@ -259,7 +259,7 @@ class GridTable<T> extends Disposable implements IView {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		this.container.style.marginBottom = BOTTOM_PADDING + 'px';
+		// this.container.style.marginBottom = BOTTOM_PADDING + 'px';
 		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
@@ -401,7 +401,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table.layout(
 			new Dimension(
 				getContentWidth(this.container) - ACTIONBAR_WIDTH,
-				size - BOTTOM_PADDING
+				size
 			)
 		);
 	}
