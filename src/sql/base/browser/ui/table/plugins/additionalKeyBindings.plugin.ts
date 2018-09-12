@@ -54,8 +54,8 @@ export class AdditionalKeyBindings<T> implements Slick.Plugin<T> {
 		} else if (event.equals(KeyCode.KEY_A | KeyMod.CtrlCmd)) {
 			// check if we can set the rows directly on the selectionModel, its cleaner
 			let selectionModel = this.grid.getSelectionModel();
-			if (selectionModel && (<any>selectionModel).setSelectedRanges) {
-				(<any>selectionModel).setSelectedRanges([new Slick.Range(0, 0, this.grid.getDataLength() - 1, this.grid.getColumns().length - 1)]);
+			if (selectionModel) {
+				selectionModel.setSelectedRanges([new Slick.Range(0, 0, this.grid.getDataLength() - 1, this.grid.getColumns().length - 1)]);
 			} else {
 				this.grid.setSelectedRows(range(this.grid.getDataLength()));
 			}
