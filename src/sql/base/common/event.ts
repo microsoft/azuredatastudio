@@ -5,6 +5,7 @@
 'use strict';
 
 import { Emitter, Event } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 /**
  * Implementation of vs/base/common/event/echo that is clearable
@@ -37,3 +38,52 @@ export function echo<T>(event: Event<T>, nextTick = false, buffer: T[] = []): { 
 		clear
 	};
 }
+
+/**
+ * Implementation of vs/base/common/event/debounceEvent that is clearable
+ */
+export function debounceEvent<T>(event: Event<T>, merger: (last: T, event: T) => T, delay?: number, leading?: boolean): { clear: () => void; event: Event<T> };
+export function debounceEvent<I, O>(event: Event<I>, merger: (last: O, event: I) => O, delay?: number, leading?: boolean): { clear: () => void; event: Event<O> };
+export function debounceEvent<I, O>(event: Event<I>, merger: (last: O, event: I) => O, delay: number = 100, leading = false): { clear: () => void; event: Event<O> } {
+
+	let subscription: IDisposable;
+	let output: O = undefined;
+	let handle: any = undefined;
+	let numDebouncedCalls = 0;
+
+	const clear = () => output = undefined;
+
+	const emitter = new Emitter<O>({
+		onFirstListenerAdd() {
+			subscription = event(cur => {
+				numDebouncedCalls++;
+				output = merger(output, cur);
+
+				if (leading && !handle) {
+					emitter.fire(output);
+				}
+
+				clearTimeout(handle);
+				handle = setTimeout(() => {
+					let _output = output;
+					output = undefined;
+					handle = undefined;
+					if (!leading || numDebouncedCalls > 1) {
+						emitter.fire(_output);
+					}
+
+					numDebouncedCalls = 0;
+				}, delay);
+			});
+		},
+		onLastListenerRemove() {
+			subscription.dispose();
+		}
+	});
+
+	return {
+		event: emitter.event,
+		clear
+	};
+}
+
