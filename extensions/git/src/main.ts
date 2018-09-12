@@ -98,28 +98,29 @@ export async function activate(context: ExtensionContext): Promise<API> {
 			throw err;
 		}
 
-		const config = workspace.getConfiguration('git');
-		const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
+		// {{SQL CARBON EDIT}} turn-off Git missing prompt
+		//const config = workspace.getConfiguration('git');
+		//const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
 
-		if (!shouldIgnore) {
-			console.warn(err.message);
-			outputChannel.appendLine(err.message);
-			outputChannel.show();
+		// if (!shouldIgnore) {
+		// 	console.warn(err.message);
+		// 	outputChannel.appendLine(err.message);
+		// 	outputChannel.show();
 
-			const download = localize('downloadgit', "Download Git");
-			const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
-			const choice = await window.showWarningMessage(
-				localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
-				download,
-				neverShowAgain
-			);
+		// 	const download = localize('downloadgit', "Download Git");
+		// 	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+		// 	const choice = await window.showWarningMessage(
+		// 		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
+		// 		download,
+		// 		neverShowAgain
+		// 	);
 
-			if (choice === download) {
-				commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-			} else if (choice === neverShowAgain) {
-				await config.update('ignoreMissingGitWarning', true, true);
-			}
-		}
+		// 	if (choice === download) {
+		// 		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+		// 	} else if (choice === neverShowAgain) {
+		// 		await config.update('ignoreMissingGitWarning', true, true);
+		// 	}
+		// }
 
 		return new NoopAPIImpl();
 	}
