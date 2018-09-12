@@ -27,11 +27,12 @@ class ResultsView implements IPanelView {
 	private container = document.createElement('div');
 	private currentDimension: DOM.Dimension;
 	private isGridRendered = false;
+	private lastGridHeight: number;
 
 	constructor(instantiationService: IInstantiationService) {
 		this.panelViewlet = instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
-		this.gridPanel = instantiationService.createInstance(GridPanel, { title: nls.localize('gridPanel', 'Results') });
-		this.messagePanel = instantiationService.createInstance(MessagePanel, { title: nls.localize('messagePanel', 'Messages') });
+		this.gridPanel = instantiationService.createInstance(GridPanel, { title: nls.localize('gridPanel', 'Results'), id: 'gridPanel' });
+		this.messagePanel = instantiationService.createInstance(MessagePanel, { title: nls.localize('messagePanel', 'Messages'), minimumBodySize: 0, id: 'messagePanel' });
 		this.gridPanel.render();
 		this.messagePanel.render();
 		this.panelViewlet.create(this.container).then(() => {
@@ -43,6 +44,7 @@ class ResultsView implements IPanelView {
 			let size = this.gridPanel.maximumBodySize;
 			if (this.isGridRendered) {
 				if (size < 1) {
+					this.lastGridHeight = this.panelViewlet.getPanelSize(this.gridPanel);
 					this.panelViewlet.removePanels([this.gridPanel]);
 					// tell the panel is has been removed.
 					this.gridPanel.layout(0);
@@ -51,14 +53,14 @@ class ResultsView implements IPanelView {
 			} else {
 				if (size > 0) {
 					this.panelViewlet.addPanels([
-						{ panel: this.gridPanel, index: 0, size: this.gridPanel.maximumSize }
+						{ panel: this.gridPanel, index: 0, size: this.lastGridHeight ||Math.round(this.currentDimension.height * .8)  }
 					]);
 					this.isGridRendered = true;
 				}
 			}
 		});
 		let gridResizeList = this.gridPanel.onDidChange(e => {
-			this.panelViewlet.resizePanel(this.gridPanel, this.gridPanel.maximumSize);
+			this.panelViewlet.resizePanel(this.gridPanel, Math.round(this.currentDimension.height * .8));
 		});
 		// once the user changes the sash we should stop trying to resize the grid
 		once(this.panelViewlet.onDidSashChange)(e => {
