@@ -38,8 +38,8 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 			let selectionModel = this.grid.getSelectionModel();
 			let ranges: Slick.Range[];
 			// check to see if we can get the range from the model directly
-			if (selectionModel && (<any>selectionModel).getSelectedRanges) {
-				ranges = (<any>selectionModel).getSelectedRanges();
+			if (selectionModel) {
+				ranges = selectionModel.getSelectedRanges();
 			} else {
 				let selectedRows = this.grid.getSelectedRows();
 				let startColumn = 0;

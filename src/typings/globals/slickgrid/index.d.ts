@@ -764,6 +764,16 @@ declare namespace Slick {
 		**/
 		destroy(): void;
 
+		/**
+		 * Sets selected ranges for the grid
+		 */
+		setSelectedRanges(ranges: Slick.Range[]);
+
+		/**
+		 * Gets selected ranges for the grid
+		 */
+		getSelectedRanges(): Slick.Range[];
+
 		onSelectedRangesChanged: Slick.Event<E>;
 	}
 

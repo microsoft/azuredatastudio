@@ -40,7 +40,7 @@ import { getMultiSelectedEditorContexts } from 'vs/workbench/browser/parts/edito
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
-import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, SIDE_GROUP, IResourceEditorReplacement } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { isEqual, basenameOrAuthority } from 'vs/base/common/resources';
 import { ltrim } from 'vs/base/common/strings';
@@ -165,7 +165,7 @@ function save(
 						// {{SQL CARBON EDIT}}
 						queryEditorService.onSaveAsCompleted(resource, target);
 						return true;
-				});
+					});
 
 			});
 		}
@@ -215,14 +215,27 @@ function saveAll(saveAllArguments: any, editorService: IEditorService, untitledE
 	// Save all
 	return textFileService.saveAll(saveAllArguments).then((result) => {
 		groupIdToUntitledResourceInput.forEach((inputs, groupId) => {
+			// {{SQL CARBON EDIT}}
 			// Update untitled resources to the saved ones, so we open the proper files
+
+			let replacementPairs: IResourceEditorReplacement[] = [];
 			inputs.forEach(i => {
 				const targetResult = result.results.filter(r => r.success && r.source.toString() === i.resource.toString()).pop();
 				if (targetResult) {
-					i.resource = targetResult.target;
+					//i.resource = targetResult.target;
+					let editor = i;
+					const replacement: IResourceInput = {
+						resource: targetResult.target,
+						encoding: i.encoding,
+						options: {
+							pinned: true,
+							viewState: undefined
+						}
+					};
+					replacementPairs.push({ editor: editor, replacement: replacement });
 				}
 			});
-			editorService.openEditors(inputs, groupId);
+			editorService.replaceEditors(replacementPairs, groupId);
 		});
 	});
 }
