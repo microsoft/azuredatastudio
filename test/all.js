@@ -61,7 +61,7 @@ function main() {
 			'bootstrap': `../${ out }/bootstrap`
 		},
 		catchError: true,
-    	// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		nodeModules: [
 			'@angular/common',
 			'@angular/core',
