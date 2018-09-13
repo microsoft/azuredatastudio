@@ -745,7 +745,6 @@ suite('SQL Object Explorer Service tests', () => {
 		await objectExplorerService.createNewSession('MSSQL', connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 		serverTreeView.setup(x => x.refreshElement(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-		serverTreeView.setup(x => x.setExpandedState(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		objectExplorerService.registerServerTreeView(serverTreeView.object);
 
 		// Refresh the node
@@ -754,9 +753,8 @@ suite('SQL Object Explorer Service tests', () => {
 
 		// Verify that it was refreshed, expanded, and the refreshed detailed were returned
 		sqlOEProvider.verify(x => x.refreshNode(TypeMoq.It.is(refreshNode => refreshNode.nodePath === nodePath)), TypeMoq.Times.once());
-		serverTreeView.verify(x => x.setExpandedState(TypeMoq.It.is(treeNode => treeNode === refreshedNode), TypeMoq.It.is(expandedState => expandedState === TreeItemCollapsibleState.Expanded)), TypeMoq.Times.once());
 		refreshedNode.children.forEach((childNode, index) => {
-			assert.equal(childNode, objectExplorerExpandInfoRefresh.nodes[index]);
+			assert.equal(childNode.nodePath, objectExplorerExpandInfoRefresh.nodes[index].nodePath);
 		});
 	});
 });
