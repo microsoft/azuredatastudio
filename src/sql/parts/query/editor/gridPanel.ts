@@ -58,8 +58,8 @@ const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ES
 export class GridPanelState {
 	public tableStates: GridTableState[] = [];
 	public scrollPosition: number;
+	public collapsed = false;
 }
-
 
 export interface IGridTableState {
 	canBeMaximized: boolean;
@@ -139,6 +139,11 @@ export class GridPanel extends ViewletPanel {
 				this.state.scrollPosition = e;
 			}
 		});
+		this.onDidChange(e => {
+			if (this.state) {
+				this.state.collapsed = !this.isExpanded();
+			}
+		});
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -203,7 +208,8 @@ export class GridPanel extends ViewletPanel {
 					this._state.tableStates.push(tableState);
 				}
 			}
-			let table = this.instantiationService.createInstance(GridTable, this.runner, tableState, set);
+			let table = this.instantiationService.createInstance(GridTable, this.runner, set);
+			table.state = tableState;
 			tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -274,6 +280,7 @@ export class GridPanel extends ViewletPanel {
 				t.state = state;
 			}
 		});
+		this.setExpanded(!this.state.collapsed);
 	}
 
 	public get state(): GridPanelState {
@@ -297,12 +304,13 @@ class GridTable<T> extends Disposable implements IView {
 	public id = generateUuid();
 	readonly element: HTMLElement = this.container;
 
+	private _state: GridTableState;
+
 	// this handles if the row count is small, like 4-5 rows
 	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
 	constructor(
 		private runner: QueryRunner,
-		private _state: GridTableState,
 		public readonly resultSet: sqlops.ResultSetSummary,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
@@ -395,7 +403,6 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.actionBar.push(actions, { icon: true, label: false });
 
-
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
@@ -413,6 +420,8 @@ class GridTable<T> extends Disposable implements IView {
 				this.state.activeCell = this.table.grid.getActiveCell();
 			}
 		});
+
+		this.setupState();
 	}
 
 	private setupState() {
@@ -440,7 +449,6 @@ class GridTable<T> extends Disposable implements IView {
 
 	public set state(val: GridTableState) {
 		this._state = val;
-		this.setupState();
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
