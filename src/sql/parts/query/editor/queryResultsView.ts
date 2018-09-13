@@ -8,17 +8,16 @@ import { QueryResultsInput, ResultsViewState } from 'sql/parts/query/common/quer
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from '../execution/queryModel';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
-import { MessagePanel, MessagePanelState } from './messagePanel';
-import { GridPanel, GridPanelState } from './gridPanel';
+import { MessagePanel } from './messagePanel';
+import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
 import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
 
 import * as nls from 'vs/nls';
-import * as UUID from 'vs/base/common/uuid';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { once } from 'vs/base/common/event';
+import { once, anyEvent } from 'vs/base/common/event';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -30,10 +29,6 @@ class ResultsView implements IPanelView {
 	private _state: ResultsViewState;
 
 	constructor(private instantiationService: IInstantiationService) {
-	}
-
-	render(container: HTMLElement): void {
-		container.appendChild(this.container);
 
 		this.panelViewlet = this.instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
 		this.gridPanel = this.instantiationService.createInstance(GridPanel, { title: nls.localize('gridPanel', 'Results'), id: 'gridPanel' });
@@ -46,7 +41,7 @@ class ResultsView implements IPanelView {
 				{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
 			]);
 		});
-		this.gridPanel.onDidChange(e => {
+		anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
 			let size = this.gridPanel.maximumBodySize;
 			if (size < 1 && this.gridPanel.isVisible()) {
 				this.gridPanel.setVisible(false);
@@ -67,25 +62,43 @@ class ResultsView implements IPanelView {
 			}
 		});
 		let gridResizeList = this.gridPanel.onDidChange(e => {
-			if (this.currentDimension) {
-				this.needsGridResize = false;
-				this.panelViewlet.resizePanel(this.gridPanel, Math.round(this.currentDimension.height * .7));
+			let panelSize: number;
+			if (this.state && this.state.gridPanelSize) {
+				panelSize = this.state.gridPanelSize;
+			} else if (this.currentDimension) {
+				panelSize = Math.round(this.currentDimension.height * .7);
 			} else {
+				panelSize = 200;
 				this.needsGridResize = true;
+			}
+			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
+		});
+		let messageResizeList = this.messagePanel.onDidChange(e => {
+			if (this.state.messagePanelSize) {
+				this.panelViewlet.resizePanel(this.gridPanel, this.state.messagePanelSize);
 			}
 		});
 		// once the user changes the sash we should stop trying to resize the grid
 		once(this.panelViewlet.onDidSashChange)(e => {
 			this.needsGridResize = false;
 			gridResizeList.dispose();
+			messageResizeList.dispose();
 		});
 
 		this.panelViewlet.onDidSashChange(e => {
 			if (this.state) {
-				this.state.gridPanelSize = this.gridPanel.expandedSize;
-				this.state.messagePanelSize  = this.messagePanel.expandedSize;
+				if (this.gridPanel.isExpanded()) {
+					this.state.gridPanelSize = this.panelViewlet.getPanelSize(this.gridPanel);
+				}
+				if (this.messagePanel.isExpanded()) {
+					this.state.messagePanelSize  = this.panelViewlet.getPanelSize(this.messagePanel);
+				}
 			}
 		});
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
 	}
 
 	layout(dimension: DOM.Dimension): void {
@@ -115,17 +128,8 @@ class ResultsView implements IPanelView {
 
 	public set state(val: ResultsViewState) {
 		this._state = val;
-		if (!val.gridPanelState) {
-			val.gridPanelState = new GridPanelState();
-		}
-		if (!val.messagePanelState) {
-			val.messagePanelState = new MessagePanelState();
-		}
 		this.gridPanel.state = val.gridPanelState;
 		this.messagePanel.state = val.messagePanelState;
-		if (this.state.messagePanelSize) {
-			this.messagePanel.expandedSize = this.state.messagePanelSize;
-		}
 	}
 
 	public get state(): ResultsViewState {

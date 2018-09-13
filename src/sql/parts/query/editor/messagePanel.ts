@@ -156,6 +156,7 @@ export class MessagePanel extends ViewletPanel {
 				}
 			});
 		}
+		this.maximumBodySize = this.model.messages.length * 22;
 	}
 
 	private reset() {

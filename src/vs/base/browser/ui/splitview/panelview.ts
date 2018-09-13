@@ -44,8 +44,7 @@ export abstract class Panel implements IView {
 	private static readonly HEADER_SIZE = 22;
 
 	protected _expanded: boolean;
-	// {{SQL CARBON EDIT}} we need to value in order to properly restore it
-	public expandedSize: number | undefined = undefined;
+	private expandedSize: number | undefined = undefined;
 	private _headerVisible = true;
 	private _minimumBodySize: number;
 	private _maximumBodySize: number;
