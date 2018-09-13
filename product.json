@@ -2,7 +2,7 @@
 	"nameShort": "azuredatastudio",
 	"nameLong": "Azure Data Studio",
 	"applicationName": "azuredatastudio",
-	"dataFolderName": ".azuredatastudio",
+	"dataFolderName": ".sqlops",
 	"win32MutexName": "azuredatastudio",
 	"licenseName": "Microsoft EULA",
 	"licenseUrl": "https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt",
