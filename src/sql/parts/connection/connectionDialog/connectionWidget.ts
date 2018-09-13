@@ -504,6 +504,7 @@ export class ConnectionWidget {
 
 		this._serverGroupSelectBox.enable();
 		this._serverNameInputBox.enable();
+		this._connectionNameInputBox.enable();
 		this._databaseNameInputBox.enabled = true;
 		let currentAuthType: AuthenticationType = undefined;
 		if (this._authTypeSelectBox) {
