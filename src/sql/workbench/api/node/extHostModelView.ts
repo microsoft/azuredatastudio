@@ -32,14 +32,21 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	navContainer(): sqlops.ContainerBuilder<sqlops.NavContainer, any, any> {
 		let id = this.getNextComponentId();
-		let container: ContainerBuilderImpl<sqlops.NavContainer, any, any> = new ContainerBuilderImpl(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
+		let container: GenericContainerBuilder<sqlops.NavContainer, any, any> = new GenericContainerBuilder(this._proxy, this._handle, ModelComponentTypes.NavContainer, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
+	divContainer(): sqlops.DivBuilder {
+		let id = this.getNextComponentId();
+		let container = new DivContainerBuilder(this._proxy, this._handle, ModelComponentTypes.DivContainer, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
 
 	flexContainer(): sqlops.FlexBuilder {
 		let id = this.getNextComponentId();
-		let container: ContainerBuilderImpl<sqlops.FlexContainer, any, any> = new ContainerBuilderImpl<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
+		let container: GenericContainerBuilder<sqlops.FlexContainer, any, any> = new GenericContainerBuilder<sqlops.FlexContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.FlexContainer, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -60,7 +67,7 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 
 	groupContainer(): sqlops.GroupBuilder {
 		let id = this.getNextComponentId();
-		let container: ContainerBuilderImpl<sqlops.GroupContainer, any, any> = new ContainerBuilderImpl<sqlops.GroupContainer, sqlops.GroupLayout, sqlops.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
+		let container: GenericContainerBuilder<sqlops.GroupContainer, any, any> = new GenericContainerBuilder<sqlops.GroupContainer, sqlops.GroupLayout, sqlops.GroupItemLayout>(this._proxy, this._handle, ModelComponentTypes.Group, id);
 		this._componentBuilders.set(id, container);
 		return container;
 	}
@@ -241,17 +248,9 @@ class ComponentBuilderImpl<T extends sqlops.Component> implements sqlops.Compone
 	}
 }
 
-class GenericComponentBuilder<T extends sqlops.Component> extends ComponentBuilderImpl<T> {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(new ComponentWrapper(proxy, handle, type, id));
-	}
-
-}
-
-
 class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> extends ComponentBuilderImpl<T> implements sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
-	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
-		super(new ComponentWrapper(proxy, handle, type, id));
+	constructor(componentWrapper: ComponentWrapper) {
+		super(componentWrapper);
 	}
 
 	withLayout(layout: TLayout): sqlops.ContainerBuilder<T, TLayout, TItemLayout> {
@@ -268,7 +267,19 @@ class ContainerBuilderImpl<T extends sqlops.Component, TLayout, TItemLayout> ext
 	}
 }
 
-class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
+class GenericContainerBuilder<T extends sqlops.Component, TLayout, TItemLayout> extends ContainerBuilderImpl<T, TLayout, TItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new ComponentWrapper(proxy, handle, type, id));
+	}
+}
+
+class DivContainerBuilder extends ContainerBuilderImpl<sqlops.DivContainer, sqlops.DivLayout, sqlops.DivItemLayout> {
+	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string) {
+		super(new DivContainerWrapper(proxy, handle, type, id));
+	}
+}
+
+class FormContainerBuilder extends GenericContainerBuilder<sqlops.FormContainer, sqlops.FormLayout, sqlops.FormItemLayout> implements sqlops.FormBuilder {
 	constructor(proxy: MainThreadModelViewShape, handle: number, type: ModelComponentTypes, id: string, private _builder: ModelBuilderImpl) {
 		super(proxy, handle, type, id);
 	}
@@ -376,7 +387,7 @@ class FormContainerBuilder extends ContainerBuilderImpl<sqlops.FormContainer, sq
 	}
 }
 
-class ToolbarContainerBuilder extends ContainerBuilderImpl<sqlops.ToolbarContainer, sqlops.ToolbarLayout, any> implements sqlops.ToolbarBuilder {
+class ToolbarContainerBuilder extends GenericContainerBuilder<sqlops.ToolbarContainer, sqlops.ToolbarLayout, any> implements sqlops.ToolbarBuilder {
 	withToolbarItems(components: sqlops.ToolbarComponent[]): sqlops.ContainerBuilder<sqlops.ToolbarContainer, any, any> {
 		this._component.itemConfigs = components.map(item => {
 			return this.convertToItemConfig(item);
@@ -844,9 +855,6 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 	public set options(o: vscode.WebviewOptions) {
 		this.setProperty('options', o);
 	}
-
-
-
 }
 
 class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
@@ -1159,6 +1167,24 @@ class FileBrowserTreeComponentWrapper extends ComponentWrapper implements sqlops
 	public get onDidChange(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
+	}
+}
+
+class DivContainerWrapper extends ComponentWrapper implements sqlops.DivContainer {
+	public get overflowY(): string {
+		return this.properties['overflowY'];
+	}
+
+	public set overflowY(value: string) {
+		this.setProperty('overflowY', value);
+	}
+
+	public get yOffsetChange(): number {
+		return this.properties['yOffsetChange'];
+	}
+
+	public set yOffsetChange(value: number) {
+		this.setProperty('yOffsetChange', value);
 	}
 }
 

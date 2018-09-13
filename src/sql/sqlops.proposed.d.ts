@@ -17,6 +17,7 @@ declare module 'sqlops' {
 	 */
 	export interface ModelBuilder {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
+		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
@@ -69,6 +70,10 @@ declare module 'sqlops' {
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
+
+	}
+
+	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
 
 	}
 
@@ -346,6 +351,33 @@ declare module 'sqlops' {
 	export interface GroupItemLayout {
 	}
 
+	export interface DivLayout {
+		/**
+		 * Container Height
+		 */
+		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
+	}
+
+	export interface DivItemLayout {
+		/**
+		 * Matches the order CSS property and its available values.
+		 */
+		order?: number;
+
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
+	}
+
+	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
+	}
+
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
 
@@ -566,6 +598,19 @@ declare module 'sqlops' {
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
+	}
+
+	export interface DivContainerProperties extends ComponentProperties {
+		/**
+		 * Matches the overflow-y CSS property and its available values.
+		 */
+		overflowY?: string;
+
+		/**
+		 * Setting the scroll based on the y offset
+		 * This is used when its child component is webview
+		 */
+		yOffsetChange?: number;
 	}
 
 	export interface CardComponent extends Component, CardProperties {

@@ -131,6 +131,7 @@ export enum FrequencyRelativeIntervals {
 
 export enum ModelComponentTypes {
 	NavContainer,
+	DivContainer,
 	FlexContainer,
 	Card,
 	InputBox,
