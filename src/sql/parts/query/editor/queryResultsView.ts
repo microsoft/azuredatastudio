@@ -58,10 +58,10 @@ class ResultsView implements IPanelView {
 					panelSize = 200;
 					this.needsGridResize = true;
 				}
-				this.panelViewlet.addPanels([ { panel: this.gridPanel, index: 0, size: panelSize }]);
+				this.panelViewlet.addPanels([{ panel: this.gridPanel, index: 0, size: panelSize }]);
 			}
 		});
-		let gridResizeList = this.gridPanel.onDidChange(e => {
+		let resizeList = anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(() => {
 			let panelSize: number;
 			if (this.state && this.state.gridPanelSize) {
 				panelSize = this.state.gridPanelSize;
@@ -71,18 +71,15 @@ class ResultsView implements IPanelView {
 				panelSize = 200;
 				this.needsGridResize = true;
 			}
-			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
-		});
-		let messageResizeList = this.messagePanel.onDidChange(e => {
 			if (this.state.messagePanelSize) {
 				this.panelViewlet.resizePanel(this.gridPanel, this.state.messagePanelSize);
 			}
-		});
+			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
+		})
 		// once the user changes the sash we should stop trying to resize the grid
 		once(this.panelViewlet.onDidSashChange)(e => {
 			this.needsGridResize = false;
-			gridResizeList.dispose();
-			messageResizeList.dispose();
+			resizeList.dispose();
 		});
 
 		this.panelViewlet.onDidSashChange(e => {
@@ -91,7 +88,7 @@ class ResultsView implements IPanelView {
 					this.state.gridPanelSize = this.panelViewlet.getPanelSize(this.gridPanel);
 				}
 				if (this.messagePanel.isExpanded()) {
-					this.state.messagePanelSize  = this.panelViewlet.getPanelSize(this.messagePanel);
+					this.state.messagePanelSize = this.panelViewlet.getPanelSize(this.messagePanel);
 				}
 			}
 		});
