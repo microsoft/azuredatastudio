@@ -28,6 +28,7 @@ import { ConnectionManagementService } from 'sql/parts/connection/common/connect
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import { TestThemeService } from 'sqltest/stubs/themeTestService';
+import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
@@ -40,6 +41,7 @@ suite('SQL QueryAction Tests', () => {
 	let editor: TypeMoq.Mock<QueryEditor>;
 	let calledRunQueryOnInput: boolean = undefined;
 	let testQueryInput: TypeMoq.Mock<QueryInput>;
+	let configurationService: TypeMoq.Mock<ConfigurationService>;
 
 	setup(() => {
 		// Setup a reusable mock QueryInput
@@ -56,6 +58,13 @@ suite('SQL QueryAction Tests', () => {
 		editor.setup(x => x.getSelection()).returns(() => undefined);
 		editor.setup(x => x.getSelection(false)).returns(() => undefined);
 		editor.setup(x => x.isSelectionEmpty()).returns(() => false);
+		configurationService = TypeMoq.Mock.ofInstance({
+			getValue: () => undefined,
+			onDidChangeConfiguration: () => undefined
+		} as any);
+		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
+			return {};
+		});
 	});
 
 	test('setClass sets child CSS class correctly', (done) => {
@@ -463,7 +472,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined, undefined);
+		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined, undefined, configurationService.object);
 
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -498,7 +507,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -522,7 +531,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -549,7 +558,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{
