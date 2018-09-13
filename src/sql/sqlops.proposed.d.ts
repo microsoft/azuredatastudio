@@ -17,6 +17,7 @@ declare module 'sqlops' {
 	 */
 	export interface ModelBuilder {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
+		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
@@ -51,7 +52,7 @@ declare module 'sqlops' {
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
 		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<T[]>;
+		onDidChangeSelection:  vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
@@ -69,6 +70,10 @@ declare module 'sqlops' {
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
+
+	}
+
+	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
 
 	}
 
@@ -119,6 +124,20 @@ declare module 'sqlops' {
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
+
+		/**
+		 * Inserts a from component in a given position in the form. Returns error given invalid index
+		 * @param formComponent Form component
+		 * @param index index to insert the component to
+		 * @param itemLayout Item Layout
+		 */
+		insertFormItem(formComponent: FormComponent | FormComponentGroup, index?: number, itemLayout?: FormItemLayout);
+
+		/**
+		 * Removes a from item from the from
+		 * @param formComponent
+		 */
+		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
 	export interface Component {
@@ -132,6 +151,15 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<void>;
+
+		/**
+		 * Sends an updated property of the component to the UI
+		 *
+		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * has been applied in the UI
+		 * @memberof Component
+		 */
+		updateProperty(key: string, value: any): Thenable<void>;
 
 		enabled: boolean;
 		/**
@@ -201,11 +229,27 @@ declare module 'sqlops' {
 
 		/**
 		 * Creates a child component and adds it to this container.
+		 * Adding component to multiple containers is not supported
 		 *
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addItem(component: Component, itemLayout?: TItemLayout): void;
+
+		/**
+		 * Creates a child component and inserts it to this container. Returns error given invalid index
+		 * Adding component to multiple containers is not supported
+		 * @param component the component to be added
+		 * @param index the index to insert the component to
+		 * @param {*} [itemLayout] Optional layout for this child item
+		 */
+		insertItem(component: Component, index: number, itemLayout?: TItemLayout): void;
+
+		/**
+		 *
+		 * @param component Removes a component from this container
+		 */
+		removeItem(component: Component): boolean;
 
 		/**
 		 * Defines the layout for this container
@@ -257,7 +301,16 @@ declare module 'sqlops' {
 		/**
 		 *
 		 */
-		textAlign?: string
+		textAlign?: string;
+
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself.
+		 */
+		position?: string;
 	}
 
 	export interface FlexItemLayout {
@@ -273,7 +326,7 @@ declare module 'sqlops' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string }
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface FormItemLayout {
@@ -296,6 +349,33 @@ declare module 'sqlops' {
 	}
 
 	export interface GroupItemLayout {
+	}
+
+	export interface DivLayout {
+		/**
+		 * Container Height
+		 */
+		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
+	}
+
+	export interface DivItemLayout {
+		/**
+		 * Matches the order CSS property and its available values.
+		 */
+		order?: number;
+
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
+	}
+
+	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
@@ -380,6 +460,18 @@ declare module 'sqlops' {
 	export interface ComponentProperties {
 		height?: number | string;
 		width?: number | string;
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself
+		 */
+		position?: string;
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface ComponentWithIcon {
@@ -468,15 +560,25 @@ declare module 'sqlops' {
 
 	}
 
-	export interface WebViewProperties {
+	export interface WebViewProperties extends ComponentProperties {
 		message?: any;
+
+		/**
+		 * Contents of the webview.
+		 *
+		 * Should be a complete html document.
+		 */
 		html?: string;
+		/**
+		 * Content settings for the webview.
+		 */
+		options?: vscode.WebviewOptions;
 	}
 
 	/**
 	 * Editor properties for the editor component
 	 */
-	export interface EditorProperties {
+	export interface EditorProperties extends ComponentProperties {
 		/**
 		 * The content inside the text editor
 		 */
@@ -485,23 +587,30 @@ declare module 'sqlops' {
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode?: string;
-		/**
-		 * The position CSS property for the editor. Empty by default.
-		 * If the editor is included inside a FlexContainer this must be
-		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
-		 * Without this the editor will fail to correctly size itself
-		 */
-		position?: string;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 		isFile?: boolean;
 		fileContent?: string;
+		title?: string;
 	}
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
+	}
+
+	export interface DivContainerProperties extends ComponentProperties {
+		/**
+		 * Matches the overflow-y CSS property and its available values.
+		 */
+		overflowY?: string;
+
+		/**
+		 * Setting the scroll based on the y offset
+		 * This is used when its child component is webview
+		 */
+		yOffsetChange?: number;
 	}
 
 	export interface CardComponent extends Component, CardProperties {
@@ -565,6 +674,7 @@ declare module 'sqlops' {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
+		readonly options: vscode.WebviewOptions;
 	}
 
 	/**
@@ -579,11 +689,41 @@ declare module 'sqlops' {
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode: string;
+		/**
+		 * The editor Uri which will be used as a reference for VSCode Language Service.
+		 * Currently this is auto-generated by the framework but can be queried after
+		 * view initialization is completed
+		 */
+		readonly editorUri: string;
+		/**
+		 * An event called when the editor content is updated
+		 */
+		readonly onContentChanged: vscode.Event<any>;
+
+		/**
+		 * An event called when the editor is created
+		 */
+		readonly onEditorCreated: vscode.Event<any>;
+
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
+		/**
+		 * The label for the button
+		 */
 		label: string;
+		/**
+		 * The title for the button. This title will show when it hovers
+		 */
+		title: string;
+		/**
+		 * Icon Path for the button.
+		 */
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+
+		/**
+		 * An event called when the button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 
@@ -1020,11 +1160,22 @@ declare module 'sqlops' {
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+			/**
+			 * `true` if there are unpersisted changes.
+			 * This is editable to support extensions updating the dirty status.
+			 */
+			isDirty: boolean;
 
 			/**
 			 * Opens the editor
 			 */
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
+
+			/**
+			 * Registers a save handler for this editor. This will be called if [supportsSave](#ModelViewEditorOptions.supportsSave)
+			 * is set to true and the editor is marked as dirty
+			 */
+			registerSaveHandler(handler: () => Thenable<boolean>);
 		}
 	}
 
@@ -1033,6 +1184,11 @@ declare module 'sqlops' {
 		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
 		 */
 		readonly retainContextWhenHidden?: boolean;
+
+		/**
+		 * Does this model view editor support save?
+		 */
+		readonly supportsSave?: boolean;
 	}
 
 	export enum DataProviderType {
@@ -1179,6 +1335,6 @@ declare module 'sqlops' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
+		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
 	}
 }

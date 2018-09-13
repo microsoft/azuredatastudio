@@ -18,6 +18,7 @@ export enum ServiceOptionType {
 }
 
 export enum ConnectionOptionSpecialType {
+	connectionName = 'connectionName',
 	serverName = 'serverName',
 	databaseName = 'databaseName',
 	authType = 'authType',
@@ -130,6 +131,7 @@ export enum FrequencyRelativeIntervals {
 
 export enum ModelComponentTypes {
 	NavContainer,
+	DivContainer,
 	FlexContainer,
 	Card,
 	InputBox,
@@ -172,7 +174,8 @@ export enum ComponentEventType {
 	onDidClick,
 	validityChanged,
 	onMessage,
-	onSelectedRowChanged
+	onSelectedRowChanged,
+	onComponentCreated
 }
 
 export interface IComponentEventArgs {

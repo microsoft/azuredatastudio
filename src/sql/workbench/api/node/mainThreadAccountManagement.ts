@@ -16,6 +16,7 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
+import { UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement implements MainThreadAccountManagementShape {
@@ -32,6 +33,20 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostAccountManagement);
 		}
 		this._toDispose = [];
+
+		this._accountManagementService.updateAccountListEvent((e: UpdateAccountListEventParams) => {
+			if (!e) {
+				return;
+			}
+
+			const providerMetadataIndex = Object.values(this._providerMetadata).findIndex((providerMetadata: sqlops.AccountProviderMetadata) => providerMetadata.id === e.providerId);
+			if (providerMetadataIndex === -1) {
+				return;
+			}
+
+			const providerHandle = parseInt(Object.keys(this._providerMetadata)[providerMetadataIndex]);
+			this._proxy.$accountsChanged(providerHandle, e.accountList);
+		});
 	}
 
 	public $beginAutoOAuthDeviceCode(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
@@ -46,6 +61,10 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 		this._accountManagementService.accountUpdated(updatedAccount);
 	}
 
+	public $getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
+		return this._accountManagementService.getAccountsForProvider(providerId);
+	}
+
 	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, handle: number): Thenable<any> {
 		let self = this;
 
@@ -58,7 +77,7 @@ export class MainThreadAccountManagement implements MainThreadAccountManagementS
 				return self._proxy.$clear(handle, accountKey);
 			},
 			getSecurityToken(account: sqlops.Account): Thenable<{}> {
-				return self._proxy.$getSecurityToken(handle, account);
+				return self._proxy.$getSecurityToken(account);
 			},
 			initialize(restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
 				return self._proxy.$initialize(handle, restoredAccounts);

@@ -41,9 +41,10 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -68,7 +69,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			this._register(this._editableDropdown.onValueChange(e => {
 				if (this.editable) {
 					this.setSelectedValue(this._editableDropdown.value);
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
@@ -83,7 +84,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 			this._register(this._selectBox.onDidSelect(e => {
 				if (!this.editable) {
 					this.setSelectedValue(this._selectBox.value);
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
@@ -97,10 +98,6 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel

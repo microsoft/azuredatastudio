@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 0.33.7
+* Release date: August 30, 2018
+* Release status: Public Preview
+
+## What's new in this version
+* Announcing the SQL Server Import Extension
+* SQL Server Profiler Session management
+* SQL Server Agent improvements
+* New community extension: First Responder Kit
+* Quality of Life improvements: Connection strings
+* Fix many customer reported GitHub issues
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* SebastianPfliegel `Added more saveAsCsv options #2099`
+* ianychoi `Fixes a typo: Mimunum -> Minimum #1994`
+* AlexFsmn `Fixed bug where proper file extension wasn't appended to filename. #2151`
+* AlexFsmn `Added functionality for adding any file to import wizard #2329`
+* AlexFsmn `Fixed background issue when copying a chart to clipboard #2215`
+* AlexFsmn `Fixed problem where vertical charts didn't display labels correctly. #2263`
+* AlexFsmn `Fixed Initial values for charts to match visuals #2266`
+* AlexFsmn `Renamed chart option labels #2264`
+* AlexFsmn `Added feature for opening file after exporting to CSV/XLS/JSON & query files #2216`
+* AlexFsmm `Get Connection String should copy to clipboard #2175`
+
 ## Version 0.31.4
 * Release date: July 19, 2018
 * Release status: Public Preview

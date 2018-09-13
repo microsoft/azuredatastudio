@@ -12,6 +12,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { echo, debounceEvent } from 'sql/base/common/event';
 
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -21,9 +22,10 @@ import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { Emitter, echo, debounceEvent, Event } from 'vs/base/common/event';
+import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -51,6 +53,10 @@ export interface IEventType {
 	editSessionReady: IEditSessionReadyEvent;
 }
 
+export interface IGridMessage extends sqlops.IResultMessage {
+	selection: sqlops.ISelectionData;
+}
+
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
 * and handles getting more rows from the service layer and disposing when the content is closed.
@@ -63,9 +69,12 @@ export default class QueryRunner {
 	private _hasCompleted: boolean = false;
 	private _batchSets: sqlops.BatchSummary[] = [];
 	private _eventEmitter = new EventEmitter();
+	private _isQueryPlan: boolean;
+
+	public get isQueryPlan(): boolean { return this._isQueryPlan; }
 
 	private _onMessage = new Emitter<sqlops.IResultMessage>();
-	public readonly onMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(echo(this._onMessage.event), (l, e) => {
+	private _debouncedMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(this._onMessage.event, (l, e) => {
 		// on first run
 		if (types.isUndefinedOrNull(l)) {
 			return [e];
@@ -73,9 +82,11 @@ export default class QueryRunner {
 			return l.concat(e);
 		}
 	});
+	private _echoedMessages = echo(this._debouncedMessage.event);
+	public readonly onMessage = this._echoedMessages.event;
 
 	private _onResultSet = new Emitter<sqlops.ResultSetSummary>();
-	public readonly onResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(echo(this._onResultSet.event), (l, e) => {
+	private _debouncedResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSet.event, (l, e) => {
 		// on first run
 		if (types.isUndefinedOrNull(l)) {
 			return [e];
@@ -83,18 +94,20 @@ export default class QueryRunner {
 			return l.concat(e);
 		}
 	});
+	private _echoedResultSet = echo(this._debouncedResultSet.event);
+	public readonly onResultSet = this._echoedResultSet.event;
 
 	private _onQueryStart = new Emitter<void>();
-	public readonly onQueryStart: Event<void> = echo(this._onQueryStart.event);
+	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
 
 	private _onQueryEnd = new Emitter<string>();
-	public readonly onQueryEnd: Event<string> = echo(this._onQueryEnd.event);
+	public readonly onQueryEnd: Event<string> = this._onQueryEnd.event;
 
 	private _onBatchStart = new Emitter<sqlops.BatchSummary>();
-	public readonly onBatchStart: Event<sqlops.BatchSummary> = echo(this._onBatchStart.event);
+	public readonly onBatchStart: Event<sqlops.BatchSummary> = this._onBatchStart.event;
 
 	private _onBatchEnd = new Emitter<sqlops.BatchSummary>();
-	public readonly onBatchEnd: Event<sqlops.BatchSummary> = echo(this._onBatchEnd.event);
+	public readonly onBatchEnd: Event<sqlops.BatchSummary> = this._onBatchEnd.event;
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -161,6 +174,13 @@ export default class QueryRunner {
 	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input: sqlops.ISelectionData, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
+		if (this.isExecuting) {
+			return TPromise.as(undefined);
+		}
+		this._echoedMessages.clear();
+		this._echoedResultSet.clear();
+		this._debouncedMessage.clear();
+		this._debouncedResultSet.clear();
 		let ownerUri = this.uri;
 		this._batchSets = [];
 		this._hasCompleted = false;
@@ -170,6 +190,12 @@ export default class QueryRunner {
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 			// TODO issue #228 add statusview callbacks here
+
+			if (runOptions && (runOptions.displayActualQueryPlan || runOptions.displayEstimatedQueryPlan)) {
+				this._isQueryPlan = true;
+			} else {
+				this._isQueryPlan = false;
+			}
 
 			// Send the request to execute the query
 			return runCurrentStatement
@@ -224,9 +250,19 @@ export default class QueryRunner {
 			}
 		});
 
-		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+		let timeStamp = Utils.parseNumAsTimeString(this._totalElapsedMilliseconds);
+
+		this._eventEmitter.emit(EventType.COMPLETE, timeStamp);
 		// We're done with this query so shut down any waiting mechanisms
-		this._onQueryEnd.fire(Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+
+		let message = {
+			message: nls.localize('query.message.executionTime', 'Total execution time: {0}', timeStamp),
+			isError: false,
+			time: undefined
+		};
+
+		this._onQueryEnd.fire(timeStamp);
+		this._onMessage.fire(message);
 	}
 
 	/**
@@ -246,7 +282,16 @@ export default class QueryRunner {
 
 		// Store the batch
 		this.batchSets[batch.id] = batch;
+
+		let message = {
+			// account for index by 1
+			message: nls.localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine + 1),
+			time: new Date(batch.executionStart).toLocaleTimeString(),
+			selection: batch.selection,
+			isError: false
+		};
 		this._eventEmitter.emit(EventType.BATCH_START, batch);
+		this._onMessage.fire(message);
 		this._onBatchStart.fire(batch);
 	}
 

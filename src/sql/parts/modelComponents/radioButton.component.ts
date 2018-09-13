@@ -33,8 +33,9 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -51,7 +52,7 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 			this._register(this._input);
 			this._register(this._input.onClicked(e => {
 				this.checked = this._input.checked;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onDidClick,
 					args: e
 				});
@@ -64,10 +65,6 @@ export default class RadioButtonComponent extends ComponentBase implements IComp
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel

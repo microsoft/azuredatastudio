@@ -8,7 +8,7 @@ import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 
-import { IResultMessage, BatchSummary, ISelectionData } from 'sqlops';
+import { IResultMessage, ISelectionData } from 'sqlops';
 
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
@@ -27,8 +27,7 @@ import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { $ } from 'vs/base/browser/builder';
 import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { localize } from 'vs/nls';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
 
 export interface IResultMessageIntern extends IResultMessage {
@@ -56,7 +55,8 @@ interface IBatchTemplate extends IMessageTemplate {
 const TemplateIds = {
 	MESSAGE: 'message',
 	BATCH: 'batch',
-	MODEL: 'model'
+	MODEL: 'model',
+	ERROR: 'error'
 };
 
 export class MessagePanel extends ViewletPanel {
@@ -71,14 +71,14 @@ export class MessagePanel extends ViewletPanel {
 	private tree: ITree;
 
 	constructor(
-		title: string, options: IViewletPanelOptions,
+		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(title, options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService);
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
 		this.controller.toFocusOnClick = this.model;
 		this.tree = new Tree(this.container, {
@@ -109,53 +109,21 @@ export class MessagePanel extends ViewletPanel {
 		this.queryRunnerDisposables = [];
 		this.reset();
 		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.push(runner.onBatchStart(e => this.onBatchStart(e)));
 		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
-		this.queryRunnerDisposables.push(runner.onQueryEnd(e => this.onQueryEnd(e)));
 	}
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
+		let hasError = false;
 		if (isArray(message)) {
-			this.model.messages.push(...message.map(c => {
-				return <IMessagePanelMessage>{
-					isError: c.isError,
-					message: c.message
-				};
-			}));
+			hasError = message.find(e => e.isError) ? true : false;
+			this.model.messages.push(...message);
 		} else {
-			this.model.messages.push({
-				message: message.message,
-				isError: message.isError
-			});
+			hasError = message.isError;
+			this.model.messages.push(message);
 		}
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
-			}
-		});
-	}
-
-	private onBatchStart(batch: BatchSummary) {
-		this.model.messages.push({
-			message: localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine),
-			time: new Date(batch.executionStart).toLocaleTimeString(),
-			selection: batch.selection,
-			isError: false
-		});
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
-				this.tree.setScrollPosition(1);
-			}
-		});
-	}
-
-	private onQueryEnd(elapsedTime: string) {
-		this.model.totalExecuteMessage = {
-			message: localize('query.message.executionTime', 'Total execution time: {0}', elapsedTime),
-			isError: false
-		};
+		if (hasError) {
+			this.setExpanded(true);
+		}
 		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.refresh(this.model).then(() => {
 			if (previousScrollPosition === 1) {
@@ -214,6 +182,8 @@ class MessageRenderer implements IRenderer {
 			return TemplateIds.MODEL;
 		} else if (element.selection) {
 			return TemplateIds.BATCH;
+		} else if (element.isError) {
+			return TemplateIds.ERROR;
 		} else {
 			return TemplateIds.MESSAGE;
 		}
@@ -229,15 +199,19 @@ class MessageRenderer implements IRenderer {
 			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
 			const message = $('div.batch-start').appendTo(container).getHTMLElement();
 			return { message, timeStamp };
+		} else if (templateId === TemplateIds.ERROR) {
+			$('div.time-stamp').appendTo(container);
+			const message = $('div.error-message').appendTo(container).getHTMLElement();
+			return { message };
 		} else {
 			return undefined;
 		}
 	}
 
 	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
-		if (templateId === TemplateIds.MESSAGE) {
+		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
 			let data: IMessageTemplate = templateData;
-			data.message.innerText = element.message;
+			data.message.innerText = element.message.replace(/(\r\n|\n|\r)/g, ' ');
 		} else if (templateId === TemplateIds.BATCH) {
 			let data = templateData as IBatchTemplate;
 			data.timeStamp.innerText = element.time;
@@ -257,7 +231,7 @@ export class MessageController extends WorkbenchTreeController {
 	constructor(
 		options: IControllerOptions,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkbenchEditorService private workbenchEditorService: IWorkbenchEditorService,
+		@IEditorService private workbenchEditorService: IEditorService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
@@ -283,7 +257,7 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let control = this.workbenchEditorService.getActiveEditor().getControl() as IEditor;
+			let control = this.workbenchEditorService.activeControl.getControl() as IEditor;
 			control.setSelection({
 				startColumn: selection.startColumn + 1,
 				endColumn: selection.endColumn + 1,

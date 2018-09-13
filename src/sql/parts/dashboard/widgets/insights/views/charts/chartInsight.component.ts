@@ -103,8 +103,8 @@ export const defaultChartConfig: IChartConfig = {
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
 	private _isDataAvailable: boolean = false;
-	private _hasInit: boolean = false;
-	private _hasError: boolean = false;
+	protected _hasInit: boolean = false;
+	protected _hasError: boolean = false;
 	private _options: any = {};
 
 	@ViewChild(BaseChartDirective) private _chart: BaseChartDirective;
@@ -113,7 +113,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected _config: IChartConfig;
 	protected _data: IInsightData;
 
-	private readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', 'Chart cannot be displayed with the given data');
+	protected readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', 'Chart cannot be displayed with the given data');
 
 	protected abstract get chartType(): ChartType;
 

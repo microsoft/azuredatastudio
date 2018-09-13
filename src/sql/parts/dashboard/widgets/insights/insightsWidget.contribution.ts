@@ -22,11 +22,11 @@ ExtensionsRegistry.registerExtensionPoint<IInsightTypeContrib | IInsightTypeCont
 	function handleCommand(insight: IInsightTypeContrib, extension: IExtensionPointUser<any>) {
 
 		if (insight.contrib.queryFile) {
-			insight.contrib.queryFile = join(extension.description.extensionFolderPath, insight.contrib.queryFile);
+			insight.contrib.queryFile = join(extension.description.extensionLocation.fsPath, insight.contrib.queryFile);
 		}
 
 		if (insight.contrib.details && insight.contrib.details.queryFile) {
-			insight.contrib.details.queryFile = join(extension.description.extensionFolderPath, insight.contrib.details.queryFile);
+			insight.contrib.details.queryFile = join(extension.description.extensionLocation.fsPath, insight.contrib.details.queryFile);
 		}
 
 		registerNonCustomDashboardWidget(insight.id, '', insight.contrib);

@@ -15,13 +15,14 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class WebViewDialog extends Modal {
 
@@ -40,6 +41,9 @@ export class WebViewDialog extends Modal {
 	private contentDisposables: IDisposable[] = [];
 	private _onMessage = new Emitter<any>();
 
+	protected contextKey: IContextKey<boolean>;
+	protected findInputFocusContextKey: IContextKey<boolean>;
+
 	constructor(
 		@IThemeService private _themeService: IThemeService,
 		@IClipboardService private _clipboardService: IClipboardService,
@@ -48,6 +52,7 @@ export class WebViewDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', 'OK');
@@ -89,18 +94,16 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		new Builder(container).div({ 'class': 'webview-dialog' }, (bodyBuilder) => {
 			this._body = bodyBuilder.getHTMLElement();
-			this._webview = new WebviewElement(
+
+			this._webview = this._instantiationService.createInstance(WebviewElement,
 				this._webViewPartService.getContainer(Parts.EDITOR_PART),
-				this._themeService,
-				this._environmentService,
-				this._contextViewService,
-				undefined,
-				undefined,
+				this.contextKey,
+				this.findInputFocusContextKey,
 				{
-					allowScripts: true,
-					enableWrappedPostMessage: true
-				}
-			);
+					enableWrappedPostMessage: true,
+					allowScripts: true
+				});
+
 			this._webview.mountTo(this._body);
 
 			this._webview.style(this._themeService.getTheme());

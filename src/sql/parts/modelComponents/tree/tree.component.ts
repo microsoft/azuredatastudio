@@ -55,8 +55,10 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService) {
-		super(changeRef);
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+	) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -80,9 +82,9 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	}
 
 	public refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
-		if (this._dataProvider) {
-			this._dataProvider.refresh(itemsToRefreshByHandle);
-		}
+		// if (this._dataProvider) {
+		// 	const itemsToRefresh = this._dataProvider.getItemsToRefresh(itemsToRefreshByHandle);
+		// }
 		if (this._tree) {
 			for (const item of Object.values(itemsToRefreshByHandle)) {
 				this._tree.refresh(<ITreeComponentItem>item);
@@ -112,7 +114,7 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 			this._tree.domFocus();
 			this._register(this._tree);
 			this._register(attachListStyler(this._tree, this.themeService));
-			this._register(this._tree.onDidChangeSelection( e => {
+			this._register(this._tree.onDidChangeSelection(e => {
 				this._dataProvider.onNodeSelected(e.selection);
 			}));
 			this._tree.refresh();
@@ -123,12 +125,11 @@ export default class TreeComponent extends ComponentBase implements IComponent, 
 	/// IComponent implementation
 
 	public layout(): void {
-		this._changeRef.detectChanges();
 		if (this._tree) {
-
 			this.layoutTree();
 			this._tree.refresh();
 		}
+		super.layout();
 	}
 
 	private layoutTree(): void {

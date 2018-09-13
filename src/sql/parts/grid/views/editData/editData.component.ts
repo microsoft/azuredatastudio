@@ -60,7 +60,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
 	private complete = false;
-	private idMapping: { [row: number]: number } = {};
 
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean };
@@ -89,7 +88,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(forwardRef(() => ChangeDetectorRef)) cd: ChangeDetectorRef,
 		@Inject(IBootstrapParams) params: IEditDataComponentParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(INotificationService) notificationService: INotificationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
@@ -97,7 +96,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		@Inject(IClipboardService) clipboardService: IClipboardService,
 		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, notificationService);
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.dataService = params.dataService;
 		this.actionProvider = this.instantiationService.createInstance(EditDataGridActionProvider, this.dataService, this.onGridSelectAll(), this.onDeleteRow(), this.onRevertRow());
@@ -188,10 +187,23 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 						let dataWithSchema = {};
 						// skip the first column since its a number column
 						for (let i = 1; i < this.dataSet.columnDefinitions.length; i++) {
-							dataWithSchema[this.dataSet.columnDefinitions[i].field] = r.cells[i - 1].displayValue;
+							dataWithSchema[this.dataSet.columnDefinitions[i].field] = {
+								displayValue: r.cells[i - 1].displayValue,
+								ariaLabel: escape(r.cells[i - 1].displayValue),
+								isNull: r.cells[i - 1].isNull
+							};
 						}
 						return dataWithSchema;
 					});
+
+					// should add null row?
+					if (offset + count > this.dataSet.totalRows - 1) {
+						gridData.push(this.dataSet.columnDefinitions.reduce((p, c) => {
+							p[c.field] = 'NULL';
+							return p;
+						}, {}));
+					}
+
 					// let rowIndex = offset;
 					// let gridData: IGridDataRow[] = result.subset.map(row => {
 					// 	self.idMapping[rowIndex] = row.id;
@@ -203,9 +215,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					// 	};
 					// });
 
-					// Append a NULL row to the end of gridData
-					// let newLastRow = gridData.length === 0 ? 0 : (gridData[gridData.length - 1].row + 1);
-					// gridData.push({ values: self.dataSet.columnDefinitions.map(cell => { return { displayValue: 'NULL', isNull: false }; }), row: newLastRow });
 					resolve(gridData);
 				});
 			});
@@ -368,17 +377,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				index => { return {}; }
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
-				let isLinked = c.isXml || c.isJson;
-				let linkType = c.isXml ? 'xml' : 'json';
-
 				return {
 					id: i.toString(),
-					name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-						? 'XML Showplan'
-						: escape(c.columnName),
+					name: escape(c.columnName),
 					field: i.toString(),
-					formatter: isLinked ? Services.hyperLinkFormatter : Services.textFormatter,
-					asyncPostRender: isLinked ? self.linkHandler(linkType) : undefined,
+					formatter: Services.textFormatter,
 					isEditable: c.isUpdatable
 				};
 			}))
@@ -453,7 +456,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			// revert our last new row
 			this.removingNewRow = true;
 
-			this.dataService.revertRow(this.idMapping[currentNewRowIndex])
+			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
 					this.removeRow(currentNewRowIndex);
 					this.newRowVisible = false;
@@ -534,7 +537,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					self.windowSize,
 					self.dataSet.totalRows,
 					self.loadDataFunction,
-					index => { return { values: [] }; }
+					index => { return {}; }
 				);
 
 				// Refresh grid
@@ -556,7 +559,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			this.windowSize,
 			this.dataSet.totalRows,
 			this.loadDataFunction,
-			index => { return { values: [] }; }
+			index => { return {}; }
 		);
 
 		// refresh results view

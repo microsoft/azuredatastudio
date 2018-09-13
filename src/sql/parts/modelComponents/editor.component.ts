@@ -19,8 +19,11 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { SimpleProgressService } from 'vs/editor/standalone/browser/simpleServices';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
 	template: '',
@@ -34,15 +37,16 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	private _editorModel: ITextModel;
 	private _renderedContent: string;
 	private _languageMode: string;
+	private _uri: string;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -54,18 +58,40 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	private _createEditor(): void {
-		this._editor = this._instantiationService.createInstance(QueryTextEditor);
+		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
+		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);
-		this._editorInput = this._instantiationService.createInstance(UntitledEditorInput, URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}` }), false, 'sql', '', '');
+		let uri = this.createUri();
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, 'plaintext', '', '');
 		this._editor.setInput(this._editorInput, undefined);
-		this._editorInput.resolve().then(model => this._editorModel = model.textEditorModel);
+		this._editorInput.resolve().then(model => {
+			this._editorModel = model.textEditorModel;
+			this.fireEvent({
+				eventType: ComponentEventType.onComponentCreated,
+				args: this._uri
+			});
+		});
 
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.content = this._editorModel.getValue();
+
+			// Notify via an event so that extensions can detect and propagate changes
+			this.fireEvent({
+				eventType: ComponentEventType.onDidChange,
+				args: e
+			});
 		}));
+	}
+
+	private createUri(): URI {
+		let uri = URI.from({ scheme: Schemas.untitled, path: `${this.descriptor.type}-${this.descriptor.id}` });
+		// Use this to set the internal (immutable) and public (shared with extension) uri properties
+		this._uri = uri.toString();
+		this.editorUri = this._uri;
+		return uri;
 	}
 
 	ngOnDestroy(): void {
@@ -81,7 +107,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._editor.layout(new DOM.Dimension(
 			width && width > 0 ? width : DOM.getContentWidth(this._el.nativeElement),
 			height && height > 0 ? height : DOM.getContentHeight(this._el.nativeElement)));
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.style.position = this.position;
 	}
 
@@ -103,7 +129,6 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	/// IComponent implementation
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();
@@ -117,6 +142,8 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		if (this.languageMode !== this._languageMode) {
 			this.updateLanguageMode();
 		}
+		// Intentionally always updating editorUri as it's wiped out by parent setProperties call.
+		this.editorUri = this._uri;
 	}
 
 	// CSS-bound properties
@@ -136,11 +163,11 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
 	}
 
-	public get position(): string {
-		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.position, '');
+	public get editorUri(): string {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, string>((props) => props.editorUri, '');
 	}
 
-	public set position(newValue: string) {
-		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, position) => { properties.languoffsetMarginageMode = position; }, newValue);
+	public set editorUri(newValue: string) {
+		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, editorUri) => { properties.editorUri = editorUri; }, newValue);
 	}
 }

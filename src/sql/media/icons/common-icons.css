@@ -63,21 +63,21 @@
 	background: url("globalerror.svg") center center no-repeat;
 }
 
-.vs .icon.error,
-.vs-dark .icon.error,
-.hc-black .icon.error {
+.vs .sql.icon.error,
+.vs-dark .sql.icon.error,
+.hc-black .sql.icon.error {
 	content: url("status_error.svg");
 }
 
-.vs .icon.warning,
-.vs-dark .icon.warning,
-.hc-black .icon.warning {
+.vs .sql.icon.warning,
+.vs-dark .sql.icon.warning,
+.hc-black .sql.icon.warning {
 	content: url("status_warning.svg");
 }
 
-.vs .icon.info,
-.vs-dark .icon.info,
-.hc-black .icon.info {
+.vs .sql.icon.info,
+.vs-dark .sql.icon.info,
+.hc-black .sql.icon.info {
 	content: url("status_info.svg");
 }
 

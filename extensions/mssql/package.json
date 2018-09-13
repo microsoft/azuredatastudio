@@ -18,7 +18,7 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.7",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.8",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
     "vscode-extension-telemetry": "^0.0.15"
@@ -201,6 +201,20 @@
       "providerId": "MSSQL",
       "displayName": "Microsoft SQL Server",
       "connectionOptions": [
+        {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "Name (optional)",
+          "description": "Custom name of the connection",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
         {
           "specialValueType": "serverName",
           "isIdentity": true,

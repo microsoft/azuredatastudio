@@ -117,7 +117,7 @@ export class AccountPicker extends Disposable {
 
 		// Create refresh account action
 		this._refreshContainer = DOM.append(this._rootElement, DOM.$('div.refresh-container'));
-		DOM.append(this._refreshContainer, DOM.$('div.icon warning'));
+		DOM.append(this._refreshContainer, DOM.$('div.sql icon warning'));
 		let actionBar = new ActionBar(this._refreshContainer, { animated: false });
 		this._refreshAccountAction = this._instantiationService.createInstance(RefreshAccountAction);
 		actionBar.push(this._refreshAccountAction, { icon: false, label: true });

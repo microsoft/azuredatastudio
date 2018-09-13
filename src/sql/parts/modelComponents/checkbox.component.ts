@@ -29,8 +29,9 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -49,7 +50,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 			this._register(this._input);
 			this._register(this._input.onChange(e => {
 				this.checked = this._input.checked;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onDidChange,
 					args: e
 				});
@@ -62,10 +63,6 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel

@@ -35,8 +35,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	@ViewChild('table', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService) {
-		super(changeRef);
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -109,7 +110,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._register(attachTableStyler(this._table, this.themeService));
 			this._register(this._table.onSelectedRowsChanged((e, data) => {
 				this.selectedRows = data.rows;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
 					args: e
 				});
@@ -132,8 +133,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public layout(): void {
 		this.layoutTable();
-
-		this._changeRef.detectChanges();
+		super.layout();
 	}
 
 	private layoutTable(): void {

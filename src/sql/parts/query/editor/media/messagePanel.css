@@ -13,18 +13,28 @@
     word-break: break-all;
 }
 
+.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows>.monaco-tree-row {
+	cursor: default;
+}
+
 .message-tree .time-stamp {
 	width: 100px;
 	display: inline-block;
 }
 
 .message-tree .message,
-.message-tree .batch-start {
+.message-tree .batch-start,
+.message-tree .error-message {
 	display: inline-block;
 }
 
 .message-tree .batch-start {
 	text-decoration: underline;
+	cursor: pointer;
+}
+
+.message-tree .error-message {
+	color: red;
 }
 
 .message-tree .batch-start:hover {

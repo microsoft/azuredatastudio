@@ -74,6 +74,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	}
 
 	ngOnInit() {
+
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,

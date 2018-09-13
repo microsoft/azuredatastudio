@@ -12,6 +12,7 @@ import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionS
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
+import URI from 'vs/base/common/uri';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -90,6 +91,15 @@ export function createApiFactory(
 				},
 				accountUpdated(updatedAccount: sqlops.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
+				},
+				getAllAccounts(): Thenable<sqlops.Account[]> {
+					return extHostAccountManagement.$getAllAccounts();
+				},
+				getSecurityToken(account: sqlops.Account): Thenable<{}> {
+					return extHostAccountManagement.$getSecurityToken(account);
+				},
+				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
 				}
 			};
 
@@ -104,8 +114,8 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
-				openConnectionDialog(providers?: string[]): Thenable<sqlops.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers);
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -320,10 +330,10 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title);
+					return extHostModelViewDialog.createDialog(title, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					return extHostModelViewDialog.createTab(title);
+					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
 					return extHostModelViewDialog.createButton(label);
@@ -364,7 +374,7 @@ export function createApiFactory(
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
 				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, options);
+					return extHostModelViewDialog.createModelViewEditor(title, extension.extensionLocation, options);
 				}
 			};
 
@@ -376,7 +386,7 @@ export function createApiFactory(
 
 			const ui = {
 				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
-					extHostModelView.$registerProvider(modelViewId, handler);
+					extHostModelView.$registerProvider(modelViewId, handler, extension.extensionLocation);
 				}
 			};
 
@@ -445,7 +455,7 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 			return undefined;
 		}
 		return new TPromise((resolve, reject) => {
-			realpath(ext.extensionFolderPath, (err, path) => {
+			realpath(ext.extensionLocation.fsPath, (err, path) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -476,7 +486,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 		setDefaultApiImpl: (defaultImpl: ApiImpl) => void,
 		parent: any): ApiImpl {
 		// get extension id from filename and api for extension
-		const ext = extensionPaths.findSubstr(parent.filename);
+		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
 			let apiImpl = apiMap.get(ext.id);
 			if (!apiImpl) {
@@ -488,6 +498,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 
 		// fall back to a default implementation
 		if (!defaultImpl) {
+			console.warn(`Could not identify extension for 'vscode' require call from ${parent.filename}`);
 			defaultImpl = createApi(nullExtensionDescription);
 			setDefaultApiImpl(defaultImpl);
 		}
@@ -527,8 +538,9 @@ const nullExtensionDescription: IExtensionDescription = {
 	enableProposedApi: false,
 	engines: undefined,
 	extensionDependencies: undefined,
-	extensionFolderPath: undefined,
+	extensionLocation: undefined,
 	isBuiltin: false,
 	main: undefined,
-	version: undefined
+	version: undefined,
+	isUnderDevelopment: true
 };

@@ -37,9 +37,10 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IClipboardService) private clipboardService: IClipboardService
+		@Inject(IClipboardService) private clipboardService: IClipboardService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -56,7 +57,7 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 			this._register(attachListBoxStyler(this._input, this.themeService));
 			this._register(this._input.onDidSelect(e => {
 				this.selectedRow = e.index;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onSelectedRowChanged,
 					args: e
 				});
@@ -75,11 +76,6 @@ export default class ListBoxComponent extends ComponentBase implements IComponen
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();

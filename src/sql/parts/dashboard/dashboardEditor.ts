@@ -23,6 +23,7 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -81,7 +82,7 @@ export class DashboardEditor extends BaseEditor {
 
 		const parentElement = this.getContainer();
 
-		super.setInput(input, options);
+		super.setInput(input, options, CancellationToken.None);
 
 		$(parentElement).clearChildren();
 

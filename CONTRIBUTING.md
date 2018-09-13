@@ -5,9 +5,9 @@ First, please do a search in [open issues](https://github.com/Microsoft/sqlopsst
 
 If you find your issue already exists, make relevant comments and add your [reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments). Use a reaction in place of a "+1" comment.
 
-👍 - upvote
+� - upvote
 
-👎 - downvote
+� - downvote
 
 If you cannot find an existing issue that describes your bug or feature, submit an issue using the guidelines below.
 

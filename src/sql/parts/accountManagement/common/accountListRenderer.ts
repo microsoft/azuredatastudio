@@ -8,7 +8,7 @@ import 'vs/css!sql/parts/accountManagement/common/media/accountListRenderer';
 import 'vs/css!sql/parts/accountManagement/common/media/accountActions';
 import 'vs/css!sql/media/icons/common-icons';
 import * as DOM from 'vs/base/browser/dom';
-import { IDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
+import { IRenderer, IVirtualDelegate } from 'vs/base/browser/ui/list/list';
 import { ActionBar, IActionOptions } from 'vs/base/browser/ui/actionbar/actionbar';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -17,7 +17,7 @@ import { RemoveAccountAction, RefreshAccountAction } from 'sql/parts/accountMana
 
 import * as sqlops from 'sqlops';
 
-export class AccountListDelegate implements IDelegate<sqlops.Account> {
+export class AccountListDelegate implements IVirtualDelegate<sqlops.Account> {
 
 	constructor(
 		private _height: number
@@ -78,6 +78,10 @@ export class AccountPickerListRenderer implements IRenderer<sqlops.Account, Acco
 	}
 
 	public disposeTemplate(template: AccountListTemplate): void {
+		// noop
+	}
+
+	public disposeElement(element: sqlops.Account, index: number, templateData: AccountListTemplate): void {
 		// noop
 	}
 }

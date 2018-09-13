@@ -11,7 +11,7 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
@@ -26,7 +26,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService
+		@IEditorService private _workbenchEditorService: IEditorService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostObjectExplorer);

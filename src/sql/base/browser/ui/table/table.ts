@@ -18,7 +18,7 @@ import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
 
-export interface ITableContextMenuEvent {
+export interface ITableMouseEvent {
 	anchor: HTMLElement | { x: number, y: number };
 	cell?: { row: number, cell: number };
 }
@@ -62,18 +62,21 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 	private _disposables: IDisposable[] = [];
 
-	private _onContextMenu = new Emitter<ITableContextMenuEvent>();
-	public readonly onContextMenu: Event<ITableContextMenuEvent> = this._onContextMenu.event;
+	private _onContextMenu = new Emitter<ITableMouseEvent>();
+	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;
+
+	private _onClick = new Emitter<ITableMouseEvent>();
+	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
 
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
-		if (!configuration || isArray(configuration.dataProvider)) {
+		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
 			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
 		} else {
 			this._data = configuration.dataProvider;
 		}
 
-		if (configuration.columns) {
+		if (configuration && configuration.columns) {
 			this._columns = configuration.columns;
 		} else {
 			this._columns = new Array<Slick.Column<T>>();
@@ -105,7 +108,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
 		DOM.addClass(this._container, this.idPrefix);
-		if (configuration.sorter) {
+		if (configuration && configuration.sorter) {
 			this._sorter = configuration.sorter;
 			this._grid.onSort.subscribe((e, args) => {
 				this._sorter.sort(args);
@@ -114,11 +117,16 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			});
 		}
 
-		this._grid.onContextMenu.subscribe((e: JQuery.Event) => {
+		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
+		this.mapMouseEvent(this._grid.onClick, this._onClick);
+	}
+
+	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
+		slickEvent.subscribe((e: JQuery.Event) => {
 			const originalEvent = e.originalEvent;
 			const cell = this._grid.getCellFromEvent(originalEvent);
 			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
-			this._onContextMenu.fire({ anchor, cell });
+			emitter.fire({ anchor, cell });
 		});
 	}
 
@@ -156,6 +164,10 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			this._data = new TableDataView<T>(data);
 		}
 		this._grid.setData(this._data, true);
+	}
+
+	getData(): Slick.DataProvider<T> {
+		return this._data;
 	}
 
 	get columns(): Slick.Column<T>[] {
@@ -236,7 +248,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			}
 		}
 		this.resizeCanvas();
-		this.autosizeColumns();
 	}
 
 	autosizeColumns() {
@@ -300,10 +311,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 		if (styles.listHoverBackground) {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { background-color:  ${styles.listHoverBackground}; }`);
+			// handle no coloring during drag
+			content.push(`.monaco-table.${this.idPrefix} .drag .slick-row:hover { background-color: inherit; }`);
+
 		}
 
 		if (styles.listHoverForeground) {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { color:  ${styles.listHoverForeground}; }`);
+			// handle no coloring during drag
+			content.push(`.monaco-table.${this.idPrefix} .drag .slick-row:hover { color: inherit; }`);
 		}
 
 		if (styles.listSelectionOutline) {

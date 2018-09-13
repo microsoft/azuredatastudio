@@ -256,6 +256,186 @@ suite('ExtHostAccountManagement', () => {
 			})
 			.then(() => done(), (err) => done(err));
 	});
+
+	// GETALLACCOUNTS TESTS ///////////////////////////////////////////////////////
+	test('GetAllAccounts - Success', (done) => {
+		let mockAccountProviderMetadata = {
+			id: 'azure',
+			displayName: 'Azure'
+		};
+
+		let mockAccount1 = {
+			key: {
+				providerId: mockAccountProviderMetadata.id,
+				accountId: 'azure_account_1'
+			},
+			displayInfo: {
+				contextualDisplayName: 'Microsoft Account',
+				accountType: 'microsoft',
+				displayName: 'Azure Account 1'
+			},
+			properties: [],
+			isStale: false
+		};
+		let mockAccount2 = {
+			key: {
+				providerId: mockAccountProviderMetadata.id,
+				accountId: 'azure_account_2'
+			},
+			displayInfo: {
+				contextualDisplayName: 'Work/School Account',
+				accountType: 'microsoft',
+				displayName: 'Azure Account 2'
+			},
+			properties: [],
+			isStale: false
+		};
+		let mockAccounts = [mockAccount1, mockAccount2];
+
+		let expectedAccounts = [mockAccount1, mockAccount2];
+
+		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
+		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
+
+		// Setup: Create ext host account management with registered account provider
+		let extHost = new ExtHostAccountManagement(threadService);
+		extHost.$registerAccountProvider(mockAccountProviderMetadata, new AccountProviderStub());
+
+		// If: I get all accounts
+		extHost.$getAllAccounts()
+			.then((accounts) => {
+				// Then: The call should have been passed to the account management service
+				mockAccountManagementService.verify(
+					(obj) => obj.getAccountsForProvider(TypeMoq.It.isAny()),
+					TypeMoq.Times.once()
+				);
+
+				assert.ok(Array.isArray(accounts));
+				assert.equal(accounts.length, expectedAccounts.length);
+				assert.deepStrictEqual(accounts, expectedAccounts);
+			})
+			.then(() => done(), (err) => done(err));
+	});
+
+	test('GetAllAccounts - No account providers', (done) => {
+		// Setup: Create ext host account management with no registered account providers
+		let extHost = new ExtHostAccountManagement(threadService);
+
+		// If: I get all accounts
+		// Then: It should throw
+		assert.throws(
+			() => extHost.$getAllAccounts(),
+			(error) => {
+				return error.message === 'No account providers registered.';
+			});
+		done();
+	});
+
+	test('GetSecurityToken - Success', (done) => {
+		let mockAccountProviderMetadata = {
+			id: 'azure',
+			displayName: 'Azure'
+		};
+
+		let mockAccount1 = {
+			key: {
+				providerId: mockAccountProviderMetadata.id,
+				accountId: 'azure_account_1'
+			},
+			displayInfo: {
+				contextualDisplayName: 'Microsoft Account',
+				accountType: 'microsoft',
+				displayName: 'Azure Account 1'
+			},
+			properties: [],
+			isStale: false
+		};
+		let mockAccounts = [mockAccount1];
+
+		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
+		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
+
+		// Setup: Create ext host account management with registered account provider
+		let extHost = new ExtHostAccountManagement(threadService);
+		extHost.$registerAccountProvider(mockAccountProviderMetadata, new AccountProviderStub());
+
+		extHost.$getAllAccounts()
+			.then((accounts) => {
+		    		// If: I get security token
+					extHost.$getSecurityToken(mockAccount1)
+						.then((securityToken) => {
+							// Then: The call should have been passed to the account management service
+							mockAccountManagementService.verify(
+								(obj) => obj.getSecurityToken(TypeMoq.It.isAny()),
+								TypeMoq.Times.once()
+							);
+						}
+					);
+				}
+			).then(() => done(), (err) => done(err));
+	});
+
+	test('GetSecurityToken - Account not found', (done) => {
+		let mockAccountProviderMetadata = {
+			id: 'azure',
+			displayName: 'Azure'
+		};
+
+		let mockAccount1 = {
+			key: {
+				providerId: mockAccountProviderMetadata.id,
+				accountId: 'azure_account_1'
+			},
+			displayInfo: {
+				contextualDisplayName: 'Microsoft Account',
+				accountType: 'microsoft',
+				displayName: 'Azure Account 1'
+			},
+			properties: [],
+			isStale: false
+		};
+		let mockAccounts = [mockAccount1];
+
+		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
+		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
+
+		// Setup: Create ext host account management with registered account provider
+		let extHost = new ExtHostAccountManagement(threadService);
+		extHost.$registerAccountProvider(mockAccountProviderMetadata, new AccountProviderStub());
+
+		let mockAccount2 = {
+			key: {
+				providerId: mockAccountProviderMetadata.id,
+				accountId: 'azure_account_2'
+			},
+			displayInfo: {
+				contextualDisplayName: 'Work/School Account',
+				accountType: 'microsoft',
+				displayName: 'Azure Account 2'
+			},
+			properties: [],
+			isStale: false
+		};
+
+		extHost.$getAllAccounts().then((accounts) => {
+			// If: I get security token for mockAccount2
+			// Then: It should throw
+			assert.throws(
+				() => extHost.$getSecurityToken(mockAccount2),
+				(error) => {
+					return error.message === `Account ${mockAccount2.key.accountId} not found.`;
+				}
+			);
+		});
+
+		done();
+	});
 });
 
 function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
@@ -270,4 +450,17 @@ function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
 		.returns(() => Promise.resolve(undefined));
 
 	return mock;
+}
+
+function getMockAccountManagementService(accounts: sqlops.Account[]): TypeMoq.Mock<AccountManagementTestService> {
+	let mockAccountManagementService = TypeMoq.Mock.ofType(AccountManagementTestService);
+
+	mockAccountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny()))
+		.returns(() => Promise.resolve(accounts));
+	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isValue(accounts[0])))
+	    .returns(() => Promise.resolve({}));
+	mockAccountManagementService.setup(x => x.updateAccountListEvent)
+	    .returns(() => () => { return undefined; } );
+
+	return mockAccountManagementService;
 }

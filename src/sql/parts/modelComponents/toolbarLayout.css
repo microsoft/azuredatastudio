@@ -30,11 +30,17 @@
 	padding-left: 10px;
 }
 
+.modelview-toolbar-container.toolbar-vertical .modelview-toolbar-item {
+	flex: 0 0;
+	flex-direction: row;
+	display: flex;
+	padding-left: 0px;
+}
+
 .modelview-toolbar-container .modelview-toolbar-title {
-	padding-right: 5px;
+	padding: 4px;
 	font-size: 14px;
 	cursor: pointer;
-	margin: auto;
 }
 
 .modelview-toolbar-container .modelview-toolbar-component select,
@@ -47,4 +53,21 @@
 	padding-left: 15px;
 	background-size: 11px;
 	margin-right: 0.3em;
+}
+
+/* Vertical button handling */
+.modelview-toolbar-container.toolbar-vertical  .modelview-toolbar-component modelview-button .monaco-text-button.icon {
+	padding: 22px 16px 22px 16px;
+	background-size: 22px;
+	margin-right: 0.3em;
+	background-position: 50% 50%;
+
+}
+
+.modelview-toolbar-container .modelview-toolbar-component modelview-button .monaco-text-button.active {
+	-ms-transform: scale(1.272019649, 1.272019649); /* 1.272019649 = √φ */
+	-webkit-transform: scale(1.272019649, 1.272019649);
+	-moz-transform: scale(1.272019649, 1.272019649);
+	-o-transform: scale(1.272019649, 1.272019649);
+	transform: scale(1.272019649, 1.272019649);
 }

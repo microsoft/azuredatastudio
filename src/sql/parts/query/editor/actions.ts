@@ -11,11 +11,14 @@ import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';
+import { QueryEditor } from './queryEditor';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };
@@ -24,12 +27,21 @@ export interface IGridActionContext {
 	batchId: number;
 	resultId: number;
 	table: Table<any>;
+	selectionModel: CellSelectionModel<any>;
 	tableState: GridTableState;
 }
 
 export interface IMessagesActionContext {
 	selection: Selection;
 	tree: ITree;
+}
+
+function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
+	if (ranges) {
+		return ranges.map(e => new Slick.Range(e.fromRow, e.fromCell - 1, e.toRow, e.toCell ? e.toCell - 1 : undefined));
+	} else {
+		return undefined;
+	}
 }
 
 export class SaveResultAction extends Action {
@@ -49,13 +61,19 @@ export class SaveResultAction extends Action {
 		id: string,
 		label: string,
 		icon: string,
-		private format: SaveFormat
+		private format: SaveFormat,
+		private accountForNumberColumn = true
 	) {
 		super(id, label, icon);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		context.runner.serializeResults(context.batchId, context.resultId, this.format, context.selection);
+		if (this.accountForNumberColumn) {
+			context.runner.serializeResults(context.batchId, context.resultId, this.format,
+				mapForNumberColumn(context.selection));
+		} else {
+			context.runner.serializeResults(context.batchId, context.resultId, this.format, context.selection);
+		}
 		return TPromise.as(true);
 	}
 }
@@ -71,12 +89,19 @@ export class CopyResultAction extends Action {
 		id: string,
 		label: string,
 		private copyHeader: boolean,
+		private accountForNumberColumn = true
 	) {
 		super(id, label);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		context.runner.copyResults(context.selection, context.batchId, context.resultId, this.copyHeader);
+		if (this.accountForNumberColumn) {
+			context.runner.copyResults(
+				mapForNumberColumn(context.selection),
+				context.batchId, context.resultId, this.copyHeader);
+		} else {
+			context.runner.copyResults(context.selection, context.batchId, context.resultId, this.copyHeader);
+		}
 		return TPromise.as(true);
 	}
 }
@@ -90,7 +115,7 @@ export class SelectAllGridAction extends Action {
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
-		context.table.setSelectedRows(true);
+		context.selectionModel.setSelectedRanges([new Slick.Range(0, 0, context.table.getData().getLength() - 1, context.table.columns.length - 1)]);
 		return TPromise.as(true);
 	}
 }
@@ -144,17 +169,59 @@ export class MaximizeTableAction extends Action {
 	}
 }
 
-export class MinimizeTableAction extends Action {
-	public static ID = 'grid.minimize';
-	public static LABEL = localize('minimize', 'Minimize');
+export class RestoreTableAction extends Action {
+	public static ID = 'grid.restore';
+	public static LABEL = localize('restore', 'Restore');
 	public static ICON = 'exitFullScreen';
 
 	constructor() {
-		super(MinimizeTableAction.ID, MinimizeTableAction.LABEL, MinimizeTableAction.ICON);
+		super(RestoreTableAction.ID, RestoreTableAction.LABEL, RestoreTableAction.ICON);
 	}
 
 	public run(context: IGridActionContext): TPromise<boolean> {
 		context.tableState.maximized = false;
 		return TPromise.as(true);
 	}
+}
+
+export class ChartDataAction extends Action {
+	public static ID = 'grid.chart';
+	public static LABEL = localize('chart', 'Chart');
+	public static ICON = 'viewChart';
+
+	constructor(@IEditorService private editorService: IEditorService) {
+		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
+	}
+
+	public run(context: IGridActionContext): TPromise<boolean> {
+		let activeEditor = this.editorService.activeControl;
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.chart({ batchId: context.batchId, resultId: context.resultId });
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+}
+
+export class ShowQueryPlanAction extends Action {
+	public static ID = 'showQueryPlan';
+	public static LABEL = localize('showQueryPlan', 'Show Query Plan');
+
+	constructor(
+		@IEditorService private editorService: IEditorService
+	) {
+		super(ShowQueryPlanAction.ID, ShowQueryPlanAction.LABEL);
+	}
+
+	public run(xml: string): TPromise<boolean> {
+		let activeEditor = this.editorService.activeControl;
+		if (activeEditor instanceof QueryEditor) {
+			activeEditor.resultsEditor.showQueryPlan(xml);
+			return TPromise.as(true);
+		} else {
+			return TPromise.as(false);
+		}
+	}
+
 }

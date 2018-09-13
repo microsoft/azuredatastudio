@@ -6,7 +6,6 @@
 'use strict';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import URI from 'vs/base/common/uri';
@@ -30,8 +29,9 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { INotification, INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 
 suite('SQL QueryEditor Tests', () => {
 	let queryModelService: QueryModelService;
@@ -40,6 +40,7 @@ suite('SQL QueryEditor Tests', () => {
 	let notificationService: TypeMoq.Mock<INotificationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
+	let configurationService: TypeMoq.Mock<ConfigurationService>;
 	let memento: TypeMoq.Mock<Memento>;
 
 	let queryInput: QueryInput;
@@ -58,7 +59,7 @@ suite('SQL QueryEditor Tests', () => {
 			editorDescriptorService.object,
 			undefined,
 			undefined,
-			undefined);
+			configurationService.object);
 	};
 
 	setup(() => {
@@ -112,14 +113,14 @@ suite('SQL QueryEditor Tests', () => {
 		// Create a QueryInput
 		let filePath = 'someFile.sql';
 		let uri: URI = URI.parse(filePath);
-		let fileInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined);
+		let fileInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 		let queryResultsInput: QueryResultsInput = new QueryResultsInput(uri.fsPath);
 		queryInput = new QueryInput('first', fileInput, queryResultsInput, undefined, undefined, undefined, undefined, undefined);
 
 		// Create a QueryInput to compare to the previous one
 		let filePath2 = 'someFile2.sql';
 		let uri2: URI = URI.parse(filePath2);
-		let fileInput2 = new UntitledEditorInput(uri2, false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined);
+		let fileInput2 = new UntitledEditorInput(uri2, false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 		let queryResultsInput2: QueryResultsInput = new QueryResultsInput(uri2.fsPath);
 		queryInput2 = new QueryInput('second', fileInput2, queryResultsInput2, undefined, undefined, undefined, undefined, undefined);
 
@@ -135,6 +136,14 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Create a QueryModelService
 		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
+
+		configurationService = TypeMoq.Mock.ofInstance({
+			getValue: () => undefined,
+			onDidChangeConfiguration: () => undefined
+		} as any);
+		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
+			return { enablePreviewFeatures: true };
+		});
 	});
 
 	test('createEditor creates only the taskbar', (done) => {
@@ -342,7 +351,7 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
-			let fileInput = new UntitledEditorInput(URI.parse('testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined, undefined);
+			let fileInput = new UntitledEditorInput(URI.parse('testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
 			queryModelService.callBase = true;
 			queryInput = new QueryInput(
