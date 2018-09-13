@@ -172,7 +172,7 @@ export class ChartView implements IPanelView {
 					});
 				}
 			}
-			// if we have the necessary information but the information isn't avaiable yet,
+			// if we have the necessary information but the information isn't available yet,
 			// we should be smart and retrying when the information might be available
 		}
 	}
@@ -211,6 +211,7 @@ export class ChartView implements IPanelView {
 
 	private updateActionbar() {
 		if (this.insight && this.insight.isCopyable) {
+			this.taskbar.context = { insight: this.insight.insight, options: this.options };
 			this.taskbar.setContent([
 				{ action: this._createInsightAction },
 				{ action: this._copyAction },
