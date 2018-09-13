@@ -16,7 +16,7 @@ import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { IInsightData, IInsightsView, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { DataType, ILineConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
+import { ILineConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
 import * as PathUtilities from 'sql/common/pathUtilities';
 import { IChartViewActionContext, CopyAction, CreateInsightAction, SaveImageAction } from 'sql/parts/grid/views/query/chartViewerActions';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -24,6 +24,7 @@ import * as Constants from 'sql/parts/query/common/constants';
 import { SelectBox as AngularSelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { LegendPosition, DataDirection, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 /* Insights */
 import {
@@ -46,7 +47,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { LegendPosition, DataDirection } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 

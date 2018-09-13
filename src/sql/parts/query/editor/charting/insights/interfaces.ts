@@ -7,8 +7,7 @@
 import { Dimension } from 'vs/base/browser/dom';
 
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
-import { DataDirection, ChartType, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 export interface IInsightOptions {
 	type: InsightType | ChartType;

@@ -25,3 +25,8 @@ export enum LegendPosition {
 	Right = 'right',
 	None = 'none'
 }
+
+export enum DataType {
+	Number = 'number',
+	Point = 'point'
+}

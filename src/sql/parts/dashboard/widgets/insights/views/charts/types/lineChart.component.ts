@@ -9,12 +9,7 @@ import { defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard
 import BarChart, { IBarChartConfig } from './barChart.component';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { clone } from 'sql/base/common/objects';
-import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
-
-export enum DataType {
-	Number = 'number',
-	Point = 'point'
-}
+import { ChartType, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;
