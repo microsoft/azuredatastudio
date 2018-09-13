@@ -105,7 +105,7 @@ export default class DivContainer extends ContainerBase<sqlops.DivItemLayout> im
 	}
 
 	public get yOffsetChange(): number {
-		return this.getPropertyOrDefault<sqlops.DivContainerProperties, any>((props) => props.yOffsetChange, undefined);
+		return this.getPropertyOrDefault<sqlops.DivContainerProperties, any>((props) => props.yOffsetChange, 0);
 	}
 	public set yOffsetChange(newValue: number) {
 		this.setPropertyFromUI<sqlops.DivContainerProperties, any>((properties, newValue) => { properties.yOffsetChange = newValue; }, newValue);
