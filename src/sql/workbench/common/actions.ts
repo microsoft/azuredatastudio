@@ -302,6 +302,12 @@ export class BackupAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): TPromise<void> {
+		if (!profile) {
+			let objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
+			let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+			let workbenchEditorService = accessor.get<IEditorService>(IEditorService);
+			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
+		}
 		let configurationService = accessor.get<IWorkspaceConfigurationService>(IWorkspaceConfigurationService);
 		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
