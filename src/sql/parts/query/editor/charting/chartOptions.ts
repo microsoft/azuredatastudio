@@ -8,10 +8,10 @@
 import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-import { ChartType, DataDirection, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
 import { InsightType, IInsightOptions } from './insights/interfaces';
+import { DataDirection, ChartType, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 

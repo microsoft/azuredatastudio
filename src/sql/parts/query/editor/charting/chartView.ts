@@ -12,11 +12,11 @@ import { Insight } from './insights/insight';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions } from './insights/interfaces';
 import { CopyAction, SaveImageAction, CreateInsightAction, IChartActionContext } from './actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';

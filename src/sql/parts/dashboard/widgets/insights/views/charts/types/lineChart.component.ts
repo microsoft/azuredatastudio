@@ -3,11 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ChartType, customMixin, defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
+import { mixin } from 'vs/base/common/objects';
+
+import { defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import BarChart, { IBarChartConfig } from './barChart.component';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
-import { mixin } from 'vs/base/common/objects';
 import { clone } from 'sql/base/common/objects';
+import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 export enum DataType {
 	Number = 'number',

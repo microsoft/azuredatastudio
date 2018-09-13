@@ -10,6 +10,7 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { mixin } from 'sql/base/common/objects';
+import { LegendPosition, DataDirection, ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { Color } from 'vs/base/common/color';
@@ -20,29 +21,6 @@ import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 declare var Chart: any;
-
-export enum ChartType {
-	Bar = 'bar',
-	Doughnut = 'doughnut',
-	HorizontalBar = 'horizontalBar',
-	Line = 'line',
-	Pie = 'pie',
-	TimeSeries = 'timeSeries',
-	Scatter = 'scatter'
-}
-
-export enum DataDirection {
-	Vertical = 'vertical',
-	Horizontal = 'horizontal'
-}
-
-export enum LegendPosition {
-	Top = 'top',
-	Bottom = 'bottom',
-	Left = 'left',
-	Right = 'right',
-	None = 'none'
-}
 
 export function customMixin(destination: any, source: any, overwrite?: boolean): any {
 	if (types.isObject(source)) {

@@ -27,7 +27,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 
 /* Insights */
 import {
-	ChartInsight, DataDirection, LegendPosition
+	ChartInsight
 } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -46,6 +46,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { LegendPosition, DataDirection } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
