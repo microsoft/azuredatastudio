@@ -43,7 +43,6 @@ import {
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -500,7 +499,7 @@ export class QueryEditor extends BaseEditor {
 	public get listDatabasesActionItem(): ListDatabasesActionItem {
 		if (!this._listDatabasesActionItem) {
 			this._listDatabasesActionItem = this._instantiationService.createInstance(ListDatabasesActionItem, this, this._listDatabasesAction);
-			this._register(attachEditableDropdownStyler(this._listDatabasesActionItem, this.themeService));
+			this._register(this._listDatabasesActionItem.attachStyler(this.themeService));
 		}
 		return this._listDatabasesActionItem;
 	}
