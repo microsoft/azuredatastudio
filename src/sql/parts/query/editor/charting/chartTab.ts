@@ -15,7 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 export class ChartTab implements IPanelTab {
 	public readonly title = localize('chartTabTitle', 'Chart');
-	public readonly identifier = generateUuid();
+	public readonly identifier = 'ChartTab';
 	public readonly view: ChartView;
 
 	constructor(@IInstantiationService instantiationService: IInstantiationService) {

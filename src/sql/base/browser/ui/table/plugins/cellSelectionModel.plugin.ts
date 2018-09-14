@@ -6,8 +6,6 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 
 import { CellRangeSelector, ICellRangeSelector } from 'sql/base/browser/ui/table/plugins/cellRangeSelector';
 
-require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
-
 export interface ICellSelectionModelOptions {
 	cellRangeSelector?: any;
 	selectActiveCell?: boolean;

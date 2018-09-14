@@ -3,8 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ChartInsight, ChartType, customMixin, IChartConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
+import { ChartInsight, customMixin, IChartConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { mixin } from 'sql/base/common/objects';
+import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 import { IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';

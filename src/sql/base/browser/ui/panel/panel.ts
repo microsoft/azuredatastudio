@@ -180,14 +180,16 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public layout(dimension: Dimension): void {
-		this._currentDimensions = dimension;
-		this.$parent.style('height', dimension.height + 'px');
-		this.$parent.style('width', dimension.width + 'px');
-		this.$header.style('width', dimension.width + 'px');
-		this.$body.style('width', dimension.width + 'px');
-		const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
-		this.$body.style('height', bodyHeight + 'px');
-		this._layoutCurrentTab(new Dimension(dimension.width, bodyHeight));
+		if (dimension) {
+			this._currentDimensions = dimension;
+			this.$parent.style('height', dimension.height + 'px');
+			this.$parent.style('width', dimension.width + 'px');
+			this.$header.style('width', dimension.width + 'px');
+			this.$body.style('width', dimension.width + 'px');
+			const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
+			this.$body.style('height', bodyHeight + 'px');
+			this._layoutCurrentTab(new Dimension(dimension.width, bodyHeight));
+		}
 	}
 
 	private _layoutCurrentTab(dimension: Dimension): void {

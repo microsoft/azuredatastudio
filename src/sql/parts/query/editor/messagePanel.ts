@@ -59,6 +59,11 @@ const TemplateIds = {
 	ERROR: 'error'
 };
 
+export class MessagePanelState {
+	public scrollPosition: number;
+	public collapsed = false;
+}
+
 export class MessagePanel extends ViewletPanel {
 	private ds = new MessageDataSource();
 	private renderer = new MessageRenderer();
@@ -67,6 +72,7 @@ export class MessagePanel extends ViewletPanel {
 	private container = $('div message-tree').getHTMLElement();
 
 	private queryRunnerDisposables: IDisposable[] = [];
+	private _state: MessagePanelState;
 
 	private tree: ITree;
 
@@ -86,6 +92,16 @@ export class MessagePanel extends ViewletPanel {
 			renderer: this.renderer,
 			controller: this.controller
 		}, { keyboardSupport: false });
+		this.tree.onDidScroll(e => {
+			if (this.state) {
+				this.state.scrollPosition = this.tree.getScrollPosition();
+			}
+		});
+		this.onDidChange(e => {
+			if (this.state) {
+				this.state.collapsed = !this.isExpanded();
+			}
+		});
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -99,8 +115,12 @@ export class MessagePanel extends ViewletPanel {
 	protected layoutBody(size: number): void {
 		const previousScrollPosition = this.tree.getScrollPosition();
 		this.tree.layout(size);
-		if (previousScrollPosition === 1) {
-			this.tree.setScrollPosition(1);
+		if (this.state && this.state.scrollPosition) {
+			this.tree.setScrollPosition(this.state.scrollPosition);
+		} else {
+			if (previousScrollPosition === 1) {
+				this.tree.setScrollPosition(1);
+			}
 		}
 	}
 
@@ -124,18 +144,36 @@ export class MessagePanel extends ViewletPanel {
 		if (hasError) {
 			this.setExpanded(true);
 		}
-		const previousScrollPosition = this.tree.getScrollPosition();
-		this.tree.refresh(this.model).then(() => {
-			if (previousScrollPosition === 1) {
+		if (this.state.scrollPosition) {
+			this.tree.refresh(this.model).then(() => {
 				this.tree.setScrollPosition(1);
-			}
-		});
+			});
+		} else {
+			const previousScrollPosition = this.tree.getScrollPosition();
+			this.tree.refresh(this.model).then(() => {
+				if (previousScrollPosition === 1) {
+					this.tree.setScrollPosition(1);
+				}
+			});
+		}
+		this.maximumBodySize = this.model.messages.length * 22;
 	}
 
 	private reset() {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
 		this.tree.refresh(this.model);
+	}
+
+	public set state(val: MessagePanelState) {
+		this._state = val;
+		if (this.state.scrollPosition) {
+			this.tree.setScrollPosition(this.state.scrollPosition);
+		}
+		this.setExpanded(!this.state.collapsed);
+	}
+	public get state(): MessagePanelState {
+		return this._state;
 	}
 }
 
