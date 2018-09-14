@@ -55,6 +55,11 @@ const ACTIONBAR_HEIGHT = 100;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
+export class GridPanelState {
+	public tableStates: GridTableState[] = [];
+	public scrollPosition: number;
+	public collapsed = false;
+}
 
 export interface IGridTableState {
 	canBeMaximized: boolean;
@@ -73,11 +78,12 @@ export class GridTableState {
 
 	private _canBeMaximized: boolean;
 
-	constructor(state?: IGridTableState) {
-		if (state) {
-			this._maximized = state.maximized;
-			this._canBeMaximized = state.canBeMaximized;
-		}
+	/* The top row of the current scroll */
+	public scrollPosition = 0;
+	public selection: Slick.Range[];
+	public activeCell: Slick.Cell;
+
+	constructor(public readonly resultId: number, public readonly batchId: number) {
 	}
 
 	public get canBeMaximized(): boolean {
@@ -103,10 +109,6 @@ export class GridTableState {
 		this._maximized = val;
 		this._onMaximizedChange.fire(val);
 	}
-
-	public clone(): GridTableState {
-		return new GridTableState({ canBeMaximized: this.canBeMaximized, maximized: this.maximized });
-	}
 }
 
 export class GridPanel extends ViewletPanel {
@@ -120,6 +122,7 @@ export class GridPanel extends ViewletPanel {
 	private runner: QueryRunner;
 
 	private maximizedGrid: GridTable<any>;
+	private _state: GridPanelState;
 
 	constructor(
 		options: IViewletPanelOptions,
@@ -131,6 +134,16 @@ export class GridPanel extends ViewletPanel {
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
+		this.splitView.onScroll(e => {
+			if (this.state) {
+				this.state.scrollPosition = e;
+			}
+		});
+		this.onDidChange(e => {
+			if (this.state) {
+				this.state.collapsed = !this.isExpanded();
+			}
+		});
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -168,6 +181,10 @@ export class GridPanel extends ViewletPanel {
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
 		}, 0);
+
+		if (this.state && this.state.scrollPosition) {
+			this.splitView.setScrollPosition(this.state.scrollPosition);
+		}
 	}
 
 	private addResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
@@ -181,8 +198,18 @@ export class GridPanel extends ViewletPanel {
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultsToAdd) {
-			let tableState = new GridTableState();
-			let table = this.instantiationService.createInstance(GridTable, this.runner, tableState, set);
+			let tableState: GridTableState;
+			if (this._state) {
+				tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
+			}
+			if (!tableState) {
+				tableState = new GridTableState(set.id, set.batchId);
+				if (this._state) {
+					this._state.tableStates.push(tableState);
+				}
+			}
+			let table = this.instantiationService.createInstance(GridTable, this.runner, set);
+			table.state = tableState;
 			tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -241,6 +268,24 @@ export class GridPanel extends ViewletPanel {
 			this.splitView.addViews(this.tables, this.tables.map(i => i.minimumSize));
 		}
 	}
+
+	public set state(val: GridPanelState) {
+		this._state = val;
+		this.tables.map(t => {
+			let state = this.state.tableStates.find(s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
+			if (!state) {
+				this.state.tableStates.push(t.state);
+			}
+			if (state) {
+				t.state = state;
+			}
+		});
+		this.setExpanded(!this.state.collapsed);
+	}
+
+	public get state(): GridPanelState {
+		return this._state;
+	}
 }
 
 class GridTable<T> extends Disposable implements IView {
@@ -259,13 +304,14 @@ class GridTable<T> extends Disposable implements IView {
 	public id = generateUuid();
 	readonly element: HTMLElement = this.container;
 
+	private _state: GridTableState;
+
 	// this handles if the row count is small, like 4-5 rows
 	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
 	constructor(
 		private runner: QueryRunner,
-		public state: GridTableState,
-		private resultSet: sqlops.ResultSetSummary,
+		public readonly resultSet: sqlops.ResultSetSummary,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
@@ -357,10 +403,52 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.actionBar.push(actions, { icon: true, label: false });
 
+		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
+			if (this.state) {
+				this.state.selection = this.selectionModel.getSelectedRanges();
+			}
+		});
+
+		this.table.grid.onScroll.subscribe(e => {
+			if (this.state) {
+				this.state.scrollPosition = this.table.grid.getViewport().top;
+			}
+		});
+
+		this.table.grid.onActiveCellChanged.subscribe(e => {
+			if (this.state) {
+				this.state.activeCell = this.table.grid.getActiveCell();
+			}
+		});
+
+		this.setupState();
+	}
+
+	private setupState() {
 		// change actionbar on maximize change
 		this.state.onMaximizedChange(this.rebuildActionBar, this);
 
 		this.state.onCanBeMaximizedChange(this.rebuildActionBar, this);
+
+		if (this.state.scrollPosition) {
+			this.table.grid.scrollRowToTop(this.state.scrollPosition);
+		}
+
+		if (this.state.selection) {
+			this.selectionModel.setSelectedRanges(this.state.selection);
+		}
+
+		if (this.state.activeCell) {
+			this.table.setActiveCell(this.state.activeCell.row, this.state.activeCell.cell);
+		}
+	}
+
+	public get state(): GridTableState {
+		return this._state;
+	}
+
+	public set state(val: GridTableState) {
+		this._state = val;
 	}
 
 	private onTableClick(event: ITableMouseEvent) {

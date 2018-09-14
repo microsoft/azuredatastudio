@@ -13,9 +13,13 @@ import { localize } from 'vs/nls';
 import * as UUID from 'vs/base/common/uuid';
 import { Builder } from 'vs/base/browser/builder';
 
+export class QueryPlanState {
+	xml: string;
+}
+
 export class QueryPlanTab implements IPanelTab {
 	public readonly title = localize('queryPlanTitle', 'Query Plan');
-	public readonly identifier = UUID.generateUuid();
+	public readonly identifier = 'QueryPlanTab';
 	public readonly view: QueryPlanView;
 
 	constructor() {
@@ -27,6 +31,7 @@ export class QueryPlanView implements IPanelView {
 	private qp: QueryPlan;
 	private xml: string;
 	private container = document.createElement('div');
+	private _state: QueryPlanState;
 
 	public render(container: HTMLElement): void {
 		if (!this.qp) {
@@ -47,6 +52,20 @@ export class QueryPlanView implements IPanelView {
 		} else {
 			this.xml = xml;
 		}
+		if (this.state) {
+			this.state.xml = xml;
+		}
+	}
+
+	public set state(val: QueryPlanState) {
+		this._state = val;
+		if (this.state.xml) {
+			this.showPlan(this.state.xml);
+		}
+	}
+
+	public get state(): QueryPlanState {
+		return this._state;
 	}
 }
 

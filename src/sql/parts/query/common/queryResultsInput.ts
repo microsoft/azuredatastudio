@@ -10,6 +10,22 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 
+import { GridPanelState } from 'sql/parts/query/editor/gridPanel';
+import { MessagePanelState } from 'sql/parts/query/editor/messagePanel';
+import { QueryPlanState } from 'sql/parts/queryPlan/queryPlan';
+import { ChartState } from 'sql/parts/query/editor/charting/chartView';
+
+export class ResultsViewState {
+	public gridPanelState: GridPanelState = new GridPanelState();
+	public messagePanelState: MessagePanelState = new MessagePanelState();
+	public chartState: ChartState = new ChartState();
+	public queryPlanState: QueryPlanState = new QueryPlanState();
+	public gridPanelSize: number;
+	public messagePanelSize: number;
+	public activeTab: string;
+	public visibleTabs: Set<string> = new Set<string>();
+}
+
 /**
  * Input for the QueryResultsEditor. This input helps with logic for the viewing and editing of
  * data in the results grid.
@@ -28,6 +44,8 @@ export class QueryResultsInput extends EditorInput {
 
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
+
+	public readonly state = new ResultsViewState();
 
 	constructor(private _uri: string) {
 		super();
