@@ -26,7 +26,7 @@ export function getAppDataPath() {
 }
 
 export function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'azuredatastudio');
+	return path.join(getAppDataPath(), 'Azure Data Studio');
 }
 
 // EXTENSION ACTIVATION ////////////////////////////////////////////////////
