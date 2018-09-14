@@ -295,6 +295,7 @@ class GridTable<T> extends Disposable implements IView {
 	private selectionModel = new CellSelectionModel();
 	private styles: ITableStyles;
 	private currentHeight: number;
+	private dataProvider: AsyncDataProvider<T>;
 
 	private columns: Slick.Column<T>[];
 
@@ -337,6 +338,31 @@ class GridTable<T> extends Disposable implements IView {
 		});
 	}
 
+	public onAdd() {
+		let collection = new VirtualizedCollection(
+			50,
+			index => this.placeholdGenerator(index),
+			this.resultSet.rowCount,
+			(offset, count) => this.loadData(offset, count)
+		);
+		collection.setCollectionChangedCallback((startIndex, count) => {
+			this.renderGridDataRowsRange(startIndex, count);
+		});
+		this.dataProvider.dataRows = collection;
+		this.table.updateRowCount();
+	}
+
+	public onRemove() {
+		let collection = new VirtualizedCollection(
+			50,
+			index => this.placeholdGenerator(index),
+			0,
+			() => TPromise.as([])
+		);
+		this.dataProvider.dataRows = collection;
+		this.table.updateRowCount();
+	}
+
 	public render(container: HTMLElement, orientation: Orientation): void {
 		container.appendChild(this.container);
 	}
@@ -347,11 +373,13 @@ class GridTable<T> extends Disposable implements IView {
 
 		this.container.appendChild(tableContainer);
 
-		let collection = new VirtualizedCollection(50, this.resultSet.rowCount,
-			(offset, count) => this.loadData(offset, count),
-			index => this.placeholdGenerator(index)
+		let collection = new VirtualizedCollection(
+			50,
+			index => this.placeholdGenerator(index),
+			0,
+			() => TPromise.as([])
 		);
-		collection.setCollectionChangedCallback((change, startIndex, count) => {
+		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
 		let numberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
@@ -366,7 +394,8 @@ class GridTable<T> extends Disposable implements IView {
 			forceFitColumns: false,
 			defaultColumnWidth: 120
 		};
-		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection), columns: this.columns }, tableOptions));
+		this.dataProvider = new AsyncDataProvider(collection);
+		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize());
