@@ -301,7 +301,8 @@ suite('SQL Object Explorer Service tests', () => {
 			reveal: element => Promise.resolve() as Thenable<void>,
 			setSelected: (element, selected, clearOtherSelections) => undefined,
 			isExpanded: element => undefined,
-			onSelectionOrFocusChange: Event.None
+			onSelectionOrFocusChange: Event.None,
+			refreshElement: (element) => Promise.resolve() as Thenable<void>
 		} as ServerTreeView);
 	});
 
@@ -736,6 +737,24 @@ suite('SQL Object Explorer Service tests', () => {
 					done(err);
 				}
 			}, err => done(err));
+		});
+	});
+
+	test('refreshInView refreshes the node, expands it, and returns the refreshed node', async () => {
+		// Set up the session and tree view
+		await objectExplorerService.createNewSession('MSSQL', connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+		serverTreeView.setup(x => x.refreshElement(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		objectExplorerService.registerServerTreeView(serverTreeView.object);
+
+		// Refresh the node
+		let nodePath = objectExplorerSession.rootNode.nodePath;
+		let refreshedNode = await objectExplorerService.refreshNodeInView(connection.id, nodePath);
+
+		// Verify that it was refreshed, expanded, and the refreshed detailed were returned
+		sqlOEProvider.verify(x => x.refreshNode(TypeMoq.It.is(refreshNode => refreshNode.nodePath === nodePath)), TypeMoq.Times.once());
+		refreshedNode.children.forEach((childNode, index) => {
+			assert.equal(childNode.nodePath, objectExplorerExpandInfoRefresh.nodes[index].nodePath);
 		});
 	});
 });
