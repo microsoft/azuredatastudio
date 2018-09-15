@@ -104,6 +104,11 @@ classes should alter those!
 	white-space: nowrap;
 	cursor: default;
 }
+
+.slick-cell .grid-cell-value-container.missing-value {
+	text-decoration: underline;
+}
+
 .slick-cell, .slick-headerrow-column{
 	border-bottom-color: silver;
 }
