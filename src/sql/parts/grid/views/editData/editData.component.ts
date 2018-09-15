@@ -464,7 +464,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		} else {
 			try {
 				// Perform a revert row operation
-				if (this.currentCell) {
+				if (this.currentCell && this.currentCell.row !== undefined && this.currentCell.row !== null) {
 					await this.dataService.revertRow(this.currentCell.row);
 				}
 			} finally {
