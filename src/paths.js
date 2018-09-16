@@ -17,7 +17,7 @@ function getAppDataPath(platform) {
 }
 
 function getDefaultUserDataPath(platform) {
-	return path.join(getAppDataPath(platform), pkg.name);
+	return path.join(getAppDataPath(platform), 'sqlops');
 }
 
 exports.getAppDataPath = getAppDataPath;
