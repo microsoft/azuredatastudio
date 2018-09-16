@@ -9,8 +9,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import * as platform from 'vs/base/common/platform';
 import * as touch from 'vs/base/browser/touch';
-import * as errors from 'vs/base/common/errors';
 import * as dom from 'vs/base/browser/dom';
+import * as errors from 'vs/base/common/errors';
 import * as mouse from 'vs/base/browser/mouseEvent';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import * as _ from 'vs/base/parts/tree/browser/tree';
@@ -193,7 +193,12 @@ export class DefaultController implements _.IController {
 				if (tree.isExpanded(element)) {
 					tree.collapse(element).done(null, errors.onUnexpectedError);
 				} else {
-					tree.expand(element).done(null, errors.onUnexpectedError);
+					let onExpandError= (e: any) : any =>
+					{
+						tree.collapse(element).done(null, null);
+						return errors.onUnexpectedError(e);
+					};
+					tree.expand(element).done(null, onExpandError);
 				}
 			}
 		}

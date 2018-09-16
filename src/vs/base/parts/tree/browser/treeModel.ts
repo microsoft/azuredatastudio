@@ -12,6 +12,7 @@ import { INavigator } from 'vs/base/common/iterator';
 import * as WinJS from 'vs/base/common/winjs.base';
 import * as _ from './tree';
 import { Event, Emitter, once, EventMultiplexer, Relay } from 'vs/base/common/event';
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }
@@ -260,7 +261,8 @@ export class Item {
 	private depth: number;
 
 	private visible: boolean;
-	private expanded: boolean;
+	private expanded: boolean = false;
+	private error: string;
 
 	private traits: { [trait: string]: boolean; };
 
@@ -311,7 +313,7 @@ export class Item {
 
 		this.traits = {};
 		this.depth = 0;
-		this.expanded = this.context.dataSource.shouldAutoexpand && this.context.dataSource.shouldAutoexpand(this.context.tree, element);
+		this.expanded = !!this.context.dataSource.shouldAutoexpand && this.context.dataSource.shouldAutoexpand(this.context.tree, element);
 
 		this._onDidCreate.fire(this);
 
@@ -354,9 +356,17 @@ export class Item {
 		this._onDidReveal.fire(eventData);
 	}
 
+	public setError(value: string): void {
+		this.error = value;
+	}
+
 	public expand(): WinJS.Promise {
 		if (this.isExpanded() || !this.doesHaveChildren || this.lock.isLocked(this)) {
 			return WinJS.TPromise.as(false);
+		}
+
+		if (this.element instanceof TreeNode) {
+			this.element.errorStateMessage = null;
 		}
 
 		var result = this.lock.run(this, () => {
@@ -366,14 +376,23 @@ export class Item {
 
 			if (this.needsChildrenRefresh) {
 				result = this.refreshChildren(false, true, true);
+				result.done(null, this.onExpandError2);
 			} else {
 				result = WinJS.TPromise.as(null);
 			}
 
 			return result.then(() => {
-				this._setExpanded(true);
-				this._onDidExpand.fire(eventData);
-				return true;
+				if ((this.element instanceof TreeNode) && (this.element.errorStateMessage)) {
+					this.needsChildrenRefresh = true;
+					this._setExpanded(false);
+					return false;
+				} // We may need special handling for other types of this.element as well.
+				else {
+					this.needsChildrenRefresh = false;
+					this._setExpanded(true);
+					this._onDidExpand.fire(eventData);
+					return true;
+				}
 			});
 		});
 
@@ -388,7 +407,11 @@ export class Item {
 			}
 
 			return r;
-		});
+		},this.onExpandError2);
+	}
+
+	private  onExpandError2(e:any) : WinJS.Promise 	{
+		return this.collapse();
 	}
 
 	public collapse(recursive: boolean = false): WinJS.Promise {
@@ -453,7 +476,6 @@ export class Item {
 			return WinJS.TPromise.as(this);
 		}
 
-		this.needsChildrenRefresh = false;
 
 		var doRefresh = () => {
 			var eventData: IItemChildrenRefreshEvent = { item: this, isNested: safe };
@@ -501,23 +523,32 @@ export class Item {
 						staleItems[staleItemId].dispose();
 					}
 				}
-
+				let returnPromise : WinJS.Promise;
 				if (recursive) {
-					return WinJS.Promise.join(this.mapEachChild((child) => {
+					returnPromise =  WinJS.Promise.join(this.mapEachChild((child) => {
 						return child.doRefresh(recursive, true);
-					}));
+					})).then(() => this.setNeedsChildrenRefresh(false));
 				} else {
 					this.mapEachChild(child => child.updateVisibility());
-					return WinJS.TPromise.as(null);
+					this.setNeedsChildrenRefresh(false);
+					returnPromise = WinJS.TPromise.as(null);
 				}
-			});
+				return returnPromise;
+			}, this.onExpandError2);
 
 			return result
-				.then(null, onUnexpectedError)
+				.then(null, (e:any) => { this.onExpandError2(e); onUnexpectedError(e);})
 				.then(() => this._onDidRefreshChildren.fire(eventData));
+//				.then(() => this.setNeedsChildrenRefresh(false));
 		};
 
-		return safe ? doRefresh() : this.lock.run(this, doRefresh);
+		let returnPromise : WinJS.Promise  =  safe ? doRefresh() : this.lock.run(this, doRefresh);
+		returnPromise.then(() => this.setNeedsChildrenRefresh(false));
+		return returnPromise;
+	}
+
+	setNeedsChildrenRefresh(value: boolean): void {
+		this.needsChildrenRefresh = value;
 	}
 
 	private doRefresh(recursive: boolean, safe: boolean = false): WinJS.Promise {
@@ -964,6 +995,9 @@ export class TreeModel {
 		return this.input ? this.input.getElement() : null;
 	}
 
+	public setError(error: string) : void {
+		this.input.setError(error);
+	}
 	public refresh(element: any = null, recursive: boolean = true): WinJS.Promise {
 		var item = this.getItem(element);
 

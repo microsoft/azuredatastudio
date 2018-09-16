@@ -39,6 +39,11 @@ export interface ITree {
 	layout(height?: number): void;
 
 	/**
+	 * Sets the errorState
+	 */
+	setError(error: string): void;
+
+	/**
 	 * Notifies the tree that is has become visible.
 	 */
 	onVisible(): void;
