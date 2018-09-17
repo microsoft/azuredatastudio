@@ -77,7 +77,6 @@ function stateFormatter(row: number, cell: number, value: any, columnDef: Slick.
 
 export class InsightsDialogView extends Modal {
 
-	private _table
 	private _connectionProfile: IConnectionProfile;
 	private _insight: IInsightsConfigDetails;
 	private _splitView: SplitView;
@@ -192,6 +191,9 @@ export class InsightsDialogView extends Modal {
 
 				this._bottomTableData.clear();
 				this._bottomTableData.push(resourceArray);
+				// this table view has to be collapsed and expanded
+				// because the initial expand doesn't have the
+				// loaded data
 				if (bottomTableView.isExpanded()) {
 					bottomTableView.collapse();
 					bottomTableView.expand();
