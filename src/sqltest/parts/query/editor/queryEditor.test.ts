@@ -110,6 +110,14 @@ suite('SQL QueryEditor Tests', () => {
 		editorDescriptorService = TypeMoq.Mock.ofType(EditorDescriptorService, TypeMoq.MockBehavior.Loose);
 		editorDescriptorService.setup(x => x.getEditor(TypeMoq.It.isAny())).returns(() => descriptor);
 
+		configurationService = TypeMoq.Mock.ofInstance({
+			getValue: () => undefined,
+			onDidChangeConfiguration: () => undefined
+		} as any);
+		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
+			return { enablePreviewFeatures: true };
+		});
+
 		// Create a QueryInput
 		let filePath = 'someFile.sql';
 		let uri: URI = URI.parse(filePath);
@@ -136,14 +144,6 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Create a QueryModelService
 		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
-
-		configurationService = TypeMoq.Mock.ofInstance({
-			getValue: () => undefined,
-			onDidChangeConfiguration: () => undefined
-		} as any);
-		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
-			return { enablePreviewFeatures: true };
-		});
 	});
 
 	test('createEditor creates only the taskbar', (done) => {

@@ -64,9 +64,9 @@ export class MessagePanelState {
 	public collapsed = false;
 
 	constructor(@IConfigurationService configurationService: IConfigurationService) {
-		let collapsedSetting = configurationService.getValue<boolean>('sql.messagesDefaultOpen');
-		if (!isUndefinedOrNull(collapsedSetting)) {
-			this.collapsed = collapsedSetting;
+		let messagesOpenedSettings = configurationService.getValue<boolean>('sql.messagesDefaultOpen');
+		if (!isUndefinedOrNull(messagesOpenedSettings)) {
+			this.collapsed = !messagesOpenedSettings;
 		}
 	}
 }
