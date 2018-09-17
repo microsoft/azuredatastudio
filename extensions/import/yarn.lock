@@ -177,14 +177,14 @@ graceful-fs@^4.1.10:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
-http-proxy-agent@^2.0.0:
+http-proxy-agent@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/http-proxy-agent/-/http-proxy-agent-2.1.0.tgz#e4821beef5b2142a2026bd73926fe537631c5405"
   dependencies:
     agent-base "4"
     debug "3.1.0"
 
-https-proxy-agent@^2.1.1:
+https-proxy-agent@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/https-proxy-agent/-/https-proxy-agent-2.2.1.tgz#51552970fa04d723e04c56d04178c3f92592bbc0"
   dependencies:
@@ -297,14 +297,14 @@ seek-bzip@^1.0.5:
   dependencies:
     commander "~2.8.1"
 
-"service-downloader@github:anthonydresser/service-downloader#0.1.4":
-  version "0.1.4"
-  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/3c0abdf8603aca85d2eacfac3c547173e41bf0c7"
+"service-downloader@github:anthonydresser/service-downloader#0.1.5":
+  version "0.1.5"
+  resolved "https://codeload.github.com/anthonydresser/service-downloader/tar.gz/6ebb0465573cc140e461a22f334260f55ef45546"
   dependencies:
     decompress "^4.2.0"
     eventemitter2 "^5.0.1"
-    http-proxy-agent "^2.0.0"
-    https-proxy-agent "^2.1.1"
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.1"
     mkdirp "^0.5.1"
     tmp "^0.0.33"
 
