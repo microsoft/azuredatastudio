@@ -343,6 +343,11 @@ class GridTable<T> extends Disposable implements IView {
 		});
 	}
 
+	public onRemove() {
+		// when we are removed slickgrid acts badly so we need to account for that
+		this.scrolled = false;
+	}
+
 	public render(container: HTMLElement, orientation: Orientation): void {
 		container.appendChild(this.container);
 	}
@@ -534,9 +539,6 @@ class GridTable<T> extends Disposable implements IView {
 				size
 			)
 		);
-		if (this.state && this.state.scrollPosition) {
-			this.table.grid.scrollTo(this.state.scrollPosition);
-		}
 	}
 
 	public get minimumSize(): number {
