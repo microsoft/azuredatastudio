@@ -1,7 +1,5 @@
 import { mixin } from 'vs/base/common/objects';
 
-require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
-
 const defaultOptions: ICellRangeSelectorOptions = {
 	selectionCss: {
 		'border': '2px dashed blue'
@@ -44,6 +42,8 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 	public onCellRangeSelected = new Slick.Event<{ range: Slick.Range }>();
 
 	constructor(private options: ICellRangeSelectorOptions) {
+		require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
+
 		this.options = mixin(this.options, defaultOptions, false);
 	}
 

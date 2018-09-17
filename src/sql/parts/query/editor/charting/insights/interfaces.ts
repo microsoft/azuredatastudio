@@ -4,11 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import { Dimension } from 'vs/base/browser/dom';
 
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { ChartType, LegendPosition, DataDirection } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
-import { Dimension } from 'vs/base/browser/dom';
-import { DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
+import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 export interface IInsightOptions {
 	type: InsightType | ChartType;

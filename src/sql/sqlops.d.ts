@@ -185,6 +185,11 @@ declare module 'sqlops' {
 			 * Get the parent node. Returns undefined if there is none.
 			 */
 			getParent(): Thenable<ObjectExplorerNode>;
+
+			/**
+			 * Refresh the node, expanding it if it has children
+			 */
+			refresh(): Thenable<void>;
 		}
 	}
 

@@ -12,11 +12,11 @@ import { Insight } from './insights/insight';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions } from './insights/interfaces';
 import { CopyAction, SaveImageAction, CreateInsightAction, IChartActionContext } from './actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
@@ -187,7 +187,7 @@ export class ChartView implements IPanelView {
 					});
 				}
 			}
-			// if we have the necessary information but the information isn't avaiable yet,
+			// if we have the necessary information but the information isn't available yet,
 			// we should be smart and retrying when the information might be available
 		}
 	}
@@ -228,6 +228,7 @@ export class ChartView implements IPanelView {
 
 	private updateActionbar() {
 		if (this.insight && this.insight.isCopyable) {
+			this.taskbar.context = { insight: this.insight.insight, options: this.options };
 			this.taskbar.setContent([
 				{ action: this._createInsightAction },
 				{ action: this._copyAction },

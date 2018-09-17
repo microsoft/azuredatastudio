@@ -17,6 +17,7 @@ declare module 'sqlops' {
 	 */
 	export interface ModelBuilder {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
+		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
@@ -69,6 +70,10 @@ declare module 'sqlops' {
 	}
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
+
+	}
+
+	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
 
 	}
 
@@ -346,6 +351,33 @@ declare module 'sqlops' {
 	export interface GroupItemLayout {
 	}
 
+	export interface DivLayout {
+		/**
+		 * Container Height
+		 */
+		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
+	}
+
+	export interface DivItemLayout {
+		/**
+		 * Matches the order CSS property and its available values.
+		 */
+		order?: number;
+
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
+	}
+
+	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
+	}
+
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
 
@@ -566,6 +598,19 @@ declare module 'sqlops' {
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
+	}
+
+	export interface DivContainerProperties extends ComponentProperties {
+		/**
+		 * Matches the overflow-y CSS property and its available values.
+		 */
+		overflowY?: string;
+
+		/**
+		 * Setting the scroll based on the y offset
+		 * This is used when its child component is webview
+		 */
+		yOffsetChange?: number;
 	}
 
 	export interface CardComponent extends Component, CardProperties {
@@ -1115,11 +1160,22 @@ declare module 'sqlops' {
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+			/**
+			 * `true` if there are unpersisted changes.
+			 * This is editable to support extensions updating the dirty status.
+			 */
+			isDirty: boolean;
 
 			/**
 			 * Opens the editor
 			 */
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
+
+			/**
+			 * Registers a save handler for this editor. This will be called if [supportsSave](#ModelViewEditorOptions.supportsSave)
+			 * is set to true and the editor is marked as dirty
+			 */
+			registerSaveHandler(handler: () => Thenable<boolean>);
 		}
 	}
 
@@ -1128,6 +1184,11 @@ declare module 'sqlops' {
 		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
 		 */
 		readonly retainContextWhenHidden?: boolean;
+
+		/**
+		 * Does this model view editor support save?
+		 */
+		readonly supportsSave?: boolean;
 	}
 
 	export enum DataProviderType {

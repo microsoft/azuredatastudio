@@ -90,14 +90,16 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	}
 
 	public $getSecurityToken(account: sqlops.Account): Thenable<{}> {
-		for (const handle in this._accounts) {
-			const providerHandle = parseInt(handle);
-			if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
-				return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
+		return this.$getAllAccounts().then(() => {
+			for (const handle in this._accounts) {
+				const providerHandle = parseInt(handle);
+				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
+					return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
+				}
 			}
-		}
 
-		throw new Error(`Account ${account.key.accountId} not found.`);
+			throw new Error(`Account ${account.key.accountId} not found.`);
+		});
 	}
 
 	public get onDidChangeAccounts(): Event<sqlops.DidChangeAccountsParams> {

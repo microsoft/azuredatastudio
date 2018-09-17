@@ -16,8 +16,8 @@ import { ShowCurrentReleaseNotesAction } from 'sql/workbench/update/releaseNotes
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 
-new Actions.BackupAction().registerTask(false);
-new Actions.RestoreAction().registerTask(false);
+new Actions.BackupAction().registerTask();
+new Actions.RestoreAction().registerTask();
 new Actions.NewQueryAction().registerTask();
 new Actions.ConfigureDashboardAction().registerTask();
 

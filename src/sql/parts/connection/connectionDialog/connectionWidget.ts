@@ -492,6 +492,7 @@ export class ConnectionWidget {
 		this._databaseNameInputBox.enabled = false;
 		this._userNameInputBox.disable();
 		this._passwordInputBox.disable();
+		this._connectionNameInputBox.disable();
 		this._rememberPasswordCheckBox.enabled = false;
 		if (this._authTypeSelectBox) {
 			this._authTypeSelectBox.disable();
@@ -503,6 +504,7 @@ export class ConnectionWidget {
 
 		this._serverGroupSelectBox.enable();
 		this._serverNameInputBox.enable();
+		this._connectionNameInputBox.enable();
 		this._databaseNameInputBox.enabled = true;
 		let currentAuthType: AuthenticationType = undefined;
 		if (this._authTypeSelectBox) {

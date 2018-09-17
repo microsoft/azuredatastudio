@@ -15,6 +15,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadObjectExplorer)
 export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
@@ -50,7 +51,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 	public $getActiveConnectionNodes(): Thenable<NodeInfoWithConnection[]> {
 		let connectionNodes = this._objectExplorerService.getActiveConnectionNodes();
 		return Promise.resolve(connectionNodes.map(node => {
-			return {connectionId: node.connection.id, nodeInfo: node.toNodeInfo()};
+			return { connectionId: node.connection.id, nodeInfo: node.toNodeInfo() };
 		}));
 	}
 
@@ -72,5 +73,9 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 
 	public $findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]> {
 		return this._objectExplorerService.findNodes(connectionId, type, schema, name, database, parentObjectNames);
+	}
+
+	public $refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo> {
+		return this._objectExplorerService.refreshNodeInView(connectionId, nodePath).then(node => node.toNodeInfo());
 	}
 }

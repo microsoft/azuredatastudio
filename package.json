@@ -1,6 +1,6 @@
 {
   "name": "sqlops",
-  "version": "0.33.4",
+  "version": "0.33.6",
   "distro": "8c3e97e3425cc9814496472ab73e076de2ba99ee",
   "author": {
     "name": "Microsoft Corporation"
@@ -64,7 +64,7 @@
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
     "semver": "^5.5.0",
-    "slickgrid": "github:anthonydresser/SlickGrid#2.3.25",
+    "slickgrid": "github:anthonydresser/SlickGrid#2.3.27",
     "spdlog": "0.7.1",
     "sudo-prompt": "8.2.0",
     "svg.js": "^2.2.5",
@@ -167,5 +167,8 @@
     "windows-foreground-love": "0.1.0",
     "windows-mutex": "^0.2.0",
     "windows-process-tree": "0.2.2"
+  },
+  "resolutions": {
+    "rc": "1.2.8"
   }
 }

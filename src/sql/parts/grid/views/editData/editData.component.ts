@@ -166,7 +166,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onCellEditEnd = (event: Slick.OnCellChangeEventArgs<any>): void => {
 			// Store the value that was set
-			self.currentEditCellValue = event.item[event.cell - 1];
+			self.currentEditCellValue = event.item[event.cell];
 		};
 
 		this.overrideCellFn = (rowNumber, columnId, value?, data?): string => {
@@ -270,18 +270,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue)
 					.then(
-					result => {
-						// Cell update was successful, update the flags
-						self.currentEditCellValue = null;
-						self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
-						self.setRowDirtyState(row, result.isRowDirty);
-						return Promise.resolve();
-					},
-					error => {
-						// Cell update failed, jump back to the last cell we were on
-						self.focusCell(self.currentCell.row, self.currentCell.column, true);
-						return Promise.reject(null);
-					}
+						result => {
+							// Cell update was successful, update the flags
+							self.currentEditCellValue = null;
+							self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
+							self.setRowDirtyState(row, result.isRowDirty);
+							return Promise.resolve();
+						},
+						error => {
+							// Cell update failed, jump back to the last cell we were on
+							self.focusCell(self.currentCell.row, self.currentCell.column, true);
+							return Promise.reject(null);
+						}
 					);
 			});
 		}
@@ -377,10 +377,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				index => { return {}; }
 			),
 			columnDefinitions: [rowNumberColumn.getColumnDefinition()].concat(resultSet.columnInfo.map((c, i) => {
+				let columnIndex = (i + 1).toString();
 				return {
-					id: i.toString(),
+					id: columnIndex,
 					name: escape(c.columnName),
-					field: i.toString(),
+					field: columnIndex,
 					formatter: Services.textFormatter,
 					isEditable: c.isUpdatable
 				};
@@ -464,7 +465,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		} else {
 			try {
 				// Perform a revert row operation
-				if (this.currentCell) {
+				if (this.currentCell && this.currentCell.row !== undefined && this.currentCell.row !== null) {
 					await this.dataService.revertRow(this.currentCell.row);
 				}
 			} finally {

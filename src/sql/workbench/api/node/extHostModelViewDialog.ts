@@ -75,6 +75,9 @@ class ModelViewPanelImpl implements sqlops.window.modelviewdialog.ModelViewPanel
 }
 
 class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace.ModelViewEditor {
+	private _isDirty: boolean;
+	private _saveHandler: () => Thenable<boolean>;
+
 	constructor(
 		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -84,10 +87,32 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 		private _options: sqlops.ModelViewEditorOptions
 	) {
 		super('modelViewEditor', extHostModelViewDialog, extHostModelView, extensionLocation);
+		this._isDirty = false;
 	}
 
 	public openEditor(position?: vscode.ViewColumn): Thenable<void> {
-		return this._proxy.$openEditor(this._modelViewId, this._title, this._options, position);
+		return this._proxy.$openEditor(this.handle, this._modelViewId, this._title, this._options, position);
+	}
+
+	public get isDirty(): boolean {
+		return this._isDirty;
+	}
+
+	public set isDirty(value: boolean) {
+		this._isDirty = value;
+		this._proxy.$setDirty(this.handle, value);
+	}
+
+	registerSaveHandler(handler: () => Thenable<boolean>) {
+		this._saveHandler = handler;
+	}
+
+	public handleSave(): Thenable<boolean> {
+		if (this._saveHandler) {
+			return Promise.resolve(this._saveHandler());
+		} else {
+			return Promise.resolve(true);
+		}
 	}
 }
 
@@ -468,6 +493,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public $validateDialogClose(handle: number): Thenable<boolean> {
 		let dialog = this._objectsByHandle.get(handle) as DialogImpl;
 		return dialog.validateClose();
+	}
+
+	public $handleSave(handle: number): Thenable<boolean> {
+		let editor = this._objectsByHandle.get(handle) as ModelViewEditorImpl;
+		return editor.handleSave();
 	}
 
 	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {

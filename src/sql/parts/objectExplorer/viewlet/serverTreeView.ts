@@ -138,7 +138,7 @@ export class ServerTreeView {
 
 			let expandGroups: boolean = self._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				 self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -242,6 +242,10 @@ export class ServerTreeView {
 		this.messages.hide();
 		this.clearOtherActions();
 		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
+	}
+
+	public refreshElement(element: any): Thenable<void> {
+		return this._tree.refresh(element);
 	}
 
 	/**

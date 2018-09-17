@@ -123,6 +123,7 @@ export class ConnectionStore {
 					.then(savedCred => {
 						if (savedCred) {
 							credentialsItem.password = savedCred.password;
+							credentialsItem.options['password'] = savedCred.password;
 						}
 						resolve({ profile: credentialsItem, savedCred: !!savedCred });
 					},
