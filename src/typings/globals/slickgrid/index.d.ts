@@ -1233,6 +1233,7 @@ declare namespace Slick {
 		public scrollRowIntoView(row: number, doPaging: boolean): void;
 		public scrollRowToTop(row: number): void;
 		public scrollCellIntoView(row: number, cell: number, doPaging: boolean): void;
+		public scrollTo(y: number);
 		public getCanvasNode(): HTMLCanvasElement;
 		public focus(): void;
 
