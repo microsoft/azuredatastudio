@@ -68,7 +68,6 @@ export class Tree implements _.ITree {
 	private context: _.ITreeContext;
 	private model: Model.TreeModel;
 	private view: View.TreeView;
-	private error: string;
 
 	private _onDidChangeFocus = new Relay<_.IFocusEvent>();
 	readonly onDidChangeFocus: Event<_.IFocusEvent> = this._onDidChangeFocus.event;
@@ -106,10 +105,6 @@ export class Tree implements _.ITree {
 		this._onHighlightChange.input = this.model.onDidHighlight;
 		this._onDidExpandItem.input = this.model.onDidExpandItem;
 		this._onDidCollapseItem.input = this.model.onDidCollapseItem;
-	}
-
-	public setError(error: string): void {
-		this.model.setError(error);
 	}
 
 	public style(styles: _.ITreeStyles): void {
