@@ -19,7 +19,7 @@ import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectio
 import { error } from 'sql/base/common/log';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { CopyInsightDialogSelectionAction } from 'sql/parts/insights/common/insightDialogActions';
-import { SplitView, ViewSizing, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
+import { SplitView, ViewSizing } from 'sql/base/browser/ui/splitview/splitview';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
