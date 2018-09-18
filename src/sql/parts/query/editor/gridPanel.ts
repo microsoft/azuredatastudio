@@ -36,7 +36,7 @@ import { $ } from 'vs/base/browser/builder';
 import { generateUuid } from 'vs/base/common/uuid';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { Dimension, getContentWidth } from 'vs/base/browser/dom';
+import { Dimension, getContentWidth, isInDOM } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -168,7 +168,12 @@ export class GridPanel extends ViewletPanel {
 		this.queryRunnerDisposables = [];
 		this.runner = runner;
 		this.queryRunnerDisposables.push(this.runner.onResultSet(e => this.onResultSet(e)));
-		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => this.reset()));
+		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => {
+			if (this.state) {
+				this.state.tableStates = [];
+			}
+			this.reset();
+		}));
 	}
 
 	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
@@ -235,7 +240,6 @@ export class GridPanel extends ViewletPanel {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
-
 		dispose(this.tables);
 		this.tables = [];
 
@@ -306,6 +310,8 @@ class GridTable<T> extends Disposable implements IView {
 
 	private _state: GridTableState;
 
+	private scrolled = false;
+
 	// this handles if the row count is small, like 4-5 rows
 	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
@@ -335,6 +341,11 @@ class GridTable<T> extends Disposable implements IView {
 				formatter: isLinked ? hyperLinkFormatter : textFormatter
 			};
 		});
+	}
+
+	public onRemove() {
+		// when we are removed slickgrid acts badly so we need to account for that
+		this.scrolled = false;
 	}
 
 	public render(container: HTMLElement, orientation: Orientation): void {
@@ -409,9 +420,13 @@ class GridTable<T> extends Disposable implements IView {
 			}
 		});
 
-		this.table.grid.onScroll.subscribe(e => {
-			if (this.state) {
-				this.state.scrollPosition = this.table.grid.getViewport().top;
+		this.table.grid.onScroll.subscribe((e, data) => {
+			if (!this.scrolled && this.state.scrollPosition && isInDOM(this.container)) {
+				this.scrolled = true;
+				this.table.grid.scrollTo(this.state.scrollPosition);
+			}
+			if (this.state && isInDOM(this.container)) {
+				this.state.scrollPosition = data.scrollTop;
 			}
 		});
 
@@ -431,7 +446,10 @@ class GridTable<T> extends Disposable implements IView {
 		this.state.onCanBeMaximizedChange(this.rebuildActionBar, this);
 
 		if (this.state.scrollPosition) {
-			this.table.grid.scrollRowToTop(this.state.scrollPosition);
+			// most of the time this won't do anything
+			this.table.grid.scrollTo(this.state.scrollPosition);
+			// the problem here is that the scrolling state slickgrid uses
+			// doesn't work with it offDOM.
 		}
 
 		if (this.state.selection) {
