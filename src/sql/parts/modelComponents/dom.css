@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 modelview-dom-component {
-	height: 100%;
-	width : 100%;
 	display: block;
+	-webkit-user-select: text;
 }

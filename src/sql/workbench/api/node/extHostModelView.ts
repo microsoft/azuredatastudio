@@ -877,13 +877,6 @@ class DomComponentWrapper extends ComponentWrapper implements sqlops.DomComponen
 	public set html(v: string) {
 		this.setProperty('html', v);
 	}
-
-	public get cssFiles(): string[] {
-		return this.properties['cssFiles'];
-	}
-	public set cssFiles(v: string[]) {
-		this.setProperty('cssFiles', v);
-	}
 }
 
 class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {

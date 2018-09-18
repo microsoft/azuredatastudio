@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./dom';
+import 'vs/css!./highlight';
+import 'vs/css!./markdown';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList
@@ -25,15 +27,12 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 	private _renderedHtml: string;
 	private _rootElement: Builder;
 	private _bodyElement: Builder;
-	private _cssLinkElement: Builder;
-	private _cssFiles: string[];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
 		super(changeRef, el);
-		this._cssFiles = [];
 	}
 
 	ngOnInit(): void {
@@ -50,9 +49,6 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 
 	private createDomElement() {
 		this._rootElement = new Builder(this._el.nativeElement);
-		this._cssLinkElement = $('.dom-link');
-		this._rootElement.append(this._cssLinkElement);
-
 		this._bodyElement = $('.dom-body');
 		this._rootElement.append(this._bodyElement);
 	}
@@ -62,20 +58,6 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 		if (this.html) {
 			this._renderedHtml = this.html;
 			this._bodyElement.innerHtml(this._renderedHtml);
-		}
-	}
-
-	private updateCssFiles(): void {
-		this._cssFiles = this.cssFiles;
-		if (this._cssFiles && this._cssFiles.length > 0) {
-			this._cssLinkElement.empty();
-			this._cssFiles.forEach(file => {
-				var link = document.createElement('link');
-				link.setAttribute('rel', 'stylesheet');
-				link.setAttribute('type', 'text/css');
-				link.setAttribute('href', file);
-				this._cssLinkElement.append(link);
-			});
 		}
 	}
 
@@ -97,10 +79,6 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 		if (this.html !== this._renderedHtml) {
 			this.setHtml();
 		}
-
-		if (this.cssFiles !== this._cssFiles) {
-			this.updateCssFiles();
-		}
 	}
 
 	// CSS-bound properties
@@ -110,13 +88,5 @@ export default class DomComponent extends ComponentBase implements IComponent, O
 
 	public set html(newValue: string) {
 		this.setPropertyFromUI<sqlops.DomProperties, string>((properties, html) => { properties.html = html; }, newValue);
-	}
-
-	public get cssFiles(): string[] {
-		return this.getPropertyOrDefault<sqlops.DomProperties, string[]>((props) => props.cssFiles, []);
-	}
-
-	public set cssFiles(newValue: string[]) {
-		this.setPropertyFromUI<sqlops.DomProperties, string[]>((properties, cssFiles) => { properties.cssFiles = cssFiles; }, newValue);
 	}
 }

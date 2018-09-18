@@ -583,11 +583,6 @@ declare module 'sqlops' {
 		 * Should be a complete html document.
 		 */
 		html?: string;
-
-		/**
-		 * css files for this component.
-		 */
-		cssFiles?: string[];
 	}
 
 	/**
