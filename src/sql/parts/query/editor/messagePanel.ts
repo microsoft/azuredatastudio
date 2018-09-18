@@ -25,7 +25,7 @@ import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'v
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { $ } from 'vs/base/browser/builder';
-import { isArray } from 'vs/base/common/types';
+import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
@@ -62,6 +62,13 @@ const TemplateIds = {
 export class MessagePanelState {
 	public scrollPosition: number;
 	public collapsed = false;
+
+	constructor(@IConfigurationService configurationService: IConfigurationService) {
+		let messagesOpenedSettings = configurationService.getValue<boolean>('sql.messagesDefaultOpen');
+		if (!isUndefinedOrNull(messagesOpenedSettings)) {
+			this.collapsed = !messagesOpenedSettings;
+		}
+	}
 }
 
 export class MessagePanel extends ViewletPanel {
