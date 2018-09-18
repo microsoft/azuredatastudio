@@ -13,7 +13,6 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree
@@ -76,8 +75,8 @@ export class ServerTreeDataSource implements IDataSource {
 					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
 						resolve(node.children);
 					}, expandError => {
-						element.setExpandedState(TreeItemCollapsibleState.Collapsed);
-						element.errorStateMessage = expandError;
+						node.setExpandedState(TreeItemCollapsibleState.Collapsed);
+						node.errorStateMessage = expandError;
 						this.showError(expandError);
 						resolve([]);
 					});
