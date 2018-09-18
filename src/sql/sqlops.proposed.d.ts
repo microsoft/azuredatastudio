@@ -578,9 +578,7 @@ declare module 'sqlops' {
 
 	export interface DomProperties extends ComponentProperties {
 		/**
-		 * Contents of the webview.
-		 *
-		 * Should be a complete html document.
+		 * Contents of the DOM component.
 		 */
 		html?: string;
 	}
