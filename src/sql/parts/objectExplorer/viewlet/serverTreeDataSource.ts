@@ -76,8 +76,6 @@ export class ServerTreeDataSource implements IDataSource {
 					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
 						resolve(node.children);
 					}, expandError => {
-						// this._objectExplorerService.findNodes
-						// if (tree instanceof Tree) { tree.setError(expandError); }
 						element.setExpandedState(TreeItemCollapsibleState.Collapsed);
 						element.errorStateMessage = expandError;
 						this.showError(expandError);
