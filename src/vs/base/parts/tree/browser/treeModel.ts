@@ -361,6 +361,8 @@ export class Item {
 			return WinJS.TPromise.as(false);
 		}
 
+		// {{SQL CARBON EDIT}} - Original code does not handle the need to refresh children in case previous refreshchildren errored out.
+		//						 resetting the errorStateMessage before we refresh children so we can track if there has been error in processing.
 		if (this.element instanceof TreeNode) {
 			this.element.errorStateMessage = null;
 		}
@@ -379,7 +381,7 @@ export class Item {
 			return result.then(() => {
 				this._setExpanded(true);
 				this._onDidExpand.fire(eventData);
-				// {{SQL CARBON EDIT}} - Original code does not handle the need to refresh children in case previous refreshchildren errored out?
+				// {{SQL CARBON EDIT}} - Original code does not handle the need to refresh children in case previous refreshchildren errored out.
 				if ((this.element instanceof TreeNode) && (this.element.errorStateMessage)) {
 					this.needsChildrenRefresh = true;
 					return false;

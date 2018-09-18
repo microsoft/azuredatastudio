@@ -90,7 +90,7 @@
 				"**/winjs*.js"
 			],
 			"webRoot": "${workspaceFolder}",
-			"timeout": 15000
+			"timeout": 45000
 		},
 		{
 			"type": "node",

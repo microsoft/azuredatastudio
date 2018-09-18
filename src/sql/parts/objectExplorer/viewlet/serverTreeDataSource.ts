@@ -72,6 +72,7 @@ export class ServerTreeDataSource implements IDataSource {
 				if (node.children) {
 					resolve(node.children);
 				} else {
+					//These similar changes are probably needed for a ConnectionProfile element as well. They will be tackled in a future checkin.
 					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
 						resolve(node.children);
 					}, expandError => {
