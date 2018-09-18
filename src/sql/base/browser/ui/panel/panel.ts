@@ -97,7 +97,6 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._createTab(internalTab);
 		if (!this._shownTab) {
 			this.showTab(tab.identifier);
-			this.tabHistory.push(tab.identifier);
 		}
 		if (this._tabMap.size > 1 && !this._headerVisible) {
 			this.$parent.append(this.$header, 0);
