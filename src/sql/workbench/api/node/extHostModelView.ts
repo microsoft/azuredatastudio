@@ -847,8 +847,8 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 	public get html(): string {
 		return this.properties['html'];
 	}
-	public set html(v: string) {
-		this.setProperty('html', v);
+	public set html(html: string) {
+		this.setProperty('html', html);
 	}
 
 	public get onMessage(): vscode.Event<any> {
@@ -874,8 +874,8 @@ class DomComponentWrapper extends ComponentWrapper implements sqlops.DomComponen
 	public get html(): string {
 		return this.properties['html'];
 	}
-	public set html(v: string) {
-		this.setProperty('html', v);
+	public set html(html: string) {
+		this.setProperty('html', html);
 	}
 }
 
