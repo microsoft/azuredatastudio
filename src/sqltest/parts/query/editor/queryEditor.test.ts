@@ -110,18 +110,26 @@ suite('SQL QueryEditor Tests', () => {
 		editorDescriptorService = TypeMoq.Mock.ofType(EditorDescriptorService, TypeMoq.MockBehavior.Loose);
 		editorDescriptorService.setup(x => x.getEditor(TypeMoq.It.isAny())).returns(() => descriptor);
 
+		configurationService = TypeMoq.Mock.ofInstance({
+			getValue: () => undefined,
+			onDidChangeConfiguration: () => undefined
+		} as any);
+		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
+			return { enablePreviewFeatures: true };
+		});
+
 		// Create a QueryInput
 		let filePath = 'someFile.sql';
 		let uri: URI = URI.parse(filePath);
 		let fileInput = new UntitledEditorInput(uri, false, '', '', '', instantiationService.object, undefined, undefined, undefined);
-		let queryResultsInput: QueryResultsInput = new QueryResultsInput(uri.fsPath);
+		let queryResultsInput: QueryResultsInput = new QueryResultsInput(uri.fsPath, configurationService.object);
 		queryInput = new QueryInput('first', fileInput, queryResultsInput, undefined, undefined, undefined, undefined, undefined);
 
 		// Create a QueryInput to compare to the previous one
 		let filePath2 = 'someFile2.sql';
 		let uri2: URI = URI.parse(filePath2);
 		let fileInput2 = new UntitledEditorInput(uri2, false, '', '', '', instantiationService.object, undefined, undefined, undefined);
-		let queryResultsInput2: QueryResultsInput = new QueryResultsInput(uri2.fsPath);
+		let queryResultsInput2: QueryResultsInput = new QueryResultsInput(uri2.fsPath, configurationService.object);
 		queryInput2 = new QueryInput('second', fileInput2, queryResultsInput2, undefined, undefined, undefined, undefined, undefined);
 
 		// Mock IMessageService
@@ -136,14 +144,6 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Create a QueryModelService
 		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
-
-		configurationService = TypeMoq.Mock.ofInstance({
-			getValue: () => undefined,
-			onDidChangeConfiguration: () => undefined
-		} as any);
-		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
-			return { enablePreviewFeatures: true };
-		});
 	});
 
 	test('createEditor creates only the taskbar', (done) => {
@@ -393,7 +393,7 @@ suite('SQL QueryEditor Tests', () => {
 			done();
 		});
 		test('Test that we attempt to dispose query when the queryInput is disposed', (done) => {
-			let queryResultsInput = new QueryResultsInput('testUri');
+			let queryResultsInput = new QueryResultsInput('testUri', configurationService.object);
 			queryInput['_results'] = queryResultsInput;
 			queryInput.dispose();
 			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
