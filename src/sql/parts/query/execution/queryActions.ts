@@ -271,7 +271,11 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
-			editor.currentQueryInput.runQuery(editor.getSelection(), {
+			let selection = editor.getSelection();
+			if (!selection) {
+				selection = editor.getAllSelection();
+			}
+			editor.currentQueryInput.runQuery(selection, {
 				displayActualQueryPlan: true
 			});
 		}
