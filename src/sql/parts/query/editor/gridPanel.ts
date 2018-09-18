@@ -553,7 +553,10 @@ class GridTable<T> extends Disposable implements IView {
 	private loadData(offset: number, count: number): Thenable<T[]> {
 		return this.runner.getQueryRows(offset, count, this.resultSet.batchId, this.resultSet.id).then(response => {
 			if (this.runner.isQueryPlan) {
-				this.instantiationService.createInstance(ShowQueryPlanAction).run(response.resultSubset.rows[0][0].displayValue);
+				// it's a show plan response
+				if (response.resultSubset.rowCount === 1) {
+					this.instantiationService.createInstance(ShowQueryPlanAction).run(response.resultSubset.rows[0][0].displayValue);
+				}
 			}
 			return response.resultSubset.rows.map(r => {
 				let dataWithSchema = {};

@@ -377,6 +377,26 @@ export class QueryEditor extends BaseEditor {
 		return undefined;
 	}
 
+	public getAllSelection(): ISelectionData {
+		if (this._sqlEditor && this._sqlEditor.getControl()) {
+			let control = this._sqlEditor.getControl();
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
+			if (codeEditor) {
+				let model = codeEditor.getModel();
+				let totalLines = model.getLineCount();
+				let endColumn = model.getLineMaxColumn(totalLines);
+				let selection: ISelectionData = {
+					startLine: 0,
+					startColumn: 0,
+					endLine: totalLines - 1,
+					endColumn: endColumn - 1,
+				};
+				return selection;
+			}
+		}
+		return undefined;
+	}
+
 	public getSelectionText(): string {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
