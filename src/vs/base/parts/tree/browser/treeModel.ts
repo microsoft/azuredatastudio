@@ -514,6 +514,7 @@ export class Item {
 						staleItems[staleItemId].dispose();
 					}
 				}
+
 				if (recursive) {
 					return WinJS.Promise.join(this.mapEachChild((child) => {
 						return child.doRefresh(recursive, true);
@@ -975,6 +976,7 @@ export class TreeModel {
 	public getInput(): any {
 		return this.input ? this.input.getElement() : null;
 	}
+
 	public refresh(element: any = null, recursive: boolean = true): WinJS.Promise {
 		var item = this.getItem(element);
 
