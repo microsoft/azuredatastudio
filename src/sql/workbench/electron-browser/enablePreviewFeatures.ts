@@ -27,44 +27,46 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		let previewFeaturesEnabled = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled || storageService.get(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN)) {
-			return;
-		}
-		Promise.all([
-			windowService.isFocused(),
-			windowsService.getWindowCount()
-		]).then(([focused, count]) => {
-			if (!focused && count > 1) {
-				return null;
-			}
-			configurationService.updateValue('workbench.enablePreviewFeatures', false);
+		return;
 
-			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Would you like to enable preview features?");
-			notificationService.prompt(
-				Severity.Info,
-				enablePreviewFeaturesNotice,
-				[{
-					label: localize('enablePreviewFeatures.yes', "Yes"),
-					run: () => {
-						configurationService.updateValue('workbench.enablePreviewFeatures', true);
-						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
-					}
-				}, {
-					label: localize('enablePreviewFeatures.no', "No"),
-					run: () => {
-						configurationService.updateValue('workbench.enablePreviewFeatures', false);
-					}
-				}, {
-					label: localize('enablePreviewFeatures.never', "No, don't show again"),
-					run: () => {
-						configurationService.updateValue('workbench.enablePreviewFeatures', false);
-						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
-					},
-					isSecondary: true
-				}]
-			);
-		})
-			.then(null, onUnexpectedError);
+		// let previewFeaturesEnabled = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		// if (previewFeaturesEnabled || storageService.get(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN)) {
+		// 	return;
+		// }
+		// Promise.all([
+		// 	windowService.isFocused(),
+		// 	windowsService.getWindowCount()
+		// ]).then(([focused, count]) => {
+		// 	if (!focused && count > 1) {
+		// 		return null;
+		// 	}
+		// 	configurationService.updateValue('workbench.enablePreviewFeatures', false);
+
+		// 	const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Would you like to enable preview features?");
+		// 	notificationService.prompt(
+		// 		Severity.Info,
+		// 		enablePreviewFeaturesNotice,
+		// 		[{
+		// 			label: localize('enablePreviewFeatures.yes', "Yes"),
+		// 			run: () => {
+		// 				configurationService.updateValue('workbench.enablePreviewFeatures', true);
+		// 				storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
+		// 			}
+		// 		}, {
+		// 			label: localize('enablePreviewFeatures.no', "No"),
+		// 			run: () => {
+		// 				configurationService.updateValue('workbench.enablePreviewFeatures', false);
+		// 			}
+		// 		}, {
+		// 			label: localize('enablePreviewFeatures.never', "No, don't show again"),
+		// 			run: () => {
+		// 				configurationService.updateValue('workbench.enablePreviewFeatures', false);
+		// 				storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
+		// 			},
+		// 			isSecondary: true
+		// 		}]
+		// 	);
+		// })
+		// 	.then(null, onUnexpectedError);
 	}
 }
