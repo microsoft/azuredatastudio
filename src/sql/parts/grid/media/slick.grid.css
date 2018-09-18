@@ -106,7 +106,7 @@ classes should alter those!
 }
 
 .slick-cell .grid-cell-value-container.missing-value {
-	text-decoration: underline;
+	font-style: italic;
 }
 
 .slick-cell, .slick-headerrow-column{
