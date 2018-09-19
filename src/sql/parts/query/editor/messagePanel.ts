@@ -29,6 +29,7 @@ import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -302,14 +303,8 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let control = this.workbenchEditorService.activeControl.getControl() as IEditor;
-			control.setSelection({
-				startColumn: selection.startColumn + 1,
-				endColumn: selection.endColumn + 1,
-				endLineNumber: selection.endLine + 1,
-				startLineNumber: selection.startLine + 1
-			});
-			control.focus();
+			let input = this.workbenchEditorService.activeEditor as QueryInput;
+			input.updateSelection(selection);
 		}
 
 		return true;
