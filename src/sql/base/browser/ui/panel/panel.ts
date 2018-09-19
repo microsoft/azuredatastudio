@@ -61,6 +61,8 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
 
+	private tabHistory: string[] = [];
+
 	constructor(private container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
 		this.$parent = this._register($('.tabbedPanel'));
@@ -152,6 +154,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		}
 
 		this._shownTab = id;
+		this.tabHistory.push(id);
 		this.$body.clearChildren();
 		let tab = this._tabMap.get(this._shownTab);
 		this.$body.attr('aria-labelledby', tab.identifier);
@@ -173,6 +176,26 @@ export class TabbedPanel extends Disposable implements IThemable {
 		}
 		this._tabMap.get(tab).header.destroy();
 		this._tabMap.delete(tab);
+		if (this._shownTab === tab) {
+			this._shownTab = undefined;
+			while (this._shownTab === undefined && this.tabHistory.length > 0) {
+				let lastTab = this.tabHistory.shift();
+				if (this._tabMap.get(lastTab)) {
+					this.showTab(lastTab);
+				}
+			}
+
+			// this shouldn't happen but just in case
+			if (this._shownTab === undefined && this._tabMap.size > 0) {
+				this.showTab(this._tabMap.keys().next().value);
+			}
+		}
+
+		if (!this.options.showHeaderWhenSingleView && this._tabMap.size === 1 && this._headerVisible) {
+			this.$header.offDOM();
+			this._headerVisible = false;
+			this.layout(this._currentDimensions);
+		}
 	}
 
 	public style(styles: IPanelStyles): void {
