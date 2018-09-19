@@ -223,5 +223,4 @@ export class ShowQueryPlanAction extends Action {
 			return TPromise.as(false);
 		}
 	}
-
 }
