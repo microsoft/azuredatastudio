@@ -19,6 +19,7 @@ declare module 'sqlops' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
+		dom(): ComponentBuilder<DomComponent>
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
@@ -575,6 +576,13 @@ declare module 'sqlops' {
 		options?: vscode.WebviewOptions;
 	}
 
+	export interface DomProperties extends ComponentProperties {
+		/**
+		 * Contents of the DOM component.
+		 */
+		html?: string;
+	}
+
 	/**
 	 * Editor properties for the editor component
 	 */
@@ -616,6 +624,10 @@ declare module 'sqlops' {
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
+	}
+
+	export interface DomComponent extends Component, DomProperties {
+
 	}
 
 	export interface TextComponent extends Component {
