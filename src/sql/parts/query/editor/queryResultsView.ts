@@ -18,6 +18,7 @@ import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { once, anyEvent } from 'vs/base/common/event';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 class ResultsView implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -155,6 +156,8 @@ export class QueryResultsView {
 	private chartTab: ChartTab;
 	private qpTab: QueryPlanTab;
 
+	private runnerDisposables: IDisposable[];
+
 	constructor(
 		container: HTMLElement,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -177,12 +180,20 @@ export class QueryResultsView {
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
+		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
 		this.resultsTab.view.state = this.input.state;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.chartTab.view.state = this.input.state.chartState;
 		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
 		this.resultsTab.queryRunner = queryRunner;
 		this.chartTab.queryRunner = queryRunner;
+		this.runnerDisposables.push(queryRunner.onQueryStart(e => {
+			this.hideChart();
+			this.hidePlan();
+			this.input.state.visibleTabs = new Set();
+			this.input.state.activeTab = this.resultsTab.identifier;
+		}));
 		if (this.input.state.visibleTabs.has(this.chartTab.identifier)) {
 			if (!this._panelView.contains(this.chartTab)) {
 				this._panelView.pushTab(this.chartTab);
@@ -220,6 +231,12 @@ export class QueryResultsView {
 		this.chartTab.chart(dataId);
 	}
 
+	public hideChart() {
+		if (this._panelView.contains(this.chartTab)) {
+			this._panelView.removeTab(this.chartTab.identifier);
+		}
+	}
+
 	public showPlan(xml: string) {
 		this.input.state.visibleTabs.add(this.qpTab.identifier);
 		if (!this._panelView.contains(this.qpTab)) {
@@ -228,5 +245,11 @@ export class QueryResultsView {
 
 		this._panelView.showTab(this.qpTab.identifier);
 		this.qpTab.view.showPlan(xml);
+	}
+
+	public hidePlan() {
+		if (this._panelView.contains(this.qpTab)) {
+			this._panelView.removeTab(this.qpTab.identifier);
+		}
 	}
 }
