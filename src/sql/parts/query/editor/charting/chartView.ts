@@ -12,12 +12,13 @@ import { Insight } from './insights/insight';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
+import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions } from './insights/interfaces';
 import { CopyAction, SaveImageAction, CreateInsightAction, IChartActionContext } from './actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
-
+import { Registry } from 'vs/platform/registry/common/platform';
 import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -39,6 +40,8 @@ export class ChartState {
 declare class Proxy {
 	constructor(object, handler);
 }
+
+const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 export class ChartView implements IPanelView {
 	private insight: Insight;
@@ -123,6 +126,7 @@ export class ChartView implements IPanelView {
 			}
 		}) as IInsightOptions;
 
+		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
 		});
