@@ -315,7 +315,7 @@ export class ChartView implements IPanelView {
 				});
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
-						input.value = val;
+						numberInput.value = val;
 					}
 				};
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
@@ -330,7 +330,7 @@ export class ChartView implements IPanelView {
 		this._state = val;
 		if (this.state.options) {
 			for (let key in this.state.options) {
-				if (this.state.options.hasOwnProperty(key)) {
+				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
 					this.options[key] = this.state.options[key];
 					this.optionMap[key].set(this.state.options[key]);
 				}
