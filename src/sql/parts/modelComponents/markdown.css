@@ -100,12 +100,11 @@ modelview-dom-component img {
 	max-height: 100%;
 }
 
-modelview-dom-component a, a:link{
+modelview-dom-component a, modelview-dom-component a:link{
 	text-decoration: none;
-	color: rgb(0, 0, 238) !important;
 }
 
-modelview-dom-component a:hover, a:link {
+modelview-dom-component a:hover, modelview-dom-component a:link {
 	text-decoration: underline;
 }
 
