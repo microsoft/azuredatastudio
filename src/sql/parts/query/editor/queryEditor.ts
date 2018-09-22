@@ -7,8 +7,10 @@ import 'vs/css!sql/parts/query/editor/media/queryEditor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
+import * as types from 'vs/base/common/types';
 
-import { EditorInput, EditorOptions, IEditorControl, IEditor } from 'vs/workbench/common/editor';
+import { EditorInput, EditorOptions, IEditorControl, IEditor, TextEditorOptions } from 'vs/workbench/common/editor';
+import * as editorCommon from 'vs/editor/common/editorCommon';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
@@ -444,6 +446,13 @@ export class QueryEditor extends BaseEditor {
 
 	public rebuildIntelliSenseCache(): void {
 		this._connectionManagementService.rebuildIntelliSenseCache(this.connectedUri);
+	}
+
+	public setOptions(options: EditorOptions): void {
+		const textOptions = <TextEditorOptions>options;
+		if (textOptions && types.isFunction(textOptions.apply)) {
+			textOptions.apply(this.getControl() as editorCommon.IEditor, editorCommon.ScrollType.Smooth);
+		}
 	}
 
 	// PRIVATE METHODS ////////////////////////////////////////////////////////////
