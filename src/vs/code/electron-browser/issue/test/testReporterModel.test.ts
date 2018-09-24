@@ -33,7 +33,7 @@ Issue Type: <b>Feature Request</b>
 
 undefined
 
-SQL Operations Studio version: undefined
+Azure Data Studio version: undefined
 OS version: undefined
 
 
@@ -57,7 +57,7 @@ Issue Type: <b>Bug</b>
 
 undefined
 
-SQL Operations Studio version: undefined
+Azure Data Studio version: undefined
 OS version: undefined
 
 <details>

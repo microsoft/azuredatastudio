@@ -91,7 +91,7 @@ suite('ConfigurationEditingService', () => {
 		workspaceDir = path.join(parentDir, 'workspaceconfig', id);
 		globalSettingsFile = path.join(workspaceDir, 'config.json');
 		// {{SQL CARBON EDIT}}
-		workspaceSettingsDir = path.join(workspaceDir, '.sqlops');
+		workspaceSettingsDir = path.join(workspaceDir, '.azuredatastudio');
 
 		return mkdirp(workspaceSettingsDir, 493);
 	}

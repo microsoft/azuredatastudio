@@ -1,15 +1,15 @@
 {
   "name": "import",
   "displayName": "SQL Server Import",
-  "description": "SQL Server Import for SQL Operations Studio supports importing CSV or JSON files into SQL Server.",
-  "version": "0.1.0",
+  "description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
     "sqlops": "*"
   },
-  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "activationEvents": [
@@ -18,7 +18,7 @@
   "main": "./out/main",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/sqlopsstudio.git"
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "extensionDependencies": [
     "Microsoft.mssql"

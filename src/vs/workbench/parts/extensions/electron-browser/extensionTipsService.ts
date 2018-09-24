@@ -229,7 +229,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		// {{SQL CARBON EDIT}}
 		this._recommendations.forEach(x => output[x.toLowerCase()] = {
 			reasonId: ExtensionRecommendationReason.Executable,
-			reasonText: localize('defaultRecommendations', "This extension is recommended by SQL Operations Studio.")
+			reasonText: localize('defaultRecommendations', "This extension is recommended by Azure Data Studio.")
 		});
 
 		for (const id of this._allIgnoredRecommendations) {
@@ -319,7 +319,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	private resolveWorkspaceFolderExtensionConfig(workspaceFolder: IWorkspaceFolder): TPromise<IExtensionsConfigContent | null> {
 		// {{SQL CARBON EDIT}}
-		const extensionsJsonUri = workspaceFolder.toResource(paths.join('.sqlops', 'extensions.json'));
+		const extensionsJsonUri = workspaceFolder.toResource(paths.join('.azuredatastudio', 'extensions.json'));
 
 		return this.fileService.resolveFile(extensionsJsonUri)
 			.then(() => this.fileService.resolveContent(extensionsJsonUri))

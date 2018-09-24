@@ -208,7 +208,7 @@ function getElectron(arch) {
 		});
 
 		return gulp.src('package.json')
-			.pipe(json({ name: product.nameShort }))
+		.pipe(json({ name: product.nameShort }))
 			.pipe(electron(electronOpts))
 			.pipe(filter(['**', '!**/app/package.json']))
 			.pipe(vfs.dest('.build/electron'));
@@ -280,7 +280,7 @@ function packageTask(platform, arch, opts) {
 	opts = opts || {};
 
 	// {{SQL CARBON EDIT}}
-	const destination = path.join(path.dirname(root), 'sqlops') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
+	const destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
 	platform = platform || process.platform;
 
 	return () => {
@@ -338,7 +338,8 @@ function packageTask(platform, arch, opts) {
 			version += '-' + quality;
 		}
 
-		const name = product.nameShort;
+		// {{SQL CARBON EDIT}}
+		const name = (platform === 'darwin') ? 'Azure Data Studio' : product.nameShort;
 		const packageJsonStream = gulp.src(['package.json'], { base: '.' })
 			.pipe(json({ name, version }));
 
@@ -460,12 +461,12 @@ function packageTask(platform, arch, opts) {
 const buildRoot = path.dirname(root);
 
 // {{SQL CARBON EDIT}}
-gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'sqlops-win32-ia32')));
-gulp.task('clean-vscode-win32-x64', util.rimraf(path.join(buildRoot, 'sqlops-win32-x64')));
-gulp.task('clean-vscode-darwin', util.rimraf(path.join(buildRoot, 'sqlops-darwin')));
-gulp.task('clean-vscode-linux-ia32', util.rimraf(path.join(buildRoot, 'sqlops-linux-ia32')));
-gulp.task('clean-vscode-linux-x64', util.rimraf(path.join(buildRoot, 'sqlops-linux-x64')));
-gulp.task('clean-vscode-linux-arm', util.rimraf(path.join(buildRoot, 'sqlops-linux-arm')));
+gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-ia32')));
+gulp.task('clean-vscode-win32-x64', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-x64')));
+gulp.task('clean-vscode-darwin', util.rimraf(path.join(buildRoot, 'azuredatastudio-darwin')));
+gulp.task('clean-vscode-linux-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-linux-ia32')));
+gulp.task('clean-vscode-linux-x64', util.rimraf(path.join(buildRoot, 'azuredatastudio-linux-x64')));
+gulp.task('clean-vscode-linux-arm', util.rimraf(path.join(buildRoot, 'azuredatastudio-linux-arm')));
 
 gulp.task('vscode-win32-ia32', ['optimize-vscode', 'clean-vscode-win32-ia32'], packageTask('win32', 'ia32'));
 gulp.task('vscode-win32-x64', ['optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));

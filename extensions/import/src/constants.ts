@@ -10,5 +10,5 @@ export const providerId = 'FlatFileImport';
 export const configLogDebugInfo = 'logDebugInfo';
 export const sqlConfigSectionName = 'sql';
 
-export const serviceCrashLink = 'https://github.com/Microsoft/sqlopsstudio/issues/2090';
+export const serviceCrashLink = 'https://github.com/Microsoft/azuredatastudio/issues/2090';
 
