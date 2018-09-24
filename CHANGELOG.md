@@ -1,5 +1,27 @@
 # Change Log
 
+
+## Version 1.0.0
+* Release date: September 24, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Announcing the SQL Server 2019 Preview extension.
+  * Support for SQL Server 2019 preview features including big data cluster support.
+  * Azure Data Studio Notebooks
+  * The Azure Resource Explorer viewlets you browse data-related endpoints for your Azure accounts and create connections to them in Object Explorer. In this release Azure SQL Databases and servers are supported.
+  * SQL Server Polybase Create External Table Wizard
+* Query Results Grid performance and UX improvements for large number of result sets.
+* Visual Studio Code source code refresh from 1.23 to 1.26.1 with Grid Layout and Improved Settings Editor (preview).
+* Accessibility improvements for screen reader, keyboard navigation and high-contrast.
+* Added Connection name option to provide an alternative display name in the Servers view-let.
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* AlexFsmn `Feature: Ability to add connection name #2332`
+* AlexFsmn `Disabled connection name input when connecting to a server. #2566`
+
 ## Version 0.33.7
 * Release date: August 30, 2018
 * Release status: Public Preview
