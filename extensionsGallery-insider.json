@@ -29,15 +29,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/agent/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/agent/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/agent/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/agent/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -51,7 +51,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/sqlopsstudio"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -82,19 +82,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/images/sqlserver.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/sp_whoIsActive/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/sp_whoIsActive/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -108,7 +108,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/sqlopsstudio"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -139,19 +139,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/images/sqlserver.png"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/images/sqlserver.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/samples/serverReports/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/samples/serverReports/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -165,7 +165,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/sqlopsstudio"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -485,15 +485,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/profiler/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/profiler/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/profiler/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/profiler/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -507,7 +507,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/sqlopsstudio"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
@@ -550,7 +550,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
 								}
 							],
 							"properties": [
@@ -713,15 +713,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx"
 								}
 							],
 							"properties": [
@@ -735,7 +735,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/Microsoft/sqlopsstudio"
+									"value": "https://github.com/Microsoft/azuredatastudio"
 								}
 							]
 						}
