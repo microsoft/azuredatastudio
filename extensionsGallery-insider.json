@@ -177,7 +177,7 @@
 					"extensionId": "13",
 					"extensionName": "ssmskeymap",
 					"displayName": "SSMS Keymap",
-					"shortDescription": "This extension ports popular SSMS keyboard shortcuts to SQL Operations Studio",
+					"shortDescription": "This extension ports popular SSMS keyboard shortcuts to Azure Data Studio",
 					"publisher": {
 						"displayName": "Kevin Cunnane",
 						"publisherId": "kevcunnane",
