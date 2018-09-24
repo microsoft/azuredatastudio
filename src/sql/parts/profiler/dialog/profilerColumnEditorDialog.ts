@@ -361,7 +361,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 	}
 
 	// currently not used, this dialog is a work in progress
-	// tracked in issue #1545 https://github.com/Microsoft/sqlopsstudio/issues/1545
+	// tracked in issue #1545 https://github.com/Microsoft/azuredatastudio/issues/1545
 	private _updateInput(): void {
 		/*
 		this._element.getUnsortedChildren().forEach(e => {
@@ -394,7 +394,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 	}
 
 	// currently not used, this dialog is a work in progress
-	// tracked in issue #1545 https://github.com/Microsoft/sqlopsstudio/issues/1545
+	// tracked in issue #1545 https://github.com/Microsoft/azuredatastudio/issues/1545
 	private _updateList(): void {
 		/*
 		this._element = new SessionItem(this._input.sessionTemplate.name, this._selectedValue === 0 ? 'event' : 'column');

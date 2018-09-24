@@ -30,7 +30,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
-// TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/sqlopsstudio/issues/450)
+// TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
 const firewallHelpUri = 'https://aka.ms/sqlopsfirewallhelp';
 

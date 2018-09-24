@@ -1,6 +1,6 @@
-# Microsoft SQL Server Agent for SQL Operations Studio
+# Microsoft SQL Server Agent for Azure Data Studio
 
-Welcome to Microsoft SQL Server Agent for SQL Operations Studio! An extension for managing and troubleshooting
+Welcome to Microsoft SQL Server Agent for Azure Data Studio! An extension for managing and troubleshooting
 SQL Server Agent jobs and configuration.  The current is an early release of this extension that provides
 basic functionality for the following.
 
@@ -22,4 +22,4 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt).
+Licensed under the [Source EULA](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt).

@@ -21,7 +21,7 @@ export function getAppDataPath() {
 }
 
 export function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'sqlops');
+	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
 export function ensure(target: object, key: string): any {

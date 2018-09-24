@@ -1,7 +1,7 @@
 {
   "resolution": "main",
   "tree": {
-    "src": "D:\\code\\sqlopsstudio\\node_modules\\angular2-slickgrid\\package.json",
+    "src": "D:\\code\\azuredatastudio\\node_modules\\angular2-slickgrid\\package.json",
     "raw": "npm:angular2-slickgrid",
     "main": "out/index.js",
     "version": "1.4.1",

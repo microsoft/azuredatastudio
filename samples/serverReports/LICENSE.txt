@@ -1,6 +1,6 @@
 MICROSOFT SOFTWARE LICENSE TERMS
 
-MICROSOFT SQL OPERATIONS STUDIO
+MICROSOFT Azure Data Studio
 
 Microsoft Corporation ("Microsoft") grants you a nonexclusive, perpetual,
 royalty-free right to use, copy, and modify the software code provided by us
