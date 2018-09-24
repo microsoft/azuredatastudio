@@ -1,25 +1,25 @@
-# SQL Operations Studio
+# Azure Data Studio
 
-[![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/Microsoft/azuredatastudio](https://badges.gitter.im/Microsoft/azuredatastudio.svg)](https://gitter.im/Microsoft/azuredatastudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
+Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download SQL Operations Studio August Public Preview**
+**Download Azure Data Studio August Public Preview**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2013365
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2013712
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2013715
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2013718
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2013830
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2013833
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2024683
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2024680
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2024677
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2024675
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2024672
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2024668
 
-Go to our [download page](https://aka.ms/sqlopsstudio) for more specific instructions.
+Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
-Try out the latest insiders build from `master` at https://github.com/Microsoft/sqlopsstudio/releases.
+Try out the latest insiders build from `master` at https://github.com/Microsoft/azuredatastudio/releases.
 
-See the [change log](https://github.com/Microsoft/sqlopsstudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
+See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
 
 **Feature Highlights**
 
@@ -38,22 +38,22 @@ See the [change log](https://github.com/Microsoft/sqlopsstudio/blob/master/CHANG
 
 Here's some of these features in action.
 
-<img src='https://github.com/Microsoft/sqlopsstudio/blob/master/docs/overview_screen.jpg' width='800px'>
+<img src='https://github.com/Microsoft/azuredatastudio/blob/master/docs/overview_screen.jpg' width='800px'>
 
 ## Contributing
 If you are interested in fixing issues and contributing directly to the code base,
-please see the document [How to Contribute](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Contribute), which covers the following:
+please see the document [How to Contribute](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Contribute), which covers the following:
 
-* [How to build and run from source](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Contribute#Build-and-Run-From-Source)
-* [The development workflow, including debugging and running tests](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Contribute#development-workflow)
-* [Submitting pull requests](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Contribute#pull-requests)
+* [How to build and run from source](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Contribute#Build-and-Run-From-Source)
+* [The development workflow, including debugging and running tests](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Contribute#development-workflow)
+* [Submitting pull requests](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Contribute#pull-requests)
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 ## Localization
-SQL Operations Studio localization is now open for community contributions. You can contribute to localization for both software and docs. https://aka.ms/SQLOpsStudioLoc
+Azure Data Studio localization is now open for community contributions. You can contribute to localization for both software and docs. https://aka.ms/SQLOpsStudioLoc
 
-Localization is now opened for 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, and Portuguese (Brazil). Help us make SQL Operations Studio available in your language!
+Localization is now opened for 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, and Portuguese (Brazil). Help us make Azure Data Studio available in your language!
 
 ## Privacy Statement
 The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
@@ -61,6 +61,8 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* AlexFsmn `Feature: Ability to add connection name #2332`
+* AlexFsmn `Disabled connection name input when connecting to a server. #2566`
 * SebastianPfliegel `Added more saveAsCsv options #2099`
 * ianychoi `Fixes a typo: Mimunum -> Minimum #1994`
 * AlexFsmn `Fixed bug where proper file extension wasn't appended to filename. #2151`
@@ -98,7 +100,7 @@ We would like to thank all our users who raised issues, and in particular the fo
   * Portuguese Brazil: Daniel de Sousa, Diogo Duarte, Douglas Correa, Douglas Eccker, José Emanuel Mendes, Marcelo Fernandes, Marcondes Alexandre, Roberto Fonseca, Rodrigo Crespi
 
 
-And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/ThirdPartyNotices.txt)
+And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/ThirdPartyNotices.txt)
 
 ## License
 
