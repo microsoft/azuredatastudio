@@ -14,7 +14,7 @@
 * Query Results Grid performance and UX improvements for large number of result sets.
 * Visual Studio Code source code refresh from 1.23 to 1.26.1 with Grid Layout and Improved Settings Editor (preview).
 * Accessibility improvements for screen reader, keyboard navigation and high-contrast.
-* Added Connection name option to provide an alternative display name in the Servers view-let.
+* Added Connection name option to provide an alternative display name in the Servers viewlet.
 
 ## Contributions and "thank you"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
