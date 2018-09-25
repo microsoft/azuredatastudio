@@ -73,7 +73,8 @@ export abstract class TitleControl extends Themable {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IKeybindingService private keybindingService: IKeybindingService,
 		@ITelemetryService private telemetryService: ITelemetryService,
-		@INotificationService private notificationService: INotificationService,
+		// {{SQL CARBON EDIT}} -- need to make the notification service protected
+		@INotificationService protected notificationService: INotificationService,
 		@IMenuService private menuService: IMenuService,
 		@IQuickOpenService protected quickOpenService: IQuickOpenService,
 		@IThemeService themeService: IThemeService,

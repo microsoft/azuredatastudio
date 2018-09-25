@@ -46,6 +46,9 @@ import { IMenuService, MenuId, IMenu } from 'vs/platform/actions/common/actions'
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { fillInContextMenuActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+// {{SQL CARBON EDIT}}
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { GlobalNewUntitledFileAction } from 'vs/workbench/parts/files/electron-browser/fileActions';
 
 export class EditorGroupView extends Themable implements IEditorGroupView {
 
@@ -126,7 +129,9 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
 		@IKeybindingService private keybindingService: IKeybindingService,
 		@IMenuService private menuService: IMenuService,
-		@IContextMenuService private contextMenuService: IContextMenuService
+		@IContextMenuService private contextMenuService: IContextMenuService,
+		// {{SQL CARBON EDIT}}
+		@ICommandService private commandService: ICommandService
 	) {
 		super(themeService);
 
@@ -244,8 +249,8 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		this._register(addDisposableListener(this.element, EventType.DBLCLICK, e => {
 			if (this.isEmpty()) {
 				EventHelper.stop(e);
-
-				this.openEditor(this.untitledEditorService.createOrGet(), EditorOptions.create({ pinned: true }));
+				// {{SQL CARBON EDIT}}
+				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).done(undefined, err => this.notificationService.warn(err));
 			}
 		}));
 
