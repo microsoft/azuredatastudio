@@ -10,7 +10,7 @@ StartupWMClass=@@NAME_SHORT@@
 Categories=Utility;TextEditor;Development;IDE;
 MimeType=text/plain;inode/directory;
 Actions=new-empty-window;
-Keywords=sqlops;
+Keywords=azuredatastudio;
 
 [Desktop Action new-empty-window]
 Name=New Empty Window

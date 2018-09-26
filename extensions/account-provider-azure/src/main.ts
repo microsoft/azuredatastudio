@@ -26,7 +26,7 @@ export function getAppDataPath() {
 }
 
 export function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'sqlops');
+	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
 // EXTENSION ACTIVATION ////////////////////////////////////////////////////

@@ -803,11 +803,11 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		const folders = this.contextService.getWorkspace().folders;
 		for (let i = 0; i < folders.length; i++) {
 			// {{SQL CARBON EDIT}}
-			if (isEqualOrParent(this.resource, folders[i].toResource('.sqlops'), hasToIgnoreCase(this.resource))) {
+			if (isEqualOrParent(this.resource, folders[i].toResource('.azuredatastudio'), hasToIgnoreCase(this.resource))) {
 				const filename = path.basename(this.resource.fsPath);
 				if (TextFileEditorModel.WHITELIST_WORKSPACE_JSON.indexOf(filename) > -1) {
 					// {{SQL CARBON EDIT}}
-					return `.sqlops/${filename}`;
+					return `.azuredatastudio/${filename}`;
 				}
 			}
 		}

@@ -66,13 +66,13 @@
 		{
 			"type": "chrome",
 			"request": "attach",
-			"name": "Attach to sqlops",
+			"name": "Attach to azuredatastudio",
 			"port": 9222
 		},
 		{
 			"type": "chrome",
 			"request": "launch",
-			"name": "Launch sqlops",
+			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
@@ -98,12 +98,12 @@
 			"name": "Unit Tests",
 			"protocol": "inspector",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"runtimeExecutable": "${workspaceFolder}/.build/electron/SQL Operations Studio.app/Contents/MacOS/Electron",
+			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops.exe"
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops"
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
 			},
 			"stopOnEntry": false,
 			"outputCapture": "std",
@@ -132,16 +132,16 @@
 	],
 	"compounds": [
 		{
-			"name": "Debug sqlops Main and Renderer",
+			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [
-				"Launch sqlops",
+				"Launch azuredatastudio",
 				"Attach to Main Process"
 			]
 		},
 		{
 			"name": "Search and Renderer processes",
 			"configurations": [
-				"Launch sqlops",
+				"Launch azuredatastudio",
 				"Attach to Search Process"
 			]
 		},
