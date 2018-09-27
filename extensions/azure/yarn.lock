@@ -942,24 +942,25 @@ moment@^2.21.0, moment@^2.22.2:
   resolved "https://registry.npmjs.org/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
 ms-rest-azure@^2.5.5:
-  version "2.5.7"
-  resolved "https://registry.npmjs.org/ms-rest-azure/-/ms-rest-azure-2.5.7.tgz#8d4a68ed938d21488ba6e66b4525fe2e8cbdfb2d"
+  version "2.5.9"
+  resolved "https://registry.npmjs.org/ms-rest-azure/-/ms-rest-azure-2.5.9.tgz#8599943e349c91eb367d2d1dcb885017518dc712"
   dependencies:
     adal-node "^0.1.28"
     async "2.6.0"
     moment "^2.22.2"
     ms-rest "^2.3.2"
+    request "^2.88.0"
     uuid "^3.2.1"
 
 ms-rest@^2.3.2, ms-rest@^2.3.3:
-  version "2.3.6"
-  resolved "https://registry.npmjs.org/ms-rest/-/ms-rest-2.3.6.tgz#9984fe9328cd07e3172b520db5dff0acb68f1f7a"
+  version "2.3.7"
+  resolved "https://registry.npmjs.org/ms-rest/-/ms-rest-2.3.7.tgz#8bfc82fb91807643fcaa487c5fc9698cd18a018c"
   dependencies:
     duplexer "^0.1.1"
     is-buffer "^1.1.6"
     is-stream "^1.1.0"
     moment "^2.21.0"
-    request "^2.87.0"
+    request "^2.88.0"
     through "^2.3.8"
     tunnel "0.0.5"
     uuid "^3.2.1"
@@ -1153,7 +1154,7 @@ replace-ext@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/replace-ext/-/replace-ext-1.0.0.tgz#de63128373fcbf7c3ccfa4de5a480c45a67958eb"
 
-"request@>= 2.52.0", request@^2.79.0, request@^2.83.0, request@^2.87.0:
+"request@>= 2.52.0", request@^2.79.0, request@^2.83.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.npmjs.org/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   dependencies:
@@ -1496,7 +1497,7 @@ vscode-nls@^4.0.0:
   resolved "https://registry.npmjs.org/vscode-nls/-/vscode-nls-4.0.0.tgz#4001c8a6caba5cedb23a9c5ce1090395c0e44002"
 
 vscode@^1.1.10:
-  version "1.1.21"
+  version "1.1.10"
   resolved "https://registry.npmjs.org/vscode/-/vscode-1.1.21.tgz#1c8253d6238aefb4112d6e58cf975ad25313dafc"
   dependencies:
     glob "^7.1.2"
