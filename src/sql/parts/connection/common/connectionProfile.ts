@@ -33,7 +33,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | interfaces.IConnectionProfile
+		model: string | sqlops.IConnectionProfile
 	) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
@@ -171,7 +171,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		};
 	}
 
-	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: interfaces.IConnectionProfile) {
+	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: sqlops.IConnectionProfile) {
 		if (profile) {
 			if (profile instanceof ConnectionProfile) {
 				return profile;
