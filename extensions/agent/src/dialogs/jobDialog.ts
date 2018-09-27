@@ -197,6 +197,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 				.withProperties({
 					value: 'Feature Preview'
 				}).component();
+			let steps = this.model.jobSteps ? this.model.jobSteps : [];
+			let data = this.convertStepsToData(steps);
 			this.stepsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -206,7 +208,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.StepsTable_SuccessColumnString,
 						this.StepsTable_FailureColumnString
 					],
-					data: [],
+					data: data,
 					height: 430
 				}).component();
 
@@ -464,6 +466,21 @@ export class JobDialog extends AgentDialog<JobData>  {
 			alignItems: 'left',
 			justifyContent: 'space-between'
 		});
+	}
+
+	private convertStepsToData(jobSteps: sqlops.AgentJobStepInfo[]): any[][] {
+		let result = [];
+		console.log(jobSteps);
+		jobSteps.forEach(jobStep => {
+			let cols = [];
+			cols.push(jobStep.id);
+			cols.push(jobStep.stepName);
+			cols.push('NA');
+			cols.push('NA');
+			cols.push('NA');
+			result.push(cols);
+		});
+		return result;
 	}
 
 	protected updateModel() {

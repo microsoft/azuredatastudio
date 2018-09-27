@@ -1322,6 +1322,7 @@ declare module 'sqlops' {
 		message: string;
 		runDate: string;
 		runStatus: number;
+		stepDetails: AgentJobStepInfo;
 	}
 
 	export interface AgentJobStepInfo {
