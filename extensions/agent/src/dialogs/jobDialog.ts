@@ -475,9 +475,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			let cols = [];
 			cols.push(jobStep.id);
 			cols.push(jobStep.stepName);
-			cols.push('NA');
-			cols.push('NA');
-			cols.push('NA');
+			cols.push(jobStep.subSystem);
+			cols.push(jobStep.successAction);
+			cols.push(jobStep.failureAction);
 			result.push(cols);
 		});
 		return result;

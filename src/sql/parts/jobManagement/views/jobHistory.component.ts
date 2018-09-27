@@ -185,8 +185,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 					stepViewRow.runStatus = jobStepStatus ? JobManagementUtilities.convertToStatusString(0) :
 						JobManagementUtilities.convertToStatusString(step.runStatus);
 					self._runStatus = JobManagementUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-					stepViewRow.stepName = step.stepName;
-					stepViewRow.stepId = step.stepId.toString();
+					stepViewRow.stepName = step.stepDetails.stepName;
+					stepViewRow.stepId = step.stepDetails.id.toString();
 					return stepViewRow;
 				});
 				this._showSteps = self._stepRows.length > 0;
@@ -199,9 +199,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 	private didJobFail(job: sqlops.AgentJobHistoryInfo): boolean {
 		for (let i = 0; i < job.steps.length; i++) {
-			// if (job.steps[i].runStatus === 0) {
-			// 	return true;
-			// }
+			if (job.steps[i].runStatus === 0) {
+				return true;
+			}
 		}
 		return false;
 	}

@@ -890,14 +890,18 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		}
 
 		let jobId =  data.getItem(rowIndex).jobId;
-		let job = this.jobs.filter(job => {
+		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});
 		let jobHistories = this.jobHistories[jobId];
 		let steps: sqlops.AgentJobStep[] = undefined;
-		if (jobHistories && jobHistories[jobHistories.length-1].steps.length > 0) {
+		if (jobHistories && jobHistories[jobHistories.length-1] &&
+			jobHistories[jobHistories.length-1].steps.length > 0) {
 			steps = jobHistories[jobHistories.length-1].steps;
 			steps.forEach(step => {
+				if (!job[0].JobSteps) {
+					job[0].JobSteps = [];
+				}
 				job[0].JobSteps.push(step.stepDetails);
 			});
 		}
