@@ -209,7 +209,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.StepsTable_FailureColumnString
 					],
 					data: data,
-					height: 430
+					height: 750
 				}).component();
 
 			this.moveStepUpButton = view.modelBuilder.button()
@@ -252,6 +252,31 @@ export class JobDialog extends AgentDialog<JobData>  {
 			}).component();
 
 			this.stepsTable.enabled = false;
+			this.editStepButton.enabled = false;
+			this.deleteStepButton.enabled = false;
+
+			this.stepsTable.onRowSelected(() => {
+				// only let edit or delete steps if there's
+				// one step selection
+				if (this.stepsTable.selectedRows.length === 1) {
+					let rowNumber = this.stepsTable.selectedRows[0];
+					let stepData = steps[rowNumber];
+					this.deleteStepButton.enabled = true;
+					this.editStepButton.enabled = true;
+					this.editStepButton.onDidClick((e) => {
+						// implement edit steps
+
+						// let stepDialog = new JobStepDialog(this.model.ownerUri, this.nameTextBox.value, '' , 1, this.model);
+						// stepDialog.openNewStepDialog();
+					});
+
+					this.deleteStepButton.onDidClick((e) => {
+						// implement delete steps
+
+
+					});
+				}
+			});
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -317,7 +342,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.ScheduleNameLabelString
 					],
 					data: [],
-					height: 430,
+					height: 750,
 					width: 420
 				}).component();
 
@@ -359,6 +384,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 				data[i] = [ schedule.name ];
 			}
 			this.schedulesTable.data = data;
+			this.schedulesTable.height = 750;
 		}
 	}
 
@@ -470,7 +496,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private convertStepsToData(jobSteps: sqlops.AgentJobStepInfo[]): any[][] {
 		let result = [];
-		console.log(jobSteps);
 		jobSteps.forEach(jobStep => {
 			let cols = [];
 			cols.push(jobStep.id);

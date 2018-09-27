@@ -1313,6 +1313,7 @@ declare module 'sqlops' {
 		jobCount: number;
 		activeEndDate: string;
 		scheduleUid: string;
+		description: string;
 	}
 
 	export interface AgentJobStep {
