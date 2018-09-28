@@ -62,6 +62,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly AlertsTopLabelString: string = localize('jobDialog.alertsList', 'Alerts list');
 	private readonly NewAlertButtonString: string = localize('jobDialog.newAlert', 'New Alert');
 	private readonly AlertNameLabelString: string = localize('jobDialog.alertNameLabel', 'Alert Name');
+	private readonly AlertEnabledLabelString: string = localize('jobDialog.alertEnabledLabel', 'Enabled');
+	private readonly AlertTypeLabelString: string = localize('jobDialog.alertTypeLabel', 'Type');
 
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
@@ -298,12 +300,16 @@ export class JobDialog extends AgentDialog<JobData>  {
 			.withProperties({
 				value: 'Feature Preview'
 			}).component();
+			let alerts = this.model.alerts ? this.model.alerts : [];
+			let data = this.convertAlertsToData(alerts);
 			this.alertsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						this.AlertNameLabelString
+						this.AlertNameLabelString,
+						this.AlertEnabledLabelString,
+						this.AlertTypeLabelString
 					],
-					data: [],
+					data: data,
 					height: 430,
 					width: 400
 				}).component();
@@ -510,11 +516,23 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private convertSchedulesToData(jobSchedules: sqlops.AgentJobScheduleInfo[]): any[][] {
 		let result = [];
 		jobSchedules.forEach(schedule => {
-			console.log(schedule);
 			let cols = [];
 			cols.push(schedule.id);
 			cols.push(schedule.name);
 			cols.push(schedule.description);
+			result.push(cols);
+		});
+		return result;
+	}
+
+	private convertAlertsToData(alerts: sqlops.AgentAlertInfo[]): any[][] {
+		let result = [];
+		alerts.forEach(alert => {
+			let cols = [];
+			console.log(alert);
+			cols.push(alert.name);
+			cols.push(alert.isEnabled);
+			cols.push(alert.alertType.toString());
 			result.push(cols);
 		});
 		return result;

@@ -1372,6 +1372,7 @@ declare module 'sqlops' {
 		server: string;
 		steps: AgentJobStep[];
 		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface AgentProxyInfo {

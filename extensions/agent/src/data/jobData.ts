@@ -61,6 +61,7 @@ export class JobData implements IAgentDialogData {
 			this.enabled = jobInfo.enabled;
 			this.jobSteps = jobInfo.JobSteps;
 			this.jobSchedules = jobInfo.JobSchedules;
+			this.alerts = jobInfo.Alerts;
 		}
 	}
 

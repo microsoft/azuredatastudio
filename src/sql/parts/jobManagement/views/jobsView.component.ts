@@ -896,6 +896,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		let jobHistories = this.jobHistories[jobId];
 		let steps: sqlops.AgentJobStep[] = undefined;
 		let schedules: sqlops.AgentJobScheduleInfo[] = undefined;
+		let alerts: sqlops.AgentAlertInfo[] = undefined;
 		if (jobHistories && jobHistories[jobHistories.length-1]) {
 			// add steps
 			steps = jobHistories[jobHistories.length-1].steps;
@@ -922,6 +923,17 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 						job[0].JobSchedules.push(schedule);
 					});
 				}
+			}
+			// add alerts
+			alerts = jobHistories[jobHistories.length-1].alerts;
+			if (!job[0].Alerts) {
+				job[0].Alerts = [];
+			}
+			if (job[0].Alerts.length !== alerts.length) {
+				job[0].Alerts = [];
+				alerts.forEach(alert => {
+					job[0].Alerts.push(alert);
+				});
 			}
 		}
 		return job && job.length > 0 ? job[0] : undefined;
