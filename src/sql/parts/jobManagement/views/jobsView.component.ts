@@ -895,15 +895,34 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		});
 		let jobHistories = this.jobHistories[jobId];
 		let steps: sqlops.AgentJobStep[] = undefined;
-		if (jobHistories && jobHistories[jobHistories.length-1] &&
-			jobHistories[jobHistories.length-1].steps.length > 0) {
+		let schedules: sqlops.AgentJobScheduleInfo[] = undefined;
+		if (jobHistories && jobHistories[jobHistories.length-1]) {
+			// add steps
 			steps = jobHistories[jobHistories.length-1].steps;
-			steps.forEach(step => {
+			if (steps && steps.length > 0) {
 				if (!job[0].JobSteps) {
 					job[0].JobSteps = [];
 				}
-				job[0].JobSteps.push(step.stepDetails);
-			});
+				if (job[0].JobSteps.length !== steps.length) {
+					job[0].JobSteps = [];
+					steps.forEach(step => {
+						job[0].JobSteps.push(step.stepDetails);
+					});
+				}
+			}
+			// add schedules
+			schedules = jobHistories[jobHistories.length-1].schedules;
+			if (schedules && schedules.length > 0) {
+				if (!job[0].JobSchedules) {
+					job[0].JobSchedules = [];
+				}
+				if (job[0].JobSchedules.length !== schedules.length) {
+					job[0].JobSchedules = [];
+					schedules.forEach(schedule => {
+						job[0].JobSchedules.push(schedule);
+					});
+				}
+			}
 		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}

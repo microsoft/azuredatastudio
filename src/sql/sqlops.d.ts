@@ -1371,6 +1371,7 @@ declare module 'sqlops' {
 		retriesAttempted: string;
 		server: string;
 		steps: AgentJobStep[];
+		schedules: AgentJobScheduleInfo[];
 	}
 
 	export interface AgentProxyInfo {

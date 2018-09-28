@@ -18,10 +18,10 @@ export class PickScheduleDialog {
 	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', 'Job Schedules');
 	private readonly OkButtonText: string = localize('pickSchedule.ok', 'OK');
 	private readonly CancelButtonText: string = localize('pickSchedule.cancel', 'Cancel');
-	private readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Name');
 	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', 'Available Schedules:');
-	private readonly SchedulesIDText: string = localize('pickSchedule.scheduleID','ID');
-	private readonly ScheduleDescription: string = localize('pickSchedule.description','Description');
+	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Name');
+	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID','ID');
+	public static readonly ScheduleDescription: string = localize('pickSchedule.description','Description');
 
 
 	// UI Components
@@ -53,13 +53,13 @@ export class PickScheduleDialog {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						this.SchedulesIDText,
-						this.ScheduleNameLabelText,
-						this.ScheduleDescription
+						PickScheduleDialog.SchedulesIDText,
+						PickScheduleDialog.ScheduleNameLabelText,
+						PickScheduleDialog.ScheduleDescription
 					],
 					data: [],
 					height: 750,
-					width: 450
+					width: 430
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()

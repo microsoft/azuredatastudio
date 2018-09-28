@@ -339,7 +339,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						this.ScheduleNameLabelString
+						PickScheduleDialog.SchedulesIDText,
+						PickScheduleDialog.ScheduleNameLabelText,
+						PickScheduleDialog.ScheduleDescription
 					],
 					data: [],
 					height: 750,
@@ -377,12 +379,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 	}
 
 	private populateScheduleTable() {
-		if (this.model.jobSchedules) {
-			let data: any[][] = [];
-			for (let i = 0; i < this.model.jobSchedules.length; ++i) {
-				let schedule = this.model.jobSchedules[i];
-				data[i] = [ schedule.name ];
-			}
+		let schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
+		let data = this.convertSchedulesToData(schedules);
+		if (data.length > 0) {
 			this.schedulesTable.data = data;
 			this.schedulesTable.height = 750;
 		}
@@ -503,6 +502,19 @@ export class JobDialog extends AgentDialog<JobData>  {
 			cols.push(jobStep.subSystem);
 			cols.push(jobStep.successAction);
 			cols.push(jobStep.failureAction);
+			result.push(cols);
+		});
+		return result;
+	}
+
+	private convertSchedulesToData(jobSchedules: sqlops.AgentJobScheduleInfo[]): any[][] {
+		let result = [];
+		jobSchedules.forEach(schedule => {
+			console.log(schedule);
+			let cols = [];
+			cols.push(schedule.id);
+			cols.push(schedule.name);
+			cols.push(schedule.description);
 			result.push(cols);
 		});
 		return result;
