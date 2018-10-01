@@ -526,15 +526,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	private async loadJobHistories() {
 		if (this.jobs) {
-			let erroredJobs = 0;
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
 			// grab histories of the failing jobs first
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
 			let passing = separatedJobs[1];
-			await this.curateJobHistory(failing, ownerUri);
-			await this.curateJobHistory(passing, ownerUri);
+			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 
@@ -581,9 +579,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		for (let i = 0; i < jobs.length; i++) {
-			let job = jobs[i];
-			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+		jobs.forEach(async (job) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 				if (result && result.jobs) {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
@@ -601,7 +598,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					}
 				}
 			});
-		}
+		});
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
