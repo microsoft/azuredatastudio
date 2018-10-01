@@ -10,4 +10,5 @@ export const serviceCrashMessage = 'SQL Tools Service component exited unexpecte
 export const serviceCrashButton = 'View Known Issues';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const configLogDebugInfo = 'logDebugInfo';
+export const configTracingLevel = 'tracingLevel';
 export const extensionConfigSectionName = 'mssql';

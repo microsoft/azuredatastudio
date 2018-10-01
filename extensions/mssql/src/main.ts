@@ -98,15 +98,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
 function generateServerOptions(executablePath: string): ServerOptions {
 	let launchArgs = [];
-	launchArgs.push('--log-dir');
-	let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
-	launchArgs.push(logFileLocation);
+	launchArgs.push('--log-file');
+	let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', 'sqltools.log');
+	console.log('logFile for ' + path.basename(executablePath) + ' is ' + logFile);
+	launchArgs.push(logFile);
 	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
 	if (config) {
-		let logDebugInfo = config[Constants.configLogDebugInfo];
-		if (logDebugInfo) {
-			launchArgs.push('--enable-logging');
-		}
+		let configTracingLevel = config[Constants.configTracingLevel];
+		launchArgs.push('--tracing-level');
+		launchArgs.push(configTracingLevel);
 	}
 
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
