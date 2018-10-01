@@ -30,11 +30,11 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		super();
 		let outputChannelRegistry = Registry.as<IOutputChannelRegistry>(OutputExt.OutputChannels);
 		outputChannelRegistry.registerChannel(Constants.mainLogChannelId, nls.localize('mainLog', "Log (Main)"), URI.file(join(this.environmentService.logsPath, `main.log`)));
-		// {{SQL CARBON EDIT}}
-		outputChannelRegistry.registerChannel(Constants.sqlToolsLogChannellId, nls.localize('sqlToolsLog', "Log (SqlTools)"), URI.file(join(this.environmentService.logsPath, '..', '..', 'mssql', 'sqltools.log')));
 		outputChannelRegistry.registerChannel(Constants.sharedLogChannelId, nls.localize('sharedLog', "Log (Shared)"), URI.file(join(this.environmentService.logsPath, `sharedprocess.log`)));
 		outputChannelRegistry.registerChannel(Constants.rendererLogChannelId, nls.localize('rendererLog', "Log (Window)"), URI.file(join(this.environmentService.logsPath, `renderer${this.windowService.getCurrentWindowId()}.log`)));
 		outputChannelRegistry.registerChannel(Constants.extHostLogChannelId, nls.localize('extensionsLog', "Log (Extension Host)"), URI.file(join(this.environmentService.logsPath, `exthost${this.windowService.getCurrentWindowId()}.log`)));
+		// {{SQL CARBON EDIT}}
+		outputChannelRegistry.registerChannel(Constants.sqlToolsLogChannellId, nls.localize('sqlToolsLog', "Log (SqlTools)"), URI.file(join(this.environmentService.logsPath, '..', '..', 'mssql', 'sqltools.log')));
 
 		const workbenchActionsRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
 		const devCategory = nls.localize('developer', "Developer");

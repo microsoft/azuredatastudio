@@ -98,7 +98,7 @@
         "mssql.tracingLevel": {
           "type": "string",
           "description": "[Optional] Log level. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
-          "default": "All",
+          "default": "Critical",
           "enum": [
             "All",
             "Off",
