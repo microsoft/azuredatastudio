@@ -97,7 +97,7 @@
         },
         "mssql.tracingLevel": {
           "type": "string",
-          "description": "[Optional] Log level. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
+          "description": "[Optional] Log level for backend services. This reuses existing files for logging by appending across restart. The default tracingLevel does not log much. User is responsible for cleaning out the old logs if this setting is changed to increase log verbosity. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
           "default": "Critical",
           "enum": [
             "All",
