@@ -1,4 +1,5 @@
 {
+	"azure.displayName": "Azure (Core)",
 	"azure.description": "Browse and work with Azure resources",
 	"azure.config.title": "Azure Resource Configuration",
 	"azure.resourceFilter.description": "The resource filter, each element is an account id, a subscription id and name separated by a slash",

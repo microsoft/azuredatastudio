@@ -1,6 +1,6 @@
-# Azure extension for Azure Data Studio
+# Azure (Core) extension for Azure Data Studio
 
-Welcome to the Azure for Azure Data Studio! This extension supports connecting to your Azure resources and working with them. In the current release the following features are supported:
+Welcome to the Azure (Core) extension for Azure Data Studio! This extension supports core Azure functionality such as browsing and connecting to Azure data endpoints. In the current release the following features are supported:
 
 * Log in to Azure and browse your accounts, subscriptions and data resources
 * See Azure SQL Databases and Servers in the tree, and open these connections in Object Explorer

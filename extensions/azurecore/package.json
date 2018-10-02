@@ -1,6 +1,6 @@
 {
-	"name": "azure",
-	"displayName": "azure",
+	"name": "azurecore",
+	"displayName": "%azure.displayName%",
 	"description": "%azure.description",
 	"version": "0.1.0",
 	"publisher": "Microsoft",
