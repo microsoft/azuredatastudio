@@ -32,7 +32,7 @@ import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile
 
 
 export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {
-	public connectionProfile: IConnectionProfile;
+	public connectionProfile: sqlops.IConnectionProfile;
 	public nodeInfo: sqlops.NodeInfo;
 	public isConnectionNode: boolean = false;
 }
@@ -52,8 +52,8 @@ export class OEAction extends ExecuteCommandAction {
 		id: string, label: string,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICommandService commandService: ICommandService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(id, label, commandService);
 	}
@@ -65,7 +65,7 @@ export class OEAction extends ExecuteCommandAction {
 		let profile: IConnectionProfile;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			if (actionContext.isConnectionNode) {
-				profile = actionContext.connectionProfile;
+				profile = new ConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
 			} else {
 				// Get the "correct" version from the tree
 				let treeNode = await getTreeNode(actionContext, this._objectExplorerService);
