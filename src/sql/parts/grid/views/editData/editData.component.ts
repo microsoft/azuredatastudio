@@ -81,7 +81,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
-	public getAdditionalCssClassesForCell: (row: number, column: number) => string;
+	public onBeforeAppendCell: (row: number, column: number) => string;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -185,7 +185,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			return returnVal;
 		};
 
-		this.getAdditionalCssClassesForCell = (row: number, column: number): string => {
+		// This is the event slickgrid will raise in order to get the additional cell CSS classes for the cell
+		// Due to performance advantage we are using this event instead of the onViewportChanged event.
+		this.onBeforeAppendCell = (row: number, column: number): string => {
 			let cellClass = undefined;
 			if (this.isRowDirty(row) && column === 0) {
 				cellClass = ' dirtyCell ';
