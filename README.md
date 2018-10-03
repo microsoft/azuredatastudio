@@ -58,7 +58,7 @@ Localization is now opened for 10 languages: French, Italian, German, Spanish, S
 ## Privacy Statement
 The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
 
-## Contributions and "thank you"
+## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
 * AlexFsmn `Feature: Ability to add connection name #2332`
@@ -87,7 +87,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
 * Adam Mechanic for helping with the `whoisactive` extension
-* All community localization contributors
+* All community localization contributors:
   * French: Adrien Clerbois, ANAS BELABBES, Antoine Griffard, Arian Papillon, Eric Macarez, Eric Van Thorre, Jérémy LANDON, Matthias GROSPERRIN, Maxime COQUEREL, Olivier Guinart, thierry DEMAN-BARCELÒ, Thomas Potier
   * Italian: Aldo Donetti, Alessandro Alpi, Andrea Dottor, Bruni Luca, Gianluca Hotz, Luca Nardi, Luigi Bruno, Marco Dal Pino, Mirco Vanini, Pasquale Ceglie, Riccardo Cappello, Sergio Govoni, Stefano Demiliani
   * German: Anna Henke-Gunvaldson, Ben Weissman, David Ullmer, J.M. ., Kai Modo, Konstantin Staschill, Kostja Klein, Lennart Trunk, Markus Ehrenmüller-Jensen, Mascha Kroenlein, Matthias Knoll, Mourad Louha, Thomas Hütter, Wolfgang Straßer
