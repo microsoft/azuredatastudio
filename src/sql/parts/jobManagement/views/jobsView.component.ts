@@ -886,6 +886,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		}
 
 		let jobId =  data.getItem(rowIndex).jobId;
+		if (!jobId) {
+			// if we couldn't find the ID, check if it's an
+			// error row
+			let isErrorRow: boolean = data.getItem(rowIndex).id.indexOf('error') >= 0;
+			if (isErrorRow) {
+				jobId = data.getItem(rowIndex - 1).jobId;
+			}
+		}
 		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});

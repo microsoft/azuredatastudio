@@ -54,7 +54,7 @@ export class HeaderFilter {
 	}
 
 	private handleKeyDown = (e) => {
-		if (e.key === 'Escape' || e.keyCode === 27) {
+		if (this.$menu && (e.key === 'Escape' || e.keyCode === 27)) {
 			this.hideMenu();
 			e.preventDefault();
 			e.stopPropagation();
