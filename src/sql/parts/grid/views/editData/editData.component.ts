@@ -39,6 +39,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { EditUpdateCellResult } from 'sqlops';
 export const EDITDATA_SELECTOR: string = 'editdata-component';
 
 @Component({
@@ -50,7 +51,10 @@ export const EDITDATA_SELECTOR: string = 'editdata-component';
 export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
 	// CONSTANTS
 	private scrollTimeOutTime = 200;
-	private windowSize = 50;
+
+	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
+	// to make the scroll experience smoother
+	private windowSize = 200;
 
 	// FIELDS
 	// All datasets
@@ -67,6 +71,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private newRowVisible: boolean;
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
+	private dirtyCells: number[] = [];
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
@@ -76,6 +81,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public onIsColumnEditable: (column: number) => boolean;
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
+	public onBeforeAppendCell: (row: number, column: number) => string;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -179,6 +185,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			return returnVal;
 		};
 
+		// This is the event slickgrid will raise in order to get the additional cell CSS classes for the cell
+		// Due to performance advantage we are using this event instead of the onViewportChanged event.
+		this.onBeforeAppendCell = (row: number, column: number): string => {
+			let cellClass = undefined;
+			if (this.isRowDirty(row) && column === 0) {
+				cellClass = ' dirtyCell ';
+			} else if (this.isCellDirty(row, column)) {
+				cellClass = ' dirtyRowHeader ';
+			}
+			return cellClass;
+		};
+
 		// Setup a function for generating a promise to lookup result subsets
 		this.loadDataFunction = (offset: number, count: number): Promise<{}[]> => {
 			return new Promise<{}[]>((resolve, reject) => {
@@ -203,17 +221,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 							return p;
 						}, {}));
 					}
-
-					// let rowIndex = offset;
-					// let gridData: IGridDataRow[] = result.subset.map(row => {
-					// 	self.idMapping[rowIndex] = row.id;
-					// 	rowIndex++;
-					// 	return {
-					// 		values: [{}].concat(row.cells.map(c => {
-					// 			return mixin({ ariaLabel: escape(c.displayValue) }, c);
-					// 		})), row: row.id
-					// 	};
-					// });
 
 					resolve(gridData);
 				});
@@ -258,33 +265,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			return;
 		}
 
-		let cellSelectTasks: Promise<void> = Promise.resolve();
-
-		if (this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
-			// We're exiting a read/write cell after having changed the value, update the cell value in the service
-			cellSelectTasks = cellSelectTasks.then(() => {
-				// Use the mapped row ID if we're on that row
-				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
-					? self.rowIdMappings[self.currentCell.row]
-					: self.currentCell.row;
-
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue)
-					.then(
-						result => {
-							// Cell update was successful, update the flags
-							self.currentEditCellValue = null;
-							self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
-							self.setRowDirtyState(row, result.isRowDirty);
-							return Promise.resolve();
-						},
-						error => {
-							// Cell update failed, jump back to the last cell we were on
-							self.focusCell(self.currentCell.row, self.currentCell.column, true);
-							return Promise.reject(null);
-						}
-					);
+		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
+			(result: EditUpdateCellResult) => {
+				// Cell update was successful, update the flags
+				self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
+				self.setRowDirtyState(row, result.isRowDirty);
+				return Promise.resolve();
+			},
+			(error) => {
+				// Cell update failed, jump back to the last cell we were on
+				self.focusCell(self.currentCell.row, self.currentCell.column, true);
+				return Promise.reject(null);
 			});
-		}
 
 		if (this.currentCell.row !== row) {
 			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
@@ -474,9 +466,36 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
 				this.currentEditCellValue = null;
+				this.dirtyCells = [];
 				this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
 			}
 		}
+	}
+
+	private submitCurrentCellChange(resultHandler, errorHandler): Promise<void> {
+		let self = this;
+		let updateCellPromise: Promise<void> = Promise.resolve();
+
+		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
+			// We're exiting a read/write cell after having changed the value, update the cell value in the service
+			updateCellPromise = updateCellPromise.then(() => {
+				// Use the mapped row ID if we're on that row
+				let sessionRowId = self.rowIdMappings[self.currentCell.row] !== undefined
+					? self.rowIdMappings[self.currentCell.row]
+					: self.currentCell.row;
+
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue);
+			}).then(
+				result => {
+					self.currentEditCellValue = null;
+					return resultHandler(result);
+				},
+				error => {
+					return errorHandler(error);
+				}
+			);
+		}
+		return updateCellPromise;
 	}
 
 	// Checks if input row is our NULL new row
@@ -492,6 +511,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		if (dirtyState) {
 			// Change cell color
 			$(grid.getCellNode(row, column)).addClass('dirtyCell').removeClass('selected');
+			if (this.dirtyCells.indexOf(column) === -1) {
+				this.dirtyCells.push(column);
+			}
 		} else {
 			$(grid.getCellNode(row, column)).removeClass('dirtyCell');
 		}
@@ -515,6 +537,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let allRows = $($('.grid-canvas').children());
 		let allCells = $(allRows.children());
 		allCells.removeClass('dirtyCell').removeClass('dirtyRowHeader');
+		this.dirtyCells = [];
 	}
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
@@ -594,16 +617,30 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private saveViewState(): void {
-		let grid = this.slickgrids.toArray()[0]
+		let grid = this.slickgrids.toArray()[0];
+		let self = this;
 		if (grid) {
 			let gridSelections = grid.getSelectedRanges();
-			let viewport = ((grid as any)._grid.getCanvasNode() as HTMLElement).parentElement;
-
+			let gridObject = grid as any;
+			let viewport = (gridObject._grid.getCanvasNode() as HTMLElement).parentElement;
 			this.savedViewState = {
 				gridSelections,
 				scrollTop: viewport.scrollTop,
 				scrollLeft: viewport.scrollLeft
 			};
+
+			// Save the cell that is currently being edited.
+			// Note: This is only updating the data in tools service, not saving the change to database.
+			// This is added to fix the data inconsistency: the updated value is displayed but won't be saved to the database
+			// when committing the changes for the row.
+			if (this.currentCell.row !== undefined && this.currentCell.column !== undefined && this.currentCell.isEditable) {
+				gridObject._grid.getEditorLock().commitCurrentEdit();
+				this.submitCurrentCellChange((result: EditUpdateCellResult) => {
+					self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
+				}, (error: any) => {
+					self.notificationService.error(error);
+				});
+			}
 		}
 	}
 
@@ -614,6 +651,26 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			viewport.scrollLeft = this.savedViewState.scrollLeft;
 			viewport.scrollTop = this.savedViewState.scrollTop;
 			this.savedViewState = undefined;
+
+			// This block of code is responsible for restoring the dirty state indicators if slickgrid decides not to re-render the dirty row
+			// Other scenarios will be taken care of by getAdditionalCssClassesForCell method when slickgrid needs to re-render the rows.
+			if (this.currentCell.row !== undefined) {
+				if (this.isRowDirty(this.currentCell.row)) {
+					this.setRowDirtyState(this.currentCell.row, true);
+
+					this.dirtyCells.forEach(cell => {
+						this.setCellDirtyState(this.currentCell.row, cell, true);
+					});
+				}
+			}
 		}
+	}
+
+	private isRowDirty(row: number): boolean {
+		return this.currentCell.row === row && this.dirtyCells.length > 0;
+	}
+
+	private isCellDirty(row: number, column: number): boolean {
+		return this.currentCell.row === row && this.dirtyCells.indexOf(column) !== -1;
 	}
 }
