@@ -49,8 +49,12 @@ export const EDITDATA_SELECTOR: string = 'editdata-component';
 })
 
 export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
-	// CONSTANTS
-	private scrollTimeOutTime = 200;
+	// The time(in milliseconds) we wait before refreshing the grid.
+	// We use clearTimeout and setTimeout pair to avoid unnecessary refreshes.
+	private refreshGridTimeoutInMs = 200;
+
+	// The timeout handle for the refresh grid task
+	private refreshGridTimeoutHandle: number;
 
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother
@@ -59,12 +63,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	// FIELDS
 	// All datasets
 	private dataSet: IGridDataSet;
-	private scrollTimeOut: number;
-	private scrollEnabled = true;
 	private firstRender = true;
 	private totalElapsedTimeSpan: number;
 	private complete = false;
-
 	// Current selected cell state
 	private currentCell: { row: number, column: number, isEditable: boolean };
 	private currentEditCellValue: string;
@@ -73,6 +74,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
+	private focusCellFlag: boolean = false;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -194,6 +196,14 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			} else if (this.isCellDirty(row, column)) {
 				cellClass = ' dirtyRowHeader ';
 			}
+			// Workaround: this is the closest we can get to focus a cell after refreshing
+			setTimeout(() => {
+				if (this.focusCellFlag && this.currentCell.row !== undefined && this.currentCell.column !== undefined
+					&& row === this.currentCell.row && column === this.currentCell.column) {
+					this.focusCellFlag = false;
+					this.focusCell(row, column);
+				}
+			}, 500);
 			return cellClass;
 		};
 
@@ -388,7 +398,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		undefinedDataSet.dataRows = undefined;
 		undefinedDataSet.resized = new EventEmitter();
 		self.placeHolderDataSets.push(undefinedDataSet);
-		self.onScroll(0);
+		self.refreshGrid();
 
 		// Setup the state of the selected cell
 		this.currentCell = { row: null, column: null, isEditable: null };
@@ -403,10 +413,13 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	 * @param scrollTop The scrolltop value, if not called by the scroll event should be 0
 	 */
 	onScroll(scrollTop): void {
+		this.refreshGrid();
+	}
+
+	private refreshGrid(refreshCallBack = undefined) {
 		const self = this;
-		clearTimeout(self.scrollTimeOut);
-		this.scrollTimeOut = setTimeout(() => {
-			self.scrollEnabled = false;
+		clearTimeout(self.refreshGridTimeoutHandle);
+		this.refreshGridTimeoutHandle = setTimeout(() => {
 			for (let i = 0; i < self.placeHolderDataSets.length; i++) {
 				self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
 				self.placeHolderDataSets[i].resized.emit();
@@ -426,7 +439,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					setActive();
 				});
 			}
-		}, self.scrollTimeOutTime);
+
+			if (refreshCallBack) {
+				refreshCallBack();
+			}
+		}, self.refreshGridTimeoutInMs);
 	}
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
@@ -451,8 +468,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
-					this.removeRow(currentNewRowIndex);
-					this.newRowVisible = false;
+					this.removeRow(currentNewRowIndex, () => {
+						this.newRowVisible = false;
+						this.currentCell.row = undefined;
+						this.currentCell.column = undefined;
+						this.currentCell.isEditable = false;
+					});
 				});
 		} else {
 			try {
@@ -467,7 +488,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				//
 				this.currentEditCellValue = null;
 				this.dirtyCells = [];
-				this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
+				if (this.currentCell.row !== undefined) {
+					this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
+				}
 			}
 		}
 	}
@@ -555,8 +578,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				// Add a new "new row" to the end of the results
 				// Adding an extra row for 'new row' functionality
 				self.dataSet.totalRows++;
-				self.dataSet.maxHeight = self.getMaxHeight(this.dataSet.totalRows);
-				self.dataSet.minHeight = self.getMinHeight(this.dataSet.totalRows);
+				self.dataSet.maxHeight = self.getMaxHeight(self.dataSet.totalRows);
+				self.dataSet.minHeight = self.getMinHeight(self.dataSet.totalRows);
 				self.dataSet.dataRows = new VirtualizedCollection(
 					self.windowSize,
 					self.dataSet.totalRows,
@@ -564,19 +587,18 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					index => { return {}; }
 				);
 
-				// Refresh grid
-				self.onScroll(0);
-
-				// Mark the row as dirty once the scroll has completed
-				setTimeout(() => {
-					self.setRowDirtyState(row, true);
-				}, self.scrollTimeOutTime);
+				self.refreshGrid(() => {
+					// Mark the row as dirty once the scroll has completed
+					self.setCellDirtyState(row, 0, true);
+					self.focusCellFlag = true;
+				});
 			});
 	}
 
+
 	// removes a row from the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
-	private removeRow(row: number): void {
+	private removeRow(row: number, removeRowCallBack = undefined): void {
 		// Removing the new row
 		this.dataSet.totalRows--;
 		this.dataSet.dataRows = new VirtualizedCollection(
@@ -587,15 +609,17 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		);
 
 		// refresh results view
-		this.onScroll(0);
-
-		// Set focus to the row index column of the removed row if the current selection is in the removed row
-		setTimeout(() => {
-			if (this.currentCell.row === row) {
-				this.focusCell(row, 0);
+		this.refreshGrid(() => {
+			// Set focus to the row index column of the removed row if the current selection is in the removed row
+			if (this.currentCell.row === row && !this.removingNewRow) {
+				this.focusCellFlag = true;
+				this.currentCell.column = 0;
+			}
+			if (removeRowCallBack) {
+				removeRowCallBack();
 			}
 			this.removingNewRow = false;
-		}, this.scrollTimeOutTime);
+		});
 	}
 
 	private focusCell(row: number, column: number, forceEdit: boolean = true): void {
