@@ -186,6 +186,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 		this._queryModelService.initializeEdit(this.uri, this.schemaName, this.tableName, this._objectType, rowLimit, queryString);
 		this.showResultsEditor();
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {
