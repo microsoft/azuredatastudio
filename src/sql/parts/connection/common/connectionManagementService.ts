@@ -1349,12 +1349,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * TODO this could be a map reduce operation
 	 */
 	public buildConnectionInfo(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
-		let connectionProvider = this._providers.get(provider);
-		if (connectionProvider) {
-			return connectionProvider.onReady.then(e => {
-				return e.buildConnectionInfo(connectionString);
-			});
-		}
-		return Promise.resolve(undefined);
+		return this._providers.get(provider).onReady.then(e => {
+			return e.buildConnectionInfo(connectionString);
+		});
 	}
 }
