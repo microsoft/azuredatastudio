@@ -18,8 +18,11 @@ export class PickScheduleDialog {
 	private readonly DialogTitle: string = localize('pickSchedule.jobSchedules', 'Job Schedules');
 	private readonly OkButtonText: string = localize('pickSchedule.ok', 'OK');
 	private readonly CancelButtonText: string = localize('pickSchedule.cancel', 'Cancel');
-	private readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Schedule Name');
-	private readonly SchedulesLabelText: string = localize('pickSchedule.schedules', 'Schedules');
+	private readonly SchedulesLabelText: string = localize('pickSchedule.availableSchedules', 'Available Schedules:');
+	public static readonly ScheduleNameLabelText: string = localize('pickSchedule.scheduleName', 'Name');
+	public static readonly SchedulesIDText: string = localize('pickSchedule.scheduleID','ID');
+	public static readonly ScheduleDescription: string = localize('pickSchedule.description','Description');
+
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
@@ -50,11 +53,13 @@ export class PickScheduleDialog {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
-						this.ScheduleNameLabelText
+						PickScheduleDialog.SchedulesIDText,
+						PickScheduleDialog.ScheduleNameLabelText,
+						PickScheduleDialog.ScheduleDescription
 					],
 					data: [],
-					height: '80em',
-					width: '40em'
+					height: 750,
+					width: 430
 				}).component();
 
 			let formModel = view.modelBuilder.formContainer()
@@ -69,7 +74,8 @@ export class PickScheduleDialog {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
 					let schedule = this.model.schedules[i];
-					data[i] = [ schedule.name ];
+					console.log(schedule);
+					data[i] = [ schedule.id, schedule.name, schedule.description ];
 				}
 				this.schedulesTable.data = data;
 			}

@@ -1313,6 +1313,7 @@ declare module 'sqlops' {
 		jobCount: number;
 		activeEndDate: string;
 		scheduleUid: string;
+		description: string;
 	}
 
 	export interface AgentJobStep {
@@ -1322,6 +1323,7 @@ declare module 'sqlops' {
 		message: string;
 		runDate: string;
 		runStatus: number;
+		stepDetails: AgentJobStepInfo;
 	}
 
 	export interface AgentJobStepInfo {
@@ -1369,6 +1371,8 @@ declare module 'sqlops' {
 		retriesAttempted: string;
 		server: string;
 		steps: AgentJobStep[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface AgentProxyInfo {
