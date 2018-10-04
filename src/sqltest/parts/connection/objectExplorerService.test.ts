@@ -447,10 +447,11 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
 				var treeNode = objectExplorerService.getObjectExplorerNode(connection);
 				assert.equal(treeNode !== null && treeNode !== undefined, true);
-				objectExplorerService.deleteObjectExplorerNode(connection);
-				treeNode = objectExplorerService.getObjectExplorerNode(connection);
-				assert.equal(treeNode === null || treeNode === undefined, true);
-				done();
+				objectExplorerService.deleteObjectExplorerNode(connection).then(() => {
+					treeNode = objectExplorerService.getObjectExplorerNode(connection);
+					assert.equal(treeNode === null || treeNode === undefined, true);
+					done();
+				});
 			}, err => {
 				// Must call done here so test indicates it's finished if errors occur
 				done(err);
