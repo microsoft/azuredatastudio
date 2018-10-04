@@ -45,7 +45,6 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	}
 
 	private _onMouseWheel(e: StandardMouseWheelEvent) {
-		// const scrollDown = Math.sign(e.deltaY) === -1;
 		if (e.deltaY || e.deltaX) {
 			let deltaY = e.deltaY * this.options.scrollSpeed;
 			let deltaX = e.deltaX * this.options.scrollSpeed;
