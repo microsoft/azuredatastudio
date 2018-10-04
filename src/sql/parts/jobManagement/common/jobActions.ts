@@ -16,6 +16,7 @@ import { JobsViewComponent } from '../views/jobsView.component';
 import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.component';
 import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export enum JobActions {
 	Run = 'run',
@@ -38,7 +39,7 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public run(context: JobsViewComponent): TPromise<boolean> {
+	public run(context: JobsViewComponent | JobHistoryComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			if (context) {
 				context.refreshJobs();
@@ -77,7 +78,8 @@ export class RunJobAction extends Action {
 
 	constructor(
 		@INotificationService private notificationService: INotificationService,
-		@IJobManagementService private jobManagementService: IJobManagementService
+		@IJobManagementService private jobManagementService: IJobManagementService,
+		@IInstantiationService private instantationService: IInstantiationService
 	) {
 		super(RunJobAction.ID, RunJobAction.LABEL, 'runJobIcon');
 	}
@@ -85,9 +87,11 @@ export class RunJobAction extends Action {
 	public run(context: JobHistoryComponent): TPromise<boolean> {
 		let jobName = context.agentJobInfo.name;
 		let ownerUri = context.ownerUri;
+		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
+					refreshAction.run(context);
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.notify({
 						severity: Severity.Info,
@@ -112,7 +116,8 @@ export class StopJobAction extends Action {
 
 	constructor(
 		@INotificationService private notificationService: INotificationService,
-		@IJobManagementService private jobManagementService: IJobManagementService
+		@IJobManagementService private jobManagementService: IJobManagementService,
+		@IInstantiationService private instantationService: IInstantiationService
 	) {
 		super(StopJobAction.ID, StopJobAction.LABEL, 'stopJobIcon');
 	}
@@ -120,14 +125,16 @@ export class StopJobAction extends Action {
 	public run(context: JobHistoryComponent): TPromise<boolean> {
 		let jobName = context.agentJobInfo.name;
 		let ownerUri = context.ownerUri;
+		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
-						var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
-						this.notificationService.notify({
-							severity: Severity.Info,
-							message: jobName+ stopMsg
-						});
+					refreshAction.run(context);
+					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
+					this.notificationService.notify({
+						severity: Severity.Info,
+						message: jobName+ stopMsg
+					});
 					resolve(true);
 				} else {
 					this.notificationService.notify({
