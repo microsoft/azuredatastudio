@@ -246,6 +246,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			}
 		}
 		this._updateTaskbar.fire();
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {

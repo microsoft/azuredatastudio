@@ -315,6 +315,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
+	}
+
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
@@ -353,4 +357,5 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._showSteps = value;
 		this._cd.detectChanges();
 	}
+
 }
