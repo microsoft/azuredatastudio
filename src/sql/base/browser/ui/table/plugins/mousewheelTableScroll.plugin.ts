@@ -72,7 +72,7 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 					event.stopPropagation();
 					event.preventDefault();
 				}
-			// scroll up
+				// scroll up
 			} else {
 				if ((this.viewport.scrollTop - deltaY) < 0) {
 					this.viewport.scrollTop = 0;
@@ -96,7 +96,7 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 					event.stopPropagation();
 					event.preventDefault();
 				}
-			// scroll left
+				// scroll left
 			} else {
 				if ((this.viewport.scrollLeft - deltaX) < 0) {
 					this.viewport.scrollLeft = 0;
