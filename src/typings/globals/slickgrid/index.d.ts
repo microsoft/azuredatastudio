@@ -1208,6 +1208,10 @@ declare namespace Slick {
 		public onSelectedRowsChanged: Slick.Event<OnSelectedRowsChangedEventArgs<T>>;
 		public onCellCssStylesChanged: Slick.Event<OnCellCssStylesChangedEventArgs<T>>;
 		public onViewportChanged: Slick.Event<OnViewportChangedEventArgs<T>>;
+
+		/* Experimental */
+		public onPostRender: Slick.Event<void>;
+
 		// #endregion Events
 
 		// #region Plugins

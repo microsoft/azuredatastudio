@@ -321,12 +321,12 @@ class GridTable<T> extends Disposable implements IView {
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
+		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		// this.container.style.marginBottom = BOTTOM_PADDING + 'px';
 		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
@@ -380,7 +380,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: new AsyncDataProvider(collection), columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize());
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(numberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
