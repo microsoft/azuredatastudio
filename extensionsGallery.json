@@ -185,14 +185,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "4/16/2018",
+							"version": "1.0.0",
+							"lastUpdated": "10/03/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/kevcunnane/ssmskeymap/releases/tag/0.2.0"
+									"source": "https://github.com/kevcunnane/ssmskeymap/releases/tag/1.0.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
