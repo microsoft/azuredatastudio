@@ -74,7 +74,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,

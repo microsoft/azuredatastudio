@@ -1537,9 +1537,9 @@ declare module 'sqlops' {
 		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
 
 		// Job Step management methods
-		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateJobStep(ownerUri: string, originalJobStepName: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateJobStep(ownerUri: string, originalJobStepName: string, stepInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<ResultStatus>;
 
 		// Alert management methods
 		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;

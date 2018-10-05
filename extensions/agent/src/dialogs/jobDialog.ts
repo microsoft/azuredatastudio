@@ -10,6 +10,7 @@ import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
 import { AgentDialog } from './agentDialog';
+import { AgentUtils } from '../../out/agentUtils';
 
 const localize = nls.loadMessageBundle();
 
@@ -273,9 +274,16 @@ export class JobDialog extends AgentDialog<JobData>  {
 					});
 
 					this.deleteStepButton.onDidClick((e) => {
-						// implement delete steps
-
-
+						AgentUtils.getAgentService().then((agentService) => {
+							let steps = this.model.jobSteps ? this.model.jobSteps : [];
+							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
+								if (result && result.success) {
+									delete steps[rowNumber];
+									let data = this.convertStepsToData(steps);
+									this.stepsTable.data = data;
+								}
+							});
+						});
 					});
 				}
 			});

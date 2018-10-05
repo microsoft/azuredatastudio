@@ -359,6 +359,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			deleteJob(connectionUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$deleteJob(handle, connectionUri, jobInfo);
 			},
+			deleteJobStep(connectionUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
+			},
 			getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);
 			},

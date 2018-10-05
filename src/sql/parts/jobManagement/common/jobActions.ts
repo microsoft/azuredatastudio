@@ -26,6 +26,7 @@ export enum JobActions {
 export interface IJobActionInfo {
 	ownerUri: string;
 	targetObject: any;
+	jobHistoryComponent?: JobHistoryComponent;
 }
 
 // Job actions
@@ -229,6 +230,48 @@ export class NewStepAction extends Action {
 		});
 	}
 }
+
+export class DeleteStepAction extends Action {
+	public static ID = 'jobaction.deleteStep';
+	public static LABEL = nls.localize('jobaction.deleteStep', "Delete Step");
+
+	constructor(
+		@INotificationService private _notificationService: INotificationService,
+		@IJobManagementService private _jobService: IJobManagementService,
+		@IInstantiationService private instantationService: IInstantiationService
+	) {
+		super(DeleteStepAction.ID, DeleteStepAction.LABEL);
+	}
+
+	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
+		let self = this;
+		let step = actionInfo.targetObject as sqlops.AgentJobStepInfo;
+		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteStepConfirm,', "Are you sure you'd like to delete the step '{0}'?", step.stepName),
+			[{
+				label: DeleteStepAction.LABEL,
+				run: () => {
+					self._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
+						if (!result || !result.success) {
+							let errorMessage = nls.localize("jobaction.failedToDeleteStep", "Could not delete step '{0}'.\nError: {1}",
+								step.stepName, result.errorMessage ? result.errorMessage : 'Unknown error');
+							self._notificationService.error(errorMessage);
+						} else {
+							refreshAction.run(actionInfo.jobHistoryComponent);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
+		return TPromise.as(true);
+	}
+}
+
 
 // Alert Actions
 
