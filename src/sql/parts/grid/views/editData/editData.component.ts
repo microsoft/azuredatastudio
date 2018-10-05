@@ -416,34 +416,33 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.refreshGrid();
 	}
 
-	private refreshGrid(refreshCallBack = undefined) {
-		const self = this;
-		clearTimeout(self.refreshGridTimeoutHandle);
-		this.refreshGridTimeoutHandle = setTimeout(() => {
-			for (let i = 0; i < self.placeHolderDataSets.length; i++) {
-				self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
-				self.placeHolderDataSets[i].resized.emit();
-			}
+	private refreshGrid(): Thenable<void> {
+		return new Promise<void>((resolve, reject) => {
+			const self = this;
+			clearTimeout(self.refreshGridTimeoutHandle);
+			this.refreshGridTimeoutHandle = setTimeout(() => {
+				for (let i = 0; i < self.placeHolderDataSets.length; i++) {
+					self.placeHolderDataSets[i].dataRows = self.dataSet.dataRows;
+					self.placeHolderDataSets[i].resized.emit();
+				}
 
-			self._cd.detectChanges();
+				self._cd.detectChanges();
 
-			if (self.firstRender) {
-				let setActive = function () {
-					if (self.firstRender && self.slickgrids.toArray().length > 0) {
-						self.slickgrids.toArray()[0].setActive();
-						self.firstRender = false;
-					}
-				};
+				if (self.firstRender) {
+					let setActive = function () {
+						if (self.firstRender && self.slickgrids.toArray().length > 0) {
+							self.slickgrids.toArray()[0].setActive();
+							self.firstRender = false;
+						}
+					};
 
-				setTimeout(() => {
-					setActive();
-				});
-			}
-
-			if (refreshCallBack) {
-				refreshCallBack();
-			}
-		}, self.refreshGridTimeoutInMs);
+					setTimeout(() => {
+						setActive();
+					});
+				}
+				resolve();
+			}, self.refreshGridTimeoutInMs);
+		});
 	}
 
 	protected tryHandleKeyEvent(e: StandardKeyboardEvent): boolean {
@@ -468,12 +467,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 			this.dataService.revertRow(this.rowIdMappings[currentNewRowIndex])
 				.then(() => {
-					this.removeRow(currentNewRowIndex, () => {
-						this.newRowVisible = false;
-						this.currentCell.row = undefined;
-						this.currentCell.column = undefined;
-						this.currentCell.isEditable = false;
-					});
+					return this.removeRow(currentNewRowIndex);
+				}).then(() => {
+					this.newRowVisible = false;
+					this.currentCell.row = undefined;
+					this.currentCell.column = undefined;
+					this.currentCell.isEditable = false;
 				});
 		} else {
 			try {
@@ -587,7 +586,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					index => { return {}; }
 				);
 
-				self.refreshGrid(() => {
+				self.refreshGrid().then(() => {
 					// Mark the row as dirty once the scroll has completed
 					self.setRowDirtyState(row, true);
 					self.focusCell(row, 1);
@@ -598,7 +597,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// removes a row from the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
-	private removeRow(row: number, removeRowCallBack = undefined): void {
+	private removeRow(row: number): Thenable<void> {
 		// Removing the new row
 		this.dataSet.totalRows--;
 		this.dataSet.dataRows = new VirtualizedCollection(
@@ -609,13 +608,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		);
 
 		// refresh results view
-		this.refreshGrid(() => {
+		return this.refreshGrid().then(() => {
 			// Set focus to the row index column of the removed row if the current selection is in the removed row
 			if (this.currentCell.row === row && !this.removingNewRow) {
 				this.focusCell(row, 1);
-			}
-			if (removeRowCallBack) {
-				removeRowCallBack();
 			}
 			this.removingNewRow = false;
 		});
