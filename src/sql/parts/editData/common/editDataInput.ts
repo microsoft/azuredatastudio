@@ -175,6 +175,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		}
 	}
 
+	public onConnectCanceled(): void {
+	}
+
 	public onConnectSuccess(params?: INewConnectionParams): void {
 		let rowLimit: number = undefined;
 		let queryString: string = undefined;

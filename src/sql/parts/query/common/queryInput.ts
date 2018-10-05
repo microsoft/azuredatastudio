@@ -225,6 +225,9 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this._updateTaskbar.fire();
 	}
 
+	public onConnectCanceled(): void {
+	}
+
 	public onConnectSuccess(params?: INewConnectionParams): void {
 		this._runQueryEnabled = true;
 		this._connectEnabled = false;

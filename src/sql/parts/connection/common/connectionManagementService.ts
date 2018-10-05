@@ -366,6 +366,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				onConnectStart: callbacks ? callbacks.onConnectStart : undefined,
 				onConnectSuccess: callbacks ? callbacks.onConnectSuccess : undefined,
 				onDisconnect: callbacks ? callbacks.onDisconnect : undefined,
+				onConnectCanceled: callbacks ? callbacks.onConnectCanceled : undefined,
 				uri: uri
 			};
 		}
@@ -438,7 +439,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				onConnectReject: () => { },
 				onConnectStart: () => { },
 				onConnectSuccess: () => { },
-				onDisconnect: () => { }
+				onDisconnect: () => { },
+				onConnectCanceled: () => { }
 			};
 		}
 		if (!options) {
