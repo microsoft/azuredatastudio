@@ -259,6 +259,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				onConnectStart: undefined,
 				onDisconnect: undefined,
 				onConnectSuccess: undefined,
+				onConnectCanceled: undefined,
 				uri: 'Editor Uri'
 			},
 			runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery
@@ -279,6 +280,7 @@ suite('SQL ConnectionManagementService tests', () => {
 				onConnectStart: undefined,
 				onDisconnect: undefined,
 				onConnectSuccess: undefined,
+				onConnectCanceled: undefined,
 				uri: 'Editor Uri'
 			},
 			runQueryOnCompletion: RunQueryOnConnectionMode.executeQuery
@@ -348,6 +350,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectReject: undefined,
 					onConnectStart: undefined,
 					onDisconnect: undefined,
+					onConnectCanceled: undefined,
 					uri: uri
 				},
 				querySelection: undefined,
@@ -661,6 +664,7 @@ suite('SQL ConnectionManagementService tests', () => {
 					onConnectReject: undefined,
 					onConnectStart: undefined,
 					onDisconnect: undefined,
+					onConnectCanceled: undefined,
 					uri: uri
 				},
 				querySelection: undefined,

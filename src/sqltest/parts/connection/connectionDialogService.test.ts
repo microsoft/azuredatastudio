@@ -56,7 +56,8 @@ suite('ConnectionDialogService tests', () => {
 				onConnectStart: undefined,
 				onConnectSuccess: undefined,
 				onConnectReject: undefined,
-				onDisconnect: undefined
+				onDisconnect: undefined,
+				onConnectCanceled: undefined
 			},
 			runQueryOnCompletion: undefined,
 			querySelection: undefined

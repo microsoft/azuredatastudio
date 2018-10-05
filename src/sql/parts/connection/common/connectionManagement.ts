@@ -67,6 +67,7 @@ export interface IConnectionCallbacks {
 	onConnectReject(error?: string): void;
 	onConnectSuccess(params?: INewConnectionParams): void;
 	onDisconnect(): void;
+	onConnectCanceled(): void;
 }
 
 export const SERVICE_ID = 'connectionManagementService';
@@ -336,6 +337,7 @@ export interface IConnectableInput {
 	onConnectReject(error?: string): void;
 	onConnectSuccess(params?: INewConnectionParams): void;
 	onDisconnect(): void;
+	onConnectCanceled(): void;
 }
 
 export enum ConnectionType {
