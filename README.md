@@ -86,7 +86,7 @@ We would like to thank all our users who raised issues, and in particular the fo
 * stebet for `Fix #153: Fixing sql snippets that failed on a DB with case-sensitive collation. (#152)`
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
-* Adam Mechanic for helping with the `whoisactive` extension
+* Adam Machanic for helping with the `whoisactive` extension
 * All community localization contributors:
   * French: Adrien Clerbois, ANAS BELABBES, Antoine Griffard, Arian Papillon, Eric Macarez, Eric Van Thorre, Jérémy LANDON, Matthias GROSPERRIN, Maxime COQUEREL, Olivier Guinart, thierry DEMAN-BARCELÒ, Thomas Potier
   * Italian: Aldo Donetti, Alessandro Alpi, Andrea Dottor, Bruni Luca, Gianluca Hotz, Luca Nardi, Luigi Bruno, Marco Dal Pino, Mirco Vanini, Pasquale Ceglie, Riccardo Cappello, Sergio Govoni, Stefano Demiliani
