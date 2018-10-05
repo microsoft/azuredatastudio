@@ -758,10 +758,12 @@ suite('SQL Object Explorer Service tests', () => {
 		await objectExplorerService.createNewSession('MSSQL', connection);
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 
-		// If I call resolveTreeNodeChildren on a node with an error
+		// If I call resolveTreeNodeChildren once, set an error on the node, and then call it again
 		let tablesNodePath = 'testServerName/tables';
 		let tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, tablesNodePath, '', '', null, null, undefined, undefined);
 		tablesNode.connection = connection;
+		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, tablesNode);
+		sqlOEProvider.verify(x => x.refreshNode(TypeMoq.It.is(x => x.nodePath === tablesNodePath)), TypeMoq.Times.never());
 		tablesNode.errorStateMessage = 'test error message';
 		await objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, tablesNode);
 
