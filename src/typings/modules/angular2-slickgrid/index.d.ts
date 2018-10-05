@@ -111,6 +111,10 @@ declare module '~angular2-slickgrid/out/js/slickGrid' {
 import { OnChanges, OnInit, OnDestroy, SimpleChange, EventEmitter, AfterViewInit } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 import { IObservableCollection, IGridDataRow, ISlickColumn } from '~angular2-slickgrid/out/js/interfaces';
+export class OnRangeRenderCompletedEventArgs {
+    startRow: number;
+    endRow: number;
+}
 export function getOverridableTextEditorClass(grid: SlickGrid): any;
 export class SlickGrid implements OnChanges, OnInit, OnDestroy, AfterViewInit {
     private _el;

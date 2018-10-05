@@ -13,7 +13,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
-import { VirtualizedCollection } from 'angular2-slickgrid';
+import { VirtualizedCollection, OnRangeRenderCompletedEventArgs } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -74,7 +74,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
-	private focusCellFlag: boolean = false;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -84,6 +83,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
 	public onBeforeAppendCell: (row: number, column: number) => string;
+	public onRangeRenderCompleted: (event: OnRangeRenderCompletedEventArgs) => void;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -196,15 +196,15 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			} else if (this.isCellDirty(row, column)) {
 				cellClass = ' dirtyRowHeader ';
 			}
-			// Workaround: this is the closest we can get to focus a cell after refreshing
-			setTimeout(() => {
-				if (this.focusCellFlag && this.currentCell.row !== undefined && this.currentCell.column !== undefined
-					&& row === this.currentCell.row && column === this.currentCell.column) {
-					this.focusCellFlag = false;
-					this.focusCell(row, column);
-				}
-			}, 500);
+
 			return cellClass;
+		};
+
+		this.onRangeRenderCompleted = (args: OnRangeRenderCompletedEventArgs): void => {
+			// After rendering move the focus back to the previous active cell
+			if (this.currentCell.column !== undefined && this.currentCell.row !== undefined && args.startRow <= this.currentCell.row && args.endRow >= this.currentCell.row) {
+				this.focusCell(this.currentCell.row, this.currentCell.column, true);
+			}
 		};
 
 		// Setup a function for generating a promise to lookup result subsets
@@ -290,7 +290,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		if (this.currentCell.row !== row) {
 			// If we're currently adding a new row, only commit it if it has changes or the user is trying to add another new row
-			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === null) {
+			if (this.newRowVisible && this.currentCell.row === this.dataSet.dataRows.getLength() - 2 && !this.isNullRow(row) && this.currentEditCellValue === undefined) {
 				cellSelectTasks = cellSelectTasks.then(() => {
 					return this.revertCurrentRow().then(() => this.focusCell(row, column));
 				});
@@ -401,8 +401,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		this.currentCell = { row: null, column: null, isEditable: null };
-		this.currentEditCellValue = null;
+		this.currentCell = { row: 0, column: 0, isEditable: undefined };
+		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
 	}
@@ -478,7 +478,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		} else {
 			try {
 				// Perform a revert row operation
-				if (this.currentCell && this.currentCell.row !== undefined && this.currentCell.row !== null) {
+				if (this.currentCell && this.currentCell.row !== undefined) {
 					await this.dataService.revertRow(this.currentCell.row);
 				}
 			} finally {
@@ -486,7 +486,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				// so clear any existing client-side edit and refresh on-screen data
 				// do not refresh the whole dataset as it will move the focus away to the first row.
 				//
-				this.currentEditCellValue = null;
+				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
 				if (this.currentCell.row !== undefined) {
 					this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
@@ -499,7 +499,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
 
-		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== null && !this.removingNewRow) {
+		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -510,7 +510,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue);
 			}).then(
 				result => {
-					self.currentEditCellValue = null;
+					self.currentEditCellValue = undefined;
 					return resultHandler(result);
 				},
 				error => {
@@ -589,8 +589,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 				self.refreshGrid(() => {
 					// Mark the row as dirty once the scroll has completed
-					self.setCellDirtyState(row, 0, true);
-					self.focusCellFlag = true;
+					self.setRowDirtyState(row, true);
+					self.focusCell(row, 1);
 				});
 			});
 	}
@@ -612,8 +612,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.refreshGrid(() => {
 			// Set focus to the row index column of the removed row if the current selection is in the removed row
 			if (this.currentCell.row === row && !this.removingNewRow) {
-				this.focusCellFlag = true;
-				this.currentCell.column = 0;
+				this.focusCell(row, 1);
 			}
 			if (removeRowCallBack) {
 				removeRowCallBack();
