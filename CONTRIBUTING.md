@@ -22,7 +22,7 @@ The more information you can provide, the more likely someone will be successful
 
 Please include the following with each issue.
 
-* Version of SQL Ops Studio
+* Version of Azure Data Studio (formerly SQL Operations Studio).
 
 > **Tip:** You can easily create an issue using `Report Issues` from Azure Data Studio Help menu.
 
