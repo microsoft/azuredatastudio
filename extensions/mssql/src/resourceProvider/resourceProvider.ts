@@ -11,7 +11,7 @@ import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, 
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import * as sqlops from 'sqlops';
-import { Disposable } from 'vscode';
+import { Disposable, workspace } from 'vscode';
 
 import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
 import * as Constants from './constants';
@@ -106,9 +106,16 @@ export class AzureResourceProvider {
 
 	private generateServerOptions(executablePath: string): ServerOptions {
 		let launchArgs = [];
-		launchArgs.push('--log-dir');
-		let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
-		launchArgs.push(logFileLocation);
+		launchArgs.push('--log-file');
+		let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', 'resourceprovider.log');
+		console.log('logFile for ' + path.basename(executablePath) + ' is ' + logFile);
+		launchArgs.push(logFile);
+		let config = workspace.getConfiguration(Constants.extensionConfigSectionName);
+		if (config) {
+			let configTracingLevel = config[Constants.configTracingLevel];
+			launchArgs.push('--tracing-level');
+			launchArgs.push(configTracingLevel);
+		}
 
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}

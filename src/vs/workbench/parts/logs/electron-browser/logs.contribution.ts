@@ -34,6 +34,11 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		outputChannelRegistry.registerChannel(Constants.rendererLogChannelId, nls.localize('rendererLog', "Log (Window)"), URI.file(join(this.environmentService.logsPath, `renderer${this.windowService.getCurrentWindowId()}.log`)));
 		outputChannelRegistry.registerChannel(Constants.extHostLogChannelId, nls.localize('extensionsLog', "Log (Extension Host)"), URI.file(join(this.environmentService.logsPath, `exthost${this.windowService.getCurrentWindowId()}.log`)));
 		// {{SQL CARBON EDIT}}
+		console.log(`Main Log file is ${URI.file(join(this.environmentService.logsPath, 'main.log'))}`);
+		console.log(`The main ui process is pid: ${process.pid}`);
+		console.log(`This ext host ui process is pid: ${process.pid}`);
+		console.log(`SqlTools Log file is ${URI.file(join(this.environmentService.logsPath, '..', '..', 'mssql', 'sqltools.log'))}`);
+		console.log(`extHost debugId ${this.environmentService.debugExtensionHost.debugId}`);
 		outputChannelRegistry.registerChannel(Constants.sqlToolsLogChannellId, nls.localize('sqlToolsLog', "Log (SqlTools)"), URI.file(join(this.environmentService.logsPath, '..', '..', 'mssql', 'sqltools.log')));
 
 		const workbenchActionsRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);

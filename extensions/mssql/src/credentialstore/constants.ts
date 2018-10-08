@@ -6,3 +6,5 @@
 
 export const serviceName = 'SerilizationProvider';
 export const providerId = 'serilizationProvider';
+export const configTracingLevel = 'tracingLevel';
+export const extensionConfigSectionName = 'mssql';
