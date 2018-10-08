@@ -90,6 +90,9 @@ export class DashboardInput extends EditorInput {
 			// Only add DB name if this is a non-default, non-master connection
 			name = name + ':' + this.connectionProfile.databaseName;
 		}
+		if (this.connectionProfile.connectionName !== null &&  this.connectionProfile.connectionName !== undefined){
+			return this.connectionProfile.connectionName;
+		}
 		return name;
 	}
 
