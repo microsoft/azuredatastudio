@@ -83,7 +83,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	public overrideCellFn: (rowNumber, columnId, value?, data?) => string;
 	public loadDataFunction: (offset: number, count: number) => Promise<{}[]>;
 	public onBeforeAppendCell: (row: number, column: number) => string;
-	public onRangeRenderCompleted: (event: OnRangeRenderCompletedEventArgs) => void;
+	public onGridRendered: (event: Slick.OnRenderedEventArgs<any>) => void;
 
 	private savedViewState: {
 		gridSelections: Slick.Range[];
@@ -200,7 +200,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			return cellClass;
 		};
 
-		this.onRangeRenderCompleted = (args: OnRangeRenderCompletedEventArgs): void => {
+		this.onGridRendered = (args: Slick.OnRenderedEventArgs<any>): void => {
 			// After rendering move the focus back to the previous active cell
 			if (this.currentCell.column !== undefined && this.currentCell.row !== undefined && args.startRow <= this.currentCell.row && args.endRow >= this.currentCell.row) {
 				this.focusCell(this.currentCell.row, this.currentCell.column, true);
