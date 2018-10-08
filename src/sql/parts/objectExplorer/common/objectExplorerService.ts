@@ -366,7 +366,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public resolveTreeNodeChildren(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
-		return this.expandOrRefreshTreeNode(session, parentTree);
+		// Always refresh the node if it has an error, otherwise expand it normally
+		let needsRefresh = !!parentTree.errorStateMessage;
+		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
 	public refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
