@@ -107,8 +107,8 @@ export class AzureResourceProvider {
 	private generateServerOptions(executablePath: string): ServerOptions {
 		let launchArgs = [];
 		launchArgs.push('--log-file');
-		let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', 'resourceprovider.log');
-		console.log('logFile for ' + path.basename(executablePath) + ' is ' + logFile);
+		let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', `resourceprovider_${process.pid}.log`);
+		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 		launchArgs.push(logFile);
 		let config = workspace.getConfiguration(Constants.extensionConfigSectionName);
 		if (config) {

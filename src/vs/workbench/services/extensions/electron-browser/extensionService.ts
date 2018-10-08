@@ -43,6 +43,7 @@ import { RPCProtocol } from 'vs/workbench/services/extensions/node/rpcProtocol';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { isFalsyOrEmpty } from 'vs/base/common/arrays';
 import { Schemas } from 'vs/base/common/network';
+import { ChildProcess } from 'child_process';
 
 let _SystemExtensionsRoot: string = null;
 function getSystemExtensionsRoot(): string {
@@ -150,6 +151,11 @@ export class ExtensionHostProcessManager extends Disposable {
 		this._extensionHostProcessProxy.then(() => {
 			initialActivationEvents.forEach((activationEvent) => this.activateByEvent(activationEvent));
 		});
+	}
+
+	// SQL CARBON EDIT
+	public getExtenstionHostProcessWorker(): ExtensionHostProcessWorker {
+		return this._extensionHostProcessWorker;
 	}
 
 	public dispose(): void {
@@ -296,6 +302,14 @@ export class ExtensionService extends Disposable implements IExtensionService {
 		}
 	}
 
+	// SQL CARBON EDIT
+	public getExtenstionHostProcessId(): number {
+		if (this._extensionHostProcessManagers.length !== 1)
+		{
+			this._logOrShowMessage(Severity.Warning, 'Exactly one Extension Host Process Manager was expected');
+		}
+		return this._extensionHostProcessManagers[0].getExtenstionHostProcessWorker().getExtenstionHostProcess().pid;
+	}
 	private startDelayed(lifecycleService: ILifecycleService): void {
 		let started = false;
 		const startOnce = () => {

@@ -99,9 +99,9 @@ export async function activate(context: vscode.ExtensionContext) {
 function generateServerOptions(executablePath: string): ServerOptions {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
-	let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', 'sqltools.log');
+	let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', `sqltools_${process.pid}.log`);
+	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
-	console.log(`logFile for ${path.basename(executablePath)}  is ${logFile}`);
 	launchArgs.push(logFile);
 	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
 	if (config) {

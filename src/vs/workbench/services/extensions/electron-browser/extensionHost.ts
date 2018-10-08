@@ -102,7 +102,7 @@ export class ExtensionHostProcessWorker {
 	}
 
 	// SQL CARBON EDIT
-	public getExtenstionHosProcess(): ChildProcess {
+	public getExtenstionHostProcess(): ChildProcess {
 		return this._extensionHostProcess;
 	}
 
