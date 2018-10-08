@@ -231,9 +231,10 @@ export class ServerTreeView {
 		if (connection) {
 			var conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				this._objectExplorerService.deleteObjectExplorerNode(conn);
-				this._tree.collapse(conn);
-				this._tree.refresh(conn);
+				this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
+					this._tree.collapse(conn);
+					this._tree.refresh(conn);
+				});
 			}
 		}
 	}

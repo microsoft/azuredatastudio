@@ -175,6 +175,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		}
 	}
 
+	public onConnectCanceled(): void {
+	}
+
 	public onConnectSuccess(params?: INewConnectionParams): void {
 		let rowLimit: number = undefined;
 		let queryString: string = undefined;
@@ -186,6 +189,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 		this._queryModelService.initializeEdit(this.uri, this.schemaName, this.tableName, this._objectType, rowLimit, queryString);
 		this.showResultsEditor();
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {

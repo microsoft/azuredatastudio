@@ -178,9 +178,9 @@ angular2-grid@2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/angular2-grid/-/angular2-grid-2.0.6.tgz#01fe225dc13b2822370b6c61f9a6913b3a26f989"
 
-"angular2-slickgrid@github:Microsoft/angular2-slickgrid#1.4.4":
-  version "1.4.4"
-  resolved "https://codeload.github.com/Microsoft/angular2-slickgrid/tar.gz/5494e99f3ffdfd119e02bd2a26db5ba3c1e05c1d"
+"angular2-slickgrid@github:Microsoft/angular2-slickgrid#1.4.5":
+  version "1.4.5"
+  resolved "https://codeload.github.com/Microsoft/angular2-slickgrid/tar.gz/4a4dd9333f6295c9539c2c3f9a945a204c9a6449"
 
 ansi-colors@^1.0.1:
   version "1.1.0"

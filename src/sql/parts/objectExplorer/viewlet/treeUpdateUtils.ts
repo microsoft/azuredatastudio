@@ -130,14 +130,16 @@ export class TreeUpdateUtils {
 					if (tree) {
 						// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
 						tree.addTraits('loading', [connection]);
+						let rejectOrCancelCallback = () => {
+							tree.collapse(connection);
+							tree.removeTraits('loading', [connection]);
+						};
 						callbacks = {
 							onConnectStart: undefined,
-							onConnectReject: () => {
-								tree.collapse(connection);
-								tree.removeTraits('loading', [connection]);
-							},
+							onConnectReject: rejectOrCancelCallback,
 							onConnectSuccess: () => tree.removeTraits('loading', [connection]),
-							onDisconnect: undefined
+							onDisconnect: undefined,
+							onConnectCanceled: rejectOrCancelCallback,
 						};
 					}
 					connectionManagementService.connect(connection, undefined, options, callbacks).then(result => {

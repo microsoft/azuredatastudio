@@ -37,6 +37,7 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, tableHoverBackground, jobsHeadingBackground, cellBorderColor } from 'sql/common/theme/colors';
+import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -171,7 +172,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
 		$(this._gridEl.nativeElement).empty();
@@ -475,7 +475,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			case ('Failed'):
 				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
 				break;
-			case ('Canceled'):
+			case ('Cancelled'):
 				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
 				break;
 			case ('Status Unknown'):
@@ -523,17 +523,15 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
-	private loadJobHistories(): void {
+	private async loadJobHistories() {
 		if (this.jobs) {
-			let erroredJobs = 0;
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
 			// grab histories of the failing jobs first
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
-			this.curateJobHistory(failing, ownerUri);
 			let passing = separatedJobs[1];
-			this.curateJobHistory(passing, ownerUri);
+			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 
@@ -578,11 +576,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return job;
 	}
 
-	private curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		for (let i = 0; i < jobs.length; i++) {
-			let job = jobs[i];
-			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
+		jobs.forEach(async (job) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
 				if (result && result.jobs) {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
@@ -600,7 +597,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					}
 				}
 			});
-		}
+		});
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
@@ -848,6 +845,40 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return TPromise.as(actions);
 	}
 
+	protected convertStepsToStepInfos(steps: sqlops.AgentJobStep[], job: sqlops.AgentJobInfo): sqlops.AgentJobStepInfo[] {
+		let result = [];
+		steps.forEach(step => {
+			let stepInfo: sqlops.AgentJobStepInfo = {
+				jobId: job.jobId,
+				jobName: job.name,
+				script: null,
+				scriptName: null,
+				stepName: step.stepName,
+				subSystem: null,
+				id: +step.stepId,
+				failureAction: null,
+				successAction: null,
+				failStepId: null,
+				successStepId: null,
+				command: null,
+				commandExecutionSuccessCode: null,
+				databaseName: null,
+				databaseUserName: null,
+				server: null,
+				outputFileName: null,
+				appendToLogFile: null,
+				appendToStepHist: null,
+				writeLogToTable: null,
+				appendLogToTable: null,
+				retryAttempts: null,
+				retryInterval: null,
+				proxyName: null
+			};
+			result.push(stepInfo);
+		});
+		return result;
+	}
+
 	protected getCurrentTableObject(rowIndex: number): any {
 		let data = this._table.grid.getData();
 		if (!data || rowIndex >= data.getLength()) {
@@ -855,10 +886,60 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		}
 
 		let jobId =  data.getItem(rowIndex).jobId;
-		let job = this.jobs.filter(job => {
+		if (!jobId) {
+			// if we couldn't find the ID, check if it's an
+			// error row
+			let isErrorRow: boolean = data.getItem(rowIndex).id.indexOf('error') >= 0;
+			if (isErrorRow) {
+				jobId = data.getItem(rowIndex - 1).jobId;
+			}
+		}
+		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});
-
+		let jobHistories = this.jobHistories[jobId];
+		let steps: sqlops.AgentJobStep[] = undefined;
+		let schedules: sqlops.AgentJobScheduleInfo[] = undefined;
+		let alerts: sqlops.AgentAlertInfo[] = undefined;
+		if (jobHistories && jobHistories[jobHistories.length-1]) {
+			// add steps
+			steps = jobHistories[jobHistories.length-1].steps;
+			if (steps && steps.length > 0) {
+				if (!job[0].JobSteps) {
+					job[0].JobSteps = [];
+				}
+				if (job[0].JobSteps.length !== steps.length) {
+					job[0].JobSteps = [];
+					steps.forEach(step => {
+						job[0].JobSteps.push(step.stepDetails);
+					});
+				}
+			}
+			// add schedules
+			schedules = jobHistories[jobHistories.length-1].schedules;
+			if (schedules && schedules.length > 0) {
+				if (!job[0].JobSchedules) {
+					job[0].JobSchedules = [];
+				}
+				if (job[0].JobSchedules.length !== schedules.length) {
+					job[0].JobSchedules = [];
+					schedules.forEach(schedule => {
+						job[0].JobSchedules.push(schedule);
+					});
+				}
+			}
+			// add alerts
+			alerts = jobHistories[jobHistories.length-1].alerts;
+			if (!job[0].Alerts) {
+				job[0].Alerts = [];
+			}
+			if (job[0].Alerts.length !== alerts.length) {
+				job[0].Alerts = [];
+				alerts.forEach(alert => {
+					job[0].Alerts.push(alert);
+				});
+			}
+		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}
 

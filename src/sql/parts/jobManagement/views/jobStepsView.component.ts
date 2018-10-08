@@ -66,7 +66,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 				}, { verticalScrollMode: ScrollbarVisibility.Visible });
 				this._register(attachListStyler(this._tree, this.themeService));
 			}
-			this._tree.layout(JobStepsViewComponent._pageSize);
+			this._tree.layout(500);
 			this._tree.setInput(new JobStepsViewModel());
 			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
 			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
@@ -74,8 +74,6 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	}
 
 	ngOnInit() {
-
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
