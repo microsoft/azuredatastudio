@@ -447,10 +447,11 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.updateObjectExplorerNodes(connection).then(() => {
 				var treeNode = objectExplorerService.getObjectExplorerNode(connection);
 				assert.equal(treeNode !== null && treeNode !== undefined, true);
-				objectExplorerService.deleteObjectExplorerNode(connection);
-				treeNode = objectExplorerService.getObjectExplorerNode(connection);
-				assert.equal(treeNode === null || treeNode === undefined, true);
-				done();
+				objectExplorerService.deleteObjectExplorerNode(connection).then(() => {
+					treeNode = objectExplorerService.getObjectExplorerNode(connection);
+					assert.equal(treeNode === null || treeNode === undefined, true);
+					done();
+				});
 			}, err => {
 				// Must call done here so test indicates it's finished if errors occur
 				done(err);
@@ -752,6 +753,28 @@ suite('SQL Object Explorer Service tests', () => {
 		refreshedNode.children.forEach((childNode, index) => {
 			assert.equal(childNode.nodePath, objectExplorerExpandInfoRefresh.nodes[index].nodePath);
 		});
+	});
+
+	test('Session can be closed even if expand requests are pending', async () => {
+		const providerId = 'MSSQL';
+
+		// Set up the session
+		await objectExplorerService.createNewSession(providerId, connection);
+		objectExplorerService.onSessionCreated(1, objectExplorerSession);
+
+		// Set up the provider to not respond to the second expand request, simulating a request that takes a long time to complete
+		const nodePath = objectExplorerSession.rootNode.nodePath;
+		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.is(x => x.nodePath === nodePath))).callback(() => { }).returns(() => TPromise.as(true));
+
+		// If I queue a second expand request (the first completes normally because of the original mock) and then close the session
+		await objectExplorerService.expandNode(providerId, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
+		let expandPromise = objectExplorerService.expandNode(providerId, objectExplorerSession, objectExplorerSession.rootNode.nodePath);
+		let closeSessionResult = await objectExplorerService.closeSession(providerId, objectExplorerSession);
+
+		// Then the expand request has completed and the session is closed
+		let expandResult = await expandPromise;
+		assert.equal(expandResult.nodes.length, 0);
+		assert.equal(closeSessionResult.success, true);
 	});
 
 	test('resolveTreeNodeChildren refreshes a node if it currently has an error', async () => {
