@@ -148,7 +148,7 @@
 		{
 			"name": "Renderer and Extension Host processes",
 			"configurations": [
-				"Launch SQL Ops",
+				"Launch azuredatastudio",
 				"Attach to Extension Host"
 			]
 		}
