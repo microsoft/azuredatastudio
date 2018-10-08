@@ -42,7 +42,6 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		console.log(`extensionHost process id is ${extHostPid}`);
 		let toolsServiceLogFile : string = join(this.environmentService.logsPath, '..', '..', 'mssql', `sqltools_${extHostPid}.log`);
 		console.log(`SqlTools Log file is: ${toolsServiceLogFile}`);
-		// Get workbench object
 		outputChannelRegistry.registerChannel(Constants.sqlToolsLogChannellId, nls.localize('sqlToolsLog', "Log (SqlTools)"), URI.file(toolsServiceLogFile));
 
 		const workbenchActionsRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
