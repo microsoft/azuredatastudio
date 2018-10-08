@@ -17,7 +17,7 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
-import { CapabilitiesService, ProviderFeatures, ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ProviderFeatures, ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as sqlops from 'sqlops';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -187,9 +187,7 @@ suite('SQL ConnectionConfig tests', () => {
 		workspaceFolder: []
 	};
 	setup(() => {
-		let storageService = new StorageService(new InMemoryLocalStorage(), null, 'testWorkspace');
 		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
-		// capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesService, undefined, storageService);
 		capabilities = [];
 		let connectionProvider: sqlops.ConnectionProviderOptions = {
 			options: [
@@ -262,19 +260,10 @@ suite('SQL ConnectionConfig tests', () => {
 				connectionOptions: connectionProvider.options
 			}
 		};
-		// msSQLCapabilities = {
-		// 	protocolVersion: '1',
-		// 	providerName: 'MSSQL',
-		// 	providerDisplayName: 'MSSQL',
-		// 	connectionProvider: connectionProvider,
-		// 	adminServicesProvider: undefined,
-		// 	features: undefined
-		// };
 		capabilities.push(msSQLCapabilities);
 
 		capabilitiesService.setup(x => x.getCapabilities('MSSQL')).returns(() => msSQLCapabilities);
 		(capabilitiesService.object as any).onCapabilitiesRegistered = onCapabilitiesRegistered.event;
-		// capabilitiesService.setup(x => x.onCapabilitiesRegistered).returns(() => onCapabilitiesRegistered.event);
 
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
 		workspaceConfigurationServiceMock.setup(x => x.reloadConfiguration())
@@ -937,15 +926,33 @@ suite('SQL ConnectionConfig tests', () => {
 		done();
 	});
 
-	test('fixConnectionIds should replace duplicate ids with new ones', (done) => {
-		done();
-	});
+	test('addConnection should not move the connection when editing', async () => {
+		// Set up the connection config
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[]>(
+			Constants.connectionsArrayName))
+			.returns(() => connections);
+		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[]>(
+			Constants.connectionGroupsArrayName))
+			.returns(() => configValueToConcat);
+		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
 
-	// test('addConnection should not move the connection when editing', async () => {
-	// 	let configurationEditService = TypeMoq.Mock.ofType(ConfigurationEditingService);
-	// 	let workspaceConfigurationService = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
-	// 	let connectionConfig = new ConnectionConfig(configurationEditService.object, workspaceConfigurationService.object, undefined);
-	// });
+		// Clone a connection and modify an option
+		const connectionIndex = 1;
+		const optionKey = 'testOption';
+		const optionValue = 'testValue';
+		let allConnections = config.getConnections(false);
+		let oldLength = allConnections.length;
+		let connectionToEdit = allConnections[connectionIndex].clone();
+		connectionToEdit.options[optionKey] = optionValue;
+		await config.addConnection(connectionToEdit);
+
+		// Get the connection and verify that it is in the same place and has been updated
+		let newConnections = config.getConnections(false);
+		assert.equal(newConnections.length, oldLength);
+		let editedConnection = newConnections[connectionIndex];
+		assert.equal(editedConnection.getOptionsKey(), connectionToEdit.getOptionsKey());
+		assert.equal(editedConnection.options[optionKey], optionValue);
+	});
 
 });
 
