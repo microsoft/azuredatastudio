@@ -323,8 +323,22 @@ function packageTask(platform, arch, opts) {
 		const localExtensionDependencies = gulp.src(extensionDepsSrc, { base: '.', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
 			.pipe(util.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
+			.pipe(util.cleanNodeModule('azurecore',
+				[
+					'node_modules/date-utils/doc/**',
+					'node_modules/tunnel/test/**',
+					'node_modules/mocha/test/**',
+					'node_modules/moment/src/**',
+					'node_modules/ms-rest/test/**',
+					'node_modules/mkdirp/test/**',
+					'node_modules/performance-now/test/**',
+					'node_modules/qs/test/**',
+					'node_modules/through/test/**',
+					'node_modules/typemoq/**',
+					'node_modules/http-signature/node_modules/**',
+					'node_modules/verror/node_modules/**',
+					'node_modules/adal_node/node_modules/**'], undefined))
 			.pipe(util.cleanNodeModule('typescript', ['**/**'], undefined));
-
 
 		const sources = es.merge(src, localExtensions, localExtensionDependencies)
 			.pipe(util.setExecutableBit(['**/*.sh']))
