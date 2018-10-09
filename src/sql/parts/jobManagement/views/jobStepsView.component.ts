@@ -20,7 +20,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import * as dom from 'vs/base/browser/dom';
+import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -36,7 +36,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	private _treeDataSource = new JobStepsViewDataSource();
 	private _treeRenderer = new JobStepsViewRenderer();
 	private _treeFilter =  new JobStepsViewFilter();
-	private static _pageSize = 1024;
+	private _pageSize = 1024;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -66,7 +66,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 				}, { verticalScrollMode: ScrollbarVisibility.Visible });
 				this._register(attachListStyler(this._tree, this.themeService));
 			}
-			this._tree.layout(500);
+			this._tree.layout(this._pageSize);
 			this._tree.setInput(new JobStepsViewModel());
 			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
 			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');

@@ -584,7 +584,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					self.jobHistories[job.jobId] = result.jobs;
 					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
 					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+					let previousRuns: sqlops.AgentJobHistoryInfo[];
+					if (jobHistories.length >= 5) {
+						previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+					} else {
+						previousRuns = jobHistories;
+					}
 					self.createJobChart(job.jobId, previousRuns);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
 						let lastJobHistory = jobHistories[result.jobs.length - 1];
@@ -645,12 +650,22 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		maxDuration = maxDuration === 0 ? 1 : maxDuration;
 		let maxBarHeight: number = 24;
 		let chartHeights = [];
+		let zeroDurationJobCount = 0;
 		for (let i = 0; i < jobHistories.length; i++) {
 			let duration = jobHistories[i].runDuration;
 			let chartHeight = (maxBarHeight * JobManagementUtilities.convertDurationToSeconds(duration)) / maxDuration;
 			chartHeights.push(`${chartHeight}px`);
+			if (chartHeight === 0) {
+				zeroDurationJobCount++;
+			}
 		}
-		return chartHeights;
+		// if the durations are all 0 secs, show minimal chart
+		// instead of nothing
+		if (zeroDurationJobCount === jobHistories.length) {
+			return ['5px', '5px', '5px', '5px', '5px'];
+		} else {
+			return chartHeights;
+		}
 	}
 
 	private expandJobs(start: boolean): void {
