@@ -25,6 +25,8 @@ export interface IJobManagementService {
 	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
 	deleteJob(connectionUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus>;
 
+	deleteJobStep(connectionUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus>;
+
 	getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult>;
 	deleteAlert(connectionUri: string, alert: sqlops.AgentAlertInfo): Thenable<sqlops.ResultStatus>;
 

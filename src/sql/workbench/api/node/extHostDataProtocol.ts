@@ -597,6 +597,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Deletes a job step
+	 */
+	$deleteJobStep(handle: number, ownerUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> {
+		throw this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
+	}
+
+	/**
 	 * Get Agent Alerts list
 	 */
 	$getAlerts(handle: number, ownerUri: string): Thenable<sqlops.AgentAlertsResult> {

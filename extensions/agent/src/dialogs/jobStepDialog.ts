@@ -9,11 +9,12 @@ import * as vscode from 'vscode';
 import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
 import { JobData } from '../data/jobData';
+import { AgentDialog } from './agentDialog';
 const path = require('path');
 
 const localize = nls.loadMessageBundle();
 
-export class JobStepDialog {
+export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	// TODO: localize
 	// Top level
@@ -67,7 +68,6 @@ export class JobStepDialog {
 	// UI Components
 
 	// Dialogs
-	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private fileBrowserDialog: sqlops.window.modelviewdialog.Dialog;
 
 	// Dialog tabs
@@ -105,35 +105,27 @@ export class JobStepDialog {
 
 	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
 	private jobModel: JobData;
-	private model: JobStepData;
-	private ownerUri: string;
 	private jobName: string;
 	private server: string;
 	private stepId: number;
 
 	constructor(
 		ownerUri: string,
-		jobName: string,
 		server: string,
 		stepId: number,
 		jobModel?: JobData
 	) {
-		this.model = new JobStepData(ownerUri);
+		super(ownerUri, new JobStepData(ownerUri, jobModel), 'New Step');
 		this.stepId = stepId;
-		this.ownerUri = ownerUri;
-		this.jobName = jobName;
+		this.jobName = jobModel.name;
 		this.server = server;
 		this.jobModel = jobModel;
 	}
 
 	private initializeUIComponents() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
 		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
 		this.advancedTab = sqlops.window.modelviewdialog.createTab(this.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.okButton.label = this.OkButtonText;
-		this.dialog.cancelButton.label = this.CancelButtonText;
 	}
 
 	private createCommands(view, queryProvider: sqlops.QueryProvider) {
@@ -478,7 +470,7 @@ export class JobStepDialog {
 		return outputFileForm;
 	}
 
-	protected execute() {
+	protected updateModel() {
 		this.model.stepName = this.nameTextBox.value;
 		if (!this.model.stepName || this.model.stepName.length === 0) {
 			this.dialog.message = this.dialog.message = { text: this.BlankStepNameErrorText };
@@ -499,12 +491,20 @@ export class JobStepDialog {
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 	}
 
-	public async openNewStepDialog() {
+	public async initializeDialog() {
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
 		let queryProvider = await AgentUtils.getQueryProvider();
 		this.initializeUIComponents();
 		this.createGeneralTab(databases, queryProvider);
 		this.createAdvancedTab();
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		this.dialog.registerCloseValidator(() => {
+			this.updateModel();
+			let validationResult = this.model.validate();
+			if (!validationResult.valid) {
+				// TODO: Show Error Messages
+				console.error(validationResult.errorMessages.join(','));
+			}
+			return validationResult.valid;
+		});
 	}
 }
