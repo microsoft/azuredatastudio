@@ -101,7 +101,7 @@ export class ExtensionHostProcessWorker {
 		}));
 	}
 
-	// SQL CARBON EDIT
+	//{{SQL CARBON EDIT}}
 	public getExtenstionHostProcess(): ChildProcess {
 		return this._extensionHostProcess;
 	}
