@@ -60,10 +60,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 	}
 
 	private getServerBreadcrumb(profile: ConnectionProfile): MenuItem {
-		if (profile.connectionName !== null && profile.connectionName !== undefined){
-			return { label: profile.connectionName, routerLink: ['server-dashboard'] };
-		}
-		return { label: profile.serverName, routerLink: ['server-dashboard'] };
+		return profile.connectionName ? { label: profile.connectionName, routerLink: ['server-dashboard'] } : { label: profile.serverName, routerLink: ['server-dashboard'] };
 	}
 
 	private getDbBreadcrumb(profile: ConnectionProfile): MenuItem {
