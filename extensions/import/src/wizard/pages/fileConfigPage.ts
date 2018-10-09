@@ -340,7 +340,14 @@ export class FileConfigPage extends ImportPage {
 		let connectionUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
 
-		let query = `SELECT name FROM sys.schemas`;
+		let query = '';
+		if (this.databaseDropdown.value != null)
+		{
+			query = `SELECT name FROM [${this.databaseDropdown.value}].sys.schemas`;
+		}
+		else {
+			query = `SELECT name FROM sys.schemas`;
+		}
 
 		let results = await queryProvider.runQueryAndReturn(connectionUri, query);
 
