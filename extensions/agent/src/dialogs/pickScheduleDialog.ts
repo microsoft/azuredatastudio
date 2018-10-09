@@ -74,7 +74,6 @@ export class PickScheduleDialog {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
 					let schedule = this.model.schedules[i];
-					console.log(schedule);
 					data[i] = [ schedule.id, schedule.name, schedule.description ];
 				}
 				this.schedulesTable.data = data;
