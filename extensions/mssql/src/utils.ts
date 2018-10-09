@@ -21,7 +21,14 @@ export function getAppDataPath() {
 }
 
 export function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'azuredatastudio');
+	if (process.env['VSCODE_DEV'])
+	{
+		return path.join(getAppDataPath(), 'code');
+	}
+	else
+	{
+		return path.join(getAppDataPath(), 'azuredatastudio');
+	}
 }
 
 export function ensure(target: object, key: string): any {
