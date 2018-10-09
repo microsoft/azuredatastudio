@@ -7,6 +7,7 @@
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { JobData } from './jobData';
+import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -14,8 +15,8 @@ const localize = nls.loadMessageBundle();
 export class JobStepData implements IAgentDialogData {
 
 	// Error Messages
-	private readonly CreateStepErrorMessage_JobNameIsEmpty = localize('stepData.jobNameRequired', 'Job name must be provided');
-	private readonly CreateStepErrorMessage_StepNameIsEmpty = localize('stepData.stepNameRequired', 'Step name must be provided');
+	private static readonly CreateStepErrorMessage_JobNameIsEmpty = localize('stepData.jobNameRequired', 'Job name must be provided');
+	private static readonly CreateStepErrorMessage_StepNameIsEmpty = localize('stepData.stepNameRequired', 'Step name must be provided');
 
 	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public ownerUri: string;
@@ -90,16 +91,46 @@ export class JobStepData implements IAgentDialogData {
 		let validationErrors: string[] = [];
 
 		if (!(this.stepName && this.stepName.trim())) {
-			validationErrors.push(this.CreateStepErrorMessage_StepNameIsEmpty);
+			validationErrors.push(JobStepData.CreateStepErrorMessage_StepNameIsEmpty);
 		}
 
 		if (!(this.jobName && this.jobName.trim())) {
-			validationErrors.push(this.CreateStepErrorMessage_JobNameIsEmpty);
+			validationErrors.push(JobStepData.CreateStepErrorMessage_JobNameIsEmpty);
 		}
 
 		return {
 			valid: validationErrors.length === 0,
 			errorMessages: validationErrors
 		};
+	}
+
+	public static convertToJobStepData(jobStepInfo: sqlops.AgentJobStepInfo, jobData: JobData) {
+		let stepData = new JobStepData(jobData.ownerUri, jobData);
+		stepData.ownerUri = jobData.ownerUri;
+		stepData.jobId = jobStepInfo.jobId;
+		stepData.jobName = jobStepInfo.jobName;
+		stepData.script = jobStepInfo.script;
+		stepData.scriptName = jobStepInfo.scriptName,
+		stepData.stepName = jobStepInfo.stepName,
+		stepData.subSystem = jobStepInfo.subSystem,
+		stepData.id = jobStepInfo.id,
+		stepData.failureAction = jobStepInfo.failureAction,
+		stepData.successAction = jobStepInfo.successAction,
+		stepData.failStepId = jobStepInfo.failStepId,
+		stepData.successStepId = jobStepInfo.successStepId,
+		stepData.command = jobStepInfo.command,
+		stepData.commandExecutionSuccessCode = jobStepInfo.commandExecutionSuccessCode,
+		stepData.databaseName = jobStepInfo.databaseName,
+		stepData.databaseUserName = jobStepInfo.databaseUserName,
+		stepData.server = jobStepInfo.server,
+		stepData.outputFileName = jobStepInfo.outputFileName,
+		stepData.appendToLogFile = jobStepInfo.appendToLogFile,
+		stepData.appendToStepHist = jobStepInfo.appendToStepHist,
+		stepData.writeLogToTable = jobStepInfo.writeLogToTable,
+		stepData.appendLogToTable = jobStepInfo.appendLogToTable,
+		stepData.retryAttempts = jobStepInfo.retryAttempts,
+		stepData.retryInterval = jobStepInfo.retryInterval,
+		stepData.proxyName = jobStepInfo.proxyName;
+		return stepData;
 	}
 }

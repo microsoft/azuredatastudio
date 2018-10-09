@@ -35,4 +35,5 @@ export class AgentUtils {
 		}
 		return this._queryProvider;
 	}
+
 }
