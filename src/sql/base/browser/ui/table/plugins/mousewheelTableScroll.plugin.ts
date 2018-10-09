@@ -6,6 +6,7 @@
 'use strict';
 
 import * as DOM from 'vs/base/browser/dom';
+import * as Platform from 'vs/base/common/platform';
 import { StandardMouseWheelEvent } from 'vs/base/browser/mouseEvent';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { mixin } from 'vs/base/common/objects';
@@ -29,7 +30,7 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	private _disposables: IDisposable[] = [];
 
 	constructor(options: IMouseWheelSupportOptions = {}) {
-		this.options = mixin(options, defaultOptions);
+		this.options = mixin(options, defaultOptions, false);
 	}
 
 	public init(grid: Slick.Grid<any>): void {
@@ -43,29 +44,69 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 		this._disposables.push(DOM.addDisposableListener(this.viewport, 'DOMMouseScroll', onMouseWheel));
 	}
 
-	private _onMouseWheel(event: StandardMouseWheelEvent) {
-		const scrollHeight = this.canvas.clientHeight;
-		const height = this.viewport.clientHeight;
-		const scrollDown = Math.sign(event.deltaY) === -1;
-		if (scrollDown) {
-			if ((this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed)) + height > scrollHeight) {
-				this.viewport.scrollTop = scrollHeight - height;
-				this.viewport.dispatchEvent(new Event('scroll'));
-			} else {
-				this.viewport.scrollTop = this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed);
-				this.viewport.dispatchEvent(new Event('scroll'));
-				event.stopPropagation();
-				event.preventDefault();
+	private _onMouseWheel(e: StandardMouseWheelEvent) {
+		if (e.deltaY || e.deltaX) {
+			let deltaY = e.deltaY * this.options.scrollSpeed;
+			let deltaX = e.deltaX * this.options.scrollSpeed;
+			const scrollHeight = this.canvas.clientHeight;
+			const scrollWidth = this.canvas.clientWidth;
+			const height = this.viewport.clientHeight;
+			const width = this.viewport.clientWidth;
+
+			// Convert vertical scrolling to horizontal if shift is held, this
+			// is handled at a higher level on Mac
+			const shiftConvert = !Platform.isMacintosh && e.browserEvent && e.browserEvent.shiftKey;
+			if (shiftConvert && !deltaX) {
+				deltaX = deltaY;
+				deltaY = 0;
 			}
-		} else {
-			if ((this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed)) < 0) {
-				this.viewport.scrollTop = 0;
-				this.viewport.dispatchEvent(new Event('scroll'));
+
+			// scroll down
+			if (deltaY < 0) {
+				if ((this.viewport.scrollTop - deltaY) + height > scrollHeight) {
+					this.viewport.scrollTop = scrollHeight - height;
+					this.viewport.dispatchEvent(new Event('scroll'));
+				} else {
+					this.viewport.scrollTop = this.viewport.scrollTop - deltaY;
+					this.viewport.dispatchEvent(new Event('scroll'));
+					event.stopPropagation();
+					event.preventDefault();
+				}
+				// scroll up
 			} else {
-				this.viewport.scrollTop = this.viewport.scrollTop - (event.deltaY * this.options.scrollSpeed);
-				this.viewport.dispatchEvent(new Event('scroll'));
-				event.stopPropagation();
-				event.preventDefault();
+				if ((this.viewport.scrollTop - deltaY) < 0) {
+					this.viewport.scrollTop = 0;
+					this.viewport.dispatchEvent(new Event('scroll'));
+				} else {
+					this.viewport.scrollTop = this.viewport.scrollTop - deltaY;
+					this.viewport.dispatchEvent(new Event('scroll'));
+					event.stopPropagation();
+					event.preventDefault();
+				}
+			}
+
+			// scroll left
+			if (deltaX < 0) {
+				if ((this.viewport.scrollLeft - deltaX) + width > scrollWidth) {
+					this.viewport.scrollLeft = scrollWidth - width;
+					this.viewport.dispatchEvent(new Event('scroll'));
+				} else {
+					this.viewport.scrollLeft = this.viewport.scrollLeft - deltaX;
+					this.viewport.dispatchEvent(new Event('scroll'));
+					event.stopPropagation();
+					event.preventDefault();
+				}
+				// scroll left
+			} else {
+				if ((this.viewport.scrollLeft - deltaX) < 0) {
+					this.viewport.scrollLeft = 0;
+					this.viewport.dispatchEvent(new Event('scroll'));
+				} else {
+					this.viewport.scrollLeft = this.viewport.scrollLeft - deltaX;
+					this.viewport.dispatchEvent(new Event('scroll'));
+					event.stopPropagation();
+					event.preventDefault();
+				}
 			}
 		}
 	}
