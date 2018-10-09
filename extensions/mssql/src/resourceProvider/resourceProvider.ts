@@ -16,6 +16,7 @@ import { Disposable, workspace } from 'vscode';
 import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
+const findRemoveSync = require('find-remove');
 
 class FireWallFeature extends SqlOpsFeature<any> {
 
@@ -108,8 +109,12 @@ export class AzureResourceProvider {
 		let launchArgs = [];
 		launchArgs.push('--log-file');
 		let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', `resourceprovider_${process.pid}.log`);
-		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 		launchArgs.push(logFile);
+		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
+		console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
+		//Delete log files older than a week
+		let deletedLogFiles = findRemoveSync(path.join(Utils.getDefaultLogLocation(), 'mssql'), {extensions: '.log', age: {seconds: 604800}, limit: 100, prefix: 'resourceprovider_'});
+		console.log(`deleting old files: ${deletedLogFiles}`);
 		let config = workspace.getConfiguration(Constants.extensionConfigSectionName);
 		if (config) {
 			let configTracingLevel = config[Constants.configTracingLevel];
