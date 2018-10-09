@@ -56,6 +56,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 				if (item.hasOwnProperty(key)) {
 					if (item[key]) {
 						hasValue = true;
+						break;
 					}
 				}
 			}
