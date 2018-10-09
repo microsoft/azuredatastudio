@@ -242,6 +242,7 @@ export class GridPanel extends ViewletPanel {
 		}
 		dispose(this.tables);
 		this.tables = [];
+		this.maximizedGrid = undefined;
 
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
