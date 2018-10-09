@@ -202,8 +202,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 		this.onGridRendered = (args: Slick.OnRenderedEventArgs<any>): void => {
 			// After rendering move the focus back to the previous active cell
-			if (this.currentCell.column !== undefined && this.currentCell.row !== undefined && args.startRow <= this.currentCell.row && args.endRow >= this.currentCell.row) {
-				this.focusCell(this.currentCell.row, this.currentCell.column, true);
+			if (this.currentCell.column !== undefined && this.currentCell.row !== undefined
+				&& this.isCellOnScreen(this.currentCell.row, this.currentCell.column)) {
+				this.focusCell(this.currentCell.row, this.currentCell.column, false);
 			}
 		};
 
@@ -312,22 +313,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			}
 		}
 
-		if (this.isNullRow(row) && !this.removingNewRow) {
-			// We've entered the "new row", so we need to add a row and jump to it
-			cellSelectTasks = cellSelectTasks.then(() => {
-				self.addRow(row);
-			});
-		}
-
 		// At the end of a successful cell select, update the currently selected cell
 		cellSelectTasks = cellSelectTasks.then(() => {
-			self.currentCell = {
-				row: row,
-				column: column,
-				isEditable: self.dataSet.columnDefinitions[column]
-					? self.dataSet.columnDefinitions[column].isEditable
-					: false
-			};
+			self.setCurrentCell(row, column);
 		});
 
 		// Cap off any failed promises, since they'll be handled
@@ -401,10 +389,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		self.refreshGrid();
 
 		// Setup the state of the selected cell
-		this.currentCell = { row: 0, column: 0, isEditable: undefined };
+		this.currentCell = { row: 0, column: 1, isEditable: undefined };
 		this.currentEditCellValue = undefined;
 		this.removingNewRow = false;
 		this.newRowVisible = false;
+		this.dirtyCells = [];
 	}
 
 	/**
@@ -470,9 +459,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					return this.removeRow(currentNewRowIndex);
 				}).then(() => {
 					this.newRowVisible = false;
-					this.currentCell.row = undefined;
-					this.currentCell.column = undefined;
-					this.currentCell.isEditable = false;
+					this.resetCurrentCell();
 				});
 		} else {
 			try {
@@ -487,6 +474,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				//
 				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
+				this.resetCurrentCell();
+
 				if (this.currentCell.row !== undefined) {
 					this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
 				}
@@ -497,8 +486,15 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private submitCurrentCellChange(resultHandler, errorHandler): Promise<void> {
 		let self = this;
 		let updateCellPromise: Promise<void> = Promise.resolve();
-
+		let refreshGrid = false;
 		if (this.currentCell && this.currentCell.isEditable && this.currentEditCellValue !== undefined && !this.removingNewRow) {
+			if (this.isNullRow(this.currentCell.row)) {
+				refreshGrid = true;
+				// We've entered the "new row", so we need to add a row and jump to it
+				updateCellPromise = updateCellPromise.then(() => {
+					return self.addRow(this.currentCell.row);
+				});
+			}
 			// We're exiting a read/write cell after having changed the value, update the cell value in the service
 			updateCellPromise = updateCellPromise.then(() => {
 				// Use the mapped row ID if we're on that row
@@ -510,7 +506,13 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			}).then(
 				result => {
 					self.currentEditCellValue = undefined;
-					return resultHandler(result);
+					let refreshPromise: Thenable<void> = Promise.resolve();
+					if (refreshGrid) {
+						refreshPromise = self.refreshGrid();
+					}
+					return refreshPromise.then(() => {
+						return resultHandler(result);
+					});
 				},
 				error => {
 					return errorHandler(error);
@@ -564,11 +566,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
 	// Then sets the focused call afterwards
-	private addRow(row: number): void {
+	private addRow(row: number): Thenable<void> {
 		let self = this;
 
 		// Add a new row to the edit session in the tools service
-		this.dataService.createRow()
+		return this.dataService.createRow()
 			.then(result => {
 				// Map the new row ID to the row ID we have
 				self.rowIdMappings[row] = result.newRowId;
@@ -585,12 +587,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					self.loadDataFunction,
 					index => { return {}; }
 				);
-
-				self.refreshGrid().then(() => {
-					// Mark the row as dirty once the scroll has completed
-					self.setRowDirtyState(row, true);
-					self.focusCell(row, 1);
-				});
 			});
 	}
 
@@ -691,5 +687,31 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 
 	private isCellDirty(row: number, column: number): boolean {
 		return this.currentCell.row === row && this.dirtyCells.indexOf(column) !== -1;
+	}
+
+	private isCellOnScreen(row: number, column: number): boolean {
+		let slick: any = this.slickgrids.toArray()[0];
+		let grid = slick._grid;
+		let viewport = grid.getViewport();
+		let cellBox = grid.getCellNodeBox(row, column);
+		return viewport && cellBox
+			&& viewport.leftPx <= cellBox.left && viewport.rightPx >= cellBox.right
+			&& viewport.top <= row && viewport.bottom >= row;
+	}
+
+	private resetCurrentCell() {
+		this.currentCell.row = undefined;
+		this.currentCell.column = undefined;
+		this.currentCell.isEditable = false;
+	}
+
+	private setCurrentCell(row: number, column: number) {
+		this.currentCell = {
+			row: row,
+			column: column,
+			isEditable: this.dataSet.columnDefinitions[column]
+				? this.dataSet.columnDefinitions[column].isEditable
+				: false
+		};
 	}
 }
