@@ -107,7 +107,7 @@ export class CredentialStore {
 		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 		//Delete log files older than a week
 		let deletedLogFiles = findRemoveSync(path.join(Utils.getDefaultLogLocation(), 'mssql'), {extensions: '.log', age: {seconds: 604800}, limit: 100, prefix: 'credentialstore_'});
-		console.log(`deleting old files: ${deletedLogFiles}`);
+		console.log(`Old log files Deletetion Report: ${JSON.stringify(deletedLogFiles)}`);
 		let config = workspace.getConfiguration(Constants.extensionConfigSectionName);
 		if (config) {
 			let configTracingLevel = config[Constants.configTracingLevel];

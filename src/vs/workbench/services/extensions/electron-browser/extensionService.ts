@@ -153,7 +153,7 @@ export class ExtensionHostProcessManager extends Disposable {
 		});
 	}
 
-	// SQL CARBON EDIT
+	// {{SQL CARBON EDIT}}
 	public getExtenstionHostProcessWorker(): ExtensionHostProcessWorker {
 		return this._extensionHostProcessWorker;
 	}
@@ -302,7 +302,7 @@ export class ExtensionService extends Disposable implements IExtensionService {
 		}
 	}
 
-	// SQL CARBON EDIT
+	// {{SQL CARBON EDIT}}
 	public getExtenstionHostProcessId(): number {
 		if (this._extensionHostProcessManagers.length !== 1)
 		{

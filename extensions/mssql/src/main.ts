@@ -107,7 +107,7 @@ function generateServerOptions(executablePath: string): ServerOptions {
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
 	//Delete log files older than a week
 	let deletedLogFiles = findRemoveSync(path.join(Utils.getDefaultLogLocation(), 'mssql'), {extensions: '.log', age: {seconds: 604800}, limit: 100, prefix: 'sqltools_'});
-	console.log(`deleting old files: ${deletedLogFiles}`);
+	console.log(`Old log files Deletetion Report: ${JSON.stringify(deletedLogFiles)}`);
 
 	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
 	if (config) {

@@ -18,7 +18,7 @@ import * as Constants from 'vs/workbench/parts/logs/common/logConstants';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ShowLogsAction, OpenLogsFolderAction, SetLogLevelAction, OpenLogFileAction } from 'vs/workbench/parts/logs/electron-browser/logsActions';
-//{{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}}
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionService } from 'vs/workbench/services/extensions/electron-browser/extensionService';
 
