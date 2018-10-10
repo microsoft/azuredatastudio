@@ -6,5 +6,4 @@
 
 export const serviceName = 'AzureResourceProvider';
 export const providerId = 'azureresourceProvider';
-export const configTracingLevel = 'tracingLevel';
 export const extensionConfigSectionName = 'mssql';
