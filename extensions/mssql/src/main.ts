@@ -97,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {
-	let launchArgs = Utils.getMssqlCommonLaunchArgs('sqltools', executablePath);
+	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

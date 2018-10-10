@@ -105,7 +105,7 @@ export class AzureResourceProvider {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getMssqlCommonLaunchArgs('resourceprovider', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('resourceprovider', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }

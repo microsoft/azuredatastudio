@@ -99,7 +99,7 @@ export class CredentialStore {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getMssqlCommonLaunchArgs('credentialstore', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('credentialstore', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }

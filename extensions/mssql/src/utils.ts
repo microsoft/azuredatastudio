@@ -76,7 +76,7 @@ export function getDefaultLogFile(prefix: string, pid: number) : string {
 	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
 }
 
-export function getMssqlCommonLaunchArgs(prefix: string, executablePath: string) : string [] {
+export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string) : string [] {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
 	let logFile = getDefaultLogFile(prefix, process.pid);
