@@ -499,7 +499,7 @@ const buildRoot = path.dirname(root);
 // {{SQL CARBON EDIT}}
 gulp.task('vscode-win32-x64-azurecore', ['optimize-vscode'], packageAzureCoreTask('win32', 'x64'));
 gulp.task('vscode-darwin-azurecore', ['optimize-vscode'], packageAzureCoreTask('darwin'));
-gulp.task('vscode-linux-x64', ['optimize-vscode'], packageAzureCoreTask('linux', 'x64'));
+gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], packageAzureCoreTask('linux', 'x64'));
 
 gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-ia32')));
 gulp.task('clean-vscode-win32-x64', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-x64')));
