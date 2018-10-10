@@ -6,4 +6,3 @@
 
 export const serviceName = 'SerilizationProvider';
 export const providerId = 'serilizationProvider';
-export const extensionConfigSectionName = 'mssql';
