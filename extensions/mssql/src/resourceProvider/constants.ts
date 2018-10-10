@@ -6,4 +6,3 @@
 
 export const serviceName = 'AzureResourceProvider';
 export const providerId = 'azureresourceProvider';
-export const extensionConfigSectionName = 'mssql';
