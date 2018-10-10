@@ -277,11 +277,15 @@ function packageBuiltInExtensions() {
 	});
 }
 
-
 // {{SQL CARBON EDIT}}
 function packageAzureCoreTask(platform, arch) {
 	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
-	destination = path.join(destination, 'resources', 'app', 'extensions', 'azurecore');
+	if (platform === 'darwin') {
+		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', 'azurecore');
+	} else {
+		destination = path.join(destination, 'resources', 'app', 'extensions', 'azurecore');
+	}
+
 	platform = platform || process.platform;
 
 	return () => {
