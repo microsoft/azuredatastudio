@@ -7,6 +7,13 @@
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
+import {workspace, WorkspaceConfiguration} from 'vscode';
+import * as findRemoveSync from 'find-remove';
+
+const configTracingLevel = 'tracingLevel';
+const configLogRetentionMinutes = 'logRetentionMinutes';
+const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
+const extensionConfigSectionName = 'mssql';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -20,17 +27,54 @@ export function getAppDataPath() {
 	}
 }
 
-export function getDefaultLogLocation() {
-	if (process.env['VSCODE_DEV'])
-	{
-		return path.join(getAppDataPath(), 'code');
+export function removeOldLogFiles(prefix: string) : JSON {
+	return findRemoveSync(getDefaultLogDir(), {prefix: `${prefix}_`,  age: {seconds: getConfigLogRetentionSeconds()}, limit: getConfigLogFilesRemovalLimit()});
+}
+
+export function getConfiguration(config: string = extensionConfigSectionName) : WorkspaceConfiguration {
+	return workspace.getConfiguration(extensionConfigSectionName);
+}
+
+export function getConfigLogFilesRemovalLimit() : number {
+	let config = getConfiguration();
+	if (config) {
+		return config[configLogFilesRemovalLimit];
 	}
 	else
 	{
-		return path.join(getAppDataPath(), 'azuredatastudio');
+		return null;
 	}
 }
 
+export function getConfigLogRetentionSeconds() : number {
+	let config = getConfiguration();
+	if (config) {
+		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
+	}
+	else
+	{
+		return null;
+	}
+}
+
+export function getConfigTracingLevel() : string {
+	let config = getConfiguration();
+	if (config) {
+		return config[configTracingLevel];
+	}
+	else
+	{
+		return null;
+	}
+}
+
+export function getDefaultLogDir() : string {
+	return path.join(process.env['VSCODE_LOGS'], '..', '..','mssql');
+}
+
+export function getDefaultLogFile(prefix: string, pid: number) : string {
+	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
+}
 export function ensure(target: object, key: string): any {
 	if (target[key] === void 0) {
 		target[key] = {} as any;

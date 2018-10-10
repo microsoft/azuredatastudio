@@ -109,6 +109,16 @@
             "Verbose"
           ]
         },
+        "mssql.logRetentionMinutes": {
+          "type": "number",
+          "default": 10080,
+          "description": "Number of minutes to retain log files for backend services. Default is 1 week."
+        },
+        "mssql.logFilesRemovalLimit": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes."
+        },
         "ignorePlatformWarning": {
           "type": "boolean",
           "description": "[Optional] Do not show unsupported platform warnings",

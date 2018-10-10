@@ -8,14 +8,13 @@ import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-cli
 import * as path from 'path';
 import { IConfig, ServerProvider } from 'service-downloader';
 import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
-import { Disposable, workspace } from 'vscode';
+import { Disposable } from 'vscode';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as sqlops from 'sqlops';
 
 import * as Contracts from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-const findRemoveSync = require('find-remove');
 
 class CredentialsFeature extends SqlOpsFeature<any> {
 
@@ -101,19 +100,18 @@ export class CredentialStore {
 
 	private generateServerOptions(executablePath: string): ServerOptions {
 		let launchArgs = [];
+		let prefix: string = 'credentialstore';
 		launchArgs.push('--log-file');
-		let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', `credentialstore_${process.pid}.log`);
+		let logFile = Utils.getDefaultLogFile(prefix, process.pid);
 		launchArgs.push(logFile);
+
 		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
-		//Delete log files older than a week
-		let deletedLogFiles = findRemoveSync(path.join(Utils.getDefaultLogLocation(), 'mssql'), {extensions: '.log', age: {seconds: 604800}, limit: 100, prefix: 'credentialstore_'});
-		console.log(`Old log files Deletetion Report: ${JSON.stringify(deletedLogFiles)}`);
-		let config = workspace.getConfiguration(Constants.extensionConfigSectionName);
-		if (config) {
-			let configTracingLevel = config[Constants.configTracingLevel];
-			launchArgs.push('--tracing-level');
-			launchArgs.push(configTracingLevel);
-		}
+		console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
+		// Delete old log files
+		let deletedLogFiles = Utils.removeOldLogFiles(prefix);
+		console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
+		launchArgs.push('--tracing-level');
+		launchArgs.push(Utils.getConfigTracingLevel());
 
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}

@@ -16,7 +16,7 @@ import { Disposable, workspace } from 'vscode';
 import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-const findRemoveSync = require('find-remove');
+import * as findRemoveSync from 'find-remove';
 
 class FireWallFeature extends SqlOpsFeature<any> {
 
@@ -107,20 +107,18 @@ export class AzureResourceProvider {
 
 	private generateServerOptions(executablePath: string): ServerOptions {
 		let launchArgs = [];
+		let prefix: string = 'resourceprovider';
 		launchArgs.push('--log-file');
-		let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', `resourceprovider_${process.pid}.log`);
+		let logFile = Utils.getDefaultLogFile(prefix, process.pid);
 		launchArgs.push(logFile);
+
 		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 		console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
-		//Delete log files older than a week
-		let deletedLogFiles = findRemoveSync(path.join(Utils.getDefaultLogLocation(), 'mssql'), {extensions: '.log', age: {seconds: 604800}, limit: 100, prefix: 'resourceprovider_'});
-		console.log(`Old log files Deletetion Report: ${JSON.stringify(deletedLogFiles)}`);
-		let config = workspace.getConfiguration(Constants.extensionConfigSectionName);
-		if (config) {
-			let configTracingLevel = config[Constants.configTracingLevel];
-			launchArgs.push('--tracing-level');
-			launchArgs.push(configTracingLevel);
-		}
+		// Delete old log files
+		let deletedLogFiles = Utils.removeOldLogFiles(prefix);
+		console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
+		launchArgs.push('--tracing-level');
+		launchArgs.push(Utils.getConfigTracingLevel());
 
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}

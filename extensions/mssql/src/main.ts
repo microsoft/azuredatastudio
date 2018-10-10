@@ -21,7 +21,6 @@ import { TelemetryFeature, AgentServicesFeature } from './features';
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-const findRemoveSync = require('find-remove');
 
 export async function activate(context: vscode.ExtensionContext) {
 	// lets make sure we support this platform first
@@ -99,22 +98,18 @@ export async function activate(context: vscode.ExtensionContext) {
 
 function generateServerOptions(executablePath: string): ServerOptions {
 	let launchArgs = [];
+	let prefix: string = 'sqltools';
 	launchArgs.push('--log-file');
-	let logFile = path.join(Utils.getDefaultLogLocation(), 'mssql', `sqltools_${process.pid}.log`);
+	let logFile = Utils.getDefaultLogFile(prefix, process.pid);
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
-	//Delete log files older than a week
-	let deletedLogFiles = findRemoveSync(path.join(Utils.getDefaultLogLocation(), 'mssql'), {extensions: '.log', age: {seconds: 604800}, limit: 100, prefix: 'sqltools_'});
-	console.log(`Old log files Deletetion Report: ${JSON.stringify(deletedLogFiles)}`);
-
-	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
-	if (config) {
-		let configTracingLevel = config[Constants.configTracingLevel];
-		launchArgs.push('--tracing-level');
-		launchArgs.push(configTracingLevel);
-	}
+	// Delete old log files
+	let deletedLogFiles = Utils.removeOldLogFiles(prefix);
+	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
+	launchArgs.push('--tracing-level');
+	launchArgs.push(Utils.getConfigTracingLevel());
 
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
