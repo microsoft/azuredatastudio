@@ -38,7 +38,7 @@ export function getConfiguration(config: string = extensionConfigSectionName) : 
 export function getConfigLogFilesRemovalLimit() : number {
 	let config = getConfiguration();
 	if (config) {
-		return config[configLogFilesRemovalLimit];
+		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
 	}
 	else
 	{
@@ -75,6 +75,23 @@ export function getDefaultLogDir() : string {
 export function getDefaultLogFile(prefix: string, pid: number) : string {
 	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
 }
+
+export function getMssqlCommonLaunchArgs(prefix: string, executablePath: string) : string [] {
+	let launchArgs = [];
+	launchArgs.push('--log-file');
+	let logFile = getDefaultLogFile(prefix, process.pid);
+	launchArgs.push(logFile);
+
+	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
+	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
+	// Delete old log files
+	let deletedLogFiles = removeOldLogFiles(prefix);
+	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
+	launchArgs.push('--tracing-level');
+	launchArgs.push(getConfigTracingLevel());
+	return launchArgs;
+}
+
 export function ensure(target: object, key: string): any {
 	if (target[key] === void 0) {
 		target[key] = {} as any;

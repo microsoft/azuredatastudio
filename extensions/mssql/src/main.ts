@@ -97,20 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {
-	let launchArgs = [];
-	let prefix: string = 'sqltools';
-	launchArgs.push('--log-file');
-	let logFile = Utils.getDefaultLogFile(prefix, process.pid);
-	launchArgs.push(logFile);
-
-	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
-	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
-	// Delete old log files
-	let deletedLogFiles = Utils.removeOldLogFiles(prefix);
-	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
-	launchArgs.push('--tracing-level');
-	launchArgs.push(Utils.getConfigTracingLevel());
-
+	let launchArgs = Utils.getMssqlCommonLaunchArgs('sqltools', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

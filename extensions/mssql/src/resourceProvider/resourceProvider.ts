@@ -106,19 +106,7 @@ export class AzureResourceProvider {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = [];
-		let prefix: string = 'resourceprovider';
-		launchArgs.push('--log-file');
-		let logFile = Utils.getDefaultLogFile(prefix, process.pid);
-		launchArgs.push(logFile);
-
-		console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
-		console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
-		// Delete old log files
-		let deletedLogFiles = Utils.removeOldLogFiles(prefix);
-		console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
-		launchArgs.push('--tracing-level');
-		launchArgs.push(Utils.getConfigTracingLevel());
+		let launchArgs = Utils.getMssqlCommonLaunchArgs('resourceprovider', executablePath);
 
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
