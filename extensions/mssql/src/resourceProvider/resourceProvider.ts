@@ -11,12 +11,11 @@ import { ServerCapabilities, ClientCapabilities, RPCMessageType, ServerOptions, 
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 
 import * as sqlops from 'sqlops';
-import { Disposable, workspace } from 'vscode';
+import { Disposable } from 'vscode';
 
 import { CreateFirewallRuleRequest, HandleFirewallRuleRequest, CreateFirewallRuleParams, HandleFirewallRuleParams } from './contracts';
 import * as Constants from './constants';
 import * as Utils from '../utils';
-import * as findRemoveSync from 'find-remove';
 
 class FireWallFeature extends SqlOpsFeature<any> {
 
@@ -107,7 +106,6 @@ export class AzureResourceProvider {
 
 	private generateServerOptions(executablePath: string): ServerOptions {
 		let launchArgs = Utils.getMssqlCommonLaunchArgs('resourceprovider', executablePath);
-
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }
