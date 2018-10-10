@@ -42,7 +42,7 @@ export function getConfigLogFilesRemovalLimit() : number {
 	}
 	else
 	{
-		return null;
+		return undefined;
 	}
 }
 
@@ -53,7 +53,7 @@ export function getConfigLogRetentionSeconds() : number {
 	}
 	else
 	{
-		return null;
+		return undefined;
 	}
 }
 
@@ -64,7 +64,7 @@ export function getConfigTracingLevel() : string {
 	}
 	else
 	{
-		return null;
+		return undefined;
 	}
 }
 
