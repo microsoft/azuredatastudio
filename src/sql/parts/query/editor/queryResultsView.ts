@@ -203,6 +203,11 @@ export class QueryResultsView {
 			if (!this._panelView.contains(this.qpTab)) {
 				this._panelView.pushTab(this.qpTab);
 			}
+		} else if (queryRunner.isQueryPlan) {
+			let disp = queryRunner.onResultSet(() => {
+				this.showPlan(queryRunner.planXml);
+				disp.dispose();
+			});
 		}
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);

@@ -59,6 +59,9 @@ export class JobData implements IAgentDialogData {
 			this.category = jobInfo.category;
 			this.description = jobInfo.description;
 			this.enabled = jobInfo.enabled;
+			this.jobSteps = jobInfo.JobSteps;
+			this.jobSchedules = jobInfo.JobSchedules;
+			this.alerts = jobInfo.Alerts;
 		}
 	}
 
@@ -105,8 +108,6 @@ export class JobData implements IAgentDialogData {
 			displayName: this.JobCompletionActionCondition_Always,
 			name: sqlops.JobCompletionActionCondition.Always.toString()
 		}];
-
-		this.jobSchedules = [];
 	}
 
 	public async save() {

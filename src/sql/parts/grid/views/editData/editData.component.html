@@ -23,6 +23,7 @@
 						(onContextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
 						[isCellEditValid]="onIsCellEditValid"
 						[overrideCellFn]="overrideCellFn"
+						[onBeforeAppendCell]="onBeforeAppendCell"
 						[enableEditing]="true"
 						class="boxCol content vertBox slickgrid">
 			</slick-grid>

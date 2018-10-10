@@ -30,6 +30,7 @@ export class JobManagementService implements IJobManagementService {
 		this._onDidChange.fire(void 0);
 	}
 
+	// Jobs
 	public getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getJobs(connectionUri);
@@ -42,6 +43,27 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getJobHistory(connectionUri, jobID);
+		});
+	}
+
+	public jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.jobAction(connectionUri, jobName, action);
+		});
+	}
+
+	// Steps
+	public deleteJobStep(connectionUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteJobStep(connectionUri, stepInfo);
+		});
+	}
+
+
+	// Alerts
 	public getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getAlerts(connectionUri);
@@ -54,6 +76,7 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	// Operators
 	public getOperators(connectionUri: string): Thenable<sqlops.AgentOperatorsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getOperators(connectionUri);
@@ -66,6 +89,7 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	// Proxies
 	public getProxies(connectionUri: string): Thenable<sqlops.AgentProxiesResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getProxies(connectionUri);
@@ -81,18 +105,6 @@ export class JobManagementService implements IJobManagementService {
 	public getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getCredentials(connectionUri);
-		});
-	}
-
-	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
-		return this._runAction(connectionUri, (runner) => {
-			return runner.getJobHistory(connectionUri, jobID);
-		});
-	}
-
-	public jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
-		return this._runAction(connectionUri, (runner) => {
-			return runner.jobAction(connectionUri, jobName, action);
 		});
 	}
 

@@ -49,10 +49,8 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 
 	protected async execute() {
 		this.updateModel();
-		let success = await this.model.save();
-		if (success) {
-			this._onSuccess.fire(this.model);
-		}
+		await this.model.save();
+		this._onSuccess.fire(this.model);
 	}
 
 	protected async cancel() {

@@ -242,6 +242,7 @@ export class GridPanel extends ViewletPanel {
 		}
 		dispose(this.tables);
 		this.tables = [];
+		this.maximizedGrid = undefined;
 
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
@@ -552,12 +553,6 @@ class GridTable<T> extends Disposable implements IView {
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
 		return this.runner.getQueryRows(offset, count, this.resultSet.batchId, this.resultSet.id).then(response => {
-			if (this.runner.isQueryPlan) {
-				// it's a show plan response
-				if (response.resultSubset.rowCount === 1) {
-					this.instantiationService.createInstance(ShowQueryPlanAction).run(response.resultSubset.rows[0][0].displayValue);
-				}
-			}
 			return response.resultSubset.rows.map(r => {
 				let dataWithSchema = {};
 				// skip the first column since its a number column

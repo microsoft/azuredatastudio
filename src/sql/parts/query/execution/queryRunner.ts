@@ -72,6 +72,8 @@ export default class QueryRunner {
 	private _isQueryPlan: boolean;
 
 	public get isQueryPlan(): boolean { return this._isQueryPlan; }
+	private _planXml: string;
+	public get planXml(): string { return this._planXml; }
 
 	private _onMessage = new Emitter<sqlops.IResultMessage>();
 	private _debouncedMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(this._onMessage.event, (l, e) => {
@@ -337,6 +339,10 @@ export default class QueryRunner {
 				}
 			} else {
 				batchSet = this.batchSets[resultSet.batchId];
+			}
+			// handle getting queryPlanxml if we need too
+			if (this.isQueryPlan) {
+				this.getQueryRows(0, 1, 0, 0).then(e => this._planXml = e.resultSubset.rows[0][0].displayValue);
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
