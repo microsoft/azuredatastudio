@@ -101,6 +101,11 @@ export class ExtensionHostProcessWorker {
 		}));
 	}
 
+	// {{SQL CARBON EDIT}}
+	public getExtenstionHostProcess(): ChildProcess {
+		return this._extensionHostProcess;
+	}
+
 	public dispose(): void {
 		this.terminate();
 	}
