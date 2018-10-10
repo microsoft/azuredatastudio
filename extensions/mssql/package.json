@@ -117,7 +117,7 @@
         "mssql.logFilesRemovalLimit": {
           "type": "number",
           "default": 100,
-          "description": "Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes."
+          "description": "Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time azuredatastudio starts up."
         },
         "ignorePlatformWarning": {
           "type": "boolean",
