@@ -43,7 +43,6 @@ import { RPCProtocol } from 'vs/workbench/services/extensions/node/rpcProtocol';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { isFalsyOrEmpty } from 'vs/base/common/arrays';
 import { Schemas } from 'vs/base/common/network';
-import { ChildProcess } from 'child_process';
 
 let _SystemExtensionsRoot: string = null;
 function getSystemExtensionsRoot(): string {
