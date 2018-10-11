@@ -7,6 +7,7 @@
     "@types/es6-collections": "0.5.31",
     "@types/es6-promise": "0.0.33",
     "@types/mime": "0.0.29",
+    "@types/minimatch": "^3.0.3",
     "@types/node": "8.0.33",
     "@types/xml2js": "0.0.33",
     "@types/request": "^2.47.0",

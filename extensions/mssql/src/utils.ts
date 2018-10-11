@@ -7,6 +7,13 @@
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
+import {workspace, WorkspaceConfiguration} from 'vscode';
+import * as findRemoveSync from 'find-remove';
+
+const configTracingLevel = 'tracingLevel';
+const configLogRetentionMinutes = 'logRetentionMinutes';
+const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
+const extensionConfigSectionName = 'mssql';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -20,8 +27,69 @@ export function getAppDataPath() {
 	}
 }
 
-export function getDefaultLogLocation() {
-	return path.join(getAppDataPath(), 'azuredatastudio');
+export function removeOldLogFiles(prefix: string) : JSON {
+	return findRemoveSync(getDefaultLogDir(), {prefix: `${prefix}_`,  age: {seconds: getConfigLogRetentionSeconds()}, limit: getConfigLogFilesRemovalLimit()});
+}
+
+export function getConfiguration(config: string = extensionConfigSectionName) : WorkspaceConfiguration {
+	return workspace.getConfiguration(extensionConfigSectionName);
+}
+
+export function getConfigLogFilesRemovalLimit() : number {
+	let config = getConfiguration();
+	if (config) {
+		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
+	}
+	else
+	{
+		return undefined;
+	}
+}
+
+export function getConfigLogRetentionSeconds() : number {
+	let config = getConfiguration();
+	if (config) {
+		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
+	}
+	else
+	{
+		return undefined;
+	}
+}
+
+export function getConfigTracingLevel() : string {
+	let config = getConfiguration();
+	if (config) {
+		return config[configTracingLevel];
+	}
+	else
+	{
+		return undefined;
+	}
+}
+
+export function getDefaultLogDir() : string {
+	return path.join(process.env['VSCODE_LOGS'], '..', '..','mssql');
+}
+
+export function getDefaultLogFile(prefix: string, pid: number) : string {
+	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
+}
+
+export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string) : string [] {
+	let launchArgs = [];
+	launchArgs.push('--log-file');
+	let logFile = getDefaultLogFile(prefix, process.pid);
+	launchArgs.push(logFile);
+
+	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
+	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
+	// Delete old log files
+	let deletedLogFiles = removeOldLogFiles(prefix);
+	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
+	launchArgs.push('--tracing-level');
+	launchArgs.push(getConfigTracingLevel());
+	return launchArgs;
 }
 
 export function ensure(target: object, key: string): any {

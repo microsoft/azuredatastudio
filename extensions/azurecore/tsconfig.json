@@ -7,14 +7,16 @@
 		"lib": [
 			"es6", "es2015.promise"
 		],
+		"typeRoots": [
+			"./node_modules/@types"
+		],
 		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
-		"declaration": true,
-		"types": ["node"]
+		"declaration": true
 	},
 	"exclude": [
-		"./node_modules"
+		"node_modules"
 	]
 }

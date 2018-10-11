@@ -40,9 +40,9 @@ export class MainController {
             let dialog = new JobDialog(ownerUri, jobInfo);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, jobId: string, server: string, stepId: number) => {
-			let dialog = new JobStepDialog(ownerUri, jobId, server, stepId);
-			dialog.openNewStepDialog();
+        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, stepId: number) => {
+			let dialog = new JobStepDialog(ownerUri, server, stepId);
+			dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string) => {
             let dialog = new PickScheduleDialog(ownerUri);
@@ -57,9 +57,8 @@ export class MainController {
             dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openProxyDialog', (ownerUri: string, proxyInfo: sqlops.AgentProxyInfo, credentials: sqlops.CredentialInfo[]) => {
-            //@TODO: reenable create proxy after snapping July release (7/14/18)
-            // let dialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
-            // dialog.openDialog();
+            let dialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
+            dialog.openDialog();
             MainController.showNotYetImplemented();
         });
     }

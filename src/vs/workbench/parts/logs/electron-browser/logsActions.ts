@@ -52,7 +52,9 @@ export class ShowLogsAction extends Action {
 			{ id: Constants.rendererLogChannelId, label: this.contextService.getWorkspace().name ? nls.localize('rendererProcess', "Window ({0})", this.contextService.getWorkspace().name) : nls.localize('emptyWindow', "Window") },
 			{ id: Constants.extHostLogChannelId, label: nls.localize('extensionHost', "Extension Host") },
 			{ id: Constants.sharedLogChannelId, label: nls.localize('sharedProcess', "Shared") },
-			{ id: Constants.mainLogChannelId, label: nls.localize('mainProcess', "Main") }
+			{ id: Constants.mainLogChannelId, label: nls.localize('mainProcess', "Main") },
+			// {{SQL CARBON EDIT}}
+			{ id: Constants.sqlToolsLogChannellId, label: nls.localize('sqlToolsHost', "SqlTools") }
 		];
 
 		return this.quickOpenService.pick(entries, { placeHolder: nls.localize('selectProcess', "Select Log for Process") })

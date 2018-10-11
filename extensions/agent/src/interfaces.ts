@@ -13,5 +13,5 @@ export enum AgentDialogMode {
 export interface IAgentDialogData {
 	dialogMode: AgentDialogMode;
 	initialize(): void;
-	save(): void;
+	save(): Promise<void>;
 }

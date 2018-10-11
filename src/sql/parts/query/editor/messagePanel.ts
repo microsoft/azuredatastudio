@@ -30,6 +30,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -99,7 +100,7 @@ export class MessagePanel extends ViewletPanel {
 			dataSource: this.ds,
 			renderer: this.renderer,
 			controller: this.controller
-		}, { keyboardSupport: false });
+		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
 		this.tree.onDidScroll(e => {
 			if (this.state) {
 				this.state.scrollPosition = this.tree.getScrollPosition();

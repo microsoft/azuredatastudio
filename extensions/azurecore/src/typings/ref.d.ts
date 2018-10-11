@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import * as nls from 'vscode-nls';
-
-const localize = nls.loadMessageBundle();
-
-export const extensionName = localize('extensionName', 'Azure Accounts');
+/// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/sql/sqlops.d.ts'/>
+/// <reference path='../../../../src/sql/sqlops.proposed.d.ts'/>
+/// <reference types='@types/node'/>

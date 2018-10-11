@@ -10,7 +10,6 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
-import { AgentJobHistoryInfo } from 'sqlops';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 
 export class JobStepsViewRow {
@@ -27,7 +26,6 @@ export class JobStepsViewModel {
 }
 
 export class JobStepsViewController extends TreeDefaults.DefaultController {
-	private _jobHistories: AgentJobHistoryInfo[];
 
 	protected onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
 		return true;
@@ -35,14 +33,6 @@ export class JobStepsViewController extends TreeDefaults.DefaultController {
 
 	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
 		return true;
-	}
-
-	public set jobHistories(value: AgentJobHistoryInfo[]) {
-		this._jobHistories = value;
-	}
-
-	public get jobHistories(): AgentJobHistoryInfo[] {
-		return this._jobHistories;
 	}
 
 }
