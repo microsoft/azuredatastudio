@@ -717,6 +717,11 @@ declare module 'sqlops' {
 		 */
 		readonly onEditorCreated: vscode.Event<any>;
 
+		/**
+		 * Toggle for whether the editor should be automatically resized or not
+		 */
+		isAutoResizable: boolean;
+
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {

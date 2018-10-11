@@ -905,6 +905,14 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 		return this.properties['editorUri'];
 	}
 
+	public get isAutoResizable(): boolean {
+		return this.properties['isAutoResizable'];
+	}
+
+	public set isAutoResizable(v: boolean) {
+		this.setProperty('isAutoResizable', v);
+	}
+
 	public get onContentChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
