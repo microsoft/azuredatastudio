@@ -13,7 +13,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { DashboardEditor } from 'sql/parts/dashboard/dashboardEditor';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { AddServerGroupAction, AddServerAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
-import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction, OpenNotebookAction } from 'sql/parts/connection/common/connectionActions';
+import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/parts/connection/common/connectionActions';
 
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
 import { ExtensionTipsService } from 'vs/workbench/parts/extensions/electron-browser/extensionTipsService';
@@ -47,17 +47,6 @@ actionRegistry.registerWorkbenchAction(
 		ClearRecentConnectionsAction.LABEL
 	),
 	ClearRecentConnectionsAction.LABEL
-);
-
-// todo: Will remove this code.
-// this is the entry point to open the new Notebook
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		OpenNotebookAction,
-		OpenNotebookAction.ID,
-		OpenNotebookAction.LABEL
-	),
-	OpenNotebookAction.LABEL
 );
 
 actionRegistry.registerWorkbenchAction(
