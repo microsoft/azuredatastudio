@@ -19,6 +19,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
 
 /**
  * Workbench action to clear the recent connnections list
@@ -102,6 +103,32 @@ export class ClearRecentConnectionsAction extends Action {
 			this._dialogService.confirm(confirm).then((confirmed) => {
 				resolve(confirmed);
 			});
+		});
+	}
+}
+
+/**
+ * todo: Will remove this code.
+ * This is the entry point to open the new Notebook
+ */
+export class OpenNotebookAction extends Action {
+
+	public static ID = 'OpenNotebookAction';
+	public static LABEL = nls.localize('OpenNotebookAction', 'Open Notebook editor');
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+	}
+
+	public run(): TPromise<void> {
+		return new TPromise<void>((resolve, reject) => {
+			let model = new NotebookInputModel('modelViewId', undefined, undefined);
+			let input = new NotebookInput('modelViewId', model);
+			this._editorService.openEditor(input, { pinned: true });
 		});
 	}
 }
