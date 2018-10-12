@@ -259,8 +259,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
-	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
-		this._proxy.$onResultSetComplete(handle, resultSetInfo);
+	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
+	}
+	$onResultSetUpdate(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._proxy.$onResultSetUpdate(handle, resultSetInfo);
 	}
 	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void {
 		this._proxy.$onQueryMessage(handle, message);

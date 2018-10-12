@@ -195,8 +195,12 @@ export function createApiFactory(
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
-					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				provider.registerOnResultSetAvailable((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
+				});
+
+				provider.registerOnResultSetUpdate((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetUpdate(provider.handle, resultSetInfo);
 				});
 
 				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {

@@ -319,7 +319,7 @@ export default class QueryRunner {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetAvailable(result: sqlops.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: sqlops.BatchSummary;
@@ -351,6 +351,10 @@ export default class QueryRunner {
 				this._onResultSet.fire(resultSet);
 			}
 		}
+	}
+
+	public handleResultSetUpdate(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+
 	}
 
 	/**
