@@ -768,6 +768,7 @@ declare module 'sqlops' {
 		batchId: number;
 		rowCount: number;
 		columnInfo: IDbColumn[];
+		complete: boolean;
 	}
 
 	export interface BatchSummary {
