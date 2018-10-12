@@ -73,7 +73,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
-	private dirtyRow: number = -1;
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
@@ -395,7 +394,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.removingNewRow = false;
 		this.newRowVisible = false;
 		this.dirtyCells = [];
-		this.dirtyRow = -1;
 	}
 
 	/**
@@ -476,7 +474,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				//
 				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
-				this.dirtyRow = -1;
 				let row = this.currentCell.row;
 				this.resetCurrentCell();
 
@@ -542,7 +539,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			if (this.dirtyCells.indexOf(column) === -1) {
 				this.dirtyCells.push(column);
 			}
-			this.dirtyRow = row;
 		} else {
 			$(grid.getCellNode(row, column)).removeClass('dirtyCell');
 			if (this.dirtyCells.indexOf(column) !== -1) {
@@ -556,11 +552,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let slick: any = this.slickgrids.toArray()[0];
 		let grid = slick._grid;
 		if (dirtyState) {
-			this.dirtyRow = row;
 			// Change row header color
 			$(grid.getCellNode(row, 0)).addClass('dirtyRowHeader');
 		} else {
-			this.dirtyRow = -1;
 			$(grid.getCellNode(row, 0)).removeClass('dirtyRowHeader');
 		}
 	}
@@ -572,7 +566,6 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let allCells = $(allRows.children());
 		allCells.removeClass('dirtyCell').removeClass('dirtyRowHeader');
 		this.dirtyCells = [];
-		this.dirtyRow = -1;
 	}
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
@@ -693,11 +686,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private isRowDirty(row: number): boolean {
-		return this.dirtyRow === row;
+		return this.currentCell.row === row && this.dirtyCells.length > 0;
 	}
 
 	private isCellDirty(row: number, column: number): boolean {
-		return this.dirtyRow === row && this.dirtyCells.indexOf(column) !== -1;
+		return this.currentCell.row === row && this.dirtyCells.indexOf(column) !== -1;
 	}
 
 	private isCellOnScreen(row: number, column: number): boolean {
