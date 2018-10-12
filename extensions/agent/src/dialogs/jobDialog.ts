@@ -237,11 +237,15 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model);
 			stepDialog.onSuccess((step) => {
+				if (!this.model.jobSteps) {
+					this.model.jobSteps = [];
+				}
 				this.model.jobSteps.push(step);
 				this.stepsTable.data = this.convertStepsToData(this.model.jobSteps);
 			});
 			this.newStepButton.onDidClick((e)=>{
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					stepDialog.jobName = this.nameTextBox.value;
 					stepDialog.openDialog();
 				} else {
 					this.dialog.message = { text: this.BlankJobNameErrorText };

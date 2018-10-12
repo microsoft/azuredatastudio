@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as sqlops from 'sqlops';
+import * as nls from 'vscode-nls';
+import * as vscode from 'vscode';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { JobData } from './jobData';
-import * as sqlops from 'sqlops';
-import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,7 +19,7 @@ export class JobStepData implements IAgentDialogData {
 	private static readonly CreateStepErrorMessage_JobNameIsEmpty = localize('stepData.jobNameRequired', 'Job name must be provided');
 	private static readonly CreateStepErrorMessage_StepNameIsEmpty = localize('stepData.stepNameRequired', 'Step name must be provided');
 
-	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
+	public dialogMode: AgentDialogMode;
 	public ownerUri: string;
 	public jobId: string;
 	public jobName: string;
@@ -29,8 +30,8 @@ export class JobStepData implements IAgentDialogData {
 	public id: number;
 	public failureAction: string;
 	public successAction: string;
-	public failStepId: number;
 	public successStepId: number;
+	public failStepId: number;
 	public command: string;
 	public commandExecutionSuccessCode: number;
 	public databaseName: string;
@@ -55,36 +56,13 @@ export class JobStepData implements IAgentDialogData {
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		agentService.createJobStep(this.ownerUri, {
-			jobId: this.jobId,
-			jobName: this.jobName,
-			script: this.script,
-			scriptName: this.scriptName,
-			stepName: this.stepName,
-			subSystem: this.subSystem,
-			id: this.id,
-			failureAction: this.failureAction,
-			successAction: this.successAction,
-			failStepId: this.failStepId,
-			successStepId: this.successStepId,
-			command: this.command,
-			commandExecutionSuccessCode: this.commandExecutionSuccessCode,
-			databaseName: this.databaseName,
-			databaseUserName: this.databaseUserName,
-			server: this.server,
-			outputFileName: this.outputFileName,
-			appendToLogFile: this.appendToLogFile,
-			appendToStepHist: this.appendToStepHist,
-			writeLogToTable: this.writeLogToTable,
-			appendLogToTable: this.appendLogToTable,
-			retryAttempts: this.retryAttempts,
-			retryInterval: this.retryInterval,
-			proxyName: this.proxyName
-		}).then(result => {
-			if (result && result.success) {
-				console.info(result);
-			}
-		});
+		let result = this.dialogMode === AgentDialogMode.CREATE ?
+			await agentService.createJobStep(this.ownerUri, JobStepData.convertToAgentJobStepInfo(this)) :
+			await agentService.updateJobStep(this.ownerUri, this.stepName, JobStepData.convertToAgentJobStepInfo(this));
+		if (!result || !result.success) {
+			vscode.window.showErrorMessage(
+				localize('jobStepData.saveErrorMessage', "Step update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		}
 	}
 
 	public validate(): { valid: boolean, errorMessages: string[] } {
@@ -131,6 +109,38 @@ export class JobStepData implements IAgentDialogData {
 		stepData.retryAttempts = jobStepInfo.retryAttempts,
 		stepData.retryInterval = jobStepInfo.retryInterval,
 		stepData.proxyName = jobStepInfo.proxyName;
+		stepData.dialogMode = AgentDialogMode.EDIT;
 		return stepData;
 	}
+
+	public static convertToAgentJobStepInfo(jobStepData: JobStepData): sqlops.AgentJobStepInfo {
+		let result: sqlops.AgentJobStepInfo = {
+			jobId: jobStepData.jobId,
+			jobName: jobStepData.jobName,
+			script: jobStepData.script,
+			scriptName: jobStepData.scriptName,
+			stepName: jobStepData.stepName,
+			subSystem: jobStepData.subSystem,
+			id: jobStepData.id,
+			failureAction: jobStepData.failureAction,
+			successAction: jobStepData.successAction,
+			failStepId: jobStepData.failStepId,
+			successStepId: jobStepData.successStepId,
+			command: jobStepData.command,
+			commandExecutionSuccessCode: jobStepData.commandExecutionSuccessCode,
+			databaseName: jobStepData.databaseName,
+			databaseUserName: jobStepData.databaseUserName,
+			server: jobStepData.server,
+			outputFileName: jobStepData.outputFileName,
+			appendToLogFile: jobStepData.appendToLogFile,
+			appendToStepHist: jobStepData.appendToStepHist,
+			writeLogToTable: jobStepData.writeLogToTable,
+			appendLogToTable: jobStepData.appendLogToTable,
+			retryAttempts: jobStepData.retryAttempts,
+			retryInterval: jobStepData.retryInterval,
+			proxyName: jobStepData.proxyName
+		};
+		return result;
+	}
+
 }

@@ -10,6 +10,7 @@ import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
 import { JobData } from '../data/jobData';
 import { AgentDialog } from './agentDialog';
+import { AgentDialogMode } from '../interfaces';
 const path = require('path');
 
 const localize = nls.loadMessageBundle();
@@ -107,15 +108,16 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
 	private jobModel: JobData;
-	private jobName: string;
+	public jobName: string;
 	private server: string;
 	private stepId: number;
+	private isEdit: boolean;
 
 	constructor(
 		ownerUri: string,
 		server: string,
 		jobModel: JobData,
-		jobStepInfo?: sqlops.AgentJobStepInfo
+		jobStepInfo?: sqlops.AgentJobStepInfo,
 	) {
 		super(ownerUri,
 			jobStepInfo ?  JobStepData.convertToJobStepData(jobStepInfo, jobModel) : new JobStepData(ownerUri, jobModel),
@@ -123,8 +125,10 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.stepId = jobStepInfo ?
 						jobStepInfo.id : jobModel.jobSteps ?
 						jobModel.jobSteps.length + 1 : 1;
+		this.isEdit = jobStepInfo ? true : false;
+		this.model.dialogMode = this.isEdit ? AgentDialogMode.EDIT : AgentDialogMode.CREATE;
 		this.jobModel = jobModel;
-		this.jobName = this.jobModel.name;
+		this.jobName = this.jobName ?  this.jobName : this.jobModel.name;
 		this.server = server;
 	}
 
@@ -262,10 +266,12 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			await view.initializeModel(formWrapper);
 
 			// Load values for edit scenario
-			this.nameTextBox.value = this.model.stepName;
-			this.typeDropdown.value = this.model.subSystem;
-			this.databaseDropdown.value = this.model.databaseName;
-			this.commandTextBox.value = this.model.command;
+			if (this.isEdit) {
+				this.nameTextBox.value = this.model.stepName;
+				this.typeDropdown.value = this.model.subSystem;
+				this.databaseDropdown.value = this.model.databaseName;
+				this.commandTextBox.value = this.model.command;
+			}
 		});
 	}
 
@@ -340,15 +346,17 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			formWrapper.loading = false;
 			await view.initializeModel(formWrapper);
 
-			this.successActionDropdown.value = this.model.successAction;
-			this.retryAttemptsBox.value = this.model.retryAttempts.toString();
-			this.retryIntervalBox.value = this.model.retryInterval.toString();
-			this.failureActionDropdown.value = this.model.failureAction;
-			this.outputFileNameBox.value = this.model.outputFileName;
-			this.appendToExistingFileCheckbox.checked = this.model.appendToLogFile;
-			this.logToTableCheckbox.checked = this.model.appendLogToTable;
-			this.logStepOutputHistoryCheckbox.checked = this.model.appendToStepHist;
-			this.userInputBox.value = this.model.databaseUserName;
+			if (this.isEdit) {
+				this.successActionDropdown.value = this.model.successAction;
+				this.retryAttemptsBox.value = this.model.retryAttempts.toString();
+				this.retryIntervalBox.value = this.model.retryInterval.toString();
+				this.failureActionDropdown.value = this.model.failureAction;
+				this.outputFileNameBox.value = this.model.outputFileName;
+				this.appendToExistingFileCheckbox.checked = this.model.appendToLogFile;
+				this.logToTableCheckbox.checked = this.model.appendLogToTable;
+				this.logStepOutputHistoryCheckbox.checked = this.model.appendToStepHist;
+				this.userInputBox.value = this.model.databaseUserName;
+			}
 		});
 	}
 
