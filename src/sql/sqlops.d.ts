@@ -692,7 +692,8 @@ declare module 'sqlops' {
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
 		registerOnBatchStart(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
 		registerOnBatchComplete(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
-		registerOnResultSetComplete(handler: (resultSetInfo: QueryExecuteResultSetCompleteNotificationParams) => any): void;
+		registerOnResultSetAvailable(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
+		registerOnResultSetUpdate(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
 		registerOnMessage(handler: (message: QueryExecuteMessageParams) => any): void;
 
 		// Edit Data Requests
@@ -835,7 +836,7 @@ declare module 'sqlops' {
 	}
 
 
-	export interface QueryExecuteResultSetCompleteNotificationParams {
+	export interface QueryExecuteResultSetNotificationParams {
 		resultSetSummary: ResultSetSummary;
 		ownerUri: string;
 	}
