@@ -341,9 +341,9 @@ export class FileConfigPage extends ImportPage {
 		let queryProvider = sqlops.dataprotocol.getProvider<sqlops.QueryProvider>(this.model.server.providerName, sqlops.DataProviderType.QueryProvider);
 
 		let query = '';
-		if (this.databaseDropdown.value != undefined)
+		if (this.databaseDropdown.value !== undefined)
 		{
-			query = `SELECT name FROM [${this.databaseDropdown.value}].sys.schemas`;
+			query = `SELECT name FROM [${this.databaseDropdown.value.name}].sys.schemas`;
 		}
 		else {
 			query = `SELECT name FROM sys.schemas`;
