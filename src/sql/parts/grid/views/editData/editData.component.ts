@@ -73,6 +73,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private removingNewRow: boolean;
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
+	private dirtyRow: number = -1;
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
 
 	// Edit Data functions
@@ -192,9 +193,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.onBeforeAppendCell = (row: number, column: number): string => {
 			let cellClass = undefined;
 			if (this.isRowDirty(row) && column === 0) {
-				cellClass = ' dirtyCell ';
-			} else if (this.isCellDirty(row, column)) {
 				cellClass = ' dirtyRowHeader ';
+			} else if (this.isCellDirty(row, column)) {
+				cellClass = ' dirtyCell ';
 			}
 
 			return cellClass;
@@ -279,8 +280,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
 				// Cell update was successful, update the flags
-				self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
-				self.setRowDirtyState(row, result.isRowDirty);
+				self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
+				self.setRowDirtyState(self.currentCell.row, result.isRowDirty);
 				return Promise.resolve();
 			},
 			(error) => {
@@ -394,6 +395,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.removingNewRow = false;
 		this.newRowVisible = false;
 		this.dirtyCells = [];
+		this.dirtyRow = -1;
 	}
 
 	/**
@@ -474,10 +476,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				//
 				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
+				this.dirtyRow = -1;
+				let row = this.currentCell.row;
 				this.resetCurrentCell();
 
-				if (this.currentCell.row !== undefined) {
-					this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
+				if (row !== undefined) {
+					this.dataSet.dataRows.resetWindowsAroundIndex(row);
 				}
 			}
 		}
@@ -538,8 +542,12 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			if (this.dirtyCells.indexOf(column) === -1) {
 				this.dirtyCells.push(column);
 			}
+			this.dirtyRow = row;
 		} else {
 			$(grid.getCellNode(row, column)).removeClass('dirtyCell');
+			if (this.dirtyCells.indexOf(column) !== -1) {
+				this.dirtyCells.splice(this.dirtyCells.indexOf(column), 1);
+			}
 		}
 	}
 
@@ -548,9 +556,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let slick: any = this.slickgrids.toArray()[0];
 		let grid = slick._grid;
 		if (dirtyState) {
+			this.dirtyRow = row;
 			// Change row header color
 			$(grid.getCellNode(row, 0)).addClass('dirtyRowHeader');
 		} else {
+			this.dirtyRow = -1;
 			$(grid.getCellNode(row, 0)).removeClass('dirtyRowHeader');
 		}
 	}
@@ -562,6 +572,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let allCells = $(allRows.children());
 		allCells.removeClass('dirtyCell').removeClass('dirtyRowHeader');
 		this.dirtyCells = [];
+		this.dirtyRow = -1;
 	}
 
 	// Adds an extra row to the end of slickgrid (just for rendering purposes)
@@ -682,11 +693,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	}
 
 	private isRowDirty(row: number): boolean {
-		return this.currentCell.row === row && this.dirtyCells.length > 0;
+		return this.dirtyRow === row;
 	}
 
 	private isCellDirty(row: number, column: number): boolean {
-		return this.currentCell.row === row && this.dirtyCells.indexOf(column) !== -1;
+		return this.dirtyRow === row && this.dirtyCells.indexOf(column) !== -1;
 	}
 
 	private isCellOnScreen(row: number, column: number): boolean {
