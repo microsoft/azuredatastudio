@@ -2,24 +2,23 @@
 *  Copyright (c) Microsoft Corporation. All rights reserved.
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
-
-import 'vs/css!./notebook';
+import 'vs/css!./code';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
 
-export const NOTEBOOK_SELECTOR: string = 'notebook-component';
+export const CODE_SELECTOR: string = 'code-component';
 
 @Component({
-	selector: NOTEBOOK_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
+	selector: CODE_SELECTOR,
+	templateUrl: decodeURI(require.toUrl('./code.component.html'))
 })
-export class NotebookComponent extends AngularDisposable implements OnInit {
+export class CodeComponent extends AngularDisposable implements OnInit {
 	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -36,6 +35,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 
 	private updateTheme(theme: IColorTheme): void {
 		let headerEl = <HTMLElement>this.header.nativeElement;
-		headerEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		headerEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 }
