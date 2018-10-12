@@ -38,6 +38,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	private _renderedContent: string;
 	private _languageMode: string;
 	private _uri: string;
+	private _isAutoResizable: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -77,6 +78,9 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.content = this._editorModel.getValue();
+			if (this._isAutoResizable) {
+				this._editor.setHeightToScrollHeight();
+			}
 
 			// Notify via an event so that extensions can detect and propagate changes
 			this.fireEvent({
@@ -104,6 +108,9 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		let width: number = this.convertSizeToNumber(this.width);
 
 		let height: number = this.convertSizeToNumber(this.height);
+		if (this._isAutoResizable) {
+			height = this._editor.scrollHeight;
+		}
 		this._editor.layout(new DOM.Dimension(
 			width && width > 0 ? width : DOM.getContentWidth(this._el.nativeElement),
 			height && height > 0 ? height : DOM.getContentHeight(this._el.nativeElement)));
@@ -144,6 +151,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		}
 		// Intentionally always updating editorUri as it's wiped out by parent setProperties call.
 		this.editorUri = this._uri;
+		this._isAutoResizable = this.isAutoResizable;
 	}
 
 	// CSS-bound properties
@@ -161,6 +169,14 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	public set languageMode(newValue: string) {
 		this.setPropertyFromUI<sqlops.EditorProperties, string>((properties, languageMode) => { properties.languageMode = languageMode; }, newValue);
+	}
+
+	public get isAutoResizable(): boolean {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, boolean>((props) => props.isAutoResizable, false);
+	}
+
+	public set isAutoResizable(newValue: boolean) {
+		this.setPropertyFromUI<sqlops.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
 	}
 
 	public get editorUri(): string {
