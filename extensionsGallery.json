@@ -641,14 +641,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "9/29/2018",
+							"version": "0.3.0",
+							"lastUpdated": "10/15/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.2.0"
+									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.3.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
