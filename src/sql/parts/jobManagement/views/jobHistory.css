@@ -177,7 +177,7 @@ table.step-list tr.step-row td {
 }
 
 .history-details {
-	height: 100%;
+	flex: 1 1 auto;
 	display: flex;
 }
 
@@ -246,8 +246,18 @@ table.step-list tr.step-row td {
 	min-height: 40px !important;
 }
 
-jobhistory-component .jobhistory-heading-container {
-	display: -webkit-box;
+.step-table {
+	flex: 1 1 auto;
+}
+
+.prev-run-list-container {
+	display: flex;
+	flex-direction: column;
+}
+
+jobhistory-component {
+	display: flex;
+	flex-direction: column;
 }
 
 jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
