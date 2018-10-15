@@ -45,10 +45,12 @@ export class JobStepData implements IAgentDialogData {
 	public retryAttempts: number;
 	public retryInterval: number;
 	public proxyName: string;
+	private jobModel: JobData;
 
 	constructor(ownerUri:string, jobModel?: JobData) {
 		this.ownerUri = ownerUri;
 		this.jobName = jobModel.name;
+		this.jobModel = jobModel;
 	}
 
 	public async initialize() {
@@ -56,9 +58,20 @@ export class JobStepData implements IAgentDialogData {
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		let result = this.dialogMode === AgentDialogMode.CREATE ?
-			await agentService.createJobStep(this.ownerUri, JobStepData.convertToAgentJobStepInfo(this)) :
-			await agentService.updateJobStep(this.ownerUri, this.stepName, JobStepData.convertToAgentJobStepInfo(this));
+		let result: any;
+		if (this.dialogMode === AgentDialogMode.CREATE) {
+			if (this.jobModel && this.jobModel.dialogMode === AgentDialogMode.CREATE) {
+				// create job -> create step
+				Promise.resolve(this);
+				return;
+			} else {
+				// edit job -> create step
+				result = await agentService.createJobStep(this.ownerUri, JobStepData.convertToAgentJobStepInfo(this));
+			}
+		} else if (this.jobModel && this.jobModel.dialogMode === AgentDialogMode.EDIT) {
+			// edit job -> edit step
+			result = await agentService.updateJobStep(this.ownerUri, this.stepName, JobStepData.convertToAgentJobStepInfo(this));
+		}
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('jobStepData.saveErrorMessage', "Step update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

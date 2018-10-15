@@ -150,7 +150,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId, 'job name').then((result) => {
+		let jobName = this._agentViewComponent.agentJobInfo.name;
+		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId, jobName).then((result) => {
 			if (result && result.histories) {
 				if (result.histories.length > 0) {
 					self._showPreviousRuns = true;
