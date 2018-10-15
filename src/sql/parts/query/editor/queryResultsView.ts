@@ -203,12 +203,12 @@ export class QueryResultsView {
 			if (!this._panelView.contains(this.qpTab)) {
 				this._panelView.pushTab(this.qpTab);
 			}
-		} else if (queryRunner.isQueryPlan) {
-			let disp = queryRunner.onResultSet(() => {
-				this.showPlan(queryRunner.planXml);
-				disp.dispose();
-			});
 		}
+		this.runnerDisposables.push(queryRunner.onResultSet(() => {
+			if (queryRunner.isQueryPlan) {
+				this.showPlan(queryRunner.planXml);
+			}
+		}));
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);
 		}
