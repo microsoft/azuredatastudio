@@ -16,6 +16,8 @@ export abstract class CellView extends AngularDisposable implements OnDestroy {
 }
 
 export interface ICellModel {
+	id: string;
+	language: string;
 	source: string;
 	cellType: CellType;
 }

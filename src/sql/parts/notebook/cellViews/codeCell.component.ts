@@ -4,13 +4,14 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./codeCell';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CellView, ICellModel } from 'sql/parts/notebook/cellViews/interfaces';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
+
 
 export const CODE_SELECTOR: string = 'code-cell-component';
 
@@ -19,7 +20,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 	templateUrl: decodeURI(require.toUrl('./codeCell.component.html'))
 })
 export class CodeCellComponent extends CellView implements OnInit {
-	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
+	@Input() cellModel: ICellModel;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
