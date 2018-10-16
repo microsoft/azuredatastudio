@@ -30,9 +30,10 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { AlertsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
-export const ROW_HEIGHT: number = 30;
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
@@ -59,6 +60,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	private dataView: any;
 	private _isCloud: boolean;
+	private _alertsCacheObject: AlertsCacheObject;
 
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
@@ -78,6 +80,15 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		@Inject(IDashboardService) _dashboardService: IDashboardService) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		let alertsCacheObjectMap = this._jobManagementService.alertsCacheObjectMap;
+		let alertsCache = alertsCacheObjectMap[this._serverName];
+		if (alertsCache) {
+			this._alertsCacheObject = alertsCache;
+		} else {
+			this._alertsCacheObject = new AlertsCacheObject();
+			this._alertsCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._alertsCacheObject);
+		}
 	}
 
 	ngOnInit(){
@@ -92,44 +103,62 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 			height = 0;
 		}
 
-		this._table.layout(new dom.Dimension(
-			dom.getContentWidth(this._gridEl.nativeElement),
-			height));
+		if (this._table) {
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._gridEl.nativeElement),
+				height));
+		}
 	}
 
 	onFirstVisible() {
 		let self = this;
+		let cached: boolean = false;
+		if (this._alertsCacheObject.serverName === this._serverName) {
+			if (this._alertsCacheObject.alerts && this._alertsCacheObject.alerts.length > 0) {
+				cached = true;
+				this.alerts = this._alertsCacheObject.alerts;
+			}
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		this.dataView = new Slick.Data.DataView();
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
 
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
 		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
 		this._table.grid.setData(this.dataView, true);
-
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getAlerts(ownerUri).then((result) => {
-			if (result && result.alerts) {
-				self.alerts = result.alerts;
-				self.onAlertsAvailable(result.alerts);
-			} else {
-				// TODO: handle error
-			}
-
+		// check for cached state
+		if (cached && this._agentViewComponent.refresh !== true) {
+			self.onAlertsAvailable(this.alerts);
 			this._showProgressWheel = false;
 			if (this.isVisible) {
 				this._cd.detectChanges();
 			}
-		});
+		} else {
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			this._jobManagementService.getAlerts(ownerUri).then((result) => {
+				if (result && result.alerts) {
+					self.alerts = result.alerts;
+					self._alertsCacheObject.alerts = result.alerts;
+					self.onAlertsAvailable(result.alerts);
+				} else {
+					// TODO: handle error
+				}
+				this._showProgressWheel = false;
+				if (this.isVisible) {
+					this._cd.detectChanges();
+				}
+			});
+		}
 	}
 
 	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
@@ -147,6 +176,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		this.dataView.beginUpdate();
 		this.dataView.setItems(items);
 		this.dataView.endUpdate();
+		this._alertsCacheObject.dataview = this.dataView;
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 	}

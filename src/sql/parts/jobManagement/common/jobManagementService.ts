@@ -20,6 +20,7 @@ export class JobManagementService implements IJobManagementService {
 
 	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);
 	private _jobCacheObject : {[server: string]: JobCacheObject; } = {};
+	private _alertsCacheObject: {[server: string]: AlertsCacheObject; } = {};
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
@@ -130,13 +131,21 @@ export class JobManagementService implements IJobManagementService {
 		return this._jobCacheObject;
 	}
 
-	public addToCache(server: string, cacheObject: JobCacheObject) {
-		this._jobCacheObject[server] = cacheObject;
+	public get alertsCacheObjectMap(): {[server: string]: AlertsCacheObject; } {
+		return this._alertsCacheObject;
+	}
+
+	public addToCache(server: string, cacheObject: JobCacheObject | AlertsCacheObject) {
+		if (cacheObject instanceof JobCacheObject) {
+			this._jobCacheObject[server] = cacheObject;
+		} else if (cacheObject instanceof AlertsCacheObject) {
+			this._alertsCacheObject[server] = cacheObject;
+		}
 	}
 }
 
 /**
- * Server level caching of jobs/job histories
+ * Server level caching of jobs/job histories and their views
  */
 export class JobCacheObject {
 	_serviceBrand: any;
@@ -231,4 +240,40 @@ export class JobCacheObject {
 		public setJobSchedules(jobID: string, value: sqlops.AgentJobScheduleInfo[]) {
 			this._jobSchedules[jobID] = value;
 		}
+}
+
+/**
+ * Server level caching of job alerts and the alerts view
+ */
+export class AlertsCacheObject {
+	_serviceBrand: any;
+	private _alerts: sqlops.AgentAlertInfo[];
+	private _dataView: Slick.Data.DataView<any>;
+	private _serverName: string;
+
+	/** Getters */
+	public get alerts(): sqlops.AgentAlertInfo[] {
+		return this._alerts;
+	}
+
+	public get dataview(): Slick.Data.DataView<any> {
+		return this._dataView;
+	}
+
+	public get serverName(): string {
+		return this._serverName;
+	}
+
+	/** Setters */
+	public set alerts(value: sqlops.AgentAlertInfo[]) {
+		this._alerts = value;
+	}
+
+	public set dataview(value: Slick.Data.DataView<any>) {
+		this._dataView = value;
+	}
+
+	public set serverName(value: string) {
+		this._serverName = value;
+	}
 }
