@@ -23,6 +23,8 @@ import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { CodeComponent } from 'sql/parts/notebook/cellViews/code.component';
+import { CodeCellComponent } from 'sql/parts/notebook/cellViews/codeCell.component';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	@NgModule({
@@ -31,6 +33,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			SelectBox,
 			EditableDropDown,
 			InputBox,
+			CodeComponent,
+			CodeCellComponent,
 			NotebookComponent,
 			ComponentHostDirective
 		],
