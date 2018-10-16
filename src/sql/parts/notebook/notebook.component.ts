@@ -21,7 +21,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
 })
 export class NotebookComponent extends AngularDisposable implements OnInit {
-	@ViewChild('header', { read: ElementRef }) private header: ElementRef;
+	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	protected cells: Array<ICellModel> = [];
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -46,7 +46,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let headerEl = <HTMLElement>this.header.nativeElement;
-		headerEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		let toolbarEl = <HTMLElement>this.toolbar.nativeElement;
+		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 }
