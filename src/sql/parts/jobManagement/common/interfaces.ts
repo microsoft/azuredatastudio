@@ -22,7 +22,7 @@ export interface IJobManagementService {
 	fireOnDidChange(): void;
 
 	getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult>;
-	getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult>;
+	getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult>;
 	deleteJob(connectionUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus>;
 
 	deleteJobStep(connectionUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus>;
