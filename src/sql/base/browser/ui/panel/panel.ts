@@ -136,7 +136,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.tabList.appendChild(tabHeaderElement);
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
-		tab.dispose = () => {};
+		tab.dispose = () => { };
 		this._register(tab);
 	}
 
