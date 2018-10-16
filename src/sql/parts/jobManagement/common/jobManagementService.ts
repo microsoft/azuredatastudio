@@ -43,9 +43,9 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
-	public getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
+	public getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> {
 		return this._runAction(connectionUri, (runner) => {
-			return runner.getJobHistory(connectionUri, jobID);
+			return runner.getJobHistory(connectionUri, jobID, jobName);
 		});
 	}
 
@@ -142,6 +142,9 @@ export class JobCacheObject {
 	_serviceBrand: any;
 	private _jobs: sqlops.AgentJobInfo[] = [];
 	private _jobHistories: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; } = {};
+	private _jobSteps: { [jobID: string]: sqlops.AgentJobStepInfo[]; } = {};
+	private _jobAlerts: { [jobID: string]: sqlops.AgentAlertInfo[]; } = {};
+	private _jobSchedules: { [jobID: string]: sqlops.AgentJobScheduleInfo[]; } = {};
 	private _runCharts: { [jobID: string]: string[]; } = {};
 	private _prevJobID: string;
 	private _serverName: string;
@@ -176,6 +179,18 @@ export class JobCacheObject {
 			return this._runCharts[jobID];
 		}
 
+		public getJobSteps(jobID: string): sqlops.AgentJobStepInfo[] {
+			return this._jobSteps[jobID];
+		}
+
+		public getJobAlerts(jobID: string): sqlops.AgentAlertInfo[] {
+			return this._jobAlerts[jobID];
+		}
+
+		public getJobSchedules(jobID: string): sqlops.AgentJobScheduleInfo[] {
+			return this._jobSchedules[jobID];
+		}
+
 		/* Setters */
 		public set jobs(value: sqlops.AgentJobInfo[]) {
 			this._jobs = value;
@@ -203,5 +218,17 @@ export class JobCacheObject {
 
 		public set dataView(value: Slick.Data.DataView<any>) {
 			this._dataView = value;
+		}
+
+		public setJobSteps(jobID: string, value: sqlops.AgentJobStepInfo[]) {
+			this._jobSteps[jobID] = value;
+		}
+
+		public setJobAlerts(jobID: string, value: sqlops.AgentAlertInfo[]) {
+			this._jobAlerts[jobID] = value;
+		}
+
+		public setJobSchedules(jobID: string, value: sqlops.AgentJobScheduleInfo[]) {
+			this._jobSchedules[jobID] = value;
 		}
 }

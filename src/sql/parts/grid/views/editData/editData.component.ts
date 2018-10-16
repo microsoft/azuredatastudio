@@ -192,9 +192,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		this.onBeforeAppendCell = (row: number, column: number): string => {
 			let cellClass = undefined;
 			if (this.isRowDirty(row) && column === 0) {
-				cellClass = ' dirtyCell ';
-			} else if (this.isCellDirty(row, column)) {
 				cellClass = ' dirtyRowHeader ';
+			} else if (this.isCellDirty(row, column)) {
+				cellClass = ' dirtyCell ';
 			}
 
 			return cellClass;
@@ -279,8 +279,8 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 		let cellSelectTasks: Promise<void> = this.submitCurrentCellChange(
 			(result: EditUpdateCellResult) => {
 				// Cell update was successful, update the flags
-				self.setCellDirtyState(row, self.currentCell.column, result.cell.isDirty);
-				self.setRowDirtyState(row, result.isRowDirty);
+				self.setCellDirtyState(self.currentCell.row, self.currentCell.column, result.cell.isDirty);
+				self.setRowDirtyState(self.currentCell.row, result.isRowDirty);
 				return Promise.resolve();
 			},
 			(error) => {
@@ -474,10 +474,11 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 				//
 				this.currentEditCellValue = undefined;
 				this.dirtyCells = [];
+				let row = this.currentCell.row;
 				this.resetCurrentCell();
 
-				if (this.currentCell.row !== undefined) {
-					this.dataSet.dataRows.resetWindowsAroundIndex(this.currentCell.row);
+				if (row !== undefined) {
+					this.dataSet.dataRows.resetWindowsAroundIndex(row);
 				}
 			}
 		}
@@ -540,6 +541,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			}
 		} else {
 			$(grid.getCellNode(row, column)).removeClass('dirtyCell');
+			if (this.dirtyCells.indexOf(column) !== -1) {
+				this.dirtyCells.splice(this.dirtyCells.indexOf(column), 1);
+			}
 		}
 	}
 

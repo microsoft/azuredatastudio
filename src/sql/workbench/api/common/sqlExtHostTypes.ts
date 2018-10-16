@@ -95,6 +95,16 @@ export enum JobCompletionActionCondition {
 	Always = 3
 }
 
+export enum JobExecutionStatus {
+	Executing = 1,
+	WaitingForWorkerThread = 2,
+	BetweenRetries = 3,
+	Idle = 4,
+	Suspended = 5,
+	WaitingForStepToFinish = 6,
+	PerformingCompletionAction = 7
+}
+
 export enum AlertType {
 	sqlServerEvent = 1,
 	sqlServerPerformanceCondition = 2,
