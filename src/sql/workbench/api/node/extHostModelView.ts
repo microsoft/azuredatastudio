@@ -913,6 +913,14 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 		this.setProperty('isAutoResizable', v);
 	}
 
+	public get minimumHeight(): number {
+		return this.properties['minimumHeight'];
+	}
+
+	public set minimumHeight(v: number) {
+		this.setProperty('minimumHeight', v);
+	}
+
 	public get onContentChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;

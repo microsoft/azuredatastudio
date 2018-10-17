@@ -33,8 +33,8 @@ export class PickScheduleDialog {
 	private _onSuccess: vscode.EventEmitter<PickScheduleData> = new vscode.EventEmitter<PickScheduleData>();
 	public readonly onSuccess: vscode.Event<PickScheduleData> = this._onSuccess.event;
 
-	constructor(ownerUri: string) {
-		this.model = new PickScheduleData(ownerUri);
+	constructor(ownerUri: string, jobName: string) {
+		this.model = new PickScheduleData(ownerUri, jobName);
 	}
 
 	public async showDialog() {

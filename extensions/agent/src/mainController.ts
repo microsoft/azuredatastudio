@@ -41,12 +41,12 @@ export class MainController {
             let dialog = new JobDialog(ownerUri, jobInfo);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobData: JobData) => {
-			let dialog = new JobStepDialog(ownerUri, server, jobData);
+        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobData: JobData, jobStepInfo: sqlops.AgentJobStepInfo) => {
+			let dialog = new JobStepDialog(ownerUri, server, jobData, jobStepInfo);
 			dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string) => {
-            let dialog = new PickScheduleDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string, jobName: string) => {
+            let dialog = new PickScheduleDialog(ownerUri, jobName);
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, alertInfo: sqlops.AgentAlertInfo, jobs: string[]) => {
