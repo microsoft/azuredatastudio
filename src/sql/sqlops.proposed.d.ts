@@ -595,6 +595,10 @@ declare module 'sqlops' {
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode?: string;
+		/**
+		 * Minimum height for editor component
+		 */
+		minimumHeight?: number;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
@@ -725,7 +729,7 @@ declare module 'sqlops' {
 		/**
 		 * Minimum height for editor component
 		 */
-		minimumEditorSize: number;
+		minimumHeight: number;
 
 	}
 
