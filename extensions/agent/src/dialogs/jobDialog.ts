@@ -11,6 +11,7 @@ import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
+import { JobStepData } from '../data/jobStepData';
 
 const localize = nls.loadMessageBundle();
 
@@ -109,11 +110,17 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private alertsTable: sqlops.TableComponent;
 	private newAlertButton: sqlops.ButtonComponent;
 
+	// Job objects
+	private steps: sqlops.AgentJobStepInfo[] = [];
+	private schedules: sqlops.AgentJobScheduleInfo[] = [];
+	private alerts: sqlops.AgentAlertInfo[] = [];
+
 	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
 		super(
 			ownerUri,
 			new JobData(ownerUri, jobInfo),
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
+		this.steps = this.model.jobSteps;
 	}
 
 	protected async initializeDialog() {
@@ -200,8 +207,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 				.withProperties({
 					value: 'Feature Preview'
 				}).component();
-			let steps = this.model.jobSteps ? this.model.jobSteps : [];
-			let data = this.convertStepsToData(steps);
+			let data = this.steps ? this.convertStepsToData(this.steps) : [];
 			this.stepsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -235,13 +241,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 				width: 80
 			}).component();
 
-			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model);
+			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
 			stepDialog.onSuccess((step) => {
-				if (!this.model.jobSteps) {
-					this.model.jobSteps = [];
-				}
-				this.model.jobSteps.push(step);
-				this.stepsTable.data = this.convertStepsToData(this.model.jobSteps);
+				let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
+				this.steps.push(stepInfo);
+				this.stepsTable.data = this.convertStepsToData(this.steps);
 			});
 			this.newStepButton.onDidClick((e)=>{
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
@@ -275,7 +279,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 					this.deleteStepButton.enabled = true;
 					this.editStepButton.enabled = true;
 					this.editStepButton.onDidClick(() => {
-						let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData);
+						let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData, true);
 						stepDialog.openDialog();
 					});
 
@@ -564,5 +568,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
 		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
 		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
+		if (!this.model.jobSteps) {
+			this.model.jobSteps = [];
+		}
+		this.model.jobSteps = this.steps;
 	}
 }

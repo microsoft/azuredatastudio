@@ -112,10 +112,11 @@ export class JobData implements IAgentDialogData {
 
 	public async save() {
 		let jobInfo: sqlops.AgentJobInfo = this.toAgentJobInfo();
+		console.log(jobInfo);
 		let result = this.dialogMode === AgentDialogMode.CREATE
 			? await this._agentService.createJob(this.ownerUri,  jobInfo)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
-
+		console.log(result);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
