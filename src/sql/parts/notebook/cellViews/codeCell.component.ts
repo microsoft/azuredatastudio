@@ -42,11 +42,11 @@ export class CodeCellComponent extends CellView implements OnInit {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let element = <HTMLElement> this._el.nativeElement;
+		let element = <HTMLElement>this._el.nativeElement;
 		element.style.borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 		element.setAttribute('tabindex', '0');
 
-		let outputElement = <HTMLElement> this.output.nativeElement;
+		let outputElement = <HTMLElement>this.output.nativeElement;
 		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 }
