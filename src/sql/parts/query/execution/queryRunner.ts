@@ -184,6 +184,7 @@ export default class QueryRunner {
 		this._echoedResultSet.clear();
 		this._debouncedMessage.clear();
 		this._debouncedResultSet.clear();
+		this._planXml = new Deferred<string>();
 		let ownerUri = this.uri;
 		this._batchSets = [];
 		this._hasCompleted = false;
