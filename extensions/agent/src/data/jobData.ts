@@ -136,8 +136,13 @@ export class JobData implements IAgentDialogData {
 	}
 
 	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
-		let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
-		if (!existingSchedule) {
+		if (this.jobSchedules) {
+			let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
+			if (!existingSchedule) {
+				this.jobSchedules.push(schedule);
+			}
+		} else {
+			this.jobSchedules = [];
 			this.jobSchedules.push(schedule);
 		}
 	}
