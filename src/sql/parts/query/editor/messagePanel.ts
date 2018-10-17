@@ -154,6 +154,7 @@ export class MessagePanel extends ViewletPanel {
 			this.countMessageLines(message);
 			this.model.messages.push(message);
 		}
+		this.maximumBodySize = this.totalLines * 22;
 		if (hasError) {
 			this.setExpanded(true);
 		}
@@ -177,7 +178,6 @@ export class MessagePanel extends ViewletPanel {
 		let lines = resultMessage.message.split('\n').length;
 		this.messageLineCountMap.set(resultMessage, lines);
 		this.totalLines += lines;
-		this.maximumBodySize = this.totalLines * 22;
 	}
 
 	private reset() {
