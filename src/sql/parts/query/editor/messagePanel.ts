@@ -80,7 +80,6 @@ export class MessagePanel extends ViewletPanel {
 	private model = new Model();
 	private controller: MessageController;
 	private container = $('div message-tree').getHTMLElement();
-	private totalLines = 0;
 
 	private queryRunnerDisposables: IDisposable[] = [];
 	private _state: MessagePanelState;
@@ -145,16 +144,17 @@ export class MessagePanel extends ViewletPanel {
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
 		let hasError = false;
+		let lines: number;
 		if (isArray(message)) {
 			hasError = message.find(e => e.isError) ? true : false;
-			message.forEach(resultMessage => this.countMessageLines(resultMessage));
+			lines = message.reduce((currentTotal, resultMessage) => currentTotal + this.countMessageLines(resultMessage), 0);
 			this.model.messages.push(...message);
 		} else {
 			hasError = message.isError;
-			this.countMessageLines(message);
+			lines = this.countMessageLines(message);
 			this.model.messages.push(message);
 		}
-		this.maximumBodySize = this.totalLines * 22;
+		this.maximumBodySize += lines * 22;
 		if (hasError) {
 			this.setExpanded(true);
 		}
@@ -174,10 +174,10 @@ export class MessagePanel extends ViewletPanel {
 		}
 	}
 
-	private countMessageLines(resultMessage: IResultMessage): void {
+	private countMessageLines(resultMessage: IResultMessage): number {
 		let lines = resultMessage.message.split('\n').length;
 		this.messageLineCountMap.set(resultMessage, lines);
-		this.totalLines += lines;
+		return lines;
 	}
 
 	private reset() {
