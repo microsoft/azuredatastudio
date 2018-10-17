@@ -117,8 +117,8 @@ export class QueryTextEditor extends BaseTextEditor {
 			this._config = new Configuration(undefined, editorWidget.getDomNode());
 		}
 		let editorHeightUsingLines = this._config.editor.lineHeight * editorWidget.getModel().getLineCount();
-		let editorHeightUsingMin = Math.max(editorHeightUsingLines, this._minHeight);
-		this.setHeight(editorHeightUsingMin);
+		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		this.setHeight(editorHeightUsingMinHeight);
 	}
 
 	public setMinimumHeight(height: number) : void {
