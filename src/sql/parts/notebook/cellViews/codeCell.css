@@ -4,7 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 code-cell-component {
-	height: 100%;
-	width: 100%;
 	display: block;
+	margin: 10px 20px 10px;
+	border-width: 1px;
+    border-style: solid;
+}
+
+code-cell-component .notebook-output {
+	border-top-width: 1px;
+	border-top-style: solid;
 }
