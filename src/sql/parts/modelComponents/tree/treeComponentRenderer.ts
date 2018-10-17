@@ -71,6 +71,10 @@ export class TreeDataTemplate extends Disposable {
 		}
 	}
 
+	public set disableCheckbox(value: boolean) {
+		this._checkbox.disabled = !!value;
+	}
+
 	public get checkbox(): HTMLInputElement {
 		return this._checkbox;
 	}
@@ -155,6 +159,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		templateData.label.textContent = label;
 		templateData.root.title = label;
 		templateData.checkboxState = this.getCheckboxState(treeNode);
+		templateData.disableCheckbox = treeNode.checkboxDisabled;
 	}
 
 	private getCheckboxState(treeNode: ITreeComponentItem): TreeCheckboxState {
