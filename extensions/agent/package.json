@@ -26,12 +26,6 @@
     "outputChannels": [
       "sqlagent"
     ],
-    "commands": [
-      {
-        "command": "agent.openNewStepDialog",
-        "title": "agent.openNewStepDialog"
-      }
-    ],
     "dashboard.tabs": [
       {
         "id": "data-management-agent",
