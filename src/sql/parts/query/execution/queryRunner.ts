@@ -343,7 +343,11 @@ export default class QueryRunner {
 			}
 			// handle getting queryPlanxml if we need too
 			if (this.isQueryPlan) {
-				this.getQueryRows(0, 1, 0, 0).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				// check if this result has show plan, this needs work, it won't work for any other provider
+				let hasShowPlan =  !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+				if (hasShowPlan) {
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				}
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
