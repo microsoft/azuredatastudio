@@ -45,8 +45,8 @@ export class QueryPlanView implements IPanelView {
 	}
 
 	public layout(dimension: Dimension): void {
-		this.container.style.width = dimension.width.toString() + 'px';
-		this.container.style.height = dimension.height.toString() + 'px';
+		this.container.style.width = dimension.width + 'px';
+		this.container.style.height = dimension.height + 'px';
 	}
 
 	public showPlan(xml: string) {
