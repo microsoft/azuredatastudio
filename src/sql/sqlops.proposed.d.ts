@@ -722,6 +722,11 @@ declare module 'sqlops' {
 		 */
 		isAutoResizable: boolean;
 
+		/**
+		 * Minimum height for editor component
+		 */
+		minimumEditorSize: number;
+
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
