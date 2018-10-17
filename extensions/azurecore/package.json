@@ -10,7 +10,7 @@
 		"sqlops": "*"
 	},
 	"activationEvents": [
-		"onView:azureResourceExplorer"
+		"*"
 	],
 	"main": "./out/extension",
 	"contributes": {
@@ -25,9 +25,41 @@
 						"description": "%azure.resourceFilter.description%"
 					}
 				}
+			},
+			{
+				"type": "object",
+				"title": "Azure Account Configuration",
+				"properties": {
+					"accounts.azure.enablePublicCloud": {
+						"type": "boolean",
+						"default": true,
+						"description": "%config.enablePublicCloudDescription%"
+					}
+				}
+			}
+		],
+		"account-type": [
+			{
+				"id": "microsoft",
+				"icon": {
+					"light": "./out/account-provider/media/microsoft_account_light.svg",
+					"dark": "./out/account-provider/media/microsoft_account_dark.svg"
+				}
+			},
+			{
+				"id": "work_school",
+				"icon": {
+					"light": "./out/account-provider/media/work_school_account_light.svg",
+					"dark": "./out/account-provider/media/work_school_account_dark.svg"
+				}
 			}
 		],
 		"commands": [
+			{
+				"command": "accounts.clearTokenCache",
+				"title": "%accounts.clearTokenCache%",
+				"category": "Azure Accounts"
+			},
 			{
 				"command": "azureresource.refreshall",
 				"title": "%azureresource.refreshall%",
@@ -115,12 +147,14 @@
 		}
 	},
 	"dependencies": {
+		"request": "2.63.0",
 		"azure-arm-resource": "^7.0.0",
 		"azure-arm-sql": "^5.0.1",
 		"vscode-nls": "^4.0.0"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.5",
+		"@types/node": "^8.0.24",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
 		"typemoq": "^2.1.0"

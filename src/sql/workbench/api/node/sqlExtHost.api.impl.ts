@@ -422,6 +422,7 @@ export function createApiFactory(
 				WeekDays: sqlExtHostTypes.WeekDays,
 				NotifyMethods: sqlExtHostTypes.NotifyMethods,
 				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
+				JobExecutionStatus: sqlExtHostTypes.JobExecutionStatus,
 				AlertType: sqlExtHostTypes.AlertType,
 				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
 				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,

@@ -21,6 +21,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     error-ex: https://github.com/Qix-/node-error-ex
     escape-string-regexp: https://github.com/sindresorhus/escape-string-regexp
     fast-plist: https://github.com/Microsoft/node-fast-plist
+    find-remove: https://www.npmjs.com/package/find-remove
     fs-extra: https://github.com/jprichardson/node-fs-extra
     gc-signals: https://github.com/Microsoft/node-gc-signals
     getmac: https://github.com/bevry/getmac

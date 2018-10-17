@@ -13,6 +13,7 @@ import { OperatorDialog } from './dialogs/operatorDialog';
 import { ProxyDialog } from './dialogs/proxyDialog';
 import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
+import { JobData } from './data/jobData';
 
 const localize = nls.loadMessageBundle();
 
@@ -40,12 +41,12 @@ export class MainController {
             let dialog = new JobDialog(ownerUri, jobInfo);
             dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, stepId: number) => {
-			let dialog = new JobStepDialog(ownerUri, server, stepId);
+        vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobData: JobData, jobStepInfo: sqlops.AgentJobStepInfo) => {
+			let dialog = new JobStepDialog(ownerUri, server, jobData, jobStepInfo);
 			dialog.openDialog();
         });
-        vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string) => {
-            let dialog = new PickScheduleDialog(ownerUri);
+        vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string, jobName: string) => {
+            let dialog = new PickScheduleDialog(ownerUri, jobName);
             dialog.showDialog();
         });
         vscode.commands.registerCommand('agent.openAlertDialog', (ownerUri: string, alertInfo: sqlops.AgentAlertInfo, jobs: string[]) => {

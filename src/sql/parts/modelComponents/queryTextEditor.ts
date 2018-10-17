@@ -23,6 +23,8 @@ import { EditorOptions } from 'vs/workbench/common/editor';
 import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { Configuration } from 'vs/editor/browser/config/configuration';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -31,6 +33,8 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
+	private _config: editorCommon.IConfiguration;
+	private _minHeight: number;
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -98,7 +102,26 @@ export class QueryTextEditor extends BaseTextEditor {
 	public setHeight(height: number) {
 		if (this._dimension) {
 			this._dimension.height = height;
-			this.layout();
+			this.layout(this._dimension);
 		}
+	}
+
+	public get scrollHeight(): number {
+		let editorWidget = this.getControl() as ICodeEditor;
+		return editorWidget.getScrollHeight();
+	}
+
+	public setHeightToScrollHeight(): void {
+		let editorWidget = this.getControl() as ICodeEditor;
+		if (!this._config) {
+			this._config = new Configuration(undefined, editorWidget.getDomNode());
+		}
+		let editorHeightUsingLines = this._config.editor.lineHeight * editorWidget.getModel().getLineCount();
+		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		this.setHeight(editorHeightUsingMinHeight);
+	}
+
+	public setMinimumHeight(height: number) : void {
+		this._minHeight = height;
 	}
 }

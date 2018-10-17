@@ -18,14 +18,18 @@ import * as Constants from 'vs/workbench/parts/logs/common/logConstants';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ShowLogsAction, OpenLogsFolderAction, SetLogLevelAction, OpenLogFileAction } from 'vs/workbench/parts/logs/electron-browser/logsActions';
-
+// {{SQL CARBON EDIT}}
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { ExtensionService } from 'vs/workbench/services/extensions/electron-browser/extensionService';
 
 class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 
 	constructor(
 		@IWindowService private windowService: IWindowService,
 		@IEnvironmentService private environmentService: IEnvironmentService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		// {{SQL CARBON EDIT}}
+		@IExtensionService private extensionService: ExtensionService
 	) {
 		super();
 		let outputChannelRegistry = Registry.as<IOutputChannelRegistry>(OutputExt.OutputChannels);
@@ -33,6 +37,12 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		outputChannelRegistry.registerChannel(Constants.sharedLogChannelId, nls.localize('sharedLog', "Log (Shared)"), URI.file(join(this.environmentService.logsPath, `sharedprocess.log`)));
 		outputChannelRegistry.registerChannel(Constants.rendererLogChannelId, nls.localize('rendererLog', "Log (Window)"), URI.file(join(this.environmentService.logsPath, `renderer${this.windowService.getCurrentWindowId()}.log`)));
 		outputChannelRegistry.registerChannel(Constants.extHostLogChannelId, nls.localize('extensionsLog', "Log (Extension Host)"), URI.file(join(this.environmentService.logsPath, `exthost${this.windowService.getCurrentWindowId()}.log`)));
+		// {{SQL CARBON EDIT}}
+		let extHostPid : number = extensionService.getExtenstionHostProcessId();
+		console.log(`extensionHost process id is ${extHostPid}`);
+		let toolsServiceLogFile : string = join(this.environmentService.logsPath, '..', '..', 'mssql', `sqltools_${extHostPid}.log`);
+		console.log(`SqlTools Log file is: ${toolsServiceLogFile}`);
+		outputChannelRegistry.registerChannel(Constants.sqlToolsLogChannellId, nls.localize('sqlToolsLog', "Log (SqlTools)"), URI.file(toolsServiceLogFile));
 
 		const workbenchActionsRegistry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions);
 		const devCategory = nls.localize('developer', "Developer");

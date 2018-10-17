@@ -76,7 +76,7 @@ class ResultsView implements IPanelView {
 				this.panelViewlet.resizePanel(this.gridPanel, this.state.messagePanelSize);
 			}
 			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
-		})
+		});
 		// once the user changes the sash we should stop trying to resize the grid
 		once(this.panelViewlet.onDidSashChange)(e => {
 			this.needsGridResize = false;
@@ -203,12 +203,14 @@ export class QueryResultsView {
 			if (!this._panelView.contains(this.qpTab)) {
 				this._panelView.pushTab(this.qpTab);
 			}
-		} else if (queryRunner.isQueryPlan) {
-			let disp = queryRunner.onResultSet(() => {
-				this.showPlan(queryRunner.planXml);
-				disp.dispose();
-			});
 		}
+		this.runnerDisposables.push(queryRunner.onQueryEnd(() => {
+			if (queryRunner.isQueryPlan) {
+				queryRunner.planXml.then(e => {
+					this.showPlan(e);
+				});
+			}
+		}));
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);
 		}
