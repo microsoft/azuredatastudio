@@ -34,6 +34,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
 	private _config: editorCommon.IConfiguration;
+	private _minHeight: number;
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -116,6 +117,11 @@ export class QueryTextEditor extends BaseTextEditor {
 			this._config = new Configuration(undefined, editorWidget.getDomNode());
 		}
 		let editorHeightUsingLines = this._config.editor.lineHeight * editorWidget.getModel().getLineCount();
-		this.setHeight(editorHeightUsingLines);
+		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		this.setHeight(editorHeightUsingMinHeight);
+	}
+
+	public setMinimumHeight(height: number) : void {
+		this._minHeight = height;
 	}
 }
