@@ -120,7 +120,8 @@ actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
-		RunCurrentQueryWithActualPlanKeyboardAction.LABEL
+		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_L }
 	),
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
