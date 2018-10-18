@@ -58,6 +58,7 @@ declare module 'sqlops' {
 
 	export class TreeComponentItem extends vscode.TreeItem {
 		checked?: boolean;
+		enabled?: boolean;
 	}
 
 	export interface ComponentBuilder<T extends Component> {

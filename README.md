@@ -4,16 +4,16 @@
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download Azure Data Studio August Public Preview**
+**Download the latest Azure Data Studio release**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2024683
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2024680
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2024677
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2024675
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2024672
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2024668
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2030731
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2030736
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2030738
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2030741
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2030746
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2030750
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -61,6 +61,10 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* philoushka  for `center the icon #2760`
+* anthonypants for `Typo #2775`
+* kstolte for `Fix Invalid Configuration in Launch.json #2789`
+* kstolte for `Fixing a reference to SQL Ops Studio #2788`
 * AlexFsmn `Feature: Ability to add connection name #2332`
 * AlexFsmn `Disabled connection name input when connecting to a server. #2566`
 * SebastianPfliegel `Added more saveAsCsv options #2099`
