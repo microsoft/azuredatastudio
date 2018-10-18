@@ -104,6 +104,14 @@ jobhistory-component {
     display: inline-block;
 }
 
+#alertsDiv .jobalertsview-grid .slick-cell.l1.r1 .alertview-alertnametext {
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+}
+
 #jobsDiv .job-with-error {
     border-bottom: none;
 }
@@ -390,4 +398,14 @@ jobsview-component .jobview-grid .slick-cell.error-row {
 
 .overview-container > .overview-tab > label {
     margin-bottom: 0px;
+}
+
+#alertsDiv .alertview-alertnameindicatorenabled {
+    width: 5px;
+    background: green;
+}
+
+#alertsDiv .alertview-alertnameindicatordisabled {
+    width: 5px;
+    background: red;
 }

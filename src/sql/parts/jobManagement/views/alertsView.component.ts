@@ -31,6 +31,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { AlertsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -43,11 +44,17 @@ export const ROW_HEIGHT: number = 45;
 export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
-		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', 'Last Occurrence'), field: 'lastOccurrenceDate', width: 200, id: 'lastOccurrenceDate' },
-		{ name: nls.localize('jobAlertColumns.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
-		{ name: nls.localize('jobAlertColumns.databaseName', 'Database Name'), field: 'databaseName', width: 200, id: 'databaseName' },
-		{ name: nls.localize('jobAlertColumns.categoryName', 'Category Name'), field: 'categoryName', width: 200, id: 'categoryName' },
+		{
+			name: nls.localize('jobAlertColumns.name', 'Name'),
+			field: 'name',
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
+			width: 500,
+			id: 'name'
+		},
+		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', 'Last Occurrence'), field: 'lastOccurrenceDate', width: 150, id: 'lastOccurrenceDate' },
+		{ name: nls.localize('jobAlertColumns.enabled', 'Enabled'), field: 'enabled', width: 80, id: 'enabled' },
+		{ name: nls.localize('jobAlertColumns.delayBetweenResponses', 'Delay Between Responses (in secs)'), field: 'delayBetweenResponses', width: 200, id: 'delayBetweenResponses' },
+		{ name: nls.localize('jobAlertColumns.categoryName', 'Category Name'), field: 'categoryName', width: 250, id: 'categoryName' },
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -126,7 +133,12 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		});
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
-
+		let rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			useRowClick: false,
+			panelRows: 1
+		});
+		columns.unshift(rowDetail.getColumnDefinition());
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
@@ -168,7 +180,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 				name: item.name,
 				lastOccurrenceDate: item.lastOccurrenceDate,
 				enabled: item.isEnabled,
-				databaseName: item.databaseName,
+				delayBetweenResponses: item.delayBetweenResponses,
 				categoryName: item.categoryName
 			};
 		});
@@ -192,6 +204,17 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		return (this.alerts && this.alerts.length >= rowIndex)
 			? this.alerts[rowIndex]
 			: undefined;
+	}
+
+
+	private renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass = dataContext.enabled ? 'alertview-alertnameindicatorenabled' :
+			'alertview-alertnameindicatordisabled';
+
+		return '<table class="alertview-alertnametable"><tr class="alertview-alertnamerow">' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
+			'<td nowrap class="alertview-alertnametext">' + dataContext.name + '</td>' +
+			'</tr></table>';
 	}
 
 	public openCreateAlertDialog() {
