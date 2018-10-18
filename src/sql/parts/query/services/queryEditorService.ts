@@ -124,7 +124,7 @@ export class QueryEditorService implements IQueryEditorService {
 			try {
 				// Create file path and file URI
 				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
-				let filePath = this.createPrefixedSqlFilePlath(objectName);
+				let filePath = this.createPrefixedSqlFilePath(objectName);
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
@@ -265,10 +265,10 @@ export class QueryEditorService implements IQueryEditorService {
 	////// Private functions
 
 	private createUntitledSqlFilePath(): string {
-		return this.createPrefixedSqlFilePlath(untitledFilePrefix);
+		return this.createPrefixedSqlFilePath(untitledFilePrefix);
 	}
 
-	private createPrefixedSqlFilePlath(prefix: string): string {
+	private createPrefixedSqlFilePath(prefix: string): string {
 		let prefixFileName = (counter: number): string => {
 			return `${prefix}_${counter}`;
 		};
