@@ -72,6 +72,9 @@ export class TreeDataTemplate extends Disposable {
 	}
 
 	public set enableCheckbox(value: boolean) {
+		if (value === undefined) {
+			value = true;
+		}
 		this._checkbox.disabled = !value;
 	}
 
