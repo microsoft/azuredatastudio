@@ -80,8 +80,8 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getJobHistory = (ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> => {
-			let params: contracts.AgentJobHistoryParams = { ownerUri: ownerUri, jobId: jobID };
+		let getJobHistory = (ownerUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> => {
+			let params: contracts.AgentJobHistoryParams = { ownerUri: ownerUri, jobId: jobID, jobName: jobName };
 
 			return client.sendRequest(contracts.AgentJobHistoryRequest.type, params).then(
 				r => r,

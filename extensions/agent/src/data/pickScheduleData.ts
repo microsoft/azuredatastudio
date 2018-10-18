@@ -13,9 +13,11 @@ export class PickScheduleData implements IAgentDialogData {
 	public ownerUri: string;
 	public schedules: sqlops.AgentJobScheduleInfo[];
 	public selectedSchedule: sqlops.AgentJobScheduleInfo;
+	private jobName: string;
 
-	constructor(ownerUri:string) {
+	constructor(ownerUri:string, jobName: string) {
 		this.ownerUri = ownerUri;
+		this.jobName = jobName;
 	}
 
 	public async initialize() {
@@ -27,5 +29,8 @@ export class PickScheduleData implements IAgentDialogData {
 	}
 
 	public async save() {
+		let agentService = await AgentUtils.getAgentService();
+		this.selectedSchedule.jobName = this.jobName;
+		let result = await agentService.createJobSchedule(this.ownerUri, this.selectedSchedule);
 	}
 }

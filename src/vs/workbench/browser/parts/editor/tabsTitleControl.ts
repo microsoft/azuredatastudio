@@ -51,6 +51,8 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { GlobalNewUntitledFileAction } from 'vs/workbench/parts/files/electron-browser/fileActions';
 
 interface IEditorInputLabel {
 	name: string;
@@ -94,6 +96,7 @@ export class TabsTitleControl extends TitleControl {
 		@IConfigurationService configurationService: IConfigurationService,
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService,
+		@ICommandService private commandService: ICommandService,
 		@IConnectionManagementService private connectionService: IConnectionManagementService,
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
@@ -178,8 +181,8 @@ export class TabsTitleControl extends TitleControl {
 		this._register(addDisposableListener(this.tabsContainer, EventType.DBLCLICK, e => {
 			if (e.target === this.tabsContainer) {
 				EventHelper.stop(e);
-
-				this.group.openEditor(this.untitledEditorService.createOrGet(), { pinned: true /* untitled is always pinned */, index: this.group.count /* always at the end */ });
+				// {{SQL CARBON EDIT}}
+				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).done(undefined, err => this.notificationService.warn(err));
 			}
 		}));
 
@@ -865,6 +868,9 @@ export class TabsTitleControl extends TitleControl {
 
 		// Dirty State
 		this.redrawEditorDirty(editor, tabContainer);
+
+		// {{SQL CARBON EDIT}} -- Display the editor's tab color
+		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor));
 	}
 
 	private redrawLabel(editor: IEditorInput, tabContainer: HTMLElement, tabLabelWidget: ResourceLabel, tabLabel: IEditorInputLabel): void {
@@ -877,7 +883,8 @@ export class TabsTitleControl extends TitleControl {
 		tabContainer.title = title;
 
 		// Label
-		tabLabelWidget.setLabel({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) });
+		// {{SQL CARBON EDIT}} -- add title in options passed
+		tabLabelWidget.setLabel({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { extraClasses: ['tab-label'], italic: !this.group.isPinned(editor), title });
 
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		const isTabActive = this.group.isActive(editor);
@@ -1102,10 +1109,12 @@ export class TabsTitleControl extends TitleControl {
 			|| this.themeService.getTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
 			tabContainer.style.borderTopWidth = '';
+			tabContainer.style.borderTopStyle = '';
 			return;
 		}
 		tabContainer.style.borderTopColor = sqlEditor.tabColor;
 		tabContainer.style.borderTopWidth = isTabActive ? '3px' : '2px';
+		tabContainer.style.borderTopStyle = 'solid';
 		if (tabColorMode === QueryConstants.tabColorModeFill) {
 			let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
 			if (backgroundColor) {

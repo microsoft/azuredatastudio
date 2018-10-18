@@ -19,7 +19,7 @@ import * as Utils from 'sql/parts/connection/common/utils';
 export class TaskHistoryRenderer implements IRenderer {
 
 	public static readonly TASKOBJECT_HEIGHT = 65;
-	private static readonly ICON_CLASS = 'task-icon icon';
+	private static readonly ICON_CLASS = 'task-icon sql icon';
 	private static readonly TASKOBJECT_TEMPLATE_ID = 'carbonTask';
 	private static readonly FAIL_CLASS = 'error';
 	private static readonly SUCCESS_CLASS = 'success';

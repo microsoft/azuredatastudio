@@ -1,6 +1,6 @@
 # Merge Conflict
 
-**Notice:** This extension is bundled with SQL Operations Stuido. It can be disabled but not uninstalled.
+**Notice:** This extension is bundled with Azure Data Studio. It can be disabled but not uninstalled.
 
 ## Features
 

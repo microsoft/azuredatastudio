@@ -1,6 +1,6 @@
 {
 	"$schema": "vscode://schemas/color-theme",
-	"name": "SQL Operations Studio-dark-theme",
+	"name": "Azure Data Studio-dark-theme",
 	"type": "dark",
 	"colors": {
 

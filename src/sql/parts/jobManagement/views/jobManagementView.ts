@@ -53,6 +53,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 				if (!this.isInitialized) {
 					this._showProgressWheel = true;
 					this.onFirstVisible();
+					this.layout();
 					this.isInitialized = true;
 				}
 			} else if (this.isVisible === true && this._parentComponent.refresh === true) {
@@ -70,8 +71,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 	abstract onFirstVisible();
 
 	protected openContextMenu(event): void {
-		let grid = this._table.grid;
-		let rowIndex = grid.getCellFromEvent(event).row;
+		let rowIndex = event.cell.row;
 
 		let targetObject = this.getCurrentTableObject(rowIndex);
 		let actions = this.getTableActions();

@@ -1,0 +1,183 @@
+/*
+https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs2015.css
+*/
+/*
+ * Visual Studio 2015 dark style
+ * Author: Nicolas LLOBERA <nllobera@gmail.com>
+ */
+
+
+modelview-dom-component .hljs-keyword,
+modelview-dom-component .hljs-literal,
+modelview-dom-component .hljs-symbol,
+modelview-dom-component .hljs-name {
+	color: #569CD6;
+}
+modelview-dom-component .hljs-link {
+	color: #569CD6;
+	text-decoration: underline;
+}
+
+modelview-dom-component .hljs-built_in,
+modelview-dom-component .hljs-type {
+	color: #4EC9B0;
+}
+
+modelview-dom-component .hljs-number,
+modelview-dom-component .hljs-class {
+	color: #B8D7A3;
+}
+
+modelview-dom-component .hljs-string,
+modelview-dom-component .hljs-meta-string {
+	color: #D69D85;
+}
+
+modelview-dom-component .hljs-regexp,
+modelview-dom-component .hljs-template-tag {
+	color: #9A5334;
+}
+
+modelview-dom-component .hljs-subst,
+modelview-dom-component .hljs-function,
+modelview-dom-component .hljs-title,
+modelview-dom-component .hljs-params,
+modelview-dom-component .hljs-formula {
+	color: #DCDCDC;
+}
+
+modelview-dom-component .hljs-comment,
+modelview-dom-component .hljs-quote {
+	color: #57A64A;
+	font-style: italic;
+}
+
+modelview-dom-component .hljs-doctag {
+	color: #608B4E;
+}
+
+modelview-dom-component .hljs-meta,
+modelview-dom-component .hljs-meta-keyword,
+modelview-dom-component .hljs-tag {
+	color: #9B9B9B;
+}
+
+modelview-dom-component .hljs-variable,
+modelview-dom-component .hljs-template-variable {
+	color: #BD63C5;
+}
+
+modelview-dom-component .hljs-attr,
+modelview-dom-component .hljs-attribute,
+modelview-dom-component .hljs-builtin-name {
+	color: #9CDCFE;
+}
+
+modelview-dom-component .hljs-section {
+	color: gold;
+}
+
+modelview-dom-component .hljs-emphasis {
+	font-style: italic;
+}
+
+modelview-dom-component .hljs-strong {
+	font-weight: bold;
+}
+
+/*.hljs-code {
+	font-family:'Monospace';
+}*/
+
+modelview-dom-component .hljs-bullet,
+modelview-dom-component .hljs-selector-tag,
+modelview-dom-component .hljs-selector-id,
+modelview-dom-component .hljs-selector-class,
+modelview-dom-component .hljs-selector-attr,
+modelview-dom-component .hljs-selector-pseudo {
+	color: #D7BA7D;
+}
+
+modelview-dom-component .hljs-addition {
+	background-color: #144212;
+	display: inline-block;
+	width: 100%;
+}
+
+modelview-dom-component .hljs-deletion {
+	background-color: #600;
+	display: inline-block;
+	width: 100%;
+}
+
+
+/*
+From https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs.css
+*/
+/*
+
+Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
+
+*/
+/*
+.vscode-light .hljs-function,
+.vscode-light .hljs-params {
+	color: inherit;
+}
+
+.vscode-light .hljs-comment,
+.vscode-light .hljs-quote,
+.vscode-light .hljs-variable {
+	color: #008000;
+}
+
+.vscode-light .hljs-keyword,
+.vscode-light .hljs-selector-tag,
+.vscode-light .hljs-built_in,
+.vscode-light .hljs-name,
+.vscode-light .hljs-tag {
+	color: #00f;
+}
+
+.vscode-light .hljs-string,
+.vscode-light .hljs-title,
+.vscode-light .hljs-section,
+.vscode-light .hljs-attribute,
+.vscode-light .hljs-literal,
+.vscode-light .hljs-template-tag,
+.vscode-light .hljs-template-variable,
+.vscode-light .hljs-type,
+.vscode-light .hljs-addition {
+	color: #a31515;
+}
+
+.vscode-light .hljs-deletion,
+.vscode-light .hljs-selector-attr,
+.vscode-light .hljs-selector-pseudo,
+.vscode-light .hljs-meta {
+	color: #2b91af;
+}
+
+.vscode-light .hljs-doctag {
+	color: #808080;
+}
+
+.vscode-light .hljs-attr {
+	color: #f00;
+}
+
+.vscode-light .hljs-symbol,
+.vscode-light .hljs-bullet,
+.vscode-light .hljs-link {
+	color: #00b0e8;
+}
+
+
+.vscode-light .hljs-emphasis {
+	font-style: italic;
+}
+
+.vscode-light .hljs-strong {
+	font-weight: bold;
+}
+*/

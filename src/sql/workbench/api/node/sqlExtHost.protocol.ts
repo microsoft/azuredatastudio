@@ -358,7 +358,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Get a Agent Job's history
 	 */
-	$getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> { throw ni(); }
+	$getJobHistory(handle: number, ownerUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> { throw ni(); }
 
 	/**
 	 * Run an action on a Job
@@ -369,6 +369,11 @@ export abstract class ExtHostDataProtocolShape {
 	 * Deletes a job
 	 */
 	$deleteJob(handle: number, ownerUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
+
+	/**
+	 * Deletes a job step
+	 */
+	$deleteJobStep(handle: number, ownerUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> { throw ni(); }
 
 	/**
 	 * Get Agent Alerts list

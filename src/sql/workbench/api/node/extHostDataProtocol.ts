@@ -578,8 +578,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Get a Agent Job's history
 	 */
-	public $getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
-		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobHistory(ownerUri, jobID);
+	public $getJobHistory(handle: number, ownerUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobHistory(ownerUri, jobID, jobName);
 	}
 
 	/**
@@ -594,6 +594,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	$deleteJob(handle: number, ownerUri: string, job: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
 		throw this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
+	}
+
+	/**
+	 * Deletes a job step
+	 */
+	$deleteJobStep(handle: number, ownerUri: string, step: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> {
+		throw this._resolveProvider<sqlops.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
 	}
 
 	/**

@@ -80,7 +80,7 @@ configurationRegistry.registerConfiguration({
 	'properties': {
 		'startup.alwaysShowServersView': {
 			'type': 'boolean',
-			'description': localize('startup.alwaysShowServersView', 'True for the Servers view to be shown on launch of SQL Operations Studio default; false if the last opened view should be shown'),
+			'description': localize('startup.alwaysShowServersView', 'True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown'),
 			'default': true
 		}
 	}

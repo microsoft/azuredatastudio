@@ -91,5 +91,5 @@ export const KEYBINDINGS_EDITOR_SHOW_DEFAULT_KEYBINDINGS = 'keybindings.editor.s
 export const KEYBINDINGS_EDITOR_SHOW_USER_KEYBINDINGS = 'keybindings.editor.showUserKeybindings';
 
 // {{SQL CARBON EDIT}}
-export const FOLDER_SETTINGS_PATH = join('.sqlops', 'settings.json');
+export const FOLDER_SETTINGS_PATH = join('.azuredatastudio', 'settings.json');
 export const DEFAULT_SETTINGS_EDITOR_SETTING = 'workbench.settings.openDefaultSettings';

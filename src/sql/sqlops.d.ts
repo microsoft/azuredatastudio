@@ -1266,6 +1266,16 @@ declare module 'sqlops' {
 		Last = 16
 	}
 
+	export enum JobExecutionStatus {
+		Executing = 1,
+		WaitingForWorkerThread = 2,
+		BetweenRetries = 3,
+		Idle = 4,
+		Suspended = 5,
+		WaitingForStepToFinish = 6,
+		PerformingCompletionAction = 7
+	}
+
 	export interface AgentJobInfo {
 		name: string;
 		owner: string;
@@ -1313,6 +1323,7 @@ declare module 'sqlops' {
 		jobCount: number;
 		activeEndDate: string;
 		scheduleUid: string;
+		description: string;
 	}
 
 	export interface AgentJobStep {
@@ -1322,6 +1333,7 @@ declare module 'sqlops' {
 		message: string;
 		runDate: string;
 		runStatus: number;
+		stepDetails: AgentJobStepInfo;
 	}
 
 	export interface AgentJobStepInfo {
@@ -1437,7 +1449,10 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobHistoryResult extends ResultStatus {
-		jobs: AgentJobHistoryInfo[];
+		histories: AgentJobHistoryInfo[];
+		steps: AgentJobStepInfo[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface CreateAgentJobResult extends ResultStatus {
@@ -1525,7 +1540,7 @@ declare module 'sqlops' {
 	export interface AgentServicesProvider extends DataProvider {
 		// Job management methods
 		getJobs(ownerUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(ownerUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
+		getJobHistory(ownerUri: string, jobId: string, jobName: string): Thenable<AgentJobHistoryResult>;
 		jobAction(ownerUri: string, jobName: string, action: string): Thenable<ResultStatus>;
 		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
@@ -1533,9 +1548,9 @@ declare module 'sqlops' {
 		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
 
 		// Job Step management methods
-		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateJobStep(ownerUri: string, originalJobStepName: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateJobStep(ownerUri: string, originalJobStepName: string, stepInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<ResultStatus>;
 
 		// Alert management methods
 		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;

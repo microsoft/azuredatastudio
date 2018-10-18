@@ -9,16 +9,19 @@ import * as vscode from 'vscode';
 import { JobStepData } from '../data/jobStepData';
 import { AgentUtils } from '../agentUtils';
 import { JobData } from '../data/jobData';
+import { AgentDialog } from './agentDialog';
+import { AgentDialogMode } from '../interfaces';
 const path = require('path');
 
 const localize = nls.loadMessageBundle();
 
-export class JobStepDialog {
+export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	// TODO: localize
 	// Top level
 	//
-	private readonly DialogTitle: string = localize('jobStepDialog.newJobStep', 'New Job Step');
+	private static readonly NewDialogTitle: string = localize('jobStepDialog.newJobStep', 'New Job Step');
+	private static readonly EditDialogTitle: string = localize('jobStepDialog.editJobStep', 'Edit Job Step');
 	private readonly FileBrowserDialogTitle: string = localize('jobStepDialog.fileBrowserTitle', 'Locate Database Files - ');
 	private readonly OkButtonText: string = localize('jobStepDialog.ok', 'OK');
 	private readonly CancelButtonText: string = localize('jobStepDialog.cancel', 'Cancel');
@@ -67,7 +70,6 @@ export class JobStepDialog {
 	// UI Components
 
 	// Dialogs
-	private dialog: sqlops.window.modelviewdialog.Dialog;
 	private fileBrowserDialog: sqlops.window.modelviewdialog.Dialog;
 
 	// Dialog tabs
@@ -102,38 +104,38 @@ export class JobStepDialog {
 	// Checkbox
 	private appendToExistingFileCheckbox: sqlops.CheckBoxComponent;
 	private logToTableCheckbox: sqlops.CheckBoxComponent;
+	private logStepOutputHistoryCheckbox: sqlops.CheckBoxComponent;
 
 	private fileBrowserTree: sqlops.FileBrowserTreeComponent;
 	private jobModel: JobData;
-	private model: JobStepData;
-	private ownerUri: string;
-	private jobName: string;
+	public jobName: string;
 	private server: string;
 	private stepId: number;
+	private isEdit: boolean;
 
 	constructor(
 		ownerUri: string,
-		jobName: string,
 		server: string,
-		stepId: number,
-		jobModel?: JobData
+		jobModel: JobData,
+		jobStepInfo?: sqlops.AgentJobStepInfo,
 	) {
-		this.model = new JobStepData(ownerUri);
-		this.stepId = stepId;
-		this.ownerUri = ownerUri;
-		this.jobName = jobName;
-		this.server = server;
+		super(ownerUri,
+			jobStepInfo ?  JobStepData.convertToJobStepData(jobStepInfo, jobModel) : new JobStepData(ownerUri, jobModel),
+			jobStepInfo ?  JobStepDialog.EditDialogTitle : JobStepDialog.NewDialogTitle);
+		this.stepId = jobStepInfo ?
+						jobStepInfo.id : jobModel.jobSteps ?
+						jobModel.jobSteps.length + 1 : 1;
+		this.isEdit = jobStepInfo ? true : false;
+		this.model.dialogMode = this.isEdit ? AgentDialogMode.EDIT : AgentDialogMode.CREATE;
 		this.jobModel = jobModel;
+		this.jobName = this.jobName ?  this.jobName : this.jobModel.name;
+		this.server = server;
 	}
 
 	private initializeUIComponents() {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
 		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
 		this.advancedTab = sqlops.window.modelviewdialog.createTab(this.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.okButton.label = this.OkButtonText;
-		this.dialog.cancelButton.label = this.CancelButtonText;
 	}
 
 	private createCommands(view, queryProvider: sqlops.QueryProvider) {
@@ -262,6 +264,14 @@ export class JobStepDialog {
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
 			await view.initializeModel(formWrapper);
+
+			// Load values for edit scenario
+			if (this.isEdit) {
+				this.nameTextBox.value = this.model.stepName;
+				this.typeDropdown.value = this.model.subSystem;
+				this.databaseDropdown.value = this.model.databaseName;
+				this.commandTextBox.value = this.model.command;
+			}
 		});
 	}
 
@@ -298,7 +308,7 @@ export class JobStepDialog {
 			let logToTableContainer = view.modelBuilder.flexContainer()
 				.withLayout({ flexFlow: 'row', justifyContent: 'space-between', width: 300 })
 				.withItems([this.logToTableCheckbox]).component();
-			let logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
+			this.logStepOutputHistoryCheckbox = view.modelBuilder.checkBox()
 				.withProperties({ label: this.IncludeStepOutputHistoryLabel }).component();
 			this.userInputBox = view.modelBuilder.inputBox()
 				.withProperties({ inputType: 'text', width: '100%' }).component();
@@ -323,7 +333,7 @@ export class JobStepDialog {
 						component: appendCheckboxContainer,
 						title: '                            '
 					}, {
-						component: logStepOutputHistoryCheckbox,
+						component: this.logStepOutputHistoryCheckbox,
 						title: ''
 					}, {
 						component: this.userInputBox,
@@ -334,7 +344,19 @@ export class JobStepDialog {
 
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
-			view.initializeModel(formWrapper);
+			await view.initializeModel(formWrapper);
+
+			if (this.isEdit) {
+				this.successActionDropdown.value = this.model.successAction;
+				this.retryAttemptsBox.value = this.model.retryAttempts.toString();
+				this.retryIntervalBox.value = this.model.retryInterval.toString();
+				this.failureActionDropdown.value = this.model.failureAction;
+				this.outputFileNameBox.value = this.model.outputFileName;
+				this.appendToExistingFileCheckbox.checked = this.model.appendToLogFile;
+				this.logToTableCheckbox.checked = this.model.appendLogToTable;
+				this.logStepOutputHistoryCheckbox.checked = this.model.appendToStepHist;
+				this.userInputBox.value = this.model.databaseUserName;
+			}
 		});
 	}
 
@@ -478,7 +500,7 @@ export class JobStepDialog {
 		return outputFileForm;
 	}
 
-	protected execute() {
+	protected updateModel() {
 		this.model.stepName = this.nameTextBox.value;
 		if (!this.model.stepName || this.model.stepName.length === 0) {
 			this.dialog.message = this.dialog.message = { text: this.BlankStepNameErrorText };
@@ -487,7 +509,6 @@ export class JobStepDialog {
 		this.model.jobName = this.jobName;
 		this.model.id = this.stepId;
 		this.model.server = this.server;
-		this.model.stepName = this.nameTextBox.value;
 		this.model.subSystem = this.typeDropdown.value as string;
 		this.model.databaseName = this.databaseDropdown.value as string;
 		this.model.script = this.commandTextBox.value;
@@ -499,12 +520,20 @@ export class JobStepDialog {
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 	}
 
-	public async openNewStepDialog() {
+	public async initializeDialog() {
 		let databases = await AgentUtils.getDatabases(this.ownerUri);
 		let queryProvider = await AgentUtils.getQueryProvider();
 		this.initializeUIComponents();
 		this.createGeneralTab(databases, queryProvider);
 		this.createAdvancedTab();
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		this.dialog.registerCloseValidator(() => {
+			this.updateModel();
+			let validationResult = this.model.validate();
+			if (!validationResult.valid) {
+				// TODO: Show Error Messages
+				console.error(validationResult.errorMessages.join(','));
+			}
+			return validationResult.valid;
+		});
 	}
 }

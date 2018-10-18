@@ -1,7 +1,7 @@
 {
     "name": "theme-carbon",
-    "displayName": "SQL Operations Studio Themes",
-    "description": "The light and dark themes for SQL Operations Studio",
+    "displayName": "Azure Data Studio Themes",
+    "description": "The light and dark themes for Azure Data Studio",
     "version": "0.1.0",
     "publisher": "sql",
     "engines": {
@@ -13,14 +13,14 @@
     "contributes": {
         "themes": [
             {
-                "id": "Default Light SQL Operations Studio",
-                "label": "Light SQL Operations Studio (default light)",
+                "id": "Default Light Azure Data Studio",
+                "label": "Light Azure Data Studio (default light)",
                 "uiTheme": "vs",
                 "path": "./themes/light_carbon.json"
             },
             {
-                "id": "Default Dark SQL Operations Studio",
-                "label": "Dark SQL Operations Studio (default dark)",
+                "id": "Default Dark Azure Data Studio",
+                "label": "Dark Azure Data Studio (default dark)",
                 "uiTheme": "vs-dark",
                 "path": "./themes/dark_carbon.json"
             }

@@ -7,3 +7,5 @@ export const mainLogChannelId = 'mainLog';
 export const sharedLogChannelId = 'sharedLog';
 export const rendererLogChannelId = 'rendererLog';
 export const extHostLogChannelId = 'extHostLog';
+// {{SQL CARBON EDIT}}
+export const sqlToolsLogChannellId = 'sqlToolsLog';

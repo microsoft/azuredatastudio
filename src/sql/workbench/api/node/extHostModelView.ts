@@ -191,6 +191,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	dom(): sqlops.ComponentBuilder<sqlops.DomComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.DomComponent> = this.getComponentBuilder(new DomComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends sqlops.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -840,8 +847,8 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 	public get html(): string {
 		return this.properties['html'];
 	}
-	public set html(v: string) {
-		this.setProperty('html', v);
+	public set html(html: string) {
+		this.setProperty('html', html);
 	}
 
 	public get onMessage(): vscode.Event<any> {
@@ -854,6 +861,21 @@ class WebViewWrapper extends ComponentWrapper implements sqlops.WebViewComponent
 	}
 	public set options(o: vscode.WebviewOptions) {
 		this.setProperty('options', o);
+	}
+}
+
+class DomComponentWrapper extends ComponentWrapper implements sqlops.DomComponent {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Dom, id);
+		this.properties = {};
+	}
+
+	public get html(): string {
+		return this.properties['html'];
+	}
+	public set html(html: string) {
+		this.setProperty('html', html);
 	}
 }
 
@@ -881,6 +903,22 @@ class EditorWrapper extends ComponentWrapper implements sqlops.EditorComponent {
 
 	public get editorUri(): string {
 		return this.properties['editorUri'];
+	}
+
+	public get isAutoResizable(): boolean {
+		return this.properties['isAutoResizable'];
+	}
+
+	public set isAutoResizable(v: boolean) {
+		this.setProperty('isAutoResizable', v);
+	}
+
+	public get minimumHeight(): number {
+		return this.properties['minimumHeight'];
+	}
+
+	public set minimumHeight(v: number) {
+		this.setProperty('minimumHeight', v);
 	}
 
 	public get onContentChanged(): vscode.Event<any> {

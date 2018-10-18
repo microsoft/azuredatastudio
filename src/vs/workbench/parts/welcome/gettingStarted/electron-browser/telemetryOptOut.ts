@@ -60,8 +60,8 @@ export class TelemetryOptOut implements IWorkbenchContribution {
 			}
 
 			// {{SQL CARBON EDIT}}
-			const optOutNotice = localize('telemetryOptOut.optOutNotice', "Help improve SQL Operations Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).", this.privacyUrl, this.optOutUrl);
-			const optInNotice = localize('telemetryOptOut.optInNotice', "Help improve SQL Operations Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).", this.privacyUrl, this.optOutUrl);
+			const optOutNotice = localize('telemetryOptOut.optOutNotice', "Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).", this.privacyUrl, this.optOutUrl);
+			const optInNotice = localize('telemetryOptOut.optInNotice', "Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).", this.privacyUrl, this.optOutUrl);
 
 			notificationService.prompt(
 				Severity.Info,

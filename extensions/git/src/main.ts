@@ -129,7 +129,7 @@ export async function activate(context: ExtensionContext): Promise<API> {
 async function checkGitVersion(info: IGit): Promise<void> {
 
 	// {{SQL CARBON EDIT}}
-	// remove Git version check for sqlops
+	// remove Git version check for azuredatastudio
 
 	return;
 

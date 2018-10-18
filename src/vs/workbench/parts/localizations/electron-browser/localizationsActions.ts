@@ -22,10 +22,10 @@ export class ConfigureLocaleAction extends Action {
 	// {{SQL CARBON EDIT}}
 	private static DEFAULT_CONTENT: string = [
 		'{',
-		`\t// ${localize('displayLanguage', 'Defines SQL Operations Studio\'s display language.')}`,
+		`\t// ${localize('displayLanguage', 'Defines Azure Data Studio\'s display language.')}`,
 		`\t// ${localize('doc', 'See {0} for a list of supported languages.', 'https://go.microsoft.com/fwlink/?LinkId=761051')}`,
 		`\t`,
-		`\t// ${localize('restart', 'Changing the value requires restarting SQL Operations Studio.')}`,
+		`\t// ${localize('restart', 'Changing the value requires restarting Azure Data Studio.')}`,
 		'}'
 	].join('\n');
 

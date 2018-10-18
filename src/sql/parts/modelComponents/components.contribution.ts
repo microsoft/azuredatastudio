@@ -22,6 +22,7 @@ import TextComponent from './text.component';
 import LoadingComponent from './loadingComponent.component';
 import FileBrowserTreeComponent from './fileBrowserTree.component';
 import EditorComponent from './editor.component';
+import DomComponent from './dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 
@@ -85,3 +86,6 @@ registerComponentType(FILEBROWSERTREE_COMPONENT, ModelComponentTypes.FileBrowser
 
 export const EDITOR_COMPONENT = 'editor-component';
 registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorComponent);
+
+export const DOM_COMPONENT = 'dom-component';
+registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);

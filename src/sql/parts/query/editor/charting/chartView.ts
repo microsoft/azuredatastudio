@@ -12,12 +12,13 @@ import { Insight } from './insights/insight';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
+import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { IInsightOptions } from './insights/interfaces';
 import { CopyAction, SaveImageAction, CreateInsightAction, IChartActionContext } from './actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
-
+import { Registry } from 'vs/platform/registry/common/platform';
 import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -39,6 +40,8 @@ export class ChartState {
 declare class Proxy {
 	constructor(object, handler);
 }
+
+const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
 export class ChartView implements IPanelView {
 	private insight: Insight;
@@ -123,6 +126,7 @@ export class ChartView implements IPanelView {
 			}
 		}) as IInsightOptions;
 
+		ChartOptions.general[0].options = insightRegistry.getAllIds();
 		ChartOptions.general.map(o => {
 			this.createOption(o, generalControls);
 		});
@@ -315,7 +319,7 @@ export class ChartView implements IPanelView {
 				});
 				setFunc = (val: string) => {
 					if (!isUndefinedOrNull(val)) {
-						input.value = val;
+						numberInput.value = val;
 					}
 				};
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
@@ -330,7 +334,7 @@ export class ChartView implements IPanelView {
 		this._state = val;
 		if (this.state.options) {
 			for (let key in this.state.options) {
-				if (this.state.options.hasOwnProperty(key)) {
+				if (this.state.options.hasOwnProperty(key) && this.optionMap[key]) {
 					this.options[key] = this.state.options[key];
 					this.optionMap[key].set(this.state.options[key]);
 				}

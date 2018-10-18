@@ -6,9 +6,9 @@
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
@@ -20,7 +20,7 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
-import { ObjectExplorerActionsContext, ObjectExplorerActionUtilities } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
+import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RefreshAction extends Action {
@@ -218,7 +218,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	public static LABEL = localize('activeConnections', 'Show Active Connections');
 	private static enabledClass = 'active-connections-action';
 	private static disabledClass = 'icon server-page';
-	private static clearAllLabel = localize('clearAll', 'Clear All');
+	private static showAllConnectionsLabel = localize('showAllConnections', 'Show All Connections');
 	private _isSet: boolean;
 	public static readonly ACTIVE = 'active';
 	public get isSet(): boolean {
@@ -249,7 +249,7 @@ export class ActiveConnectionsFilterAction extends Action {
 			// show active connections in the tree
 			this.view.showFilteredTree(ActiveConnectionsFilterAction.ACTIVE);
 			this.isSet = true;
-			this.label = ActiveConnectionsFilterAction.clearAllLabel;
+			this.label = ActiveConnectionsFilterAction.showAllConnectionsLabel;
 		} else {
 			// show full tree
 			this.view.refreshTree();
@@ -323,7 +323,8 @@ export class NewQueryAction extends Action {
 		@IQueryEditorService private queryEditorService: IQueryEditorService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IEditorService protected _workbenchEditorService: IEditorService
+		@IEditorService protected _workbenchEditorService: IEditorService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(id, label);
 		this.class = 'extension-action update';
@@ -331,7 +332,7 @@ export class NewQueryAction extends Action {
 
 	public run(actionContext: ObjectExplorerActionsContext): TPromise<boolean> {
 		if (actionContext instanceof ObjectExplorerActionsContext) {
-			this._connectionProfile = actionContext.connectionProfile;
+			this._connectionProfile = new ConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
 		}
 
 		TaskUtilities.newQuery(this._connectionProfile, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this._workbenchEditorService);

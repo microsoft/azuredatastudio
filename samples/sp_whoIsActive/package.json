@@ -1,7 +1,7 @@
 {
     "name": "whoisactive",
     "displayName": "whoisactive",
-    "description": "sp_whoisactive for SQL Operations Studio",
+    "description": "sp_whoisactive for Azure Data Studio",
     "version": "0.1.1",
     "publisher": "Microsoft",
     "preview": true,
@@ -11,7 +11,7 @@
     },
     "icon": "images/sqlserver.png",
     "license": "SEE LICENSE IN LICENSE.txt",
-    "repository": "https://github.com/Microsoft/sqlopsstudio",
+    "repository": "https://github.com/Microsoft/azuredatastudio",
     "categories": [
         "Other"
     ],

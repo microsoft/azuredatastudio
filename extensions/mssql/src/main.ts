@@ -97,18 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {
-	let launchArgs = [];
-	launchArgs.push('--log-dir');
-	let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
-	launchArgs.push(logFileLocation);
-	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
-	if (config) {
-		let logDebugInfo = config[Constants.configLogDebugInfo];
-		if (logDebugInfo) {
-			launchArgs.push('--enable-logging');
-		}
-	}
-
+	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

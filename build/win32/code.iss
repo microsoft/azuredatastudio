@@ -8,14 +8,14 @@ AppId={#AppId}
 AppName={#NameLong}
 AppVerName={#NameVersion}
 AppPublisher=Microsoft Corporation
-AppPublisherURL=https://github.com/Microsoft/sqlopsstudio
-AppSupportURL=https://github.com/Microsoft/sqlopsstudio
-AppUpdatesURL=https://github.com/Microsoft/sqlopsstudio
+AppPublisherURL=https://github.com/Microsoft/azuredatastudio
+AppSupportURL=https://github.com/Microsoft/azuredatastudio
+AppUpdatesURL=https://github.com/Microsoft/azuredatastudio
 
 DefaultGroupName={#NameLong}
 AllowNoIcons=yes
 OutputDir={#OutputDir}
-OutputBaseFilename=SqlOpsStudioSetup
+OutputBaseFilename=AzureDataStudioSetup
 Compression=lzma
 SolidCompression=yes
 AppMutex={code:GetAppMutex}
@@ -68,7 +68,7 @@ Type: filesandordirs; Name: "{app}\_"
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: checkedonce; Check: IsNotUpdate
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
-Name: "associatewithfiles"; Description: "{cm:AssociateWithFiles,{#NameShort}}"; GroupDescription: "{cm:Other}"; Flags: unchecked
+Name: "associatewithfiles"; Description: "{cm:AssociateWithFiles,{#NameLong}}"; GroupDescription: "{cm:Other}"; Flags: unchecked
 Name: "addtopath"; Description: "{cm:AddToPath}"; GroupDescription: "{cm:Other}"
 Name: "runcode"; Description: "{cm:RunAfter,{#NameShort}}"; GroupDescription: "{cm:Other}"; Check: WizardSilent
 
@@ -180,9 +180,9 @@ begin
   Result := not IsBackgroundUpdate();
 end;
 
-// SqlOps will create a flag file before the update starts (/update=C:\foo\bar)
-// - if the file exists at this point, the user quit SqlOps before the update finished, so don't start SqlOps after update
-// - otherwise, the user has accepted to apply the update and SqlOps should start
+// AzureDataStudio will create a flag file before the update starts (/update=C:\foo\bar)
+// - if the file exists at this point, the user quit AzureDataStudio before the update finished, so don't start AzureDataStudio after update
+// - otherwise, the user has accepted to apply the update and AzureDataStudio should start
 function LockFileExists(): Boolean;
 begin
   Result := FileExists(ExpandConstant('{param:update}'))

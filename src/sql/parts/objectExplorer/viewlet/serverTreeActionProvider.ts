@@ -167,12 +167,12 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
+				this.addNewQueryAction(context, actions);
 			} else {
 				return actions;
 			}
 		}
 
-		this.addNewQueryAction(context, actions);
 		this.addScriptingActions(context, actions);
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, treeNode));
 

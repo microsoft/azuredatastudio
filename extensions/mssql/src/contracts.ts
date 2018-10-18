@@ -40,6 +40,7 @@ export interface AgentJobsParams {
 export interface AgentJobHistoryParams {
 	ownerUri: string;
 	jobId: string;
+	jobName: string;
 }
 
 export interface AgentJobActionParams {

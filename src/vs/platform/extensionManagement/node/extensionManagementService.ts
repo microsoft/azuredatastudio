@@ -187,7 +187,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 							}
 							return null;
 						}),
-					e => TPromise.wrapError(new Error(nls.localize('restartCode', "Please restart SQL Operations Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
+					e => TPromise.wrapError(new Error(nls.localize('restartCode', "Please restart Azure Data Studio before reinstalling {0}.", manifest.displayName || manifest.name))));
 			});
 	}
 

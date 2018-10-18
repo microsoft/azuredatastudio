@@ -36,7 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { tableBackground, cellBackground, tableHoverBackground, jobsHeadingBackground, cellBorderColor } from 'sql/common/theme/colors';
+import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -86,7 +86,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	public jobs: sqlops.AgentJobInfo[];
-	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobSteps: { [jobId: string]: sqlops.AgentJobStepInfo[]; } = Object.create(null);
+	private jobAlerts: { [jobId: string]: sqlops.AgentAlertInfo[]; } = Object.create(null);
+	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
@@ -171,7 +174,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
 		$(this._gridEl.nativeElement).empty();
@@ -475,7 +477,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			case ('Failed'):
 				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
 				break;
-			case ('Canceled'):
+			case ('Cancelled'):
 				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
 				break;
 			case ('Status Unknown'):
@@ -523,17 +525,15 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
-	private loadJobHistories(): void {
+	private async loadJobHistories() {
 		if (this.jobs) {
-			let erroredJobs = 0;
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
 			// grab histories of the failing jobs first
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
-			this.curateJobHistory(failing, ownerUri);
 			let passing = separatedJobs[1];
-			this.curateJobHistory(passing, ownerUri);
+			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 
@@ -578,19 +578,27 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return job;
 	}
 
-	private curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		for (let i = 0; i < jobs.length; i++) {
-			let job = jobs[i];
-			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-				if (result && result.jobs) {
-					self.jobHistories[job.jobId] = result.jobs;
-					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+		jobs.forEach(async (job) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then((result) => {
+				if (result) {
+					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
+					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
+					self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
+					self.jobHistories[job.jobId] = result.histories ? result.histories : [];
+					self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
+					self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
 					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+					let previousRuns: sqlops.AgentJobHistoryInfo[];
+					if (jobHistories.length >= 5) {
+						previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+					} else {
+						previousRuns = jobHistories;
+					}
 					self.createJobChart(job.jobId, previousRuns);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let lastJobHistory = jobHistories[result.jobs.length - 1];
+						let lastJobHistory = jobHistories[jobHistories.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 						let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
@@ -600,7 +608,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					}
 				}
 			});
-		}
+		});
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
@@ -648,12 +656,22 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		maxDuration = maxDuration === 0 ? 1 : maxDuration;
 		let maxBarHeight: number = 24;
 		let chartHeights = [];
+		let zeroDurationJobCount = 0;
 		for (let i = 0; i < jobHistories.length; i++) {
 			let duration = jobHistories[i].runDuration;
 			let chartHeight = (maxBarHeight * JobManagementUtilities.convertDurationToSeconds(duration)) / maxDuration;
 			chartHeights.push(`${chartHeight}px`);
+			if (chartHeight === 0) {
+				zeroDurationJobCount++;
+			}
 		}
-		return chartHeights;
+		// if the durations are all 0 secs, show minimal chart
+		// instead of nothing
+		if (zeroDurationJobCount === jobHistories.length) {
+			return ['5px', '5px', '5px', '5px', '5px'];
+		} else {
+			return chartHeights;
+		}
 	}
 
 	private expandJobs(start: boolean): void {
@@ -848,6 +866,40 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return TPromise.as(actions);
 	}
 
+	protected convertStepsToStepInfos(steps: sqlops.AgentJobStep[], job: sqlops.AgentJobInfo): sqlops.AgentJobStepInfo[] {
+		let result = [];
+		steps.forEach(step => {
+			let stepInfo: sqlops.AgentJobStepInfo = {
+				jobId: job.jobId,
+				jobName: job.name,
+				script: null,
+				scriptName: null,
+				stepName: step.stepName,
+				subSystem: null,
+				id: +step.stepId,
+				failureAction: null,
+				successAction: null,
+				failStepId: null,
+				successStepId: null,
+				command: null,
+				commandExecutionSuccessCode: null,
+				databaseName: null,
+				databaseUserName: null,
+				server: null,
+				outputFileName: null,
+				appendToLogFile: null,
+				appendToStepHist: null,
+				writeLogToTable: null,
+				appendLogToTable: null,
+				retryAttempts: null,
+				retryInterval: null,
+				proxyName: null
+			};
+			result.push(stepInfo);
+		});
+		return result;
+	}
+
 	protected getCurrentTableObject(rowIndex: number): any {
 		let data = this._table.grid.getData();
 		if (!data || rowIndex >= data.getLength()) {
@@ -855,10 +907,52 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		}
 
 		let jobId =  data.getItem(rowIndex).jobId;
-		let job = this.jobs.filter(job => {
+		if (!jobId) {
+			// if we couldn't find the ID, check if it's an
+			// error row
+			let isErrorRow: boolean = data.getItem(rowIndex).id.indexOf('error') >= 0;
+			if (isErrorRow) {
+				jobId = data.getItem(rowIndex - 1).jobId;
+			}
+		}
+
+		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});
 
+		// add steps
+		if (this.jobSteps && this.jobSteps[jobId]) {
+			let steps = this.jobSteps[jobId];
+			job[0].JobSteps = steps;
+		}
+		let jobHistories = this.jobHistories[job[0].jobId];
+		let schedules: sqlops.AgentJobScheduleInfo[] = this.jobSchedules[job[0].jobId];
+		let alerts: sqlops.AgentAlertInfo[] = this.jobAlerts[job[0].jobId];
+		if (jobHistories && jobHistories[jobHistories.length-1]) {
+
+			// add schedules
+			if (schedules && schedules.length > 0) {
+				if (!job[0].JobSchedules) {
+					job[0].JobSchedules = [];
+				}
+				if (job[0].JobSchedules.length !== schedules.length) {
+					job[0].JobSchedules = [];
+					schedules.forEach(schedule => {
+						job[0].JobSchedules.push(schedule);
+					});
+				}
+			}
+			// add alerts
+			if (!job[0].Alerts) {
+				job[0].Alerts = [];
+			}
+			if (job[0].Alerts.length !== alerts.length) {
+				job[0].Alerts = [];
+				alerts.forEach(alert => {
+					job[0].Alerts.push(alert);
+				});
+			}
+		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}
 

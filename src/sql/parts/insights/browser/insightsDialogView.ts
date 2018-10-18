@@ -188,8 +188,16 @@ export class InsightsDialogView extends Modal {
 				for (let i = 0; i < this._model.columns.length; i++) {
 					resourceArray.push({ label: this._model.columns[i], value: element.data[i], data: element.data });
 				}
+
 				this._bottomTableData.clear();
 				this._bottomTableData.push(resourceArray);
+				// this table view has to be collapsed and expanded
+				// because the initial expand doesn't have the
+				// loaded data
+				if (bottomTableView.isExpanded()) {
+					bottomTableView.collapse();
+					bottomTableView.expand();
+				}
 				this._enableTaskButtons(true);
 			} else {
 				this._enableTaskButtons(false);
@@ -334,6 +342,7 @@ export class InsightsDialogView extends Modal {
 		this.hide();
 		dispose(this._taskButtonDisposables);
 		this._taskButtonDisposables = [];
+		this.dispose();
 	}
 
 	protected onClose(e: StandardKeyboardEvent) {

@@ -56,7 +56,7 @@ gulp.task('compile:src', function(done) {
             }
         })
         .pipe(srcmap.write('.', {
-            sourceRoot: function(file) { 
+            sourceRoot: function(file) {
                 return file.cwd + '/src';
             }
         }))
@@ -100,14 +100,14 @@ gulp.task('test', (done) => {
     }
     process.env.JUNIT_REPORT_PATH = workspace + '/test-reports/ext_xunit.xml';
 
-    let sqlopsPath = 'sqlops';
+    let azuredatastudioPath = 'azuredatastudio';
     if (process.env['SQLOPS_DEV']) {
         let suffix = os.platform === 'win32' ? 'bat' : 'sh';
-        sqlopsPath = `${process.env['SQLOPS_DEV']}/scripts/sql-cli.${suffix}`;
+        azuredatastudioPath = `${process.env['SQLOPS_DEV']}/scripts/sql-cli.${suffix}`;
     }
-    console.log(`Using SQLOPS Path of ${sqlopsPath}`);
+    console.log(`Using SQLOPS Path of ${azuredatastudioPath}`);
 
-    cproc.exec(`${sqlopsPath} --extensionDevelopmentPath="${workspace}" --extensionTestsPath="${workspace}/out/test" --verbose`, (error, stdout, stderr) => {
+    cproc.exec(`${azuredatastudioPath} --extensionDevelopmentPath="${workspace}" --extensionTestsPath="${workspace}/out/test" --verbose`, (error, stdout, stderr) => {
         if (error) {
             console.error(`exec error: ${error}`);
             process.exit(1);

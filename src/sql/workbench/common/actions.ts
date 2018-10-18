@@ -441,7 +441,7 @@ export class NewDatabaseAction extends Action {
 
 export class ConfigureDashboardAction extends Task {
 	public static readonly ID = 'configureDashboard';
-	public static readonly LABEL = nls.localize('configureDashboard', 'Configure');
+	public static readonly LABEL = nls.localize('configureDashboard', 'Learn How To Configure The Dashboard');
 	public static readonly ICON = 'configure-dashboard';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 

@@ -25,8 +25,8 @@ import { Action } from 'vs/base/common/actions';
 class TwitterFeedbackService implements IFeedbackService {
 
 	private static TWITTER_URL: string = 'https://twitter.com/intent/tweet';
-	private static VIA_NAME: string = 'sqlopsstudio'; // {{SQL CARBON EDIT}}
-	private static HASHTAGS: string[] = ['HappySqlOps']; // {{SQL CARBON EDIT}}
+	private static VIA_NAME: string = 'azuredatastudio'; // {{SQL CARBON EDIT}}
+	private static HASHTAGS: string[] = ['HappyAzureDataStudio']; // {{SQL CARBON EDIT}}
 
 	private combineHashTagsAsString(): string {
 		return TwitterFeedbackService.HASHTAGS.join(',');

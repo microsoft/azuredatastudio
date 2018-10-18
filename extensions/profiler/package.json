@@ -1,11 +1,11 @@
 {
   "name": "profiler",
   "displayName": "SQL Server Profiler",
-  "description": "SQL Server Profiler for SQL Operations Studio",
-  "version": "0.1.5",
+  "description": "SQL Server Profiler for Azure Data Studio",
+  "version": "0.2.0",
   "publisher": "Microsoft",
   "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "engines": {
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/sqlopsstudio.git"
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "extensionDependencies": [
     "Microsoft.mssql"

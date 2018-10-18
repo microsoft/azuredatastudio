@@ -17,7 +17,9 @@ export class JobManagementUtilities {
 		switch(status) {
 			case(0): return nls.localize('agentUtilities.failed','Failed');
 			case(1): return nls.localize('agentUtilities.succeeded', 'Succeeded');
-			case(3): return nls.localize('agentUtilities.canceled', 'Canceled');
+			case(2): return nls.localize('agentUtilities.retry', 'Retry');
+			case(3): return nls.localize('agentUtilities.canceled', 'Cancelled');
+			case(4): return nls.localize('agentUtilities.inProgress', 'In Progress');
 			case(5): return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
 			default: return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
 		}

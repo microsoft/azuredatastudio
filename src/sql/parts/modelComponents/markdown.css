@@ -1,0 +1,238 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+ modelview-dom-component {
+	font-family: "Segoe WPC", "Segoe UI", "SFUIText-Light", "HelveticaNeue-Light", sans-serif, "Droid Sans Fallback";
+	font-size: 14px;
+	padding: 0 26px;
+	line-height: 22px;
+	word-wrap: break-word;
+}
+
+modelview-dom-component #code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+modelview-dom-component #code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+
+modelview-dom-component .scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+modelview-dom-component .showEditorSelection .code-line {
+	position: relative;
+}
+
+modelview-dom-component .showEditorSelection .code-active-line:before,
+modelview-dom-component .showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+modelview-dom-component .showEditorSelection li.code-active-line:before,
+modelview-dom-component .showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+modelview-dom-component .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+modelview-dom-component .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vs-dark .monaco-workbench modelview-dom-component .showEditorSelection .code-active-line:before
+.hc-black .monaco-workbench modelview-dom-component .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vs-dark .monaco-workbench modelview-dom-component .showEditorSelection .code-line:hover:before
+.hc-black .monaco-workbench modelview-dom-component .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vs-dark .monaco-workbench modelview-dom-component .showEditorSelection .code-line .code-line:hover:before
+.hc-black .monaco-workbench modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.hc-black modelview-dom-component .showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.hc-black modelview-dom-component .showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+modelview-dom-component .showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+modelview-dom-component img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+modelview-dom-component a, modelview-dom-component a:link{
+	text-decoration: none;
+}
+
+modelview-dom-component a:hover, modelview-dom-component a:link {
+	text-decoration: underline;
+}
+
+modelview-dom-component a:focus,
+modelview-dom-component input:focus,
+modelview-dom-component select:focus,
+modelview-dom-component textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+modelview-dom-component hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+modelview-dom-component h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+modelview-dom-component h1,
+modelview-dom-component h2,
+modelview-dom-component h3 {
+	font-weight: normal;
+}
+
+modelview-dom-component h1 code,
+modelview-dom-component h2 code,
+modelview-dom-component h3 code,
+modelview-dom-component h4 code,
+modelview-dom-component h5 code,
+modelview-dom-component h6 code {
+	font-size: inherit;
+	line-height: auto;
+}
+
+modelview-dom-component table {
+	border-collapse: collapse;
+}
+
+modelview-dom-component table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+modelview-dom-component table > thead > tr > th,
+modelview-dom-component table > thead > tr > td,
+modelview-dom-component table > tbody > tr > th,
+modelview-dom-component table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+modelview-dom-component table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+modelview-dom-component blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+modelview-dom-component code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 14px;
+	line-height: 19px;
+}
+
+modelview-dom-component .wordWrap pre {
+	white-space: pre-wrap;
+}
+
+modelview-dom-component .mac code {
+	font-size: 12px;
+	line-height: 18px;
+}
+
+modelview-dom-component pre:not(.hljs),
+modelview-dom-component pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+/** Theming */
+
+modelview-dom-component pre code {
+	color: var(--vscode-editor-foreground);
+}
+
+
+modelview-dom-component pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vs-dark .monaco-workbench modelview-dom-component pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.hc-black .monaco-workbench modelview-dom-component pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.hc-black .monaco-workbench modelview-dom-component h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+modelview-dom-component table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vs-dark .monaco-workbench modelview-dom-component table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+modelview-dom-component h1,
+modelview-dom-component hr,
+modelview-dom-component table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vs-dark .monaco-workbench modelview-dom-component h1,
+.vs-dark .monaco-workbench modelview-dom-component hr,
+.vs-dark .monaco-workbench modelview-dom-component table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}

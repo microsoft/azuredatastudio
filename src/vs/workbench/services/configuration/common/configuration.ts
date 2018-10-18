@@ -7,7 +7,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 // {{SQL CARBON EDIT}}
-export const FOLDER_CONFIG_FOLDER_NAME = '.sqlops';
+export const FOLDER_CONFIG_FOLDER_NAME = '.azuredatastudio';
 export const FOLDER_SETTINGS_NAME = 'settings';
 export const FOLDER_SETTINGS_PATH = `${FOLDER_CONFIG_FOLDER_NAME}/${FOLDER_SETTINGS_NAME}.json`;
 

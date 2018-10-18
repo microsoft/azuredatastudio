@@ -40,7 +40,7 @@
       <source xml:lang="en">Startup Configuration</source>
     </trans-unit>
     <trans-unit id="startup.alwaysShowServersView">
-      <source xml:lang="en">True for the Servers view to be shown on launch of SQL Operations Studio default; false if the last opened view should be shown</source>
+      <source xml:lang="en">True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/parts/query/common/query.contribution" source-language="en" datatype="plaintext"><body>

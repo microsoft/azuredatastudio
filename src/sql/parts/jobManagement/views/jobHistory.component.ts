@@ -74,7 +74,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
@@ -151,16 +150,17 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
-			if (result && result.jobs) {
-				if (result.jobs.length > 0) {
+		let jobName = this._agentViewComponent.agentJobInfo.name;
+		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId, jobName).then((result) => {
+			if (result && result.histories) {
+				if (result.histories.length > 0) {
 					self._showPreviousRuns = true;
-					self.buildHistoryTree(self, result.jobs);
+					self.buildHistoryTree(self, result.histories);
 					if (self._agentViewComponent.showHistory) {
 						self._cd.detectChanges();
 					}
 				} else {
-					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.jobs);
+					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.histories);
 					self._showPreviousRuns = false;
 				}
 			} else {
@@ -185,8 +185,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 					stepViewRow.runStatus = jobStepStatus ? JobManagementUtilities.convertToStatusString(0) :
 						JobManagementUtilities.convertToStatusString(step.runStatus);
 					self._runStatus = JobManagementUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-					stepViewRow.stepName = step.stepName;
-					stepViewRow.stepID = step.stepId.toString();
+					stepViewRow.stepName = step.stepDetails.stepName;
+					stepViewRow.stepId = step.stepDetails.id.toString();
 					return stepViewRow;
 				});
 				this._showSteps = self._stepRows.length > 0;
@@ -315,6 +315,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
+	}
+
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
@@ -353,4 +357,5 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._showSteps = value;
 		this._cd.detectChanges();
 	}
+
 }

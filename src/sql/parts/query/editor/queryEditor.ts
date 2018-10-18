@@ -7,8 +7,10 @@ import 'vs/css!sql/parts/query/editor/media/queryEditor';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
+import * as types from 'vs/base/common/types';
 
-import { EditorInput, EditorOptions, IEditorControl, IEditor } from 'vs/workbench/common/editor';
+import { EditorInput, EditorOptions, IEditorControl, IEditor, TextEditorOptions } from 'vs/workbench/common/editor';
+import * as editorCommon from 'vs/editor/common/editorCommon';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { VerticalFlexibleSash, HorizontalFlexibleSash, IFlexibleSash } from 'sql/parts/query/views/flexibleSash';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
@@ -377,6 +379,26 @@ export class QueryEditor extends BaseEditor {
 		return undefined;
 	}
 
+	public getAllSelection(): ISelectionData {
+		if (this._sqlEditor && this._sqlEditor.getControl()) {
+			let control = this._sqlEditor.getControl();
+			let codeEditor: ICodeEditor = <ICodeEditor>control;
+			if (codeEditor) {
+				let model = codeEditor.getModel();
+				let totalLines = model.getLineCount();
+				let endColumn = model.getLineMaxColumn(totalLines);
+				let selection: ISelectionData = {
+					startLine: 0,
+					startColumn: 0,
+					endLine: totalLines - 1,
+					endColumn: endColumn - 1,
+				};
+				return selection;
+			}
+		}
+		return undefined;
+	}
+
 	public getSelectionText(): string {
 		if (this._sqlEditor && this._sqlEditor.getControl()) {
 			let control = this._sqlEditor.getControl();
@@ -424,6 +446,13 @@ export class QueryEditor extends BaseEditor {
 
 	public rebuildIntelliSenseCache(): void {
 		this._connectionManagementService.rebuildIntelliSenseCache(this.connectedUri);
+	}
+
+	public setOptions(options: EditorOptions): void {
+		const textOptions = <TextEditorOptions>options;
+		if (textOptions && types.isFunction(textOptions.apply)) {
+			textOptions.apply(this.getControl() as editorCommon.IEditor, editorCommon.ScrollType.Smooth);
+		}
 	}
 
 	// PRIVATE METHODS ////////////////////////////////////////////////////////////

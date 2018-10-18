@@ -142,7 +142,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		if (element) {
 			element.onCheckedChanged = (checked: boolean) => {
 				this._dataProvider.onNodeCheckedChanged(element.handle, checked);
-			}
+			};
 			templateData.model = element;
 		}
 		if (templateId === TreeComponentRenderer.DEFAULT_TEMPLATE) {

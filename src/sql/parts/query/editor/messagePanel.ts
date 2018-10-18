@@ -25,10 +25,12 @@ import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'v
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { $ } from 'vs/base/browser/builder';
-import { isArray } from 'vs/base/common/types';
+import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditor } from 'vs/editor/common/editorCommon';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -62,6 +64,13 @@ const TemplateIds = {
 export class MessagePanelState {
 	public scrollPosition: number;
 	public collapsed = false;
+
+	constructor(@IConfigurationService configurationService: IConfigurationService) {
+		let messagesOpenedSettings = configurationService.getValue<boolean>('sql.messagesDefaultOpen');
+		if (!isUndefinedOrNull(messagesOpenedSettings)) {
+			this.collapsed = !messagesOpenedSettings;
+		}
+	}
 }
 
 export class MessagePanel extends ViewletPanel {
@@ -91,7 +100,7 @@ export class MessagePanel extends ViewletPanel {
 			dataSource: this.ds,
 			renderer: this.renderer,
 			controller: this.controller
-		}, { keyboardSupport: false });
+		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
 		this.tree.onDidScroll(e => {
 			if (this.state) {
 				this.state.scrollPosition = this.tree.getScrollPosition();
@@ -295,14 +304,8 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let control = this.workbenchEditorService.activeControl.getControl() as IEditor;
-			control.setSelection({
-				startColumn: selection.startColumn + 1,
-				endColumn: selection.endColumn + 1,
-				endLineNumber: selection.endLine + 1,
-				startLineNumber: selection.startLine + 1
-			});
-			control.focus();
+			let input = this.workbenchEditorService.activeEditor as QueryInput;
+			input.updateSelection(selection);
 		}
 
 		return true;

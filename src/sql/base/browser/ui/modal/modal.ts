@@ -518,5 +518,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	public dispose() {
 		super.dispose();
 		this._keydownListener.dispose();
+		this._footerButtons = [];
 	}
 }

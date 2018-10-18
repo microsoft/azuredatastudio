@@ -26,7 +26,7 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 
 	public constructor(
 		protected capabilitiesService: ICapabilitiesService,
-		model: string | interfaces.IConnectionProfile
+		model: string | sqlops.IConnectionProfile
 	) {
 		super();
 		// we can't really do a whole lot if we don't have a provider
@@ -195,8 +195,8 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 		if (this._serverCapabilities) {
 			idNames = this._serverCapabilities.connectionOptions.map(o => {
 				if ((o.specialValueType || o.isIdentity)
-				&& o.specialValueType !== ConnectionOptionSpecialType.password
-				&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
+					&& o.specialValueType !== ConnectionOptionSpecialType.password
+					&& o.specialValueType !== ConnectionOptionSpecialType.connectionName) {
 					return o.name;
 				} else {
 					return undefined;
