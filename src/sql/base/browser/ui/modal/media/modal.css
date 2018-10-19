@@ -50,6 +50,8 @@
 .monaco-shell .modal.flyout-dialog .modal-content {
 	height: 100%;
 	font-size: 11px;
+	display: flex;
+	flex-direction: column;
 }
 
 .modal .modal-title {
@@ -63,13 +65,10 @@
 	margin-right: 10px;
 }
 
-.monaco-shell .modal.flyout-dialog .modal-body {
-	height: calc(100% - 105px);
-}
-
-/* modal body for angular component dialog */
+.monaco-shell .modal.flyout-dialog .modal-body,
 .monaco-shell .modal.flyout-dialog .angular-modal-body {
-	height: calc(100% - 90px);
+	margin-bottom: auto;
+	height: 100%;
 }
 
 /* Style for body and footer in modal dialog. This should be applied to dialog created with angular component. */

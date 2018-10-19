@@ -342,17 +342,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		element.style.display = visible ? 'block' : 'none';
 	}
 
-	private adjustBodyHeight() {
-		if (this._modalHeaderSection && this._modalFooterSection && this._modalBodySection && this._messageElement) {
-			let usedHeight: number = DOM.getTotalHeight(this._modalHeaderSection.getHTMLElement()) + DOM.getTotalHeight(this._modalFooterSection.getHTMLElement()) + DOM.getTotalHeight(this._messageElement);
-			if (usedHeight === 0) {
-				usedHeight = this._modalOptions.isAngular ? 90 : 105;
-			}
-			// TODO maybe using flex to control the height?
-			this._modalBodySection.style.height = 'calc(100% - ' + usedHeight + 'px';
-		}
-	}
-
 	private updateExpandMessageState() {
 		this._messageSummaryElement.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
 		this._messageSummaryElement.classList.remove('expandedMode');
@@ -363,7 +352,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this.shouldShowExpandMessageButton) {
 			this._messageSummaryElement.classList.add('expandedMode');
 			this.updateElementVisibility(this._messageDetailElement, true);
-			this.adjustBodyHeight();
 		}
 	}
 
@@ -509,7 +497,6 @@ export abstract class Modal extends Disposable implements IThemable {
 			this.updateElementVisibility(this._messageDetailElement, false);
 			this.updateElementVisibility(this._messageElement, this._messageSummaryText !== '');
 			this.updateExpandMessageState();
-			this.adjustBodyHeight();
 		}
 	}
 
