@@ -704,3 +704,11 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
 }
+
+export interface ExtHostNotebookShape {
+
+}
+
+export interface MainTheadNotebookShape {
+
+}
