@@ -128,13 +128,6 @@
 	border: 1px solid transparent;
 }
 
-.modal.flyout-dialog .dialogErrorMessage {
-	overflow: hidden;
-	padding-left: 10px;
-	overflow-y: auto;
-	display: flex;
-}
-
 .modal .modal-footer {
 	display: flex;
 }
@@ -167,27 +160,59 @@
 	margin-right: none;
 }
 
-.modal.flyout-dialog .icon.error {
-	float: left;
-	margin-right: 10px;
+.modal.flyout-dialog .dialogMessageBox {
+	padding: 5px;
+	background-color:#94402c !important;
+	font-size: 13px;
+	color:#f2efef !important;
+}
+
+.modal.flyout-dialog .dialogMessageHeader {
+	overflow: hidden;
+	overflow-y: auto;
+	display: flex;
+}
+
+.modal.flyout-dialog .dialogMessageIcon {
+	margin-right: 5px;
 	width: 20px;
 	height: 20px;
+	min-width: 20px;
 }
 
-.modal .modal-footer .dialogErrorMessage {
-	align-items: center;
-	max-height: 30px;
+.modal.flyout-dialog .dialogMessageSeverity {
+	margin-right: auto;
+}
+
+.modal.flyout-dialog .messageActionButton {
+	width: 85px;
 	margin-right: 5px;
 }
-
-.modal .dialogErrorMessage .icon {
-	float: left;
-	margin-right: 10px;
-	width: auto;
-	height: 20px;
+.modal.flyout-dialog .messageActionButton > a {
+	background-position-x: 2px !important;
+	background-color: inherit !important;
 }
 
-.modal .modal-footer .dialogErrorMessage .errorMessage {
-	max-height: 100%;
+.modal.flyout-dialog .dialogMessageSummary {
+	margin-left: 25px;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.modal.flyout-dialog .dialogMessageSummary.expandedMode {
+	white-space: normal;
 	overflow-y: scroll;
+	max-height: 95px;
+}
+
+.modal.flyout-dialog .dialogMessageDetail {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	max-height: 95px;
+	margin-left: 25px;
+	margin-top: 5px;
+	white-space: normal;
+	-webkit-user-select: text;
+	font-size: 11px;
 }

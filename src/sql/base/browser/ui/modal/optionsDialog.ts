@@ -30,6 +30,7 @@ import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/split
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class CategoryView extends FixedCollapsibleView {
 	private _treecontainer: HTMLElement;
@@ -95,9 +96,10 @@ export class OptionsDialog extends Modal {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(title, name, partService, telemetryService, contextKeyService, options);
+		super(title, name, partService, telemetryService, clipboardService, contextKeyService, options);
 	}
 
 	public render() {

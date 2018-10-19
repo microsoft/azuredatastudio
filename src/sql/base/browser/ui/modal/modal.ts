@@ -16,6 +16,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
@@ -28,6 +29,12 @@ export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOW
 const INFO_ALT_TEXT = localize('infoAltText', 'Info');
 const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
 const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
+const INFO_MESSAGE_BOX_CLASS = '';
+const WARNING_MESSAGE_BOX_CLASS = '';
+const ERROR_MESSAGE_BOX_CLASS = '';
+const EXPAND_TEXT = localize('showMessageDetails', 'Expand');
+const COPY_TEXT = localize('copyMessage', 'Copy');
+const CLOSE_TEXT = localize('closeMessage', 'Close');
 
 export interface IModalDialogStyles {
 	dialogForeground?: Color;
@@ -66,10 +73,20 @@ const defaultOptions: IModalOptions = {
 
 export abstract class Modal extends Disposable implements IThemable {
 
-	private _errorMessage: Builder;
-	private _spinnerElement: HTMLElement;
-	private _errorIconElement: HTMLElement;
+	private _messageElement: HTMLElement;
+	private _messageIcon: HTMLElement;
+	private _messageSeverity: Builder;
+	private _messageSummary: Builder;
+	private _messageSummaryElement: HTMLElement;
+	private _messageDetail: Builder;
+	private _messageDetailElement: HTMLElement;
+	private _expandMessageButton: Button;
+	private _copyMessageButton: Button;
+	private _closeMessageButton: Button;
+	private _messageSummaryText: string;
+	private _messageDetailText: string;
 
+	private _spinnerElement: HTMLElement;
 	private _focusableElements: NodeListOf<Element>;
 	private _firstFocusableElement: HTMLElement;
 	private _lastFocusableElement: HTMLElement;
@@ -82,6 +99,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private _modalDialog: Builder;
 	private _modalHeaderSection: Builder;
+	private _modalMessageSecion: Builder;
 	private _modalBodySection: HTMLElement;
 	private _modalFooterSection: Builder;
 	private _closeButtonInHeader: Builder;
@@ -135,6 +153,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _name: string,
 		private _partService: IPartService,
 		private _telemetryService: ITelemetryService,
+		protected _clipboardService: IClipboardService,
 		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
@@ -149,7 +168,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Build and render the modal, will call {@link Modal#renderBody}
 	 */
-	public render(errorMessagesInFooter: boolean = false) {
+	public render() {
 		let modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 		let parts: Array<HTMLElement> = [];
 		// This modal header section refers to the header of of the dialog
@@ -176,11 +195,66 @@ export abstract class Modal extends Disposable implements IThemable {
 			parts.push(this._modalHeaderSection.getHTMLElement());
 		}
 
+		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
+
+			this._modalMessageSecion = $().div({ class: 'dialogMessageBox vs-dark' }, (messageContainer) => {
+				messageContainer.div({ class: 'dialogMessageHeader' }, (headerContainer) => {
+					headerContainer.div({ class: 'dialogMessageIcon sql icon error vs-dark' }, (iconContainer) => {
+						this._messageIcon = iconContainer.getHTMLElement();
+					});
+					headerContainer.div({ class: 'dialogMessageSeverity' }, (messageSeverityContainer) => {
+						this._messageSeverity = messageSeverityContainer;
+					});
+					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
+						this._expandMessageButton = new Button(buttonContainer);
+						this._expandMessageButton.icon = 'sql icon scriptToClipboard';
+						this._expandMessageButton.label = EXPAND_TEXT;
+						this._expandMessageButton.onDidClick((e) => {
+							this.expandMessage();
+						});
+					});
+					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
+						this._copyMessageButton = new Button(buttonContainer);
+						this._copyMessageButton.icon = 'sql icon scriptToClipboard';
+						this._copyMessageButton.label = COPY_TEXT;
+						this._copyMessageButton.onDidClick((e) => {
+							this._clipboardService.writeText(this.getTextForClipboard());
+						});
+					});
+					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
+						this._closeMessageButton = new Button(buttonContainer);
+						this._closeMessageButton.icon = 'sql icon close';
+						this._closeMessageButton.label = CLOSE_TEXT;
+						this._closeMessageButton.onDidClick((e) => {
+							this.setError(undefined);
+						});
+					});
+				});
+				messageContainer.div({ class: 'dialogMessageSummary' }, (summaryContainer) => {
+					this._messageSummary = summaryContainer;
+					this._messageSummaryElement = summaryContainer.getHTMLElement();
+					this._messageSummaryElement.onclick = (e) => {
+						this.expandMessage();
+					};
+				});
+				messageContainer.div({ class: 'dialogMessageDetail' }, (detailContainer) => {
+					this._messageDetail = detailContainer;
+					this._messageDetailElement = detailContainer.getHTMLElement();
+					this._messageDetailElement.style.display = 'none';
+				});
+			});
+			this._messageElement = this._modalMessageSecion.getHTMLElement();
+			this.updateElementVisibility(this._messageElement, false);
+
+			parts.push(this._messageElement);
+		}
+
 		// This modal body section refers to the body of of the dialog
 		let body: Builder;
 		$().div({ class: modalBodyClass }, (builder) => {
 			body = builder;
 		});
+
 		this._modalBodySection = body.getHTMLElement();
 		parts.push(body.getHTMLElement());
 
@@ -212,19 +286,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		if (this._modalOptions.isWide) {
 			builderClass += ' wide';
-		}
-
-		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
-			let builder = errorMessagesInFooter ? this._leftFooter : body;
-			builder.div({ class: 'dialogErrorMessage', id: 'dialogErrorMessage' }, (errorMessageContainer) => {
-				errorMessageContainer.div({ class: 'sql icon error' }, (iconContainer) => {
-					this._errorIconElement = iconContainer.getHTMLElement();
-					this._errorIconElement.style.visibility = 'hidden';
-				});
-				errorMessageContainer.div({ class: 'errorMessage' }, (messageContainer) => {
-					this._errorMessage = messageContainer;
-				});
-			});
 		}
 
 		// The builder builds the dialog. It append header, body and footer sections.
@@ -271,6 +332,43 @@ export abstract class Modal extends Disposable implements IThemable {
 			e.preventDefault();
 			this._firstFocusableElement.focus();
 		}
+	}
+
+	private getTextForClipboard(): string {
+		return this._messageDetailText === '' ? this._messageSummaryText : this._messageSummaryText + '\r\n========================\r\n' + this._messageDetailText;
+	}
+
+	private updateElementVisibility(element: HTMLElement, visible: boolean) {
+		element.style.display = visible ? 'block' : 'none';
+	}
+
+	private adjustBodyHeight() {
+		if (this._modalHeaderSection && this._modalFooterSection && this._modalBodySection && this._messageElement) {
+			let usedHeight: number = DOM.getTotalHeight(this._modalHeaderSection.getHTMLElement()) + DOM.getTotalHeight(this._modalFooterSection.getHTMLElement()) + DOM.getTotalHeight(this._messageElement);
+			if (usedHeight === 0) {
+				usedHeight = this._modalOptions.isAngular ? 90 : 105;
+			}
+			// TODO maybe using flex to control the height?
+			this._modalBodySection.style.height = 'calc(100% - ' + usedHeight + 'px';
+		}
+	}
+
+	private updateExpandMessageState() {
+		this.updateElementVisibility(this._expandMessageButton.element, this.shouldShowExpandMessageButton);
+		this._messageSummaryElement.style.cursor = this.shouldShowExpandMessageButton ? 'cursor' : 'default';
+		this._messageSummaryElement.classList.remove('expandedMode');
+	}
+
+	private expandMessage() {
+		if (this.shouldShowExpandMessageButton) {
+			this._messageSummaryElement.classList.add('expandedMode');
+			this.updateElementVisibility(this._messageDetailElement, true);
+			this.adjustBodyHeight();
+		}
+	}
+
+	private get shouldShowExpandMessageButton(): boolean {
+		return this._messageDetailText !== '' || this._messageSummaryElement.scrollWidth > this._messageSummaryElement.offsetWidth;
 	}
 
 	/**
@@ -374,35 +472,44 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Show an error in the error message element
-	 * @param err Text to show in the error message
+	 * @param message Text to show in the message
+	 * @param level Severity level of the message
+	 * @param description Description of the message
 	 */
-	protected setError(err: string, level: MessageLevel = MessageLevel.Error) {
+	protected setError(message: string, level: MessageLevel = MessageLevel.Error, description: string = '') {
 		if (this._modalOptions.hasErrors) {
-			if (err === '') {
-				this._errorIconElement.style.visibility = 'hidden';
-			} else {
+			this._messageSummaryText = message ? message : '';
+			this._messageDetailText = description ? description : '';
+
+			if (this._messageSummaryText !== '') {
 				const levelClasses = ['info', 'warning', 'error'];
 				let selectedLevel = levelClasses[2];
-				let altText = ERROR_ALT_TEXT;
+				let severityText = ERROR_ALT_TEXT;
 				if (level === MessageLevel.Information) {
 					selectedLevel = levelClasses[0];
-					altText = INFO_ALT_TEXT;
+					severityText = INFO_ALT_TEXT;
 				} else if (level === MessageLevel.Warning) {
 					selectedLevel = levelClasses[1];
-					altText = WARNING_ALT_TEXT;
+					severityText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
 					if (selectedLevel === level) {
-						this._errorIconElement.classList.add(level);
+						this._messageIcon.classList.add(level);
 					} else {
-						this._errorIconElement.classList.remove(level);
+						this._messageIcon.classList.remove(level);
 					}
 				});
 
-				this._errorIconElement.title = altText;
-				this._errorIconElement.style.visibility = 'visible';
+				this._messageIcon.title = severityText;
+				this._messageSeverity.text(severityText);
+				this._messageSummary.text(message);
+				this._messageSummary.title(message);
+				this._messageDetail.text(description);
 			}
-			this._errorMessage.text(err);
+			this.updateElementVisibility(this._messageDetailElement, false);
+			this.updateElementVisibility(this._messageElement, this._messageSummaryText !== '');
+			this.updateExpandMessageState();
+			this.adjustBodyHeight();
 		}
 	}
 
