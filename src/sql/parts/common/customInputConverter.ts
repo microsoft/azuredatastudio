@@ -12,6 +12,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import URI from 'vs/base/common/uri';
 import { IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
+import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
 
 const fs = require('fs');
 
@@ -28,7 +29,7 @@ export const sqlModeId = 'sql';
  * to that type.
  * @param input The input to check for conversion
  * @param options Editor options for controlling the conversion
- * @param instantiationService The instatianation service to use to create the new input types
+ * @param instantiationService The instantiation service to use to create the new input types
  */
 export function convertEditorInput(input: EditorInput, options: IQueryEditorOptions, instantiationService: IInstantiationService): EditorInput {
 	let denyQueryEditor = options && options.denyQueryEditor;
@@ -47,6 +48,16 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			let queryPlanXml: string = fs.readFileSync(uri.fsPath);
 			let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
 			return queryPlanInput;
+		}
+
+		//Notebook
+		uri = getNotebookEditorUri(input);
+		if(uri){
+			let notebookData: string = fs.readFileSync(uri.fsPath);
+			let notebookInputModel = new NotebookInputModel('modelViewId', undefined, undefined);
+			//TO DO: Second paramter has to be the content
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, '', notebookInputModel);
+			return notebookInput;
 		}
 	}
 
@@ -80,6 +91,7 @@ export function getSupportedInputResource(input: IEditorInput): URI {
 // file extensions for the inputs we support (should be all upper case for comparison)
 const sqlFileTypes = ['SQL'];
 const sqlPlanFileTypes = ['SQLPLAN'];
+const notebookFileType = ['IPYNB'];
 
 /**
  * If input is a supported query editor file, return it's URI. Otherwise return undefined.
@@ -121,6 +133,29 @@ function getQueryPlanEditorUri(input: EditorInput): URI {
 		let uri: URI = getSupportedInputResource(input);
 		if (uri) {
 			if (hasFileExtension(sqlPlanFileTypes, input, false)) {
+				return uri;
+			}
+		}
+	}
+
+	return undefined;
+}
+
+
+/**
+ * If input is a supported notebook editor file (.ipynb), return it's URI. Otherwise return undefined.
+ * @param input The EditorInput to get the URI of
+ */
+function getNotebookEditorUri(input: EditorInput): URI {
+	if (!input || !input.getName()) {
+		return undefined;
+	}
+
+	// If this editor is not already of type notebook input
+	if (!(input instanceof NotebookInput)) {
+		let uri: URI = getSupportedInputResource(input);
+		if (uri) {
+			if (hasFileExtension(notebookFileType, input, false)) {
 				return uri;
 			}
 		}
