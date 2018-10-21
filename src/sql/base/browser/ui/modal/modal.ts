@@ -23,18 +23,17 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
+import * as os from 'os';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
-const INFO_ALT_TEXT = localize('infoAltText', 'Info');
+const INFO_ALT_TEXT = localize('infoAltText', 'Infomation');
 const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
 const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
-const INFO_MESSAGE_BOX_CLASS = '';
-const WARNING_MESSAGE_BOX_CLASS = '';
-const ERROR_MESSAGE_BOX_CLASS = '';
-const EXPAND_TEXT = localize('showMessageDetails', 'Expand');
+const DETAILS_TEXT = localize('toggleMessageDetails', 'Details');
 const COPY_TEXT = localize('copyMessage', 'Copy');
 const CLOSE_TEXT = localize('closeMessage', 'Close');
+const MESSAGE_EXPANDED_MODE_CLASS = 'expandedMode';
 
 export interface IModalDialogStyles {
 	dialogForeground?: Color;
@@ -80,7 +79,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _messageSummaryElement: HTMLElement;
 	private _messageDetail: Builder;
 	private _messageDetailElement: HTMLElement;
-	private _expandMessageButton: Button;
+	private _toggleMessageDetailButton: Button;
 	private _copyMessageButton: Button;
 	private _closeMessageButton: Button;
 	private _messageSummaryText: string;
@@ -197,8 +196,8 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
 
-			this._modalMessageSecion = $().div({ class: 'dialogMessageBox vs-dark' }, (messageContainer) => {
-				messageContainer.div({ class: 'dialogMessageHeader' }, (headerContainer) => {
+			this._modalMessageSecion = $().div({ class: 'dialogMessageBox vs-dark error' }, (messageContainer) => {
+				messageContainer.div({ class: 'dialogMessageRow' }, (headerContainer) => {
 					headerContainer.div({ class: 'dialogMessageIcon sql icon error vs-dark' }, (iconContainer) => {
 						this._messageIcon = iconContainer.getHTMLElement();
 					});
@@ -206,11 +205,11 @@ export abstract class Modal extends Disposable implements IThemable {
 						this._messageSeverity = messageSeverityContainer;
 					});
 					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
-						this._expandMessageButton = new Button(buttonContainer);
-						this._expandMessageButton.icon = 'sql icon scriptToClipboard';
-						this._expandMessageButton.label = EXPAND_TEXT;
-						this._expandMessageButton.onDidClick((e) => {
-							this.expandMessage();
+						this._toggleMessageDetailButton = new Button(buttonContainer);
+						this._toggleMessageDetailButton.icon = 'sql icon scriptToClipboard';
+						this._toggleMessageDetailButton.label = DETAILS_TEXT;
+						this._toggleMessageDetailButton.onDidClick((e) => {
+							this.toggleMessageDetail();
 						});
 					});
 					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
@@ -234,7 +233,7 @@ export abstract class Modal extends Disposable implements IThemable {
 					this._messageSummary = summaryContainer;
 					this._messageSummaryElement = summaryContainer.getHTMLElement();
 					this._messageSummaryElement.onclick = (e) => {
-						this.expandMessage();
+						this.toggleMessageDetail();
 					};
 				});
 				messageContainer.div({ class: 'dialogMessageDetail' }, (detailContainer) => {
@@ -335,7 +334,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private getTextForClipboard(): string {
-		return this._messageDetailText === '' ? this._messageSummaryText : this._messageSummaryText + '\r\n========================\r\n' + this._messageDetailText;
+		return this._messageDetailText === '' ? this._messageSummaryText : this._messageSummaryText + `${os.EOL}========================${os.EOL}` + this._messageDetailText;
 	}
 
 	private updateElementVisibility(element: HTMLElement, visible: boolean) {
@@ -344,15 +343,19 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private updateExpandMessageState() {
 		this._messageSummaryElement.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
-		this._messageSummaryElement.classList.remove('expandedMode');
-		this.updateElementVisibility(this._expandMessageButton.element, this.shouldShowExpandMessageButton);
+		this._messageSummaryElement.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
+		this.updateElementVisibility(this._toggleMessageDetailButton.element, this.shouldShowExpandMessageButton);
 	}
 
-	private expandMessage() {
-		if (this.shouldShowExpandMessageButton) {
-			this._messageSummaryElement.classList.add('expandedMode');
-			this.updateElementVisibility(this._messageDetailElement, true);
+	private toggleMessageDetail() {
+		let isExpanded = this._messageSummaryElement.classList.contains(MESSAGE_EXPANDED_MODE_CLASS);
+		if (isExpanded) {
+			this._messageSummaryElement.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
+		} else {
+			this._messageSummaryElement.classList.add(MESSAGE_EXPANDED_MODE_CLASS);
 		}
+
+		this.updateElementVisibility(this._messageDetailElement, !isExpanded);
 	}
 
 	private get shouldShowExpandMessageButton(): boolean {
@@ -483,8 +486,10 @@ export abstract class Modal extends Disposable implements IThemable {
 				levelClasses.forEach(level => {
 					if (selectedLevel === level) {
 						this._messageIcon.classList.add(level);
+						this._messageElement.classList.add(level);
 					} else {
 						this._messageIcon.classList.remove(level);
+						this._messageElement.classList.remove(level);
 					}
 				});
 

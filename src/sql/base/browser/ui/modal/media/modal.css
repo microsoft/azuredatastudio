@@ -159,17 +159,32 @@
 	margin-right: none;
 }
 
-.modal.flyout-dialog .dialogMessageBox {
+.modal.flyout-dialog .dialogMessageBox.error {
 	padding: 5px;
 	background-color:#94402c !important;
 	font-size: 13px;
-	color:#f2efef !important;
+	color:white !important;
 }
 
-.modal.flyout-dialog .dialogMessageHeader {
+.modal.flyout-dialog .dialogMessageBox.warning {
+	padding: 5px;
+	background-color:darkorange !important;
+	font-size: 13px;
+	color:white !important;
+}
+
+.modal.flyout-dialog .dialogMessageBox.info {
+	padding: 5px;
+	background-color:blue !important;
+	font-size: 13px;
+	color:white !important;
+}
+
+.modal.flyout-dialog .dialogMessageRow {
 	overflow: hidden;
-	overflow-y: auto;
+	overflow-y: hidden;
 	display: flex;
+	margin-right: 10px;
 }
 
 .modal.flyout-dialog .dialogMessageIcon {
@@ -184,12 +199,14 @@
 }
 
 .modal.flyout-dialog .messageActionButton {
-	width: 85px;
+	width: 70px;
 	margin-right: 5px;
 }
+
 .modal.flyout-dialog .messageActionButton > a {
 	background-position-x: 2px !important;
 	background-color: inherit !important;
+	padding-left: 20px !important;
 }
 
 .modal.flyout-dialog .dialogMessageSummary {
@@ -197,6 +214,7 @@
 	overflow-x: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	margin-right: 10px;
 }
 
 .modal.flyout-dialog .dialogMessageSummary.expandedMode {
