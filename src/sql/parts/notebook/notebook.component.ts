@@ -32,10 +32,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		super();
 
 		// Todo: This is mock data for cells. Will remove this code when we have a service
-		let cell1 : ICellModel = {
+		let cell1: ICellModel = {
 			id: '1', language: 'sql', source: 'select * from sys.tables', cellType: CellTypes.Code, active: false
 		};
-		let cell2 : ICellModel = {
+		let cell2: ICellModel = {
 			id: '2', language: 'sql', source: 'select 1', cellType: CellTypes.Code, active: false
 		};
 		this.cells.push(cell1, cell2);
