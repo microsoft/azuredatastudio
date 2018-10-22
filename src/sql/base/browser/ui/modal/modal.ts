@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/modal';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
@@ -33,7 +32,7 @@ const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
 const DETAILS_TEXT = localize('toggleMessageDetails', 'Details');
 const COPY_TEXT = localize('copyMessage', 'Copy');
 const CLOSE_TEXT = localize('closeMessage', 'Close');
-const MESSAGE_EXPANDED_MODE_CLASS = 'expandedMode';
+const MESSAGE_EXPANDED_MODE_CLASS = 'expanded';
 
 export interface IModalDialogStyles {
 	dialogForeground?: Color;
@@ -196,50 +195,52 @@ export abstract class Modal extends Disposable implements IThemable {
 
 		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
 
-			this._modalMessageSecion = $().div({ class: 'dialogMessageBox vs-dark error' }, (messageContainer) => {
-				messageContainer.div({ class: 'dialogMessageRow' }, (headerContainer) => {
-					headerContainer.div({ class: 'dialogMessageIcon sql icon error vs-dark' }, (iconContainer) => {
+			this._modalMessageSecion = $().div({ class: 'dialog-message error' }, (messageContainer) => {
+				messageContainer.div({ class: 'dialog-message-header' }, (headerContainer) => {
+					headerContainer.div({ class: 'dialog-message-icon' }, (iconContainer) => {
 						this._messageIcon = iconContainer.getHTMLElement();
 					});
-					headerContainer.div({ class: 'dialogMessageSeverity' }, (messageSeverityContainer) => {
+					headerContainer.div({ class: 'dialog-message-severity' }, (messageSeverityContainer) => {
 						this._messageSeverity = messageSeverityContainer;
 					});
-					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
+					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
 						this._toggleMessageDetailButton = new Button(buttonContainer);
-						this._toggleMessageDetailButton.icon = 'sql icon scriptToClipboard';
+						this._toggleMessageDetailButton.icon = 'message-details-icon';
 						this._toggleMessageDetailButton.label = DETAILS_TEXT;
 						this._toggleMessageDetailButton.onDidClick((e) => {
 							this.toggleMessageDetail();
 						});
 					});
-					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
+					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
 						this._copyMessageButton = new Button(buttonContainer);
-						this._copyMessageButton.icon = 'sql icon scriptToClipboard';
+						this._copyMessageButton.icon = 'copy-message-icon';
 						this._copyMessageButton.label = COPY_TEXT;
 						this._copyMessageButton.onDidClick((e) => {
 							this._clipboardService.writeText(this.getTextForClipboard());
 						});
 					});
-					headerContainer.div({ class: 'messageActionButton' }, (buttonContainer) => {
+					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
 						this._closeMessageButton = new Button(buttonContainer);
-						this._closeMessageButton.icon = 'sql icon close';
+						this._closeMessageButton.icon = 'close-message-icon';
 						this._closeMessageButton.label = CLOSE_TEXT;
 						this._closeMessageButton.onDidClick((e) => {
 							this.setError(undefined);
 						});
 					});
 				});
-				messageContainer.div({ class: 'dialogMessageSummary' }, (summaryContainer) => {
-					this._messageSummary = summaryContainer;
-					this._messageSummaryElement = summaryContainer.getHTMLElement();
-					this._messageSummaryElement.onclick = (e) => {
-						this.toggleMessageDetail();
-					};
-				});
-				messageContainer.div({ class: 'dialogMessageDetail' }, (detailContainer) => {
-					this._messageDetail = detailContainer;
-					this._messageDetailElement = detailContainer.getHTMLElement();
-					this._messageDetailElement.style.display = 'none';
+				messageContainer.div({ class: 'dialog-message-body' }, (messageBody) => {
+					messageBody.div({ class: 'dialog-message-summary' }, (summaryContainer) => {
+						this._messageSummary = summaryContainer;
+						this._messageSummaryElement = summaryContainer.getHTMLElement();
+						this._messageSummaryElement.onclick = (e) => {
+							this.toggleMessageDetail();
+						};
+					});
+					messageBody.div({ class: 'dialog-message-detail' }, (detailContainer) => {
+						this._messageDetail = detailContainer;
+						this._messageDetailElement = detailContainer.getHTMLElement();
+						this._messageDetailElement.style.display = 'none';
+					});
 				});
 			});
 			this._messageElement = this._modalMessageSecion.getHTMLElement();

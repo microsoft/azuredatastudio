@@ -159,77 +159,117 @@
 	margin-right: none;
 }
 
-.modal.flyout-dialog .dialogMessageBox.error {
-	padding: 5px;
-	background-color:#94402c !important;
+
+.modal.flyout-dialog .dialog-message {
+	padding: 10px;
 	font-size: 13px;
-	color:white !important;
+	display: flex;
+	flex-direction: column;
 }
 
-.modal.flyout-dialog .dialogMessageBox.warning {
-	padding: 5px;
-	background-color:darkorange !important;
-	font-size: 13px;
-	color:white !important;
+.modal.flyout-dialog .dialog-message.error {
+	background-color:#B62E00 !important;
+	color:#FFFFFF !important;
 }
 
-.modal.flyout-dialog .dialogMessageBox.info {
-	padding: 5px;
-	background-color:blue !important;
-	font-size: 13px;
-	color:white !important;
+.modal.flyout-dialog .dialog-message.warning {
+	background-color:#F9E385 !important;
+	color:#4A4A4A !important;
 }
 
-.modal.flyout-dialog .dialogMessageRow {
+.modal.flyout-dialog .dialog-message.info {
+	background-color:#0078D7 !important;
+	color:#FFFFFF !important;
+}
+
+.modal.flyout-dialog .dialog-message-header {
 	overflow: hidden;
 	overflow-y: hidden;
 	display: flex;
+	flex-direction: row;
+}
+
+.modal.flyout-dialog .dialog-message-body {
+	margin-left: 26px;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	max-height: 110px;
+	display: flex;
+	flex-direction: column;
+}
+
+.modal.flyout-dialog .dialog-message-icon {
 	margin-right: 10px;
+	width: 16px;
+	height: 16px;
+	min-width: 16px;
 }
 
-.modal.flyout-dialog .dialogMessageIcon {
-	margin-right: 5px;
-	width: 20px;
-	height: 20px;
-	min-width: 20px;
-}
-
-.modal.flyout-dialog .dialogMessageSeverity {
+.modal.flyout-dialog .dialog-message-severity {
 	margin-right: auto;
 }
 
-.modal.flyout-dialog .messageActionButton {
+.modal.flyout-dialog .dialog-message-button {
 	width: 70px;
 	margin-right: 5px;
 }
 
-.modal.flyout-dialog .messageActionButton > a {
+.modal.flyout-dialog .dialog-message-button > a {
 	background-position-x: 2px !important;
 	background-color: inherit !important;
+	color:inherit !important;
 	padding-left: 20px !important;
+	background-size: 16px 16px !important;
 }
 
-.modal.flyout-dialog .dialogMessageSummary {
-	margin-left: 25px;
-	overflow-x: hidden;
+.modal.flyout-dialog .dialog-message-summary {
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	margin-right: 10px;
 }
 
-.modal.flyout-dialog .dialogMessageSummary.expandedMode {
+.modal.flyout-dialog .dialog-message-summary.expanded {
 	white-space: normal;
-	overflow-y: scroll;
-	max-height: 95px;
 }
 
-.modal.flyout-dialog .dialogMessageDetail {
-	overflow-y: scroll;
-	overflow-x: hidden;
-	max-height: 95px;
-	margin-left: 25px;
+.modal.flyout-dialog .dialog-message-detail {
 	margin-top: 5px;
 	white-space: normal;
 	-webkit-user-select: text;
 	font-size: 11px;
+}
+
+.close-message-icon {
+	background: url('close_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .close-message-icon {
+	background: url('close.svg') center center no-repeat;
+}
+
+.copy-message-icon {
+	background: url('copy_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .copy-message-icon {
+	background: url('copy.svg') center center no-repeat;
+}
+
+.message-details-icon {
+	background: url('show_details_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .message-details-icon {
+	background: url('show_details.svg') center center no-repeat;
+}
+
+.dialog-message.info .dialog-message-icon  {
+	background: url('info_notification_inverse.svg') center center no-repeat;
+}
+
+.dialog-message.warning .dialog-message-icon {
+	background: url('warning_notification.svg') center center no-repeat;
+}
+
+.dialog-message.error .dialog-message-icon {
+	background: url('error_notification_inverse.svg') center center no-repeat;
 }
