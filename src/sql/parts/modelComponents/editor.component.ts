@@ -39,6 +39,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	private _languageMode: string;
 	private _uri: string;
 	private _isAutoResizable: boolean;
+	private _minimumHeight: number;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -79,6 +80,9 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this.content = this._editorModel.getValue();
 			if (this._isAutoResizable) {
+				if (this._minimumHeight) {
+					this._editor.setMinimumHeight(this._minimumHeight);
+				}
 				this._editor.setHeightToScrollHeight();
 			}
 
@@ -109,7 +113,8 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 		let height: number = this.convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
-			height = this._editor.scrollHeight;
+			this._editor.setHeightToScrollHeight();
+			height = Math.max(this._editor.scrollHeight, this._minimumHeight ? this._minimumHeight : 0);
 		}
 		this._editor.layout(new DOM.Dimension(
 			width && width > 0 ? width : DOM.getContentWidth(this._el.nativeElement),
@@ -152,6 +157,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 		// Intentionally always updating editorUri as it's wiped out by parent setProperties call.
 		this.editorUri = this._uri;
 		this._isAutoResizable = this.isAutoResizable;
+		this._minimumHeight = this.minimumHeight;
 	}
 
 	// CSS-bound properties
@@ -177,6 +183,14 @@ export default class EditorComponent extends ComponentBase implements IComponent
 
 	public set isAutoResizable(newValue: boolean) {
 		this.setPropertyFromUI<sqlops.EditorProperties, boolean>((properties, isAutoResizable) => { properties.isAutoResizable = isAutoResizable; }, newValue);
+	}
+
+	public get minimumHeight(): number {
+		return this.getPropertyOrDefault<sqlops.EditorProperties, number>((props) => props.minimumHeight, this._editor.minimumHeight);
+	}
+
+	public set minimumHeight(newValue: number) {
+		this.setPropertyFromUI<sqlops.EditorProperties, number>((properties, minimumHeight) => { properties.minimumHeight = minimumHeight; }, newValue);
 	}
 
 	public get editorUri(): string {
