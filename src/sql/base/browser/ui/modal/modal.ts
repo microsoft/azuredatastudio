@@ -335,7 +335,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private getTextForClipboard(): string {
-		return this._messageDetailText === '' ? this._messageSummaryText : this._messageSummaryText + `${os.EOL}========================${os.EOL}` + this._messageDetailText;
+		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${os.EOL}========================${os.EOL}${this._messageDetailText}`;
 	}
 
 	private updateElementVisibility(element: HTMLElement, visible: boolean) {
