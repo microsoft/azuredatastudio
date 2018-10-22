@@ -59,6 +59,9 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -101,7 +104,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService
+		@IAngularEventingService private _angularEventing: IAngularEventingService,
+		@IEnvironmentService private _environmentService: IEnvironmentService,
 	) {
 		super();
 		if (this._instantiationService) {
@@ -124,13 +128,34 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			100 /* High Priority */
 		));
 
-		if (_capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
+		let profile = null;
+		if (this._environmentService && this._environmentService.args.server)
+		{
+
+			profile = new ConnectionProfile(_capabilitiesService, null);
+			// We want connection store to use any matching password it finds
+			profile.savePassword = true;
+			profile.providerName = Constants.mssqlProviderName;
+			profile.serverName = _environmentService.args.server;
+			profile.databaseName = _environmentService.args.database ? _environmentService.args.database : '';
+			profile.userName = _environmentService.args.user ? _environmentService.args.user : '';
+			profile.authenticationType = _environmentService.args.integrated ? 'Integrated'  :  'SqlLogin';
+			profile.connectionName = '';
+			profile.setOptionValue('applicationName', Constants.applicationName);
+			profile.setOptionValue('databaseDisplayName', profile.databaseName);
+			profile.setOptionValue('groupId', profile.groupId);
+		}
+		if (!profile && _capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
 			this.showConnectionDialog();
-		} else if (_capabilitiesService && !this.hasRegisteredServers()) {
+		} else if (!profile && _capabilitiesService && !this.hasRegisteredServers()) {
 			_capabilitiesService.onCapabilitiesRegistered(e => {
 				// prompt the user for a new connection on startup if no profiles are registered
 				this.showConnectionDialog();
+			});
+		} else if (profile && _capabilitiesService)	{
+			_capabilitiesService.onCapabilitiesRegistered(e => {
+				this.connectIfNotConnected(profile, 'connection');
 			});
 		}
 
@@ -282,29 +307,30 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to use after the connection is complete
 	 */
 	private tryConnect(connection: IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+		let self=this;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			// Load the password if it's not already loaded
-			this._connectionStore.addSavedPassword(connection).then(result => {
+			self._connectionStore.addSavedPassword(connection).then(result => {
 				let newConnection = result.profile;
 				let foundPassword = result.savedCred;
 
 				// If there is no password, try to load it from an existing connection
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
-					let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
+				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection)) {
+					let existingConnection = self._connectionStatusManager.findConnectionProfile(connection);
 					if (existingConnection && existingConnection.connectionProfile) {
 						newConnection.password = existingConnection.connectionProfile.password;
 						foundPassword = true;
 					}
 				}
 				// If the password is required and still not loaded show the dialog
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
-					resolve(this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
+				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
+					resolve(self.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
 				} else {
 					// Try to connect
-					this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
+					self.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
 						if (!connectionResult.connected && !connectionResult.errorHandled) {
 							// If connection fails show the dialog
-							resolve(this.showConnectionDialogOnError(connection, owner, connectionResult, options));
+							resolve(self.showConnectionDialogOnError(connection, owner, connectionResult, options));
 						} else {
 							//Resolve with the connection result
 							resolve(connectionResult);
@@ -390,7 +416,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (this._connectionStatusManager.isConnected(ownerUri)) {
 				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 			} else {
-				this.connect(connection, ownerUri).then(connectionResult => {
+				const options: IConnectionCompletionOptions = {
+					// Should saving the connection be a command line switch?
+					saveTheConnection : true,
+					showConnectionDialogOnError : true,
+					showDashboard : purpose === 'dashboard',
+					params : undefined,
+					showFirewallRuleOnError : true,
+				};
+				this.connect(connection, ownerUri, options).then(connectionResult => {
 					if (connectionResult && connectionResult.connected) {
 						resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 					} else {

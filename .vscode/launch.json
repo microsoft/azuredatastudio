@@ -93,6 +93,56 @@
 			"timeout": 45000
 		},
 		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch azuredatastudio to sqltools2017-3 sql auth",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"urlFilter": "*index.html*",
+			"runtimeArgs": [
+				"--inspect=5875",
+				"--server=sqltools2017-3",
+				"--user=sa"
+			],
+			"skipFiles": [
+				"**/winjs*.js"
+			],
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch azuredatastudio to sqltools2017-3 integrated auth",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"urlFilter": "*index.html*",
+			"runtimeArgs": [
+				"--inspect=5875",
+				"--server=sqltools2017-3",
+				"--integrated"
+			],
+			"skipFiles": [
+				"**/winjs*.js"
+			],
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
+		{
 			"type": "node",
 			"request": "launch",
 			"name": "Unit Tests",
