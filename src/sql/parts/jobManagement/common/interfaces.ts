@@ -39,7 +39,7 @@ export interface IJobManagementService {
 	getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult>;
 
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
-	addToCache(server: string, cache: JobCacheObject);
+	addToCache(server: string, cache: JobCacheObject | ProxiesCacheObject);
 	jobCacheObjectMap:  { [server: string]: JobCacheObject; };
 	proxiesCacheObjectMap: {[server: string]: ProxiesCacheObject };
 }
