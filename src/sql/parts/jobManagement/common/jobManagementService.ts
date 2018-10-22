@@ -232,3 +232,7 @@ export class JobCacheObject {
 			this._jobSchedules[jobID] = value;
 		}
 }
+
+export class ProxiesCacheObject {
+
+}
