@@ -40,7 +40,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	@Input() content: string;
 	@Input() language: string;
 
-	private readonly _minimumHeight = 100;
+	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;

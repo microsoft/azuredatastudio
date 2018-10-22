@@ -20,6 +20,7 @@ export interface ICellModel {
 	language: string;
 	source: string;
 	cellType: CellType;
+	active: boolean;
 }
 
 export type CellType = 'code' | 'markdown' | 'raw';

@@ -25,7 +25,6 @@ export class CodeCellComponent extends CellView implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
 		super();
@@ -42,10 +41,6 @@ export class CodeCellComponent extends CellView implements OnInit {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
-		let element = <HTMLElement>this._el.nativeElement;
-		element.style.borderColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
-		element.setAttribute('tabindex', '0');
-
 		let outputElement = <HTMLElement>this.output.nativeElement;
 		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}

@@ -5,9 +5,6 @@
 
 code-cell-component {
 	display: block;
-	margin: 10px 20px 10px;
-	border-width: 1px;
-	border-style: solid;
 }
 
 code-cell-component .notebook-output {
