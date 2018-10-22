@@ -31,7 +31,7 @@ import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { OperatorsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
 export const ROW_HEIGHT: number = 45;
