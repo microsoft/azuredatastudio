@@ -193,7 +193,7 @@
 	margin-left: 26px;
 	overflow-y: scroll;
 	overflow-x: hidden;
-	max-height: 110px;
+	max-height: 90px;
 	display: flex;
 	flex-direction: column;
 }
@@ -223,12 +223,14 @@
 }
 
 .modal.flyout-dialog .dialog-message-summary {
+	overflow-x: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
 
 .modal.flyout-dialog .dialog-message-summary.expanded {
 	white-space: normal;
+	overflow-x: unset;
 }
 
 .modal.flyout-dialog .dialog-message-detail {

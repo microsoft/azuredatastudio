@@ -356,7 +356,9 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._messageSummaryElement.classList.add(MESSAGE_EXPANDED_MODE_CLASS);
 		}
 
-		this.updateElementVisibility(this._messageDetailElement, !isExpanded);
+		if (this._messageDetailText !== '') {
+			this.updateElementVisibility(this._messageDetailElement, !isExpanded);
+		}
 	}
 
 	private get shouldShowExpandMessageButton(): boolean {
