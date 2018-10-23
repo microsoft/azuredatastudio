@@ -641,14 +641,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.0",
-							"lastUpdated": "9/29/2018",
+							"version": "0.3.0",
+							"lastUpdated": "10/15/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.2.0"
+									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.3.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -799,6 +799,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "25",
+					"extensionName": "pastetheplan",
+					"displayName": "Paste the Plan",
+					"shortDescription": "Send XML execution plans to Paste the Plan",
+					"publisher": {
+						"displayName": "Drew Skwiers-Koballa",
+						"publisherId": "drewsk",
+						"publisherName": "drewsk"
+					},
+					"versions": [
+						{
+							"version": "0.2.0",
+							"lastUpdated": "10/21/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/dzsquared/sqlops-pastetheplan/releases/tag/0.2.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-pastetheplan/master/images/pastetheplan-sqlops-extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-pastetheplan/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-pastetheplan/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/dzsquared/sqlops-pastetheplan/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/dzsquared/sqlops-pastetheplan"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -807,7 +864,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 14
+							"count": 15
 						}
 					]
 				}
