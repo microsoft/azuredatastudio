@@ -124,10 +124,6 @@ const dataTypeInput: IChartOption = {
 	default: DataType.Number
 };
 
-export const ChartNameMapping = {
-	timeSeries: 'line',
-};
-
 export const ChartOptions: IChartOptions = {
 	general: [
 		{
