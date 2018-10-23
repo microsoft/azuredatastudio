@@ -20,6 +20,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 	templateUrl: decodeURI(require.toUrl('./codeCell.component.html'))
 })
 export class CodeCellComponent extends CellView implements OnInit {
+	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 	@Input() cellModel: ICellModel;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -30,11 +31,17 @@ export class CodeCellComponent extends CellView implements OnInit {
 	}
 
 	ngOnInit() {
-
+		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
+		this.updateTheme(this.themeService.getColorTheme());
 	}
 
 	// Todo: implement layout
 	public layout() {
 
+	}
+
+	private updateTheme(theme: IColorTheme): void {
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 }

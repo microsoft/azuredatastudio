@@ -40,6 +40,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	@Input() content: string;
 	@Input() language: string;
 
+	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
@@ -78,6 +79,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
+		this._editor.setMinimumHeight(this._minimumHeight);
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
@@ -99,6 +101,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._editor.layout(new DOM.Dimension(
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
+		this._editor.setHeightToScrollHeight();
 	}
 
 	private createUri(): URI {
