@@ -112,7 +112,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private isEdit: boolean = false;
 
 	// Job objects
-	private steps: sqlops.AgentJobStepInfo[] = [];
+	private steps: sqlops.AgentJobStepInfo[];
 	private schedules: sqlops.AgentJobScheduleInfo[] = [];
 	private alerts: sqlops.AgentAlertInfo[] = [];
 
@@ -121,7 +121,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			ownerUri,
 			new JobData(ownerUri, jobInfo),
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
-		this.steps = this.model.jobSteps;
+		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
 		this.isEdit = jobInfo ? true : false;
 	}
 
@@ -245,7 +245,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
 			stepDialog.onSuccess((step) => {
-				console.log(step);
 				let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
 				this.steps.push(stepInfo);
 				this.stepsTable.data = this.convertStepsToData(this.steps);
