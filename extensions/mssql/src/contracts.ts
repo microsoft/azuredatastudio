@@ -291,3 +291,18 @@ export namespace DeleteAgentJobScheduleRequest {
 }
 
 // ------------------------------- < Agent Management > ------------------------------------
+
+// ------------------------------- < DacFx > ------------------------------------
+export interface DacFxExportParams {
+	connectionString: string;
+}
+
+export interface DacFxExportResponse {
+	operationId: string;
+}
+
+export namespace DacFxExportRequest {
+	export const type = new RequestType<DacFxExportParams, sqlops.DacFxExportResult, void, void>('dacfx/export');
+}
+
+// ------------------------------- < DacFx > ------------------------------------

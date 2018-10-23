@@ -137,6 +137,7 @@ import { IScriptingService, ScriptingService } from 'sql/services/scripting/scri
 import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';
+import { IDacFxService, DacFxService } from 'sql/services/dacfx/dacFxService';
 import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
 import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
@@ -582,6 +583,8 @@ export class Workbench extends Disposable implements IPartService {
 		// {{SQL CARBON EDIT}}
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
 		// {{SQL CARBON EDIT}}
+		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
+
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));
