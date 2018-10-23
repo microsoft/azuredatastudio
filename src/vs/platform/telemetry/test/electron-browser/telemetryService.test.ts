@@ -206,35 +206,36 @@ suite('TelemetryService', () => {
 		});
 	}));
 
-	test('Error events', sinon.test(function (this: any) {
+	// {{SQL CARBON EDIT}}
+	// test('Error events', sinon.test(function (this: any) {
 
-		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
-		Errors.setUnexpectedErrorHandler(() => { });
+	// 	let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
+	// 	Errors.setUnexpectedErrorHandler(() => { });
 
-		try {
-			let testAppender = new TestTelemetryAppender();
-			let service = new TelemetryService({ appender: testAppender }, undefined);
-			const errorTelemetry = new ErrorTelemetry(service);
+	// 	try {
+	// 		let testAppender = new TestTelemetryAppender();
+	// 		let service = new TelemetryService({ appender: testAppender }, undefined);
+	// 		const errorTelemetry = new ErrorTelemetry(service);
 
 
-			let e: any = new Error('This is a test.');
-			// for Phantom
-			if (!e.stack) {
-				e.stack = 'blah';
-			}
+	// 		let e: any = new Error('This is a test.');
+	// 		// for Phantom
+	// 		if (!e.stack) {
+	// 			e.stack = 'blah';
+	// 		}
 
-			Errors.onUnexpectedError(e);
-			this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
-			assert.equal(testAppender.getEventsCount(), 1);
-			assert.equal(testAppender.events[0].eventName, 'UnhandledError');
-			assert.equal(testAppender.events[0].data.msg, 'This is a test.');
+	// 		Errors.onUnexpectedError(e);
+	// 		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+	// 		assert.equal(testAppender.getEventsCount(), 1);
+	// 		assert.equal(testAppender.events[0].eventName, 'UnhandledError');
+	// 		assert.equal(testAppender.events[0].data.msg, 'This is a test.');
 
-			errorTelemetry.dispose();
-			service.dispose();
-		} finally {
-			Errors.setUnexpectedErrorHandler(origErrorHandler);
-		}
-	}));
+	// 		errorTelemetry.dispose();
+	// 		service.dispose();
+	// 	} finally {
+	// 		Errors.setUnexpectedErrorHandler(origErrorHandler);
+	// 	}
+	// }));
 
 	// 	test('Unhandled Promise Error events', sinon.test(function() {
 	//
@@ -265,32 +266,32 @@ suite('TelemetryService', () => {
 	// 		}
 	// 	}));
 
-	test('Handle global errors', sinon.test(function (this: any) {
-		let errorStub = sinon.stub();
-		window.onerror = errorStub;
+	// test('Handle global errors', sinon.test(function (this: any) {
+	// 	let errorStub = sinon.stub();
+	// 	window.onerror = errorStub;
 
-		let testAppender = new TestTelemetryAppender();
-		let service = new TelemetryService({ appender: testAppender }, undefined);
-		const errorTelemetry = new ErrorTelemetry(service);
+	// 	let testAppender = new TestTelemetryAppender();
+	// 	let service = new TelemetryService({ appender: testAppender }, undefined);
+	// 	const errorTelemetry = new ErrorTelemetry(service);
 
-		let testError = new Error('test');
-		(<any>window.onerror)('Error Message', 'file.js', 2, 42, testError);
-		this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
+	// 	let testError = new Error('test');
+	// 	(<any>window.onerror)('Error Message', 'file.js', 2, 42, testError);
+	// 	this.clock.tick(ErrorTelemetry.ERROR_FLUSH_TIMEOUT);
 
-		assert.equal(errorStub.alwaysCalledWithExactly('Error Message', 'file.js', 2, 42, testError), true);
-		assert.equal(errorStub.callCount, 1);
+	// 	assert.equal(errorStub.alwaysCalledWithExactly('Error Message', 'file.js', 2, 42, testError), true);
+	// 	assert.equal(errorStub.callCount, 1);
 
-		assert.equal(testAppender.getEventsCount(), 1);
-		assert.equal(testAppender.events[0].eventName, 'UnhandledError');
-		assert.equal(testAppender.events[0].data.msg, 'Error Message');
-		assert.equal(testAppender.events[0].data.file, 'file.js');
-		assert.equal(testAppender.events[0].data.line, 2);
-		assert.equal(testAppender.events[0].data.column, 42);
-		assert.equal(testAppender.events[0].data.uncaught_error_msg, 'test');
+	// 	assert.equal(testAppender.getEventsCount(), 1);
+	// 	assert.equal(testAppender.events[0].eventName, 'UnhandledError');
+	// 	assert.equal(testAppender.events[0].data.msg, 'Error Message');
+	// 	assert.equal(testAppender.events[0].data.file, 'file.js');
+	// 	assert.equal(testAppender.events[0].data.line, 2);
+	// 	assert.equal(testAppender.events[0].data.column, 42);
+	// 	assert.equal(testAppender.events[0].data.uncaught_error_msg, 'test');
 
-		errorTelemetry.dispose();
-		service.dispose();
-	}));
+	// 	errorTelemetry.dispose();
+	// 	service.dispose();
+	// }));
 
 	test('Error Telemetry removes PII from filename with spaces', sinon.test(function (this: any) {
 		let errorStub = sinon.stub();
