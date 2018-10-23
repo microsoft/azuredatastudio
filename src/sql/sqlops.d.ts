@@ -37,6 +37,8 @@ declare module 'sqlops' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
+		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -1580,6 +1582,19 @@ declare module 'sqlops' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
+	}
+
+	// DacFx interfaces  -----------------------------------------------------------------------
+	export interface DacFxExportResult extends ResultStatus {
+		operationId: string;
+	}
+
+	export interface DacFxExportParams {
+		connectionString: string;
+	}
+
+	export interface DacFxServicesProvider extends DataProvider {
+		exportBacpac(connectionstring: string): Thenable<DacFxExportResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

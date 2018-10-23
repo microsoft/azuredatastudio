@@ -156,6 +156,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerDacFxServiceProvider(provider: sqlops.DacFxServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.DacFxServicesProvider);
+		this._proxy.$registerDacFxServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> {
 		return this._resolveProvider<sqlops.CapabilitiesProvider>(handle).getServerCapabilities(client);

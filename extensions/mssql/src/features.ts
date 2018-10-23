@@ -28,6 +28,50 @@ export class TelemetryFeature implements StaticFeature {
 	}
 }
 
+export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messageTypes: RPCMessageType[] = [
+		contracts.DacFxExportRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, DacFxServicesFeature.messageTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+		let self = this;
+
+		let exportBacpac = (cs: string): Thenable<sqlops.DacFxExportResult> => {
+			let params: contracts.DacFxExportParams = { connectionString: cs };
+			return client.sendRequest(contracts.DacFxExportRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					console.error("error sending request");
+					client.logFailedRequest(contracts.AgentJobsRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return sqlops.dataprotocol.registerDacFxServicesProvider({
+			providerId: client.providerId,
+			exportBacpac
+		});
+	}
+}
+
 export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
 		contracts.AgentJobsRequest.type,
