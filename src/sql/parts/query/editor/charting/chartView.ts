@@ -275,7 +275,7 @@ export class ChartView implements IPanelView {
 				dropdown.render(optionContainer);
 				dropdown.onDidSelect(e => {
 					if (this.options[option.configEntry] !== option.options[e.index]) {
-						this.options[option.configEntry] = option.options[e.index];
+						this.options[option.configEntry] = option.options[e.index] === 'timeSeries' ? 'line' : option.options[e.index];
 						if (this.insight) {
 							this.insight.options = this.options;
 						}

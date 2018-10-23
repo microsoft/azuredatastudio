@@ -21,6 +21,8 @@ export class JobManagementService implements IJobManagementService {
 	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);
 	private _jobCacheObjectMap : {[server: string]: JobCacheObject; } = {};
 	private _operatorsCacheObjectMap: {[server: string]: OperatorsCacheObject; } = {};
+	private _alertsCacheObject: {[server: string]: AlertsCacheObject; } = {};
+	private _proxiesCacheObjectMap: {[server: string]: ProxiesCacheObject; } = {};
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
@@ -131,21 +133,33 @@ export class JobManagementService implements IJobManagementService {
 		return this._jobCacheObjectMap;
 	}
 
+	public get alertsCacheObjectMap(): {[server: string]: AlertsCacheObject; } {
+		return this._alertsCacheObject;
+	}
+
+	public get proxiesCacheObjectMap(): {[server: string]: ProxiesCacheObject; } {
+		return this._proxiesCacheObjectMap;
+	}
+
 	public get operatorsCacheObjectMap(): {[server: string]: OperatorsCacheObject} {
 		return this._operatorsCacheObjectMap;
 	}
 
-	public addToCache(server: string, cacheObject: JobCacheObject | OperatorsCacheObject) {
+	public addToCache(server: string, cacheObject: JobCacheObject | OperatorsCacheObject | ProxiesCacheObject | AlertsCacheObject) {
 		if (cacheObject instanceof JobCacheObject) {
 			this._jobCacheObjectMap[server] = cacheObject;
 		} else if (cacheObject instanceof OperatorsCacheObject) {
 			this._operatorsCacheObjectMap[server] = cacheObject;
+		} else if (cacheObject instanceof AlertsCacheObject) {
+			this._alertsCacheObject[server] = cacheObject;
+		} else if (cacheObject instanceof ProxiesCacheObject) {
+			this._proxiesCacheObjectMap[server] = cacheObject;
 		}
 	}
 }
 
 /**
- * Server level caching of jobs/job histories
+ * Server level caching of jobs/job histories and their views
  */
 export class JobCacheObject {
 	_serviceBrand: any;
@@ -277,4 +291,80 @@ export class OperatorsCacheObject {
 		this._serverName = value;
 	}
 
+}
+
+/*
+* Server level caching of job alerts and the alerts view
+*/
+export class AlertsCacheObject {
+   _serviceBrand: any;
+   private _alerts: sqlops.AgentAlertInfo[];
+   private _dataView: Slick.Data.DataView<any>;
+   private _serverName: string;
+
+   	/** Getters */
+	public get alerts(): sqlops.AgentAlertInfo[] {
+		return this._alerts;
+	}
+
+	public get dataview(): Slick.Data.DataView<any> {
+		return this._dataView;
+	}
+
+	public get serverName(): string {
+		return this._serverName;
+	}
+
+	/** Setters */
+	public set alerts(value: sqlops.AgentAlertInfo[]) {
+		this._alerts = value;
+	}
+
+	public set dataview(value: Slick.Data.DataView<any>) {
+		this._dataView = value;
+	}
+
+	public set serverName(value: string) {
+		this._serverName = value;
+	}
+}
+
+
+/**
+ * Server level caching of job proxies and proxies view
+ */
+export class ProxiesCacheObject {
+	_serviceBrand: any;
+	private _proxies: sqlops.AgentProxyInfo[];
+	private _dataView: Slick.Data.DataView<any>;
+	private _serverName: string;
+
+	/**
+	 * Getters
+	 */
+	public get proxies(): sqlops.AgentProxyInfo[] {
+		return this._proxies;
+	}
+
+	public get dataview(): Slick.Data.DataView<any> {
+		return this._dataView;
+	}
+
+	public get serverName(): string {
+		return this._serverName;
+	}
+
+	/** Setters */
+
+	public set proxies(value: sqlops.AgentProxyInfo[]) {
+		this._proxies = value;
+	}
+
+	public set dataview(value: Slick.Data.DataView<any>) {
+		this._dataView = value;
+	}
+
+	public set serverName(value: string) {
+		this._serverName = value;
+	}
 }

@@ -65,7 +65,6 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	};
 
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
 	private _operatorsCacheObject: OperatorsCacheObject;
 
