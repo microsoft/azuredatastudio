@@ -161,7 +161,7 @@
 
 
 .modal.flyout-dialog .dialog-message {
-	padding: 10px;
+	padding: 6px 10px 10px 10px;
 	font-size: 13px;
 	display: flex;
 	flex-direction: column;
@@ -200,6 +200,7 @@
 
 .modal.flyout-dialog .dialog-message-icon {
 	margin-right: 10px;
+	margin-top: 5px;
 	width: 16px;
 	height: 16px;
 	min-width: 16px;
@@ -207,19 +208,21 @@
 
 .modal.flyout-dialog .dialog-message-severity {
 	margin-right: auto;
+	line-height: 26px;
 }
 
 .modal.flyout-dialog .dialog-message-button {
-	width: 70px;
-	margin-right: 5px;
+	min-width: 60px;
+	margin-right: 10px;
 }
 
 .modal.flyout-dialog .dialog-message-button > a {
 	background-position-x: 2px !important;
 	background-color: inherit !important;
 	color:inherit !important;
-	padding-left: 20px !important;
+	padding-left: 22px !important;
 	background-size: 16px 16px !important;
+	text-align: left !important;
 }
 
 .modal.flyout-dialog .dialog-message-summary {
