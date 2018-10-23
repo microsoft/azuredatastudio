@@ -92,11 +92,20 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		let defaultProvider: string;
 		if (this._providerNameToDisplayNameMap) {
 			let keys = Object.keys(this._providerNameToDisplayNameMap);
+			let filteredKeys: string[];
 			if (keys && keys.length > 0) {
-				defaultProvider = keys[0];
+				if (this._params.providers && this._params.providers.length > 0) {
+					//Filter providers from master keys.
+					filteredKeys = keys.filter(key => this._params.providers.includes(key));
+				}
+				if (filteredKeys && filteredKeys.length > 0) {
+					defaultProvider = filteredKeys[0];
+				}
+				else {
+					defaultProvider = keys[0];
+				}
 			}
 		}
-
 		if (!defaultProvider && this._workspaceConfigurationService) {
 			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
 		}
