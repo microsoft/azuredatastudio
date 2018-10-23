@@ -1,5 +1,21 @@
 # Change Log
 
+## Version 1.1.3
+* Release date: October 18, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Introducing the Azure Resource Explorer to browse Azure SQL Databases
+* Improve Object Explorer and Query Editor connectivity robustness
+* SQL Server 2019 and SQL Agent extension improvements
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* philoushka  for `center the icon #2760`
+* anthonypants for `Typo #2775`
+* kstolte for `Fix Invalid Configuration in Launch.json #2789`
+* kstolte for `Fixing a reference to SQL Ops Studio #2788`
 
 ## Version 1.0.0
 * Release date: September 24, 2018

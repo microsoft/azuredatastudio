@@ -43,12 +43,12 @@ export class ErrorMessageDialog extends Modal {
 
 	constructor(
 		@IThemeService private _themeService: IThemeService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IClipboardService clipboardService: IClipboardService,
 		@IPartService partService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, clipboardService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', 'OK');
 		this._closeLabel = localize('errorMessageDialog.close', 'Close');
 	}

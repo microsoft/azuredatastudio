@@ -57,7 +57,6 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	};
 
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
 
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
