@@ -7,7 +7,7 @@
 
 import { Graph } from './graphInsight';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { DataDirection, ChartType, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { ImageInsight } from './imageInsight';
 import { TableInsight } from './tableInsight';
 import { IInsightOptions, IInsight, InsightType, IInsightCtor } from './interfaces';
@@ -16,6 +16,7 @@ import { CountInsight } from './countInsight';
 import { Builder } from 'vs/base/browser/builder';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
+import { deepClone } from 'vs/base/common/objects';
 
 const defaultOptions: IInsightOptions = {
 	type: ChartType.Bar,
@@ -47,13 +48,13 @@ export class Insight {
 	}
 
 	public set options(val: IInsightOptions) {
-		this._options = val;
+		this._options = deepClone(val);
 		if (this.insight) {
 			// check to see if we need to change the insight type
-			if (!this.insight.types.includes(val.type)) {
+			if (!this.insight.types.includes(this.options.type)) {
 				this.buildInsight();
 			} else {
-				this.insight.options = val;
+				this.insight.options = this.options;
 			}
 		}
 	}
