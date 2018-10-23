@@ -63,10 +63,8 @@ export class Dialog extends ModelViewPane {
 	}
 
 	public set message(value: DialogMessage) {
-		if (this._message && !value || !this._message && value || this._message && value && (this._message.level !== value.level || this._message.text !== value.text)) {
-			this._message = value;
-			this._onMessageChange.fire(this._message);
-		}
+		this._message = value;
+		this._onMessageChange.fire(this._message);
 	}
 
 	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
@@ -255,9 +253,7 @@ export class Wizard {
 	}
 
 	public set message(value: DialogMessage) {
-		if (this._message && !value || !this._message && value || this._message && value && (this._message.level !== value.level || this._message.text !== value.text)) {
-			this._message = value;
-			this._onMessageChange.fire(this._message);
-		}
+		this._message = value;
+		this._onMessageChange.fire(this._message);
 	}
 }

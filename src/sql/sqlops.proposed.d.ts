@@ -890,6 +890,7 @@ declare module 'sqlops' {
 			 */
 			export type DialogMessage = {
 				readonly text: string,
+				readonly description?: string,
 				readonly level?: MessageLevel
 			};
 

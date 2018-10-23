@@ -166,7 +166,8 @@ export default class ErrorTelemetry {
 					"${include}": [ "${ErrorEvent}" ]
 				}
 			*/
-			this._telemetryService.publicLog('UnhandledError', error, true);
+			// {{SQL CARBON EDIT}}
+			//this._telemetryService.publicLog('UnhandledError', error, true);
 		}
 		this._buffer.length = 0;
 	}
