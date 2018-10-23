@@ -104,7 +104,8 @@ jobhistory-component {
     display: inline-block;
 }
 
-#alertsDiv .jobalertsview-grid .slick-cell.l1.r1 .alertview-alertnametext {
+#alertsDiv .jobalertsview-grid .slick-cell.l1.r1 .alertview-alertnametext,
+#proxiesDiv .jobproxiesview-grid .slick-cell.l1.r1 .proxyview-proxynametext {
     text-overflow: ellipsis;
     width: 100%;
     overflow: hidden;
@@ -400,12 +401,14 @@ jobsview-component .jobview-grid .slick-cell.error-row {
     margin-bottom: 0px;
 }
 
-#alertsDiv .alertview-alertnameindicatorenabled {
+#alertsDiv .alertview-alertnameindicatorenabled,
+#proxiesDiv .proxyview-proxynameindicatorenabled {
     width: 5px;
     background: green;
 }
 
-#alertsDiv .alertview-alertnameindicatordisabled {
+#alertsDiv .alertview-alertnameindicatordisabled,
+#proxiesDiv .proxyview-proxynameindicatordisabled {
     width: 5px;
     background: red;
 }
