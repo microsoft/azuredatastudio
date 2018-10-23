@@ -69,7 +69,6 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	};
 
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
 	private _proxiesCacheObject: ProxiesCacheObject;
 

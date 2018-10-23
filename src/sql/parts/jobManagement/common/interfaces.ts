@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { JobCacheObject, ProxiesCacheObject } from './jobManagementService';
+import { JobCacheObject, AlertsCacheObject, ProxiesCacheObject } from './jobManagementService';
 import { Event } from 'vs/base/common/event';
 
 export const SERVICE_ID = 'jobManagementService';
@@ -39,7 +39,8 @@ export interface IJobManagementService {
 	getCredentials(connectionUri: string): Thenable<sqlops.GetCredentialsResult>;
 
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
-	addToCache(server: string, cache: JobCacheObject | ProxiesCacheObject);
 	jobCacheObjectMap:  { [server: string]: JobCacheObject; };
+	alertsCacheObjectMap: { [server: string]: AlertsCacheObject; };
 	proxiesCacheObjectMap: {[server: string]: ProxiesCacheObject };
+	addToCache(server: string, cache: JobCacheObject | ProxiesCacheObject | AlertsCacheObject);
 }

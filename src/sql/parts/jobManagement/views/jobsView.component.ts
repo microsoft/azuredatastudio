@@ -78,7 +78,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
@@ -109,7 +108,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
