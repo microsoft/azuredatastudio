@@ -100,7 +100,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			let keys = Object.keys(this._providerNameToDisplayNameMap);
 			let filteredKeys: string[];
 			if (keys && keys.length > 0) {
-				if (this._params.providers && this._params.providers.length > 0) {
+				if (this._params && this._params.providers && this._params.providers.length > 0) {
 					//Filter providers from master keys.
 					filteredKeys = keys.filter(key => this._params.providers.includes(key));
 				}
