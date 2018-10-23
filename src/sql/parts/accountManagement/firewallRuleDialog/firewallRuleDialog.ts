@@ -29,6 +29,7 @@ import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/st
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -70,12 +71,14 @@ export class FirewallRuleDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IWindowsService private _windowsService: IWindowsService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
 		super(
 			localize('createNewFirewallRule', 'Create new firewall rule'),
 			TelemetryKeys.FireWallRule,
 			partService,
 			telemetryService,
+			clipboardService,
 			contextKeyService,
 			{
 				isFlyout: true,
