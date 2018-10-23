@@ -20,6 +20,7 @@ export class JobManagementService implements IJobManagementService {
 
 	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);
 	private _jobCacheObjectMap : {[server: string]: JobCacheObject; } = {};
+	private _operatorsCacheObjectMap: {[server: string]: OperatorsCacheObject; } = {};
 	private _alertsCacheObject: {[server: string]: AlertsCacheObject; } = {};
 	private _proxiesCacheObjectMap: {[server: string]: ProxiesCacheObject; } = {};
 
@@ -140,9 +141,15 @@ export class JobManagementService implements IJobManagementService {
 		return this._proxiesCacheObjectMap;
 	}
 
-	public addToCache(server: string, cacheObject: JobCacheObject | AlertsCacheObject | ProxiesCacheObject) {
+	public get operatorsCacheObjectMap(): {[server: string]: OperatorsCacheObject} {
+		return this._operatorsCacheObjectMap;
+	}
+
+	public addToCache(server: string, cacheObject: JobCacheObject | OperatorsCacheObject | ProxiesCacheObject | AlertsCacheObject) {
 		if (cacheObject instanceof JobCacheObject) {
-			this._jobCacheObjectMap[server] = cacheObject;;
+			this._jobCacheObjectMap[server] = cacheObject;
+		} else if (cacheObject instanceof OperatorsCacheObject) {
+			this._operatorsCacheObjectMap[server] = cacheObject;
 		} else if (cacheObject instanceof AlertsCacheObject) {
 			this._alertsCacheObject[server] = cacheObject;
 		} else if (cacheObject instanceof ProxiesCacheObject) {
@@ -250,15 +257,52 @@ export class JobCacheObject {
 }
 
 /**
- * Server level caching of job alerts and the alerts view
+ * Server level caching of Operators
  */
-export class AlertsCacheObject {
+export class OperatorsCacheObject {
 	_serviceBrand: any;
-	private _alerts: sqlops.AgentAlertInfo[];
+	private _operators: sqlops.AgentOperatorInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;
 
 	/** Getters */
+	public get operators(): sqlops.AgentOperatorInfo[] {
+		return this._operators;
+	}
+
+	public get dataview(): Slick.Data.DataView<any> {
+		return this._dataView;
+	}
+
+	public get serverName(): string {
+		return this._serverName;
+	}
+
+	/** Setters */
+	public set operators(value: sqlops.AgentOperatorInfo[]) {
+		this._operators = value;
+	}
+
+	public set dataview(value: Slick.Data.DataView<any>) {
+		this._dataView = value;
+	}
+
+	public set serverName(value: string) {
+		this._serverName = value;
+	}
+
+}
+
+/*
+* Server level caching of job alerts and the alerts view
+*/
+export class AlertsCacheObject {
+   _serviceBrand: any;
+   private _alerts: sqlops.AgentAlertInfo[];
+   private _dataView: Slick.Data.DataView<any>;
+   private _serverName: string;
+
+   	/** Getters */
 	public get alerts(): sqlops.AgentAlertInfo[] {
 		return this._alerts;
 	}
@@ -272,7 +316,6 @@ export class AlertsCacheObject {
 	}
 
 	/** Setters */
-
 	public set alerts(value: sqlops.AgentAlertInfo[]) {
 		this._alerts = value;
 	}
