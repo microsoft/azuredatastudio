@@ -121,7 +121,7 @@ actionRegistry.registerWorkbenchAction(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
 		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_L }
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
 	),
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
