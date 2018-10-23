@@ -15,8 +15,7 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightOptions, IInsight } from './interfaces';
-import { ChartType, DataDirection, LegendPosition, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
-import { IPointDataSet, customMixin } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
+import { ChartType, DataDirection, LegendPosition, DataType, IPointDataSet, customMixin } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
