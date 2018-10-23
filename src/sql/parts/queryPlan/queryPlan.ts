@@ -41,10 +41,12 @@ export class QueryPlanView implements IPanelView {
 			}
 		}
 		container.appendChild(this.container);
-		container.style.overflow = 'scroll';
+		this.container.style.overflow = 'scroll';
 	}
 
 	public layout(dimension: Dimension): void {
+		this.container.style.width = dimension.width + 'px';
+		this.container.style.height = dimension.height + 'px';
 	}
 
 	public showPlan(xml: string) {

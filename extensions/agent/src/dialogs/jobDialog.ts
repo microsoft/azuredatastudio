@@ -109,6 +109,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	// Alert tab controls
 	private alertsTable: sqlops.TableComponent;
 	private newAlertButton: sqlops.ButtonComponent;
+	private isEdit: boolean = false;
 
 	// Job objects
 	private steps: sqlops.AgentJobStepInfo[] = [];
@@ -121,6 +122,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			new JobData(ownerUri, jobInfo),
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
 		this.steps = this.model.jobSteps;
+		this.isEdit = jobInfo ? true : false;
 	}
 
 	protected async initializeDialog() {
@@ -243,6 +245,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
 			stepDialog.onSuccess((step) => {
+				console.log(step);
 				let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
 				this.steps.push(stepInfo);
 				this.stepsTable.data = this.convertStepsToData(this.steps);
@@ -377,12 +380,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 				label: this.PickScheduleButtonString,
 				width: 80
 			}).component();
-
 			this.pickScheduleButton.onDidClick((e)=>{
-				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri);
+				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);
 				pickScheduleDialog.onSuccess((dialogModel) => {
 					let selectedSchedule = dialogModel.selectedSchedule;
 					if (selectedSchedule) {
+						selectedSchedule.jobName = this.model.name;
 						this.model.addJobSchedule(selectedSchedule);
 						this.populateScheduleTable();
 					}

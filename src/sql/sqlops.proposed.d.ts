@@ -58,6 +58,7 @@ declare module 'sqlops' {
 
 	export class TreeComponentItem extends vscode.TreeItem {
 		checked?: boolean;
+		enabled?: boolean;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -595,6 +596,10 @@ declare module 'sqlops' {
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode?: string;
+		/**
+		 * Minimum height for editor component
+		 */
+		minimumHeight?: number;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
@@ -721,6 +726,11 @@ declare module 'sqlops' {
 		 * Toggle for whether the editor should be automatically resized or not
 		 */
 		isAutoResizable: boolean;
+
+		/**
+		 * Minimum height for editor component
+		 */
+		minimumHeight: number;
 
 	}
 
@@ -880,6 +890,7 @@ declare module 'sqlops' {
 			 */
 			export type DialogMessage = {
 				readonly text: string,
+				readonly description?: string,
 				readonly level?: MessageLevel
 			};
 
