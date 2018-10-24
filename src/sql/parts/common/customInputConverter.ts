@@ -53,14 +53,16 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		uri = getNotebookEditorUri(input);
 		if(uri){
+			//TODO: We need to pass in notebook data either through notebook input or notebook service
 			let notebookData: string = fs.readFileSync(uri.fsPath);
-			let notebookInputModel = new NotebookInputModel('modelViewId', undefined, undefined);
-			//TO DO: Second paramter has to be the content
-			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, '', notebookInputModel);
+			let fileName: string = input? input.getName() : 'untitled';
+			let filePath: string = uri.fsPath;
+			let notebookInputModel = new NotebookInputModel(filePath, undefined, undefined);
+			//TO DO: Second paramter has to be the content.
+			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 			return notebookInput;
 		}
 	}
-
 	return input;
 }
 
@@ -144,7 +146,7 @@ function getQueryPlanEditorUri(input: EditorInput): URI {
 
 /**
  * If input is a supported notebook editor file (.ipynb), return it's URI. Otherwise return undefined.
- * @param input The EditorInput to get the URI of
+ * @param input The EditorInput to get the URI of.
  */
 function getNotebookEditorUri(input: EditorInput): URI {
 	if (!input || !input.getName()) {
