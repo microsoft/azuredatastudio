@@ -12,7 +12,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 
 export const SERVICE_ID = 'dacFxService';
-export const IDacFxService= createDecorator<IDacFxService>(SERVICE_ID);
+export const IDacFxService = createDecorator<IDacFxService>(SERVICE_ID);
 
 export interface IDacFxService {
 	_serviceBrand: any;
