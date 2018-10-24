@@ -15,7 +15,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
@@ -366,7 +366,7 @@ suite('ExtHostAccountManagement', () => {
 		extHost.$getAllAccounts()
 			.then((accounts) => {
 		    		// If: I get security token
-					extHost.$getSecurityToken(mockAccount1)
+					extHost.$getSecurityToken(mockAccount1, AzureResource.ResourceManagement)
 						.then((securityToken) => {
 							// Then: The call should have been passed to the account management service
 							mockAccountManagementService.verify(
@@ -427,7 +427,7 @@ suite('ExtHostAccountManagement', () => {
 			// If: I get security token for mockAccount2
 			// Then: It should throw
 			assert.throws(
-				() => extHost.$getSecurityToken(mockAccount2),
+				() => extHost.$getSecurityToken(mockAccount2, AzureResource.ResourceManagement),
 				(error) => {
 					return error.message === `Account ${mockAccount2.key.accountId} not found.`;
 				}

@@ -31,6 +31,7 @@ export const defaultEngine = 'defaultEngine';
 export const passwordChars = '***************';
 
 /* authentication types */
-export const sqlLogin = 'SqlLogin';
-export const integrated = 'Integrated';
+// export const sqlLogin = 'SqlLogin';
+// export const integrated = 'Integrated';
+// export const azureMFA = 'AzureMFA';
 

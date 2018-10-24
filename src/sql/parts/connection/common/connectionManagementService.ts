@@ -59,6 +59,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -101,7 +102,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService
+		@IAngularEventingService private _angularEventing: IAngularEventingService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super();
 		if (this._instantiationService) {
@@ -259,7 +261,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
-	public addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
+	public async addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
+		await this.fillInAzureTokenIfNeeded(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -746,8 +749,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
+	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<void> {
+		if (connection.authenticationType === Constants.azureMFA) {
+			let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+			if (accounts && accounts.length > 0) {
+				let tokens = await this._accountManagementService.getSecurityToken(accounts[0], AzureResource.Sql);
+				connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
+				connection.options['user'] = undefined;
+				connection.options['password'] = undefined;
+			}
+		}
+	}
+
 	// Request Senders
-	private sendConnectRequest(connection: IConnectionProfile, uri: string): Thenable<boolean> {
+	private async sendConnectRequest(connection: IConnectionProfile, uri: string): Promise<boolean> {
+		await this.fillInAzureTokenIfNeeded(connection);
 		let connectionInfo = Object.assign({}, {
 			options: connection.options
 		});

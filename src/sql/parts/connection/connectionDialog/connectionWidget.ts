@@ -37,6 +37,7 @@ import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -50,6 +51,8 @@ export class ConnectionWidget {
 	private _passwordInputBox: InputBox;
 	private _password: string;
 	private _rememberPasswordCheckBox: Checkbox;
+	private _azureAccountDropdown: SelectBox;
+	private _rememberAccountCheckBox: Checkbox;
 	private _advancedButton: Button;
 	private _callbacks: IConnectionComponentCallbacks;
 	private _authTypeSelectBox: SelectBox;
@@ -59,7 +62,7 @@ export class ConnectionWidget {
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
 	private _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
+		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
 	};
 	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
@@ -96,7 +99,8 @@ export class ConnectionWidget {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		this._callbacks = callbacks;
 		this._toDispose = [];
@@ -109,9 +113,9 @@ export class ConnectionWidget {
 		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
 			if (OS === OperatingSystem.Windows) {
-				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.integrated);
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
 			} else {
-				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.sqlLogin);
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
 			}
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
@@ -200,6 +204,12 @@ export class ConnectionWidget {
 		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
 		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', false);
 
+		// Azure account picker
+		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
+		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input');
+		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, undefined, { ariaLabel: accountLabel });
+		DialogHelper.appendInputSelectBox(accountDropdownBuilder, this._azureAccountDropdown);
+
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
 		let databaseNameBuilder = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
@@ -228,7 +238,7 @@ export class ConnectionWidget {
 
 	private validateUsername(value: string, isOptionRequired: boolean): boolean {
 		let currentAuthType = this._authTypeSelectBox ? this.getMatchingAuthType(this._authTypeSelectBox.value) : undefined;
-		if (!currentAuthType || currentAuthType.showUsernameAndPassword) {
+		if (!currentAuthType || currentAuthType === AuthenticationType.SqlLogin) {
 			if (!value && isOptionRequired) {
 				return true;
 			}
@@ -341,7 +351,7 @@ export class ConnectionWidget {
 	private setConnectButton(): void {
 		let showUsernameAndPassword: boolean = true;
 		if (this.authType) {
-			showUsernameAndPassword = this.authType.showUsernameAndPassword;
+			showUsernameAndPassword = this.authType === AuthenticationType.SqlLogin;
 		}
 		showUsernameAndPassword ? this._callbacks.onSetConnectButton(!!this.serverName && !!this.userName) :
 			this._callbacks.onSetConnectButton(!!this.serverName);
@@ -349,7 +359,7 @@ export class ConnectionWidget {
 
 	private onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		if (!currentAuthType.showUsernameAndPassword) {
+		if (currentAuthType !== AuthenticationType.SqlLogin) {
 			this._userNameInputBox.disable();
 			this._passwordInputBox.disable();
 			this._userNameInputBox.hideMessage();
@@ -364,6 +374,12 @@ export class ConnectionWidget {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
+		}
+
+		if (currentAuthType === AuthenticationType.AzureMFA) {
+			this._azureAccountDropdown.enable();
+		} else {
+			this._azureAccountDropdown.disable();
 		}
 	}
 
@@ -639,12 +655,18 @@ export class ConnectionWidget {
 	}
 }
 
-class AuthenticationType {
-	public name: string;
-	public showUsernameAndPassword: boolean;
+// class AuthenticationType {
+// 	public name: string;
+// 	public showUsernameAndPassword: boolean;
 
-	constructor(name: string, showUsernameAndPassword: boolean) {
-		this.name = name;
-		this.showUsernameAndPassword = showUsernameAndPassword;
-	}
+// 	constructor(name: string, showUsernameAndPassword: boolean) {
+// 		this.name = name;
+// 		this.showUsernameAndPassword = showUsernameAndPassword;
+// 	}
+// }
+
+enum AuthenticationType {
+	SqlLogin = 'SqlLogin',
+	Integrated = 'Integrated',
+	AzureMFA = 'AzureMFA'
 }

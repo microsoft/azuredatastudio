@@ -551,6 +551,8 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IServerGroupController, this.instantiationService.createInstance(ServerGroupController));
 		serviceCollection.set(ICredentialsService, this.instantiationService.createInstance(CredentialsService));
 		serviceCollection.set(IResourceProviderService, this.instantiationService.createInstance(ResourceProviderService));
+		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
+		serviceCollection.set(IAccountManagementService, accountManagementService);
 		let connectionManagementService = this.instantiationService.createInstance(ConnectionManagementService, undefined, undefined);
 		serviceCollection.set(IConnectionManagementService, connectionManagementService);
 		serviceCollection.set(ISerializationService, this.instantiationService.createInstance(SerializationService));
@@ -571,8 +573,6 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IFileBrowserService, this.instantiationService.createInstance(FileBrowserService));
 		serviceCollection.set(IFileBrowserDialogController, this.instantiationService.createInstance(FileBrowserDialogController));
 		serviceCollection.set(IInsightsDialogService, this.instantiationService.createInstance(InsightsDialogService));
-		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
-		serviceCollection.set(IAccountManagementService, accountManagementService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
 

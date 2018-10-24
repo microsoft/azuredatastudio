@@ -6,29 +6,29 @@
 'use strict';
 
 import { ServiceClientCredentials } from 'ms-rest';
-import { Account, DidChangeAccountsParams } from 'sqlops';
+import * as sqlops from 'sqlops';
 import { Event } from 'vscode';
 
 import { AzureResourceSubscription, AzureResourceDatabaseServer, AzureResourceDatabase } from './models';
 
 export interface IAzureResourceAccountService {
-	getAccounts(): Promise<Account[]>;
+	getAccounts(): Promise<sqlops.Account[]>;
 
-	readonly onDidChangeAccounts: Event<DidChangeAccountsParams>;
+	readonly onDidChangeAccounts: Event<sqlops.DidChangeAccountsParams>;
 }
 
 export interface IAzureResourceCredentialService {
-	getCredentials(account: Account): Promise<ServiceClientCredentials[]>;
+	getCredentials(account: sqlops.Account, resource: sqlops.AzureResource): Promise<ServiceClientCredentials[]>;
 }
 
 export interface IAzureResourceSubscriptionService {
-	getSubscriptions(account: Account, credentials: ServiceClientCredentials[]): Promise<AzureResourceSubscription[]>;
+	getSubscriptions(account: sqlops.Account, credentials: ServiceClientCredentials[]): Promise<AzureResourceSubscription[]>;
 }
 
 export interface IAzureResourceSubscriptionFilterService {
-	getSelectedSubscriptions(account: Account): Promise<AzureResourceSubscription[]>;
+	getSelectedSubscriptions(account: sqlops.Account): Promise<AzureResourceSubscription[]>;
 
-	saveSelectedSubscriptions(account: Account, selectedSubscriptions: AzureResourceSubscription[]): Promise<void>;
+	saveSelectedSubscriptions(account: sqlops.Account, selectedSubscriptions: AzureResourceSubscription[]): Promise<void>;
 }
 
 export interface IAzureResourceDatabaseServerService {

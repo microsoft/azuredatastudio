@@ -89,12 +89,12 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return Promise.all(promises).then(() => resultAccounts);
 	}
 
-	public $getSecurityToken(account: sqlops.Account): Thenable<{}> {
+	public $getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
 		return this.$getAllAccounts().then(() => {
 			for (const handle in this._accounts) {
 				const providerHandle = parseInt(handle);
 				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
-					return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
+					return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account, resource));
 				}
 			}
 
