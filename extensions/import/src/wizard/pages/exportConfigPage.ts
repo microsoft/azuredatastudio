@@ -210,6 +210,17 @@ export class ExportConfigPage {
 
 		return true;
 	}
+
+	public async getConnectionString(): Promise<string> {
+		let connectionstring = await sqlops.connection.getConnectionString(this.model.server.connectionId, true);
+		let splitted = connectionstring.split(';');
+
+		// set datbase to appropriate value instead of master
+		let temp = splitted.find(s => s.startsWith('Initial Catalog'));
+		splitted[splitted.indexOf(temp)] = 'Initial Catalog=' + this.model.database;
+
+		return splitted.join(';');
+	}
 }
 
 interface ConnectionDropdownValue extends sqlops.CategoryValue {

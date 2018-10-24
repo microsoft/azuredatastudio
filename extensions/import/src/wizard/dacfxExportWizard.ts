@@ -15,8 +15,7 @@ const localize = nls.loadMessageBundle();
 export class DacFxExportWizard {
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
-	private connectionstring: string;
-
+	private exportConfigPage: ExportConfigPage;
 	constructor() {
 	}
 
@@ -35,39 +34,26 @@ export class DacFxExportWizard {
 			return;
 		}
 
-		this.connectionstring = await this.getConnectionString(model.database);
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Export Data-tier Application Wizard');
 		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('dacFxExport.page1Name', 'Specify database'));
 
-		let exportConfigPage: ExportConfigPage;
-
 		page1.registerContent(async (view) => {
-			exportConfigPage = new ExportConfigPage(this, page1, model, view);
-			await exportConfigPage.start().then(() => {
-				exportConfigPage.setupNavigationValidator();
-				exportConfigPage.onPageEnter();
+			this.exportConfigPage = new ExportConfigPage(this, page1, model, view);
+			await this.exportConfigPage.start().then(() => {
+				this.exportConfigPage.setupNavigationValidator();
+				this.exportConfigPage.onPageEnter();
 			});
 		});
 
 		this.wizard.pages = [page1];
 		this.wizard.generateScriptButton.hidden = true;
 		this.wizard.doneButton.label = "Export";
-		this.wizard.doneButton.onClick(async () => await this.export(this.connectionstring));
+		this.wizard.doneButton.onClick(async () => await this.export());
 		this.wizard.open();
 	}
 
-	private async getConnectionString(database: string) {
-		let connectionstring = await sqlops.connection.getConnectionString(this.connection.connectionId, true);
-		let splitted = connectionstring.split(';');
-
-		// set datbase to appropriate value instead of master
-		let temp = splitted.find(s => s.startsWith('Initial Catalog'));
-		splitted[splitted.indexOf(temp)] = 'Initial Catalog=' + database;
-
-		return splitted.join(';');
-	}
-
-	private async export(connectionstring: string) {
+	private async export() {
+		let connectionstring = await this.exportConfigPage.getConnectionString();
 		let service = await DacFxExportWizard.getService();
 		let result = await service.exportBacpac(connectionstring);
 		if (!result || !result.success) {
