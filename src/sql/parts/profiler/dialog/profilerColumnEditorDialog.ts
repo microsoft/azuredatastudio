@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import 'vs/css!./media/profilerDialog';
+import 'vs/css!sql/parts/profiler/media/profiler';
 
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
