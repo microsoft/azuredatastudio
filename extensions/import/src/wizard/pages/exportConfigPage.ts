@@ -224,8 +224,8 @@ export class ExportConfigPage {
 
 		// default filepath
 		let now = new Date();
-		let datetime = now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		this.fileTextBox.value = os.tmpdir + '\\' + this.model.database + '-' + datetime +'.bacpac';
+		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+		this.fileTextBox.value = os.tmpdir + '\\' + this.model.database + '-' + datetime + '.bacpac';
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: localize('dacFxExport.browseFiles', 'Browse'),

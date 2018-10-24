@@ -403,7 +403,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider> {
+		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider>{
 			exportBacpac(connectionstring: string, packageFileName: string): Thenable<sqlops.DacFxExportResult> {
 				return self._proxy.$exportBacpac(handle, connectionstring, packageFileName);
 			}

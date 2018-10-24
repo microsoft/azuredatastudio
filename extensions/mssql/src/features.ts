@@ -8,7 +8,7 @@ import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import { Telemetry } from './telemetry';
-import * as contracts  from './contracts';
+import * as contracts from './contracts';
 import * as sqlops from 'sqlops';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -52,7 +52,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		let self = this;
 
 		let exportBacpac = (connectionString: string, packageFileName: string): Thenable<sqlops.DacFxExportResult> => {
-			let params: contracts.DacFxExportParams = { connectionString: connectionString, packageFileName: packageFileName};
+			let params: contracts.DacFxExportParams = { connectionString: connectionString, packageFileName: packageFileName };
 			return client.sendRequest(contracts.DacFxExportRequest.type, params).then(
 				r => {
 					return r;
@@ -273,7 +273,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Alert management methods
-		let  getAlerts = (ownerUri: string): Thenable<sqlops.AgentAlertsResult>  => {
+		let getAlerts = (ownerUri: string): Thenable<sqlops.AgentAlertsResult> => {
 			let params: contracts.AgentAlertsParams = {
 				ownerUri: ownerUri
 			};
@@ -343,7 +343,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Operator management methods
-		let  getOperators = (ownerUri: string): Thenable<sqlops.AgentOperatorsResult>  => {
+		let getOperators = (ownerUri: string): Thenable<sqlops.AgentOperatorsResult> => {
 			let params: contracts.AgentOperatorsParams = {
 				ownerUri: ownerUri
 			};
@@ -413,7 +413,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Proxy management methods
-		let  getProxies = (ownerUri: string): Thenable<sqlops.AgentProxiesResult>  => {
+		let getProxies = (ownerUri: string): Thenable<sqlops.AgentProxiesResult> => {
 			let params: contracts.AgentProxiesParams = {
 				ownerUri: ownerUri
 			};
@@ -483,7 +483,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Agent Credential Method
-		let  getCredentials = (ownerUri: string): Thenable<sqlops.GetCredentialsResult>  => {
+		let getCredentials = (ownerUri: string): Thenable<sqlops.GetCredentialsResult> => {
 			let params: contracts.GetCredentialsParams = {
 				ownerUri: ownerUri
 			};
@@ -499,7 +499,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 
 		// Job Schedule management methods
-		let  getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult>  => {
+		let getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult> => {
 			let params: contracts.AgentJobScheduleParams = {
 				ownerUri: ownerUri
 			};
