@@ -6,6 +6,8 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
+import * as vscode from 'vscode';
+import * as os from 'os';
 import { ImportDataModel } from '../api/models';
 import { DacFxExportWizard } from '../dacFxExportWizard';
 
@@ -21,6 +23,8 @@ export class ExportConfigPage {
 	private serverDropdown: sqlops.DropDownComponent;
 	private databaseDropdown: sqlops.DropDownComponent;
 	private form: sqlops.FormContainer;
+	private fileTextBox: sqlops.InputBoxComponent;
+	private fileButton: sqlops.ButtonComponent;
 
 	private databaseLoader: sqlops.LoadingComponent;
 
@@ -34,12 +38,14 @@ export class ExportConfigPage {
 	async start(): Promise<boolean> {
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
+		let fileBrowserComponent = await this.createFileBrowser();
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					serverComponent,
 					databaseComponent,
+					fileBrowserComponent,
 				]).component();
 
 		await this.view.initializeModel(this.form);
@@ -211,6 +217,45 @@ export class ExportConfigPage {
 		return true;
 	}
 
+	private async createFileBrowser(): Promise<sqlops.FormComponent> {
+		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
+			required: true
+		}).component();
+
+		// default filepath
+		let now = new Date();
+		let datetime = now.getFullYear() + '-' + (now.getMonth()+1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+		this.fileTextBox.value = os.tmpdir + '\\' + this.model.database + '-' + datetime +'.bacpac';
+
+		this.fileButton = this.view.modelBuilder.button().withProperties({
+			label: localize('dacFxExport.browseFiles', 'Browse'),
+		}).component();
+
+		this.fileButton.onDidClick(async (click) => {
+			let fileUri = await vscode.window.showSaveDialog(
+				{
+					defaultUri: vscode.Uri.file(this.fileTextBox.value),
+					filters: {
+						'bacpac Files': ['bacpac'],
+						'All Files': ['*']
+					}
+				}
+			);
+
+			if (!fileUri) {
+				return;
+			}
+
+			this.fileTextBox.value = fileUri.fsPath;
+		});
+
+		return {
+			component: this.fileTextBox,
+			title: localize('dacFxExport.fileTextboxTitle', 'Location to save bacpac'),
+			actions: [this.fileButton]
+		};
+	}
+
 	public async getConnectionString(): Promise<string> {
 		let connectionstring = await sqlops.connection.getConnectionString(this.model.server.connectionId, true);
 		let splitted = connectionstring.split(';');
@@ -220,6 +265,10 @@ export class ExportConfigPage {
 		splitted[splitted.indexOf(temp)] = 'Initial Catalog=' + this.model.database;
 
 		return splitted.join(';');
+	}
+
+	public getFilePath(): string {
+		return this.fileTextBox.value;
 	}
 }
 
