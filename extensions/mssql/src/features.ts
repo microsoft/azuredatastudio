@@ -51,8 +51,8 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 		let self = this;
 
-		let exportBacpac = (cs: string): Thenable<sqlops.DacFxExportResult> => {
-			let params: contracts.DacFxExportParams = { connectionString: cs };
+		let exportBacpac = (connectionString: string, packageFileName: string): Thenable<sqlops.DacFxExportResult> => {
+			let params: contracts.DacFxExportParams = { connectionString: connectionString, packageFileName: packageFileName};
 			return client.sendRequest(contracts.DacFxExportRequest.type, params).then(
 				r => {
 					return r;

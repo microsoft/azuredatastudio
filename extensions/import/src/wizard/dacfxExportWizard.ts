@@ -54,8 +54,9 @@ export class DacFxExportWizard {
 
 	private async export() {
 		let connectionstring = await this.exportConfigPage.getConnectionString();
+		let packageFileName = this.exportConfigPage.getFilePath();
 		let service = await DacFxExportWizard.getService();
-		let result = await service.exportBacpac(connectionstring);
+		let result = await service.exportBacpac(connectionstring, packageFileName);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

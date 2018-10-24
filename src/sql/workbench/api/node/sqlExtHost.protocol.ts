@@ -413,7 +413,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * DacFx export bacpac
 	 */
-	$exportBacpac(handle: number, connectionstring: string): Thenable<sqlops.DacFxExportResult> {throw ni(); }
+	$exportBacpac(handle: number, connectionstring: string, packageFileName: string): Thenable<sqlops.DacFxExportResult> {throw ni(); }
 }
 
 /**
