@@ -93,8 +93,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
  * 	2. If so, filters provider paramter against master map
  * 	3. Fetches the result array and extracts the first element
  * 	4. If none of the above data exists, returns 'MSSQL'
+ * @returns: Default provider as string
  */
-	private getDefaultProviderName() {
+	private getDefaultProviderName(): string {
 		let defaultProvider: string;
 		if (this._providerNameToDisplayNameMap) {
 			let keys = Object.keys(this._providerNameToDisplayNameMap);
