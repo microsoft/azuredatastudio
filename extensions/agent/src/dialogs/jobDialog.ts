@@ -113,7 +113,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	// Job objects
 	private steps: sqlops.AgentJobStepInfo[];
-	private schedules: sqlops.AgentJobScheduleInfo[] = [];
+	private schedules: sqlops.AgentJobScheduleInfo[];
 	private alerts: sqlops.AgentAlertInfo[] = [];
 
 	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
@@ -122,6 +122,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			new JobData(ownerUri, jobInfo),
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
 		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
+		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
 		this.isEdit = jobInfo ? true : false;
 	}
 
@@ -291,7 +292,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
 								if (result && result.success) {
 									delete steps[rowNumber];
-									this.model.jobSteps = steps;
+									// this.model.jobSteps = steps;
 									let data = this.convertStepsToData(steps);
 									this.stepsTable.data = data;
 								}
@@ -384,8 +385,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 				pickScheduleDialog.onSuccess((dialogModel) => {
 					let selectedSchedule = dialogModel.selectedSchedule;
 					if (selectedSchedule) {
-						selectedSchedule.jobName = this.model.name;
-						this.model.addJobSchedule(selectedSchedule);
+						let existingSchedule = this.schedules.find(item => item.name === selectedSchedule.name);
+						if (!existingSchedule) {
+							selectedSchedule.jobName = this.model.name ? this.model.name : this.nameTextBox.value;
+							this.schedules.push(selectedSchedule);
+						}
 						this.populateScheduleTable();
 					}
 				});
@@ -406,8 +410,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	}
 
 	private populateScheduleTable() {
-		let schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
-		let data = this.convertSchedulesToData(schedules);
+		let data = this.convertSchedulesToData(this.schedules);
 		if (data.length > 0) {
 			this.schedulesTable.data = data;
 			this.schedulesTable.height = 750;
@@ -574,5 +577,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.model.jobSteps = [];
 		}
 		this.model.jobSteps = this.steps;
+		if (!this.model.jobSchedules) {
+			this.model.jobSchedules = [];
+		}
+		this.model.jobSchedules = this.schedules;
 	}
 }

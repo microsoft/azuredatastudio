@@ -112,7 +112,6 @@ export class JobData implements IAgentDialogData {
 
 	public async save() {
 		let jobInfo: sqlops.AgentJobInfo = this.toAgentJobInfo();
-		console.log(jobInfo);
 		let result = this.dialogMode === AgentDialogMode.CREATE
 			? await this._agentService.createJob(this.ownerUri,  jobInfo)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
@@ -134,18 +133,6 @@ export class JobData implements IAgentDialogData {
 			valid: validationErrors.length === 0,
 			errorMessages: validationErrors
 		};
-	}
-
-	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
-		if (this.jobSchedules) {
-			let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
-			if (!existingSchedule) {
-				this.jobSchedules.push(schedule);
-			}
-		} else {
-			this.jobSchedules = [];
-			this.jobSchedules.push(schedule);
-		}
 	}
 
 	public toAgentJobInfo(): sqlops.AgentJobInfo {
