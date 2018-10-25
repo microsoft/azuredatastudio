@@ -140,7 +140,7 @@
 				},
 				{
 					"command": "azureresource.refresh",
-					"when": "viewItem != azureResource.itemType.database && viewItem != azureResource.itemType.databaseServer && viewItem != azureResource.itemType.message",
+					"when": "viewItem =~ /^azureResource.itemType./ && viewItem != azureResource.itemType.database && viewItem != azureResource.itemType.databaseServer && viewItem != azureResource.itemType.message",
 					"group": "inline"
 				}
 			]
