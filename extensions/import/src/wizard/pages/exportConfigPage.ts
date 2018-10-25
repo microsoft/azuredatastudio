@@ -8,6 +8,7 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
+import  * as path from 'path';
 import { ImportDataModel } from '../api/models';
 import { DacFxExportWizard } from '../dacFxExportWizard';
 
@@ -225,7 +226,7 @@ export class ExportConfigPage {
 		// default filepath
 		let now = new Date();
 		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		this.fileTextBox.value = os.tmpdir + '\\' + this.model.database + '-' + datetime + '.bacpac';
+		this.fileTextBox.value = path.join(os.tmpdir(), this.model.database + '-' + datetime + '.bacpac');
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: localize('dacFxExport.browseFiles', 'Browse'),
