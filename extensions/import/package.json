@@ -33,6 +33,15 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "dacFxExport.start",
+        "title": "Export bacpac",
+        "category": "Export Data-tier Application",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
       }
     ],
     "keybindings": [
@@ -48,6 +57,11 @@
           "command": "flatFileImport.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "import"
+        },
+        {
+          "command": "dacFxExport.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "group": "export"
         }
       ]
     }
