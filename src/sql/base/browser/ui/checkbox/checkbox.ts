@@ -27,6 +27,7 @@ export class Checkbox extends Widget {
 
 		this._el = document.createElement('input');
 		this._el.type = 'checkbox';
+		this._el.style.verticalAlign = 'middle';
 
 		if (opts.ariaLabel) {
 			this._el.setAttribute('aria-label', opts.ariaLabel);
@@ -44,6 +45,7 @@ export class Checkbox extends Widget {
 		});
 
 		this._label = document.createElement('span');
+		this._label.style.verticalAlign = 'middle';
 
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;
