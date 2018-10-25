@@ -172,6 +172,9 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
+
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -575,7 +578,7 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IAccountManagementService, accountManagementService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
-
+		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));

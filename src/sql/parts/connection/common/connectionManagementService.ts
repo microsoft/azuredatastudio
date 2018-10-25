@@ -63,6 +63,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
+
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
 	_serviceBrand: any;
@@ -80,7 +81,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
-
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	private _configurationEditService: ConfigurationEditingService;
@@ -128,37 +128,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			100 /* High Priority */
 		));
 
-		let profile = null;
-		if (this._environmentService && this._environmentService.args.server)
-		{
-
-			profile = new ConnectionProfile(_capabilitiesService, null);
-			// We want connection store to use any matching password it finds
-			profile.savePassword = true;
-			profile.providerName = Constants.mssqlProviderName;
-			profile.serverName = _environmentService.args.server;
-			profile.databaseName = _environmentService.args.database ? _environmentService.args.database : '';
-			profile.userName = _environmentService.args.user ? _environmentService.args.user : '';
-			profile.authenticationType = _environmentService.args.integrated ? 'Integrated'  :  'SqlLogin';
-			profile.connectionName = '';
-			profile.setOptionValue('applicationName', Constants.applicationName);
-			profile.setOptionValue('databaseDisplayName', profile.databaseName);
-			profile.setOptionValue('groupId', profile.groupId);
-		}
-		if (!profile && _capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
-			// prompt the user for a new connection on startup if no profiles are registered
-			this.showConnectionDialog();
-		} else if (!profile && _capabilitiesService && !this.hasRegisteredServers()) {
-			_capabilitiesService.onCapabilitiesRegistered(e => {
-				// prompt the user for a new connection on startup if no profiles are registered
-				this.showConnectionDialog();
-			});
-		} else if (profile && _capabilitiesService)	{
-			_capabilitiesService.onCapabilitiesRegistered(e => {
-				this.connectIfNotConnected(profile, 'connection');
-			});
-		}
-
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
 		let providerRegistration = (p: { id: string, properties: ConnectionProviderProperties }) => {
@@ -182,6 +151,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
 	}
+
 
 	// Event Emitters
 	public get onAddConnectionProfile(): Event<IConnectionProfile> {
