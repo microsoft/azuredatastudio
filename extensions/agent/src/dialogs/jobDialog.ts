@@ -123,6 +123,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
 		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
+		this.alerts = this.model.alerts ? this.model.alerts : [];
 		this.isEdit = jobInfo ? true : false;
 	}
 
@@ -206,10 +207,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private initializeStepsTab() {
 		this.stepsTab.registerContent(async view => {
-			let previewTag = view.modelBuilder.text()
-				.withProperties({
-					value: 'Feature Preview'
-				}).component();
 			let data = this.steps ? this.convertStepsToData(this.steps) : [];
 			this.stepsTable = view.modelBuilder.table()
 				.withProperties({
@@ -292,7 +289,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
 								if (result && result.success) {
 									delete steps[rowNumber];
-									// this.model.jobSteps = steps;
 									let data = this.convertStepsToData(steps);
 									this.stepsTable.data = data;
 								}
@@ -304,10 +300,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: previewTag,
-					title: ''
-				},
-				{
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
 					actions: [this.moveStepUpButton, this.moveStepDownButton, this.newStepButton, this.editStepButton, this.deleteStepButton]
@@ -318,10 +310,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private initializeAlertsTab() {
 		this.alertsTab.registerContent(async view => {
-			let previewTag = view.modelBuilder.text()
-			.withProperties({
-				value: 'Feature Preview'
-			}).component();
 			let alerts = this.model.alerts ? this.model.alerts : [];
 			let data = this.convertAlertsToData(alerts);
 			this.alertsTable = view.modelBuilder.table()
@@ -332,7 +320,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.AlertTypeLabelString
 					],
 					data: data,
-					height: 430,
+					height: 750,
 					width: 400
 				}).component();
 
@@ -341,18 +329,24 @@ export class JobDialog extends AgentDialog<JobData>  {
 				width: 80
 			}).component();
 
-			this.newAlertButton.onDidClick((e)=>{
-				let alertDialog = new AlertDialog(this.model.ownerUri, null, []);
-				alertDialog.onSuccess((dialogModel) => {
-				});
-				alertDialog.openDialog();
+			let alertDialog = new AlertDialog(this.model.ownerUri, this.model, null, true);
+			alertDialog.onSuccess((alert) => {
+				let alertInfo = alert.toAgentAlertInfo();
+				this.alerts.push(alertInfo);
+				this.alertsTable.data = this.convertAlertsToData(this.alerts);
+			});
+			this.newAlertButton.onDidClick(()=>{
+				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					alertDialog.jobId = this.model.jobId;
+					alertDialog.jobName = this.model.name ? this.model.name : this.nameTextBox.value;
+					alertDialog.openDialog();
+				} else {
+					this.dialog.message = { text: this.BlankJobNameErrorText };
+				}
 			});
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: previewTag,
-					title: ''
-				}, {
 					component: this.alertsTable,
 					title: this.AlertsTopLabelString,
 					actions: [this.newAlertButton]
@@ -581,5 +575,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.model.jobSchedules = [];
 		}
 		this.model.jobSchedules = this.schedules;
+		if (!this.model.alerts) {
+			this.model.alerts = [];
+		}
+		this.model.alerts = this.alerts;
 	}
 }

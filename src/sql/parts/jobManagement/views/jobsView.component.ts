@@ -930,20 +930,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			job[0].JobSchedules = schedules;
 		}
 
-		let jobHistories = this.jobHistories[job[0].jobId];
-		let alerts: sqlops.AgentAlertInfo[] = this.jobAlerts[job[0].jobId];
-
-		if (jobHistories && jobHistories[jobHistories.length-1]) {
-			// add alerts
-			if (!job[0].Alerts) {
-				job[0].Alerts = [];
-			}
-			if (job[0].Alerts.length !== alerts.length) {
-				job[0].Alerts = [];
-				alerts.forEach(alert => {
-					job[0].Alerts.push(alert);
-				});
-			}
+		// add alerts
+		if (this.jobAlerts && this.jobAlerts[jobId]) {
+			let alerts = this.jobAlerts[jobId];
+			job[0].Alerts = alerts;
 		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}

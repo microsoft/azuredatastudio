@@ -44,6 +44,7 @@ export class JobData implements IAgentDialogData {
 	public jobSteps: sqlops.AgentJobStepInfo[];
 	public jobSchedules: sqlops.AgentJobScheduleInfo[];
 	public alerts: sqlops.AgentAlertInfo[];
+	public jobId: string;
 
 	constructor(
 		ownerUri: string,
@@ -62,6 +63,7 @@ export class JobData implements IAgentDialogData {
 			this.jobSteps = jobInfo.JobSteps;
 			this.jobSchedules = jobInfo.JobSchedules;
 			this.alerts = jobInfo.Alerts;
+			this.jobId = jobInfo.jobId;
 		}
 	}
 
@@ -165,7 +167,7 @@ export class JobData implements IAgentDialogData {
 			categoryType: 1, // LocalJob, hard-coding the value, corresponds to the target tab in SSMS
 			lastRun: '',
 			nextRun: '',
-			jobId: ''
+			jobId: this.jobId
 		};
 	}
 }
