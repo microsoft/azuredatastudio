@@ -241,6 +241,8 @@ export class GridPanel extends ViewletPanel {
 			this.splitView.removeView(i);
 		}
 		dispose(this.tables);
+		dispose(this.tableDisposable);
+		this.tableDisposable = [];
 		this.tables = [];
 		this.maximizedGrid = undefined;
 
