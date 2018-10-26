@@ -39,7 +39,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			id: '2', language: 'sql', source: 'select 1', cellType: CellTypes.Code, active: false
 		};
 		let cell3: ICellModel = {
-			id: '3', language: 'markdown', source: '##This is test!', cellType: CellTypes.Markdown, active: false
+			id: '3', language: 'markdown', source: '## This is test!', cellType: CellTypes.Markdown, active: false
 		};
 		this.cells.push(cell1, cell2, cell3);
 	}
