@@ -15,6 +15,6 @@ export class ShowNotebookPreview implements Command {
 	) { }
 
 	public async execute(document: vscode.Uri, textContent: string): Promise<string> {
-        return this.engine.renderText(document, textContent);
+		return this.engine.renderText(document, textContent);
 	}
 }
