@@ -107,7 +107,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	private createUri(): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
-		this.cellModel.cellURI = uri;
+		this.cellModel.cellUri = uri;
 		return uri;
 	}
 

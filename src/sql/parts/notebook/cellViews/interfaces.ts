@@ -21,7 +21,7 @@ export interface ICellModel {
 	source: string;
 	cellType: CellType;
 	active: boolean;
-	cellURI?: URI;
+	cellUri?: URI;
 }
 
 export type CellType = 'code' | 'markdown' | 'raw';
