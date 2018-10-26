@@ -168,7 +168,6 @@ export class QueryResultsView extends Disposable {
 	private resultsTab: ResultsTab;
 	private chartTab: ChartTab;
 	private qpTab: QueryPlanTab;
-	private _state: ResultsViewState;
 
 	private runnerDisposables: IDisposable[];
 
@@ -184,8 +183,8 @@ export class QueryResultsView extends Disposable {
 		this.qpTab = this._register(new QueryPlanTab());
 		this._panelView.pushTab(this.resultsTab);
 		this._register(this._panelView.onTabChange(e => {
-			if (this.state) {
-				this.state.activeTab = e;
+			if (this.input) {
+				this.input.state.activeTab = e;
 			}
 		}));
 	}
@@ -193,36 +192,28 @@ export class QueryResultsView extends Disposable {
 	public style() {
 	}
 
-	public get state(): ResultsViewState {
-		return this._state;
-	}
-
-	public setState(state: ResultsViewState) {
-		this._state = state;
-		this.resultsTab.view.state = state;
-		this.qpTab.view.state = state.queryPlanState;
-		this.chartTab.view.state = state.chartState;
-	}
-
 	public set input(input: QueryResultsInput) {
 		this._input = input;
 		dispose(this.runnerDisposables);
 		this.runnerDisposables = [];
+		this.resultsTab.view.state = this.input.state;
+		this.qpTab.view.state = this.input.state.queryPlanState;
+		this.chartTab.view.state = this.input.state.chartState;
 		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
 		this.resultsTab.queryRunner = queryRunner;
 		this.chartTab.queryRunner = queryRunner;
 		this.runnerDisposables.push(queryRunner.onQueryStart(e => {
 			this.hideChart();
 			this.hidePlan();
-			this.state.visibleTabs = new Set();
-			this.state.activeTab = this.resultsTab.identifier;
+			this.input.state.visibleTabs = new Set();
+			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
-		if (this.state.visibleTabs.has(this.chartTab.identifier)) {
+		if (this.input.state.visibleTabs.has(this.chartTab.identifier)) {
 			if (!this._panelView.contains(this.chartTab)) {
 				this._panelView.pushTab(this.chartTab);
 			}
 		}
-		if (this.state.visibleTabs.has(this.qpTab.identifier)) {
+		if (this.input.state.visibleTabs.has(this.qpTab.identifier)) {
 			if (!this._panelView.contains(this.qpTab)) {
 				this._panelView.pushTab(this.qpTab);
 			}
@@ -234,8 +225,8 @@ export class QueryResultsView extends Disposable {
 				});
 			}
 		}));
-		if (this.state.activeTab) {
-			this._panelView.showTab(this.state.activeTab);
+		if (this.input.state.activeTab) {
+			this._panelView.showTab(this.input.state.activeTab);
 		}
 	}
 
@@ -259,7 +250,7 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public chartData(dataId: { resultId: number, batchId: number }): void {
-		this.state.visibleTabs.add(this.chartTab.identifier);
+		this.input.state.visibleTabs.add(this.chartTab.identifier);
 		if (!this._panelView.contains(this.chartTab)) {
 			this._panelView.pushTab(this.chartTab);
 		}
@@ -275,7 +266,7 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public showPlan(xml: string) {
-		this.state.visibleTabs.add(this.qpTab.identifier);
+		this.input.state.visibleTabs.add(this.qpTab.identifier);
 		if (!this._panelView.contains(this.qpTab)) {
 			this._panelView.pushTab(this.qpTab);
 		}
