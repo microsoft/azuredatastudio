@@ -12,7 +12,9 @@ import * as Constants from 'sql/parts/connection/common/constants';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class CommandLineService implements ICommandLineProcessing {
 	private _connectionProfile : ConnectionProfile;
@@ -22,7 +24,9 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IConnectionManagementService private _connectionManagementService : IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService : ICapabilitiesService,
 		@IEnvironmentService private _environmentService : IEnvironmentService,
-		@IQueryEditorService private _queryEditorService : IQueryEditorService
+		@IQueryEditorService private _queryEditorService : IQueryEditorService,
+		@IObjectExplorerService private _objectExplorerService : IObjectExplorerService,
+		@IEditorService private _editorService : IEditorService,
 	)
 	{
 		let profile = null;
@@ -64,7 +68,12 @@ export class CommandLineService implements ICommandLineProcessing {
 			// prompt the user for a new connection on startup if no profiles are registered
 			this._connectionManagementService.showConnectionDialog();
 		} else if (this._connectionProfile)	{
-			this._connectionManagementService.connectIfNotConnected(this._connectionProfile, 'connection');
+			this._connectionManagementService.connectIfNotConnected(this._connectionProfile, 'connection')
+			   .then(result => TaskUtilities.newQuery(this._connectionProfile,
+											this._connectionManagementService,
+											this._queryEditorService,
+											this._objectExplorerService,
+											this._editorService));
 		}
 	}
 }

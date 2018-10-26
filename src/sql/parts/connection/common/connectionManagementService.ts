@@ -63,7 +63,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
-
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
 	_serviceBrand: any;
@@ -151,7 +150,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
 	}
-
 
 	// Event Emitters
 	public get onAddConnectionProfile(): Event<IConnectionProfile> {
