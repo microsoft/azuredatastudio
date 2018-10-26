@@ -29,4 +29,8 @@ export class ChartTab implements IPanelTab {
 	public chart(dataId: { batchId: number, resultId: number}): void {
 		this.view.chart(dataId);
 	}
+
+	public dispose() {
+		this.view.dispose();
+	}
 }

@@ -63,7 +63,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	private tabHistory: string[] = [];
 
-	constructor(private container: HTMLElement, private options: IPanelOptions = defaultOptions) {
+	constructor(container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
 		this.parent = $('.tabbedPanel');
 		container.appendChild(this.parent);
@@ -85,6 +85,13 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.body.setAttribute('role', 'tabpanel');
 		this.body.setAttribute('tabindex', '0');
 		this.parent.appendChild(this.body);
+	}
+
+	public dispose() {
+		this.header.remove();
+		this.tabList.remove();
+		this.body.remove();
+		this.parent.remove();
 	}
 
 	public contains(tab: IPanelTab): boolean {
