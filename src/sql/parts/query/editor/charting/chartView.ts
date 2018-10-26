@@ -134,6 +134,10 @@ export class ChartView extends Disposable implements IPanelView {
 		this.buildOptions();
 	}
 
+	public clear() {
+
+	}
+
 	render(container: HTMLElement): void {
 		if (!this.container) {
 			this.container = $('div.chart-parent-container');

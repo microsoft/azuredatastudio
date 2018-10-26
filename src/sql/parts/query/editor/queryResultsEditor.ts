@@ -90,7 +90,6 @@ export class QueryResultsEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.queryResultsEditor';
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _rawOptions: BareResultsGridInfo;
-	protected _input: QueryResultsInput;
 
 	private resultsView: QueryResultsView;
 	private styleSheet = DOM.createStyleSheet();
@@ -114,7 +113,7 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	public get input(): QueryResultsInput {
-		return this._input;
+		return this._input as QueryResultsInput;
 	}
 
 	private applySettings() {
@@ -145,6 +144,11 @@ export class QueryResultsEditor extends BaseEditor {
 		super.setInput(input, options, CancellationToken.None);
 		this.resultsView.input = input;
 		return TPromise.wrap<void>(null);
+	}
+
+	clearInput() {
+		this.resultsView.clearInput();
+		super.clearInput();
 	}
 
 	public chart(dataId: { batchId: number, resultId: number }) {

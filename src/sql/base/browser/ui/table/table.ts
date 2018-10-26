@@ -7,9 +7,7 @@ import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
 
 import { IThemable } from 'vs/platform/theme/common/styler';
-import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import * as DOM from 'vs/base/browser/dom';
-import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
@@ -17,16 +15,7 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
-
-export interface ITableMouseEvent {
-	anchor: HTMLElement | { x: number, y: number };
-	cell?: { row: number, cell: number };
-}
-
-export interface ITableStyles extends IListStyles {
-	tableHeaderBackground?: Color;
-	tableHeaderForeground?: Color;
-}
+import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -35,23 +24,13 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export interface ITableSorter<T> {
-	sort(args: Slick.OnSortEventArgs<T>);
-}
-
-export interface ITableConfiguration<T> {
-	dataProvider?: Slick.DataProvider<T> | Array<T>;
-	columns?: Slick.Column<T>[];
-	sorter?: ITableSorter<T>;
-}
-
 export class Table<T extends Slick.SlickData> extends Widget implements IThemable, IDisposable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
-	private _data: Slick.DataProvider<T>;
+	private _data: IDisposableDataProvider<T>;
 	private _sorter: ITableSorter<T>;
 
 	private _autoscroll: boolean;
@@ -132,6 +111,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 	public dispose() {
 		dispose(this._disposables);
+		this._grid.destroy();
+		this._data.dispose();
 	}
 
 	public invalidateRows(rows: number[], keepEditor: boolean) {
@@ -166,7 +147,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid.setData(this._data, true);
 	}
 
-	getData(): Slick.DataProvider<T> {
+	getData(): IDisposableDataProvider<T> {
 		return this._data;
 	}
 

@@ -193,8 +193,13 @@ export class MessagePanel extends ViewletPanel {
 		}
 		this.setExpanded(!this.state.collapsed);
 	}
+
 	public get state(): MessagePanelState {
 		return this._state;
+	}
+
+	public clear() {
+		this.reset();
 	}
 }
 

@@ -29,6 +29,10 @@ export class QueryPlanTab implements IPanelTab {
 	public dispose() {
 		dispose(this.view);
 	}
+
+	public clear() {
+		this.view.clear();
+	}
 }
 
 export class QueryPlanView implements IPanelView {
@@ -57,6 +61,10 @@ export class QueryPlanView implements IPanelView {
 	public layout(dimension: Dimension): void {
 		this.container.style.width = dimension.width + 'px';
 		this.container.style.height = dimension.height + 'px';
+	}
+
+	public clear() {
+		this.qp.xml = undefined;
 	}
 
 	public showPlan(xml: string) {

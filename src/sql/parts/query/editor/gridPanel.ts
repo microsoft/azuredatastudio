@@ -7,7 +7,7 @@
 import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
-import { Table, ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/table';
+import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
@@ -41,6 +41,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
+import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -236,6 +237,10 @@ export class GridPanel extends ViewletPanel {
 		this.tables = this.tables.concat(tables);
 	}
 
+	public clear() {
+		this.reset();
+	}
+
 	private reset() {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
@@ -292,6 +297,14 @@ export class GridPanel extends ViewletPanel {
 
 	public get state(): GridPanelState {
 		return this._state;
+	}
+
+	public dispose() {
+		dispose(this.tableDisposable);
+		dispose(this.tables);
+		this.tableDisposable = undefined;
+		this.tables = undefined;
+		super.dispose();
 	}
 }
 
@@ -636,6 +649,7 @@ class GridTable<T> extends Disposable implements IView {
 
 	public dispose() {
 		$(this.container).destroy();
+		this.table.dispose();
 		super.dispose();
 	}
 }

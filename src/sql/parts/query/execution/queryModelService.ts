@@ -356,6 +356,10 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			queryRunner.disposeQuery();
 		}
+		// remove our info map
+		if (this._queryInfoMap.has(ownerUri)) {
+			this._queryInfoMap.delete(ownerUri);
+		}
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////

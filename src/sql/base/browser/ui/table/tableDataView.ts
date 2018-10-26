@@ -9,6 +9,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as types from 'vs/base/common/types';
 
+import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+
 export interface IFindPosition {
 	col: number;
 	row: number;
@@ -20,7 +22,7 @@ function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T
 	return data.sort((a, b) => (a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1)) * sign);
 }
 
-export class TableDataView<T extends Slick.SlickData> implements Slick.DataProvider<T> {
+export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 	private _data: Array<T>;
 	private _findArray: Array<IFindPosition>;
 	private _findObs: Observable<IFindPosition>;
@@ -153,5 +155,11 @@ export class TableDataView<T extends Slick.SlickData> implements Slick.DataProvi
 
 	get findCount(): number {
 		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
+	}
+
+	dispose() {
+		this._data = undefined;
+		this._findArray = undefined;
+		this._findObs = undefined;
 	}
 }
