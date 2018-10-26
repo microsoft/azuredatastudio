@@ -324,6 +324,24 @@ export class ChartView implements IPanelView {
 				};
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
+			case ControlType.dateInput:
+				let dateInput = new InputBox(optionContainer, this._contextViewService, { type: 'date' });
+				dateInput.value = value || '';
+				dateInput.onDidChange(e => {
+					if (this.options[option.configEntry] !== e) {
+						this.options[option.configEntry] = e;
+						if (this.insight) {
+							this.insight.options = this.options;
+						}
+					}
+				});
+				setFunc = (val: string) => {
+					if (!isUndefinedOrNull(val)) {
+						dateInput.value = val;
+					}
+				};
+				this.optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
+				break;
 		}
 		this.optionMap[option.configEntry] = { element: optionContainer, set: setFunc };
 		container.appendChild(optionContainer);

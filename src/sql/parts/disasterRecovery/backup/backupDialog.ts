@@ -18,6 +18,7 @@ import { Builder } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class BackupDialog extends Modal {
 	private _bodyBuilder: Builder;
@@ -31,9 +32,10 @@ export class BackupDialog extends Modal {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super('', TelemetryKeys.Backup, partService, telemetryService, contextKeyService, { isAngular: true, hasErrors: true });
+		super('', TelemetryKeys.Backup, partService, telemetryService, clipboardService, contextKeyService, { isAngular: true, hasErrors: true });
 	}
 
 	protected renderBody(container: HTMLElement) {

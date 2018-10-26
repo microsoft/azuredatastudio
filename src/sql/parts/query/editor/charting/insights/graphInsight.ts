@@ -7,7 +7,7 @@
 
 import { Chart as ChartJs } from 'chart.js';
 
-import { mixin } from 'vs/base/common/objects';
+import { mixin } from 'sql/base/common/objects';
 import { localize } from 'vs/nls';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
@@ -15,9 +15,27 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightOptions, IInsight } from './interfaces';
-import { ChartType, DataDirection, LegendPosition } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { ChartType, DataDirection, LegendPosition, DataType, IPointDataSet, customMixin } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
+
+const timeSeriesScales = {
+	scales: {
+		xAxes: [{
+			type: 'time',
+			display: true,
+			ticks: {
+				autoSkip: false,
+				maxRotation: 45,
+				minRotation: 45
+			}
+		}],
+
+		yAxes: [{
+			display: true,
+		}]
+	}
+};
 
 const defaultOptions: IInsightOptions = {
 	type: ChartType.Bar,
@@ -29,6 +47,8 @@ export class Graph implements IInsight {
 	private canvas: HTMLCanvasElement;
 	private chartjs: ChartJs;
 	private _data: IInsightData;
+
+	private originalType: ChartType;
 
 	public static readonly types = [ChartType.Bar, ChartType.Doughnut, ChartType.HorizontalBar, ChartType.Line, ChartType.Pie, ChartType.Scatter, ChartType.TimeSeries];
 	public readonly types = Graph.types;
@@ -83,37 +103,51 @@ export class Graph implements IInsight {
 			labels = data.rows.map(row => row[0]);
 		}
 
-		if (this.options.dataDirection === DataDirection.Horizontal) {
-			if (this.options.labelFirstColumn) {
-				chartData = data.rows.map((row) => {
-					return {
-						data: row.map(item => Number(item)).slice(1),
-						label: row[0]
-					};
-				});
-			} else {
-				chartData = data.rows.map((row, i) => {
-					return {
-						data: row.map(item => Number(item)),
-						label: localize('series', 'Series {0}', i)
-					};
-				});
-			}
+		if (this.originalType === ChartType.TimeSeries) {
+			let dataSetMap: { [label: string]: IPointDataSet } = {};
+			this._data.rows.map(row => {
+				if (row && row.length >= 3) {
+					let legend = row[0];
+					if (!dataSetMap[legend]) {
+						dataSetMap[legend] = { label: legend, data: [], fill: false };
+					}
+					dataSetMap[legend].data.push({ x: row[1], y: Number(row[2]) });
+				}
+			});
+			chartData = Object.values(dataSetMap);
 		} else {
-			if (this.options.columnsAsLabels) {
-				chartData = data.rows[0].slice(1).map((row, i) => {
-					return {
-						data: data.rows.map(row => Number(row[i + 1])),
-						label: data.columns[i + 1]
-					};
-				});
+			if (this.options.dataDirection === DataDirection.Horizontal) {
+				if (this.options.labelFirstColumn) {
+					chartData = data.rows.map((row) => {
+						return {
+							data: row.map(item => Number(item)).slice(1),
+							label: row[0]
+						};
+					});
+				} else {
+					chartData = data.rows.map((row, i) => {
+						return {
+							data: row.map(item => Number(item)),
+							label: localize('series', 'Series {0}', i)
+						};
+					});
+				}
 			} else {
-				chartData = data.rows[0].slice(1).map((row, i) => {
-					return {
-						data: data.rows.map(row => Number(row[i + 1])),
-						label: localize('series', 'Series {0}', i + 1)
-					};
-				});
+				if (this.options.columnsAsLabels) {
+					chartData = data.rows[0].slice(1).map((row, i) => {
+						return {
+							data: data.rows.map(row => Number(row[i + 1])),
+							label: data.columns[i + 1]
+						};
+					});
+				} else {
+					chartData = data.rows[0].slice(1).map((row, i) => {
+						return {
+							data: data.rows.map(row => Number(row[i + 1])),
+							label: localize('series', 'Series {0}', i + 1)
+						};
+					});
+				}
 			}
 		}
 
@@ -187,6 +221,35 @@ export class Graph implements IInsight {
 						color: gridLines
 					}
 				}];
+
+				if (this.originalType === ChartType.TimeSeries) {
+					retval = mixin(retval, timeSeriesScales, true, customMixin);
+					if (options.xAxisMax) {
+						retval = mixin(retval, {
+							scales: {
+								xAxes: [{
+									type: 'time',
+									time: {
+										max: options.xAxisMax
+									}
+								}],
+							}
+						}, true, customMixin);
+					}
+
+					if (options.xAxisMin) {
+						retval = mixin(retval, {
+							scales: {
+								xAxes: [{
+									type: 'time',
+									time: {
+										min: options.xAxisMin
+									}
+								}],
+							}
+						}, true, customMixin);
+					}
+				}
 			}
 
 			retval.legend = <ChartJs.ChartLegendOptions>{
@@ -208,6 +271,12 @@ export class Graph implements IInsight {
 
 	public set options(options: IInsightOptions) {
 		this._options = options;
+		this.originalType = options.type as ChartType;
+		if (this.options.type === ChartType.TimeSeries) {
+			this.options.type = ChartType.Line;
+			this.options.dataType = DataType.Point;
+			this.options.dataDirection = DataDirection.Horizontal;
+		}
 		this.data = this._data;
 	}
 

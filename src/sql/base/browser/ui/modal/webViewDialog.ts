@@ -46,7 +46,7 @@ export class WebViewDialog extends Modal {
 
 	constructor(
 		@IThemeService private _themeService: IThemeService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IClipboardService clipboardService: IClipboardService,
 		@IPartService private _webViewPartService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -54,7 +54,7 @@ export class WebViewDialog extends Modal {
 		@IEnvironmentService private _environmentService: IEnvironmentService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, clipboardService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', 'OK');
 		this._closeLabel = localize('webViewDialog.close', 'Close');
 	}
