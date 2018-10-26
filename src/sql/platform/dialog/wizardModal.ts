@@ -46,13 +46,13 @@ export class WizardModal extends Modal {
 		name: string,
 		options: IModalOptions,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(_wizard.title, name, partService, telemetryService, clipboardService, contextKeyService, options);
+		super(_wizard.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
 	}
 
 	public layout(): void {

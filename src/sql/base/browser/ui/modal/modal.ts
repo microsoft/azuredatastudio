@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./media/modal';
-import { IThemable } from 'vs/platform/theme/common/styler';
+import { IThemable, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -23,6 +23,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as os from 'os';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -153,6 +154,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _partService: IPartService,
 		private _telemetryService: ITelemetryService,
 		protected _clipboardService: IClipboardService,
+		protected _themeService: IThemeService,
 		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
@@ -228,6 +230,10 @@ export abstract class Modal extends Disposable implements IThemable {
 							this.setError(undefined);
 						});
 					});
+
+					attachButtonStyler(this._toggleMessageDetailButton, this._themeService);
+					attachButtonStyler(this._copyMessageButton, this._themeService);
+					attachButtonStyler(this._closeMessageButton, this._themeService);
 				});
 				messageContainer.div({ class: 'dialog-message-body' }, (messageBody) => {
 					messageBody.div({ class: 'dialog-message-summary' }, (summaryContainer) => {
@@ -601,11 +607,19 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style('border-style', border ? 'solid' : null);
 			this._modalDialog.style('border-color', border);
 		}
+
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style('background-color', headerAndFooterBackground);
 			this._modalHeaderSection.style('border-bottom-width', border ? '1px' : null);
 			this._modalHeaderSection.style('border-bottom-style', border ? 'solid' : null);
 			this._modalHeaderSection.style('border-bottom-color', border);
+		}
+
+		if (this._modalMessageSection) {
+			this._modalMessageSection.style('background-color', headerAndFooterBackground);
+			this._modalMessageSection.style('border-bottom-width', border ? '1px' : null);
+			this._modalMessageSection.style('border-bottom-style', border ? 'solid' : null);
+			this._modalMessageSection.style('border-bottom-color', border);
 		}
 
 		if (this._modalBodySection) {

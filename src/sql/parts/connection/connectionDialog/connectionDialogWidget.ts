@@ -88,7 +88,7 @@ export class ConnectionDialogWidget extends Modal {
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IPartService _partService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -96,7 +96,7 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	public refresh(): void {
@@ -194,8 +194,8 @@ export class ConnectionDialogWidget extends Modal {
 		this.$connectionUIContainer.appendTo(this._bodyBuilder);
 
 		let self = this;
-		this._register(self._themeService.onDidColorThemeChange(e => self.updateTheme(e)));
-		self.updateTheme(self._themeService.getColorTheme());
+		this._register(self._workbenchThemeService.onDidColorThemeChange(e => self.updateTheme(e)));
+		self.updateTheme(self._workbenchThemeService.getColorTheme());
 	}
 
 	/**
