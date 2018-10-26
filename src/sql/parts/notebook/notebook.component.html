@@ -12,8 +12,10 @@
 	</div>
 	<div style="flex: 1 1 auto; position: relative">
 		<div class="notebook-cell" *ngFor="let cell of cells" (click)="selectCell(cell)" [class.active]="cell.active" >
-			<code-cell-component [cellModel]="cell">
+			<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell">
 			</code-cell-component>
+			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell">
+			</text-cell-component>
 		</div>
 	</div>
 </div>
