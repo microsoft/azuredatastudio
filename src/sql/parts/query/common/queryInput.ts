@@ -116,11 +116,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		if (this._configurationService) {
-			this._configurationService.onDidChangeConfiguration(e => {
+			this._toDispose.push(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
-			});
+			}));
 		}
 
 		this.onDisconnect();
@@ -276,7 +276,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	// Clean up functions
 	public dispose(): void {
-		this._queryModelService.disposeQuery(this.uri);
 		this._sql.dispose();
 		this._results.dispose();
 		this._toDispose = dispose(this._toDispose);
@@ -285,6 +284,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public close(): void {
+		this._queryModelService.disposeQuery(this.uri);
 		this._queryEditorService.onQueryInputClosed(this.uri);
 		this._connectionManagementService.disconnectEditor(this, true);
 

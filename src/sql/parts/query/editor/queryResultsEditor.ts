@@ -103,12 +103,12 @@ export class QueryResultsEditor extends BaseEditor {
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-		this._configurationService.onDidChangeConfiguration(e => {
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('resultsGrid')) {
 				this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
 				this.applySettings();
 			}
-		});
+		}));
 		this.applySettings();
 	}
 
@@ -132,7 +132,7 @@ export class QueryResultsEditor extends BaseEditor {
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
-			this.resultsView = new QueryResultsView(parent, this._instantiationService, this._queryModelService);
+			this.resultsView = this._register(new QueryResultsView(parent, this._instantiationService, this._queryModelService));
 		}
 	}
 
@@ -157,12 +157,5 @@ export class QueryResultsEditor extends BaseEditor {
 
 	public showQueryPlan(xml: string) {
 		this.resultsView.showPlan(xml);
-	}
-
-	public dispose(): void {
-		super.dispose();
-		if (this.resultsView) {
-			this.resultsView.dispose();
-		}
 	}
 }

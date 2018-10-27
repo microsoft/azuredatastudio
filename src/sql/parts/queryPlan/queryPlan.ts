@@ -64,7 +64,9 @@ export class QueryPlanView implements IPanelView {
 	}
 
 	public clear() {
-		this.qp.xml = undefined;
+		if (this.qp) {
+			this.qp.xml = undefined;
+		}
 	}
 
 	public showPlan(xml: string) {
