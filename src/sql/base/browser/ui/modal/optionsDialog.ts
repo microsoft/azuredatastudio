@@ -93,13 +93,13 @@ export class OptionsDialog extends Modal {
 		name: string,
 		options: IModalOptions,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(title, name, partService, telemetryService, clipboardService, contextKeyService, options);
+		super(title, name, partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, options);
 	}
 
 	public render() {
@@ -115,8 +115,8 @@ export class OptionsDialog extends Modal {
 		attachButtonStyler(this._okButton, this._themeService);
 		attachButtonStyler(this._closeButton, this._themeService);
 		let self = this;
-		this._register(self._themeService.onDidColorThemeChange(e => self.updateTheme(e)));
-		self.updateTheme(self._themeService.getColorTheme());
+		this._register(self._workbenchThemeService.onDidColorThemeChange(e => self.updateTheme(e)));
+		self.updateTheme(self._workbenchThemeService.getColorTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {

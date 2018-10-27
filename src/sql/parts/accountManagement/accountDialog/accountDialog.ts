@@ -67,7 +67,7 @@ export class AccountDialog extends Modal {
 
 	constructor(
 		@IPartService partService: IPartService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IListService private _listService: IListService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -82,6 +82,7 @@ export class AccountDialog extends Modal {
 			partService,
 			telemetryService,
 			clipboardService,
+			themeService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);

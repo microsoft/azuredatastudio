@@ -65,7 +65,7 @@ export class FirewallRuleDialog extends Modal {
 	constructor(
 		@IAccountPickerService private _accountPickerService: IAccountPickerService,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -79,6 +79,7 @@ export class FirewallRuleDialog extends Modal {
 			partService,
 			telemetryService,
 			clipboardService,
+			_workbenchThemeService,
 			contextKeyService,
 			{
 				isFlyout: true,
@@ -205,8 +206,8 @@ export class FirewallRuleDialog extends Modal {
 			builder.append(firewallRuleSection);
 		});
 
-		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._themeService.getColorTheme());
+		this._register(this._workbenchThemeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._workbenchThemeService.getColorTheme());
 
 		$(this._IPAddressInput).on(DOM.EventType.CLICK, () => {
 			this.onFirewallRuleOptionSelected(true);
