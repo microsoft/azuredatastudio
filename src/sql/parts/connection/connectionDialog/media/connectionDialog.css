@@ -88,3 +88,11 @@
 .hc-black .search-action.clear-search-results {
 	background: url('clear-search-results-dark.svg');
 }
+
+.hide-azure-accounts #azure-account-row {
+	display: none;
+}
+
+.hide-username-password .username-password-row {
+	display: none;
+}

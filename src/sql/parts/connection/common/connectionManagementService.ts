@@ -287,7 +287,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private tryConnect(connection: IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			// Load the password if it's not already loaded
-			this._connectionStore.addSavedPassword(connection).then(result => {
+			this._connectionStore.addSavedPassword(connection).then(async result => {
 				let newConnection = result.profile;
 				let foundPassword = result.savedCred;
 
@@ -299,8 +299,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						foundPassword = true;
 					}
 				}
-				// If the password is required and still not loaded show the dialog
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
+
+				// Fill in the Azure account token if needed
+				let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(newConnection);
+
+				// If the password is required and still not loaded, or if the selected Azure account no longer exists, show the dialog
+				if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 					resolve(this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
 				} else {
 					// Try to connect
@@ -455,9 +459,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				showFirewallRuleOnError: true
 			};
 		}
-		return new Promise<IConnectionResult>((resolve, reject) => {
+		return new Promise<IConnectionResult>(async (resolve, reject) => {
 			if (callbacks.onConnectStart) {
 				callbacks.onConnectStart();
+			}
+			let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(connection);
+			if (!tokenFillSuccess) {
+				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -749,21 +757,37 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
-	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<void> {
-		if (connection.authenticationType === Constants.azureMFA) {
+	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
+		if (connection.authenticationType === 'AzureMFA' && !connection.options['azureAccountToken']) {
 			let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 			if (accounts && accounts.length > 0) {
-				let tokens = await this._accountManagementService.getSecurityToken(accounts[0], AzureResource.Sql);
-				connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
-				connection.options['user'] = undefined;
-				connection.options['password'] = undefined;
+				let account = accounts.find(account => account.key.accountId === connection.userName);
+				if (account) {
+					if (account.isStale) {
+						try {
+							account = await this._accountManagementService.refreshAccount(account);
+						} catch {
+							// This happens when the user cancels the dialog
+							return false;
+						}
+						if (!account) {
+							return false;
+						}
+					}
+					let tokens = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+					connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
+					connection.options['password'] = '';
+					return true;
+				}
 			}
+			return false;
 		}
+		return true;
 	}
 
 	// Request Senders
 	private async sendConnectRequest(connection: IConnectionProfile, uri: string): Promise<boolean> {
-		await this.fillInAzureTokenIfNeeded(connection);
+		// let continueConnecting = await this.fillInAzureTokenIfNeeded(connection);
 		let connectionInfo = Object.assign({}, {
 			options: connection.options
 		});
