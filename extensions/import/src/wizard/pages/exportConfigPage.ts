@@ -47,8 +47,9 @@ export class ExportConfigPage {
 					serverComponent,
 					databaseComponent,
 					fileBrowserComponent,
-				]).component();
-
+				],  {
+					horizontal: true
+				}).component();
 		await this.view.initializeModel(this.form);
 		return true;
 	}
@@ -229,7 +230,7 @@ export class ExportConfigPage {
 		this.fileTextBox.value = path.join(os.homedir(), this.model.database + '-' + datetime + '.bacpac');
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('dacFxExport.browseFiles', 'Browse'),
+			label: localize('dacFxExport.browseFiles', '...'),
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
