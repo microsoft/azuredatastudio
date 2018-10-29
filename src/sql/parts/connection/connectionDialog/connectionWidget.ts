@@ -30,7 +30,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import * as styler from 'vs/platform/theme/common/styler';
+import * as styler from 'sql/common/theme/styler';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -288,6 +288,7 @@ export class ConnectionWidget {
 		this._toDispose.push(attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 		this._toDispose.push(attachButtonStyler(this._advancedButton, this._themeService));
+		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
@@ -300,6 +301,10 @@ export class ConnectionWidget {
 
 		if (this._azureAccountDropdown) {
 			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
+				// Reset the dropdown's validation message if the old selection was not valid but the new one is
+				this.validateAzureAccountSelection(false);
+			}));
 		}
 
 		this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
@@ -491,8 +496,8 @@ export class ConnectionWidget {
 
 			if (this._authTypeSelectBox) {
 				this.onAuthTypeSelected(this._authTypeSelectBox.value);
-
 			}
+
 			// Disable connect button if -
 			// 1. Authentication type is SQL Login and no username is provided
 			// 2. No server name is provided
@@ -590,18 +595,22 @@ export class ConnectionWidget {
 		return this._authTypeSelectBox ? this.getAuthTypeName(this._authTypeSelectBox.value) : undefined;
 	}
 
-	private validateAzureAccountSelection(): boolean {
+	private validateAzureAccountSelection(showMessage: boolean = true): boolean {
 		if (this.authType !== AuthenticationType.AzureMFA) {
 			return true;
 		}
 
 		let selected = this._azureAccountDropdown.value;
 		if (selected === '' || selected === this._addAzureAccountMessage) {
-			this._azureAccountDropdown.showMessage({
-				content: localize('connectionWidget.invalidAzureAccount', 'You must select an account'),
-				type: MessageType.ERROR
-			});
+			if (showMessage) {
+				this._azureAccountDropdown.showMessage({
+					content: localize('connectionWidget.invalidAzureAccount', 'You must select an account'),
+					type: MessageType.ERROR
+				});
+			}
 			return false;
+		} else {
+			this._azureAccountDropdown.hideMessage();
 		}
 
 		return true;
