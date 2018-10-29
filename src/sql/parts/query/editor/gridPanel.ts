@@ -305,6 +305,7 @@ export class GridPanel extends ViewletPanel {
 	}
 
 	public dispose() {
+		dispose(this.queryRunnerDisposables);
 		dispose(this.tableDisposable);
 		dispose(this.tables);
 		this.tableDisposable = undefined;
