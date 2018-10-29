@@ -31,3 +31,14 @@ export interface ColumnMetadata {
 	primaryKey: boolean;
 	nullable: boolean;
 }
+
+/**
+ * Data model to communicate between DacFx pages
+ */
+export interface DacFxDataModel {
+	serverConnection: sqlops.connection.Connection;
+	serverName: string;
+	serverId: string;
+	databaseName: string;
+	filePath: string;
+}
