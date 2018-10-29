@@ -1,9 +1,9 @@
-import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 
 export interface IObservableCollection<T> {
 	getLength(): number;
