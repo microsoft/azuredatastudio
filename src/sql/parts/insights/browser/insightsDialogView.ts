@@ -125,7 +125,7 @@ export class InsightsDialogView extends Modal {
 	constructor(
 		private _model: IInsightsDialogModel,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IListService private _listService: IListService,
 		@IPartService partService: IPartService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
@@ -135,7 +135,7 @@ export class InsightsDialogView extends Modal {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, clipboardService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, clipboardService, themeService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 

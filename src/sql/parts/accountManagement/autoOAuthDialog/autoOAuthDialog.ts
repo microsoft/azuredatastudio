@@ -43,7 +43,7 @@ export class AutoOAuthDialog extends Modal {
 
 	constructor(
 		@IPartService partService: IPartService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
@@ -55,6 +55,7 @@ export class AutoOAuthDialog extends Modal {
 			partService,
 			telemetryService,
 			clipboardService,
+			themeService,
 			contextKeyService,
 			{
 				isFlyout: true,

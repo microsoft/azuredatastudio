@@ -27,7 +27,7 @@ export class BackupDialog extends Modal {
 	private _moduleRef: any;
 
 	constructor(
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IPartService partService: IPartService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -35,7 +35,7 @@ export class BackupDialog extends Modal {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService
 	) {
-		super('', TelemetryKeys.Backup, partService, telemetryService, clipboardService, contextKeyService, { isAngular: true, hasErrors: true });
+		super('', TelemetryKeys.Backup, partService, telemetryService, clipboardService, themeService, contextKeyService, { isAngular: true, hasErrors: true });
 	}
 
 	protected renderBody(container: HTMLElement) {
