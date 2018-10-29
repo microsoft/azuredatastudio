@@ -18,7 +18,7 @@ export class ChartTab implements IPanelTab {
 	public readonly identifier = 'ChartTab';
 	public readonly view: ChartView;
 
-	constructor(@IInstantiationService instantiationService: IInstantiationService) {
+	constructor( @IInstantiationService instantiationService: IInstantiationService) {
 		this.view = instantiationService.createInstance(ChartView);
 	}
 
@@ -26,7 +26,11 @@ export class ChartTab implements IPanelTab {
 		this.view.queryRunner = runner;
 	}
 
-	public chart(dataId: { batchId: number, resultId: number}): void {
+	public chart(dataId: { batchId: number, resultId: number }): void {
 		this.view.chart(dataId);
+	}
+
+	public dispose() {
+		this.view.dispose();
 	}
 }

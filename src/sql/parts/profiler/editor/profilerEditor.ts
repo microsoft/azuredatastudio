@@ -252,6 +252,7 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._pauseAction },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
+			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: viewTemplateContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._connectionInfoText }
@@ -343,6 +344,10 @@ export class ProfilerEditor extends BaseEditor {
 				}
 			]
 		}, { forceFitColumns: true });
+
+		this._detailTableData.onRowCountChange(() => {
+			this._detailTable.updateRowCount();
+		});
 
 		this._tabbedPanel.pushTab({
 			identifier: 'detailTable',
