@@ -2527,6 +2527,7 @@ find-parent-dir@^0.3.0:
 find-remove@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/find-remove/-/find-remove-1.2.1.tgz#afd93400d23890e018ea197591e9d850d3d049a2"
+  integrity sha512-zcspBi9mWAyM9YTcVJLkI/x6rbjSDqHijjPa0vTwEmVZnYSmvYMtixDkUnSnuv2xAAkc9fblpkCg91paBIJaLw==
   dependencies:
     fmerge "1.2.0"
     rimraf "2.6.2"
@@ -2610,6 +2611,7 @@ flatten@^1.0.2:
 fmerge@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/fmerge/-/fmerge-1.2.0.tgz#36e99d2ae255e3ee1af666b4df780553671cf692"
+  integrity sha1-NumdKuJV4+4a9ma033gFU2cc9pI=
 
 for-in@^0.1.5:
   version "0.1.5"
@@ -6850,12 +6852,14 @@ right-align@^0.1.1:
 rimraf@2.6.2, rimraf@^2.4.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.2.tgz#2ed8150d24a16ea8651e6d6ef0f47c4158ce7a36"
+  integrity sha512-lreewLK/BlghmxtfH36YYVg1i8IAce4TI7oao75I1g245+6BctqTVQiBP3YUJ9C6DQOXJmkYR9X9fCLtCOJc5w==
   dependencies:
     glob "^7.0.5"
 
 rimraf@^2.2.8:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
+  integrity sha1-wjOOxkPfeht/5cVPqG9XQopV8z0=
   dependencies:
     glob "^7.0.5"
 
