@@ -8,17 +8,18 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
-import  * as path from 'path';
-import { ImportDataModel } from '../api/models';
+import * as path from 'path';
+import { DacFxDataModel } from '../api/models';
 import { DacFxExportWizard } from '../dacFxExportWizard';
+import { DacFxExportPage } from '../api/dacFxExportPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ExportConfigPage {
+export class ExportConfigPage extends DacFxExportPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DacFxExportWizard;
-	protected readonly model: ImportDataModel;
+	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
 	private serverDropdown: sqlops.DropDownComponent;
@@ -29,11 +30,8 @@ export class ExportConfigPage {
 
 	private databaseLoader: sqlops.LoadingComponent;
 
-	public constructor(instance: DacFxExportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView) {
-		this.instance = instance;
-		this.wizardPage = wizardPage;
-		this.model = model;
-		this.view = view;
+	public constructor(instance: DacFxExportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+		super(instance, wizardPage, model, view);
 	}
 
 	async start(): Promise<boolean> {
@@ -47,7 +45,7 @@ export class ExportConfigPage {
 					serverComponent,
 					databaseComponent,
 					fileBrowserComponent,
-				],  {
+				], {
 					horizontal: true
 				}).component();
 		await this.view.initializeModel(this.form);
@@ -61,14 +59,10 @@ export class ExportConfigPage {
 	}
 
 	async onPageLeave(): Promise<boolean> {
-		delete this.model.serverId;
 		return true;
 	}
 
 	public async cleanup(): Promise<boolean> {
-		delete this.model.filePath;
-		delete this.model.table;
-
 		return true;
 	}
 
@@ -88,8 +82,8 @@ export class ExportConfigPage {
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async () => {
-			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
-
+			this.model.serverConnection = (this.serverDropdown.value as ConnectionDropdownValue).connection;
+			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
 			await this.populateDatabaseDropdown();
 		});
 
@@ -113,7 +107,7 @@ export class ExportConfigPage {
 			// Handle the code to remember what the user's choice was from before
 			count++;
 			if (idx === -1) {
-				if (this.model.server && c.connectionId === this.model.server.connectionId) {
+				if (this.model.serverConnection && c.connectionId === this.model.serverConnection.connectionId) {
 					idx = count;
 				} else if (this.model.serverId && c.connectionId === this.model.serverId) {
 					idx = count;
@@ -145,14 +139,13 @@ export class ExportConfigPage {
 			values[0] = values[idx];
 			values[idx] = tmp;
 		} else {
-			delete this.model.server;
+			delete this.model.serverConnection;
 			delete this.model.serverId;
-			delete this.model.database;
-			delete this.model.schema;
+			delete this.model.databaseName;
 		}
 
-		this.model.server = values[0].connection;
-
+		this.model.serverConnection = values[0].connection;
+		this.model.serverName = values[0].displayName;
 		this.serverDropdown.updateProperties({
 			values: values
 		});
@@ -166,7 +159,9 @@ export class ExportConfigPage {
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
-			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+			this.model.databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+			this.fileTextBox.value = this.generateFilePath();
+			this.model.filePath = this.fileTextBox.value;
 		});
 
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
@@ -181,16 +176,16 @@ export class ExportConfigPage {
 		this.databaseLoader.loading = true;
 		this.databaseDropdown.updateProperties({ values: [] });
 
-		if (!this.model.server) {
+		if (!this.model.serverConnection) {
 			this.databaseLoader.loading = false;
 			return false;
 		}
 
 		let idx = -1;
 		let count = -1;
-		let values = (await sqlops.connection.listDatabases(this.model.server.connectionId)).map(db => {
+		let values = (await sqlops.connection.listDatabases(this.model.serverConnection.connectionId)).map(db => {
 			count++;
-			if (this.model.database && db === this.model.database) {
+			if (this.model.databaseName && db === this.model.databaseName) {
 				idx = count;
 			}
 
@@ -205,11 +200,12 @@ export class ExportConfigPage {
 			values[0] = values[idx];
 			values[idx] = tmp;
 		} else {
-			delete this.model.database;
-			delete this.model.schema;
+			delete this.model.databaseName;
 		}
 
-		this.model.database = values[0].name;
+		this.model.databaseName = values[0].name;
+		this.model.filePath = this.generateFilePath();
+		this.fileTextBox.value = this.model.filePath;
 
 		this.databaseDropdown.updateProperties({
 			values: values
@@ -225,10 +221,8 @@ export class ExportConfigPage {
 		}).component();
 
 		// default filepath
-		let now = new Date();
-		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		this.fileTextBox.value = path.join(os.homedir(), this.model.database + '-' + datetime + '.bacpac');
-
+		this.fileTextBox.value = this.generateFilePath();
+		this.model.filePath = this.fileTextBox.value;
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: localize('dacFxExport.browseFiles', '...'),
 		}).component();
@@ -258,19 +252,10 @@ export class ExportConfigPage {
 		};
 	}
 
-	public async getConnectionString(): Promise<string> {
-		let connectionstring = await sqlops.connection.getConnectionString(this.model.server.connectionId, true);
-		let splitted = connectionstring.split(';');
-
-		// set datbase to appropriate value instead of master
-		let temp = splitted.find(s => s.startsWith('Initial Catalog'));
-		splitted[splitted.indexOf(temp)] = 'Initial Catalog=' + this.model.database;
-
-		return splitted.join(';');
-	}
-
-	public getFilePath(): string {
-		return this.fileTextBox.value;
+	private generateFilePath(): string {
+		let now = new Date();
+		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+		return path.join(os.homedir(), this.model.databaseName + '-' + datetime + '.bacpac');
 	}
 }
 
