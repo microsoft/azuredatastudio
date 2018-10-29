@@ -136,6 +136,12 @@ export class QueryResultsEditor extends BaseEditor {
 		}
 	}
 
+	dispose() {
+		this.styleSheet.remove();
+		this.styleSheet = undefined;
+		super.dispose();
+	}
+
 	layout(dimension: DOM.Dimension): void {
 		this.resultsView.layout(dimension);
 	}

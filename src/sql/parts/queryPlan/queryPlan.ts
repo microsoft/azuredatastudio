@@ -15,6 +15,9 @@ import { dispose, Disposable } from 'vs/base/common/lifecycle';
 
 export class QueryPlanState {
 	xml: string;
+	dispose() {
+
+	}
 }
 
 export class QueryPlanTab implements IPanelTab {

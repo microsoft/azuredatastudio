@@ -196,17 +196,17 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	// State update funtions
 	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this._queryModelService.runQuery(this.uri, selection, this.uri, this, executePlanOptions);
+		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.showQueryResultsEditor();
 	}
 
 	public runQueryStatement(selection: ISelectionData): void {
-		this._queryModelService.runQueryStatement(this.uri, selection, this.uri, this);
+		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.showQueryResultsEditor();
 	}
 
 	public runQueryString(text: string): void {
-		this._queryModelService.runQueryString(this.uri, text, this.uri, this);
+		this._queryModelService.runQueryString(this.uri, text, this);
 		this.showQueryResultsEditor();
 	}
 

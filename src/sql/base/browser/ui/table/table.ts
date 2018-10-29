@@ -5,17 +5,18 @@
 
 import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
+import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
-import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { $ } from 'vs/base/browser/builder';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -39,8 +40,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 	private _classChangeTimeout: number;
 
-	private _disposables: IDisposable[] = [];
-
 	private _onContextMenu = new Emitter<ITableMouseEvent>();
 	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;
 
@@ -54,6 +53,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		} else {
 			this._data = configuration.dataProvider;
 		}
+
+		this._register(this._data);
 
 		if (configuration && configuration.columns) {
 			this._columns = configuration.columns;
@@ -96,6 +97,12 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			});
 		}
 
+		this._register({
+			dispose: () => {
+				this._grid.destroy();
+			}
+		});
+
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
 	}
@@ -110,9 +117,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	}
 
 	public dispose() {
-		dispose(this._disposables);
-		this._grid.destroy();
-		this._data.dispose();
+		$(this._container).dispose();
+		super.dispose();
 	}
 
 	public invalidateRows(rows: number[], keepEditor: boolean) {

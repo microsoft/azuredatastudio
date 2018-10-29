@@ -60,6 +60,10 @@ export class GridPanelState {
 	public tableStates: GridTableState[] = [];
 	public scrollPosition: number;
 	public collapsed = false;
+
+	dispose() {
+		dispose(this.tableStates);
+	}
 }
 
 export interface IGridTableState {
@@ -67,14 +71,14 @@ export interface IGridTableState {
 	maximized: boolean;
 }
 
-export class GridTableState {
+export class GridTableState extends Disposable {
 
 	private _maximized: boolean;
 
-	private _onMaximizedChange = new Emitter<boolean>();
+	private _onMaximizedChange = this._register(new Emitter<boolean>());
 	public onMaximizedChange: Event<boolean> = this._onMaximizedChange.event;
 
-	private _onCanBeMaximizedChange = new Emitter<boolean>();
+	private _onCanBeMaximizedChange = this._register(new Emitter<boolean>());
 	public onCanBeMaximizedChange: Event<boolean> = this._onCanBeMaximizedChange.event;
 
 	private _canBeMaximized: boolean;
@@ -85,6 +89,7 @@ export class GridTableState {
 	public activeCell: Slick.Cell;
 
 	constructor(public readonly resultId: number, public readonly batchId: number) {
+		super();
 	}
 
 	public get canBeMaximized(): boolean {
@@ -216,13 +221,13 @@ export class GridPanel extends ViewletPanel {
 			}
 			let table = this.instantiationService.createInstance(GridTable, this.runner, set);
 			table.state = tableState;
-			tableState.onMaximizedChange(e => {
+			this.tableDisposable.push(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
 				} else {
 					this.minimizeTables();
 				}
-			});
+			}));
 			this.tableDisposable.push(attachTableStyler(table, this.themeService));
 
 			tables.push(table);
@@ -457,9 +462,9 @@ class GridTable<T> extends Disposable implements IView {
 
 	private setupState() {
 		// change actionbar on maximize change
-		this.state.onMaximizedChange(this.rebuildActionBar, this);
+		this._register(this.state.onMaximizedChange(this.rebuildActionBar, this));
 
-		this.state.onCanBeMaximizedChange(this.rebuildActionBar, this);
+		this._register(this.state.onCanBeMaximizedChange(this.rebuildActionBar, this));
 
 		if (this.state.scrollPosition) {
 			// most of the time this won't do anything
@@ -650,6 +655,7 @@ class GridTable<T> extends Disposable implements IView {
 	public dispose() {
 		$(this.container).destroy();
 		this.table.dispose();
+		this.actionBar.dispose();
 		super.dispose();
 	}
 }

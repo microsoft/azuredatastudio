@@ -111,6 +111,10 @@ class ResultsView extends Disposable implements IPanelView {
 		}
 	}
 
+	dispose() {
+		super.dispose();
+	}
+
 	public clear() {
 		this.gridPanel.clear();
 		this.messagePanel.clear();
@@ -237,10 +241,6 @@ export class QueryResultsView extends Disposable {
 		this.chartTab.clear();
 	}
 
-	public dispose() {
-		this._panelView.dispose();
-	}
-
 	public get input(): QueryResultsInput {
 		return this._input;
 	}
@@ -279,5 +279,9 @@ export class QueryResultsView extends Disposable {
 		if (this._panelView.contains(this.qpTab)) {
 			this._panelView.removeTab(this.qpTab.identifier);
 		}
+	}
+
+	public dispose() {
+		super.dispose();
 	}
 }

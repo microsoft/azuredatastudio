@@ -35,6 +35,10 @@ export class ChartState {
 	options: IInsightOptions = {
 		type: ChartType.Bar
 	};
+
+	dispose() {
+
+	}
 }
 
 declare class Proxy {
@@ -136,6 +140,11 @@ export class ChartView extends Disposable implements IPanelView {
 
 	public clear() {
 
+	}
+
+	public dispose() {
+		dispose(this.optionDisposables);
+		super.dispose();
 	}
 
 	render(container: HTMLElement): void {
