@@ -306,10 +306,13 @@ export class ConnectionWidget {
 			this._toDispose.push(this._azureAccountDropdown.onDidSelect(async () => {
 				// Reset the dropdown's validation message if the old selection was not valid but the new one is
 				this.validateAzureAccountSelection(false);
+				this._refreshCredentialsLinkBuilder.display('none');
+
+				let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 
 				// Open the add account dialog if needed, then select the added account
-				let oldAccountIds = (await this._accountManagementService.getAccountsForProvider('azurePublicCloud')).map(account => account.key.accountId);
 				if (this._azureAccountDropdown.value === this._addAzureAccountMessage) {
+					let oldAccountIds = accounts.map(account => account.key.accountId);
 					await this._accountManagementService.addAccount('azurePublicCloud');
 					let newOptions = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 					let newAccount = newOptions.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
@@ -320,6 +323,8 @@ export class ConnectionWidget {
 						this._azureAccountDropdown.select(0);
 					}
 				}
+
+				this.updateRefreshCredentialsLink();
 			}));
 		}
 
@@ -445,6 +450,17 @@ export class ConnectionWidget {
 		accountDropdownOptions.push(this._addAzureAccountMessage);
 		this._azureAccountDropdown.setOptions(accountDropdownOptions);
 		this._azureAccountDropdown.selectWithOptionName(oldSelection);
+		this.updateRefreshCredentialsLink();
+	}
+
+	private async updateRefreshCredentialsLink(): Promise<void> {
+		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		let chosenAccount = accounts.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		if (chosenAccount && chosenAccount.isStale) {
+			this._refreshCredentialsLinkBuilder = this._refreshCredentialsLinkBuilder.display('block');
+		} else {
+			this._refreshCredentialsLinkBuilder = this._refreshCredentialsLinkBuilder.display('none');
+		}
 	}
 
 	private serverNameChanged(serverName: string) {
