@@ -24,7 +24,7 @@ import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Builder } from 'vs/base/browser/builder';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -43,7 +43,7 @@ declare class Proxy {
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
-export class ChartView implements IPanelView {
+export class ChartView extends Disposable implements IPanelView {
 	private insight: Insight;
 	private _queryRunner: QueryRunner;
 	private _data: IInsightData;
@@ -82,6 +82,7 @@ export class ChartView implements IPanelView {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService contextMenuService: IContextMenuService
 	) {
+		super();
 		this.taskbarContainer = $('div.taskbar-container');
 		this.taskbar = new Taskbar(this.taskbarContainer, contextMenuService);
 		this.optionsControl = $('div.options-container');
@@ -323,6 +324,24 @@ export class ChartView implements IPanelView {
 					}
 				};
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
+				break;
+			case ControlType.dateInput:
+				let dateInput = new InputBox(optionContainer, this._contextViewService, { type: 'date' });
+				dateInput.value = value || '';
+				dateInput.onDidChange(e => {
+					if (this.options[option.configEntry] !== e) {
+						this.options[option.configEntry] = e;
+						if (this.insight) {
+							this.insight.options = this.options;
+						}
+					}
+				});
+				setFunc = (val: string) => {
+					if (!isUndefinedOrNull(val)) {
+						dateInput.value = val;
+					}
+				};
+				this.optionDisposables.push(attachInputBoxStyler(dateInput, this._themeService));
 				break;
 		}
 		this.optionMap[option.configEntry] = { element: optionContainer, set: setFunc };

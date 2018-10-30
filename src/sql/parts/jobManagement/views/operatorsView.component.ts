@@ -30,9 +30,11 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { OperatorsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
-export const ROW_HEIGHT: number = 30;
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
@@ -43,7 +45,13 @@ export const ROW_HEIGHT: number = 30;
 export class OperatorsViewComponent extends JobManagementView implements OnInit {
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobOperatorsView.name', 'Name'), field: 'name', width: 200, id: 'name' },
+		{
+			name: nls.localize('jobOperatorsView.name', 'Name'),
+			field: 'name',
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
+			width: 200,
+			id: 'name'
+		},
 		{ name: nls.localize('jobOperatorsView.emailAddress', 'Email Address'), field: 'emailAddress', width: 200, id: 'emailAddress' },
 		{ name: nls.localize('jobOperatorsView.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
 	];
@@ -57,8 +65,8 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	};
 
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
+	private _operatorsCacheObject: OperatorsCacheObject;
 
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
@@ -79,6 +87,15 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		let operatorsCacheObject = this._jobManagementService.operatorsCacheObjectMap;
+		let operatorsCache = operatorsCacheObject[this._serverName];
+		if (operatorsCache) {
+			this._operatorsCacheObject = operatorsCache;
+		} else {
+			this._operatorsCacheObject = new OperatorsCacheObject();
+			this._operatorsCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._operatorsCacheObject);
+		}
 	}
 
 	ngOnInit(){
@@ -93,19 +110,36 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 			height = 0;
 		}
 
-		this._table.layout(new dom.Dimension(
-			dom.getContentWidth(this._gridEl.nativeElement),
-			height));
+		if (this._table) {
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._gridEl.nativeElement),
+				height));
+		}
 	}
 
 	onFirstVisible() {
 		let self = this;
+
+		let cached: boolean = false;
+		if (this._operatorsCacheObject.serverName === this._serverName) {
+			if (this._operatorsCacheObject.operators && this._operatorsCacheObject.operators.length > 0) {
+				cached = true;
+				this.operators = this._operatorsCacheObject.operators;
+			}
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		this.dataView = new Slick.Data.DataView();
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		let rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			useRowClick: false,
+			panelRows: 1
+		});
+		columns.unshift(rowDetail.getColumnDefinition());
 
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
@@ -117,20 +151,29 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getOperators(ownerUri).then((result) => {
-			if (result && result.operators) {
-				self.operators = result.operators;
-				self.onOperatorsAvailable(result.operators);
-			} else {
-				// TODO: handle error
-			}
-
+		// check for cached state
+		if (cached && this._agentViewComponent.refresh !== true) {
+			this.onOperatorsAvailable(this.operators);
 			this._showProgressWheel = false;
 			if (this.isVisible) {
 				this._cd.detectChanges();
 			}
-		});
+		} else {
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			this._jobManagementService.getOperators(ownerUri).then((result) => {
+				if (result && result.operators) {
+					self.operators = result.operators;
+					self._operatorsCacheObject.operators = result.operators;
+					self.onOperatorsAvailable(result.operators);
+				} else {
+					// TODO: handle error
+				}
+				this._showProgressWheel = false;
+				if (this.isVisible) {
+					this._cd.detectChanges();
+				}
+			});
+		}
 	}
 
 	private onOperatorsAvailable(operators: sqlops.AgentOperatorInfo[]) {
@@ -146,6 +189,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(items);
 		this.dataView.endUpdate();
+		this._operatorsCacheObject.dataview = this.dataView;
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 	}
@@ -161,6 +205,15 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		return (this.operators && this.operators.length >= rowIndex)
 			? this.operators[rowIndex]
 			: undefined;
+	}
+
+	private renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass = dataContext.enabled ? 'operatorview-operatornameindicatorenabled' :
+			'operatorview-operatornameindicatordisabled';
+ 		return '<table class="operatorview-operatornametable"><tr class="operatorview-operatornamerow">' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
+			'<td nowrap class="operatorview-operatornametext">' + dataContext.name + '</td>' +
+			'</tr></table>';
 	}
 
 	public openCreateOperatorDialog() {

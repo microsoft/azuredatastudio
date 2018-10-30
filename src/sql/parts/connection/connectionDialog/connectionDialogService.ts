@@ -87,16 +87,32 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) { }
-
-	private getDefaultProviderName() {
+/**
+ * Gets the default provider with the following actions
+ * 	1. Checks if master provider(map) has data
+ * 	2. If so, filters provider paramter against master map
+ * 	3. Fetches the result array and extracts the first element
+ * 	4. If none of the above data exists, returns 'MSSQL'
+ * @returns: Default provider as string
+ */
+	private getDefaultProviderName(): string {
 		let defaultProvider: string;
 		if (this._providerNameToDisplayNameMap) {
 			let keys = Object.keys(this._providerNameToDisplayNameMap);
+			let filteredKeys: string[];
 			if (keys && keys.length > 0) {
-				defaultProvider = keys[0];
+				if (this._params && this._params.providers && this._params.providers.length > 0) {
+					//Filter providers from master keys.
+					filteredKeys = keys.filter(key => this._params.providers.includes(key));
+				}
+				if (filteredKeys && filteredKeys.length > 0) {
+					defaultProvider = filteredKeys[0];
+				}
+				else {
+					defaultProvider = keys[0];
+				}
 			}
 		}
-
 		if (!defaultProvider && this._workspaceConfigurationService) {
 			defaultProvider = WorkbenchUtils.getSqlConfigValue<string>(this._workspaceConfigurationService, Constants.defaultEngine);
 		}

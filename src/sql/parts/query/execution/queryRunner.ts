@@ -112,6 +112,15 @@ export default class QueryRunner {
 	private _onBatchEnd = new Emitter<sqlops.BatchSummary>();
 	public readonly onBatchEnd: Event<sqlops.BatchSummary> = this._onBatchEnd.event;
 
+	private _queryStartTime: Date;
+	public get queryStartTime(): Date {
+		return this._queryStartTime;
+	}
+	private _queryEndTime: Date;
+	public get queryEndTime(): Date {
+		return this._queryEndTime;
+	}
+
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		public uri: string,
@@ -185,9 +194,10 @@ export default class QueryRunner {
 		this._debouncedMessage.clear();
 		this._debouncedResultSet.clear();
 		this._planXml = new Deferred<string>();
-		let ownerUri = this.uri;
 		this._batchSets = [];
 		this._hasCompleted = false;
+		this._queryStartTime = undefined;
+		this._queryEndTime = undefined;
 		if (types.isObject(input) || types.isUndefinedOrNull(input)) {
 			// Update internal state to show that we're executing the query
 			this._resultLineOffset = input ? input.startLine : 0;
@@ -203,20 +213,22 @@ export default class QueryRunner {
 
 			// Send the request to execute the query
 			return runCurrentStatement
-				? this._queryManagementService.runQueryStatement(ownerUri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
-				: this._queryManagementService.runQuery(ownerUri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
+				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
+				: this._queryManagementService.runQuery(this.uri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else if (types.isString(input)) {
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 
-			return this._queryManagementService.runQueryString(ownerUri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
+			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
 			return Promise.reject('Unknown input');
 		}
 	}
 
 	private handleSuccessRunQueryResult() {
+		// this isn't exact, but its the best we can do
+		this._queryStartTime = new Date();
 		// The query has started, so lets fire up the result pane
 		this._onQueryStart.fire();
 		this._eventEmitter.emit(EventType.START);
@@ -241,6 +253,8 @@ export default class QueryRunner {
 	 * Handle a QueryComplete from the service layer
 	 */
 	public handleQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void {
+		// this also isn't exact but its the best we can do
+		this._queryEndTime = new Date();
 
 		// Store the batch sets we got back as a source of "truth"
 		this._isExecuting = false;

@@ -28,6 +28,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 	protected _parentComponent: AgentViewComponent;
 	protected _table: Table<any>;
 	protected _actionBar: Taskbar;
+	protected _serverName: string;
 	public contextAction: any;
 
 	@ViewChild('actionbarContainer') protected actionBarContainer: ElementRef;
@@ -41,6 +42,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		super();
 
 		let self = this;
+		this._serverName = this._commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		this._dashboardService.onLayout((d) => {
 			self.layout();
 		});

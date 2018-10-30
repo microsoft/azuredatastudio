@@ -6,6 +6,7 @@
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryModelService } from '../execution/queryModel';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { parseNumAsTimeString } from 'sql/parts/connection/common/utils';
 
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -14,13 +15,15 @@ import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { append, $, hide, show } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
+import { IntervalTimer } from 'vs/base/common/async';
 
-export class RowCountStatusBarItem implements IStatusbarItem {
+export class TimeElapsedStatusBarItem implements IStatusbarItem {
 
 	private _element: HTMLElement;
 	private _flavorElement: HTMLElement;
 
-	private dispose: IDisposable;
+	private dispose: IDisposable[] = [];
+	private intervalTimer = new IntervalTimer();
 
 	constructor(
 		@IEditorService private _editorService: EditorServiceImpl,
@@ -35,7 +38,7 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 
 		this._element = append(container, $('.query-statusbar-group'));
 		this._flavorElement = append(this._element, $('.editor-status-selection'));
-		this._flavorElement.title = nls.localize('rowStatus', "Row Count");
+		this._flavorElement.title = nls.localize('timeElapsed', "Time Elapsed");
 		hide(this._flavorElement);
 
 		this._showStatus();
@@ -53,38 +56,52 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 
 	// Show/hide query status for active editor
 	private _showStatus(): void {
+		this.intervalTimer.cancel();
 		hide(this._flavorElement);
 		dispose(this.dispose);
+		this._flavorElement.innerText = '';
+		this.dispose = [];
 		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (currentUri) {
 				let queryRunner = this._queryModelService.getQueryRunner(currentUri);
 				if (queryRunner) {
-					if (queryRunner.hasCompleted) {
+					if (queryRunner.hasCompleted || queryRunner.isExecuting) {
 						this._displayValue(queryRunner);
 					}
-					this.dispose = queryRunner.onQueryEnd(e => {
+					this.dispose.push(queryRunner.onQueryStart(e => {
 						this._displayValue(queryRunner);
-					});
+					}));
+					this.dispose.push(queryRunner.onQueryEnd(e => {
+						this._displayValue(queryRunner);
+					}));
 				} else {
-					this.dispose = this._queryModelService.onRunQueryComplete(e => {
+					this.dispose.push(this._queryModelService.onRunQueryStart(e => {
 						if (e === currentUri) {
 							this._displayValue(this._queryModelService.getQueryRunner(currentUri));
 						}
-					});
+					}));
+					this.dispose.push(this._queryModelService.onRunQueryComplete(e => {
+						if (e === currentUri) {
+							this._displayValue(this._queryModelService.getQueryRunner(currentUri));
+						}
+					}));
 				}
 			}
 		}
 	}
 
 	private _displayValue(runner: QueryRunner) {
-		let rowCount = runner.batchSets.reduce((p, c) => {
-			return p + c.resultSetSummaries.reduce((rp, rc) => {
-				return rp + rc.rowCount;
-			}, 0);
-		}, 0);
-		this._flavorElement.innerText = nls.localize('rowCount', "{0} rows", rowCount);
+		this.intervalTimer.cancel();
+		if (runner.isExecuting) {
+			this.intervalTimer.cancelAndSet(() => {
+				this._flavorElement.innerText = parseNumAsTimeString(Date.now() - runner.queryStartTime.getTime(), false);
+			}, 1000);
+			this._flavorElement.innerText = parseNumAsTimeString(Date.now() - runner.queryStartTime.getTime(), false);
+		} else {
+			this._flavorElement.innerText = parseNumAsTimeString(runner.queryEndTime.getTime() - runner.queryStartTime.getTime(), false);
+		}
 		show(this._flavorElement);
 	}
 }

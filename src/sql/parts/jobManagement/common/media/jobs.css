@@ -104,6 +104,16 @@ jobhistory-component {
     display: inline-block;
 }
 
+#operatorsDiv .joboperatorsview-grid .slick-cell.l1.r1 .operatorview-operatornametext,
+#alertsDiv .jobalertsview-grid .slick-cell.l1.r1 .alertview-alertnametext,
+#proxiesDiv .jobproxiesview-grid .slick-cell.l1.r1 .proxyview-proxynametext {
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+}
+
 #jobsDiv .job-with-error {
     border-bottom: none;
 }
@@ -390,4 +400,18 @@ jobsview-component .jobview-grid .slick-cell.error-row {
 
 .overview-container > .overview-tab > label {
     margin-bottom: 0px;
+}
+
+#operatorsDiv .operatorview-operatornameindicatorenabled,
+#alertsDiv .alertview-alertnameindicatorenabled,
+#proxiesDiv .proxyview-proxynameindicatorenabled {
+    width: 5px;
+    background: green;
+}
+
+#operatorsDiv .operatorview-operatornameindicatordisabled,
+#alertsDiv .alertview-alertnameindicatordisabled,
+#proxiesDiv .proxyview-proxynameindicatordisabled {
+    width: 5px;
+    background: red;
 }
