@@ -52,7 +52,7 @@ export class ConnectionWidget {
 	private _password: string;
 	private _rememberPasswordCheckBox: Checkbox;
 	private _azureAccountDropdown: SelectBox;
-	private _rememberAccountCheckBox: Checkbox;
+	private _refreshCredentialsLinkBuilder: Builder;
 	private _advancedButton: Button;
 	private _callbacks: IConnectionComponentCallbacks;
 	private _authTypeSelectBox: SelectBox;
@@ -205,14 +205,16 @@ export class ConnectionWidget {
 
 		// Remember password
 		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
-		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', false);
+		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', 'username-password-row', false);
 
 		// Azure account picker
 		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
 		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input');
-		accountDropdownBuilder.getContainer().parentElement.id = 'azure-account-row';
+		accountDropdownBuilder.getContainer().parentElement.classList.add('azure-account-row');
 		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdownBuilder.getContainer(), { ariaLabel: accountLabel });
 		DialogHelper.appendInputSelectBox(accountDropdownBuilder, this._azureAccountDropdown);
+		let refreshCredentialsBuilder = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'azure-account-row');
+		this._refreshCredentialsLinkBuilder = refreshCredentialsBuilder.a({ href: '#' }).text('Refresh account credentials');
 
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
@@ -268,9 +270,9 @@ export class ConnectionWidget {
 		return button;
 	}
 
-	private appendCheckbox(container: Builder, label: string, checkboxClass: string, cellContainerClass: string, isChecked: boolean): Checkbox {
+	private appendCheckbox(container: Builder, label: string, checkboxClass: string, cellContainerClass: string, rowContainerClass: string, isChecked: boolean): Checkbox {
 		let checkbox: Checkbox;
-		container.element('tr', {}, (rowContainer) => {
+		container.element('tr', { class: rowContainerClass }, (rowContainer) => {
 			rowContainer.element('td');
 			rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
 				checkbox = new Checkbox(inputCellContainer.getHTMLElement(), { label, checked: isChecked, ariaLabel: label });
@@ -301,9 +303,33 @@ export class ConnectionWidget {
 
 		if (this._azureAccountDropdown) {
 			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
+			this._toDispose.push(this._azureAccountDropdown.onDidSelect(async () => {
 				// Reset the dropdown's validation message if the old selection was not valid but the new one is
 				this.validateAzureAccountSelection(false);
+
+				// Open the add account dialog if needed, then select the added account
+				let oldAccountIds = (await this._accountManagementService.getAccountsForProvider('azurePublicCloud')).map(account => account.key.accountId);
+				if (this._azureAccountDropdown.value === this._addAzureAccountMessage) {
+					await this._accountManagementService.addAccount('azurePublicCloud');
+					let newOptions = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+					let newAccount = newOptions.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+					await this.fillInAzureAccountOptions();
+					if (newAccount) {
+						this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
+					} else {
+						this._azureAccountDropdown.select(0);
+					}
+				}
+			}));
+		}
+
+		if (this._refreshCredentialsLinkBuilder) {
+			this._toDispose.push(this._refreshCredentialsLinkBuilder.on(DOM.EventType.CLICK, async () => {
+				let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+				let account = accounts.find(account => account.key.accountId === this._azureAccountDropdown.value);
+				if (account) {
+					this._accountManagementService.refreshAccount(account);
+				}
 			}));
 		}
 
@@ -390,14 +416,8 @@ export class ConnectionWidget {
 		}
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
-			this._accountManagementService.getAccountsForProvider('azurePublicCloud').then(accounts => {
-				let accountDropdownOptions = accounts.map(account => account.key.accountId);
-				accountDropdownOptions.unshift('');
-				accountDropdownOptions.push(localize('connectionWidget.AddAzureAccount', 'Add an account...'));
-				this._azureAccountDropdown.setOptions(accountDropdownOptions);
-				this._azureAccountDropdown.select(0);
-				this._azureAccountDropdown.enable();
-			});
+			this.fillInAzureAccountOptions();
+			this._azureAccountDropdown.enable();
 			let tableContainer = this._tableContainer.getContainer();
 			tableContainer.classList.add('hide-username-password');
 			tableContainer.classList.remove('hide-azure-accounts');
@@ -412,6 +432,19 @@ export class ConnectionWidget {
 				// Do nothing, this throws if no message is currently shown
 			}
 		}
+	}
+
+	private async fillInAzureAccountOptions(): Promise<void> {
+		let oldSelection = this._azureAccountDropdown.value;
+		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		let accountDropdownOptions = accounts.map(account => account.key.accountId);
+		if (accountDropdownOptions.length === 0) {
+			// If there are no accounts add a blank option so that add account isn't automatically selected
+			accountDropdownOptions.unshift('');
+		}
+		accountDropdownOptions.push(this._addAzureAccountMessage);
+		this._azureAccountDropdown.setOptions(accountDropdownOptions);
+		this._azureAccountDropdown.selectWithOptionName(oldSelection);
 	}
 
 	private serverNameChanged(serverName: string) {

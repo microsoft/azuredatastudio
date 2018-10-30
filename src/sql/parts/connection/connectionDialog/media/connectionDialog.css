@@ -89,7 +89,7 @@
 	background: url('clear-search-results-dark.svg');
 }
 
-.hide-azure-accounts #azure-account-row {
+.hide-azure-accounts .azure-account-row {
 	display: none;
 }
 
