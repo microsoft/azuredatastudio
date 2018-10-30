@@ -4,13 +4,14 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { ICellModel } from 'sql/parts/notebook/cellViews/interfaces';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -26,7 +27,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 
-
 export const CODE_SELECTOR: string = 'code-component';
 
 @Component({
@@ -36,10 +36,10 @@ export const CODE_SELECTOR: string = 'code-component';
 export class CodeComponent extends AngularDisposable implements OnInit {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@Input() id: string;
-	@Input() content: string;
-	@Input() language: string;
+	@Input() cellModel: ICellModel;
+	@Output() public onContentChanged = new EventEmitter<void>();
 
+	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
@@ -78,19 +78,21 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
+		this._editor.setMinimumHeight(this._minimumHeight);
 		let uri = this.createUri();
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.language, '', '');
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model.textEditorModel;
-			this._modelService.updateModel(this._editorModel, this.content);
+			this._modelService.updateModel(this._editorModel, this.cellModel.source);
 		});
 
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
-			this.content = this._editorModel.getValue();
 			this._editor.setHeightToScrollHeight();
+			this.cellModel.source = this._editorModel.getValue();
+			this.onContentChanged.emit();
 		}));
 		this.layout();
 	}
@@ -99,25 +101,26 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._editor.layout(new DOM.Dimension(
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
+		this._editor.setHeightToScrollHeight();
 	}
 
 	private createUri(): URI {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
-		this._uri = uri.toString();
+		this.cellModel.cellUri = uri;
 		return uri;
 	}
 
 	/// Editor Functions
 	private updateModel() {
 		if (this._editorModel) {
-			this._modelService.updateModel(this._editorModel, this.content);
+			this._modelService.updateModel(this._editorModel, this.cellModel.source);
 		}
 	}
 
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
-			this._modeService.getOrCreateMode(this.language).then((modeValue) => {
+			this._modeService.getOrCreateMode(this.cellModel.language).then((modeValue) => {
 				this._modelService.setMode(this._editorModel, modeValue);
 			});
 		}

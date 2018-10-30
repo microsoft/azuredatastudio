@@ -5,7 +5,7 @@
 
 import { OnDestroy } from '@angular/core';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-
+import URI from 'vs/base/common/uri';
 
 export abstract class CellView extends AngularDisposable implements OnDestroy {
 	constructor() {
@@ -20,6 +20,8 @@ export interface ICellModel {
 	language: string;
 	source: string;
 	cellType: CellType;
+	active: boolean;
+	cellUri?: URI;
 }
 
 export type CellType = 'code' | 'markdown' | 'raw';

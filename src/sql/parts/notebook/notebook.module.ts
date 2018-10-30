@@ -25,6 +25,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Registry } from 'vs/platform/registry/common/platform';
 import { CodeComponent } from 'sql/parts/notebook/cellViews/code.component';
 import { CodeCellComponent } from 'sql/parts/notebook/cellViews/codeCell.component';
+import { TextCellComponent } from 'sql/parts/notebook/cellViews/textCell.component';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	@NgModule({
@@ -35,6 +36,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			InputBox,
 			CodeComponent,
 			CodeCellComponent,
+			TextCellComponent,
 			NotebookComponent,
 			ComponentHostDirective
 		],
