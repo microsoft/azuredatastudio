@@ -42,13 +42,14 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
 const MIN_GRID_HEIGHT_ROWS = 8;
 const ESTIMATED_SCROLL_BAR_HEIGHT = 10;
 const BOTTOM_PADDING = 15;
-const ACTIONBAR_WIDTH = 26;
+const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
 const ACTIONBAR_HEIGHT = 100;
@@ -134,7 +135,7 @@ export class GridPanel extends ViewletPanel {
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
-		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false });
+		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state) {
 				this.state.scrollPosition = e;
