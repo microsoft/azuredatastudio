@@ -5,6 +5,8 @@
 
 import 'vs/css!./notebook';
 
+import { nb } from 'sqlops';
+
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
@@ -12,9 +14,29 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { ICellModel, CellTypes } from 'sql/parts/notebook/cellViews/interfaces';
+import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotebookService } from 'sql/services/notebook/notebookService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
+
+class CellModelStub implements ICellModel {
+	constructor(public id: string,
+		public language: string,
+		public source: string,
+		public cellType: CellType,
+		public trustedMode: boolean = false
+	) { }
+
+	equals(cellModel: ICellModel): boolean {
+		throw new Error('Method not implemented.');
+	}
+	toJSON(): nb.ICell {
+		throw new Error('Method not implemented.');
+	}
+}
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,
@@ -26,17 +48,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
+		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(INotebookService) private notebookService: INotebookService
 	) {
 		super();
 
-		// Todo: This is mock data for cells. Will remove this code when we have a service
-		let cell1 : ICellModel = {
-			id: '1', language: 'sql', source: 'select * from sys.tables', cellType: CellTypes.Code
-		};
-		let cell2 : ICellModel = {
-			id: '2', language: 'sql', source: 'select 1', cellType: CellTypes.Code
-		};
+		// TODO NOTEBOOK REFACTOR: This is mock data for cells. Will remove this code when we have a service
+		let cell1 : ICellModel = new CellModelStub ('1', 'sql', 'select * from sys.tables', CellTypes.Code);
+		let cell2 : ICellModel = new CellModelStub ('2', 'sql', 'select 1', CellTypes.Code);
 		this.cells.push(cell1, cell2);
 	}
 

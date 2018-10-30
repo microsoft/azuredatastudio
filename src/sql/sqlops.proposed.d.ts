@@ -1368,31 +1368,36 @@ declare module 'sqlops' {
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
 		export interface NotebookProvider {
-			handle: number;/**
-			* Manages starting, stopping and handling notifications around sessions.
-			* Each notebook has 1 session associated with it, and the session is responsible
-			* for kernel management
-			*/
-			readonly sessionManager: NotebookSessionManager;
+			handle: number;
+			readonly providerId: string;
+			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
+			handleNotebookClosed(notebookUri: vscode.Uri): void;
+		}
 
+		export interface NotebookManager {
 			/**
 			 * Manages reading and writing contents to/from files.
 			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
 			 * from specific notebook file types to and from a standard type for this UI
 			 */
-			readonly contentManager: NotebookContentManager;
-
+			readonly contentManager: ContentManager;
 			/**
-			 * Optional serverManager to handle server lifetime management operations.
+			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
+			 * Each notebook has 1 session associated with it, and the session is responsible
+			 * for kernel management
+			 */
+			readonly sessionManager: SessionManager;
+			/**
+			 * (Optional) ServerManager to handle server lifetime management operations.
 			 * Depending on the implementation this may not be needed.
 			 */
-			readonly serverManager?: NotebookServerManager;
+			readonly serverManager?: ServerManager;
 		}
 
 		/**
 		 * Defines the contracts needed to manage the lifetime of a notebook server.
 		 */
-		export interface NotebookServerManager {
+		export interface ServerManager {
 			/**
 			 * Indicates if the server is started at the current time
 			 */
@@ -1420,7 +1425,7 @@ declare module 'sqlops' {
 		/**
 		 * Handles interacting with file and folder contents
 		 */
-		export interface NotebookContentManager {
+		export interface ContentManager {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
@@ -1537,7 +1542,7 @@ declare module 'sqlops' {
 		//#endregion
 
 		//#region Session APIs
-		export interface NotebookSessionManager {
+		export interface SessionManager {
 			/**
 			 * Indicates whether the manager is ready.
 			 */
