@@ -83,7 +83,7 @@ export class ConnectionWidget {
 	};
 	public NoneServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('noneServerGroup', '<None>'),
+		name: localize('noneServerGroup', '<Do not save>'),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
