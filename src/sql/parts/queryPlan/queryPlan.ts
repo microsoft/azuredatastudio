@@ -10,8 +10,8 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 
 import { Dimension } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import * as UUID from 'vs/base/common/uuid';
 import { Builder } from 'vs/base/browser/builder';
+import { dispose, Disposable } from 'vs/base/common/lifecycle';
 
 export class QueryPlanState {
 	xml: string;
@@ -24,6 +24,10 @@ export class QueryPlanTab implements IPanelTab {
 
 	constructor() {
 		this.view = new QueryPlanView();
+	}
+
+	public dispose() {
+		dispose(this.view);
 	}
 }
 
@@ -42,6 +46,12 @@ export class QueryPlanView implements IPanelView {
 		}
 		container.appendChild(this.container);
 		this.container.style.overflow = 'scroll';
+	}
+
+	dispose() {
+		this.container.remove();
+		this.qp = undefined;
+		this.container = undefined;
 	}
 
 	public layout(dimension: Dimension): void {

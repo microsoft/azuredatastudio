@@ -41,13 +41,13 @@ export class DialogModal extends Modal {
 		name: string,
 		options: IModalOptions,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(_dialog.title, name, partService, telemetryService, clipboardService, contextKeyService, options);
+		super(_dialog.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
 	}
 
 	public layout(): void {
