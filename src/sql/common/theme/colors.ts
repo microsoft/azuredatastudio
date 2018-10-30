@@ -12,6 +12,7 @@ export const tableHeaderForeground = registerColor('table.headerForeground', { d
 export const disabledInputBackground = registerColor('input.disabled.background', { dark: '#444444', light: '#dcdcdc', hc: Color.black }, nls.localize('disabledInputBoxBackground', "Disabled Input box background."));
 export const disabledInputForeground = registerColor('input.disabled.foreground', { dark: '#888888', light: '#888888', hc: foreground }, nls.localize('disabledInputBoxForeground', "Disabled Input box foreground."));
 export const buttonFocusOutline = registerColor('button.focusOutline', { dark: '#eaeaea', light: '#666666', hc: null }, nls.localize('buttonFocusOutline', "Button outline color when focused."));
+export const disabledCheckboxForeground = registerColor('checkbox.disabled.foreground', { dark: '#888888', light: '#888888', hc: Color.black }, nls.localize('disabledCheckboxforeground', "Disabled checkbox foreground."));
 
 export const listFocusAndSelectionBackground = registerColor('list.focusAndSelectionBackground', { dark: '#2c3295', light: '#2c3295', hc: null }, nls.localize('listFocusAndSelectionBackground', "List/Table background color for the selected and focus item when the list/table is active"));
 
