@@ -13,11 +13,11 @@ import { ClientSession } from './clientSession';
 
 export class ModelFactory implements IModelFactory {
 
-    public createCell(cell: nb.ICell, options: ICellModelOptions): ICellModel {
-        return new CellModel(this, cell, options);
-    }
+	public createCell(cell: nb.ICell, options: ICellModelOptions): ICellModel {
+		return new CellModel(this, cell, options);
+	}
 
-    public createClientSession(options: IClientSessionOptions): IClientSession {
-        return new ClientSession(options);
-    }
+	public createClientSession(options: IClientSessionOptions): IClientSession {
+		return new ClientSession(options);
+	}
 }

@@ -8,9 +8,9 @@
 
 // TODO: The content of this file should be refactored to an extension
 export function getKnoxUrl(host: string, port: string): string {
-    return `https://${host}:${port}/gateway`;
+	return `https://${host}:${port}/gateway`;
 }
 
 export function getLivyUrl(serverName: string, port: string): string {
-    return getKnoxUrl(serverName, port) + '/default/livy/v1/';
+	return getKnoxUrl(serverName, port) + '/default/livy/v1/';
 }
