@@ -59,9 +59,6 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -103,8 +100,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@IAngularEventingService private _angularEventing: IAngularEventingService
 	) {
 		super();
 		if (this._instantiationService) {
