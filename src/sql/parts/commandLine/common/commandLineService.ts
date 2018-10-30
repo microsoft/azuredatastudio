@@ -69,11 +69,12 @@ export class CommandLineService implements ICommandLineProcessing {
 			this._connectionManagementService.showConnectionDialog();
 		} else if (this._connectionProfile)	{
 			this._connectionManagementService.connectIfNotConnected(this._connectionProfile, 'connection')
-			   .then(result => TaskUtilities.newQuery(this._connectionProfile,
+				.then(result => TaskUtilities.newQuery(this._connectionProfile,
 											this._connectionManagementService,
 											this._queryEditorService,
 											this._objectExplorerService,
-											this._editorService));
+											this._editorService))
+				.catch(() => {});
 		}
 	}
 }
