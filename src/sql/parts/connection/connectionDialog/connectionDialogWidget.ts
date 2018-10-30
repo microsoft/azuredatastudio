@@ -36,6 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as styler from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -92,9 +93,10 @@ export class ConnectionDialogWidget extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	public refresh(): void {

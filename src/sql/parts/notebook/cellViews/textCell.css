@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-code-cell-component {
+text-cell-component {
 	display: block;
 }
 
-code-cell-component .notebook-output {
+text-cell-component .notebook-preview {
 	border-top-width: 1px;
 	border-top-style: solid;
 }
