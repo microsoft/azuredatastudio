@@ -11,9 +11,11 @@
 import { nb } from 'sqlops';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import URI from 'vs/base/common/uri';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/services/notebook/notebookService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
@@ -325,6 +327,7 @@ export interface ICellModelOptions {
 }
 
 export interface ICellModel {
+	cellUri: URI;
 	id: string;
 	language: string;
 	source: string;

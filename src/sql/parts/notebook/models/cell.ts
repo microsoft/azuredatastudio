@@ -7,6 +7,7 @@
 'use strict';
 
 import { Event, Emitter } from 'vs/base/common/event';
+import URI from 'vs/base/common/uri';
 
 import { nb } from 'sqlops';
 import { ICellModelOptions, IModelFactory } from './modelInterfaces';
@@ -31,6 +32,7 @@ export class CellModel implements ICellModel {
 	public id: string;
 	private _isTrusted: boolean;
 	private _active: boolean;
+	private _cellUri: URI;
 
 	constructor(private factory: IModelFactory, cellData?: nb.ICell, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
@@ -94,6 +96,14 @@ export class CellModel implements ICellModel {
 
 	public set active(value: boolean) {
 		this._active = value;
+	}
+
+	public get cellUri(): URI {
+		return this._cellUri;
+	}
+
+	public set cellUri(value: URI) {
+		this._cellUri = value;
 	}
 
 	public get options(): ICellModelOptions {

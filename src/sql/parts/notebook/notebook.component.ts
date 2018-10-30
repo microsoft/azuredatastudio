@@ -7,22 +7,25 @@ import './notebookStyles';
 
 import { nb } from 'sqlops';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, ViewChildren } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
+
+import URI from 'vs/base/common/uri';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import * as themeColors from 'vs/workbench/common/theme';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import * as themeColors from 'vs/workbench/common/theme';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { INotebookService } from 'sql/services/notebook/notebookService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
 class CellModelStub implements ICellModel {
+	public cellUri: URI;
 	constructor(public id: string,
 		public language: string,
 		public source: string,
