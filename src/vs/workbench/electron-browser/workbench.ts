@@ -172,9 +172,10 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+// {{SQL CARBON EDIT}}
 import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
 import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
-
+// {{SQL CARBON EDIT}}
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
