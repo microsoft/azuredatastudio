@@ -8,9 +8,12 @@
 import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import URI from 'vs/base/common/uri';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
+
+export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 
 export interface INotebookService {
 	_serviceBrand: any;
@@ -48,4 +51,9 @@ export interface INotebookManager {
 	readonly contentManager: sqlops.nb.ContentManager;
 	readonly sessionManager: sqlops.nb.SessionManager;
 	readonly serverManager: sqlops.nb.ServerManager;
+}
+
+export interface INotebookParams extends IBootstrapParams {
+	notebookUri: URI;
+	providerId: string;
 }

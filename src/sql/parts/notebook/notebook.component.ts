@@ -20,7 +20,8 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams } from 'sql/services/notebook/notebookService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -56,7 +57,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
 		@Inject(INotificationService) private notificationService: INotificationService,
-		@Inject(INotebookService) private notebookService: INotebookService
+		@Inject(INotebookService) private notebookService: INotebookService,
+		@Inject(IBootstrapParams) private notebookParams: INotebookParams
 	) {
 		super();
 

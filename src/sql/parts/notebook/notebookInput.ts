@@ -8,19 +8,30 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
-
 import { Emitter, Event } from 'vs/base/common/event';
+import URI from 'vs/base/common/uri';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
 export class NotebookInputModel extends EditorModel {
 	private dirty: boolean;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
-	get onDidChangeDirty(): Event<void> { return this._onDidChangeDirty.event; }
-
-	constructor(public readonly modelViewId, private readonly handle: number, private saveHandler?: ModeViewSaveHandler) {
+	private _providerId: string;
+	constructor(public readonly notebookUri: URI, private readonly handle: number, private saveHandler?: ModeViewSaveHandler) {
 		super();
 		this.dirty = false;
+	}
+
+	public get providerId(): string {
+		return this._providerId;
+	}
+
+	public set providerId(value: string) {
+		this._providerId = value;
+	}
+
+	get onDidChangeDirty(): Event<void> {
+		return this._onDidChangeDirty.event;
 	}
 
 	get isDirty(): boolean {
@@ -62,8 +73,12 @@ export class NotebookInput extends EditorInput {
 		return this._title;
 	}
 
-	public get modelViewId(): string {
-		return this._model.modelViewId;
+	public get notebookUri(): URI {
+		return this._model.notebookUri;
+	}
+
+	public get providerId(): string {
+		return this._model.providerId;
 	}
 
 	public getTypeId(): string {
