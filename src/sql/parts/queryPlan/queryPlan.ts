@@ -93,7 +93,7 @@ export class QueryPlan {
 		QP.showPlan(this.container, this._xml, {
 			jsTooltips: false
 		});
-		this.container.querySelectorAll('div.qp-tt').forEach(toolTip=>{
+		(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip=>{
 			toolTip.classList.add('monaco-editor');
 			toolTip.classList.add('monaco-editor-hover');
 		});
