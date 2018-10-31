@@ -118,9 +118,10 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		server: string,
 		jobModel: JobData,
 		jobStepInfo?: sqlops.AgentJobStepInfo,
+		viaJobDialog: boolean = false
 	) {
 		super(ownerUri,
-			jobStepInfo ?  JobStepData.convertToJobStepData(jobStepInfo, jobModel) : new JobStepData(ownerUri, jobModel),
+			jobStepInfo ?  JobStepData.convertToJobStepData(jobStepInfo, jobModel) : new JobStepData(ownerUri, jobModel, viaJobDialog),
 			jobStepInfo ?  JobStepDialog.EditDialogTitle : JobStepDialog.NewDialogTitle);
 		this.stepId = jobStepInfo ?
 						jobStepInfo.id : jobModel.jobSteps ?
