@@ -381,12 +381,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 			} else {
 				const options: IConnectionCompletionOptions = {
-					// Should saving the connection be a command line switch?
-					saveTheConnection : true,
-					showConnectionDialogOnError : true,
-					showDashboard : purpose === 'dashboard',
-					params : undefined,
-					showFirewallRuleOnError : true,
+					saveTheConnection: false,
+					showConnectionDialogOnError: true,
+					showDashboard: purpose === 'dashboard',
+					params: undefined,
+					showFirewallRuleOnError: true,
 				};
 				this.connect(connection, ownerUri, options).then(connectionResult => {
 					if (connectionResult && connectionResult.connected) {
