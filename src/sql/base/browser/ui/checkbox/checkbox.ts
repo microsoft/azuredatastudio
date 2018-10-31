@@ -16,7 +16,7 @@ export interface ICheckboxOptions {
 	ariaLabel?: string;
 }
 
-export interface ICheckBoxStyles {
+export interface ICheckboxStyles {
 	disabledCheckboxForeground?: Color;
 }
 
@@ -98,7 +98,7 @@ export class Checkbox extends Widget {
 		this.enabled = true;
 	}
 
-	public style(styles: ICheckBoxStyles): void {
+	public style(styles: ICheckboxStyles): void {
 		this.disabledCheckboxForeground = styles.disabledCheckboxForeground;
 		this.updateStyle();
 	}
