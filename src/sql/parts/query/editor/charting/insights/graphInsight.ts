@@ -162,7 +162,7 @@ export class Graph implements IInsight {
 			this.chartjs.data.datasets = chartData;
 			this.chartjs.config.type = this.options.type;
 			this.chartjs.data.labels = this.originalType === 'timeSeries' ? [] : labels,
-			this.chartjs.options = this.transformOptions(this.options);
+				this.chartjs.options = this.transformOptions(this.options);
 			this.chartjs.update(0);
 		} else {
 			this.chartjs = new ChartJs(this.canvas.getContext('2d'), {
