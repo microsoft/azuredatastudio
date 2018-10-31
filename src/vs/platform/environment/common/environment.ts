@@ -62,13 +62,6 @@ export interface ParsedArgs {
 	'upload-logs'?: string;
 	'driver'?: string;
 	'driver-verbose'?: boolean;
-	// {{SQL CARBON EDIT}}
-	aad?: boolean;
-	database?: string;
-	integrated?: boolean;
-	server?: string;
-	user?: string;
-	// {{SQL CARBON EDIT}}
 }
 
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');

@@ -33,12 +33,7 @@ const options: minimist.Opts = {
 		'export-default-configuration',
 		'install-source',
 		'upload-logs',
-		'driver',
-		// {{SQL CARBON EDIT}}
-	    'database',
-	    'server',
-		'user',
-		// {{SQL CARBON EDIT}}
+		'driver'
 	],
 	boolean: [
 		'help',
@@ -71,11 +66,7 @@ const options: minimist.Opts = {
 		'status',
 		'file-write',
 		'file-chmod',
-		'driver-verbose',
-		// {{SQL CARBON EDIT}}
-		'aad',
-		'integrated',
-		// {{SQL CARBON EDIT}}
+		'driver-verbose'
 	],
 	alias: {
 		add: 'a',
@@ -94,12 +85,6 @@ const options: minimist.Opts = {
 		'debugBrkPluginHost': 'inspect-brk-extensions',
 		'debugSearch': 'inspect-search',
 		'debugBrkSearch': 'inspect-brk-search',
-		// {{SQL CARBON EDIT}}
-		database: 'D',
-		integrated: 'E',
-		server: 'S',
-		user: 'U',
-		// {{SQL CARBON EDIT}}
 	}
 };
 
