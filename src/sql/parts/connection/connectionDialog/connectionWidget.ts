@@ -53,10 +53,12 @@ export class ConnectionWidget {
 	private _rememberPasswordCheckBox: Checkbox;
 	private _azureAccountDropdown: SelectBox;
 	private _refreshCredentialsLinkBuilder: Builder;
+	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
+	private readonly _azureProviderId = 'azurePublicCloud';
+	private _azureAccountList: sqlops.Account[];
 	private _advancedButton: Button;
 	private _callbacks: IConnectionComponentCallbacks;
 	private _authTypeSelectBox: SelectBox;
-	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
 	private _toDispose: lifecycle.IDisposable[];
 	private _optionsMaps: { [optionType: number]: sqlops.ConnectionOption };
 	private _tableContainer: Builder;
@@ -187,8 +189,7 @@ export class ConnectionWidget {
 		// Username
 		let self = this;
 		let userNameOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
-		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input');
-		userNameBuilder.getContainer().parentElement.classList.add('username-password-row');
+		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._userNameInputBox = new InputBox(userNameBuilder.getHTMLElement(), this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
@@ -197,8 +198,7 @@ export class ConnectionWidget {
 		});
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
-		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
-		passwordBuilder.getContainer().parentElement.classList.add('username-password-row');
+		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._passwordInputBox.inputElement.type = 'password';
 		this._password = '';
@@ -209,12 +209,11 @@ export class ConnectionWidget {
 
 		// Azure account picker
 		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
-		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input');
-		accountDropdownBuilder.getContainer().parentElement.classList.add('azure-account-row');
+		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
 		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdownBuilder.getContainer(), { ariaLabel: accountLabel });
 		DialogHelper.appendInputSelectBox(accountDropdownBuilder, this._azureAccountDropdown);
 		let refreshCredentialsBuilder = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'azure-account-row');
-		this._refreshCredentialsLinkBuilder = refreshCredentialsBuilder.a({ href: '#' }).text('Refresh account credentials');
+		this._refreshCredentialsLinkBuilder = refreshCredentialsBuilder.a({ href: '#' }).text(localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials'));
 
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
@@ -303,37 +302,17 @@ export class ConnectionWidget {
 
 		if (this._azureAccountDropdown) {
 			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._toDispose.push(this._azureAccountDropdown.onDidSelect(async () => {
-				// Reset the dropdown's validation message if the old selection was not valid but the new one is
-				this.validateAzureAccountSelection(false);
-				this._refreshCredentialsLinkBuilder.display('none');
-
-				let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
-
-				// Open the add account dialog if needed, then select the added account
-				if (this._azureAccountDropdown.value === this._addAzureAccountMessage) {
-					let oldAccountIds = accounts.map(account => account.key.accountId);
-					await this._accountManagementService.addAccount('azurePublicCloud');
-					let newOptions = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
-					let newAccount = newOptions.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
-					await this.fillInAzureAccountOptions();
-					if (newAccount) {
-						this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
-					} else {
-						this._azureAccountDropdown.select(0);
-					}
-				}
-
-				this.updateRefreshCredentialsLink();
+			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
+				this.onAzureAccountSelected();
 			}));
 		}
 
 		if (this._refreshCredentialsLinkBuilder) {
 			this._toDispose.push(this._refreshCredentialsLinkBuilder.on(DOM.EventType.CLICK, async () => {
-				let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
-				let account = accounts.find(account => account.key.accountId === this._azureAccountDropdown.value);
+				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
-					this._accountManagementService.refreshAccount(account);
+					await this._accountManagementService.refreshAccount(account);
+					this.fillInAzureAccountOptions();
 				}
 			}));
 		}
@@ -441,8 +420,8 @@ export class ConnectionWidget {
 
 	private async fillInAzureAccountOptions(): Promise<void> {
 		let oldSelection = this._azureAccountDropdown.value;
-		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
-		let accountDropdownOptions = accounts.map(account => account.key.accountId);
+		this._azureAccountList = await this._accountManagementService.getAccountsForProvider(this._azureProviderId);
+		let accountDropdownOptions = this._azureAccountList.map(account => account.key.accountId);
 		if (accountDropdownOptions.length === 0) {
 			// If there are no accounts add a blank option so that add account isn't automatically selected
 			accountDropdownOptions.unshift('');
@@ -454,13 +433,37 @@ export class ConnectionWidget {
 	}
 
 	private async updateRefreshCredentialsLink(): Promise<void> {
-		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
-		let chosenAccount = accounts.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
 			this._refreshCredentialsLinkBuilder = this._refreshCredentialsLinkBuilder.display('block');
 		} else {
 			this._refreshCredentialsLinkBuilder = this._refreshCredentialsLinkBuilder.display('none');
 		}
+	}
+
+	private async onAzureAccountSelected(): Promise<void> {
+		// Reset the dropdown's validation message if the old selection was not valid but the new one is
+		this.validateAzureAccountSelection(false);
+		this._refreshCredentialsLinkBuilder.display('none');
+
+		// Open the add account dialog if needed, then select the added account
+		if (this._azureAccountDropdown.value === this._addAzureAccountMessage) {
+			let oldAccountIds = this._azureAccountList.map(account => account.key.accountId);
+			await this._accountManagementService.addAccount(this._azureProviderId);
+
+			// Refresh the dropdown's list to include the added account
+			await this.fillInAzureAccountOptions();
+
+			// If a new account was added find it and select it, otherwise select the first account
+			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+			if (newAccount) {
+				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
+			} else {
+				this._azureAccountDropdown.select(0);
+			}
+		}
+
+		this.updateRefreshCredentialsLink();
 	}
 
 	private serverNameChanged(serverName: string) {
