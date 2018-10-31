@@ -30,8 +30,7 @@ export class CommandLineService implements ICommandLineProcessing {
 	)
 	{
 		let profile = null;
-		if (this._environmentService && this._environmentService.args.server)
-		{
+		if (this._environmentService && this._environmentService.args.server) {
 			profile = new ConnectionProfile(_capabilitiesService, null);
 			// We want connection store to use any matching password it finds
 			profile.savePassword = true;
@@ -49,11 +48,9 @@ export class CommandLineService implements ICommandLineProcessing {
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 		let sqlProvider = registry.getProperties( Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
-		if (sqlProvider)
-		{
+		if (sqlProvider) {
 			this.processCommandLine();
-		} else
-		{
+		} else {
 			registry.onNewProvider(e => {
 				if (e.id === Constants.mssqlProviderName)
 				{

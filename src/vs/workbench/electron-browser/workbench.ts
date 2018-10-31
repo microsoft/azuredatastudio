@@ -578,7 +578,9 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IAccountManagementService, accountManagementService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
+		// {{SQL CARBON EDIT}}
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
+		// {{SQL CARBON EDIT}}
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));
