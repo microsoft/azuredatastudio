@@ -69,7 +69,7 @@ export function parseTimeString(value: string): number | boolean {
  * @param value The number of milliseconds to convert to a timespan string
  * @returns A properly formatted timespan string.
  */
-export function parseNumAsTimeString(value: number): string {
+export function parseNumAsTimeString(value: number, includeFraction: boolean = true): string {
 	let tempVal = value;
 	let h = Math.floor(tempVal / msInH);
 	tempVal %= msInH;
@@ -85,7 +85,7 @@ export function parseNumAsTimeString(value: number): string {
 
 	let rs = hs + ':' + ms + ':' + ss;
 
-	return tempVal > 0 ? rs + '.' + mss : rs;
+	return tempVal > 0 && includeFraction ? rs + '.' + mss : rs;
 }
 
 export function generateUri(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): string {
