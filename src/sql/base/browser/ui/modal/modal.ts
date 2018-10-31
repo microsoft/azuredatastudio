@@ -27,7 +27,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
-const INFO_ALT_TEXT = localize('infoAltText', 'Infomation');
+const INFO_ALT_TEXT = localize('infoAltText', 'Information');
 const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
 const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
 const SHOW_DETAILS_TEXT = localize('showMessageDetails', 'Show Details');
