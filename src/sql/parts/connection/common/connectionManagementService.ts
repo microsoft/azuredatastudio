@@ -374,14 +374,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnecion?: boolean): Promise<string> {
+	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			let ownerUri: string = Utils.generateUri(connection, purpose);
 			if (this._connectionStatusManager.isConnected(ownerUri)) {
 				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 			} else {
 				const options: IConnectionCompletionOptions = {
-					saveTheConnection: saveConnecion,
+					saveTheConnection: false,
 					showConnectionDialogOnError: true,
 					showDashboard: purpose === 'dashboard',
 					params: undefined,

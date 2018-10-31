@@ -63,8 +63,7 @@ export class CommandLineService implements ICommandLineProcessing {
 			// prompt the user for a new connection on startup if no profiles are registered
 			this._connectionManagementService.showConnectionDialog();
 		} else if (this._connectionProfile) {
-			// Should saving the connection be a command line switch?
-			this._connectionManagementService.connectIfNotConnected(this._connectionProfile, 'connection', true)
+			this._connectionManagementService.connectIfNotConnected(this._connectionProfile, 'connection')
 				.then(result => TaskUtilities.newQuery(this._connectionProfile,
 					this._connectionManagementService,
 					this._queryEditorService,
