@@ -1370,7 +1370,6 @@ declare module 'sqlops' {
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
 		export interface NotebookProvider {
-			handle: number;
 			readonly providerId: string;
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
