@@ -17,7 +17,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { attachInputBoxStyler, attachButtonStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachCheckboxStyler, attachEditableDropdownStyler, attachInputBoxStyler } from 'sql/common/theme/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
@@ -83,7 +83,7 @@ export class ConnectionWidget {
 	};
 	public NoneServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('noneServerGroup', '<None>'),
+		name: localize('noneServerGroup', '<Do not save>'),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
@@ -274,6 +274,7 @@ export class ConnectionWidget {
 		this._toDispose.push(attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 		this._toDispose.push(attachButtonStyler(this._advancedButton, this._themeService));
+		this._toDispose.push(attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 
 		if (this._authTypeSelectBox) {
 			// Theme styler

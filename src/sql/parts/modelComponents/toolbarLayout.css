@@ -39,7 +39,7 @@
 
 .modelview-toolbar-container .modelview-toolbar-title {
 	padding: 4px;
-	font-size: 14px;
+	font-size: 13px;
 	cursor: pointer;
 }
 
@@ -57,8 +57,8 @@
 
 /* Vertical button handling */
 .modelview-toolbar-container.toolbar-vertical  .modelview-toolbar-component modelview-button .monaco-text-button.icon {
-	padding: 22px 16px 22px 16px;
-	background-size: 22px;
+	padding: 20px 16px 20px 16px;
+	background-size: 20px;
 	margin-right: 0.3em;
 	background-position: 50% 50%;
 

@@ -7,8 +7,7 @@
 	display: flex;
 	flex-direction: column;
 	width: 80px;
-	height: calc(100% + 25px);
-	margin-top: -25px;
+	height: 100%;
 }
 
 .hc-black .wizardNavigation-container {
@@ -24,7 +23,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
-	max-height: 130px;
+	max-height: 100px;
 }
 
 .wizardNavigation-pageNumber a {

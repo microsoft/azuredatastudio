@@ -9,7 +9,6 @@ import QueryRunner from 'sql/parts/query/execution/queryRunner';
 
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { append, $, hide, show } from 'vs/base/browser/dom';
@@ -25,7 +24,6 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 
 	constructor(
 		@IEditorService private _editorService: EditorServiceImpl,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IQueryModelService private _queryModelService: IQueryModelService
 	) { }
 
@@ -36,7 +34,7 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 		];
 
 		this._element = append(container, $('.query-statusbar-group'));
-		this._flavorElement = append(this._element, $('a.editor-status-selection'));
+		this._flavorElement = append(this._element, $('.editor-status-selection'));
 		this._flavorElement.title = nls.localize('rowStatus', "Row Count");
 		hide(this._flavorElement);
 
@@ -65,11 +63,10 @@ export class RowCountStatusBarItem implements IStatusbarItem {
 				if (queryRunner) {
 					if (queryRunner.hasCompleted) {
 						this._displayValue(queryRunner);
-					} else if (queryRunner.isExecuting) {
-						this.dispose = queryRunner.addListener('complete', () => {
-							this._displayValue(queryRunner);
-						});
 					}
+					this.dispose = queryRunner.onQueryEnd(e => {
+						this._displayValue(queryRunner);
+					});
 				} else {
 					this.dispose = this._queryModelService.onRunQueryComplete(e => {
 						if (e === currentUri) {

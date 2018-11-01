@@ -10,8 +10,8 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 
 import { Dimension } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import * as UUID from 'vs/base/common/uuid';
 import { Builder } from 'vs/base/browser/builder';
+import { dispose, Disposable } from 'vs/base/common/lifecycle';
 
 export class QueryPlanState {
 	xml: string;
@@ -24,6 +24,10 @@ export class QueryPlanTab implements IPanelTab {
 
 	constructor() {
 		this.view = new QueryPlanView();
+	}
+
+	public dispose() {
+		dispose(this.view);
 	}
 }
 
@@ -44,7 +48,15 @@ export class QueryPlanView implements IPanelView {
 		this.container.style.overflow = 'scroll';
 	}
 
+	dispose() {
+		this.container.remove();
+		this.qp = undefined;
+		this.container = undefined;
+	}
+
 	public layout(dimension: Dimension): void {
+		this.container.style.width = dimension.width + 'px';
+		this.container.style.height = dimension.height + 'px';
 	}
 
 	public showPlan(xml: string) {
@@ -80,6 +92,10 @@ export class QueryPlan {
 		new Builder(this.container).empty();
 		QP.showPlan(this.container, this._xml, {
 			jsTooltips: false
+		});
+		(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip=>{
+			toolTip.classList.add('monaco-editor');
+			toolTip.classList.add('monaco-editor-hover');
 		});
 	}
 

@@ -44,6 +44,7 @@ export class JobData implements IAgentDialogData {
 	public jobSteps: sqlops.AgentJobStepInfo[];
 	public jobSchedules: sqlops.AgentJobScheduleInfo[];
 	public alerts: sqlops.AgentAlertInfo[];
+	public jobId: string;
 
 	constructor(
 		ownerUri: string,
@@ -62,6 +63,7 @@ export class JobData implements IAgentDialogData {
 			this.jobSteps = jobInfo.JobSteps;
 			this.jobSchedules = jobInfo.JobSchedules;
 			this.alerts = jobInfo.Alerts;
+			this.jobId = jobInfo.jobId;
 		}
 	}
 
@@ -115,7 +117,6 @@ export class JobData implements IAgentDialogData {
 		let result = this.dialogMode === AgentDialogMode.CREATE
 			? await this._agentService.createJob(this.ownerUri,  jobInfo)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
-
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -133,18 +134,6 @@ export class JobData implements IAgentDialogData {
 			valid: validationErrors.length === 0,
 			errorMessages: validationErrors
 		};
-	}
-
-	public addJobSchedule(schedule: sqlops.AgentJobScheduleInfo) {
-		if (this.jobSchedules) {
-			let existingSchedule = this.jobSchedules.find(item => item.name === schedule.name);
-			if (!existingSchedule) {
-				this.jobSchedules.push(schedule);
-			}
-		} else {
-			this.jobSchedules = [];
-			this.jobSchedules.push(schedule);
-		}
 	}
 
 	public toAgentJobInfo(): sqlops.AgentJobInfo {
@@ -177,7 +166,7 @@ export class JobData implements IAgentDialogData {
 			categoryType: 1, // LocalJob, hard-coding the value, corresponds to the target tab in SSMS
 			lastRun: '',
 			nextRun: '',
-			jobId: ''
+			jobId: this.jobId
 		};
 	}
 }

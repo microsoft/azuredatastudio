@@ -63,7 +63,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _jobCacheObject: JobCacheObject;
 	private _agentJobInfo: sqlops.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
-	private _serverName: string;
 
 	private static readonly INITIAL_TREE_HEIGHT: number = 780;
 	private static readonly HEADING_HEIGHT: number = 24;

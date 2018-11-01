@@ -4,16 +4,16 @@
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download Azure Data Studio August Public Preview**
+**Download the latest Azure Data Studio release**
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2024683
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2024680
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2024677
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2024675
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2024672
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2024668
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2030731
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2030736
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2030738
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2030741
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2030746
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2030750
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -34,9 +34,9 @@ See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CH
 - Task History window to view current task execution status, completion results with error messages and task T-SQL scripting
 - Scripting support to generate CREATE, SELECT, ALTER and DROP statements for database objects
 - Workspaces with full Git integration and Find In Files support to managing T-SQL script libraries
-- Modern light-weight shell with theming, user settings, full screen support, integrated terminal and numerous other features
+- Modern light-weight shell with theming, user settings, full-screen support, integrated terminal and numerous other features
 
-Here's some of these features in action.
+Here are some of these features in action.
 
 <img src='https://github.com/Microsoft/azuredatastudio/blob/master/docs/overview_screen.jpg' width='800px'>
 
@@ -61,29 +61,33 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* philoushka  for `center the icon #2760`
+* anthonypants for `Typo #2775`
+* kstolte for `Fix Invalid Configuration in Launch.json #2789`
+* kstolte for `Fixing a reference to SQL Ops Studio #2788`
 * AlexFsmn `Feature: Ability to add connection name #2332`
 * AlexFsmn `Disabled connection name input when connecting to a server. #2566`
 * SebastianPfliegel `Added more saveAsCsv options #2099`
 * ianychoi `Fixes a typo: Mimunum -> Minimum #1994`
-* AlexFsmn `Fixed bug where proper file extension wasn't appended to filename. #2151`
+* AlexFsmn `Fixed bug where proper file extension wasn't appended to the filename. #2151`
 * AlexFsmn `Added functionality for adding any file to import wizard #2329`
 * AlexFsmn `Fixed background issue when copying a chart to clipboard #2215`
 * AlexFsmn `Fixed problem where vertical charts didn't display labels correctly. #2263`
 * AlexFsmn `Fixed Initial values for charts to match visuals #2266`
 * AlexFsmn `Renamed chart option labels #2264`
-* AlexFsmn `Added feature for opening file after exporting to CSV/XLS/JSON & query files #2216`
+* AlexFsmn `Added feature for the opening file after exporting to CSV/XLS/JSON & query files #2216`
 * AlexFsmm `Get Connection String should copy to clipboard #2175`
-* lanceklinger `Fix for double clicking column handle in results table #1504`
+* lanceklinger `Fix for double-clicking column handle in results table #1504`
 * westerncj for `Removed duplicate contribution from README.md (#753)`
 * ntovas for `Fix for duplicate extensions shown in "Save File" dialog. (#779)`
 * SebastianPfliegel for `Add cursor snippet (#475)`
-* mikaoelitiana for fix: `revert README and CONTRIBUTING after last VSCode merge (#574)`
+* mikaoelitiana for the fix: `revert README and CONTRIBUTING after last VSCode merge (#574)`
 * alextercete for `Reinstate menu item to install from VSIX (#682)`
 * alextercete for `Fix "No extension gallery service configured" error (#427)`
 * mwiedemeyer for `Fix #58: Default sort order for DB size widget (#111)`
 * AlexTroshkin for `Show disconnect in context menu only when connectionProfile connected (#150)`
 * AlexTroshkin for `Fix #138: Invalid syntax color highlighting (identity not highlighting) (#140))`
-* stebet for `Fix #153: Fixing sql snippets that failed on a DB with case-sensitive collation. (#152)`
+* stebet for `Fix #153: Fixing sql snippets that failed on a DB with a case-sensitive collation. (#152)`
 * SebastianPfliegel `Remove sqlExtensionHelp (#312)`
 * olljanat for `Implemented npm version check (#314)`
 * Adam Machanic for helping with the `whoisactive` extension
@@ -92,7 +96,7 @@ We would like to thank all our users who raised issues, and in particular the fo
   * Italian: Aldo Donetti, Alessandro Alpi, Andrea Dottor, Bruni Luca, Gianluca Hotz, Luca Nardi, Luigi Bruno, Marco Dal Pino, Mirco Vanini, Pasquale Ceglie, Riccardo Cappello, Sergio Govoni, Stefano Demiliani
   * German: Anna Henke-Gunvaldson, Ben Weissman, David Ullmer, J.M. ., Kai Modo, Konstantin Staschill, Kostja Klein, Lennart Trunk, Markus Ehrenmüller-Jensen, Mascha Kroenlein, Matthias Knoll, Mourad Louha, Thomas Hütter, Wolfgang Straßer
   * Spanish: Alberto Poblacion, Andy Gonzalez, Carlos Mendible, Christian Araujo, Daniel D, Eickhel Mendoza, Ernesto Cardenas, Ivan Toledo Ivanovic, Fran Diaz, JESUS GIL, Jorge Serrano Pérez, José Saturnino Pimentel Juárez, Mauricio Hidalgo, Pablo Iglesias, Rikhardo Estrada Rdez, Thierry DEMAN, YOLANDA CUESTA ALTIERI
-  * Japanese: Fujio Kojima, Kazushi KAMEGAWA, Masayoshi Yamada, Masayuki Ozawa , Seiji Momoto, Takashi Kanai, Takayoshi Tanaka, Yoshihisa Ozaki, 庄垣内治
+  * Japanese: Fujio Kojima, Kazushi KAMEGAWA, Masayoshi Yamada, Masayuki Ozawa, Seiji Momoto, Takashi Kanai, Takayoshi Tanaka, Yoshihisa Ozaki, 庄垣内治
   * Chinese (simplified): DAN YE, Joel Yang, Lynne Dong, Ryan（Yu） Zhang, Sheng Jiang, Wei Zhang, Zhiliang Xu
   * Chinese  (Traditional): Bruce Chen, Chiayi Yen, Kevin Yang,  Winnie Lin, 保哥 Will,  謝政廷
   * Korean: Do-Kyun Kim, Evelyn Kim, Helen Jung, Hong Jmee, jeongwoo choi, Jun Hyoung Lee, Jungsun Kim정선, Justin Yoo, Kavrith mucha, Kiwoong Youm, MinGyu Ju,  MVP_JUNO BEA, Sejun Kim, SOONMAN KWON, sung man ko, Yeongrak Choi, younggun kim, Youngjae Kim, 소영 이
@@ -100,7 +104,7 @@ We would like to thank all our users who raised issues, and in particular the fo
   * Portuguese Brazil: Daniel de Sousa, Diogo Duarte, Douglas Correa, Douglas Eccker, José Emanuel Mendes, Marcelo Fernandes, Marcondes Alexandre, Roberto Fonseca, Rodrigo Crespi
 
 
-And of course we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/ThirdPartyNotices.txt)
+And of course, we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/ThirdPartyNotices.txt)
 
 ## License
 

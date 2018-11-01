@@ -255,3 +255,10 @@ export function attachButtonStyler(widget: IThemable, themeService: IThemeServic
 		buttonFocusOutline: (style && style.buttonFocusOutline) || sqlcolors.buttonFocusOutline
 	}, widget);
 }
+
+export function attachCheckboxStyler(widget: IThemable, themeService: IThemeService, style?: { disabledCheckboxForeground?: cr.ColorIdentifier })
+	: IDisposable {
+	return attachStyler(themeService, {
+		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || sqlcolors.disabledCheckboxForeground
+	}, widget);
+}

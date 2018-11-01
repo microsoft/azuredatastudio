@@ -39,6 +39,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -124,16 +125,17 @@ export class InsightsDialogView extends Modal {
 	constructor(
 		private _model: IInsightsDialogModel,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IListService private _listService: IListService,
 		@IPartService partService: IPartService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ICommandService private _commandService: ICommandService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, clipboardService, themeService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 

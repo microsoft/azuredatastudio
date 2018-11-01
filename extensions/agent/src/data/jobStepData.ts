@@ -46,11 +46,13 @@ export class JobStepData implements IAgentDialogData {
 	public retryInterval: number;
 	public proxyName: string;
 	private jobModel: JobData;
+	private viaJobDialog: boolean;
 
-	constructor(ownerUri:string, jobModel?: JobData) {
+	constructor(ownerUri:string, jobModel?: JobData, viaJobDialog: boolean = false) {
 		this.ownerUri = ownerUri;
 		this.jobName = jobModel.name;
 		this.jobModel = jobModel;
+		this.viaJobDialog = viaJobDialog;
 	}
 
 	public async initialize() {
@@ -59,18 +61,16 @@ export class JobStepData implements IAgentDialogData {
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
 		let result: any;
-		if (this.dialogMode === AgentDialogMode.CREATE) {
-			if (this.jobModel && this.jobModel.dialogMode === AgentDialogMode.CREATE) {
-				// create job -> create step
+		// if it's called via the job dialog, add it to the
+		// job model
+		if (this.viaJobDialog) {
+			if (this.jobModel) {
 				Promise.resolve(this);
 				return;
-			} else {
-				// edit job -> create step
-				result = await agentService.createJobStep(this.ownerUri, JobStepData.convertToAgentJobStepInfo(this));
 			}
-		} else if (this.jobModel && this.jobModel.dialogMode === AgentDialogMode.EDIT) {
-			// edit job -> edit step
-			result = await agentService.updateJobStep(this.ownerUri, this.stepName, JobStepData.convertToAgentJobStepInfo(this));
+		} else {
+			// has to be a create step
+			result = await agentService.createJobStep(this.ownerUri, JobStepData.convertToAgentJobStepInfo(this));
 		}
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(

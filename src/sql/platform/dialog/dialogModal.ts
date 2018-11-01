@@ -25,6 +25,7 @@ import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DialogMessage, MessageLevel } from '../../workbench/api/common/sqlExtHostTypes';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -40,12 +41,13 @@ export class DialogModal extends Modal {
 		name: string,
 		options: IModalOptions,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(_dialog.title, name, partService, telemetryService, contextKeyService, options);
+		super(_dialog.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
 	}
 
 	public layout(): void {
@@ -53,7 +55,7 @@ export class DialogModal extends Modal {
 	}
 
 	public render() {
-		super.render(true);
+		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
 		if (this.backButton) {
@@ -78,7 +80,7 @@ export class DialogModal extends Modal {
 
 		let messageChangeHandler = (message: DialogMessage) => {
 			if (message && message.text) {
-				this.setError(message.text, message.level);
+				this.setError(message.text, message.level, message.description);
 			} else {
 				this.setError('');
 			}

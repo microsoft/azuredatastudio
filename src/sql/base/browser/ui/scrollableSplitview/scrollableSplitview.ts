@@ -17,11 +17,13 @@ import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElemen
 import { HeightMap, IView as HeightIView, IViewItem as HeightIViewItem } from './heightMap';
 import { ArrayIterator } from 'vs/base/common/iterator';
 import { mixin } from 'vs/base/common/objects';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 export { Orientation } from 'vs/base/browser/ui/sash/sash';
 
 export interface ISplitViewOptions {
 	orientation?: Orientation; // default Orientation.VERTICAL
 	enableResizing?: boolean;
+	verticalScrollbarVisibility?: ScrollbarVisibility;
 }
 
 const defaultOptions: ISplitViewOptions = {
@@ -127,7 +129,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		this.options = mixin(options, defaultOptions, false);
 
 		this.el = document.createElement('div');
-		this.scrollable = new ScrollableElement(this.el, {});
+		this.scrollable = new ScrollableElement(this.el, { vertical: options.verticalScrollbarVisibility });
 		debounceEvent(this.scrollable.onScroll, (l, e) => e, 25)(e => {
 			this.render(e.scrollTop, e.height);
 			this.relayout();

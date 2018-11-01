@@ -6,7 +6,7 @@
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Dimension, EventType, $, addDisposableListener } from 'vs/base/browser/dom';
-import { $ as quickBuilder } from 'vs/base/browser/builder';
+import { $ as qb } from 'vs/base/browser/builder';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -63,7 +63,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	private tabHistory: string[] = [];
 
-	constructor(private container: HTMLElement, private options: IPanelOptions = defaultOptions) {
+	constructor(container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
 		this.parent = $('.tabbedPanel');
 		container.appendChild(this.parent);
@@ -85,6 +85,13 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.body.setAttribute('role', 'tabpanel');
 		this.body.setAttribute('tabindex', '0');
 		this.parent.appendChild(this.body);
+	}
+
+	public dispose() {
+		this.header.remove();
+		this.tabList.remove();
+		this.body.remove();
+		this.parent.remove();
 	}
 
 	public contains(tab: IPanelTab): boolean {
@@ -146,18 +153,18 @@ export class TabbedPanel extends Disposable implements IThemable {
 		}
 
 		if (this._shownTab) {
-			this._tabMap.get(this._shownTab).label.classList.remove('active');
-			this._tabMap.get(this._shownTab).header.classList.remove('active');
+			qb(this._tabMap.get(this._shownTab).label).removeClass('active');
+			qb(this._tabMap.get(this._shownTab).header).removeClass('active');
 			this._tabMap.get(this._shownTab).header.setAttribute('aria-selected', 'false');
 		}
 
 		this._shownTab = id;
 		this.tabHistory.push(id);
-		quickBuilder(this.body).empty();
+		qb(this.body).empty();
 		let tab = this._tabMap.get(this._shownTab);
 		this.body.setAttribute('aria-labelledby', tab.identifier);
-		tab.label.classList.add('active');
-		tab.header.classList.add('active');
+		qb(tab.label).addClass('active');
+		qb(tab.header).addClass('active');
 		tab.header.setAttribute('aria-selected', 'true');
 		tab.view.render(this.body);
 		this._onTabChange.fire(id);
@@ -168,11 +175,11 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	public removeTab(tab: PanelTabIdentifier) {
 		let actualTab = this._tabMap.get(tab);
-		quickBuilder(actualTab.header).destroy();
+		qb(actualTab.header).destroy();
 		if (actualTab.view.remove) {
 			actualTab.view.remove();
 		}
-		quickBuilder(this._tabMap.get(tab).header).destroy();
+		qb(this._tabMap.get(tab).header).destroy();
 		this._tabMap.delete(tab);
 		if (this._shownTab === tab) {
 			this._shownTab = undefined;
