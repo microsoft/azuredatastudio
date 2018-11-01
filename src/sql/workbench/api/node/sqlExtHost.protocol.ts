@@ -545,6 +545,7 @@ export const SqlMainContext = {
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
+	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook')
 };
 
 export const SqlExtHostContext = {
@@ -563,7 +564,8 @@ export const SqlExtHostContext = {
 	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
-	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
+	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
+	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -703,4 +705,21 @@ export interface ExtHostQueryEditorShape {
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
+}
+
+export interface ExtHostNotebookShape {
+
+	/**
+	 * Looks up a notebook manager for a given notebook URI
+	 * @param {vscode.Uri} notebookUri
+	 * @returns {Thenable<string>} handle of the manager to be used when sending
+	 */
+	getNotebookManager(notebookUri: vscode.Uri): Thenable<number>;
+	handleNotebookClosed(notebookUri: vscode.Uri): void;
+
+}
+
+export interface MainThreadNotebookShape extends IDisposable {
+	$registerNotebookProvider(providerId: string, handle: number): void;
+	$unregisterNotebookProvider(handle: number): void;
 }

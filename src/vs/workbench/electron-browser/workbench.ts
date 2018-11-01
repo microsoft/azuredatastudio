@@ -172,6 +172,8 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
+import { INotebookService } from 'sql/services/notebook/notebookService';
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -573,11 +575,14 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IInsightsDialogService, this.instantiationService.createInstance(InsightsDialogService));
 		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
 		serviceCollection.set(IAccountManagementService, accountManagementService);
+		let notebookService = this.instantiationService.createInstance(NotebookService);
+		serviceCollection.set(INotebookService, notebookService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
+		this._register(toDisposable(() => notebookService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));
 	}
 
