@@ -29,7 +29,7 @@ export class DacFxExportWizard extends DacFxWizard {
 		this.model = <DacFxDataModel>{};
 		let pages: Map<number, DacFxPage> = new Map<number, DacFxPage>();
 
-		let profile = <sqlops.IConnectionProfile>p.connectionProfile;
+		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : null;
 		if (profile) {
 			this.model.serverId = profile.id;
 			this.model.databaseName = profile.databaseName;
@@ -92,7 +92,7 @@ export class DacFxExportWizard extends DacFxWizard {
 		let packageFileName = this.model.filePath;
 		let service = await DacFxExportWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
-		let result = await service.exportBacpac(connectionstring, packageFileName, ownerUri, 0);
+		let result = await service.exportBacpac(connectionstring, packageFileName, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

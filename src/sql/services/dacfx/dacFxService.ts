@@ -19,6 +19,7 @@ export interface IDacFxService {
 
 	registerProvider(providerId: string, provider: sqlops.DacFxServicesProvider): void;
 	exportBacpac(connectionString: string, packageFileName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
+	importBacpac(connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 }
 
 export class DacFxService implements IDacFxService {
@@ -37,6 +38,12 @@ export class DacFxService implements IDacFxService {
 	exportBacpac(connectionString: string, packageFileName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> {
 		return this._runAction(connectionString, (runner) => {
 			return runner.exportBacpac(connectionString, packageFileName, ownerUri, taskExecutionMode);
+		});
+	}
+
+	importBacpac(connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> {
+		return this._runAction(connectionString, (runner) => {
+			return runner.importBacpac(connectionString, packageFilePath, targetDatabaseName, ownerUri, taskExecutionMode);
 		});
 	}
 

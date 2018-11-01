@@ -65,9 +65,24 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let importBacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode:sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
+			let params: contracts.DacFxImportParams = { connectionString: connectionString, packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.DacFxImportRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					console.error("error sending request");
+					client.logFailedRequest(contracts.AgentJobsRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return sqlops.dataprotocol.registerDacFxServicesProvider({
 			providerId: client.providerId,
-			exportBacpac
+			exportBacpac,
+			importBacpac
 		});
 	}
 }

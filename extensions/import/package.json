@@ -42,6 +42,15 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "dacFxImport.start",
+        "title": "Import bacpac",
+        "category": "Import Data-tier Application",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
       }
     ],
     "keybindings": [
