@@ -406,6 +406,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider>{
 			exportBacpac(connectionstring: string, packageFileName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> {
 				return self._proxy.$exportBacpac(handle, connectionstring, packageFileName, ownerUri, taskExecutionMode);
+			},
+			importBacpac(connectionstring: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> {
+				return self._proxy.$importBacpac(handle, connectionstring, packageFilePath, targetDatabaseName, ownerUri, taskExecutionMode);
 			}
 		});
 

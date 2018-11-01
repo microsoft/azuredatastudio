@@ -10,32 +10,30 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
-import { DacFxWizard } from '../dacFxWizard';
+import { DacFxImportWizard } from '../dacFxImportWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ExportConfigPage extends DacFxPage {
+export class ImportConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: DacFxWizard;
+	protected readonly instance: DacFxImportWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
 	private serverDropdown: sqlops.DropDownComponent;
-	private databaseDropdown: sqlops.DropDownComponent;
+	private databaseTextBox: sqlops.InputBoxComponent;
 	private form: sqlops.FormContainer;
 	private fileTextBox: sqlops.InputBoxComponent;
 	private fileButton: sqlops.ButtonComponent;
 
-	private databaseLoader: sqlops.LoadingComponent;
-
-	public constructor(instance: DacFxWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DacFxImportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
 	async start(): Promise<boolean> {
-		let databaseComponent = await this.createDatabaseDropdown();
+		let databaseComponent = await this.createDatabaseTextBox();
 		let serverComponent = await this.createServerDropdown();
 		let fileBrowserComponent = await this.createFileBrowser();
 
@@ -54,8 +52,7 @@ export class ExportConfigPage extends DacFxPage {
 
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
-		let r2 = await this.populateDatabaseDropdown();
-		return r1 && r2;
+		return r1;
 	}
 
 	async onPageLeave(): Promise<boolean> {
@@ -68,9 +65,6 @@ export class ExportConfigPage extends DacFxPage {
 
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
-			if (this.databaseLoader.loading) {
-				return false;
-			}
 			return true;
 		});
 	}
@@ -84,12 +78,11 @@ export class ExportConfigPage extends DacFxPage {
 		this.serverDropdown.onValueChanged(async () => {
 			this.model.serverConnection = (this.serverDropdown.value as ConnectionDropdownValue).connection;
 			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
-			await this.populateDatabaseDropdown();
 		});
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxExport.serverDropdownTitle', 'Server the database is in')
+			title: localize('dacFxExport.serverDropdownTitle', 'Server')
 		};
 	}
 
@@ -152,67 +145,19 @@ export class ExportConfigPage extends DacFxPage {
 		return true;
 	}
 
-	private async createDatabaseDropdown(): Promise<sqlops.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+	private async createDatabaseTextBox(): Promise<sqlops.FormComponent> {
+		this.databaseTextBox = this.view.modelBuilder.inputBox().withProperties({
 			required: true
 		}).component();
 
-		// Handle database changes
-		this.databaseDropdown.onValueChanged(async () => {
-			this.model.databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
-			this.fileTextBox.value = this.generateFilePath();
-			this.model.filePath = this.fileTextBox.value;
+		this.databaseTextBox.onTextChanged(async () => {
+			this.model.databaseName = this.databaseTextBox.value;
 		});
-
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 
 		return {
-			component: this.databaseLoader,
-			title: localize('dacFxExport.databaseDropdownTitle', 'Database to export')
+			component: this.databaseTextBox,
+			title: localize('dacFxImport.databaseNameTextBox', 'New database name')
 		};
-	}
-
-	private async populateDatabaseDropdown(): Promise<boolean> {
-		this.databaseLoader.loading = true;
-		this.databaseDropdown.updateProperties({ values: [] });
-
-		if (!this.model.serverConnection) {
-			this.databaseLoader.loading = false;
-			return false;
-		}
-
-		let idx = -1;
-		let count = -1;
-		let values = (await sqlops.connection.listDatabases(this.model.serverConnection.connectionId)).map(db => {
-			count++;
-			if (this.model.databaseName && db === this.model.databaseName) {
-				idx = count;
-			}
-
-			return {
-				displayName: db,
-				name: db
-			};
-		});
-
-		if (idx >= 0) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
-		} else {
-			delete this.model.databaseName;
-		}
-
-		this.model.databaseName = values[0].name;
-		this.model.filePath = this.generateFilePath();
-		this.fileTextBox.value = this.model.filePath;
-
-		this.databaseDropdown.updateProperties({
-			values: values
-		});
-		this.databaseLoader.loading = false;
-
-		return true;
 	}
 
 	private async createFileBrowser(): Promise<sqlops.FormComponent> {
@@ -220,18 +165,17 @@ export class ExportConfigPage extends DacFxPage {
 			required: true
 		}).component();
 
-		// default filepath
-		this.fileTextBox.value = this.generateFilePath();
-		this.model.filePath = this.fileTextBox.value;
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('dacFxExport.browseFiles', '...'),
+			label: localize('dacFxImport.browseFiles', '...'),
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
-			let fileUri = await vscode.window.showSaveDialog(
+			let fileUris = await vscode.window.showOpenDialog(
 				{
-					defaultUri: vscode.Uri.file(this.fileTextBox.value),
-					saveLabel: localize('dacfxExport.saveFile', 'Save'),
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					openLabel: localize('dacFxImport.openFile', 'Open'),
 					filters: {
 						'bacpac Files': ['bacpac'],
 						'All Files': ['*']
@@ -239,24 +183,24 @@ export class ExportConfigPage extends DacFxPage {
 				}
 			);
 
-			if (!fileUri) {
+			if (!fileUris || fileUris.length === 0) {
 				return;
 			}
 
+			let fileUri = fileUris[0];
 			this.fileTextBox.value = fileUri.fsPath;
+			this.model.filePath = fileUri.fsPath;
+		});
+
+		this.fileTextBox.onTextChanged(async () => {
+			this.model.filePath = this.fileTextBox.value;
 		});
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExport.fileTextboxTitle', 'Location to save bacpac'),
+			title: localize('dacFxImport.fileTextboxTitle', 'Location of bacpac'),
 			actions: [this.fileButton]
 		};
-	}
-
-	private generateFilePath(): string {
-		let now = new Date();
-		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		return path.join(os.homedir(), this.model.databaseName + '-' + datetime + '.bacpac');
 	}
 }
 

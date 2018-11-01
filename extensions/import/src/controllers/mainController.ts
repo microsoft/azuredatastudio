@@ -14,6 +14,7 @@ import { ServiceClient } from '../services/serviceClient';
 import { ApiType, managerInstance } from '../services/serviceApiManager';
 import { FlatFileProvider } from '../services/contracts';
 import { DacFxExportWizard } from '../wizard/dacfxExportWizard';
+import { DacFxImportWizard } from '../wizard/dacfxImportWizard';
 
 /**
  * The main controller class that initializes the extension
@@ -37,6 +38,7 @@ export default class MainController extends ControllerBase {
 		});
 
 		this.initializeDacFxExport();
+		this.initializeDacFxImport();
 		return Promise.resolve(true);
 	}
 
@@ -46,5 +48,9 @@ export default class MainController extends ControllerBase {
 
 	private initializeDacFxExport() {
 		sqlops.tasks.registerTask('dacFxExport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DacFxExportWizard().start(profile, args));
+	}
+
+	private initializeDacFxImport() {
+		sqlops.tasks.registerTask('dacFxImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DacFxImportWizard().start(profile, args));
 	}
 }
