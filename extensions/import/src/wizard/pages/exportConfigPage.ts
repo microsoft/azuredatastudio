@@ -10,15 +10,15 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
-import { DacFxExportWizard } from '../dacFxExportWizard';
-import { DacFxExportPage } from '../api/dacFxExportPage';
+import { DacFxWizard } from '../dacFxWizard';
+import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ExportConfigPage extends DacFxExportPage {
+export class ExportConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: DacFxExportWizard;
+	protected readonly instance: DacFxWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -30,7 +30,7 @@ export class ExportConfigPage extends DacFxExportPage {
 
 	private databaseLoader: sqlops.LoadingComponent;
 
-	public constructor(instance: DacFxExportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DacFxWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 

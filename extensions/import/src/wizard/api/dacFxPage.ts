@@ -6,16 +6,16 @@
 
 import { DacFxDataModel } from './models';
 import * as sqlops from 'sqlops';
-import { DacFxExportWizard } from '../dacfxExportWizard';
+import { DacFxWizard } from '../dacfxWizard';
 
-export abstract class DacFxExportPage {
+export abstract class DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: DacFxExportWizard;
+	protected readonly instance: DacFxWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
-	protected constructor(instance: DacFxExportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	protected constructor(instance: DacFxWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		this.instance = instance;
 		this.wizardPage = wizardPage;
 		this.model = model;

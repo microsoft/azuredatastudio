@@ -9,11 +9,11 @@ import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
 import { DacFxExportWizard } from '../dacFxExportWizard';
 import { ExportConfigPage } from './exportConfigPage';
-import { DacFxExportPage } from '../api/dacFxExportPage';
+import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ExportSummaryPage extends DacFxExportPage {
+export class ExportSummaryPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DacFxExportWizard;
