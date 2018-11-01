@@ -54,10 +54,8 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		uri = getNotebookEditorUri(input);
 		if(uri){
 			//TODO: We need to pass in notebook data either through notebook input or notebook service
-			let notebookData: string = fs.readFileSync(uri.fsPath);
 			let fileName: string = input? input.getName() : 'untitled';
-			let filePath: string = uri.fsPath;
-			let notebookInputModel = new NotebookInputModel(filePath, undefined, undefined);
+			let notebookInputModel = new NotebookInputModel(uri, undefined, undefined);
 			//TO DO: Second paramter has to be the content.
 			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 			return notebookInput;

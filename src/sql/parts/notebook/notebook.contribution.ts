@@ -11,9 +11,14 @@ import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
+import { Schemas } from 'vs/base/common/network';
 
 import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
+import URI from 'vs/base/common/uri';
+
+
+let counter = 0;
 
 /**
  * todo: Will remove this code.
@@ -34,7 +39,8 @@ export class OpenNotebookAction extends Action {
 
 	public run(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
-			let model = new NotebookInputModel('modelViewId', undefined, undefined);
+			let untitledUri = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter++}`});
+			let model = new NotebookInputModel(untitledUri, undefined, undefined);
 			let input = new NotebookInput('modelViewId', model);
 			this._editorService.openEditor(input, { pinned: true });
 		});

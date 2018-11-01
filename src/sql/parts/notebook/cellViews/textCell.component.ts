@@ -7,11 +7,12 @@ import 'vs/css!./textCell';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { CellView, ICellModel } from 'sql/parts/notebook/cellViews/interfaces';
+import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
