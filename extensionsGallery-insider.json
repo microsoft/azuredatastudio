@@ -856,6 +856,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "26",
+					"extensionName": "hcq--high-color-queries-",
+					"displayName": "HCQ (High Color Queries)",
+					"shortDescription": "Theme Pair of Dark and Light Themes for TSQL in Azure Data Studio. Dark theme uses bright colors and light theme is SSMS-esque.",
+					"publisher": {
+						"displayName": "Drew Skwiers-Koballa",
+						"publisherId": "drewsk",
+						"publisherName": "drewsk"
+					},
+					"versions": [
+						{
+							"version": "0.0.4",
+							"lastUpdated": "10/28/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/dzsquared/high-color-queries/releases/tag/0.0.4"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/dzsquared/high-color-queries/master/images/hcq_icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/dzsquared/high-color-queries/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/dzsquared/high-color-queries/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/dzsquared/high-color-queries/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/dzsquared/high-color-queries"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -864,7 +921,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 15
+							"count": 16
 						}
 					]
 				}
