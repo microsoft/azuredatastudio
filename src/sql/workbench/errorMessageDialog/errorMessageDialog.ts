@@ -42,13 +42,13 @@ export class ErrorMessageDialog extends Modal {
 	public onOk: Event<void> = this._onOk.event;
 
 	constructor(
-		@IThemeService private _themeService: IThemeService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IThemeService themeService: IThemeService,
+		@IClipboardService clipboardService: IClipboardService,
 		@IPartService partService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', 'OK');
 		this._closeLabel = localize('errorMessageDialog.close', 'Close');
 	}

@@ -36,8 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { tableBackground, cellBackground, tableHoverBackground, jobsHeadingBackground, cellBorderColor } from 'sql/common/theme/colors';
-import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
+import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -79,7 +78,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
@@ -87,7 +85,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	public jobs: sqlops.AgentJobInfo[];
-	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobSteps: { [jobId: string]: sqlops.AgentJobStepInfo[]; } = Object.create(null);
+	private jobAlerts: { [jobId: string]: sqlops.AgentAlertInfo[]; } = Object.create(null);
+	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
@@ -107,7 +108,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
@@ -579,10 +579,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		jobs.forEach(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-				if (result && result.jobs) {
-					self.jobHistories[job.jobId] = result.jobs;
-					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then((result) => {
+				if (result) {
+					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
+					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
+					self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
+					self.jobHistories[job.jobId] = result.histories ? result.histories : [];
+					self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
+					self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
 					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
 					let previousRuns: sqlops.AgentJobHistoryInfo[];
 					if (jobHistories.length >= 5) {
@@ -592,7 +596,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					}
 					self.createJobChart(job.jobId, previousRuns);
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let lastJobHistory = jobHistories[result.jobs.length - 1];
+						let lastJobHistory = jobHistories[jobHistories.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 						let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
@@ -909,51 +913,27 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 				jobId = data.getItem(rowIndex - 1).jobId;
 			}
 		}
+
 		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});
-		let jobHistories = this.jobHistories[jobId];
-		let steps: sqlops.AgentJobStep[] = undefined;
-		let schedules: sqlops.AgentJobScheduleInfo[] = undefined;
-		let alerts: sqlops.AgentAlertInfo[] = undefined;
-		if (jobHistories && jobHistories[jobHistories.length-1]) {
-			// add steps
-			steps = jobHistories[jobHistories.length-1].steps;
-			if (steps && steps.length > 0) {
-				if (!job[0].JobSteps) {
-					job[0].JobSteps = [];
-				}
-				if (job[0].JobSteps.length !== steps.length) {
-					job[0].JobSteps = [];
-					steps.forEach(step => {
-						job[0].JobSteps.push(step.stepDetails);
-					});
-				}
-			}
-			// add schedules
-			schedules = jobHistories[jobHistories.length-1].schedules;
-			if (schedules && schedules.length > 0) {
-				if (!job[0].JobSchedules) {
-					job[0].JobSchedules = [];
-				}
-				if (job[0].JobSchedules.length !== schedules.length) {
-					job[0].JobSchedules = [];
-					schedules.forEach(schedule => {
-						job[0].JobSchedules.push(schedule);
-					});
-				}
-			}
-			// add alerts
-			alerts = jobHistories[jobHistories.length-1].alerts;
-			if (!job[0].Alerts) {
-				job[0].Alerts = [];
-			}
-			if (job[0].Alerts.length !== alerts.length) {
-				job[0].Alerts = [];
-				alerts.forEach(alert => {
-					job[0].Alerts.push(alert);
-				});
-			}
+
+		// add steps
+		if (this.jobSteps && this.jobSteps[jobId]) {
+			let steps = this.jobSteps[jobId];
+			job[0].JobSteps = steps;
+		}
+
+		// add schedules
+		if (this.jobSchedules && this.jobSchedules[jobId]) {
+			let schedules = this.jobSchedules[jobId];
+			job[0].JobSchedules = schedules;
+		}
+
+		// add alerts
+		if (this.jobAlerts && this.jobAlerts[jobId]) {
+			let alerts = this.jobAlerts[jobId];
+			job[0].Alerts = alerts;
 		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}

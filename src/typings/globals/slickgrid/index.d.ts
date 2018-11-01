@@ -1208,6 +1208,7 @@ declare namespace Slick {
 		public onSelectedRowsChanged: Slick.Event<OnSelectedRowsChangedEventArgs<T>>;
 		public onCellCssStylesChanged: Slick.Event<OnCellCssStylesChangedEventArgs<T>>;
 		public onViewportChanged: Slick.Event<OnViewportChangedEventArgs<T>>;
+		public onRendered: Slick.Event<OnRenderedEventArgs<T>>;
 		// #endregion Events
 
 		// #region Plugins
@@ -1414,6 +1415,11 @@ declare namespace Slick {
 
 	export interface OnViewportChangedEventArgs<T extends SlickData> extends GridEventArgs<T> {
 
+	}
+
+	export interface OnRenderedEventArgs<T extends SlickData> extends GridEventArgs<T>{
+		startRow: number;
+		endRow: number;
 	}
 
 	export interface SortColumn<T extends SlickData> {

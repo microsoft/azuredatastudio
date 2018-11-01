@@ -40,6 +40,7 @@
 		"Microsoft.import",
 		"Microsoft.profiler",
 		"Microsoft.server-report",
+		"Microsoft.sql-vnext",
 		"Microsoft.whoisactive",
 		"Redgate.sql-search"
 	],

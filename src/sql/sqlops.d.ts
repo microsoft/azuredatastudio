@@ -1268,6 +1268,16 @@ declare module 'sqlops' {
 		Last = 16
 	}
 
+	export enum JobExecutionStatus {
+		Executing = 1,
+		WaitingForWorkerThread = 2,
+		BetweenRetries = 3,
+		Idle = 4,
+		Suspended = 5,
+		WaitingForStepToFinish = 6,
+		PerformingCompletionAction = 7
+	}
+
 	export interface AgentJobInfo {
 		name: string;
 		owner: string;
@@ -1373,8 +1383,6 @@ declare module 'sqlops' {
 		retriesAttempted: string;
 		server: string;
 		steps: AgentJobStep[];
-		schedules: AgentJobScheduleInfo[];
-		alerts: AgentAlertInfo[];
 	}
 
 	export interface AgentProxyInfo {
@@ -1443,7 +1451,10 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobHistoryResult extends ResultStatus {
-		jobs: AgentJobHistoryInfo[];
+		histories: AgentJobHistoryInfo[];
+		steps: AgentJobStepInfo[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface CreateAgentJobResult extends ResultStatus {
@@ -1531,7 +1542,7 @@ declare module 'sqlops' {
 	export interface AgentServicesProvider extends DataProvider {
 		// Job management methods
 		getJobs(ownerUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(ownerUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
+		getJobHistory(ownerUri: string, jobId: string, jobName: string): Thenable<AgentJobHistoryResult>;
 		jobAction(ownerUri: string, jobName: string, action: string): Thenable<ResultStatus>;
 		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;

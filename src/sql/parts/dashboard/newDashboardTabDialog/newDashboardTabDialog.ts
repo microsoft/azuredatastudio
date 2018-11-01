@@ -32,6 +32,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 class ExtensionListDelegate implements IVirtualDelegate<IDashboardUITab> {
 
@@ -119,19 +120,22 @@ export class NewDashboardTabDialog extends Modal {
 
 	constructor(
 		@IPartService partService: IPartService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IListService private _listService: IListService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
 		super(
 			localize('newDashboardTab.openDashboardExtensions', 'Open dashboard extensions'),
 			TelemetryKeys.AddNewDashboardTab,
 			partService,
 			telemetryService,
+			clipboardService,
+			themeService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
