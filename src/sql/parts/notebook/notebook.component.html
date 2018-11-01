@@ -7,11 +7,11 @@
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div #toolbar class="editor-toolbar" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center">
 		<div style="flex: 1 1 auto">
-			PlaceHolder for Toolbar
+			<notebook-toolbar></notebook-toolbar>
 		</div>
 	</div>
 	<div style="flex: 1 1 auto; position: relative">
-		<div class="notebook-cell" *ngFor="let cell of cells" (click)="selectCell(cell)" [class.active]="cell.active" >
+		<div class="notebook-cell" *ngFor="let cell of cells" (click)="selectCell(cell)" [class.active]="cell.active" (keydown)="onKeyDown($event)">
 			<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell">
 			</code-cell-component>
 			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell">
