@@ -1,15 +1,19 @@
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnDestroy } from '@angular/core';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+'use strict';
 
-export abstract class CellView extends AngularDisposable implements OnDestroy {
-	constructor() {
-		super();
-	}
+export namespace nbversion {
+	/**
+	 * The major version of the notebook format.
+	 */
+	export const MAJOR_VERSION: number = 4;
 
-	public abstract layout(): void;
+	/**
+	 * The minor version of the notebook format.
+	 */
+	export const MINOR_VERSION: number = 2;
 }

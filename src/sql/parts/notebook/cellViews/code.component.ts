@@ -11,7 +11,6 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
-import { ICellModel } from 'sql/parts/notebook/cellViews/interfaces';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -26,6 +25,7 @@ import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const CODE_SELECTOR: string = 'code-component';
 

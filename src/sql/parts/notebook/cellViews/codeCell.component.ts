@@ -7,10 +7,11 @@ import 'vs/css!./codeCell';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { CellView, ICellModel } from 'sql/parts/notebook/cellViews/interfaces';
+import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 
 export const CODE_SELECTOR: string = 'code-cell-component';

@@ -16,6 +16,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { NotebookModule } from 'sql/parts/notebook/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/parts/notebook/notebook.component';
+import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 
 export class NotebookEditor extends BaseEditor {
 
@@ -83,12 +84,16 @@ export class NotebookEditor extends BaseEditor {
 	private bootstrapAngular(input: NotebookInput): void {
 		// Get the bootstrap params and perform the bootstrap
 		input.hasBootstrapped = true;
+		let params: INotebookParams = {
+			notebookUri: input.notebookUri,
+			providerId: input.providerId ? input.providerId : DEFAULT_NOTEBOOK_PROVIDER
+		};
 		bootstrapAngular(this.instantiationService,
 			NotebookModule,
 			this._notebookContainer,
 			NOTEBOOK_SELECTOR,
-			undefined,
-			undefined
+			params,
+			input
 		);
 	}
 }
