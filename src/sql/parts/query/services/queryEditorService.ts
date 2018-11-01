@@ -152,12 +152,6 @@ export class QueryEditorService implements IQueryEditorService {
 		});
 	}
 
-	/**
-	 * Clears any QueryEditor data for the given URI held by this service
-	 */
-	public onQueryInputClosed(uri: string): void {
-	}
-
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
 		let oldResourceString: string = oldResource.toString();
 

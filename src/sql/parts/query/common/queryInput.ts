@@ -285,7 +285,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	public close(): void {
 		this._queryModelService.disposeQuery(this.uri);
-		this._queryEditorService.onQueryInputClosed(this.uri);
 		this._connectionManagementService.disconnectEditor(this, true);
 
 		this._sql.close();
