@@ -38,7 +38,8 @@ export interface IQueryManagementService {
 	onQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void;
 	onBatchStart(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
 	onBatchComplete(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	onResultSetComplete(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
+	onResultSetAvailable(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
+	onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
 	onMessage(message: sqlops.QueryExecuteMessageParams): void;
 
 	// Edit Data Callbacks
@@ -243,9 +244,15 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public onResultSetComplete(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
+	public onResultSetAvailable(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetComplete(resultSetInfo);
+			runner.handleResultSetAvailable(resultSetInfo);
+		});
+	}
+
+	public onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
+			runner.handleResultSetUpdated(resultSetInfo);
 		});
 	}
 

@@ -483,7 +483,8 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void;
 	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
 	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
+	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
+	$onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
 	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
 	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
 	$onObjectExplorerNodeExpanded(handle: number, message: sqlops.ObjectExplorerExpandInfo): void;

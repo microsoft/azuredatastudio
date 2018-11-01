@@ -43,6 +43,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { warn } from 'sql/base/common/log';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -169,7 +170,8 @@ export class GridPanel extends ViewletPanel {
 		this.reset();
 		this.queryRunnerDisposables = [];
 		this.runner = runner;
-		this.queryRunnerDisposables.push(this.runner.onResultSet(e => this.onResultSet(e)));
+		this.queryRunnerDisposables.push(this.runner.onResultSet(this.onResultSet, this));
+		this.queryRunnerDisposables.push(this.runner.onResultSetUpdate(this.updateResultSet, this));
 		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => {
 			if (this.state) {
 				this.state.tableStates = [];
@@ -192,6 +194,26 @@ export class GridPanel extends ViewletPanel {
 		if (this.state && this.state.scrollPosition) {
 			this.splitView.setScrollPosition(this.state.scrollPosition);
 		}
+	}
+
+	private updateResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
+
+		let resultsToUpdate: sqlops.ResultSetSummary[];
+		if (!Array.isArray(resultSet)) {
+			resultsToUpdate = [resultSet];
+		} else {
+			resultsToUpdate = resultSet;
+		}
+
+		for (let set of resultsToUpdate) {
+			let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
+			if (table) {
+				table.updateResult(set);
+			} else {
+				warn('Got result set update request for non-existant table');
+			}
+		}
+
 	}
 
 	private addResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
@@ -316,12 +338,16 @@ class GridTable<T> extends Disposable implements IView {
 
 	private scrolled = false;
 
+	public get resultSet(): sqlops.ResultSetSummary {
+		return this._resultSet;
+	}
+
 	// this handles if the row count is small, like 4-5 rows
 	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
 	constructor(
 		private runner: QueryRunner,
-		public readonly resultSet: sqlops.ResultSetSummary,
+		private _resultSet: sqlops.ResultSetSummary,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
@@ -528,6 +554,13 @@ class GridTable<T> extends Disposable implements IView {
 				let input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', content);
 				this.editorService.openEditor(input);
 			});
+		}
+	}
+
+	public updateResult(resultSet: sqlops.ResultSetSummary) {
+		this._resultSet = resultSet;
+		if (this.table) {
+
 		}
 	}
 
