@@ -1592,10 +1592,12 @@ declare module 'sqlops' {
 	export interface DacFxExportParams {
 		connectionString: string;
 		packageFileName: string;
+		owneruri: string;
+		taskExecutionMode: TaskExecutionMode;
 	}
 
 	export interface DacFxServicesProvider extends DataProvider {
-		exportBacpac(connectionstring: string, packageFileName: string): Thenable<DacFxExportResult>;
+		exportBacpac(connectionstring: string, packageFileName: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxExportResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

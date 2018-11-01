@@ -293,9 +293,17 @@ export namespace DeleteAgentJobScheduleRequest {
 // ------------------------------- < Agent Management > ------------------------------------
 
 // ------------------------------- < DacFx > ------------------------------------
+
+export enum TaskExecutionMode {
+	execute = 0,
+	script = 1,
+	executeAndScript = 2,
+}
 export interface DacFxExportParams {
 	connectionString: string;
 	packageFileName: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
 }
 
 export interface DacFxExportResponse {

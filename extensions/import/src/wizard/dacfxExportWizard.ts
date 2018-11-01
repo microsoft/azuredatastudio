@@ -9,11 +9,12 @@ import * as sqlops from 'sqlops';
 import { ExportConfigPage } from './pages/exportConfigPage';
 import { DacFxDataModel } from './api/models';
 import { ExportSummaryPage } from './pages/exportSummaryPage';
-import { DacFxExportPage } from './api/dacFxExportPage';
+import { DacFxPage } from './api/dacFxPage';
+import { DacFxWizard } from './dacfxWizard';
 
 const localize = nls.loadMessageBundle();
 
-export class DacFxExportWizard {
+export class DacFxExportWizard extends DacFxWizard {
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
 	private exportConfigPage: ExportConfigPage;
@@ -21,11 +22,12 @@ export class DacFxExportWizard {
 	private model: DacFxDataModel;
 
 	constructor() {
+		super();
 	}
 
 	public async start(p: any, ...args: any[]) {
 		this.model = <DacFxDataModel>{};
-		let pages: Map<number, DacFxExportPage> = new Map<number, DacFxExportPage>();
+		let pages: Map<number, DacFxPage> = new Map<number, DacFxPage>();
 
 		let profile = <sqlops.IConnectionProfile>p.connectionProfile;
 		if (profile) {
@@ -40,7 +42,7 @@ export class DacFxExportWizard {
 		}
 
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Export Data-tier Application Wizard');
-		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('dacFxExport.page1Name', 'Specify database'));
+		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('dacFxExport.page1Name', 'Export Settings'));
 		let page2 = sqlops.window.modelviewdialog.createWizardPage(localize('dacFxExport.page2Name', 'Summary'));
 
 		page1.registerContent(async (view) => {
@@ -89,13 +91,11 @@ export class DacFxExportWizard {
 		let connectionstring = await this.getConnectionString();
 		let packageFileName = this.model.filePath;
 		let service = await DacFxExportWizard.getService();
-		let result = await service.exportBacpac(connectionstring, packageFileName);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
+		let result = await service.exportBacpac(connectionstring, packageFileName, ownerUri, 0);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		} else {
-			vscode.window.showInformationMessage(
-				localize('alertData.saveInfoMessage', "Export {0} succeeded", packageFileName));
 		}
 	}
 
