@@ -20,3 +20,8 @@ steps:
     .\scripts\test.bat
     .\scripts\test-integration.bat
   displayName: 'Test'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: 'test/test-results.xml'    
+  condition: succeededOrFailed()

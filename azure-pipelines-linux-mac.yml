@@ -37,3 +37,8 @@ steps:
     ./scripts/test.sh --reporter dot
   displayName: 'Mac Scripts'
   condition: eq(variables['Agent.OS'], 'Darwin')
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: 'test/test-results.xml'    
+  condition: succeededOrFailed()
