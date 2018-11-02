@@ -12,7 +12,13 @@ set CODE=".build\electron\%NAMESHORT%"
 
 rem TFS Builds
 if not "%BUILD_BUILDID%" == "" (
-	%CODE% .\node_modules\mocha\bin\_mocha %*
+	if not "%ADD_REPORTER%" == "" (
+		%CODE% .\node_modules\mocha\bin\_mocha --reporter mocha-junit-reporter %*
+	)
+
+	if "%ADD_REPORTER%" == "" (
+		%CODE% .\node_modules\mocha\bin\_mocha %*
+	)
 )
 
 rem Otherwise
