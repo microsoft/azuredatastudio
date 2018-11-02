@@ -335,6 +335,8 @@ class GridTable<T> extends Disposable implements IView {
 
 	private columns: Slick.Column<T>[];
 
+	private rowNumberColumn: RowNumberColumn<T>;
+
 	private _onDidChange = new Emitter<number>();
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
 
@@ -431,12 +433,12 @@ class GridTable<T> extends Disposable implements IView {
 		collection.setCollectionChangedCallback((startIndex, count) => {
 			this.renderGridDataRowsRange(startIndex, count);
 		});
-		let numberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
+		this.rowNumberColumn = new RowNumberColumn({ numberOfRows: this.resultSet.rowCount });
 		let copyHandler = new CopyKeybind();
 		copyHandler.onCopy(e => {
 			new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false).run(this.generateContext());
 		});
-		this.columns.unshift(numberColumn.getColumnDefinition());
+		this.columns.unshift(this.rowNumberColumn.getColumnDefinition());
 		let tableOptions: Slick.GridOptions<T> = {
 			rowHeight: ROW_HEIGHT,
 			showRowNumber: true,
@@ -449,7 +451,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize());
 		this.table.registerPlugin(copyHandler);
-		this.table.registerPlugin(numberColumn);
+		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
 		this._register(this.table.onContextMenu(this.contextMenu, this));
 		this._register(this.table.onClick(this.onTableClick, this));
@@ -575,6 +577,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
+		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {

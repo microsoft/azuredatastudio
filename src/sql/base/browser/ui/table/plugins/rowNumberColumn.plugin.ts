@@ -17,6 +17,9 @@ const sizePerDigit = 15;
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
 	private grid: Slick.Grid<T>;
+	private currentColumnWidth: number;
+
+	private updateCount = 0;
 
 
 	constructor(private options: IRowNumberColumnOptions) {
@@ -52,19 +55,27 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 		}
 	}
 
+	public updateRowCount(rowNum: number) {
+		this.options.numberOfRows = rowNum;
+		let columnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
+		if (columnWidth !== this.currentColumnWidth) {
+			this.grid.setColumnWidths([this.getColumnDefinition()]);
+		}
+	}
+
 	public getColumnDefinition(): Slick.Column<T> {
 		// that smallest we can make it is 22 due to padding and margins in the cells
-		let columnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
+		this.currentColumnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
 		return {
 			id: 'rowNumber',
 			name: '',
 			field: 'rowNumber',
-			width: columnWidth,
-			minWidth: columnWidth,
-			maxWidth: columnWidth,
+			width: this.currentColumnWidth,
+			// minWidth: this.currentColumnWidth,
+			// maxWidth: this.currentColumnWidth,
 			resizable: false,
 			cssClass: this.options.cssClass,
-			focusable: false,
+			focusable: true,
 			selectable: false,
 			formatter: (r, c, v, cd, dc) => this.formatter(r, c, v, cd, dc)
 		};
