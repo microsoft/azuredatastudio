@@ -41,8 +41,8 @@ export class ImportConfigPage extends DacFxPage {
 			.withFormItems(
 				[
 					serverComponent,
-					databaseComponent,
 					fileBrowserComponent,
+					databaseComponent,
 				], {
 					horizontal: true
 				}).component();
@@ -190,10 +190,14 @@ export class ImportConfigPage extends DacFxPage {
 			let fileUri = fileUris[0];
 			this.fileTextBox.value = fileUri.fsPath;
 			this.model.filePath = fileUri.fsPath;
+			this.model.databaseName = this.generateDatabaseName(this.model.filePath);
+			this.databaseTextBox.value = this.model.databaseName;
 		});
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
+			this.model.databaseName = this.generateDatabaseName(this.model.filePath);
+			this.databaseTextBox.value = this.model.databaseName;
 		});
 
 		return {
@@ -201,6 +205,11 @@ export class ImportConfigPage extends DacFxPage {
 			title: localize('dacFxImport.fileTextboxTitle', 'Location of bacpac'),
 			actions: [this.fileButton]
 		};
+	}
+
+	private generateDatabaseName(filePath: string): string {
+		let result = path.parse(filePath);
+		return result.name;
 	}
 }
 

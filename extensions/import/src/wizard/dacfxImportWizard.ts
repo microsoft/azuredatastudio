@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { ImportConfigPage } from './pages/importConfigPage';
+import { ImportSummaryPage } from './pages/importSummaryPage';
 import { DacFxDataModel } from './api/models';
 import { DacFxPage } from './api/dacFxPage';
 import { DacFxWizard } from './dacfxWizard';
@@ -17,6 +18,7 @@ export class DacFxImportWizard extends DacFxWizard {
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
 	private importConfigPage: ImportConfigPage;
+	private summaryPage: ImportSummaryPage;
 	private model: DacFxDataModel;
 
 	constructor() {
@@ -41,6 +43,7 @@ export class DacFxImportWizard extends DacFxWizard {
 
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Import Data-tier Application Wizard');
 		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('dacFxImport.page1Name', 'Import Settings'));
+		let page2 = sqlops.window.modelviewdialog.createWizardPage(localize('dacFxImport.page2Name', 'Summary'));
 
 		page1.registerContent(async (view) => {
 			this.importConfigPage = new ImportConfigPage(this, page1, this.model, view);
@@ -49,6 +52,12 @@ export class DacFxImportWizard extends DacFxWizard {
 				this.importConfigPage.setupNavigationValidator();
 				this.importConfigPage.onPageEnter();
 			});
+		});
+
+		page2.registerContent(async (view) => {
+			this.summaryPage = new ImportSummaryPage(this, page2, this.model, view);
+			pages.set(1, this.summaryPage);
+			await this.summaryPage.start();
 		});
 
 		this.wizard.onPageChanged(async (event) => {
@@ -71,7 +80,7 @@ export class DacFxImportWizard extends DacFxWizard {
 			}
 		});
 
-		this.wizard.pages = [page1];
+		this.wizard.pages = [page1, page2];
 		this.wizard.generateScriptButton.hidden = true;
 		this.wizard.doneButton.label = localize('dacFxImport.importButton', 'Import');
 		this.wizard.doneButton.onClick(async () => await this.import());
