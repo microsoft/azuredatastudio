@@ -2,9 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/modal';
-import { IThemable } from 'vs/platform/theme/common/styler';
+import { IThemable, attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { Color } from 'vs/base/common/color';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -16,18 +15,26 @@ import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
+import * as os from 'os';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
-const INFO_ALT_TEXT = localize('infoAltText', 'Info');
+const INFO_ALT_TEXT = localize('infoAltText', 'Information');
 const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
 const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
+const SHOW_DETAILS_TEXT = localize('showMessageDetails', 'Show Details');
+const HIDE_DETAILS_TEXT = localize('hideMessageDetails', 'Hide Details');
+const COPY_TEXT = localize('copyMessage', 'Copy');
+const CLOSE_TEXT = localize('closeMessage', 'Close');
+const MESSAGE_EXPANDED_MODE_CLASS = 'expanded';
 
 export interface IModalDialogStyles {
 	dialogForeground?: Color;
@@ -66,10 +73,20 @@ const defaultOptions: IModalOptions = {
 
 export abstract class Modal extends Disposable implements IThemable {
 
-	private _errorMessage: Builder;
-	private _spinnerElement: HTMLElement;
-	private _errorIconElement: HTMLElement;
+	private _messageElement: HTMLElement;
+	private _messageIcon: HTMLElement;
+	private _messageSeverity: Builder;
+	private _messageSummary: Builder;
+	private _messageSummaryElement: HTMLElement;
+	private _messageDetail: Builder;
+	private _messageDetailElement: HTMLElement;
+	private _toggleMessageDetailButton: Button;
+	private _copyMessageButton: Button;
+	private _closeMessageButton: Button;
+	private _messageSummaryText: string;
+	private _messageDetailText: string;
 
+	private _spinnerElement: HTMLElement;
 	private _focusableElements: NodeListOf<Element>;
 	private _firstFocusableElement: HTMLElement;
 	private _lastFocusableElement: HTMLElement;
@@ -82,6 +99,7 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	private _modalDialog: Builder;
 	private _modalHeaderSection: Builder;
+	private _modalMessageSection: Builder;
 	private _modalBodySection: HTMLElement;
 	private _modalFooterSection: Builder;
 	private _closeButtonInHeader: Builder;
@@ -135,6 +153,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		private _name: string,
 		private _partService: IPartService,
 		private _telemetryService: ITelemetryService,
+		protected _clipboardService: IClipboardService,
+		protected _themeService: IThemeService,
 		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
@@ -149,7 +169,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Build and render the modal, will call {@link Modal#renderBody}
 	 */
-	public render(errorMessagesInFooter: boolean = false) {
+	public render() {
 		let modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 		let parts: Array<HTMLElement> = [];
 		// This modal header section refers to the header of of the dialog
@@ -176,11 +196,72 @@ export abstract class Modal extends Disposable implements IThemable {
 			parts.push(this._modalHeaderSection.getHTMLElement());
 		}
 
+		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
+
+			this._modalMessageSection = $().div({ class: 'dialog-message error' }, (messageContainer) => {
+				messageContainer.div({ class: 'dialog-message-header' }, (headerContainer) => {
+					headerContainer.div({ class: 'dialog-message-icon' }, (iconContainer) => {
+						this._messageIcon = iconContainer.getHTMLElement();
+					});
+					headerContainer.div({ class: 'dialog-message-severity' }, (messageSeverityContainer) => {
+						this._messageSeverity = messageSeverityContainer;
+					});
+					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
+						this._toggleMessageDetailButton = new Button(buttonContainer);
+						this._toggleMessageDetailButton.icon = 'message-details-icon';
+						this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
+						this._toggleMessageDetailButton.onDidClick((e) => {
+							this.toggleMessageDetail();
+						});
+					});
+					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
+						this._copyMessageButton = new Button(buttonContainer);
+						this._copyMessageButton.icon = 'copy-message-icon';
+						this._copyMessageButton.label = COPY_TEXT;
+						this._copyMessageButton.onDidClick((e) => {
+							this._clipboardService.writeText(this.getTextForClipboard());
+						});
+					});
+					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
+						this._closeMessageButton = new Button(buttonContainer);
+						this._closeMessageButton.icon = 'close-message-icon';
+						this._closeMessageButton.label = CLOSE_TEXT;
+						this._closeMessageButton.onDidClick((e) => {
+							this.setError(undefined);
+						});
+					});
+
+					attachButtonStyler(this._toggleMessageDetailButton, this._themeService);
+					attachButtonStyler(this._copyMessageButton, this._themeService);
+					attachButtonStyler(this._closeMessageButton, this._themeService);
+				});
+				messageContainer.div({ class: 'dialog-message-body' }, (messageBody) => {
+					messageBody.div({ class: 'dialog-message-summary' }, (summaryContainer) => {
+						this._messageSummary = summaryContainer;
+						this._messageSummaryElement = summaryContainer.getHTMLElement();
+						this._messageSummaryElement.onclick = (e) => {
+							this.toggleMessageDetail();
+						};
+					});
+					messageBody.div({ class: 'dialog-message-detail' }, (detailContainer) => {
+						this._messageDetail = detailContainer;
+						this._messageDetailElement = detailContainer.getHTMLElement();
+						this._messageDetailElement.style.display = 'none';
+					});
+				});
+			});
+			this._messageElement = this._modalMessageSection.getHTMLElement();
+			this.updateElementVisibility(this._messageElement, false);
+
+			parts.push(this._messageElement);
+		}
+
 		// This modal body section refers to the body of of the dialog
 		let body: Builder;
 		$().div({ class: modalBodyClass }, (builder) => {
 			body = builder;
 		});
+
 		this._modalBodySection = body.getHTMLElement();
 		parts.push(body.getHTMLElement());
 
@@ -212,19 +293,6 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 		if (this._modalOptions.isWide) {
 			builderClass += ' wide';
-		}
-
-		if (this._modalOptions.isAngular === false && this._modalOptions.hasErrors) {
-			let builder = errorMessagesInFooter ? this._leftFooter : body;
-			builder.div({ class: 'dialogErrorMessage', id: 'dialogErrorMessage' }, (errorMessageContainer) => {
-				errorMessageContainer.div({ class: 'sql icon error' }, (iconContainer) => {
-					this._errorIconElement = iconContainer.getHTMLElement();
-					this._errorIconElement.style.visibility = 'hidden';
-				});
-				errorMessageContainer.div({ class: 'errorMessage' }, (messageContainer) => {
-					this._errorMessage = messageContainer;
-				});
-			});
 		}
 
 		// The builder builds the dialog. It append header, body and footer sections.
@@ -271,6 +339,39 @@ export abstract class Modal extends Disposable implements IThemable {
 			e.preventDefault();
 			this._firstFocusableElement.focus();
 		}
+	}
+
+	private getTextForClipboard(): string {
+		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${os.EOL}========================${os.EOL}${this._messageDetailText}`;
+	}
+
+	private updateElementVisibility(element: HTMLElement, visible: boolean) {
+		element.style.display = visible ? 'block' : 'none';
+	}
+
+	private updateExpandMessageState() {
+		this._messageSummaryElement.style.cursor = this.shouldShowExpandMessageButton ? 'pointer' : 'default';
+		this._messageSummaryElement.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
+		this.updateElementVisibility(this._toggleMessageDetailButton.element, this.shouldShowExpandMessageButton);
+	}
+
+	private toggleMessageDetail() {
+		let isExpanded = this._messageSummaryElement.classList.contains(MESSAGE_EXPANDED_MODE_CLASS);
+		if (isExpanded) {
+			this._messageSummaryElement.classList.remove(MESSAGE_EXPANDED_MODE_CLASS);
+			this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
+		} else {
+			this._messageSummaryElement.classList.add(MESSAGE_EXPANDED_MODE_CLASS);
+			this._toggleMessageDetailButton.label = HIDE_DETAILS_TEXT;
+		}
+
+		if (this._messageDetailText !== '') {
+			this.updateElementVisibility(this._messageDetailElement, !isExpanded);
+		}
+	}
+
+	private get shouldShowExpandMessageButton(): boolean {
+		return this._messageDetailText !== '' || this._messageSummaryElement.scrollWidth > this._messageSummaryElement.offsetWidth;
 	}
 
 	/**
@@ -374,35 +475,45 @@ export abstract class Modal extends Disposable implements IThemable {
 
 	/**
 	 * Show an error in the error message element
-	 * @param err Text to show in the error message
+	 * @param message Text to show in the message
+	 * @param level Severity level of the message
+	 * @param description Description of the message
 	 */
-	protected setError(err: string, level: MessageLevel = MessageLevel.Error) {
+	protected setError(message: string, level: MessageLevel = MessageLevel.Error, description: string = '') {
 		if (this._modalOptions.hasErrors) {
-			if (err === '') {
-				this._errorIconElement.style.visibility = 'hidden';
-			} else {
+			this._messageSummaryText = message ? message : '';
+			this._messageDetailText = description ? description : '';
+
+			if (this._messageSummaryText !== '') {
 				const levelClasses = ['info', 'warning', 'error'];
 				let selectedLevel = levelClasses[2];
-				let altText = ERROR_ALT_TEXT;
+				let severityText = ERROR_ALT_TEXT;
 				if (level === MessageLevel.Information) {
 					selectedLevel = levelClasses[0];
-					altText = INFO_ALT_TEXT;
+					severityText = INFO_ALT_TEXT;
 				} else if (level === MessageLevel.Warning) {
 					selectedLevel = levelClasses[1];
-					altText = WARNING_ALT_TEXT;
+					severityText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
 					if (selectedLevel === level) {
-						this._errorIconElement.classList.add(level);
+						this._messageIcon.classList.add(level);
+						this._messageElement.classList.add(level);
 					} else {
-						this._errorIconElement.classList.remove(level);
+						this._messageIcon.classList.remove(level);
+						this._messageElement.classList.remove(level);
 					}
 				});
 
-				this._errorIconElement.title = altText;
-				this._errorIconElement.style.visibility = 'visible';
+				this._messageIcon.title = severityText;
+				this._messageSeverity.text(severityText);
+				this._messageSummary.text(message);
+				this._messageSummary.title(message);
+				this._messageDetail.text(description);
 			}
-			this._errorMessage.text(err);
+			this.updateElementVisibility(this._messageDetailElement, false);
+			this.updateElementVisibility(this._messageElement, this._messageSummaryText !== '');
+			this.updateExpandMessageState();
 		}
 	}
 
@@ -496,11 +607,19 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalDialog.style('border-style', border ? 'solid' : null);
 			this._modalDialog.style('border-color', border);
 		}
+
 		if (this._modalHeaderSection) {
 			this._modalHeaderSection.style('background-color', headerAndFooterBackground);
 			this._modalHeaderSection.style('border-bottom-width', border ? '1px' : null);
 			this._modalHeaderSection.style('border-bottom-style', border ? 'solid' : null);
 			this._modalHeaderSection.style('border-bottom-color', border);
+		}
+
+		if (this._modalMessageSection) {
+			this._modalMessageSection.style('background-color', headerAndFooterBackground);
+			this._modalMessageSection.style('border-bottom-width', border ? '1px' : null);
+			this._modalMessageSection.style('border-bottom-style', border ? 'solid' : null);
+			this._modalMessageSection.style('border-bottom-color', border);
 		}
 
 		if (this._modalBodySection) {

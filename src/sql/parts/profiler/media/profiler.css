@@ -11,3 +11,11 @@
 .tree-row > * {
 	display: inline-block;
 }
+
+.vs .icon.clear-results {
+	background-image: url('clear.svg');
+}
+
+.vs-dark .icon.clear-results {
+	background-image: url('clear_inverse.svg');
+}

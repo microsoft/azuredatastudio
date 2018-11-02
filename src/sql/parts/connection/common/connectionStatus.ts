@@ -23,9 +23,7 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IEditorService private _editorService: EditorServiceImpl,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 	) {
 	}

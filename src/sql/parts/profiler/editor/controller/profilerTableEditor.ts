@@ -113,6 +113,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 			this._stateListener.dispose();
 		}
 		this._stateListener = input.state.addChangeListener(e => this._onStateChange(e));
+		input.data.onRowCountChange(() => { this._profilerTable.updateRowCount(); });
 
 		if (this._findCountChangeListener) {
 			this._findCountChangeListener.dispose();

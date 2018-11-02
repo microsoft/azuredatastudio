@@ -29,8 +29,6 @@ export class PickScheduleData implements IAgentDialogData {
 	}
 
 	public async save() {
-		let agentService = await AgentUtils.getAgentService();
 		this.selectedSchedule.jobName = this.jobName;
-		let result = await agentService.createJobSchedule(this.ownerUri, this.selectedSchedule);
 	}
 }

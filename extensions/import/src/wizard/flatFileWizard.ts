@@ -31,7 +31,7 @@ export class FlatFileWizard {
 	public async start(p: any, ...args: any[]) {
 		let model = <ImportDataModel>{};
 
-		let profile = <sqlops.IConnectionProfile>p.connectionProfile;
+		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : null;
 		if (profile) {
 			model.serverId = profile.id;
 			model.database = profile.databaseName;

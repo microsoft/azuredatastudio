@@ -10,10 +10,9 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { mixin } from 'sql/base/common/objects';
-import { LegendPosition, DataDirection, ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { LegendPosition, ChartType, defaultChartConfig, IChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import { Color } from 'vs/base/common/color';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -21,51 +20,6 @@ import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 declare var Chart: any;
-
-export function customMixin(destination: any, source: any, overwrite?: boolean): any {
-	if (types.isObject(source)) {
-		mixin(destination, source, overwrite, customMixin);
-	} else if (types.isArray(source)) {
-		for (let i = 0; i < source.length; i++) {
-			if (destination[i]) {
-				mixin(destination[i], source[i], overwrite, customMixin);
-			} else {
-				destination[i] = source[i];
-			}
-		}
-	} else {
-		destination = source;
-	}
-	return destination;
-}
-
-export interface IDataSet {
-	data: Array<number>;
-	label?: string;
-}
-
-export interface IPointDataSet {
-	data: Array<{ x: number | string, y: number }>;
-	label?: string;
-	fill: boolean;
-	backgroundColor?: Color;
-}
-
-export interface IChartConfig {
-	colorMap?: { [column: string]: string };
-	labelFirstColumn?: boolean;
-	legendPosition?: LegendPosition;
-	dataDirection?: DataDirection;
-	columnsAsLabels?: boolean;
-	showTopNData?: number;
-}
-
-export const defaultChartConfig: IChartConfig = {
-	labelFirstColumn: true,
-	columnsAsLabels: true,
-	legendPosition: LegendPosition.Top,
-	dataDirection: DataDirection.Vertical
-};
 
 @Component({
 	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">

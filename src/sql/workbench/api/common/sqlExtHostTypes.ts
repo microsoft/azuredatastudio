@@ -245,6 +245,7 @@ export enum MessageLevel {
 export interface DialogMessage {
 	text: string;
 	level?: MessageLevel;
+	description?: string;
 }
 
 /// Card-related APIs that need to be here to avoid early load issues

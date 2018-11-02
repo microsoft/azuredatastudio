@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
+import 'vs/css!sql/parts/profiler/media/profiler';
 import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
@@ -157,7 +157,7 @@ export class ProfilerClear extends Action {
 	public static LABEL = nls.localize('profiler.clear', "Clear Data");
 
 	constructor(id: string, label: string) {
-		super(id, label);
+		super(id, label, 'clear-results');
 	}
 
 	run(input: ProfilerInput): TPromise<void> {

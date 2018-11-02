@@ -42,18 +42,18 @@
 	"Create a new Table": {
 		"prefix": "sqlCreateTable",
 		"body": [
-			"-- Create a new table called '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
+			"-- Create a new table called '[${1:TableName}]' in schema '[${2:dbo}]'",
 			"-- Drop the table if it already exists",
-			"IF OBJECT_ID('[${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]', 'U') IS NOT NULL",
-			"DROP TABLE [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"IF OBJECT_ID('[${2:dbo}].[${1:TableName}]', 'U') IS NOT NULL",
+			"DROP TABLE [${2:dbo}].[${1:TableName}]",
 			"GO",
-			"-- Create the table in the specified database and schema",
-			"CREATE TABLE [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"-- Create the table in the specified schema",
+			"CREATE TABLE [${2:dbo}].[${1:TableName}]",
 			"(",
-			"\t[${4:ColumnName}]Id INT NOT NULL PRIMARY KEY, -- Primary Key column",
-			"\t[${5:ColumnName1}] [NVARCHAR](50) NOT NULL,",
-			"\t[${6:ColumnName2}] [NVARCHAR](50) NOT NULL",
-			"\t-- Specify more columns here",
+			"\t[${3:Id}] INT NOT NULL PRIMARY KEY, -- Primary Key column",
+			"\t[${4:ColumnName2}] ${5:NVARCHAR(50)} NOT NULL,",
+			"\t[${6:ColumnName3}] ${7:NVARCHAR(50)} NOT NULL",
+			"\t$0-- Specify more columns here",
 			");",
 			"GO"
 		],
@@ -64,10 +64,10 @@
 	"Drop a Table": {
 		"prefix": "sqlDropTable",
 		"body": [
-				"-- Drop a table called '${3:TableName}' in schema '${2:SchemaName}' in Database '${1:DatabaseName}'",
+				"-- Drop a table called '${1:TableName}' in schema '${2:dbo}'",
 				"-- Drop the table if it already exists",
-				"IF OBJECT_ID('[${1:DatabaseName}].[${2:SchemaName}].[${3:TableName}]', 'U') IS NOT NULL",
-				"DROP TABLE [${1:DatabaseName}].[${2:SchemaName}].[${3:TableName}]",
+				"IF OBJECT_ID('[${2:dbo}].[${1:TableName}]', 'U') IS NOT NULL",
+				"DROP TABLE [${2:dbo}].[${1:TableName}]",
 				"GO"
 		],
 		"description": "Drop a Table"
@@ -76,9 +76,9 @@
 	"Add a new column to a Table": {
 		"prefix": "sqlAddColumn",
 		"body": [
-			"-- Add a new column '[${1:NewColumnName}]' to table '[${2:TableName}]' in schema '[${3:SchemaName}]' in database '[${4:DatabaseName}]'",
-			"ALTER TABLE [${4:DatabaseName}].[${3:SchemaName}].[${2:TableName}]",
-			"\tADD [${1:NewColumnName}] /*new_column_name*/ ${5:int} /*new_column_datatype*/ ${6:NULL} /*new_column_nullability*/",
+			"-- Add a new column '[${1:NewColumnName}]' to table '[${2:TableName}]' in schema '[${3:dbo}]'",
+			"ALTER TABLE [${3:dbo}].[${2:TableName}]",
+			"\tADD [${1:NewColumnName}] /*new_column_name*/ ${4:int} /*new_column_datatype*/ ${5:NULL} /*new_column_nullability*/",
 			"GO"
 		],
 		"description": "Add a new column to a Table"
@@ -87,8 +87,8 @@
 	"Drop a column from a Table": {
 		"prefix": "sqlDropColumn",
 		"body": [
-			"-- Drop '[${1:ColumnName}]' from table '[${2:TableName}]' in schema '[${3:SchemaName}]' in database '[${4:DatabaseName}]'",
-			"ALTER TABLE [${4:DatabaseName}].[${3:SchemaName}].[${2:TableName}]",
+			"-- Drop '[${1:ColumnName}]' from table '[${2:TableName}]' in schema '[${3:dbo}]'",
+			"ALTER TABLE [${3:dbo}].[${2:TableName}]",
 			"\tDROP COLUMN [${1:ColumnName}]",
 			"GO"
 		],
@@ -98,9 +98,9 @@
 	"Select rows from a Table or a View": {
 		"prefix": "sqlSelect",
 		"body": [
-			"-- Select rows from a Table or View '[${1:TableOrViewName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"SELECT * FROM [${3:DatabaseName}].[${2:SchemaName}].[${1:TableOrViewName}]",
-			"WHERE ${4:/* add search conditions here */}",
+			"-- Select rows from a Table or View '[${1:TableOrViewName}]' in schema '[${2:dbo}]'",
+			"SELECT * FROM [${2:dbo}].[${1:TableOrViewName}]",
+			"WHERE ${3:/* add search conditions here */}",
 			"GO"
 		],
 		"description": "Select rows from a Table or a View"
@@ -109,17 +109,17 @@
 	"Insert rows into a Table": {
 		"prefix": "sqlInsertRows",
 		"body": [
-			"-- Insert rows into table '${1:TableName}' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"INSERT INTO [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"-- Insert rows into table '${1:TableName}' in schema '[${2:dbo}]'",
+			"INSERT INTO [${2:dbo}].[${1:TableName}]",
 			"( -- Columns to insert data into",
-			" ${4:[ColumnName1], [ColumnName2], [ColumnName3]}",
+			" ${3:[ColumnName1], [ColumnName2], [ColumnName3]}",
 			")",
 			"VALUES",
 			"( -- First row: values for the columns in the list above",
-			" ${5:ColumnValue1, ColumnValue2, ColumnValue3}",
+			" ${4:ColumnValue1, ColumnValue2, ColumnValue3}",
 			"),",
 			"( -- Second row: values for the columns in the list above",
-			" ${6:ColumnValue1, ColumnValue2, ColumnValue3}",
+			" ${5:ColumnValue1, ColumnValue2, ColumnValue3}",
 			")",
 			"-- Add more rows here",
 			"GO"
@@ -130,9 +130,9 @@
 	"Delete rows from a Table": {
 		"prefix": "sqlDeleteRows",
 		"body": [
-			"-- Delete rows from table '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"DELETE FROM [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
-			"WHERE ${4:/* add search conditions here */}",
+			"-- Delete rows from table '[${1:TableName}]' in schema '[${2:dbo}]'",
+			"DELETE FROM [${2:dbo}].[${1:TableName}]",
+			"WHERE ${3:/* add search conditions here */}",
 			"GO"
 		],
 		"description": "Delete rows from a Table"
@@ -141,13 +141,13 @@
 	"Update rows in a Table": {
 		"prefix": "sqlUpdateRows",
 		"body": [
-			"-- Update rows in table '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"UPDATE [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}]",
+			"-- Update rows in table '[${1:TableName}]' in schema '[${2:dbo}]'",
+			"UPDATE [${2:dbo}].[${1:TableName}]",
 			"SET",
-			"\t[${4:ColumnName1}] = ${5:ColumnValue1},",
-			"\t[${6:ColumnName2}] = ${7:ColumnValue2}",
+			"\t[${3:ColumnName1}] = ${4:ColumnValue1},",
+			"\t[${5:ColumnName2}] = ${6:ColumnValue2}",
 			"\t-- Add more columns and values here",
-			"WHERE ${8:/* add search conditions here */}",
+			"WHERE ${7:/* add search conditions here */}",
 			"GO"
 		],
 		"description": "Update rows in a Table"
@@ -156,27 +156,27 @@
 	"Create a stored procedure": {
 		"prefix": "sqlCreateStoredProc",
 		"body": [
-			"-- Create a new stored procedure called '${1:StoredProcedureName}' in schema '${2:SchemaName}'",
+			"-- Create a new stored procedure called '${1:StoredProcedureName}' in schema '${2:dbo}'",
 			"-- Drop the stored procedure if it already exists",
 			"IF EXISTS (",
 			"SELECT *",
 			"\tFROM INFORMATION_SCHEMA.ROUTINES",
-			"WHERE SPECIFIC_SCHEMA = N'${2:SchemaName}'",
+			"WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
 			"\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
 			")",
-			"DROP PROCEDURE ${2:SchemaName}.${1:StoredProcedureName}",
+			"DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
 			"GO",
 			"-- Create the stored procedure in the specified schema",
-			"CREATE PROCEDURE ${2:SchemaName}.${1:StoredProcedureName}",
-			"\t$3@param1 /*parameter name*/ int /*datatype_for_param1*/ = 0, /*default_value_for_param1*/",
-			"\t$4@param2 /*parameter name*/ int /*datatype_for_param1*/ = 0 /*default_value_for_param2*/",
+			"CREATE PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
+			"\t$3@param1 /*parameter name*/ $4int /*datatype_for_param1*/ = 0, /*default_value_for_param1*/",
+			"\t$5@param2 /*parameter name*/ $6int /*datatype_for_param1*/ = 0 /*default_value_for_param2*/",
 			"-- add more stored procedure parameters here",
 			"AS",
 			"\t-- body of the stored procedure",
 			"\tSELECT @param1, @param2",
 			"GO",
 			"-- example to execute the stored procedure we just created",
-			"EXECUTE ${2:SchemaName}.${1:StoredProcedureName} 1 /*value_for_param1*/, 2 /*value_for_param2*/",
+			"EXECUTE ${2:dbo}.${1:StoredProcedureName} 1 /*value_for_param1*/, 2 /*value_for_param2*/",
 			"GO"
 		],
 		"description": "Create a stored procedure"
@@ -185,14 +185,14 @@
 	"Drop a stored procedure": {
 		"prefix": "sqlDropStoredProc",
 		"body": [
-			"-- Drop the stored procedure called '${1:StoredProcedureName}' in schema '${2:SchemaName}'",
+			"-- Drop the stored procedure called '${1:StoredProcedureName}' in schema '${2:dbo}'",
 			"IF EXISTS (",
 			"SELECT *",
 			"\tFROM INFORMATION_SCHEMA.ROUTINES",
-			"WHERE SPECIFIC_SCHEMA = N'${2:SchemaName}'",
+			"WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
 			"\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
 			")",
-			"DROP PROCEDURE ${2:SchemaName}.${1:StoredProcedureName}",
+			"DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
 			"GO"
 		],
 		"description": "Drop a stored procedure"
@@ -241,7 +241,7 @@
 	"Declare a cursor": {
 		"prefix": "sqlCursor",
 		"body": [
-			"-- Declare a cursor for a Table or a View '${1:TableOrViewName}' in schema '${2:SchemaName}'",
+			"-- Declare a cursor for a Table or a View '${1:TableOrViewName}' in schema '${2:dbo}'",
 			"DECLARE @ColumnName1 NVARCHAR(50), @ColumnName2 NVARCHAR(50)",
 			"",
 			"DECLARE db_cursor CURSOR FOR",
@@ -304,8 +304,8 @@
 		"prefix": "sqlCreateIndex",
 		"body": [
 			"-- Create a nonclustered index with or without a unique constraint",
-			"-- Or create a clustered index on table '[${1:TableName}]' in schema '[${2:SchemaName}]' in database '[${3:DatabaseName}]'",
-			"CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:SchemaName}].[${1:TableName}] ([${6:ColumnName1}] DESC /*Change sort order as needed*/",
+			"-- Or create a clustered index on table '[${1:TableName}]' in schema '[${2:dbo}]' in database '[${3:DatabaseName}]'",
+			"CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:dbo}].[${1:TableName}] ([${6:ColumnName1}] DESC /*Change sort order as needed*/",
 			"GO"
 		],
 		"description": "Create a new Index"
@@ -319,13 +319,13 @@
 			"IF OBJECT_ID('tempDB..#${1:TableName}', 'U') IS NOT NULL",
 			"DROP TABLE #${1:TableName}",
 			"GO",
-			"-- Create the temporary table from a physical table called '${4:TableName}' in schema '${3:SchemaName}' in database '${2:DatabaseName}'",
+			"-- Create the temporary table from a physical table called '${4:TableName}' in schema '${3:dbo}' in database '${2:DatabaseName}'",
 			"SELECT *",
 			"INTO #${1:TableName}",
-			"FROM [${2:DatabaseName}].[${3:[SchemaName}].[${4:TableName}]",
+			"FROM [${2:DatabaseName}].[${3:[dbo}].[${4:TableName}]",
 			"WHERE ${5:/* add search conditions here */}"
 		],
 		"description": "Create a new Temporary Table"
-	},
+	}
 
 }

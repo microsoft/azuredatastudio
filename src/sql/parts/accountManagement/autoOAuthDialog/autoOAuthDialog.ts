@@ -21,6 +21,7 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class AutoOAuthDialog extends Modal {
 	private _copyAndOpenButton: Button;
@@ -42,16 +43,19 @@ export class AutoOAuthDialog extends Modal {
 
 	constructor(
 		@IPartService partService: IPartService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
 		super(
 			'',
 			TelemetryKeys.AutoOAuth,
 			partService,
 			telemetryService,
+			clipboardService,
+			themeService,
 			contextKeyService,
 			{
 				isFlyout: true,
