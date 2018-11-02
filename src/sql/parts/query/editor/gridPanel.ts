@@ -550,7 +550,7 @@ class GridTable<T> extends Disposable implements IView {
 					} catch (e) {
 						// If Xml fails to parse, fall back on original Xml content
 					}
-				} else  {
+				} else {
 					let jsonContent: string = undefined;
 					try {
 						jsonContent = JSON.parse(content);
