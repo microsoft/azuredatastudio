@@ -55,7 +55,7 @@ export class DacFxExportWizard extends DacFxWizard {
 		});
 
 		page2.registerContent(async (view) => {
-			this.summaryPage = new ExportSummaryPage(this, page2, this.model, view, this.exportConfigPage);
+			this.summaryPage = new ExportSummaryPage(this, page2, this.model, view);
 			pages.set(1, this.summaryPage);
 			await this.summaryPage.start();
 		});
