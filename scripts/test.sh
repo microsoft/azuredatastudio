@@ -33,9 +33,9 @@ export ELECTRON_RUN_AS_NODE=1
 if [[ "$OSTYPE" == "darwin"* ]]; then
 	cd $ROOT ; ulimit -n 4096 ; \
 		"$CODE" \
-		node_modules/mocha/bin/_mocha "$@"
+		node_modules/mocha/bin/_mocha "$@" --reporter mocha-junit-reporter
 else
 	cd $ROOT ; \
 		"$CODE" \
-		node_modules/mocha/bin/_mocha "$@"
+		node_modules/mocha/bin/_mocha "$@" --reporter mocha-junit-reporter
 fi

@@ -40,5 +40,5 @@ steps:
 
 - task: PublishTestResults@2
   inputs:
-    testResultsFiles: 'test/test-results.xml'    
+    testResultsFiles: './test-results.xml'    
   condition: succeededOrFailed()
