@@ -20,8 +20,8 @@
 }
 
 .optionsDialog-options-groups {
-	padding: 15px;
-	height: calc(100% - 150px);
+	margin-top: 10px;
+	flex: 1 1;
 	overflow-y: auto;
 }
 
@@ -33,21 +33,47 @@
 	cursor: pointer;
 }
 
-.vs-dark.monaco-shell .backButtonIcon {
+.hc-black .backButtonIcon,
+.vs-dark .backButtonIcon {
 	content: url('back_inverse.svg');
 }
 
 .optionsDialog-description {
-	padding: 15px;
+	padding: 10px;
 	overflow-y: auto;
+	height: 100px;
+}
+
+.vs .optionsDialog-description,
+.vs-dark .optionsDialog-description {
+	box-shadow: inset 0 1px 4px 1px rgba(220,220,220,0.71);
+}
+
+.optionsDialog-description .modal-title {
+	background-repeat: no-repeat;
+	background-position: 2px center;
+	padding-left: 25px;
+	background-size: 16px;
+}
+
+.vs .optionsDialog-description .modal-title {
+	background-image: url('info_notification.svg')
+}
+
+.vs-dark .optionsDialog-description .modal-title,
+.hc-black .optionsDialog-description .modal-title {
+	background-image: url('info_notification_inverse.svg')
 }
 
 .optionsDialog-options {
-	height: calc(100% - 30px);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
 }
 
 .optionsDialog-description-content {
-	padding: 10px;
+	padding-top: 10px;
+	padding-left: 25px;
 }
 
 .optionsDialog-table{
