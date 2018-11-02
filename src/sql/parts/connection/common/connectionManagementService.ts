@@ -755,7 +755,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType === 'AzureMFA' && !connection.options['azureAccountToken']) {
+		if (connection.authenticationType === Constants.azureMFA && !connection.options['azureAccountToken']) {
 			let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
 			if (accounts && accounts.length > 0) {
 				let account = accounts.find(account => account.key.accountId === connection.userName);
@@ -784,7 +784,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	// Request Senders
 	private async sendConnectRequest(connection: IConnectionProfile, uri: string): Promise<boolean> {
-		// let continueConnecting = await this.fillInAzureTokenIfNeeded(connection);
 		let connectionInfo = Object.assign({}, {
 			options: connection.options
 		});
