@@ -29,14 +29,8 @@ steps:
   displayName: 'Scripts'
 
 - script: |
-    ./scripts/test.sh --coverage --reporter dot
-  displayName: 'Linux Scripts'
-  condition: eq(variables['Agent.OS'], 'Linux')
-
-- script: |
-    ./scripts/test.sh --reporter dot
-  displayName: 'Mac Scripts'
-  condition: eq(variables['Agent.OS'], 'Darwin')
+    ./scripts/test.sh --reporter mocha-junit-reporter
+  displayName: 'Tests'
 
 - task: PublishTestResults@2
   inputs:
