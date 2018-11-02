@@ -19,6 +19,8 @@ steps:
 - script: |
     .\scripts\test.bat
     .\scripts\test-integration.bat
+    dir
+    dir test-results.xml /s
   displayName: 'Test'
 
 - task: PublishTestResults@2

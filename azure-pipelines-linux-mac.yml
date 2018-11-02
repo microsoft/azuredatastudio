@@ -30,8 +30,6 @@ steps:
 
 - script: |
     ./scripts/test.sh --reporter mocha-junit-reporter
-    dir
-    dir test-results.xml /s
   displayName: 'Tests'
 
 - task: PublishTestResults@2
