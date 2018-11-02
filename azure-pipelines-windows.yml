@@ -19,11 +19,9 @@ steps:
 - script: |
     .\scripts\test.bat
     .\scripts\test-integration.bat
-    dir
-    dir test-results.xml /s
   displayName: 'Test'
 
 - task: PublishTestResults@2
   inputs:
-    testResultsFiles: './test-results.xml'    
+    testResultsFiles: '**/test-results.xml'    
   condition: succeededOrFailed()
