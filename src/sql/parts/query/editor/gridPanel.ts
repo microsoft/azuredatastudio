@@ -214,6 +214,13 @@ export class GridPanel extends ViewletPanel {
 			}
 		}
 
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
+
+		if (this.state && this.state.scrollPosition) {
+			this.splitView.setScrollPosition(this.state.scrollPosition);
+		}
 	}
 
 	private addResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
@@ -337,13 +344,16 @@ class GridTable<T> extends Disposable implements IView {
 	private _state: GridTableState;
 
 	private scrolled = false;
+	private visible = false;
 
 	public get resultSet(): sqlops.ResultSetSummary {
 		return this._resultSet;
 	}
 
 	// this handles if the row count is small, like 4-5 rows
-	private readonly maxSize = ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+	private get maxSize(): number {
+		return ((this.resultSet.rowCount) * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
+	}
 
 	constructor(
 		private runner: QueryRunner,
@@ -374,6 +384,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public onAdd() {
+		this.visible = true;
 		let collection = new VirtualizedCollection(
 			50,
 			index => this.placeholdGenerator(index),
@@ -388,6 +399,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	public onRemove() {
+		this.visible = false;
 		let collection = new VirtualizedCollection(
 			50,
 			index => this.placeholdGenerator(index),
@@ -559,8 +571,9 @@ class GridTable<T> extends Disposable implements IView {
 
 	public updateResult(resultSet: sqlops.ResultSetSummary) {
 		this._resultSet = resultSet;
-		if (this.table) {
-
+		if (this.table && this.visible) {
+			this.dataProvider.length = resultSet.rowCount;
+			this.table.updateRowCount();
 		}
 	}
 
@@ -634,6 +647,9 @@ class GridTable<T> extends Disposable implements IView {
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
 		return this.runner.getQueryRows(offset, count, this.resultSet.batchId, this.resultSet.id).then(response => {
+			if (!response.resultSubset) {
+				return [];
+			}
 			return response.resultSubset.rows.map(r => {
 				let dataWithSchema = {};
 				// skip the first column since its a number column

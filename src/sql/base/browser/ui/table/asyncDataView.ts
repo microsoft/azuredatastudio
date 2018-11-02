@@ -8,6 +8,7 @@ export interface IObservableCollection<T> {
 	at(index: number): T;
 	getRange(start: number, end: number): T[];
 	setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void;
+	setLength(number): void;
 }
 
 class LoadCancellationToken {
@@ -71,7 +72,6 @@ class DataWindow<T> {
 }
 
 export class VirtualizedCollection<T extends Slick.SlickData> implements IObservableCollection<T> {
-
 	private _bufferWindowBefore: DataWindow<T>;
 	private _window: DataWindow<T>;
 	private _bufferWindowAfter: DataWindow<T>;
@@ -101,6 +101,10 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 
 	public getLength(): number {
 		return this.length;
+	}
+
+	setLength(number: any): void {
+		this.length = number;
 	}
 
 	public at(index: number): T {
@@ -191,5 +195,13 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements Slick.DataP
 
 	public getRange(start: number, end: number): T[] {
 		return this.dataRows.getRange(start, end);
+	}
+
+	public set length(length: number) {
+		this.dataRows.setLength(length);
+	}
+
+	public get length(): number {
+		return this.dataRows.getLength();
 	}
 }
