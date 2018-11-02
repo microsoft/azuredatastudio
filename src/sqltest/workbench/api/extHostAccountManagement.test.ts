@@ -370,7 +370,7 @@ suite('ExtHostAccountManagement', () => {
 						.then((securityToken) => {
 							// Then: The call should have been passed to the account management service
 							mockAccountManagementService.verify(
-								(obj) => obj.getSecurityToken(TypeMoq.It.isAny()),
+								(obj) => obj.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()),
 								TypeMoq.Times.once()
 							);
 						}
@@ -457,7 +457,7 @@ function getMockAccountManagementService(accounts: sqlops.Account[]): TypeMoq.Mo
 
 	mockAccountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny()))
 		.returns(() => Promise.resolve(accounts));
-	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isValue(accounts[0])))
+	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isValue(accounts[0]), TypeMoq.It.isAny()))
 	    .returns(() => Promise.resolve({}));
 	mockAccountManagementService.setup(x => x.updateAccountListEvent)
 	    .returns(() => () => { return undefined; } );
