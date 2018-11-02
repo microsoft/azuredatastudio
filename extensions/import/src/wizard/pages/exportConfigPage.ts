@@ -244,6 +244,11 @@ export class ExportConfigPage extends DacFxPage {
 			}
 
 			this.fileTextBox.value = fileUri.fsPath;
+			this.model.filePath = fileUri.fsPath;
+		});
+
+		this.fileTextBox.onTextChanged(async () => {
+			this.model.filePath = this.fileTextBox.value;
 		});
 
 		return {
