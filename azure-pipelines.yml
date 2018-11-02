@@ -12,26 +12,23 @@ jobs:
 # All tasks on Windows
 - job: build_all_windows
   displayName: Build all tasks (Windows)
-  condition: eq(variables.os, 'Windows_NT')
   pool:
     vmImage: vs2017-win2016
   steps:
-  - template: ci/build-windows.yml
+  - template: azure-pipelines-windows.yml
 
 # All tasks on Linux
 - job: build_all_linux
   displayName: Build all tasks (Linux)
-  condition: eq(variables.os, 'Linux')
   pool:
     vmImage: 'Ubuntu 16.04'
   steps:
-  - template: ci/build-mac-linux.yml
+  - template: azure-pipelines-linux-mac.yml
 
 # All tasks on macOS
 - job: build_all_darwin
   displayName: Build all tasks (macOS)
-  condition: eq(variables.os, 'Darwin')
   pool:
     vmImage: macos-10.13
   steps:
-  - template: ci/build-mac-linux.yml
+  - template: azure-pipelines-linux-mac.yml

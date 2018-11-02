@@ -16,7 +16,7 @@ steps:
     sh -e /etc/init.d/xvfb start
     sleep 3
   displayName: 'Linux preinstall'
-  condition: eq(variables.os, 'Linux')
+  condition: eq(variables['Agent.OS'], 'Linux')
 
 - script: |
     yarn
@@ -31,9 +31,9 @@ steps:
 - script: |
     ./scripts/test.sh --coverage --reporter dot
   displayName: 'Linux Scripts'
-  condition: eq(variables.os, 'Linux')
+  condition: eq(variables['Agent.OS'], 'Linux')
 
 - script: |
     ./scripts/test.sh --reporter dot
   displayName: 'Mac Scripts'
-  condition: eq(variables.os, 'Darwin')
+  condition: eq(variables['Agent.OS'], 'Darwin')
