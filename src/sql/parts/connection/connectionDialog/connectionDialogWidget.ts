@@ -144,7 +144,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._panel = new TabbedPanel(connectionContainer.getHTMLElement());
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
-			title: localize('recentConnectionTitle', 'Recent connections'),
+			title: localize('recentConnectionTitle', 'Recent Connections'),
 			view: {
 				render: c => {
 					recentConnectionTab.appendTo(c);
@@ -155,7 +155,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		let savedConnectionTabId = this._panel.pushTab({
 			identifier: 'saved_connection',
-			title: localize('savedConnectionTitle', 'Saved connections'),
+			title: localize('savedConnectionTitle', 'Saved Connections'),
 			view: {
 				layout: () => { },
 				render: c => {

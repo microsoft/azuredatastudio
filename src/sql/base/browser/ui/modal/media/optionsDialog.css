@@ -25,6 +25,29 @@
 	overflow-y: auto;
 }
 
+.optionsDialog-options-groups {
+	margin: 10px 0px;
+	flex: 1 1;
+	overflow-y: auto;
+}
+
+.vs .optionsDialog-options-groups {
+	box-shadow: 0 1px 4px 1px rgba(220, 220, 220, 0.71);
+}
+
+.vs-dark .optionsDialog-options-groups {
+	box-shadow: 0 4px 5px 0px rgba(0, 0, 0, 0.71);
+}
+
+.optionsDialog-options-groups .split-view-view .header {
+	padding-left: 28px !important;
+	background-position-x: 8px !important;
+}
+
+.optionsDialog-options-groups .split-view-view .body {
+	padding-left: 5px !important;
+}
+
 .backButtonIcon {
 	content: url('back.svg');
 	width: 20px;
@@ -39,14 +62,9 @@
 }
 
 .optionsDialog-description {
-	padding: 10px;
-	overflow-y: auto;
-	height: 100px;
-}
-
-.vs .optionsDialog-description,
-.vs-dark .optionsDialog-description {
-	box-shadow: inset 0 1px 4px 1px rgba(220,220,220,0.71);
+    height: 90px;
+    margin: 15px;
+    overflow-y: auto;
 }
 
 .optionsDialog-description .modal-title {
