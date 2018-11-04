@@ -326,7 +326,7 @@ export class ChartView extends Disposable implements IPanelView {
 				this.optionDisposables.push(attachInputBoxStyler(numberInput, this._themeService));
 				break;
 			case ControlType.dateInput:
-				let dateInput = new InputBox(optionContainer, this._contextViewService, { type: 'date' });
+				let dateInput = new InputBox(optionContainer, this._contextViewService, { type: 'datetime-local' });
 				dateInput.value = value || '';
 				dateInput.onDidChange(e => {
 					if (this.options[option.configEntry] !== e) {
