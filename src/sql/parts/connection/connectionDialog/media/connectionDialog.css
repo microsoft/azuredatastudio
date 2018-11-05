@@ -9,25 +9,35 @@
 }
 
 .connection-input {
-	padding-right:8px;
 	width: 200px;
 	padding-bottom: 5px;
 }
 
 .connection-dialog {
-	height: calc(100% - 20px);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 .connection-dialog .tabbedPanel {
 	border-top-color: transparent;
-	height: calc(100% - 350px);
-	display: block;
+	flex: 1 1;
 	min-height: 120px;
+	overflow: hidden;
+	margin: 0px 11px;
+}
+.connection-dialog .tabBody {
+	overflow: hidden;
+    flex: 1 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .connection-recent, .connection-saved {
-	margin: 15px;
-	height: calc(100% - 60px);
+	margin: 5px;
+	flex: 1 1;
 	overflow-y: auto;
 }
 
@@ -45,6 +55,8 @@
 .recent-titles-container {
 	display: flex;
 	justify-content: space-between;
+	margin: 5px;
+	flex: 0 0 auto;
 }
 
 .connection-provider-info {
@@ -53,7 +65,13 @@
 }
 
 .connection-recent-content {
-	height: calc(100% - 20px);
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.connection-recent-content .server-explorer-viewlet {
+	flex: 1 1;
 }
 
 .connection-table-content {
@@ -66,8 +84,9 @@
 }
 
 .connection-type {
-	margin: 15px;
-	overflow-y: hidden;
+	flex: 0 0 auto;
+	overflow: hidden;
+	margin: 0px 13px;
 }
 
 .connection-dialog .connection-history-actions .action-label.icon {
@@ -76,8 +95,9 @@
 	line-height: 20px;
 	min-width: 20px;
 	background-size: 16px;
-	background-position: center center;
+	background-position: 2px center;
 	background-repeat: no-repeat;
+	padding-left: 25px;
 }
 
 .search-action.clear-search-results {
@@ -87,4 +107,11 @@
 .vs-dark .search-action.clear-search-results,
 .hc-black .search-action.clear-search-results {
 	background: url('clear-search-results-dark.svg');
+}
+
+.connection-details-title {
+	font-size: 14px;
+	margin: 5px 0px;
+	padding: 5px 15px;
+	font-weight: 600;
 }
