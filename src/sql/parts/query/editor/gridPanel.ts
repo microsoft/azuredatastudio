@@ -37,7 +37,7 @@ import { $ } from 'vs/base/browser/builder';
 import { generateUuid } from 'vs/base/common/uuid';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { Dimension, getContentWidth, isInDOM } from 'vs/base/browser/dom';
+import { isInDOM } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';

@@ -5,8 +5,6 @@
 
 'use strict';
 
-import { range } from 'vs/base/common/arrays';
-
 export interface IRowNumberColumnOptions {
 	numberOfRows: number;
 	cssClass?: string;
@@ -18,9 +16,6 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
 	private grid: Slick.Grid<T>;
 	private currentColumnWidth: number;
-
-	private updateCount = 0;
-
 
 	constructor(private options: IRowNumberColumnOptions) {
 	}
@@ -71,8 +66,6 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 			name: '',
 			field: 'rowNumber',
 			width: this.currentColumnWidth,
-			// minWidth: this.currentColumnWidth,
-			// maxWidth: this.currentColumnWidth,
 			resizable: false,
 			cssClass: this.options.cssClass,
 			focusable: true,
