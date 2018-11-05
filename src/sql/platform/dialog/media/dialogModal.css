@@ -16,6 +16,18 @@
 	min-width: 800px;
 }
 
+.dialog-message-and-page-container {
+	display: flex;
+	flex-direction: column;
+	flex: 1 1;
+	overflow: hidden;
+}
+
+.dialogModal-page-container {
+	flex: 1 1;
+	overflow: hidden;
+}
+
 .dialogModal-pane {
 	display: flex;
 	flex-direction: column;

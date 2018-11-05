@@ -72,8 +72,8 @@ const defaultOptions: IModalOptions = {
 };
 
 export abstract class Modal extends Disposable implements IThemable {
-
-	private _messageElement: HTMLElement;
+	protected _useDefaultMessageBoxLocation: boolean = true;
+	protected _messageElement: HTMLElement;
 	private _messageIcon: HTMLElement;
 	private _messageSeverity: Builder;
 	private _messageSummary: Builder;
@@ -253,7 +253,9 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._messageElement = this._modalMessageSection.getHTMLElement();
 			this.updateElementVisibility(this._messageElement, false);
 
-			parts.push(this._messageElement);
+			if (!this._useDefaultMessageBoxLocation) {
+				parts.push(this._messageElement);
+			}
 		}
 
 		// This modal body section refers to the body of of the dialog
