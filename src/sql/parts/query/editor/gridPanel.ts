@@ -421,6 +421,7 @@ class GridTable<T> extends Disposable implements IView {
 	private build(): void {
 		let tableContainer = document.createElement('div');
 		tableContainer.style.display = 'inline-block';
+		tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
 
 		this.container.appendChild(tableContainer);
 
@@ -631,12 +632,7 @@ class GridTable<T> extends Disposable implements IView {
 		} else {
 			this.currentHeight = size;
 		}
-		this.table.layout(
-			new Dimension(
-				getContentWidth(this.container) - ACTIONBAR_WIDTH,
-				size
-			)
-		);
+		this.table.layout(size, Orientation.VERTICAL);
 	}
 
 	public get minimumSize(): number {
