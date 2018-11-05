@@ -22,6 +22,8 @@ import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionProfile } from '../common/connectionProfile';
+import * as styler from 'sql/common/theme/styler';
+import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 
 import * as sqlops from 'sqlops';
 
@@ -30,14 +32,12 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import * as styler from 'sql/common/theme/styler';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 
 export class ConnectionWidget {
 	private _builder: Builder;
@@ -411,11 +411,7 @@ export class ConnectionWidget {
 			let tableContainer = this._tableContainer.getContainer();
 			tableContainer.classList.remove('hide-username-password');
 			tableContainer.classList.add('hide-azure-accounts');
-			try {
-				this._azureAccountDropdown.hideMessage();
-			} catch {
-				// Do nothing, this throws if no message is currently shown
-			}
+			this._azureAccountDropdown.hideMessage();
 		}
 	}
 
@@ -436,9 +432,9 @@ export class ConnectionWidget {
 	private async updateRefreshCredentialsLink(): Promise<void> {
 		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
-			this._refreshCredentialsLinkBuilder = this._refreshCredentialsLinkBuilder.display('block');
+			this._refreshCredentialsLinkBuilder.display('block');
 		} else {
-			this._refreshCredentialsLinkBuilder = this._refreshCredentialsLinkBuilder.display('none');
+			this._refreshCredentialsLinkBuilder.display('none');
 		}
 	}
 

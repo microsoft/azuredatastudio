@@ -285,6 +285,10 @@
             {
               "displayName": "Windows Authentication",
               "name": "Integrated"
+            },
+            {
+              "displayName": "Azure Active Directory (MFA)",
+              "name": "AzureMFA"
             }
           ],
           "isRequired": true,

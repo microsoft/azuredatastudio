@@ -34,12 +34,13 @@ import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { values } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 
 import * as sqlops from 'sqlops';
 
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
@@ -58,8 +59,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
-import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -290,7 +289,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					}
 				}
 
-				// Fill in the Azure account token if needed
+				// Fill in the Azure account token if needed and open the connection dialog if it fails
 				let tokenFillSuccess = await self.fillInAzureTokenIfNeeded(newConnection);
 
 				// If the password is required and still not loaded show the dialog
@@ -755,31 +754,28 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType === Constants.azureMFA && !connection.options['azureAccountToken']) {
-			let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
-			if (accounts && accounts.length > 0) {
-				let account = accounts.find(account => account.key.accountId === connection.userName);
-				if (account) {
-					if (account.isStale) {
-						try {
-							account = await this._accountManagementService.refreshAccount(account);
-						} catch {
-							// This happens when the user cancels the dialog
-							return false;
-						}
-						if (!account) {
-							return false;
-						}
-					}
-					let tokens = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
-					connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
-					connection.options['password'] = '';
-					return true;
-				}
-			}
-			return false;
+		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
+			return true;
 		}
-		return true;
+		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		if (accounts && accounts.length > 0) {
+			let account = accounts.find(account => account.key.accountId === connection.userName);
+			if (account) {
+				if (account.isStale) {
+					try {
+						account = await this._accountManagementService.refreshAccount(account);
+					} catch {
+						// refreshAccount throws an error if the user cancels the dialog
+						return false;
+					}
+				}
+				let tokens = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+				connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
+				connection.options['password'] = '';
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// Request Senders
