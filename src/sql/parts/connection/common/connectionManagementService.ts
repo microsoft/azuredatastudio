@@ -77,7 +77,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
-
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	private _configurationEditService: ConfigurationEditingService;
@@ -123,16 +122,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			statusbar.StatusbarAlignment.RIGHT,
 			100 /* High Priority */
 		));
-
-		if (_capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
-			// prompt the user for a new connection on startup if no profiles are registered
-			this.showConnectionDialog();
-		} else if (_capabilitiesService && !this.hasRegisteredServers()) {
-			_capabilitiesService.onCapabilitiesRegistered(e => {
-				// prompt the user for a new connection on startup if no profiles are registered
-				this.showConnectionDialog();
-			});
-		}
 
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
@@ -282,29 +271,30 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to use after the connection is complete
 	 */
 	private tryConnect(connection: IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+		let self = this;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			// Load the password if it's not already loaded
-			this._connectionStore.addSavedPassword(connection).then(result => {
+			self._connectionStore.addSavedPassword(connection).then(result => {
 				let newConnection = result.profile;
 				let foundPassword = result.savedCred;
 
 				// If there is no password, try to load it from an existing connection
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
-					let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
+				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection)) {
+					let existingConnection = self._connectionStatusManager.findConnectionProfile(connection);
 					if (existingConnection && existingConnection.connectionProfile) {
 						newConnection.password = existingConnection.connectionProfile.password;
 						foundPassword = true;
 					}
 				}
 				// If the password is required and still not loaded show the dialog
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
-					resolve(this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
+				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
+					resolve(self.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
 				} else {
 					// Try to connect
-					this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
+					self.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
 						if (!connectionResult.connected && !connectionResult.errorHandled) {
 							// If connection fails show the dialog
-							resolve(this.showConnectionDialogOnError(connection, owner, connectionResult, options));
+							resolve(self.showConnectionDialogOnError(connection, owner, connectionResult, options));
 						} else {
 							//Resolve with the connection result
 							resolve(connectionResult);
@@ -390,7 +380,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (this._connectionStatusManager.isConnected(ownerUri)) {
 				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 			} else {
-				this.connect(connection, ownerUri).then(connectionResult => {
+				const options: IConnectionCompletionOptions = {
+					saveTheConnection: false,
+					showConnectionDialogOnError: true,
+					showDashboard: purpose === 'dashboard',
+					params: undefined,
+					showFirewallRuleOnError: true,
+				};
+				this.connect(connection, ownerUri, options).then(connectionResult => {
 					if (connectionResult && connectionResult.connected) {
 						resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 					} else {

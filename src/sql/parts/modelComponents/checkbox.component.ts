@@ -14,6 +14,8 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { attachCheckboxStyler } from 'sql/common/theme/styler';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 @Component({
 	selector: 'modelview-checkbox',
@@ -30,7 +32,8 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,) {
 		super(changeRef, el);
 	}
 
@@ -55,6 +58,7 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 					args: e
 				});
 			}));
+			this._register(attachCheckboxStyler(this._input, this.themeService));
 		}
 	}
 

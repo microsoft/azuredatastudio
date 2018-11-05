@@ -165,6 +165,8 @@ import { DashboardViewService } from 'sql/services/dashboard/common/dashboardVie
 import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
+import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
+import { INotebookService } from 'sql/services/notebook/notebookService';
 
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -172,8 +174,10 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
-import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
-import { INotebookService } from 'sql/services/notebook/notebookService';
+// {{SQL CARBON EDIT}}
+import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
+// {{SQL CARBON EDIT}}
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -579,7 +583,9 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(INotebookService, notebookService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
-
+		// {{SQL CARBON EDIT}}
+		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
+		// {{SQL CARBON EDIT}}
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
 		this._register(toDisposable(() => notebookService.shutdown()));

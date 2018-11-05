@@ -33,7 +33,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler } from 'sql/common/theme/styler';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
@@ -532,6 +532,7 @@ export class RestoreDialog extends Modal {
 				ariaLabel: label
 			});
 		});
+		this._register(attachCheckboxStyler(checkbox, this._themeService));
 		return checkbox;
 	}
 
