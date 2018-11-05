@@ -9,6 +9,7 @@ import { nb } from 'sqlops';
 import * as nls from 'vs/nls';
 import { INotebookService, INotebookManager, INotebookProvider } from 'sql/services/notebook/notebookService';
 import URI from 'vs/base/common/uri';
+import { RenderMimeRegistry } from 'sql/parts/notebook/outputview-src/registry';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
@@ -57,4 +58,13 @@ export class NotebookService implements INotebookService {
 
 		return op(provider);
 	}
+
+	//Returns an instantiation of RenderMimeRegistry class
+	getMimeRegistry(): RenderMimeRegistry
+	{
+		//let mimeRegistry: RenderMimeRegistry;
+		return new RenderMimeRegistry();
+	}
+
+
 }
