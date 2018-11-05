@@ -140,7 +140,7 @@ export class WizardModal extends Modal {
 
 		bodyBuilderObj.div({ class: 'dialog-message-and-page-container' }, (mpContainer) => {
 			this._messageAndPageContainer = mpContainer.getHTMLElement();
-			this._messageAndPageContainer.append(this._messageElement);
+			mpContainer.append(this._messageElement);
 			this._pageContainer = mpContainer.div({ class: 'dialogModal-page-container' }).getHTMLElement();
 		});
 
