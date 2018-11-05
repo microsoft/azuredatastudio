@@ -26,7 +26,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 export class ClearRecentConnectionsAction extends Action {
 
 	public static ID = 'clearRecentConnectionsAction';
-	public static LABEL = nls.localize('ClearRecentlyUsedLabel', 'Clear Recent Connections List');
+	public static LABEL = nls.localize('ClearRecentlyUsedLabel', 'Clear List');
 	public static ICON = 'search-action clear-search-results';
 
 	private _onRecentConnectionsRemoved = new Emitter<void>();
@@ -83,7 +83,7 @@ export class ClearRecentConnectionsAction extends Action {
 				{ key: nls.localize('connectionAction.no', 'No'), value: false }
 			];
 
-			self._quickOpenService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', 'Clear Recent Connections List'), ignoreFocusLost: true }).then((choice) => {
+			self._quickOpenService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', 'Clear List'), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});

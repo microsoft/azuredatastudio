@@ -125,7 +125,7 @@ export class OptionsDialog extends Modal {
 		});
 
 		let builder = new Builder(this._body);
-		builder.div({ class: 'Connection-divider' }, (dividerContainer) => {
+		builder.div({}, (dividerContainer) => {
 			this._dividerBuilder = dividerContainer;
 		});
 

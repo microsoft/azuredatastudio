@@ -611,7 +611,7 @@
   </body></file>
   <file original="src/sql/parts/connection/common/connectionActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ClearRecentlyUsedLabel">
-      <source xml:lang="en">Clear Recent Connections List</source>
+      <source xml:lang="en">Clear List</source>
     </trans-unit>
     <trans-unit id="ClearedRecentConnections">
       <source xml:lang="en">Recent connections list cleared</source>
@@ -1039,10 +1039,10 @@
       <source xml:lang="en">Connection</source>
     </trans-unit>
     <trans-unit id="recentConnectionTitle">
-      <source xml:lang="en">Recent connections</source>
+      <source xml:lang="en">Recent Connections</source>
     </trans-unit>
     <trans-unit id="savedConnectionTitle">
-      <source xml:lang="en">Saved connections</source>
+      <source xml:lang="en">Saved Connections</source>
     </trans-unit>
     <trans-unit id="connectType">
       <source xml:lang="en">Connection type</source>
@@ -1644,7 +1644,7 @@
   </body></file>
   <file original="src/sql/parts/connection/connectionDialog/advancedPropertiesController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="connectionAdvancedProperties">
-      <source xml:lang="en">Advanced properties</source>
+      <source xml:lang="en">Advanced Properties</source>
     </trans-unit>
     <trans-unit id="advancedProperties.discard">
       <source xml:lang="en">Discard</source>

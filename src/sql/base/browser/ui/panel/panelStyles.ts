@@ -19,6 +19,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 			.tabbedPanel > .title .tabList .tab .tabLabel.active {
 				color: ${titleActive};
 				border-bottom-color: ${titleActiveBorder};
+				border-bottom-width: 2px;
 			}
 
 			.tabbedPanel > .title .tabList .tab-header.active {
