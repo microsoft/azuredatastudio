@@ -35,7 +35,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Sunday');
 	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', 'Workday begin');
 	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', 'Workday end');
-	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', 'Pager on duty schdule');
+	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', 'Pager on duty schedule');
 
 	// Notifications tab strings
 	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', 'Alert list');
