@@ -253,7 +253,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._messageElement = this._modalMessageSection.getHTMLElement();
 			this.updateElementVisibility(this._messageElement, false);
 
-			if (!this._useDefaultMessageBoxLocation) {
+			if (this._useDefaultMessageBoxLocation) {
 				parts.push(this._messageElement);
 			}
 		}
