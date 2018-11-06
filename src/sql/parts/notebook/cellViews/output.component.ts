@@ -23,7 +23,8 @@ export class OutputComponent extends AngularDisposable implements OnInit {
     @Input() cellOutput: nb.ICellOutput;
 	private readonly _minimumHeight = 30;
 	registry: RenderMimeRegistry;
-	trusted: boolean = true;
+    trusted: boolean = true;
+
 
 	constructor(
 		@Inject(INotebookService) private _notebookService: INotebookService

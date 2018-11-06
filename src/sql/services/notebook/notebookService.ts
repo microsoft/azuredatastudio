@@ -9,7 +9,7 @@ import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import URI from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { RenderMimeRegistry } from 'sql/parts/notebook/outputview-src/registry';
+import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);

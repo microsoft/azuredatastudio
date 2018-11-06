@@ -9,7 +9,7 @@ import { nb } from 'sqlops';
 import * as nls from 'vs/nls';
 import { INotebookService, INotebookManager, INotebookProvider } from 'sql/services/notebook/notebookService';
 import URI from 'vs/base/common/uri';
-import { RenderMimeRegistry } from 'sql/parts/notebook/outputview-src/registry';
+import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
