@@ -8,9 +8,9 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { nb } from 'sqlops';
 import { INotebookService } from 'sql/services/notebook/notebookService';
-import { MimeModel } from 'sql/parts/notebook/outputview-src/common/mimemodel';
-import * as outputProcessor from '../outputview-src/common/outputProcessor';
-import { RenderMimeRegistry } from 'sql/parts/notebook/outputview-src/registry';
+import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
+import * as outputProcessor from '../outputs/common/outputProcessor';
+import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 
