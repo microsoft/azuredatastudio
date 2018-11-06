@@ -301,7 +301,7 @@ export enum TaskExecutionMode {
 }
 export interface DacFxExportParams {
 	connectionString: string;
-	packageFileName: string;
+	packageFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -318,12 +318,30 @@ export interface DacFxImportResponse {
 	operationId: string;
 }
 
+export interface DacFxExtractParams {
+	connectionString: string;
+	packageFilePath: string;
+	applicationName: string;
+	applicationVersion: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface DacFxExtractResult {
+	operationId: string;
+}
+
 export namespace DacFxExportRequest {
 	export const type = new RequestType<DacFxExportParams, sqlops.DacFxExportResult, void, void>('dacfx/export');
 }
 
 export namespace DacFxImportRequest {
 	export const type = new RequestType<DacFxImportParams, sqlops.DacFxImportResult, void, void>('dacfx/import');
+}
+
+
+export namespace DacFxExtractRequest {
+	export const type = new RequestType<DacFxExtractParams, sqlops.DacFxExtractResult, void, void>('dacfx/extract');
 }
 
 // ------------------------------- < DacFx > ------------------------------------

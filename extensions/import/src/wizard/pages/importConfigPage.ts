@@ -40,8 +40,8 @@ export class ImportConfigPage extends DacFxPage {
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
-					serverComponent,
 					fileBrowserComponent,
+					serverComponent,
 					databaseComponent,
 				], {
 					horizontal: true
@@ -202,7 +202,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxImport.fileTextboxTitle', 'Location of bacpac'),
+			title: localize('dacFxImport.fileTextboxTitle', 'Bacpac to import'),
 			actions: [this.fileButton]
 		};
 	}

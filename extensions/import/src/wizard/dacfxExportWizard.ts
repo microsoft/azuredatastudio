@@ -89,10 +89,10 @@ export class DacFxExportWizard extends DacFxWizard {
 
 	private async export() {
 		let connectionstring = await this.getConnectionString();
-		let packageFileName = this.model.filePath;
+		let packageFilePath = this.model.filePath;
 		let service = await DacFxExportWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
-		let result = await service.exportBacpac(connectionstring, packageFileName, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.exportBacpac(connectionstring, packageFilePath, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

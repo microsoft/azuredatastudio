@@ -71,7 +71,7 @@ export class ExportSummaryPage extends DacFxPage {
 				[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
 				[localize('dacfxExport.databaseName', 'Database'), this.model.databaseName],
 				[localize('dacfxExport.bacpacLocation', 'Bacpac location'), this.model.filePath]],
-			columns: ['Object type', 'Value'],
+			columns: ['Setting', 'Value'],
 			width: 600,
 			height: 200
 		});

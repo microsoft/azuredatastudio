@@ -1593,10 +1593,14 @@ declare module 'sqlops' {
 		operationId: string;
 	}
 
+	export interface DacFxExtractResult extends ResultStatus {
+		operationId: string;
+	}
+
 	export interface DacFxExportParams {
 		connectionString: string;
-		packageFileName: string;
-		owneruri: string;
+		packageFilePath: string;
+		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
 
@@ -1604,13 +1608,23 @@ declare module 'sqlops' {
 		connectionString: string;
 		packageFilePath: string;
 		targetDatabaseName: string;
-		owneruri: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DacFxExtractParams {
+		connectionString: string;
+		packageFilePath: string;
+		applicationName: string;
+		applicationVersion: string;
+		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
 
 	export interface DacFxServicesProvider extends DataProvider {
-		exportBacpac(connectionstring: string, packageFileName: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxExportResult>;
-		importBacpac(connectionstring: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxImportResult>;
+		exportBacpac(connectionString: string, packageFilePath: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxExportResult>;
+		importBacpac(connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxImportResult>;
+		extractDacpac(connectionString:string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxExtractResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
