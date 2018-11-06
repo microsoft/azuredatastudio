@@ -212,7 +212,7 @@ export class ConnectionWidget {
 		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
 		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdownBuilder.getContainer(), { ariaLabel: accountLabel });
 		DialogHelper.appendInputSelectBox(accountDropdownBuilder, this._azureAccountDropdown);
-		let refreshCredentialsBuilder = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'azure-account-row');
+		let refreshCredentialsBuilder = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'azure-account-row refresh-credentials-link');
 		this._refreshCredentialsLinkBuilder = refreshCredentialsBuilder.a({ href: '#' }).text(localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials'));
 
 		// Database
@@ -432,9 +432,9 @@ export class ConnectionWidget {
 	private async updateRefreshCredentialsLink(): Promise<void> {
 		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (chosenAccount && chosenAccount.isStale) {
-			this._refreshCredentialsLinkBuilder.display('block');
+			this._tableContainer.getContainer().classList.remove('hide-refresh-link');
 		} else {
-			this._refreshCredentialsLinkBuilder.display('none');
+			this._tableContainer.getContainer().classList.add('hide-refresh-link');
 		}
 	}
 
