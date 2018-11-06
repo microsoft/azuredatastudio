@@ -3,12 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+
 export interface IObservableCollection<T> {
 	getLength(): number;
 	at(index: number): T;
 	getRange(start: number, end: number): T[];
 	setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void;
 	setLength(number): void;
+	dispose(): void;
 }
 
 class LoadCancellationToken {
@@ -27,6 +30,16 @@ class DataWindow<T> {
 		private placeholderItemGenerator: (index: number) => T,
 		private loadCompleteCallback: (start: number, end: number) => void
 	) { }
+
+	dispose() {
+		this._data = undefined;
+		this.loadFunction = undefined;
+		this.placeholderItemGenerator = undefined;
+		this.loadCompleteCallback = undefined;
+		if (this.lastLoadCancellationToken) {
+			this.lastLoadCancellationToken.isCancelled = true;
+		}
+	}
 
 	public getStartIndex(): number {
 		return this._offsetFromDataSource;
@@ -60,10 +73,9 @@ class DataWindow<T> {
 			return;
 		}
 
-		let cancellationToken = new LoadCancellationToken();
-		this.lastLoadCancellationToken = cancellationToken;
+		this.lastLoadCancellationToken = new LoadCancellationToken();
 		this.loadFunction(offset, length).then(data => {
-			if (!cancellationToken.isCancelled) {
+			if (!this.lastLoadCancellationToken.isCancelled) {
 				this._data = data;
 				this.loadCompleteCallback(this._offsetFromDataSource, this._offsetFromDataSource + this._length);
 			}
@@ -93,6 +105,12 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 		this._bufferWindowBefore = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
 		this._window = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
 		this._bufferWindowAfter = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
+	}
+
+	dispose() {
+		this._bufferWindowAfter.dispose();
+		this._bufferWindowBefore.dispose();
+		this._window.dispose();
 	}
 
 	public setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void {
@@ -181,7 +199,7 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 	}
 }
 
-export class AsyncDataProvider<T extends Slick.SlickData> implements Slick.DataProvider<T> {
+export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 
 	constructor(public dataRows: IObservableCollection<T>) { }
 
@@ -203,5 +221,9 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements Slick.DataP
 
 	public get length(): number {
 		return this.dataRows.getLength();
+	}
+
+	dispose() {
+		this.dataRows.dispose();
 	}
 }

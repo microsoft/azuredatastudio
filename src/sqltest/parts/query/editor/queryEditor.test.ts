@@ -141,6 +141,8 @@ suite('SQL QueryEditor Tests', () => {
 		connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
+		connectionManagementService.setup(x => x.disconnectEditor(TypeMoq.It.isAny())).returns(() => void 0);
+		connectionManagementService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
 
 		// Create a QueryModelService
 		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
@@ -328,6 +330,9 @@ suite('SQL QueryEditor Tests', () => {
 			queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
 			queryConnectionService.callBase = true;
 
+			queryConnectionService.setup(x => x.disconnectEditor(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
+			queryConnectionService.setup(x => x.ensureDefaultLanguageFlavor(TypeMoq.It.isAnyString())).returns(() => void 0);
+
 			// Mock InstantiationService to give us the actions
 			queryActionInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 
@@ -354,12 +359,13 @@ suite('SQL QueryEditor Tests', () => {
 			let fileInput = new UntitledEditorInput(URI.parse('testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined);
 			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
 			queryModelService.callBase = true;
+			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny())).returns(() => void 0);
 			queryInput = new QueryInput(
 				'',
 				fileInput,
 				undefined,
 				undefined,
-				undefined,
+				connectionManagementService.object,
 				queryModelService.object,
 				undefined,
 				undefined
@@ -395,7 +401,7 @@ suite('SQL QueryEditor Tests', () => {
 		test('Test that we attempt to dispose query when the queryInput is disposed', (done) => {
 			let queryResultsInput = new QueryResultsInput('testUri', configurationService.object);
 			queryInput['_results'] = queryResultsInput;
-			queryInput.dispose();
+			queryInput.close();
 			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 			done();
 		});
