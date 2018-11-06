@@ -3,11 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+
 export interface IObservableCollection<T> {
 	getLength(): number;
 	at(index: number): T;
 	getRange(start: number, end: number): T[];
 	setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void;
+	dispose(): void;
 }
 
 export interface IGridDataRow {
@@ -24,24 +27,27 @@ class LoadCancellationToken {
 }
 
 class DataWindow<TData> {
-	private _dataSourceLength: number;
 	private _data: TData[];
 	private _length: number = 0;
 	private _offsetFromDataSource: number = -1;
 
-	private loadFunction: (offset: number, count: number) => Thenable<TData[]>;
 	private lastLoadCancellationToken: LoadCancellationToken;
-	private loadCompleteCallback: (start: number, end: number) => void;
-	private placeholderItemGenerator: (index: number) => TData;
 
-	constructor(dataSourceLength: number,
-		loadFunction: (offset: number, count: number) => Thenable<TData[]>,
-		placeholderItemGenerator: (index: number) => TData,
-		loadCompleteCallback: (start: number, end: number) => void) {
-		this._dataSourceLength = dataSourceLength;
-		this.loadFunction = loadFunction;
-		this.placeholderItemGenerator = placeholderItemGenerator;
-		this.loadCompleteCallback = loadCompleteCallback;
+	constructor(
+		private loadFunction: (offset: number, count: number) => Thenable<TData[]>,
+		private placeholderItemGenerator: (index: number) => TData,
+		private loadCompleteCallback: (start: number, end: number) => void
+	) {
+	}
+
+	dispose() {
+		this._data = undefined;
+		this.loadFunction = undefined;
+		this.placeholderItemGenerator = undefined;
+		this.loadCompleteCallback = undefined;
+		if (this.lastLoadCancellationToken) {
+			this.lastLoadCancellationToken.isCancelled = true;
+		}
 	}
 
 	getStartIndex(): number {
@@ -76,10 +82,9 @@ class DataWindow<TData> {
 			return;
 		}
 
-		let cancellationToken = new LoadCancellationToken();
-		this.lastLoadCancellationToken = cancellationToken;
+		this.lastLoadCancellationToken = new LoadCancellationToken();
 		this.loadFunction(offset, length).then(data => {
-			if (!cancellationToken.isCancelled) {
+			if (!this.lastLoadCancellationToken.isCancelled) {
 				this._data = data;
 				this.loadCompleteCallback(this._offsetFromDataSource, this._offsetFromDataSource + this._length);
 			}
@@ -97,10 +102,12 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 
 	private collectionChangedCallback: (change: CollectionChange, startIndex: number, count: number) => void;
 
-	constructor(windowSize: number,
+	constructor(
+		windowSize: number,
 		length: number,
 		loadFn: (offset: number, count: number) => Thenable<TData[]>,
-		private _placeHolderGenerator: (index: number) => TData) {
+		private _placeHolderGenerator: (index: number) => TData
+	) {
 		this._windowSize = windowSize;
 		this._length = length;
 
@@ -110,9 +117,15 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 			}
 		};
 
-		this._bufferWindowBefore = new DataWindow(length, loadFn, _placeHolderGenerator, loadCompleteCallback);
-		this._window = new DataWindow(length, loadFn, _placeHolderGenerator, loadCompleteCallback);
-		this._bufferWindowAfter = new DataWindow(length, loadFn, _placeHolderGenerator, loadCompleteCallback);
+		this._bufferWindowBefore = new DataWindow(loadFn, _placeHolderGenerator, loadCompleteCallback);
+		this._window = new DataWindow(loadFn, _placeHolderGenerator, loadCompleteCallback);
+		this._bufferWindowAfter = new DataWindow(loadFn, _placeHolderGenerator, loadCompleteCallback);
+	}
+
+	dispose() {
+		this._bufferWindowAfter.dispose();
+		this._bufferWindowBefore.dispose();
+		this._window.dispose();
 	}
 
 	setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void {
@@ -197,7 +210,7 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 	}
 }
 
-export class AsyncDataProvider<TData extends IGridDataRow> implements Slick.DataProvider<TData> {
+export class AsyncDataProvider<TData extends IGridDataRow> implements IDisposableDataProvider<TData> {
 
 	constructor(private dataRows: IObservableCollection<TData>) { }
 
@@ -211,5 +224,9 @@ export class AsyncDataProvider<TData extends IGridDataRow> implements Slick.Data
 
 	public getRange(start: number, end: number): TData[] {
 		return !this.dataRows ? undefined : this.dataRows.getRange(start, end);
+	}
+
+	dispose() {
+		this.dataRows.dispose();
 	}
 }
