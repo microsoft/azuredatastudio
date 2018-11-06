@@ -5,11 +5,8 @@
 import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
-
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { nb } from 'sqlops';
-
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { INotebookService } from 'sql/services/notebook/notebookService';
 import { MimeModel } from 'sql/parts/notebook/outputview-src/common/mimemodel';
 import * as outputProcessor from '../outputview-src/common/outputProcessor';
@@ -23,7 +20,7 @@ export const OUTPUT_SELECTOR: string = 'output-component';
 })
 export class OutputComponent extends AngularDisposable implements OnInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
-	@Input() cellOutput: nb.ICellOutput;
+    @Input() cellOutput: nb.ICellOutput;
 	private readonly _minimumHeight = 30;
 	registry: RenderMimeRegistry;
 	trusted: boolean = true;
@@ -32,7 +29,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		@Inject(INotebookService) private _notebookService: INotebookService
 	) {
 		super();
-		this.registry = _notebookService.getMimeRegistry();
+        this.registry = _notebookService.getMimeRegistry();
 	}
 
 	ngOnInit() {

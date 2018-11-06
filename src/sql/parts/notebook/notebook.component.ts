@@ -32,7 +32,8 @@ class CellModelStub implements ICellModel {
 		public source: string,
 		public cellType: CellType,
 		public trustedMode: boolean = false,
-		public active: boolean = false
+		public active: boolean = false,
+		public outputs: ReadonlyArray<nb.ICellOutput> = undefined
 	) { }
 
 	equals(cellModel: ICellModel): boolean {
@@ -64,7 +65,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 
 		// TODO NOTEBOOK REFACTOR: This is mock data for cells. Will remove this code when we have a service
 		let cell1 : ICellModel = new CellModelStub ('1', 'sql', 'select * from sys.tables', CellTypes.Code);
-		let cell2 : ICellModel = new CellModelStub ('2', 'sql', 'select 1', CellTypes.Code);
+		let output1: nb.IStreamResult = {
+			output_type: 'stream',
+			name: 'stdout',
+			text: 'hello world'
+		};
+		let cell2 : ICellModel = new CellModelStub ('2', 'sql', 'select 1', CellTypes.Code, false, false, [output1]);
 		let cell3 : ICellModel = new CellModelStub ('3', 'markdown', '## This is test!', CellTypes.Markdown);
 		this.cells.push(cell1, cell2, cell3);
 	}
