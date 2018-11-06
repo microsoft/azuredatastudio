@@ -26,7 +26,6 @@
     "Microsoft.mssql"
   ],
   "contributes": {
-
     "commands": [
       {
         "command": "profiler.newProfiler",
@@ -49,6 +48,15 @@
         "category": "Profiler"
       }
     ],
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "profiler.newProfiler",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+          "group": "profiler"
+        }
+      ]
+    },
     "outputChannels": [
       "sqlprofiler"
     ]

@@ -91,6 +91,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		});
 	}
 
+	public get providerType(): string {
+		return this._connection ? this._connection.providerName : undefined;
+	}
+
 	public set viewTemplate(template: IProfilerViewTemplate) {
 		this._data.clear();
 		this._viewTemplate = template;
