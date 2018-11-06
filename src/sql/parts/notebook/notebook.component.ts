@@ -59,6 +59,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	) {
 		super();
 		this.profile = this.notebookParams!.profile;
+		this.isLoading = true;
 	}
 
 	ngOnInit() {
