@@ -89,4 +89,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			this._changeRef.detectChanges();
 		}
 	}
+
+	public onKeyDown(event) {
+		switch (event.key) {
+			case 'ArrowDown':
+			case 'ArrowRight':
+				let nextIndex = (this.findCellIndex(this._activeCell) + 1)%this.cells.length;
+				this.selectCell(this.cells[nextIndex]);
+				break;
+			case 'ArrowUp':
+			case 'ArrowLeft':
+				let index = this.findCellIndex(this._activeCell);
+				if (index === 0) {
+					index = this.cells.length;
+				}
+				this.selectCell(this.cells[--index]);
+				break;
+			default:
+				break;
+		}
+	}
+
+	findCellIndex(cellModel: ICellModel): number {
+        return this.cells.findIndex((cell) => cell.id === cellModel.id);
+	}
 }
