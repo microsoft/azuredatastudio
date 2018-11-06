@@ -12,6 +12,7 @@ import { CreateSessionData } from '../data/createSessionData';
 const localize = nls.loadMessageBundle();
 
 export class CreateSessionDialog {
+	private readonly _providerType: string;
 
 	// Top level
 	private readonly DialogTitle: string = localize('createSessionDialog.newSession', 'New Session');
@@ -30,13 +31,17 @@ export class CreateSessionDialog {
 	public readonly onSuccess: vscode.Event<CreateSessionData> = this._onSuccess.event;
 
 
-	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
+	constructor(ownerUri: string, providerType: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
 		if (typeof (templates) === 'undefined' || templates === null) {
 			throw new Error(localize('createSessionDialog.templatesInvalid', "Invalid templates list, cannot open dialog"));
 		}
 		if (typeof (ownerUri) === 'undefined' || ownerUri === null) {
 			throw new Error(localize('createSessionDialog.dialogOwnerInvalid', "Invalid dialog owner, cannot open dialog"));
 		}
+		if (typeof (providerType) === 'undefined' || providerType === null) {
+			throw new Error(localize('createSessionDialog.invalidProviderType', "Invalid provider type, cannot open dialog"));
+		}
+		this._providerType = providerType;
 		this.model = new CreateSessionData(ownerUri, templates);
 	}
 
@@ -97,8 +102,7 @@ export class CreateSessionDialog {
 	}
 
 	private async execute(): Promise<void> {
-		let currentConnection = await sqlops.connection.getCurrentConnection();
-		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
+		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(this._providerType, sqlops.DataProviderType.ProfilerProvider);
 
 		let name = this.sessionNameBox.value;
 		let selected = this.templatesBox.value.toString();

@@ -228,6 +228,6 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
-		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, this.getSessionTemplates());
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, input.providerType, this.getSessionTemplates());
 	}
 }
