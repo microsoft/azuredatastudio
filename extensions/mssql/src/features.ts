@@ -51,7 +51,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 		let self = this;
 
-		let exportBacpac = (connectionString: string, packageFilePath: string, ownerUri: string, taskExecutionMode:sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
+		let exportBacpac = (connectionString: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
 			let params: contracts.DacFxExportParams = { connectionString: connectionString, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.DacFxExportRequest.type, params).then(
 				r => {
@@ -65,7 +65,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let importBacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode:sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
+		let importBacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
 			let params: contracts.DacFxImportParams = { connectionString: connectionString, packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.DacFxImportRequest.type, params).then(
 				r => {
@@ -79,7 +79,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let extractDacpac = (connectionString: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode:sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
+		let extractDacpac = (connectionString: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
 			let params: contracts.DacFxExtractParams = { connectionString: connectionString, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.DacFxExtractRequest.type, params).then(
 				r => {
