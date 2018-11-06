@@ -40,8 +40,8 @@ export class OpenNotebookAction extends Action {
 	public run(): TPromise<void> {
 		return new TPromise<void>((resolve, reject) => {
 			let untitledUri = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter++}`});
-			let model = new NotebookInputModel(untitledUri, undefined, undefined);
-			let input = new NotebookInput('modelViewId', model);
+			let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
+			let input = new NotebookInput('modelViewId', model,);
 			this._editorService.openEditor(input, { pinned: true });
 		});
 	}
