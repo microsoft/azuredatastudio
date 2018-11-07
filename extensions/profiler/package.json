@@ -29,7 +29,7 @@
     "commands": [
       {
         "command": "profiler.newProfiler",
-        "title": "New Profiler",
+        "title": "Launch Profiler",
         "category": "Profiler"
       },
       {

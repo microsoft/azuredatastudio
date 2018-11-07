@@ -28,6 +28,7 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -399,6 +400,9 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 	if (activeInput) {
 		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
 			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
+		}
+		else if (activeInput instanceof ProfilerInput) {
+			connection = activeInput.connection;
 		}
 	}
 

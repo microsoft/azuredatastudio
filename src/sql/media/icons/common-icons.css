@@ -227,6 +227,51 @@
 	background: url('unpin.svg') center center no-repeat;
 }
 
+.vs .sql.icon.pause {
+	background-image: url('pause.svg')
+}
+
+.vs-dark .sql.icon.pause,
+.hc-black .sql.icon.pause {
+	background-image: url('pause_inverse.svg')
+}
+
+.vs .sql.icon.continue {
+	background-image: url('continue.svg')
+}
+
+.vs-dark .sql.icon.continue,
+.hc-black .sql.icon.continue {
+	background-image: url('continue_inverse.svg')
+}
+
+.vs .sql.icon.checked {
+	background-image: url('check.svg')
+}
+
+.vs-dark .sql.icon.checked,
+.hc-black .sql.icon.checked {
+	background-image: url('check_inverse.svg')
+}
+
+.vs .sql.icon.start {
+	background-image: url('start.svg')
+}
+
+.vs-dark .sql.icon.start,
+.hc-black .sql.icon.start {
+	background-image: url('start_inverse.svg')
+}
+
+.vs .sql.icon.stop {
+	background-image: url('stop.svg')
+}
+
+.vs-dark .sql.icon.stop,
+.hc-black .sql.icon.stop {
+	background-image: url('stop_inverse.svg')
+}
+
 .small {
 	width: 16px;
 	height: 16px;

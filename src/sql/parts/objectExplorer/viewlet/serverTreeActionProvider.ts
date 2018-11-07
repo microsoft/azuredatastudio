@@ -24,7 +24,6 @@ import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NewProfilerAction } from 'sql/parts/profiler/contrib/profilerActions';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';

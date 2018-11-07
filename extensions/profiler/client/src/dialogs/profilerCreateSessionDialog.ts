@@ -12,10 +12,7 @@ import { CreateSessionData } from '../data/createSessionData';
 const localize = nls.loadMessageBundle();
 
 export class CreateSessionDialog {
-	private readonly _providerType: string;
-
 	// Top level
-	private readonly DialogTitle: string = localize('createSessionDialog.newSession', 'New Session');
 	private readonly CancelButtonText: string = localize('createSessionDialog.cancel', 'Cancel');
 	private readonly CreateButtonText: string = localize('createSessionDialog.create', 'Create');
 	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Create New Profiler Session');
@@ -26,6 +23,7 @@ export class CreateSessionDialog {
 	private sessionNameBox: sqlops.InputBoxComponent;
 
 	private model: CreateSessionData;
+	private readonly _providerType: string;
 
 	private _onSuccess: vscode.EventEmitter<CreateSessionData> = new vscode.EventEmitter<CreateSessionData>();
 	public readonly onSuccess: vscode.Event<CreateSessionData> = this._onSuccess.event;
@@ -46,7 +44,7 @@ export class CreateSessionDialog {
 	}
 
 	public async showDialog(): Promise<void> {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitleText);
 		this.initializeContent();
 		this.dialog.okButton.onClick(() => this.execute());
 		this.dialog.cancelButton.onClick(() => { });
@@ -81,7 +79,7 @@ export class CreateSessionDialog {
 
 						title: localize('createSessionDialog.enterSessionName', "Enter session name:")
 					}],
-					title: this.DialogTitleText
+					title: ''
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
