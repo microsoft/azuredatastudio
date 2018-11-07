@@ -102,7 +102,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public set sessionName(name: string) {
-		if (!this._state.isRunning || !this.state.isPaused) {
+		if (!this.state.isRunning || !this.state.isPaused) {
 			this._sessionName = name;
 		}
 	}
@@ -254,7 +254,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	confirmSave(): TPromise<ConfirmResult> {
-		if (this._state.isRunning || this.state.isPaused) {
+		if (this.state.isRunning || this.state.isPaused) {
 			return this._dialogService.show(Severity.Warning,
 				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
 				[
@@ -277,6 +277,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	isDirty(): boolean {
-		return this._state.isRunning || this.state.isPaused;
+		return this.state.isRunning || this.state.isPaused;
 	}
 }
