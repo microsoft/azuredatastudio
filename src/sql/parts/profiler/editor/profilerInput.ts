@@ -12,7 +12,7 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -22,6 +22,7 @@ import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/
 import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 import URI from 'vs/base/common/uri';
+import Severity from 'vs/base/common/severity';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -72,23 +73,6 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			return ret;
 		};
 		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn);
-
-		this.onDispose(() => {
-			if (this._state.isRunning || this.state.isPaused) {
-				let confirm: IConfirmation = {
-					message: nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
-					primaryButton: nls.localize('profilerClosingActions.yes', 'Yes'),
-					secondaryButton: nls.localize('profilerClosingActions.no', 'No'),
-					type: 'question'
-				};
-
-				this._dialogService.confirm(confirm).then(result => {
-					if (result.confirmed) {
-						this._profilerService.stopSession(this.id);
-					}
-				});
-			}
-		});
 	}
 
 	public get providerType(): string {
@@ -267,5 +251,32 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._data.push(data);
 		}
 
+	}
+
+	confirmSave(): TPromise<ConfirmResult> {
+		if (this._state.isRunning || this.state.isPaused) {
+			return this._dialogService.show(Severity.Warning,
+				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
+				[
+					nls.localize('profilerClosingActions.yes', 'Yes'),
+					nls.localize('profilerClosingActions.no', 'No'),
+					nls.localize('profilerClosingActions.cancel', 'Cancel')
+				]).then((selection: number) => {
+					if (selection === 0) {
+						this._profilerService.stopSession(this.id);
+						return ConfirmResult.DONT_SAVE;
+					} else if (selection === 1) {
+						return ConfirmResult.DONT_SAVE;
+					} else {
+						return ConfirmResult.CANCEL;
+					}
+				});;
+		} else {
+			return TPromise.wrap(ConfirmResult.DONT_SAVE);
+		}
+	}
+
+	isDirty(): boolean {
+		return this._state.isRunning || this.state.isPaused;
 	}
 }
