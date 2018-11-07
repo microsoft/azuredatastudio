@@ -26,12 +26,9 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { CodeComponent } from 'sql/parts/notebook/cellViews/code.component';
 import { CodeCellComponent } from 'sql/parts/notebook/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/parts/notebook/cellViews/textCell.component';
-<<<<<<< HEAD
 import { OutputAreaComponent } from 'sql/parts/notebook/cellViews/outputArea.component';
 import { OutputComponent } from 'sql/parts/notebook/cellViews/output.component';
-=======
 import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
->>>>>>> origin/feature/nativeNotebook
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	@NgModule({

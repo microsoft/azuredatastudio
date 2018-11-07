@@ -31,27 +31,6 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
-<<<<<<< HEAD
-class CellModelStub implements ICellModel {
-	public cellUri: URI;
-	constructor(public id: string,
-		public language: string,
-		public source: string,
-		public cellType: CellType,
-		public trustedMode: boolean = false,
-		public active: boolean = false,
-		public outputs: ReadonlyArray<nb.ICellOutput> = undefined
-	) { }
-
-	equals(cellModel: ICellModel): boolean {
-		throw new Error('Method not implemented.');
-	}
-	toJSON(): nb.ICell {
-		throw new Error('Method not implemented.');
-	}
-}
-=======
->>>>>>> origin/feature/nativeNotebook
 
 @Component({
 	selector: NOTEBOOK_SELECTOR,
@@ -79,30 +58,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IBootstrapParams) private notebookParams: INotebookParams
 	) {
 		super();
-<<<<<<< HEAD
-
-		// TODO NOTEBOOK REFACTOR: This is mock data for cells. Will remove this code when we have a service
-		let output1: nb.IDisplayResult ={
-			output_type: 'display_data',
-			data: {
-				'text/plain': [
-				 '<IPython.core.display.HTML object>'
-				]
-			}
-		}
-		let cell1 : ICellModel = new CellModelStub ('1', 'sql', 'select * from sys.tables', CellTypes.Code, false, false, [output1]);
-		let output2: nb.IStreamResult = {
-			output_type: 'stream',
-			name: 'stdout',
-			text: 'hello world'
-		};
-		let cell2 : ICellModel = new CellModelStub ('2', 'sql', 'select 1', CellTypes.Code, false, false, [output2]);
-		let cell3 : ICellModel = new CellModelStub ('3', 'markdown', '## This is test!', CellTypes.Markdown);
-		this.cells.push(cell1, cell2, cell3);
-=======
 		this.profile = this.notebookParams!.profile;
 		this.isLoading = true;
->>>>>>> origin/feature/nativeNotebook
 	}
 
 	ngOnInit() {
