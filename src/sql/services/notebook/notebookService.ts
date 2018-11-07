@@ -9,6 +9,7 @@ import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import URI from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
@@ -40,6 +41,8 @@ export interface INotebookService {
 	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager>;
 
 	shutdown(): void;
+
+	getMimeRegistry(): RenderMimeRegistry;
 }
 
 export interface INotebookProvider {

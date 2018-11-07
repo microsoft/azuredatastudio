@@ -338,6 +338,7 @@ export interface ICellModel {
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
+	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICell;
 }

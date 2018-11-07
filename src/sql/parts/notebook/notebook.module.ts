@@ -26,6 +26,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { CodeComponent } from 'sql/parts/notebook/cellViews/code.component';
 import { CodeCellComponent } from 'sql/parts/notebook/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/parts/notebook/cellViews/textCell.component';
+import { OutputAreaComponent } from 'sql/parts/notebook/cellViews/outputArea.component';
+import { OutputComponent } from 'sql/parts/notebook/cellViews/output.component';
 import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
@@ -40,7 +42,9 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			CodeCellComponent,
 			TextCellComponent,
 			NotebookComponent,
-			ComponentHostDirective
+			ComponentHostDirective,
+			OutputAreaComponent,
+			OutputComponent
 		],
 		entryComponents: [NotebookComponent],
 		imports: [
