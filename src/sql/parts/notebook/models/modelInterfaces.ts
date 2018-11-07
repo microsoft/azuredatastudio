@@ -21,7 +21,7 @@ import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export interface IClientSessionOptions {
-	path: string;
+	notebookUri: URI;
 	notebookManager: INotebookManager;
 	notificationService: INotificationService;
 }
@@ -73,7 +73,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * The current path associated with the client session.
 	 */
-	readonly path: string;
+	readonly notebookUri: URI;
 
 	/**
 	 * The current name associated with the client session.
@@ -353,7 +353,7 @@ export interface INotebookModelOptions {
 	/**
 	 * Path to the local or remote notebook
 	 */
-	path: string;
+	notebookUri: URI;
 
 	/**
 	 * Factory for creating cells and client sessions
