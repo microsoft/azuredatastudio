@@ -142,11 +142,6 @@ export namespace nbformat {
     }
 
     /**
-     * A type which describes the type of cell.
-     */
-    export type CellType = 'code' | 'markdown' | 'raw';
-
-    /**
      * Cell-level metadata.
      */
     export interface IBaseCellMetadata extends JSONObject {

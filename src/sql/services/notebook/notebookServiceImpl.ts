@@ -17,8 +17,7 @@ import { SessionManager } from 'sql/services/notebook/sessionManager';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
-	_mimeRegistry: RenderMimeRegistry;
-
+	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, INotebookProvider> = new Map();
 	private _managers: Map<URI, INotebookManager> = new Map();
 
