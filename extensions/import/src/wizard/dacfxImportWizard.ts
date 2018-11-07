@@ -37,7 +37,7 @@ export class DacFxImportWizard extends DacFxWizard {
 
 		this.connection = await sqlops.connection.getCurrentConnection();
 		if (!this.connection) {
-			vscode.window.showErrorMessage(localize('dacFxExport.needConnection', 'Please connect to a server before using this wizard.'));
+			vscode.window.showErrorMessage(localize('dacFxImport.needConnection', 'Please connect to a server before using this wizard.'));
 			return;
 		}
 
@@ -62,7 +62,6 @@ export class DacFxImportWizard extends DacFxWizard {
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.newPage;
-
 			let page = pages.get(idx);
 
 			if (page) {
@@ -73,8 +72,8 @@ export class DacFxImportWizard extends DacFxWizard {
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.lastPage;
-
 			let page = pages.get(idx);
+
 			if (page) {
 				page.onPageLeave();
 			}
@@ -88,12 +87,13 @@ export class DacFxImportWizard extends DacFxWizard {
 	}
 
 	private async import() {
-		let connectionstring = await await sqlops.connection.getConnectionString(this.model.serverConnection.connectionId, true);
+		let connectionString = await await sqlops.connection.getConnectionString(this.model.serverConnection.connectionId, true);
 		let packageFilePath = this.model.filePath;
 		let targetDatabaseName = this.model.databaseName;
 		let service = await DacFxImportWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
-		let result = await service.importBacpac(connectionstring, packageFilePath, targetDatabaseName, ownerUri, sqlops.TaskExecutionMode.execute);
+
+		let result = await service.importBacpac(connectionString, packageFilePath, targetDatabaseName, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

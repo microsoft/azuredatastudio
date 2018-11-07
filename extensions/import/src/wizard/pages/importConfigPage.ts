@@ -7,7 +7,6 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
 import { DacFxImportWizard } from '../dacFxImportWizard';
@@ -51,8 +50,7 @@ export class ImportConfigPage extends DacFxPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		let r1 = await this.populateServerDropdown();
-		return r1;
+		return await this.populateServerDropdown();
 	}
 
 	async onPageLeave(): Promise<boolean> {
@@ -82,7 +80,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxExport.serverDropdownTitle', 'Server')
+			title: localize('dacFxImport.serverDropdownTitle', 'Server')
 		};
 	}
 

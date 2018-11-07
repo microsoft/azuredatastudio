@@ -34,7 +34,7 @@ export class ImportSummaryPage extends DacFxPage {
 			[
 				{
 					component: this.table,
-					title: localize('dacfxExport.importInformation', 'Import bacpac information')
+					title: localize('dacfxImport.importInformation', 'Import bacpac information')
 				}
 			]
 		).component();
@@ -68,10 +68,10 @@ export class ImportSummaryPage extends DacFxPage {
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
-				[localize('dacfxExport.bacpacLocation', 'Bacpac location'), this.model.filePath],
-				[localize('dacfxExport.databaseName', 'Database name'), this.model.databaseName]],
-			columns: ['Object type', 'Value'],
+				[localize('dacfxImport.serverName', 'Server'), this.model.serverName],
+				[localize('dacfxImport.bacpacLocation', 'Bacpac to import'), this.model.filePath],
+				[localize('dacfxImport.databaseName', 'Database name'), this.model.databaseName]],
+			columns: ['Setting', 'Value'],
 			width: 600,
 			height: 200
 		});

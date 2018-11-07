@@ -62,7 +62,6 @@ export class DacFxExportWizard extends DacFxWizard {
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.newPage;
-
 			let page = pages.get(idx);
 
 			if (page) {
@@ -73,8 +72,8 @@ export class DacFxExportWizard extends DacFxWizard {
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.lastPage;
-
 			let page = pages.get(idx);
+
 			if (page) {
 				page.onPageLeave();
 			}
@@ -88,11 +87,12 @@ export class DacFxExportWizard extends DacFxWizard {
 	}
 
 	private async export() {
-		let connectionstring = await this.getConnectionString();
-		let packageFileName = this.model.filePath;
+		let connectionString = await this.getConnectionString();
+		let packageFilePath = this.model.filePath;
 		let service = await DacFxExportWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
-		let result = await service.exportBacpac(connectionstring, packageFileName, ownerUri, sqlops.TaskExecutionMode.execute);
+
+		let result = await service.exportBacpac(connectionString, packageFilePath, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -110,10 +110,10 @@ export class DacFxExportWizard extends DacFxWizard {
 	}
 
 	private async getConnectionString(): Promise<string> {
-		let connectionstring = await sqlops.connection.getConnectionString(this.model.serverConnection.connectionId, true);
-		let splitted = connectionstring.split(';');
+		let connectionString = await sqlops.connection.getConnectionString(this.model.serverConnection.connectionId, true);
+		let splitted = connectionString.split(';');
 
-		// set datbase to appropriate value instead of master
+		// set database to appropriate value instead of master
 		let temp = splitted.find(s => s.startsWith('Initial Catalog'));
 		splitted[splitted.indexOf(temp)] = 'Initial Catalog=' + this.model.databaseName;
 
