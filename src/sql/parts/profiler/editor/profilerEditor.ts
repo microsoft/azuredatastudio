@@ -533,6 +533,11 @@ export class ProfilerEditor extends BaseEditor {
 					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
 						this.input.sessionName = this._sessionsList[0];
 					}
+
+					if (this.input.sessionName) {
+						this._sessionSelector.selectWithOptionName(this.input.sessionName);
+					}
+
 				});
 			}
 		}
