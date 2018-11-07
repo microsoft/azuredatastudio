@@ -235,6 +235,10 @@ export interface IKernelPreference {
 
 export interface INotebookModel {
 	/**
+	 * Cell List for this model
+	 */
+	readonly cells: ReadonlyArray<ICellModel>;
+	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
 	readonly clientSession: IClientSession;
