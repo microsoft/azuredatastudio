@@ -24,6 +24,7 @@ export class TextCellComponent extends CellView implements OnInit {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@Input() cellModel: ICellModel;
 	private _content: string;
+	private isEditMode: boolean;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -31,6 +32,7 @@ export class TextCellComponent extends CellView implements OnInit {
 		@Inject(ICommandService) private _commandService: ICommandService
 	) {
 		super();
+		this.isEditMode = true;
 	}
 
 	ngOnChanges() {
@@ -41,7 +43,7 @@ export class TextCellComponent extends CellView implements OnInit {
 		if (this._content !== this.cellModel.source) {
 			this._content = this.cellModel.source;
 			// todo: pass in the notebook filename instead of undefined value
-			this._commandService.executeCommand('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
+			this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
@@ -64,5 +66,10 @@ export class TextCellComponent extends CellView implements OnInit {
 
 	public handleContentChanged(): void {
 		this.updatePreview();
+	}
+
+	public toggleEditMode(): void {
+		this.isEditMode = !this.isEditMode;
+		this._changeRef.detectChanges();
 	}
 }

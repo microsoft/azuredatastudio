@@ -7,16 +7,24 @@
 
 import { nb } from 'sqlops';
 import * as nls from 'vs/nls';
-import { INotebookService, INotebookManager, INotebookProvider } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import URI from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
+import { LocalContentManager } from 'sql/services/notebook/localContentManager';
+import { session } from 'electron';
+import { SessionManager } from 'sql/services/notebook/sessionManager';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
 
 	private _providers: Map<string, INotebookProvider> = new Map();
 	private _managers: Map<URI, INotebookManager> = new Map();
+
+	constructor() {
+		let defaultProvider = new BuiltinProvider();
+		this.registerProvider(defaultProvider.providerId, defaultProvider);
+	}
 
 	registerProvider(providerId: string, provider: INotebookProvider): void {
 		this._providers.set(providerId, provider);
@@ -69,5 +77,49 @@ export class NotebookService implements INotebookService {
 		});
 	}
 
+
+}
+
+export class BuiltinProvider implements INotebookProvider {
+	private manager: BuiltInNotebookManager;
+
+	constructor() {
+		this.manager = new BuiltInNotebookManager();
+	}
+	public get providerId(): string {
+		return DEFAULT_NOTEBOOK_PROVIDER;
+	}
+
+	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
+		return Promise.resolve(this.manager);
+	}
+	handleNotebookClosed(notebookUri: URI): void {
+		// No-op
+	}
+}
+
+export class BuiltInNotebookManager implements INotebookManager {
+	private _contentManager: nb.ContentManager;
+	private _sessionManager: nb.SessionManager;
+
+	constructor() {
+		this._contentManager = new LocalContentManager();
+		this._sessionManager = new SessionManager();
+	}
+	public get providerId(): string {
+		return DEFAULT_NOTEBOOK_PROVIDER;
+	}
+
+	public get contentManager(): nb.ContentManager {
+		return this._contentManager;
+	}
+
+	public get serverManager(): nb.ServerManager {
+		return undefined;
+	}
+
+	public get sessionManager(): nb.SessionManager {
+		return this._sessionManager;
+	}
 
 }

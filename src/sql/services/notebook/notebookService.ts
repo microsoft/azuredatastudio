@@ -10,6 +10,8 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import URI from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
+import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -59,4 +61,7 @@ export interface INotebookManager {
 export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
 	providerId: string;
+	isTrusted: boolean;
+	profile?: IConnectionProfile;
+	modelFactory?: ModelFactory;
 }
