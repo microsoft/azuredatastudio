@@ -2,7 +2,6 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-//import sanitizeHtml = require('typings/modules/sanitize-html/index');
 import * as sanitizeHtml from 'sanitize-html';
 
 export interface ISanitizer {

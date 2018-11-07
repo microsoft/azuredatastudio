@@ -17,11 +17,14 @@ import { SessionManager } from 'sql/services/notebook/sessionManager';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
+	_mimeRegistry: RenderMimeRegistry;
 
 	private _providers: Map<string, INotebookProvider> = new Map();
 	private _managers: Map<URI, INotebookManager> = new Map();
 
+
 	constructor() {
+		mimeRegistry: RenderMimeRegistry;
 		let defaultProvider = new BuiltinProvider();
 		this.registerProvider(defaultProvider.providerId, defaultProvider);
 	}
@@ -69,12 +72,13 @@ export class NotebookService implements INotebookService {
 	}
 
 	//Returns an instantiation of RenderMimeRegistry class
-	getMimeRegistry(): RenderMimeRegistry
-	{
-		//let mimeRegistry: RenderMimeRegistry;
-		return new RenderMimeRegistry({
-			initialFactories: standardRendererFactories
-		});
+	getMimeRegistry(): RenderMimeRegistry {
+		if (!this._mimeRegistry) {
+			return new RenderMimeRegistry({
+				initialFactories: standardRendererFactories
+			});
+		}
+		return this._mimeRegistry;
 	}
 
 

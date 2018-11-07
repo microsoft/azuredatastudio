@@ -4,7 +4,6 @@
 |----------------------------------------------------------------------------*/
 
 import { default as AnsiUp } from 'ansi_up';
-//import AnsiUp from 'typings/modules/ansi_up/ansi_up';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { URLExt } from './common/url';
 import URI from 'vs/base/common/uri';

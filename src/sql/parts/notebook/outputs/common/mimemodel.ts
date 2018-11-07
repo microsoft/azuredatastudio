@@ -16,7 +16,7 @@ export class MimeModel implements IRenderMime.IMimeModel {
     this.trusted = !!options.trusted;
     this._data = options.data || {};
     this._metadata = options.metadata || {};
-    this._callback = options.callback || Private.noOp;
+    this._callback = options.callback;
   }
 
   /**
@@ -83,17 +83,5 @@ export namespace MimeModel {
      * The initial mime metadata.
      */
     metadata?: ReadonlyJSONObject;
-  }
-}
-
-/**
- * The namespace for module private data.
- */
-namespace Private {
-  /**
-   * A no-op callback function.
-   */
-  export function noOp() {
-    /* no-op */
   }
 }
