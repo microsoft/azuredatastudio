@@ -22,6 +22,11 @@ import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { AddCellAction, KernelsDropdown, AttachToDropdown } from 'sql/parts/notebook/notebookActions';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -49,6 +54,7 @@ class CellModelStub implements ICellModel {
 })
 export class NotebookComponent extends AngularDisposable implements OnInit {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
+	protected _actionBar: Taskbar;
 	protected cells: Array<ICellModel> = [];
 	private _activeCell: ICellModel;
 	constructor(
@@ -58,7 +64,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
-		@Inject(IBootstrapParams) private notebookParams: INotebookParams
+		@Inject(IBootstrapParams) private notebookParams: INotebookParams,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
 
@@ -72,6 +81,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.initActionBar();
 	}
 
 	private updateTheme(theme: IColorTheme): void {
@@ -110,7 +120,39 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
-	findCellIndex(cellModel: ICellModel): number {
-        return this.cells.findIndex((cell) => cell.id === cellModel.id);
+	private findCellIndex(cellModel: ICellModel): number {
+		return this.cells.findIndex((cell) => cell.id === cellModel.id);
+	}
+
+	protected initActionBar() {
+		let kernelInfoText = document.createElement('div');
+		kernelInfoText.className ='notebook-info-label';
+		kernelInfoText.innerText = 'Kernel: ';
+
+		let kernelsDropdown = new KernelsDropdown(this.contextViewService);
+		let kernelsDropdownTemplateContainer = document.createElement('div');
+		kernelsDropdownTemplateContainer.className = 'notebook-toolbar-dropdown';
+		kernelsDropdown.render(kernelsDropdownTemplateContainer);
+		attachSelectBoxStyler(kernelsDropdown, this.themeService);
+
+		let attachToDropdown = new AttachToDropdown(this.contextViewService);
+		let attachToDropdownTemplateContainer = document.createElement('div');
+		attachToDropdownTemplateContainer.className = 'notebook-toolbar-dropdown';
+		attachToDropdown.render(attachToDropdownTemplateContainer);
+		attachSelectBoxStyler(attachToDropdown, this.themeService);
+
+		let attachToInfoText = document.createElement('div');
+		attachToInfoText.className ='notebook-info-label';
+		attachToInfoText.innerText = 'Attach To: ';
+
+		let taskbar = <HTMLElement>this.toolbar.nativeElement;
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar.context = this;
+		this._actionBar.setContent([
+			{ element: kernelInfoText },
+			{ element: kernelsDropdownTemplateContainer },
+			{ element: attachToInfoText },
+			{ element: attachToDropdownTemplateContainer }
+		]);
 	}
 }
