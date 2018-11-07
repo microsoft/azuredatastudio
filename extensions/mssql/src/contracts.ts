@@ -301,7 +301,7 @@ export enum TaskExecutionMode {
 }
 export interface DacFxExportParams {
 	connectionString: string;
-	packageFileName: string;
+	packageFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
