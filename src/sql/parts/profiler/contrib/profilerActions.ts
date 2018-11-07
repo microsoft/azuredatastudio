@@ -10,7 +10,6 @@ import { IProfilerController } from 'sql/parts/profiler/editor/controller/interf
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -25,8 +24,11 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ProfilerConnect extends Action {
+	private static readonly ConnectText = nls.localize('profilerAction.connect', 'Connect');
+	private static readonly DisconnectText = nls.localize('profilerAction.disconnect', 'Disconnect');
+
 	public static ID = 'profiler.connect';
-	public static LABEL = nls.localize('profiler.connect', "Connect");
+	public static LABEL = ProfilerConnect.ConnectText;
 
 	private _connected: boolean = false;
 
@@ -59,7 +61,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? nls.localize('profilerAction.disconnect', 'Disconnect') : nls.localize('profilerAction.connect', "Connect"));
+		this._setLabel(value ? ProfilerConnect.DisconnectText : ProfilerConnect.ConnectText);
 	}
 
 	public get connected(): boolean {
@@ -75,7 +77,7 @@ export class ProfilerStart extends Action {
 		id: string, label: string,
 		@IProfilerService private _profilerService: IProfilerService
 	) {
-		super(id, label, 'start');
+		super(id, label, 'sql start');
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
@@ -86,7 +88,7 @@ export class ProfilerStart extends Action {
 
 export class ProfilerCreate extends Action {
 	public static ID = 'profiler.create';
-	public static LABEL = nls.localize('create', "Create");
+	public static LABEL = nls.localize('create', "New Session");
 
 	constructor(
 		id: string, label: string,
@@ -105,8 +107,13 @@ export class ProfilerCreate extends Action {
 }
 
 export class ProfilerPause extends Action {
+	private static readonly PauseText = nls.localize('profilerAction.pauseCapture', 'Pause');
+	private static readonly ResumeText = nls.localize('profilerAction.resumeCapture', 'Resume');
+	private static readonly PauseCssClass = 'sql pause';
+	private static readonly ResumeCssClass = 'sql continue';
+
 	public static ID = 'profiler.pause';
-	public static LABEL = nls.localize('profiler.capture', "Pause Capture");
+	public static LABEL = ProfilerPause.PauseText;
 
 	private _paused: boolean = false;
 
@@ -114,7 +121,7 @@ export class ProfilerPause extends Action {
 		id: string, label: string,
 		@IProfilerService private _profilerService: IProfilerService
 	) {
-		super(id, label, 'stop');
+		super(id, label, ProfilerPause.PauseCssClass);
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
@@ -127,8 +134,8 @@ export class ProfilerPause extends Action {
 
 	public set paused(value: boolean) {
 		this._paused = value;
-		this._setClass(value ? 'start' : 'stop');
-		this._setLabel(value ? nls.localize('profilerAction.resumeCapture', "Resume Capture") : nls.localize('profilerAction.pauseCapture', "Pause Capture"));
+		this._setClass(value ? ProfilerPause.ResumeCssClass : ProfilerPause.PauseCssClass);
+		this._setLabel(value ? ProfilerPause.ResumeText : ProfilerPause.PauseText);
 	}
 
 	public get paused(): boolean {
@@ -144,7 +151,7 @@ export class ProfilerStop extends Action {
 		id: string, label: string,
 		@IProfilerService private _profilerService: IProfilerService
 	) {
-		super(id, label, 'stop');
+		super(id, label, 'sql stop');
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
@@ -167,16 +174,21 @@ export class ProfilerClear extends Action {
 }
 
 export class ProfilerAutoScroll extends Action {
+	private static readonly AutoScrollOnText = nls.localize('profilerAction.autoscrollOn', 'Auto Scroll: On');
+	private static readonly AutoScrollOffText = nls.localize('profilerAction.autoscrollOff', 'Auto Scroll: Off');
+	private static readonly CheckedCssClass = 'sql checked';
+
 	public static ID = 'profiler.autoscroll';
-	public static LABEL = nls.localize('profiler.autoscrollOn', "Auto Scroll: On");
+	public static LABEL = ProfilerAutoScroll.AutoScrollOnText;
 
 	constructor(id: string, label: string) {
-		super(id, label);
+		super(id, label, ProfilerAutoScroll.CheckedCssClass);
 	}
 
 	run(input: ProfilerInput): TPromise<boolean> {
 		this.checked = !this.checked;
-		this._setLabel(this.checked ? nls.localize('profilerAction.autoscrollOn', "Auto Scroll: On") : nls.localize('profilerAction.autoscrollOff', "Auto Scroll: Off"));
+		this._setLabel(this.checked ? ProfilerAutoScroll.AutoScrollOnText : ProfilerAutoScroll.AutoScrollOffText);
+		this._setClass(this.checked ? ProfilerAutoScroll.CheckedCssClass : '');
 		input.state.change({ autoscroll: this.checked });
 		return TPromise.as(true);
 	}
@@ -256,7 +268,7 @@ export class ProfilerFindPrevious implements IEditorAction {
 
 export class NewProfilerAction extends Task {
 	public static readonly ID = 'profiler.newProfiler';
-	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'New Profiler');
+	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'Launch Profiler');
 	public static readonly ICON = 'profile';
 
 	private _connectionProfile: ConnectionProfile;
