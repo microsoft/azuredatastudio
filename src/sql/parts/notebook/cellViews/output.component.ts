@@ -11,19 +11,20 @@ import { INotebookService } from 'sql/services/notebook/notebookService';
 import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from '../outputs/common/outputProcessor';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
+import 'vs/css!sql/parts/notebook/outputs/style/index';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 
 @Component({
 	selector: OUTPUT_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./output.component.html'))
+    templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
 export class OutputComponent extends AngularDisposable implements OnInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
     @Input() cellOutput: nb.ICellOutput;
 	private readonly _minimumHeight = 30;
 	registry: RenderMimeRegistry;
-    trusted: boolean = true;
+    trusted: boolean = false;
 
 
 	constructor(
@@ -39,7 +40,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
         let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trusted });
         // TODO handle safe/unsafe mapping
         this.createRenderedMimetype(options, node);
-	}
+    }
 
 	public layout(): void {
 	}
@@ -63,9 +64,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
                     'application/vnd.jupyter.stderr'
                 );
             });
-
 			//this.setState({ node: node });
-
         } else {
             // TODO Localize
             node.innerHTML =

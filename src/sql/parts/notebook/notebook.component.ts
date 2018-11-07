@@ -64,13 +64,21 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		super();
 
 		// TODO NOTEBOOK REFACTOR: This is mock data for cells. Will remove this code when we have a service
-		let cell1 : ICellModel = new CellModelStub ('1', 'sql', 'select * from sys.tables', CellTypes.Code);
-		let output1: nb.IStreamResult = {
+		let output1: nb.IDisplayResult ={
+			output_type: 'display_data',
+			data: {
+				'text/plain': [
+				 '<IPython.core.display.HTML object>'
+				]
+			}
+		}
+		let cell1 : ICellModel = new CellModelStub ('1', 'sql', 'select * from sys.tables', CellTypes.Code, false, false, [output1]);
+		let output2: nb.IStreamResult = {
 			output_type: 'stream',
 			name: 'stdout',
 			text: 'hello world'
 		};
-		let cell2 : ICellModel = new CellModelStub ('2', 'sql', 'select 1', CellTypes.Code, false, false, [output1]);
+		let cell2 : ICellModel = new CellModelStub ('2', 'sql', 'select 1', CellTypes.Code, false, false, [output2]);
 		let cell3 : ICellModel = new CellModelStub ('3', 'markdown', '## This is test!', CellTypes.Markdown);
 		this.cells.push(cell1, cell2, cell3);
 	}

@@ -7,7 +7,6 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import {nb} from 'sqlops';
 
 export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 
@@ -28,8 +27,6 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	}
 
 	ngOnInit() {
-		//Just for testing - wil remove it
-		let cellText = this.cellModel.outputs.length >0 ? (<nb.IStreamResult>this.cellModel.outputs[0]).text : '';
 	}
 
 	public layout(): void {

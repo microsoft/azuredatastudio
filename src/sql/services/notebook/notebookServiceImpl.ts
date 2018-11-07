@@ -10,6 +10,7 @@ import * as nls from 'vs/nls';
 import { INotebookService, INotebookManager, INotebookProvider } from 'sql/services/notebook/notebookService';
 import URI from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
+import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
@@ -63,7 +64,9 @@ export class NotebookService implements INotebookService {
 	getMimeRegistry(): RenderMimeRegistry
 	{
 		//let mimeRegistry: RenderMimeRegistry;
-		return new RenderMimeRegistry();
+		return new RenderMimeRegistry({
+			initialFactories: standardRendererFactories
+		});
 	}
 
 
