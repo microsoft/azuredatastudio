@@ -15,7 +15,6 @@ export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 	templateUrl: decodeURI(require.toUrl('./outputArea.component.html'))
 })
 export class OutputAreaComponent extends AngularDisposable implements OnInit {
-
 	@Input() cellModel: ICellModel;
 
 	private readonly _minimumHeight = 30;
@@ -25,11 +24,7 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	) {
 		super();
 	}
+	ngOnInit(): void {
 
-	ngOnInit() {
 	}
-
-	public layout(): void {
-	}
-
 }
