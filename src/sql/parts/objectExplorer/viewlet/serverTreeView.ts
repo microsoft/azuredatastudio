@@ -217,6 +217,12 @@ export class ServerTreeView {
 		}
 	}
 
+	private onObjectExplorerSessionDisconnected(connection: IConnectionProfile) {
+
+		let a = 0;
+
+	}
+
 	public addObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
 		this.messages.hide();
 		if (!this._objectExplorerService.getObjectExplorerNode(connection)) {

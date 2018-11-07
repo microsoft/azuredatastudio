@@ -42,6 +42,8 @@ export interface IObjectExplorerService {
 
 	onSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
 
+	onSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
+
 	onNodeExpanded(handle: number, sessionResponse: sqlops.ObjectExplorerExpandInfo);
 
 	/**
@@ -197,6 +199,22 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
 				error(errorMessage);
 			}
+
+		} else {
+			warn(`cannot find session ${session.sessionId}`);
+		}
+
+		this.sendUpdateNodeEvent(connection, errorMessage);
+	}
+
+		/**
+	 * Gets called when session is created
+	 */
+	public onSessionDisconnected(handle: number, session: sqlops.ObjectExplorerSession) {
+		let connection: ConnectionProfile = undefined;
+		let errorMessage: string = undefined;
+		if (this._sessions[session.sessionId]) {
+
 
 		} else {
 			warn(`cannot find session ${session.sessionId}`);
