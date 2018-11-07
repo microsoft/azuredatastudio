@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as pretty from 'pretty-data';
+
 import { attachTableStyler } from 'sql/common/theme/styler';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -20,9 +22,9 @@ import { hyperLinkFormatter, textFormatter } from 'sql/parts/grid/services/share
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
+import { warn } from 'sql/base/common/log';
 
 import * as sqlops from 'sqlops';
-import * as pretty from 'pretty-data';
 
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -44,7 +46,6 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { warn } from 'sql/base/common/log';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
