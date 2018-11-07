@@ -30,7 +30,10 @@ export class TelemetryFeature implements StaticFeature {
 
 export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
-		contracts.DacFxExportRequest.type
+		contracts.DacFxExportRequest.type,
+		contracts.DacFxImportRequest.type,
+		contracts.DacFxExtractRequest.type,
+		contracts.DacFxDeployRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -65,7 +68,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let importBacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
+		let importBacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxImportResult> => {
 			let params: contracts.DacFxImportParams = { connectionString: connectionString, packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.DacFxImportRequest.type, params).then(
 				r => {
@@ -79,7 +82,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let extractDacpac = (connectionString: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
+		let extractDacpac = (connectionString: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExtractResult> => {
 			let params: contracts.DacFxExtractParams = { connectionString: connectionString, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.DacFxExtractRequest.type, params).then(
 				r => {
@@ -93,11 +96,26 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let deployDacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxDeployResult> => {
+			let params: contracts.DacFxDeployParams = { connectionString: connectionString, packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.DacFxDeployRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					console.error("error sending request");
+					client.logFailedRequest(contracts.DacFxDeployRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return sqlops.dataprotocol.registerDacFxServicesProvider({
 			providerId: client.providerId,
 			exportBacpac,
 			importBacpac,
-			extractDacpac
+			extractDacpac,
+			deployDacpac
 		});
 	}
 }
