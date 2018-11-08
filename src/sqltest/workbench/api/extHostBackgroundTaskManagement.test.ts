@@ -63,7 +63,7 @@ suite('ExtHostBackgroundTaskManagement Tests', () => {
 			operation: (op: sqlops.BackgroundOperation) => {
 				op.onCanceled(() => {
 					op.updateStatus(TaskStatus.Canceled);
-				})
+				});
 			},
 			operationId: operationId
 		};
