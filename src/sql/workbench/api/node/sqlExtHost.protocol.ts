@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -711,11 +711,16 @@ export interface ExtHostNotebookShape {
 
 	/**
 	 * Looks up a notebook manager for a given notebook URI
+	 * @param {number} providerHandle
 	 * @param {vscode.Uri} notebookUri
 	 * @returns {Thenable<string>} handle of the manager to be used when sending
 	 */
-	getNotebookManager(notebookUri: vscode.Uri): Thenable<number>;
-	handleNotebookClosed(notebookUri: vscode.Uri): void;
+	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
+	$handleNotebookClosed(notebookUri: UriComponents): void;
+	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStopServer(managerHandle: number): Thenable<void>;
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook>;
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook>;
 
 }
 
@@ -723,3 +728,4 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$registerNotebookProvider(providerId: string, handle: number): void;
 	$unregisterNotebookProvider(handle: number): void;
 }
+

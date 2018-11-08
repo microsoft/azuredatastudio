@@ -1430,19 +1430,19 @@ declare module 'sqlops' {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
-			getNotebookContents(path: string): Thenable<INotebook>;
+			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebook>;
 
 			/**
 			 * Save a file.
 			 *
-			 * @param path - The desired file path.
+			 * @param notebookUri - The desired file path.
 			 *
 			 * @param notebook - notebook to be saved.
 			 *
 			 * @returns A thenable which resolves with the file content model when the
 			 *   file is saved.
 			 */
-			save(path: string, notebook: INotebook): Thenable<INotebook>;
+			save(notebookUri: vscode.Uri, notebook: INotebook): Thenable<INotebook>;
 		}
 
 		export interface INotebook {

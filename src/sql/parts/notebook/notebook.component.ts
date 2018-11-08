@@ -129,7 +129,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this.notebookParams.providerId, this.notebookParams.notebookUri);
 		let model = new NotebookModel({
 			factory: this.modelFactory,
-			path: this.notebookParams.notebookUri.fsPath,
+			notebookUri: this.notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManager: this.notebookManager

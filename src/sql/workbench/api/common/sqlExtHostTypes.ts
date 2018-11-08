@@ -411,3 +411,9 @@ export class SqlThemeIcon {
 		this.id = id;
 	}
 }
+
+export interface INotebookManagerDetails {
+	handle: number;
+	hasContentManager: boolean;
+	hasServerManager: boolean;
+}
