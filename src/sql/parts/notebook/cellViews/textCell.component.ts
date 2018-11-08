@@ -47,7 +47,7 @@ export class TextCellComponent extends CellView implements OnInit {
 		if (this._sanitizer) {
 			return this._sanitizer;
 		}
-		return defaultSanitizer;
+		return this._sanitizer = defaultSanitizer;
 	}
 
 	private updatePreview() {
