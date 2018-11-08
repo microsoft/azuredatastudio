@@ -26,8 +26,10 @@ import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagem
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { JobHistoryController, JobHistoryDataSource,
-	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
+import {
+	JobHistoryController, JobHistoryDataSource,
+	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow
+} from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
@@ -85,7 +87,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._treeController = new JobHistoryController();
 		this._treeDataSource = new JobHistoryDataSource();
 		this._treeRenderer = new JobHistoryRenderer();
-		this._treeFilter =  new JobHistoryFilter();
+		this._treeFilter = new JobHistoryFilter();
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -141,7 +143,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		}, {verticalScrollMode: ScrollbarVisibility.Visible});
+		}, { verticalScrollMode: ScrollbarVisibility.Visible });
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(JobHistoryComponent.INITIAL_TREE_HEIGHT);
 		this.initActionBar();
@@ -263,7 +265,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			this.setActions();
 		}
 
-		if (this.isRefreshing ) {
+		if (this.isRefreshing) {
 			this.loadHistory();
 			return;
 		}
@@ -278,7 +280,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				$('jobhistory-component .history-details .prev-run-list .monaco-tree-row').attr('tabIndex', '0');
 				this._cd.detectChanges();
 			}
-		} else if (jobHistories && jobHistories.length === 0 ){
+		} else if (jobHistories && jobHistories.length === 0) {
 			this._showPreviousRuns = false;
 			this._showSteps = false;
 			this._noJobsAvailable = true;

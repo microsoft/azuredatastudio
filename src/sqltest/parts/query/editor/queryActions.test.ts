@@ -17,7 +17,7 @@ import {
 	RunQueryOnConnectionMode
 } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
-import { RunQueryAction, CancelQueryAction, ListDatabasesActionItem, QueryTaskbarAction} from 'sql/parts/query/execution/queryActions';
+import { RunQueryAction, CancelQueryAction, ListDatabasesActionItem, QueryTaskbarAction } from 'sql/parts/query/execution/queryActions';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
