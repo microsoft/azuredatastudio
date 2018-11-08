@@ -51,6 +51,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	protected isLoading: boolean;
 	private notebookManager: INotebookManager;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
+	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 
 
@@ -76,6 +77,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
 		this.doLoad();
+	}
+
+	public get modelRegistered(): Promise<NotebookModel> {
+        return this._modelRegisteredDeferred.promise;
 	}
 
 	protected get cells(): ReadonlyArray<ICellModel> {
@@ -145,11 +150,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			notebookManager: this.notebookManager
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		model.backgroundStartSession();
 		await model.requestModelLoad(this.notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		this._model = model;
 		this._register(model);
+		this._modelRegisteredDeferred.resolve(this._model);
+		model.backgroundStartSession();
 		this._changeRef.detectChanges();
 	}
 
@@ -185,7 +191,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		kernelInfoText.className ='notebook-info-label';
 		kernelInfoText.innerText = 'Kernel: ';
 
-		let kernelsDropdown = new KernelsDropdown(this.contextViewService);
+		let kernelsDropdown = new KernelsDropdown(this.contextViewService, this.modelRegistered);
 		let kernelsDropdownTemplateContainer = document.createElement('div');
 		kernelsDropdownTemplateContainer.className = 'notebook-toolbar-dropdown';
 		kernelsDropdown.render(kernelsDropdownTemplateContainer);

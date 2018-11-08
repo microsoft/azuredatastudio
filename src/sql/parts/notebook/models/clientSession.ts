@@ -118,14 +118,14 @@ export class ClientSession implements IClientSession {
 					path: this.path,
 					kernelName: undefined
 				});
+				session.defaultKernelLoaded = false;
 			} else {
 				throw err;
 			}
-			session.defaultKernelLoaded = false;
 		}
-			this._session = session;
-			await this.runKernelConfigActions(kernelName);
-			this._statusChangedEmitter.fire(session);
+		this._session = session;
+		await this.runKernelConfigActions(kernelName);
+		this._statusChangedEmitter.fire(session);
 	}
 
 	private async runKernelConfigActions(kernelName: string): Promise<void> {
