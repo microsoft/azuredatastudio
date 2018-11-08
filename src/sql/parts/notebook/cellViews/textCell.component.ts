@@ -32,7 +32,7 @@ export class TextCellComponent extends CellView implements OnInit {
 		@Inject(ICommandService) private _commandService: ICommandService
 	) {
 		super();
-		this.isEditMode = true;
+		this.isEditMode = false;
 	}
 
 	ngOnChanges() {
