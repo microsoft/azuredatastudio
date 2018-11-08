@@ -12,3 +12,15 @@
 	border-width: 1px;
 	border-style: solid;
 }
+
+.notebookEditor .notebook-toolbar-dropdown {
+	width: 150px;
+	padding-right: 10px;
+}
+
+.notebookEditor .notebook-info-label {
+	padding-right: 5px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+}

@@ -34,7 +34,7 @@ export class ClientSession implements IClientSession {
 	private _iopubMessageEmitter = new Emitter<nb.IMessage>();
 	private _unhandledMessageEmitter = new Emitter<nb.IMessage>();
 	private _propertyChangedEmitter = new Emitter<'path' | 'name' | 'type'>();
-	private _path: string;
+	private _notebookUri: URI;
 	private _type: string;
 	private _name: string;
 	private _isReady: boolean;
@@ -53,7 +53,7 @@ export class ClientSession implements IClientSession {
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 
 	constructor(private options: IClientSessionOptions) {
-		this._path = options.path;
+		this._notebookUri = options.notebookUri;
 		this.notebookManager = options.notebookManager;
 		this._isReady = false;
 		this._ready = new Deferred<void>();
@@ -104,8 +104,9 @@ export class ClientSession implements IClientSession {
 	private async startSessionInstance(kernelName: string): Promise<void> {
 		let session: nb.ISession;
 		try {
+			// TODO #3164 should use URI instead of path for startNew
 			session = await this.notebookManager.sessionManager.startNew({
-				path: this.path,
+				path: this.notebookUri.fsPath,
 				kernelName: kernelName
 				// TODO add kernel name if saved in the document
 			});
@@ -115,17 +116,17 @@ export class ClientSession implements IClientSession {
 			if (err && err.response && err.response.status === 501) {
 				this.options.notificationService.warn(nls.localize('sparkKernelRequiresConnection', 'Kernel {0} was not found. The default kernel will be used instead.', kernelName));
 				session = await this.notebookManager.sessionManager.startNew({
-					path: this.path,
+					path: this.notebookUri.fsPath,
 					kernelName: undefined
 				});
+				session.defaultKernelLoaded = false;
 			} else {
 				throw err;
 			}
-			session.defaultKernelLoaded = false;
 		}
-			this._session = session;
-			await this.runKernelConfigActions(kernelName);
-			this._statusChangedEmitter.fire(session);
+		this._session = session;
+		await this.runKernelConfigActions(kernelName);
+		this._statusChangedEmitter.fire(session);
 	}
 
 	private async runKernelConfigActions(kernelName: string): Promise<void> {
@@ -169,8 +170,8 @@ export class ClientSession implements IClientSession {
 	public get kernel(): nb.IKernel | null {
 		return this._session ? this._session.kernel : undefined;
 	}
-	public get path(): string {
-		return this._path;
+	public get notebookUri(): URI {
+		return this._notebookUri;
 	}
 	public get name(): string {
 		return this._name;

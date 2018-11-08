@@ -81,7 +81,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
-		if (!notebookOptions || !notebookOptions.path || !notebookOptions.notebookManager) {
+		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManager) {
 			throw new Error('path or notebook service not defined');
 		}
 		if (startSessionImmediately) {
@@ -183,7 +183,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async requestModelLoad(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
-			let contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.path);
+			let contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = undefined;
@@ -248,7 +248,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public backgroundStartSession(): void {
 		this._clientSession = this.notebookOptions.factory.createClientSession({
-			path: this.notebookOptions.path,
+			notebookUri: this.notebookOptions.notebookUri,
 			notebookManager: this.notebookManager,
 			notificationService: this.notebookOptions.notificationService
 		});
@@ -416,7 +416,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!notebook) {
 			return false;
 		}
-		await this.notebookManager.contentManager.save(this.notebookOptions.path, notebook);
+		await this.notebookManager.contentManager.save(this.notebookOptions.notebookUri, notebook);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.DirtyStateChanged,
 			isDirty: false

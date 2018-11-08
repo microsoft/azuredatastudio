@@ -10,13 +10,12 @@ import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as nls from 'vs/nls';
 import { Schemas } from 'vs/base/common/network';
+import URI from 'vs/base/common/uri';
+import { localize } from 'vs/nls';
 
 import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
-import URI from 'vs/base/common/uri';
-
 
 let counter = 0;
 
@@ -27,7 +26,7 @@ let counter = 0;
 export class OpenNotebookAction extends Action {
 
 	public static ID = 'OpenNotebookAction';
-	public static LABEL = nls.localize('OpenNotebookAction', 'Open Notebook editor');
+	public static LABEL = localize('OpenNotebookAction', 'Open Notebook editor');
 
 	constructor(
 		id: string,
@@ -68,3 +67,5 @@ actionRegistry.registerWorkbenchAction(
 	),
 	OpenNotebookAction.LABEL
 );
+
+
