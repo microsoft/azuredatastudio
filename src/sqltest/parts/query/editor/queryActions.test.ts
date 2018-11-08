@@ -130,7 +130,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryAction: RunQueryAction = new RunQueryAction(connectionManagementService.object);
 		isConnected = false;
 		calledRunQueryOnInput = false;
-		queryAction.run();
+		queryAction.run({ input: undefined, editor: undefined });
 
 		// runQuery should not be run
 		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
@@ -145,7 +145,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// If I call run on RunQueryAction when I am connected
 		isConnected = true;
-		queryAction.run();
+		queryAction.run({ input: undefined, editor: undefined });
 
 		//runQuery should be run, and the conneciton dialog should not open
 		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
@@ -183,14 +183,14 @@ suite('SQL QueryAction Tests', () => {
 		// If I call run on RunQueryAction when I have a non empty selection
 		let queryAction: RunQueryAction = new RunQueryAction(connectionManagementService.object);
 		isSelectionEmpty = false;
-		queryAction.run();
+		queryAction.run({ input: queryInput.object, editor: undefined });
 
 		//runQuery should be run
 		assert.equal(countCalledRunQuery, 1, 'runQuery should be called');
 
 		// If I call run on RunQueryAction when I have an empty selection
 		isSelectionEmpty = true;
-		queryAction.run();
+		queryAction.run({ input: queryInput.object, editor: undefined });
 
 		//runQuery should not be run again
 		assert.equal(countCalledRunQuery, 1, 'runQuery should not be called again');
@@ -249,7 +249,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryAction: RunQueryAction = new RunQueryAction(connectionManagementService.object);
 		isConnected = false;
 		selectionToReturnInGetSelection = undefined;
-		queryAction.run();
+		queryAction.run({ input: queryInput.object, editor: undefined });
 
 		// The conneciton dialog should open with an undefined seleciton
 		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
@@ -260,7 +260,7 @@ suite('SQL QueryAction Tests', () => {
 		////// If I call run on RunQueryAction while disconnected and with a defined selection
 		isConnected = false;
 		selectionToReturnInGetSelection = predefinedSelection;
-		queryAction.run();
+		queryAction.run({ input: queryInput.object, editor: undefined });
 
 		// The conneciton dialog should open with the correct seleciton
 		assert.equal(countCalledShowDialog, 2, 'run should call showDialog again');
@@ -275,7 +275,7 @@ suite('SQL QueryAction Tests', () => {
 		////// If I call run on RunQueryAction while connected and with an undefined selection
 		isConnected = true;
 		selectionToReturnInGetSelection = undefined;
-		queryAction.run();
+		queryAction.run({ input: queryInput.object, editor: undefined });
 
 		// The query should run with an undefined selection
 		assert.equal(countCalledShowDialog, 2, 'run should not call showDialog');
@@ -285,7 +285,7 @@ suite('SQL QueryAction Tests', () => {
 		////// If I call run on RunQueryAction while connected and with a defined selection
 		isConnected = true;
 		selectionToReturnInGetSelection = predefinedSelection;
-		queryAction.run();
+		queryAction.run({ input: queryInput.object, editor: undefined });
 
 		// The query should run with the given seleciton
 		assert.equal(countCalledShowDialog, 2, 'run should not call showDialog');
@@ -317,14 +317,14 @@ suite('SQL QueryAction Tests', () => {
 		// If I call run on CancelQueryAction when I am not connected
 		let queryAction: CancelQueryAction = new CancelQueryAction(queryModelService.object, connectionManagementService.object);
 		isConnected = false;
-		queryAction.run();
+		queryAction.run({ input: undefined, editor: undefined });
 
 		// cancelQuery should not be run
 		assert.equal(calledCancelQuery, false, 'run should not call cancelQuery');
 
 		// If I call run on CancelQueryAction when I am connected
 		isConnected = true;
-		queryAction.run();
+		queryAction.run({ input: undefined, editor: undefined });
 
 		// cancelQuery should be run
 		assert.equal(calledCancelQuery, true, 'run should call cancelQuery');

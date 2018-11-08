@@ -287,7 +287,7 @@ export class RunQueryShortcutAction extends Action {
 			let parameterText: string = editor.getSelectionText();
 			return this.escapeStringParamIfNeeded(editor, shortcutText, parameterText).then((escapedParam) => {
 				let queryString = `${shortcutText} ${escapedParam}`;
-				editor.currentQueryInput.runQueryString(queryString);
+				editor.input.runQueryString(queryString);
 			}).then(success => null, err => {
 				// swallow errors for now
 				return null;
@@ -449,9 +449,9 @@ export class ParseSyntaxAction extends Action {
 	 * Public for testing only.
 	 */
 	private isConnected(editor: QueryEditor): boolean {
-		if (!editor || !editor.currentQueryInput) {
+		if (!editor || !editor.input) {
 			return false;
 		}
-		return this._connectionManagementService.isConnected(editor.currentQueryInput.uri);
+		return this._connectionManagementService.isConnected(editor.input.uri);
 	}
 }
