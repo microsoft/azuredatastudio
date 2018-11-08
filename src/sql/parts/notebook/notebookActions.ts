@@ -15,7 +15,7 @@ import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 export class AddCellAction extends Action {
-	public static ID = 'jobaction.notebookTest';
+	public static ID = 'notebook.addCell';
 	public static LABEL = 'Cell';
 
 	constructor(
@@ -42,9 +42,9 @@ export class KernelsDropdown extends SelectBox {
 		if (modelRegistered) {
 			modelRegistered
 			.then((model) => this.updateModel(model))
-            .catch((err) => {
+			.catch((err) => {
 				// No-op for now
-            });
+			});
 		}
 
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
@@ -52,8 +52,8 @@ export class KernelsDropdown extends SelectBox {
 
 	updateModel(model: INotebookModel): void {
 		this.model = model;
-        model.kernelsChanged((defaultKernel) => {
-            this.updateKernel(defaultKernel);
+		model.kernelsChanged((defaultKernel) => {
+			this.updateKernel(defaultKernel);
 		});
 		if (model.clientSession) {
 			model.clientSession.kernelChanged((changedArgs: sqlops.nb.IKernelChangedArgs) => {
@@ -68,15 +68,14 @@ export class KernelsDropdown extends SelectBox {
 	private updateKernel(defaultKernel: sqlops.nb.IKernelSpec) {
 		let specs = this.model.specs;
 		if (specs && specs.kernels) {
-			console.log ('toolbar updatekernel');
 			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
 			this.setOptions(specs.kernels.map(kernel => kernel.display_name), index);
 		}
 	}
-	
+
 	public doChangeKernel(displayName: string): void {
-        this.model.changeKernel(displayName);
-    }
+		this.model.changeKernel(displayName);
+	}
 }
 
 export class AttachToDropdown extends SelectBox {

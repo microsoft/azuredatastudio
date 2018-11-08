@@ -11,18 +11,11 @@ import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Schemas } from 'vs/base/common/network';
+import URI from 'vs/base/common/uri';
+import { localize } from 'vs/nls';
 
 import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
-import URI from 'vs/base/common/uri';
-
-import { localize } from 'vs/nls';
-import * as types from 'vs/base/common/types';
-import * as Constants from 'sql/parts/connection/common/constants';
-
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { generateContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
-import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 
 let counter = 0;
 

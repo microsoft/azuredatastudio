@@ -1,8 +1,9 @@
 'use strict';
 
 import { nb } from 'sqlops';
+import { localize } from 'vs/nls';
 
-const noKernel: string = 'No Kernel';
+const noKernel: string = localize('noKernel', 'No Kernel');
 let noKernelSpec: nb.IKernelSpec = ({
 	name: noKernel,
 	language: 'python',
