@@ -13,6 +13,7 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
@@ -25,11 +26,13 @@ export class TextCellComponent extends CellView implements OnInit {
 	@Input() cellModel: ICellModel;
 	private _content: string;
 	private isEditMode: boolean;
+	private _sanitizer:	ISanitizer;
+
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
 	) {
 		super();
 		this.isEditMode = true;
@@ -39,15 +42,33 @@ export class TextCellComponent extends CellView implements OnInit {
 		this.updatePreview();
 	}
 
+	//Gets sanitizer from ISanitizer interface
+	private get sanitizer(): ISanitizer {
+		if (this._sanitizer) {
+			return this._sanitizer;
+		}
+		return defaultSanitizer;
+	}
+
 	private updatePreview() {
-		if (this._content !== this.cellModel.source) {
-			this._content = this.cellModel.source;
+		if (this.cellModel.source && this._content !== this.cellModel.source) {
+			this._content = this.sanitizeContent(this.cellModel.source);
 			// todo: pass in the notebook filename instead of undefined value
 			this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = htmlcontent;
 			});
 		}
+	}
+
+	//Sanitizes the content based on trusted mode of Cell Model
+	private sanitizeContent(content: string): string {
+		if (this.sanitizer) {
+			if (this.cellModel && !this.cellModel.trustedMode) {
+				content = this.sanitizer.sanitize(content);
+			}
+		}
+		return content;
 	}
 
 	ngOnInit() {
