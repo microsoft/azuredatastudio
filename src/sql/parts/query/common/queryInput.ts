@@ -5,20 +5,19 @@
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Event, Emitter } from 'vs/base/common/event';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { Event } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
-import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
-import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
+import * as sqlops from 'sqlops';
 
 const MAX_SIZE = 13;
 
@@ -43,19 +42,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public static ID: string = 'workbench.editorinputs.queryInput';
 	public static SCHEMA: string = 'sql';
 
-	private _runQueryEnabled: boolean;
-	private _cancelQueryEnabled: boolean;
-	private _connectEnabled: boolean;
-	private _disconnectEnabled: boolean;
-	private _changeConnectionEnabled: boolean;
-	private _listDatabasesConnected: boolean;
-
-	private _updateTaskbar: Emitter<void>;
-	private _showQueryResultsEditor: Emitter<void>;
-	private _updateSelection: Emitter<ISelectionData>;
-
-	private _currentEventCallbacks: IDisposable[];
-
 	public savedViewState: IEditorViewState;
 
 	constructor(
@@ -63,27 +49,21 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		private _sql: UntitledEditorInput,
 		private _results: QueryResultsInput,
 		private _connectionProviderName: string,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
-		this._updateTaskbar = new Emitter<void>();
-		this._showQueryResultsEditor = new Emitter<void>();
-		this._updateSelection = new Emitter<ISelectionData>();
 
-		this._toDispose = [];
-		this._currentEventCallbacks = [];
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
-			this._toDispose.push(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 		}
 
 		// Attach to event callbacks
 		if (this._queryModelService) {
 			// Register callbacks for the Actions
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryStart(uri => {
 					if (this.uri === uri) {
 						this.onRunQuery();
@@ -91,7 +71,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				})
 			);
 
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryComplete(uri => {
 					if (this.uri === uri) {
 						this.onQueryComplete();
@@ -100,23 +80,23 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			);
 		}
 
-		if (this._connectionManagementService) {
-			this._toDispose.push(this._connectionManagementService.onDisconnect(result => {
+		if (this.connectionManagementService) {
+			this._register(this.connectionManagementService.onDisconnect(result => {
 				if (result.connectionUri === this.uri) {
 					this.onDisconnect();
 				}
 			}));
 			if (this.uri) {
 				if (this._connectionProviderName) {
-					this._connectionManagementService.doChangeLanguageFlavor(this.uri, 'sql', this._connectionProviderName);
+					this.connectionManagementService.doChangeLanguageFlavor(this.uri, 'sql', this._connectionProviderName);
 				} else {
-					this._connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
+					this.connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
 				}
 			}
 		}
 
 		if (this._configurationService) {
-			this._toDispose.push(this._configurationService.onDidChangeConfiguration(e => {
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
@@ -131,18 +111,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public get uri(): string { return this.getResource().toString(); }
 	public get sql(): UntitledEditorInput { return this._sql; }
 	public get results(): QueryResultsInput { return this._results; }
-	public get updateTaskbarEvent(): Event<void> { return this._updateTaskbar.event; }
-	public get showQueryResultsEditorEvent(): Event<void> { return this._showQueryResultsEditor.event; }
-	public get updateSelectionEvent(): Event<ISelectionData> { return this._updateSelection.event; }
-	public get runQueryEnabled(): boolean { return this._runQueryEnabled; }
-	public get cancelQueryEnabled(): boolean { return this._cancelQueryEnabled; }
-	public get connectEnabled(): boolean { return this._connectEnabled; }
-	public get disconnectEnabled(): boolean { return this._disconnectEnabled; }
-	public get changeConnectionEnabled(): boolean { return this._changeConnectionEnabled; }
-	public get listDatabasesConnected(): boolean { return this._listDatabasesConnected; }
 	public getQueryResultsInputResource(): string { return this._results.uri; }
-	public showQueryResultsEditor(): void { this._showQueryResultsEditor.fire(); }
-	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }
 	public getTypeId(): string { return QueryInput.ID; }
 	public getDescription(): string { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
@@ -170,7 +139,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	public getName(): string {
 		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
-			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
+			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
 			if (profile) {
 				if (profile.userName) {
@@ -195,49 +164,72 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	// State update funtions
-	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
-		this.showQueryResultsEditor();
+	public runQuery(selection: sqlops.ISelectionData, executePlanOptions?: sqlops.ExecutionPlanOptions): void {
+		if (this.isConnected()) {
+			this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
+		} else {
+			let executionMode = RunQueryOnConnectionMode.executeQuery;
+			if (executePlanOptions) {
+				if (executePlanOptions.displayActualQueryPlan) {
+					executionMode = RunQueryOnConnectionMode.actualQueryPlan;
+				}
+
+				if (executePlanOptions.displayEstimatedQueryPlan) {
+					executionMode = RunQueryOnConnectionMode.estimatedQueryPlan;
+				}
+			}
+			this.connectEditor(executionMode, selection);
+		}
 	}
 
-	public runQueryStatement(selection: ISelectionData): void {
+	public runQueryStatement(selection: sqlops.ISelectionData): void {
 		this._queryModelService.runQueryStatement(this.uri, selection, this);
-		this.showQueryResultsEditor();
 	}
 
 	public runQueryString(text: string): void {
-		this._queryModelService.runQueryString(this.uri, text, this);
-		this.showQueryResultsEditor();
+		if (this.isConnected()) {
+			this._queryModelService.runQueryString(this.uri, text, this);
+		} else {
+
+		}
+	}
+
+	/**
+	 * Returns the URI of the given editor if it is not undefined and is connected.
+	 * Public for testing only.
+	 */
+	private isConnected(): boolean {
+		return this.connectionManagementService.isConnected(this.uri);
+	}
+
+	/**
+	 * Connects the given editor to it's current URI.
+	 * Public for testing only.
+	 */
+	protected connectEditor(runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: sqlops.ISelectionData): void {
+		let params: INewConnectionParams = {
+			input: this,
+			connectionType: ConnectionType.editor,
+			runQueryOnCompletion: runQueryOnCompletion || RunQueryOnConnectionMode.none,
+			querySelection: selection
+		};
+		this.connectionManagementService.showConnectionDialog(params);
 	}
 
 	public onConnectStart(): void {
-		this._runQueryEnabled = false;
-		this._cancelQueryEnabled = false;
-		this._connectEnabled = false;
-		this._disconnectEnabled = true;
-		this._changeConnectionEnabled = false;
-		this._listDatabasesConnected = false;
-		this._updateTaskbar.fire();
 	}
 
 	public onConnectReject(): void {
 		this.onDisconnect();
-		this._updateTaskbar.fire();
 	}
 
 	public onConnectCanceled(): void {
 	}
 
 	public onConnectSuccess(params?: INewConnectionParams): void {
-		this._runQueryEnabled = true;
-		this._connectEnabled = false;
-		this._disconnectEnabled = true;
-		this._changeConnectionEnabled = true;
-		this._listDatabasesConnected = true;
-
 		let isRunningQuery = this._queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: ISelectionData = params ? params.querySelection : undefined;
+			let selection: sqlops.ISelectionData = params ? params.querySelection : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
 				this.runQueryStatement(selection);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
@@ -248,65 +240,37 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 				this.runQuery(selection, { displayActualQueryPlan: true });
 			}
 		}
-		this._updateTaskbar.fire();
 		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {
-		this._runQueryEnabled = true;
-		this._cancelQueryEnabled = false;
-		this._connectEnabled = true;
-		this._disconnectEnabled = false;
-		this._changeConnectionEnabled = false;
-		this._listDatabasesConnected = false;
-		this._updateTaskbar.fire();
 	}
 
 	public onRunQuery(): void {
-		this._runQueryEnabled = false;
-		this._cancelQueryEnabled = true;
-		this._updateTaskbar.fire();
 	}
 
 	public onQueryComplete(): void {
-		this._runQueryEnabled = true;
-		this._cancelQueryEnabled = false;
-		this._updateTaskbar.fire();
 	}
 
 	// Clean up functions
 	public dispose(): void {
 		this._sql.dispose();
 		this._results.dispose();
-		this._toDispose = dispose(this._toDispose);
-		this._currentEventCallbacks = dispose(this._currentEventCallbacks);
 		super.dispose();
 	}
 
 	public close(): void {
 		this._queryModelService.disposeQuery(this.uri);
-		this._connectionManagementService.disconnectEditor(this, true);
+		this.connectionManagementService.disconnectEditor(this, true);
 
 		this._sql.close();
 		this._results.close();
 	}
 
 	/**
-	 * Unsubscribe all events in _currentEventCallbacks and set the new callbacks
-	 * to be unsubscribed the next time this method is called.
-	 *
-	 * This method is used to ensure that all callbacks point to the current QueryEditor
-	 * in the case that this QueryInput is moved between different QueryEditors.
-	 */
-	public setEventCallbacks(callbacks: IDisposable[]): void {
-		this._currentEventCallbacks = dispose(this._currentEventCallbacks);
-		this._currentEventCallbacks = callbacks;
-	}
-
-	/**
 	 * Get the color that should be displayed
 	 */
 	public get tabColor(): string {
-		return this._connectionManagementService.getTabColorForUri(this.uri);
+		return this.connectionManagementService.getTabColorForUri(this.uri);
 	}
 }

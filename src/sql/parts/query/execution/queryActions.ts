@@ -88,16 +88,14 @@ export abstract class QueryTaskbarAction extends Action {
 /**
  * Action class that runs a query in the active SQL text document.
  */
-export class RunQueryAction extends QueryTaskbarAction {
+export class RunQueryAction extends Action {
 
 	public static EnabledClass = 'start';
 	public static ID = 'runQueryAction';
 	public static LABEL = nls.localize('runQueryLabel', 'Run');
 
-	constructor(
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		super(connectionManagementService, RunQueryAction.ID, RunQueryAction.LABEL, RunQueryAction.EnabledClass);
+	constructor() {
+		super(RunQueryAction.ID, RunQueryAction.LABEL, RunQueryAction.EnabledClass);
 	}
 
 	public run(context: IQueryActionContext): TPromise<void> {
@@ -109,29 +107,13 @@ export class RunQueryAction extends QueryTaskbarAction {
 				endLine: vscodeSelection.endLineNumber - 1,
 				endColumn: vscodeSelection.endColumn - 1,
 			};
-			if (this.isConnected(context.input)) {
-				// If we are already connected, run the query
-				return TPromise.wrap(this.runQuery(context.input, selection));
+			if (this.isCursorPosition(selection)) {
+				context.input.runQueryStatement(selection);
 			} else {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				return TPromise.wrap(this.connectEditor(context.input, RunQueryOnConnectionMode.executeQuery, selection));
+				context.input.runQuery(selection);
 			}
 		}
 		return TPromise.as(null);
-	}
-
-	private runQuery(input: QueryInput, selection: sqlops.ISelectionData, runCurrentStatement: boolean = false) {
-		if (this.isConnected(input)) {
-			// if the selection isn't empty then execute the selection
-			// otherwise, either run the statement or the script depending on parameter
-			if (runCurrentStatement && this.isCursorPosition(selection)) {
-				input.runQueryStatement(selection);
-			} else {
-				// get the selection again this time with trimming
-				input.runQuery(selection);
-			}
-		}
 	}
 
 	private isCursorPosition(selection: sqlops.ISelectionData) {
@@ -168,16 +150,14 @@ export class CancelQueryAction extends QueryTaskbarAction {
 /**
  * Action class that runs a query in the active SQL text document.
  */
-export class EstimatedQueryPlanAction extends QueryTaskbarAction {
+export class EstimatedQueryPlanAction extends Action {
 
 	public static EnabledClass = 'estimatedQueryPlan';
 	public static ID = 'estimatedQueryPlanAction';
 	public static LABEL = nls.localize('estimatedQueryPlan', 'Explain');
 
-	constructor(
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		super(connectionManagementService, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.LABEL, EstimatedQueryPlanAction.EnabledClass);
+	constructor() {
+		super(EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.LABEL, EstimatedQueryPlanAction.EnabledClass);
 	}
 
 	public run(context: IQueryActionContext): TPromise<void> {
@@ -189,36 +169,20 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 				endLine: vscodeSelection.endLineNumber - 1,
 				endColumn: vscodeSelection.endColumn - 1,
 			};
-			if (this.isConnected(context.input)) {
-				// If we are already connected, run the query
-				return TPromise.wrap(this.runQuery(context.input, selection));
-			} else {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				return TPromise.wrap(this.connectEditor(context.input, RunQueryOnConnectionMode.executeQuery, selection));
-			}
+			context.input.runQuery(selection, { displayEstimatedQueryPlan: true });
 		}
 		return TPromise.as(null);
 	}
 
-	private runQuery(input: QueryInput, selection: sqlops.ISelectionData) {
-		if (this.isConnected(input)) {
-			input.runQuery(selection, {
-				displayEstimatedQueryPlan: true
-			});
-		}
-	}
 }
 
-export class ActualQueryPlanAction extends QueryTaskbarAction {
+export class ActualQueryPlanAction extends Action {
 	public static EnabledClass = 'actualQueryPlan';
 	public static ID = 'actualQueryPlanAction';
 	public static LABEL = nls.localize('actualQueryPlan', "Actual");
 
-	constructor(
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		super(connectionManagementService, ActualQueryPlanAction.ID, ActualQueryPlanAction.LABEL, ActualQueryPlanAction.EnabledClass);
+	constructor() {
+		super(ActualQueryPlanAction.ID, ActualQueryPlanAction.LABEL, ActualQueryPlanAction.EnabledClass);
 	}
 
 	public run(context: IQueryActionContext): TPromise<void> {
@@ -230,24 +194,9 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 				endLine: vscodeSelection.endLineNumber - 1,
 				endColumn: vscodeSelection.endColumn - 1,
 			};
-			if (this.isConnected(context.input)) {
-				// If we are already connected, run the query
-				return TPromise.wrap(this.runQuery(context.input, selection));
-			} else {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				return TPromise.wrap(this.connectEditor(context.input, RunQueryOnConnectionMode.executeQuery, selection));
-			}
+			context.input.runQuery(selection, { displayActualQueryPlan: true });
 		}
 		return TPromise.as(null);
-	}
-
-	private runQuery(input: QueryInput, selection: sqlops.ISelectionData) {
-		if (this.isConnected(input)) {
-			input.runQuery(selection, {
-				displayActualQueryPlan: true
-			});
-		}
 	}
 }
 

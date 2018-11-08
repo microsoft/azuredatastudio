@@ -163,7 +163,7 @@ export class QueryEditor extends BaseEditor {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public setInput(newInput: QueryInput, options?: EditorOptions): Thenable<void> {
+	public setInput(newInput: QueryInput, options: EditorOptions, token: CancellationToken): Thenable<void> {
 		const oldInput = <QueryInput>this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -172,13 +172,13 @@ export class QueryEditor extends BaseEditor {
 
 		// Make sure all event callbacks will be sent to this QueryEditor in the case that this QueryInput was moved from
 		// another QueryEditor
-		let taskbarCallback: IDisposable = newInput.updateTaskbarEvent(() => this._updateTaskbar());
-		let showResultsCallback: IDisposable = newInput.showQueryResultsEditorEvent(() => this._showQueryResultsEditor());
-		let selectionCallback: IDisposable = newInput.updateSelectionEvent((selection) => this._setSelection(selection));
-		newInput.setEventCallbacks([taskbarCallback, showResultsCallback, selectionCallback]);
 
-		return super.setInput(newInput, options, CancellationToken.None)
-			.then(() => this._updateInput(oldInput, newInput, options));
+		return TPromise.join([
+			super.setInput(newInput, options, token),
+			this.taskbar.setInput(newInput),
+			this.textEditor.setInput(newInput.sql, options, token),
+			this.resultsEditor.setInput(newInput.results, options)
+		]).then(() => undefined);
 	}
 
 	/**

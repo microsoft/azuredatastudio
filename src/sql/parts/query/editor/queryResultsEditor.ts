@@ -146,7 +146,7 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions): TPromise<void> {
+	setInput(input: QueryResultsInput, options: EditorOptions): Thenable<void> {
 		super.setInput(input, options, CancellationToken.None);
 		this.resultsView.input = input;
 		return TPromise.wrap<void>(null);
