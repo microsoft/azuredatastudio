@@ -26,13 +26,13 @@ export class TextCellComponent extends CellView implements OnInit {
 	@Input() cellModel: ICellModel;
 	private _content: string;
 	private isEditMode: boolean;
-	private _sanitizer:	ISanitizer;
+	private _sanitizer: ISanitizer;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(ICommandService) private _commandService: ICommandService
 	) {
 		super();
 		this.isEditMode = true;
@@ -63,10 +63,8 @@ export class TextCellComponent extends CellView implements OnInit {
 
 	//Sanitizes the content based on trusted mode of Cell Model
 	private sanitizeContent(content: string): string {
-		if (this.sanitizer) {
-			if (this.cellModel && !this.cellModel.trustedMode) {
-				content = this.sanitizer.sanitize(content);
-			}
+		if (this.cellModel && !this.cellModel.trustedMode) {
+			content = this.sanitizer.sanitize(content);
 		}
 		return content;
 	}

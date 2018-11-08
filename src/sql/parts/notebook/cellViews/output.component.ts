@@ -17,12 +17,12 @@ export const OUTPUT_SELECTOR: string = 'output-component';
 
 @Component({
 	selector: OUTPUT_SELECTOR,
-    templateUrl: decodeURI(require.toUrl('./output.component.html'))
+	templateUrl: decodeURI(require.toUrl('./output.component.html'))
 })
 export class OutputComponent extends AngularDisposable implements OnInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
-    @Input() cellOutput: nb.ICellOutput;
-    @Input() trustedMode: boolean;
+	@Input() cellOutput: nb.ICellOutput;
+	@Input() trustedMode: boolean;
 	private readonly _minimumHeight = 30;
 	registry: RenderMimeRegistry;
 
@@ -31,47 +31,47 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		@Inject(INotebookService) private _notebookService: INotebookService
 	) {
 		super();
-        this.registry = _notebookService.getMimeRegistry();
+		this.registry = _notebookService.getMimeRegistry();
 	}
 
 	ngOnInit() {
 		let node = this.outputElement.nativeElement;
-        let output = this.cellOutput;
-        let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trustedMode });
-        // TODO handle safe/unsafe mapping
-        this.createRenderedMimetype(options, node);
-    }
+		let output = this.cellOutput;
+		let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trustedMode });
+		// TODO handle safe/unsafe mapping
+		this.createRenderedMimetype(options, node);
+	}
 
 	public layout(): void {
 	}
 
 	protected createRenderedMimetype(options: MimeModel.IOptions, node: HTMLElement): void {
-        let mimeType = this.registry.preferredMimeType(
-            options.data,
-            options.trusted ? 'any' : 'ensure'
-        );
-        if (mimeType) {
+		let mimeType = this.registry.preferredMimeType(
+			options.data,
+			options.trusted ? 'any' : 'ensure'
+		);
+		if (mimeType) {
 			let output = this.registry.createRenderer(mimeType);
-            output.node = node;
-            let model = new MimeModel(options);
-            output.renderModel(model).catch(error => {
-                // Manually append error message to output
-                output.node.innerHTML = `<pre>Javascript Error: ${error.message}</pre>`;
-                // Remove mime-type-specific CSS classes
-                output.node.className = 'p-Widget jp-RenderedText';
-                output.node.setAttribute(
-                    'data-mime-type',
-                    'application/vnd.jupyter.stderr'
-                );
-            });
+			output.node = node;
+			let model = new MimeModel(options);
+			output.renderModel(model).catch(error => {
+				// Manually append error message to output
+				output.node.innerHTML = `<pre>Javascript Error: ${error.message}</pre>`;
+				// Remove mime-type-specific CSS classes
+				output.node.className = 'p-Widget jp-RenderedText';
+				output.node.setAttribute(
+					'data-mime-type',
+					'application/vnd.jupyter.stderr'
+				);
+			});
 			//this.setState({ node: node });
-        } else {
-            // TODO Localize
-            node.innerHTML =
-                `No ${options.trusted ? '' : '(safe) '}renderer could be ` +
-                'found for output. It has the following MIME types: ' +
-                Object.keys(options.data).join(', ');
-            //this.setState({ node: node });
-        }
-    }
+		} else {
+			// TODO Localize
+			node.innerHTML =
+				`No ${options.trusted ? '' : '(safe) '}renderer could be ` +
+				'found for output. It has the following MIME types: ' +
+				Object.keys(options.data).join(', ');
+			//this.setState({ node: node });
+		}
+	}
 }
