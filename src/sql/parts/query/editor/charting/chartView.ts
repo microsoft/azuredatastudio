@@ -21,7 +21,7 @@ import { ChartType } from 'sql/parts/dashboard/widgets/insights/views/charts/int
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
-import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Builder } from 'vs/base/browser/builder';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
@@ -83,12 +83,11 @@ export class ChartView extends Disposable implements IPanelView {
 	constructor(
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextMenuService contextMenuService: IContextMenuService
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
 		this.taskbarContainer = $('div.taskbar-container');
-		this.taskbar = new Taskbar(this.taskbarContainer, contextMenuService);
+		this.taskbar = new Taskbar(this.taskbarContainer);
 		this.optionsControl = $('div.options-container');
 		let generalControls = $('div.general-controls');
 		this.optionsControl.appendChild(generalControls);

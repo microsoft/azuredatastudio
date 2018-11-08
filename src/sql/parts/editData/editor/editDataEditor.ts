@@ -318,7 +318,7 @@ export class EditDataEditor extends BaseEditor {
 	private _createTaskbar(parentElement: HTMLElement): void {
 		// Create QueryTaskbar
 		this._taskbarContainer = DOM.append(parentElement, DOM.$('div'));
-		this._taskbar = new Taskbar(this._taskbarContainer, this._contextMenuService, {
+		this._taskbar = new Taskbar(this._taskbarContainer, {
 			actionItemProvider: (action: Action) => this._getChangeMaxRowsAction(action)
 		});
 

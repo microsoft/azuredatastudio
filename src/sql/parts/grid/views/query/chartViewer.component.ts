@@ -100,7 +100,6 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
 		@Inject(IConfigurationService) private configurationService: IConfigurationService,
 		@Inject(IWindowsService) private windowsService: IWindowsService,
@@ -152,7 +151,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		this._saveAction = this.instantiationService.createInstance(SaveImageAction);
 
 		let taskbar = <HTMLElement>this.taskbarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: this._createInsightAction },

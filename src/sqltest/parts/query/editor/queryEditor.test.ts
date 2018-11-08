@@ -48,20 +48,6 @@ suite('SQL QueryEditor Tests', () => {
 	let parentBuilder: Builder;
 	let mockEditor: any;
 
-	let getQueryEditor = function (): QueryEditor {
-		return new QueryEditor(
-			undefined,
-			themeService,
-			instantiationService.object,
-			undefined,
-			undefined,
-			undefined,
-			editorDescriptorService.object,
-			undefined,
-			undefined,
-			configurationService.object);
-	};
-
 	setup(() => {
 		// Setup DOM elements
 		let element = DOM.$('queryEditorParent');
@@ -87,7 +73,7 @@ suite('SQL QueryEditor Tests', () => {
 			return new TPromise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new TPromise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined)));
+			return new TPromise((resolve) => resolve(new RunQueryAction(undefined)));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
@@ -97,7 +83,7 @@ suite('SQL QueryEditor Tests', () => {
 				}
 			}
 			// Default
-			return new RunQueryAction(undefined, undefined, undefined);
+			return new RunQueryAction(undefined);
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
@@ -146,26 +132,6 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Create a QueryModelService
 		queryModelService = new QueryModelService(instantiationService.object, notificationService.object);
-	});
-
-	test('createEditor creates only the taskbar', (done) => {
-		// If I call createEditor
-		let editor: QueryEditor = getQueryEditor();
-		editor.createEditor(parentBuilder.getHTMLElement());
-
-		// The taskbar should be created
-		assert.equal(!!editor.taskbar, true);
-		assert.equal(!!editor.taskbarContainer, true);
-
-		// But Nothing else should be created
-		assert.equal(!!editor.getContainer(), false);
-		assert.equal(!!editor.sqlEditor, false);
-		assert.equal(!!editor.sqlEditorContainer, false);
-		assert.equal(!!editor.resultsEditor, false);
-		assert.equal(!!editor.resultsEditorContainer, false);
-		assert.equal(!!editor.sash, false);
-		assert.equal(!!editor._isResultsEditorVisible(), false);
-		done();
 	});
 
 	/*
@@ -342,7 +308,7 @@ suite('SQL QueryEditor Tests', () => {
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
 				// Default
-				return new RunQueryAction(undefined, undefined, undefined);
+				return new RunQueryAction(undefined);
 			});
 
 			// Setup hook to capture calls to create the listDatabase action
@@ -353,7 +319,7 @@ suite('SQL QueryEditor Tests', () => {
 						return item;
 					}
 					// Default
-					return new RunQueryAction(undefined, undefined, undefined);
+					return new RunQueryAction(undefined);
 				});
 
 			let fileInput = new UntitledEditorInput(URI.parse('testUri'), false, '', '', '', instantiationService.object, undefined, undefined, undefined);
@@ -398,6 +364,7 @@ suite('SQL QueryEditor Tests', () => {
 			assert.equal(queryInput.listDatabasesConnected, true);
 			done();
 		});
+
 		test('Test that we attempt to dispose query when the queryInput is disposed', (done) => {
 			let queryResultsInput = new QueryResultsInput('testUri', configurationService.object);
 			queryInput['_results'] = queryResultsInput;

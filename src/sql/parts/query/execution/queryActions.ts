@@ -4,18 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/parts/query/editor/media/queryActions';
+
 import * as nls from 'vs/nls';
 import { Builder, $ } from 'vs/base/browser/builder';
-import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
-import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import Severity from 'vs/base/common/severity';
 
-import { ISelectionData } from 'sqlops';
+import * as sqlops from 'sqlops';
+
+import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
+import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
+import { EventEmitter } from 'sql/base/common/eventEmitter';
+import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -25,10 +31,13 @@ import {
 } from 'sql/parts/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import Severity from 'vs/base/common/severity';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
+
+export interface IQueryActionContext {
+	input: QueryInput;
+	editor: ICodeEditor;
+}
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -36,65 +45,43 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
  */
 export abstract class QueryTaskbarAction extends Action {
 
-	private _classes: string[];
-
 	constructor(
-		protected _connectionManagementService: IConnectionManagementService,
-		protected editor: QueryEditor,
+		protected connectionManagementService: IConnectionManagementService,
 		id: string,
-		enabledClass: string
+		label: string,
+		cssClass: string
 	) {
-		super(id);
-		this.enabled = true;
-		this._setCssClass(enabledClass);
+		super(id, label, cssClass);
 	}
 
 	/**
 	 * This method is executed when the button is clicked.
 	 */
-	public abstract run(): TPromise<void>;
-
-	protected updateCssClass(enabledClass: string): void {
-		// set the class, useful on change of label or icon
-		this._setCssClass(enabledClass);
-	}
-
-	/**
-	 * Sets the CSS classes combining the parent and child classes.
-	 * Public for testing only.
-	 */
-	private _setCssClass(enabledClass: string): void {
-		this._classes = [];
-
-		if (enabledClass) {
-			this._classes.push(enabledClass);
-		}
-		this.class = this._classes.join(' ');
-	}
+	public abstract run(context: IQueryActionContext): TPromise<void>;
 
 	/**
 	 * Returns the URI of the given editor if it is not undefined and is connected.
 	 * Public for testing only.
 	 */
-	public isConnected(editor: QueryEditor): boolean {
-		if (!editor || !editor.currentQueryInput) {
+	public isConnected(input: QueryInput): boolean {
+		if (!input) {
 			return false;
 		}
-		return this._connectionManagementService.isConnected(editor.currentQueryInput.uri);
+		return this.connectionManagementService.isConnected(input.uri);
 	}
 
 	/**
 	 * Connects the given editor to it's current URI.
 	 * Public for testing only.
 	 */
-	protected connectEditor(editor: QueryEditor, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: ISelectionData): void {
+	protected connectEditor(input: QueryInput, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: sqlops.ISelectionData): void {
 		let params: INewConnectionParams = {
-			input: editor.currentQueryInput,
+			input: input,
 			connectionType: ConnectionType.editor,
-			runQueryOnCompletion: runQueryOnCompletion ? runQueryOnCompletion : RunQueryOnConnectionMode.none,
+			runQueryOnCompletion: runQueryOnCompletion || RunQueryOnConnectionMode.none,
 			querySelection: selection
 		};
-		this._connectionManagementService.showConnectionDialog(params);
+		this.connectionManagementService.showConnectionDialog(params);
 	}
 }
 
@@ -105,64 +92,49 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public static EnabledClass = 'start';
 	public static ID = 'runQueryAction';
+	public static LABEL = nls.localize('runQueryLabel', 'Run');
 
 	constructor(
-		editor: QueryEditor,
-		@IQueryModelService protected _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
-		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
-		this.label = nls.localize('runQueryLabel', 'Run');
+		super(connectionManagementService, RunQueryAction.ID, RunQueryAction.LABEL, RunQueryAction.EnabledClass);
 	}
 
-	public run(): TPromise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			if (this.isConnected(this.editor)) {
+	public run(context: IQueryActionContext): TPromise<void> {
+		if (!context.editor.getSelection()) {
+			let vscodeSelection = context.editor.getSelection();
+			let selection: sqlops.ISelectionData = {
+				startLine: vscodeSelection.startLineNumber - 1,
+				startColumn: vscodeSelection.startColumn - 1,
+				endLine: vscodeSelection.endLineNumber - 1,
+				endColumn: vscodeSelection.endColumn - 1,
+			};
+			if (this.isConnected(context.input)) {
 				// If we are already connected, run the query
-				this.runQuery(this.editor);
+				return TPromise.wrap(this.runQuery(context.input, selection));
 			} else {
 				// If we are not already connected, prompt for connection and run the query if the
 				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
+				return TPromise.wrap(this.connectEditor(context.input, RunQueryOnConnectionMode.executeQuery, selection));
 			}
 		}
 		return TPromise.as(null);
 	}
 
-	public runCurrent(): TPromise<void> {
-		if (!this.editor.isSelectionEmpty()) {
-			if (this.isConnected(this.editor)) {
-				// If we are already connected, run the query
-				this.runQuery(this.editor, true);
-			} else {
-				// If we are not already connected, prompt for connection and run the query if the
-				// connection succeeds. "runQueryOnCompletion=true" will cause the query to run after connection
-				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
-			}
-		}
-		return TPromise.as(null);
-	}
-
-	public runQuery(editor: QueryEditor, runCurrentStatement: boolean = false) {
-		if (!editor) {
-			editor = this.editor;
-		}
-
-		if (this.isConnected(editor)) {
+	private runQuery(input: QueryInput, selection: sqlops.ISelectionData, runCurrentStatement: boolean = false) {
+		if (this.isConnected(input)) {
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let selection: ISelectionData = editor.getSelection(false);
-			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
-				editor.currentQueryInput.runQueryStatement(selection);
+			if (runCurrentStatement && this.isCursorPosition(selection)) {
+				input.runQueryStatement(selection);
 			} else {
 				// get the selection again this time with trimming
-				selection = editor.getSelection();
-				editor.currentQueryInput.runQuery(selection);
+				input.runQuery(selection);
 			}
 		}
 	}
 
-	protected isCursorPosition(selection: ISelectionData) {
+	private isCursorPosition(selection: sqlops.ISelectionData) {
 		return selection.startLine === selection.endLine
 			&& selection.startColumn === selection.endColumn;
 	}
@@ -175,20 +147,19 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	public static EnabledClass = 'stop';
 	public static ID = 'cancelQueryAction';
+	public static LABEL = nls.localize('cancelQueryLabel', 'Cancel');
 
 	constructor(
-		editor: QueryEditor,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
-		super(connectionManagementService, editor, CancelQueryAction.ID, CancelQueryAction.EnabledClass);
+		super(connectionManagementService, CancelQueryAction.ID, CancelQueryAction.LABEL, CancelQueryAction.EnabledClass);
 		this.enabled = false;
-		this.label = nls.localize('cancelQueryLabel', 'Cancel');
 	}
 
-	public run(): TPromise<void> {
-		if (this.isConnected(this.editor)) {
-			this._queryModelService.cancelQuery(this.editor.currentQueryInput.uri);
+	public run(context: IQueryActionContext): TPromise<void> {
+		if (this.isConnected(context.input)) {
+			this._queryModelService.cancelQuery(context.input.uri);
 		}
 		return TPromise.as(null);
 	}
@@ -201,17 +172,15 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public static EnabledClass = 'estimatedQueryPlan';
 	public static ID = 'estimatedQueryPlanAction';
+	public static LABEL = nls.localize('estimatedQueryPlan', 'Explain');
 
 	constructor(
-		editor: QueryEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
-		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', 'Explain');
+		super(connectionManagementService, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.LABEL, EstimatedQueryPlanAction.EnabledClass);
 	}
 
-	public run(): TPromise<void> {
+	public run(context: IQueryActionContext): TPromise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -241,14 +210,12 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 export class ActualQueryPlanAction extends QueryTaskbarAction {
 	public static EnabledClass = 'actualQueryPlan';
 	public static ID = 'actualQueryPlanAction';
+	public static LABEL = nls.localize('actualQueryPlan', "Actual");
 
 	constructor(
-		editor: QueryEditor,
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
-		super(connectionManagementService, editor, ActualQueryPlanAction.ID, ActualQueryPlanAction.EnabledClass);
-		this.label = nls.localize('actualQueryPlan', "Actual");
+		super(connectionManagementService, ActualQueryPlanAction.ID, ActualQueryPlanAction.LABEL, ActualQueryPlanAction.EnabledClass);
 	}
 
 	public run(): TPromise<void> {
@@ -283,66 +250,6 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 }
 
 /**
- * Action class that disconnects the connection associated with the current query file.
- */
-export class DisconnectDatabaseAction extends QueryTaskbarAction {
-
-	public static EnabledClass = 'disconnect';
-	public static ID = 'disconnectDatabaseAction';
-
-	constructor(
-		editor: QueryEditor,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		super(connectionManagementService, editor, DisconnectDatabaseAction.ID, DisconnectDatabaseAction.EnabledClass);
-		this.label = nls.localize('disconnectDatabaseLabel', 'Disconnect');
-	}
-
-	public run(): TPromise<void> {
-		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
-		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
-		this._connectionManagementService.disconnectEditor(this.editor.currentQueryInput);
-		return TPromise.as(null);
-	}
-}
-
-/**
- * Action class that launches a connection dialogue for the current query file
- */
-export class ConnectDatabaseAction extends QueryTaskbarAction {
-
-	public static EnabledDefaultClass = 'connect';
-	public static EnabledChangeClass = 'changeConnection';
-	public static ID = 'connectDatabaseAction';
-
-	constructor(
-		editor: QueryEditor,
-		isChangeConnectionAction: boolean,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		let label: string;
-		let enabledClass: string;
-
-		if (isChangeConnectionAction) {
-			enabledClass = ConnectDatabaseAction.EnabledChangeClass;
-			label = nls.localize('changeConnectionDatabaseLabel', 'Change Connection');
-		} else {
-			enabledClass = ConnectDatabaseAction.EnabledDefaultClass;
-			label = nls.localize('connectDatabaseLabel', 'Connect');
-		}
-
-		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
-
-		this.label = label;
-	}
-
-	public run(): TPromise<void> {
-		this.connectEditor(this.editor);
-		return TPromise.as(null);
-	}
-}
-
-/**
  * Action class that either launches a connection dialogue for the current query file,
  * or disconnects the active connection
  */
@@ -355,6 +262,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	private _connected: boolean;
 	private _connectLabel: string;
 	private _disconnectLabel: string;
+
 	constructor(
 		editor: QueryEditor,
 		isConnected: boolean,

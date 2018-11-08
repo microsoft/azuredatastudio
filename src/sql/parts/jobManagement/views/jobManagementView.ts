@@ -4,17 +4,18 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ElementRef, AfterContentChecked, ViewChild } from '@angular/core';
-import { Table } from 'sql/base/browser/ui/table/table';
-import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
+
+import { Table } from 'sql/base/browser/ui/table/table';
+import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
@@ -111,7 +112,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let refreshAction = this._instantiationService.createInstance(JobsRefreshAction);
 		let newAction: Action = this._instantiationService.createInstance(this.contextAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this._contextMenuService);
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: refreshAction },
