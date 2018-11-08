@@ -44,7 +44,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		if (registration) {
 			this.notebookService.unregisterProvider(registration.providerId);
 			registration.dispose();
-			delete this._providers[handle];
+			this._providers.delete(handle);
 		}
 	}
 
