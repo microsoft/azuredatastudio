@@ -23,7 +23,10 @@ import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RunCellAction } from 'sql/parts/notebook/cellViews/codeActions';
 
 export const CODE_SELECTOR: string = 'code-component';
 
@@ -37,6 +40,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	@Input() cellModel: ICellModel;
 	@Output() public onContentChanged = new EventEmitter<void>();
 
+	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
@@ -49,7 +53,9 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
-		@Inject(IModeService) private _modeService: IModeService
+		@Inject(IModeService) private _modeService: IModeService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IContextViewService) private contextViewService: IContextViewService
 	) {
 		super();
 	}
@@ -57,6 +63,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.initActionBar();
 	}
 
 	ngOnChanges() {
@@ -100,6 +107,18 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
 		this._editor.setHeightToScrollHeight();
+	}
+
+	protected initActionBar() {
+
+		let runCellAction = this._instantiationService.createInstance(RunCellAction);
+
+		let taskbar = <HTMLElement>this.toolbarElement.nativeElement;
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar.context = this;
+		this._actionBar.setContent([
+			{ action: runCellAction }
+		]);
 	}
 
 	private createUri(): URI {

@@ -148,7 +148,7 @@ export class SparkMagicContexts {
 		} else {
 			// Handle kernels
 			if (savedKernelInfo && savedKernelInfo.name.toLowerCase().indexOf('spark') > -1) {
-				notificationService.warn(localize('sparkKernelRequiresConnection', 'Cannot use kernel {0} as no connection is active. The default kernel of Python3 will be used instead.', savedKernelInfo.display_name));
+				notificationService.warn(localize('sparkKernelRequiresConnection', 'Cannot use kernel {0} as no connection is active. The default kernel of {1} will be used instead.', savedKernelInfo.display_name, defaultKernel.display_name));
 			}
 		}
 
