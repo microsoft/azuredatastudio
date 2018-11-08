@@ -36,7 +36,7 @@ export class NotebookConnection {
 	}
 
 	public get connectionProfile(): IConnectionProfile {
-		return this._connectionProfile;
+		return this.connectionProfile;
 	}
 
 
@@ -70,11 +70,11 @@ export class NotebookConnection {
 	}
 
 	public get user(): string {
-		return this._connectionProfile.options[constants.userPropName];
+		return this.connectionProfile.options[constants.userPropName];
 	}
 
 	public get password(): string {
-		return this._connectionProfile.options[constants.passwordPropName];
+		return this.connectionProfile.options[constants.passwordPropName];
 	}
 
 	public get knoxport(): string {
