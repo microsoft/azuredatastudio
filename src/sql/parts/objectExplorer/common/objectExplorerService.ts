@@ -20,6 +20,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import * as Utils from 'sql/parts/connection/common/utils';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -207,20 +208,28 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this.sendUpdateNodeEvent(connection, errorMessage);
 	}
 
-		/**
-	 * Gets called when session is created
+	/**
+	 * Gets called when session is disconnected
 	 */
 	public onSessionDisconnected(handle: number, session: sqlops.ObjectExplorerSession) {
-		let connection: ConnectionProfile = undefined;
-		let errorMessage: string = undefined;
 		if (this._sessions[session.sessionId]) {
-
-
+			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
+			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
+				//connection.isDisconnecting = true;
+				//this._connectionManagementService.disconnect(connection).then((value) => {
+					let uri: string = Utils.generateUri(connection);
+					if (this._serverTreeView.isObjectExplorerConnectionUri(uri)) {
+						this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection);
+					}
+					//connection.isDisconnecting = false;
+					this.sendUpdateNodeEvent(connection, session.errorMessage);
+				// }).catch(disconnectError => {
+				// 	///
+				// });
+			}
 		} else {
-			warn(`cannot find session ${session.sessionId}`);
+			warn(`Cannot find session ${session.sessionId}`);
 		}
-
-		this.sendUpdateNodeEvent(connection, errorMessage);
 	}
 
 	private sendUpdateNodeEvent(connection: ConnectionProfile, errorMessage: string = undefined) {
@@ -406,7 +415,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		parentTree: TreeNode,
 		refresh: boolean = false): Thenable<TreeNode[]> {
 		return new Promise<TreeNode[]>((resolve, reject) => {
-			this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
+				this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
 				let children: TreeNode[] = [];
 				if (expandResult && expandResult.nodes) {
 					children = expandResult.nodes.map(node => {

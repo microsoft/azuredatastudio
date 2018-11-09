@@ -150,7 +150,7 @@ export class ServerTreeView {
 		});
 	}
 
-	private isObjectExplorerConnectionUri(uri: string): boolean {
+	public isObjectExplorerConnectionUri(uri: string): boolean {
 		let isBackupRestoreUri: boolean = uri.indexOf(ConnectionUtils.ConnectionUriBackupIdAttributeName) >= 0 ||
 			uri.indexOf(ConnectionUtils.ConnectionUriRestoreIdAttributeName) >= 0;
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
