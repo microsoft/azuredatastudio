@@ -40,9 +40,9 @@ export interface IQueryEditorStateChange {
 }
 
 export class QueryEditorState {
-	private _connected: boolean;
-	private _resultsVisible: boolean;
-	private _executing: boolean;
+	private _connected = false;
+	private _resultsVisible = false;
+	private _executing = false;
 
 	private _onChange = new Emitter<IQueryEditorStateChange>();
 	public onChange = this._onChange.event;

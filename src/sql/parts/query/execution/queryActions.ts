@@ -18,7 +18,6 @@ import Severity from 'vs/base/common/severity';
 
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
-import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
 import {
 	IConnectionManagementService,
@@ -233,17 +232,30 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	}
 }
 
+export class ChangeConnectionAction extends QueryTaskbarAction {
+	public static ID = 'changeConnection';
+	public static LABEL = nls.localize('changeConnection', 'Change Connection');
+	public static CLASS = 'changeConnection';
+
+	constructor(@IConnectionManagementService connectionManagementService: IConnectionManagementService) {
+		super(connectionManagementService, ChangeConnectionAction.ID, ChangeConnectionAction.LABEL, ChangeConnectionAction.CLASS);
+	}
+
+	public run(context: IQueryActionContext): TPromise<void> {
+		this.connectEditor(context.input);
+		return TPromise.as(null);
+	}
+}
+
 /**
  * Action class that is tied with ListDatabasesActionItem.
  */
-export class ListDatabasesAction extends QueryTaskbarAction {
+export class ListDatabasesAction extends Action {
 
 	public static ID = 'listDatabaseQueryAction';
 
-	constructor(
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		super(connectionManagementService, ListDatabasesAction.ID);
+	constructor() {
+		super(ListDatabasesAction.ID);
 	}
 
 	public run(): TPromise<void> {
@@ -255,7 +267,7 @@ export class ListDatabasesAction extends QueryTaskbarAction {
  * Action item that handles the dropdown (combobox) that lists the available databases.
  * Based off StartDebugActionItem.
  */
-export class ListDatabasesActionItem extends EventEmitter implements IActionItem {
+export class ListDatabasesActionItem implements IActionItem {
 	public static ID = 'listDatabaseQueryActionItem';
 
 	public actionRunner: IActionRunner;
@@ -272,13 +284,12 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@INotificationService private _notificationService: INotificationService
 	) {
-		super();
 		this._toDispose = [];
 		this.$databaseListDropdown = $('.databaseListDropdown');
 		this._isInAccessibilityMode = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
@@ -290,7 +301,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			this._databaseSelectBox.disable();
 
 		} else {
-			this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, themeService, {
+			this._dropdown = new Dropdown(this.$databaseListDropdown.getHTMLElement(), contextViewProvider, {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString,
@@ -298,6 +309,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			});
 			this._dropdown.onValueChange(s => this.databaseSelected(s));
 			this._toDispose.push(this._dropdown.onFocus(() => { self.onDropdownFocus(); }));
+			this._toDispose.push(attachEditableDropdownStyler(this._dropdown, themeService));
 		}
 
 		// Register event handlers

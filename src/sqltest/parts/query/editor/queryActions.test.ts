@@ -311,7 +311,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(connectionManagementService.object, undefined, undefined, undefined, configurationService.object);
+		listItem = new ListDatabasesActionItem(undefined, undefined, configurationService.object, connectionManagementService.object, undefined);
 
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -346,7 +346,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(undefined, undefined, configurationService.object, cms.object, undefined);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -370,7 +370,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(undefined, undefined, configurationService.object, cms.object, undefined);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -397,7 +397,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(undefined, undefined, configurationService.object, cms.object, undefined);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{

@@ -109,7 +109,6 @@ export class Dropdown extends Disposable {
 	constructor(
 		container: HTMLElement,
 		contextViewService: IContextViewProvider,
-		private _themeService: IThemeService,
 		opt?: IDropdownOptions
 	) {
 		super();

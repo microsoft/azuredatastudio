@@ -61,8 +61,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 				ariaLabel: '',
 				actionLabel: ''
 			};
-			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, this.themeService,
-				dropdownOptions);
+			this._editableDropdown = new Dropdown(this._editableDropDownContainer.nativeElement, this.contextViewService, dropdownOptions);
 
 			this._register(this._editableDropdown);
 			this._register(attachEditableDropdownStyler(this._editableDropdown, this.themeService));
