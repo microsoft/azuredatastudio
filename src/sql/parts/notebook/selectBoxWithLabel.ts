@@ -10,38 +10,29 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 
 export class SelectBoxWithLabel extends SelectBox {
 	private _label: string;
-	private _outterContainer: HTMLElement;
-	private _innerContainer: HTMLElement;
 
 	constructor(label: string,
 		options: string[], selectedOption: string,
 		contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
-			let outterContainer: HTMLElement;
-			let dropdownContainer: HTMLElement;
+		super(options, selectedOption, contextViewProvider, container, selectBoxOptions);
 
-			if (!container) {
-				outterContainer = document.createElement('div');
-			}
-			else {
-				outterContainer = container;
-			}
-
-			outterContainer.className = 'notebook-info-label';
-			dropdownContainer = document.createElement('div');
-			dropdownContainer.className = 'notebook-toolbar-dropdown';
-
-			super(options, selectedOption, contextViewProvider, dropdownContainer, selectBoxOptions);
-
-			this._outterContainer = outterContainer;
-			this._innerContainer = dropdownContainer;
-			this._label = label;
+		this._label = label;
 	}
-	public render(container?: HTMLElement): void {
+	public render(container: HTMLElement): void {
+		let labelOnTop = false;
+		let outterDiv = document.createElement('div');
+		let selectDiv = document.createElement('div');
+		outterDiv.className = labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
+		outterDiv.classList.add('action-item-label');
+
+		container.appendChild(outterDiv);
 		let labelText = document.createElement('div');
 		labelText.innerHTML = this._label;
-
-		this._outterContainer.appendChild(labelText);
-		this._outterContainer.appendChild(this._innerContainer);
-		super.render(this._innerContainer);
+		labelText.className = 'notebook-info-label';
+		outterDiv.appendChild(labelText);
+		outterDiv.appendChild(selectDiv);
+		super.render(selectDiv);
+		selectDiv.getElementsByTagName('select')[0].classList.add('action-item-label');
 	}
+
 }

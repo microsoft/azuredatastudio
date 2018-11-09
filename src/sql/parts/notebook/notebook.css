@@ -24,3 +24,14 @@
 	display: flex;
 	align-items: center;
 }
+
+.notebookEditor .labelOnTopContainer {
+	display: flex;
+	flex-direction: column;
+}
+
+.notebookEditor .labelOnLeftContainer {
+	display: flex;
+	flex-direction: row;
+	margin-right: 5px;
+}

@@ -54,6 +54,10 @@
 	padding-left: 15px;
  }
 
+.carbon-taskbar .action-item-label {
+	font-size:11px;
+}
+
 .listDatabasesSelectBox {
 	padding-left: 2px;
 	min-width: 100px;
