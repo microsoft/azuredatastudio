@@ -14,7 +14,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
-import * as Constant from '../constants';
+import * as Constants from '../constants';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
@@ -51,10 +51,15 @@ export class TextCellComponent extends CellView implements OnInit {
 		return this._sanitizer = defaultSanitizer;
 	}
 
+	/**
+	 * Updates the preview of markdown component with latest changes
+	 * If content is empty and in non-edit mode, default it to 'Double-click to edit'
+	 * Sanitizes the data to be shown in markdown cell
+	 */
 	private updatePreview() {
 		if (this._content !== this.cellModel.source) {
 			if (!this.cellModel.source && !this.isEditMode) {
-				(<HTMLElement>this.output.nativeElement).innerHTML = Constant.doubleClickToEdit;
+				(<HTMLElement>this.output.nativeElement).innerHTML = Constants.doubleClickToEdit;
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
 				// todo: pass in the notebook filename instead of undefined value
@@ -66,8 +71,6 @@ export class TextCellComponent extends CellView implements OnInit {
 		}
 	}
 
-
-	private clearPreviw
 	//Sanitizes the content based on trusted mode of Cell Model
 	private sanitizeContent(content: string): string {
 		if (this.cellModel && !this.cellModel.trustedMode) {
