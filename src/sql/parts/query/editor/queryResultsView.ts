@@ -19,6 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as DOM from 'vs/base/browser/dom';
 import { once, anyEvent } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 class ResultsView extends Disposable implements IPanelView {
 	private panelViewlet: PanelViewlet;
@@ -196,17 +197,10 @@ export class QueryResultsView extends Disposable {
 	public style() {
 	}
 
-	public set input(input: QueryResultsInput) {
-		this._input = input;
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
-		this.resultsTab.view.state = this.input.state;
-		this.qpTab.view.state = this.input.state.queryPlanState;
-		this.chartTab.view.state = this.input.state.chartState;
-		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
-		this.resultsTab.queryRunner = queryRunner;
-		this.chartTab.queryRunner = queryRunner;
-		this.runnerDisposables.push(queryRunner.onQueryStart(e => {
+	private setQueryRunner(runner: QueryRunner) {
+		this.resultsTab.queryRunner = runner;
+		this.chartTab.queryRunner = runner;
+		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.hideChart();
 			this.hidePlan();
 			this.input.state.visibleTabs = new Set();
@@ -222,15 +216,34 @@ export class QueryResultsView extends Disposable {
 				this._panelView.pushTab(this.qpTab);
 			}
 		}
-		this.runnerDisposables.push(queryRunner.onQueryEnd(() => {
-			if (queryRunner.isQueryPlan) {
-				queryRunner.planXml.then(e => {
+		this.runnerDisposables.push(runner.onQueryEnd(() => {
+			if (runner.isQueryPlan) {
+				runner.planXml.then(e => {
 					this.showPlan(e);
 				});
 			}
 		}));
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);
+		}
+	}
+
+	public setInput(input: QueryInput) {
+		this._input = input.results;
+		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
+		this.resultsTab.view.state = this.input.state;
+		this.qpTab.view.state = this.input.state.queryPlanState;
+		this.chartTab.view.state = this.input.state.chartState;
+		let info = this.queryModelService._getQueryInfo(input.uri);
+		if (info) {
+			this.setQueryRunner(info.queryRunner);
+		} else {
+			let disposeable = input.onQueryStart(() => {
+				let info = this.queryModelService._getQueryInfo(input.uri);
+				this.setQueryRunner(info.queryRunner);
+				disposeable.dispose();
+			});
 		}
 	}
 

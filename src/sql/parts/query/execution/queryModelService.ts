@@ -28,6 +28,9 @@ import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IRange } from 'vs/editor/common/core/range';
 
 const selectionSnippetMaxLen = 100;
 
@@ -78,7 +81,8 @@ export class QueryModelService implements IQueryModelService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IEditorService private editorService: IEditorService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -183,7 +187,17 @@ export class QueryModelService implements IQueryModelService {
 	public setEditorSelection(uri: string, index: number): void {
 		let info: QueryInfo = this._queryInfoMap.get(uri);
 		if (info && info.queryInput) {
-			info.queryInput.updateSelection(info.selection[index]);
+			this.editorService.openEditor(info.queryInput).then(e => {
+				let range: IRange = {
+					startLineNumber: info.selection[index].startLine + 1,
+					startColumn: info.selection[index].startColumn + 1,
+					endLineNumber: info.selection[index].endLine + 1,
+					endColumn: info.selection[index].endColumn + 1
+				};
+				let editor = e.getControl() as ICodeEditor;
+				editor.revealRange(range);
+				editor.setSelection(range);
+			});
 		}
 	}
 

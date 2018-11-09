@@ -22,6 +22,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -146,9 +147,9 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions): Thenable<void> {
+	setInput(input: QueryInput, options: EditorOptions): Thenable<void> {
 		super.setInput(input, options, CancellationToken.None);
-		this.resultsView.input = input;
+		this.resultsView.setInput(input);
 		return TPromise.wrap<void>(null);
 	}
 

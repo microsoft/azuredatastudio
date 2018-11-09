@@ -5,13 +5,15 @@
 
 import {
 	ToggleConnectDatabaseAction, ListDatabasesAction, RunQueryAction,
-	ListDatabasesActionItem
+	ListDatabasesActionItem,
+	IQueryActionContext
 } from 'sql/parts/query/execution/queryActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 export class QueryEditorActionBar extends Taskbar {
 
@@ -19,6 +21,11 @@ export class QueryEditorActionBar extends Taskbar {
 	private toggleConnect: ToggleConnectDatabaseAction;
 	private listDatabases: ListDatabasesAction;
 	private listDatabaseActionItem: ListDatabasesActionItem;
+
+	private _context: IQueryActionContext = {
+		input: undefined,
+		editor: undefined
+	};
 
 	constructor(container: HTMLElement,
 		@IInstantiationService instantiationService: IInstantiationService
@@ -43,7 +50,13 @@ export class QueryEditorActionBar extends Taskbar {
 	}
 
 	public setInput(input: QueryInput): TPromise<void> {
-		this.context = { input };
+		this._context.input = input;
+		this.context = this._context;
 		return TPromise.as(undefined);
+	}
+
+	public set editor(editor: ICodeEditor) {
+		this._context.editor = editor;
+		this.context = this._context;
 	}
 }

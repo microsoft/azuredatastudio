@@ -30,6 +30,9 @@ import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IRange } from 'vs/editor/common/core/range';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -337,8 +340,15 @@ export class MessageController extends WorkbenchTreeController {
 		if (element.selection) {
 			let selection: ISelectionData = element.selection;
 			// this is a batch statement
-			let input = this.workbenchEditorService.activeEditor as QueryInput;
-			input.updateSelection(selection);
+			let control = (<ICodeEditor>this.workbenchEditorService.activeControl.getControl());
+			let range: IRange = {
+				endColumn: selection.endColumn + 1,
+				endLineNumber: selection.endLine + 1,
+				startColumn: selection.startColumn + 1,
+				startLineNumber: selection.startLine +1
+			};
+			control.setSelection(range);
+			control.revealRange(range);
 		}
 
 		return true;

@@ -16,8 +16,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import Severity from 'vs/base/common/severity';
 
-import * as sqlops from 'sqlops';
-
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
@@ -29,10 +27,10 @@ import {
 	ConnectionType,
 	RunQueryOnConnectionMode
 } from 'sql/parts/connection/common/connectionManagement';
-import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { IRange } from 'vs/editor/common/core/range';
 
 export interface IQueryActionContext {
 	input: QueryInput;
@@ -74,12 +72,12 @@ export abstract class QueryTaskbarAction extends Action {
 	 * Connects the given editor to it's current URI.
 	 * Public for testing only.
 	 */
-	protected connectEditor(input: QueryInput, runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: sqlops.ISelectionData): void {
+	protected connectEditor(input: QueryInput, runQueryOnCompletion?: RunQueryOnConnectionMode, range?: IRange): void {
 		let params: INewConnectionParams = {
 			input: input,
 			connectionType: ConnectionType.editor,
 			runQueryOnCompletion: runQueryOnCompletion || RunQueryOnConnectionMode.none,
-			querySelection: selection
+			querySelection: range
 		};
 		this.connectionManagementService.showConnectionDialog(params);
 	}
@@ -99,25 +97,17 @@ export class RunQueryAction extends Action {
 	}
 
 	public run(context: IQueryActionContext): TPromise<void> {
-		if (!context.editor.getSelection()) {
-			let vscodeSelection = context.editor.getSelection();
-			let selection: sqlops.ISelectionData = {
-				startLine: vscodeSelection.startLineNumber - 1,
-				startColumn: vscodeSelection.startColumn - 1,
-				endLine: vscodeSelection.endLineNumber - 1,
-				endColumn: vscodeSelection.endColumn - 1,
-			};
-			if (this.isCursorPosition(selection)) {
-				context.input.runQueryStatement(selection);
-			} else {
-				context.input.runQuery(selection);
-			}
+		let range = context.editor.getSelection();
+		if (this.isCursorPosition(range)) {
+			context.input.runQueryStatement(range);
+		} else {
+			context.input.runQuery(range);
 		}
 		return TPromise.as(null);
 	}
 
-	private isCursorPosition(selection: sqlops.ISelectionData) {
-		return selection.startLine === selection.endLine
+	private isCursorPosition(selection: IRange) {
+		return selection.startLineNumber === selection.endLineNumber
 			&& selection.startColumn === selection.endColumn;
 	}
 }
@@ -132,10 +122,12 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	public static LABEL = nls.localize('cancelQueryLabel', 'Cancel');
 
 	constructor(
+		id: string,
+		label: string,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
-		super(connectionManagementService, CancelQueryAction.ID, CancelQueryAction.LABEL, CancelQueryAction.EnabledClass);
+		super(connectionManagementService, id, label, CancelQueryAction.EnabledClass);
 		this.enabled = false;
 	}
 
@@ -162,14 +154,7 @@ export class EstimatedQueryPlanAction extends Action {
 
 	public run(context: IQueryActionContext): TPromise<void> {
 		if (!context.editor.getSelection()) {
-			let vscodeSelection = context.editor.getSelection();
-			let selection: sqlops.ISelectionData = {
-				startLine: vscodeSelection.startLineNumber - 1,
-				startColumn: vscodeSelection.startColumn - 1,
-				endLine: vscodeSelection.endLineNumber - 1,
-				endColumn: vscodeSelection.endColumn - 1,
-			};
-			context.input.runQuery(selection, { displayEstimatedQueryPlan: true });
+			context.input.runQuery(context.editor.getSelection(), { displayEstimatedQueryPlan: true });
 		}
 		return TPromise.as(null);
 	}
@@ -187,14 +172,7 @@ export class ActualQueryPlanAction extends Action {
 
 	public run(context: IQueryActionContext): TPromise<void> {
 		if (!context.editor.getSelection()) {
-			let vscodeSelection = context.editor.getSelection();
-			let selection: sqlops.ISelectionData = {
-				startLine: vscodeSelection.startLineNumber - 1,
-				startColumn: vscodeSelection.startColumn - 1,
-				endLine: vscodeSelection.endLineNumber - 1,
-				endColumn: vscodeSelection.endColumn - 1,
-			};
-			context.input.runQuery(selection, { displayActualQueryPlan: true });
+			context.input.runQuery(context.editor.getSelection(), { displayActualQueryPlan: true });
 		}
 		return TPromise.as(null);
 	}
@@ -214,15 +192,12 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	public static DisconnectLabel = nls.localize('disconnectDatabaseLabel', 'Disconnect');
 
 	private _connected: boolean;
-	private _connectLabel: string;
-	private _disconnectLabel: string;
 
 	constructor(
-		isConnected: boolean,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, ToggleConnectDatabaseAction.ID);
-		this.connected = isConnected;
+		this.connected = false;
 	}
 
 	public get connected(): boolean {
@@ -238,10 +213,10 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	private updateLabelAndIcon(): void {
 		if (this._connected) {
 			// We are connected, so show option to disconnect
-			this.label = this._disconnectLabel;
+			this.label = ToggleConnectDatabaseAction.DisconnectLabel;
 			this.class = ToggleConnectDatabaseAction.DisconnectClass;
 		} else {
-			this.label = this._connectLabel;
+			this.label = ToggleConnectDatabaseAction.ConnectLabel;
 			this.class = ToggleConnectDatabaseAction.ConnectClass;
 		}
 	}
@@ -285,7 +260,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 	public actionRunner: IActionRunner;
 	private _toDispose: IDisposable[];
-	private _context: any;
+	private _context: IQueryActionContext;
 	private _currentDatabaseName: string;
 	private _isConnected: boolean;
 	private $databaseListDropdown: Builder;
@@ -296,8 +271,6 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
-		private _editor: QueryEditor,
-		private _action: ListDatabasesAction,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IContextViewService contextViewProvider: IContextViewService,
@@ -402,7 +375,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
-		let uri = this._editor.connectedUri;
+		let uri = this._context.input.uri;
 		if (!uri) {
 			return;
 		}
@@ -412,7 +385,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			return;
 		}
 
-		this._connectionManagementService.changeDatabase(this._editor.uri, dbName)
+		this._connectionManagementService.changeDatabase(uri, dbName)
 			.then(
 				result => {
 					if (!result) {
@@ -433,7 +406,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	}
 
 	private getCurrentDatabaseName() {
-		let uri = this._editor.connectedUri;
+		let uri = this._context.input.uri;
 		if (uri) {
 			let profile = this._connectionManagementService.getConnectionProfile(uri);
 			if (profile) {
@@ -456,7 +429,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 			return;
 		}
 
-		let uri = this._editor.connectedUri;
+		let uri = this._context.input.uri;
 		if (uri !== connParams.connectionUri) {
 			return;
 		}
@@ -465,14 +438,12 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	}
 
 	private onDropdownFocus(): void {
-		let self = this;
-
-		let uri = self._editor.connectedUri;
+		let uri = this._context.input.uri;
 		if (!uri) {
 			return;
 		}
 
-		self._connectionManagementService.listDatabases(uri)
+		this._connectionManagementService.listDatabases(uri)
 			.then(result => {
 				if (result && result.databaseNames) {
 					this._dropdown.values = result.databaseNames;
@@ -486,12 +457,11 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox.enable();
-			let self = this;
-			let uri = self._editor.connectedUri;
+			let uri = this._context.input.uri;
 			if (!uri) {
 				return;
 			}
-			self._connectionManagementService.listDatabases(uri)
+			this._connectionManagementService.listDatabases(uri)
 				.then(result => {
 					if (result && result.databaseNames) {
 						this._databaseSelectBox.setOptions(result.databaseNames);

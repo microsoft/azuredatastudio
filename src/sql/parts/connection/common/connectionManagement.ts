@@ -16,6 +16,7 @@ import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/conne
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
+import { IRange } from 'vs/editor/common/core/range';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -326,7 +327,7 @@ export interface INewConnectionParams {
 	connectionType: ConnectionType;
 	input?: IConnectableInput;
 	runQueryOnCompletion?: RunQueryOnConnectionMode;
-	querySelection?: sqlops.ISelectionData;
+	querySelection?: IRange;
 	showDashboard?: boolean;
 	providers?: string[];
 }

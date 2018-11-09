@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import nls = require('vs/nls');
+import * as nls from 'vs/nls';
 
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 import * as sqlops from 'sqlops';
 
@@ -20,7 +22,8 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { CancelQueryAction } from 'sql/parts/query/execution/queryActions';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 const singleQuote = '\'';
 
@@ -73,9 +76,8 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			queryEditor.focus();
+		if (editor instanceof QueryEditor) {
+			editor.focus();
 		}
 		return TPromise.as(null);
 	}
@@ -100,10 +102,14 @@ export class RunQueryKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.activeControl;
-		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
-			let queryEditor: QueryEditor | EditDataEditor = editor;
-			queryEditor.runQuery();
+		if (editor instanceof QueryEditor) {
+			editor.input.runQuery();
 		}
+
+		if (editor instanceof EditDataEditor) {
+			editor.runQuery();
+		}
+
 		return TPromise.as(null);
 	}
 }
@@ -126,9 +132,9 @@ export class RunCurrentQueryKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			queryEditor.runCurrentQuery();
+		if (editor instanceof QueryEditor) {
+			let selection = (<ICodeEditor>editor.getControl()).getSelection();
+			editor.input.runQuery(selection);
 		}
 		return TPromise.as(null);
 	}
@@ -149,9 +155,9 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			queryEditor.runCurrentQueryWithActualPlan();
+		if (editor instanceof QueryEditor) {
+			let selection = (<ICodeEditor>editor.getControl()).getSelection();
+			editor.input.runQuery(selection, { displayActualQueryPlan: true });
 		}
 		return TPromise.as(null);
 	}
@@ -160,7 +166,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 /**
  * Locates the active editor and calls cancelQuery() on the editor if it is a QueryEditor.
  */
-export class CancelQueryKeyboardAction extends Action {
+export class CancelQueryKeyboardAction extends CancelQueryAction {
 
 	public static ID = 'cancelQueryKeyboardAction';
 	public static LABEL = nls.localize('cancelQueryKeyboardAction', 'Cancel Query');
@@ -168,17 +174,21 @@ export class CancelQueryKeyboardAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IEditorService private _editorService: IEditorService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IQueryModelService queryModelService: IQueryModelService,
+		@IEditorService private editorService: IEditorService
 	) {
-		super(id, label);
+		super(id, label, queryModelService, connectionManagementService);
 		this.enabled = true;
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.activeControl;
-		if (editor && (editor instanceof QueryEditor || editor instanceof EditDataEditor)) {
-			let queryEditor: QueryEditor | EditDataEditor = editor;
-			queryEditor.cancelQuery();
+		let editor = this.editorService.activeControl;
+		if (editor instanceof QueryEditor) {
+			return super.run({ input: editor.input, editor: editor.getControl() as ICodeEditor });
+		}
+		if (editor instanceof EditDataEditor) {
+			editor.cancelQuery();
 		}
 		return TPromise.as(null);
 	}
@@ -201,10 +211,9 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		let editor = this._editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			queryEditor.rebuildIntelliSenseCache();
+		let editor = this._editorService.activeEditor;
+		if (editor instanceof QueryInput) {
+			editor.rebuildIntelliSenseCache();
 		}
 		return TPromise.as(null);
 	}
@@ -228,9 +237,8 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			queryEditor.toggleResultsEditorVisibility();
+		if (editor instanceof QueryEditor) {
+			editor.toggleResultsEditorVisibility();
 		}
 		return TPromise.as(null);
 	}
@@ -284,7 +292,9 @@ export class RunQueryShortcutAction extends Action {
 
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
-			let parameterText: string = editor.getSelectionText();
+			let control = (<ICodeEditor>editor.getControl());
+
+			let parameterText: string = control.getModel().getValueInRange(control.getSelection());
 			return this.escapeStringParamIfNeeded(editor, shortcutText, parameterText).then((escapedParam) => {
 				let queryString = `${shortcutText} ${escapedParam}`;
 				editor.input.runQueryString(queryString);
@@ -309,7 +319,7 @@ export class RunQueryShortcutAction extends Action {
 			if (this.canQueryProcMetadata(editor)) {
 				let dbName = this.getDatabaseName(editor);
 				let query = `exec dbo.sp_sproc_columns @procedure_name = N'${escapeSqlString(shortcutText, singleQuote)}', @procedure_owner = null, @procedure_qualifier = N'${escapeSqlString(dbName, singleQuote)}'`;
-				return this._queryManagementService.runQueryAndReturn(editor.uri, query)
+				return this._queryManagementService.runQueryAndReturn(editor.input.uri, query)
 					.then(result => {
 						switch (this.isProcWithSingleArgument(result)) {
 							case 1:
@@ -379,12 +389,12 @@ export class RunQueryShortcutAction extends Action {
 	}
 
 	private canQueryProcMetadata(editor: QueryEditor): boolean {
-		let info = this._connectionManagementService.getConnectionInfo(editor.uri);
+		let info = this._connectionManagementService.getConnectionInfo(editor.input.uri);
 		return (info && info.providerId === ConnectionConstants.mssqlProviderName);
 	}
 
 	private getDatabaseName(editor: QueryEditor): string {
-		let info = this._connectionManagementService.getConnectionInfo(editor.uri);
+		let info = this._connectionManagementService.getConnectionInfo(editor.input.uri);
 		return info.connectionProfile.databaseName;
 	}
 }
@@ -411,34 +421,30 @@ export class ParseSyntaxAction extends Action {
 
 	public run(): TPromise<void> {
 		let editor = this._editorService.activeControl;
-		if (editor && editor instanceof QueryEditor) {
-			let queryEditor: QueryEditor = editor;
-			if (!queryEditor.isSelectionEmpty()) {
-				if (this.isConnected(queryEditor)) {
-					let text = queryEditor.getSelectionText();
-					if (text === '') {
-						text = queryEditor.getAllText();
-					}
-					this._queryManagementService.parseSyntax(queryEditor.connectedUri, text).then(result => {
-						if (result && result.parseable) {
-							this._notificationService.notify({
-								severity: Severity.Info,
-								message: nls.localize('queryActions.parseSyntaxSuccess', 'Commands completed successfully')
-							});
-						} else if (result && result.errors.length > 0) {
-							let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command failed: ');
-							this._notificationService.error(`${errorMessage}${result.errors[0]}`);
-
-						}
-					});
-				} else {
-					this._notificationService.notify({
-						severity: Severity.Error,
-						message: nls.localize('queryActions.notConnected', 'Please connect to a server')
-					});
+		if (editor instanceof QueryEditor) {
+			if (this.isConnected(editor)) {
+				let control = editor.getControl() as ICodeEditor;
+				let text = control.getModel().getValueInRange(control.getSelection());
+				if (text === '') {
+					text = control.getValue();
 				}
+				this._queryManagementService.parseSyntax(editor.input.uri, text).then(result => {
+					if (result && result.parseable) {
+						this._notificationService.notify({
+							severity: Severity.Info,
+							message: nls.localize('queryActions.parseSyntaxSuccess', 'Commands completed successfully')
+						});
+					} else if (result && result.errors.length > 0) {
+						let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command failed: ');
+						this._notificationService.error(`${errorMessage}${result.errors[0]}`);
+					}
+				});
+			} else {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: nls.localize('queryActions.notConnected', 'Please connect to a server')
+				});
 			}
-
 		}
 
 		return TPromise.as(null);

@@ -6,7 +6,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Event } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
@@ -18,6 +18,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 
 import * as sqlops from 'sqlops';
+import { IRange } from 'vs/editor/common/core/range';
 
 const MAX_SIZE = 13;
 
@@ -43,6 +44,9 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public static SCHEMA: string = 'sql';
 
 	public savedViewState: IEditorViewState;
+
+	private _onQueryStart: Emitter<void> = new Emitter<void>();
+	public onQueryStart = this._onQueryStart.event;
 
 	constructor(
 		private _description: string,
@@ -159,12 +163,17 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	public get hasAssociatedFilePath(): boolean { return this._sql.hasAssociatedFilePath; }
 
+	public rebuildIntelliSenseCache(): void {
+		this.connectionManagementService.rebuildIntelliSenseCache(this.uri);
+	}
+
 	public setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): void {
 		this._sql.setEncoding(encoding, mode);
 	}
 
 	// State update funtions
-	public runQuery(selection: sqlops.ISelectionData, executePlanOptions?: sqlops.ExecutionPlanOptions): void {
+	public runQuery(range?: IRange, executePlanOptions?: sqlops.ExecutionPlanOptions): void {
+		let selection = this.rangeToSelection(range);
 		if (this.isConnected()) {
 			this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		} else {
@@ -178,12 +187,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 					executionMode = RunQueryOnConnectionMode.estimatedQueryPlan;
 				}
 			}
-			this.connectEditor(executionMode, selection);
+			this.connectEditor(executionMode, range);
 		}
 	}
 
-	public runQueryStatement(selection: sqlops.ISelectionData): void {
-		this._queryModelService.runQueryStatement(this.uri, selection, this);
+	public runQueryStatement(range: IRange): void {
+		this._queryModelService.runQueryStatement(this.uri, this.rangeToSelection(range), this);
 	}
 
 	public runQueryString(text: string): void {
@@ -192,6 +201,15 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		} else {
 
 		}
+	}
+
+	private rangeToSelection(range: IRange): sqlops.ISelectionData {
+		return range ? {
+			startColumn: range.startColumn - 1,
+			startLine: range.startLineNumber - 1,
+			endColumn: range.endColumn - 1,
+			endLine: range.endLineNumber - 1
+		} : undefined;
 	}
 
 	/**
@@ -206,12 +224,12 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	 * Connects the given editor to it's current URI.
 	 * Public for testing only.
 	 */
-	protected connectEditor(runQueryOnCompletion?: RunQueryOnConnectionMode, selection?: sqlops.ISelectionData): void {
+	protected connectEditor(runQueryOnCompletion?: RunQueryOnConnectionMode, range?: IRange): void {
 		let params: INewConnectionParams = {
 			input: this,
 			connectionType: ConnectionType.editor,
 			runQueryOnCompletion: runQueryOnCompletion || RunQueryOnConnectionMode.none,
-			querySelection: selection
+			querySelection: range
 		};
 		this.connectionManagementService.showConnectionDialog(params);
 	}
@@ -229,7 +247,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public onConnectSuccess(params?: INewConnectionParams): void {
 		let isRunningQuery = this._queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
-			let selection: sqlops.ISelectionData = params ? params.querySelection : undefined;
+			let selection = params ? params.querySelection : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
 				this.runQueryStatement(selection);
 			} else if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeQuery) {
@@ -247,6 +265,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public onRunQuery(): void {
+		this._onQueryStart.fire();
 	}
 
 	public onQueryComplete(): void {
