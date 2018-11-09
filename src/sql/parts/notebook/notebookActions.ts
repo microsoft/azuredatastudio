@@ -39,51 +39,7 @@ export class AddCellAction extends Action {
 	}
 }
 
-export class KernelsDropdown extends SelectBox {
-	private model: INotebookModel;
-	constructor(contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
-	) {
-		super([msgLoading], msgLoading, contextViewProvider);
-		if (modelRegistered) {
-			modelRegistered
-			.then((model) => this.updateModel(model))
-			.catch((err) => {
-				// No-op for now
-			});
-		}
-
-		this.onDidSelect(e => this.doChangeKernel(e.selected));
-	}
-
-	updateModel(model: INotebookModel): void {
-		this.model = model;
-		model.kernelsChanged((defaultKernel) => {
-			this.updateKernel(defaultKernel);
-		});
-		if (model.clientSession) {
-			model.clientSession.kernelChanged((changedArgs: sqlops.nb.IKernelChangedArgs) => {
-				if (changedArgs.newValue) {
-					this.updateKernel(changedArgs.newValue);
-				}
-			});
-		}
-	}
-
-	// Update SelectBox values
-	private updateKernel(defaultKernel: sqlops.nb.IKernelSpec) {
-		let specs = this.model.specs;
-		if (specs && specs.kernels) {
-			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));
-			this.setOptions(specs.kernels.map(kernel => kernel.display_name), index);
-		}
-	}
-
-	public doChangeKernel(displayName: string): void {
-		this.model.changeKernel(displayName);
-	}
-}
-
-export class KernelsDropdownNew extends SelectBoxWithLabel {
+export class KernelsDropdown extends SelectBoxWithLabel {
 	private model: INotebookModel;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
 	) {

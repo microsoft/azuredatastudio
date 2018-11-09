@@ -26,7 +26,7 @@ import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AttachToDropdown, KernelsDropdownNew } from 'sql/parts/notebook/notebookActions';
+import { AttachToDropdown, KernelsDropdown } from 'sql/parts/notebook/notebookActions';
 import * as notebookUtils from './notebookUtils';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -183,7 +183,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 
 	protected initActionBar() {
 		let kernelContainer = document.createElement('div');
-		let kernelDropdown = new KernelsDropdownNew(kernelContainer, this.contextViewService, this.modelRegistered);
+		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelRegistered);
 		kernelDropdown.render(kernelContainer);
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
