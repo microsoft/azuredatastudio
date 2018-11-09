@@ -5,15 +5,15 @@
 
 import {
 	ToggleConnectDatabaseAction, ListDatabasesAction, RunQueryAction,
-	ListDatabasesActionItem,
-	IQueryActionContext
+	ListDatabasesActionItem, IQueryActionContext
 } from 'sql/parts/query/execution/queryActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { QueryInput, QueryEditorState } from 'sql/parts/query/common/queryInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export class QueryEditorActionBar extends Taskbar {
 
@@ -21,6 +21,8 @@ export class QueryEditorActionBar extends Taskbar {
 	private toggleConnect: ToggleConnectDatabaseAction;
 	private listDatabases: ListDatabasesAction;
 	private listDatabaseActionItem: ListDatabasesActionItem;
+
+	private inputDisposables: IDisposable[] = [];
 
 	private _context: IQueryActionContext = {
 		input: undefined,
@@ -50,9 +52,19 @@ export class QueryEditorActionBar extends Taskbar {
 	}
 
 	public setInput(input: QueryInput): TPromise<void> {
+		dispose(this.inputDisposables);
+		this.inputDisposables = [];
+		this.inputDisposables.push(input.state.onChange(() => this.parseState(input.state)));
+		this.parseState(input.state);
 		this._context.input = input;
 		this.context = this._context;
 		return TPromise.as(undefined);
+	}
+
+	private parseState(state: QueryEditorState) {
+		this.toggleConnect.connected = state.connected;
+		this.runQuery.enabled = state.connected && !state.executing;
+		this.listDatabaseActionItem.enabled = state.connected && !state.executing;
 	}
 
 	public set editor(editor: ICodeEditor) {

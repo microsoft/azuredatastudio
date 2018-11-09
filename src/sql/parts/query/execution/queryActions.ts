@@ -268,6 +268,7 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 	private _databaseSelectBox: SelectBox;
 	private _isInAccessibilityMode: boolean;
 	private readonly _selectDatabaseString: string = nls.localize("selectDatabase", "Select Database");
+	private _enabled = true;
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
@@ -360,16 +361,28 @@ export class ListDatabasesActionItem extends EventEmitter implements IActionItem
 		this.updateConnection(dbName);
 	}
 
-	public onDisconnect(): void {
-		this._isConnected = false;
-		this._currentDatabaseName = undefined;
+	public get enabled(): boolean {
+		return this._enabled;
+	}
 
-		if (this._isInAccessibilityMode) {
-			this._databaseSelectBox.disable();
-			this._databaseSelectBox.setOptions([this._selectDatabaseString]);
-		} else {
-			this._dropdown.enabled = false;
-			this._dropdown.value = '';
+	public set enabled(val: boolean) {
+		if (val !== this._enabled) {
+			this._enabled = val;
+			if (this.enabled) {
+				let dbName = this.getCurrentDatabaseName();
+				this.updateConnection(dbName);
+			} else {
+				this._isConnected = false;
+				this._currentDatabaseName = undefined;
+
+				if (this._isInAccessibilityMode) {
+					this._databaseSelectBox.disable();
+					this._databaseSelectBox.setOptions([this._selectDatabaseString]);
+				} else {
+					this._dropdown.enabled = false;
+					this._dropdown.value = '';
+				}
+			}
 		}
 	}
 

@@ -11,7 +11,6 @@ import URI from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -34,6 +33,54 @@ function trimTitle(title: string): string {
 	}
 }
 
+export interface IQueryEditorStateChange {
+	connectedChange?: boolean;
+	resultsVisibleChange?: boolean;
+	executingChange?: boolean;
+}
+
+export class QueryEditorState {
+	private _connected: boolean;
+	private _resultsVisible: boolean;
+	private _executing: boolean;
+
+	private _onChange = new Emitter<IQueryEditorStateChange>();
+	public onChange = this._onChange.event;
+
+	public set connected(val: boolean) {
+		if (val !== this._connected) {
+			this._connected = val;
+			this._onChange.fire({ connectedChange: true });
+		}
+	}
+
+	public get connected(): boolean {
+		return this._connected;
+	}
+
+	public set resultsVisible(val: boolean) {
+		if (val !== this._resultsVisible) {
+			this._resultsVisible = val;
+			this._onChange.fire({ resultsVisibleChange: true });
+		}
+	}
+
+	public get resultsVisible(): boolean {
+		return this._resultsVisible;
+	}
+
+	public set executing(val: boolean) {
+		if (val !== this._executing) {
+			this._executing = val;
+			this._onChange.fire({ executingChange: true });
+		}
+	}
+
+	public get executing(): boolean {
+		return this._executing;
+	}
+}
+
 /**
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
  * and a UntitledEditorInput for the SQL File Editor.
@@ -43,10 +90,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public static ID: string = 'workbench.editorinputs.queryInput';
 	public static SCHEMA: string = 'sql';
 
-	public savedViewState: IEditorViewState;
-
-	private _onQueryStart: Emitter<void> = new Emitter<void>();
-	public onQueryStart = this._onQueryStart.event;
+	private _state = new QueryEditorState();
+	public get state(): QueryEditorState { return this._state; }
 
 	constructor(
 		private _description: string,
@@ -259,16 +304,20 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 			}
 		}
 		this._onDidChangeLabel.fire();
+		this.state.connected = true;
 	}
 
 	public onDisconnect(): void {
+		this._onDidChangeLabel.fire();
+		this.state.connected = false;
 	}
 
 	public onRunQuery(): void {
-		this._onQueryStart.fire();
+		this.state.executing = true;
 	}
 
 	public onQueryComplete(): void {
+		this.state.executing = false;
 	}
 
 	// Clean up functions

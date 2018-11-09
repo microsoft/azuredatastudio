@@ -132,9 +132,6 @@ export class QueryEditor extends BaseEditor {
 			return TPromise.as(undefined);
 		}
 
-		// Make sure all event callbacks will be sent to this QueryEditor in the case that this QueryInput was moved from
-		// another QueryEditor
-
 		return TPromise.join([
 			super.setInput(newInput, options, token),
 			this.taskbar.setInput(newInput),
@@ -143,8 +140,10 @@ export class QueryEditor extends BaseEditor {
 		]).then(() => {
 			dispose(this.inputDisposables);
 			this.inputDisposables = [];
-			this.inputDisposables.push(this.input.onQueryStart(() => {
-				this.addResultsEditor();
+			this.inputDisposables.push(this.input.state.onChange(c => {
+				if (c.executingChange && this.input.state.executing) {
+					this.addResultsEditor();
+				}
 			}));
 		});
 	}

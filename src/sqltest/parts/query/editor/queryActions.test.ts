@@ -49,13 +49,8 @@ suite('SQL QueryAction Tests', () => {
 
 		// Setup a reusable mock QueryEditor
 		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService());
-		editor.setup(x => x.connectedUri).returns(() => testUri);
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
-		editor.setup(x => x.uri).returns(() => testUri);
 
-		editor.setup(x => x.getSelection()).returns(() => undefined);
-		editor.setup(x => x.getSelection(false)).returns(() => undefined);
-		editor.setup(x => x.isSelectionEmpty()).returns(() => false);
 		configurationService = TypeMoq.Mock.ofInstance({
 			getValue: () => undefined,
 			onDidChangeConfiguration: () => undefined
@@ -67,35 +62,11 @@ suite('SQL QueryAction Tests', () => {
 
 	test('setClass sets child CSS class correctly', (done) => {
 		// If I create a RunQueryAction
-		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined);
+		let queryAction = new RunQueryAction();
 
 		// "class should automatically get set to include the base class and the RunQueryAction class
 		let className = RunQueryAction.EnabledClass;
 		assert.equal(queryAction.class, className, 'CSS class not properly set');
-		done();
-	});
-
-	test('getConnectedQueryEditorUri returns connected URI only if connected', (done) => {
-		// ... Create assert variables
-		let isConnectedReturnValue: boolean = false;
-
-		// ... Mock "isConnected in ConnectionManagementService
-		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {});
-		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnectedReturnValue);
-
-		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
-		let queryAction: QueryTaskbarAction = new RunQueryAction(connectionManagementService.object);
-		let connected: boolean = queryAction.isConnected(testQueryInput.object);
-
-		// I should get an unconnected state
-		assert(!connected, 'Non-connected editor should get back an undefined URI');
-
-		// If I run with a connected URI
-		isConnectedReturnValue = true;
-		connected = queryAction.isConnected(testQueryInput.object);
-
-		// I should get a connected state
-		assert(connected, 'Connected editor should get back a non-undefined URI');
 		done();
 	});
 
@@ -127,7 +98,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I call run on RunQueryAction when I am not connected
-		let queryAction: RunQueryAction = new RunQueryAction(connectionManagementService.object);
+		let queryAction: RunQueryAction = new RunQueryAction();
 		isConnected = false;
 		calledRunQueryOnInput = false;
 		queryAction.run({ input: undefined, editor: undefined });
@@ -168,9 +139,6 @@ suite('SQL QueryAction Tests', () => {
 		});
 		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService());
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
-		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
-		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
-		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => isSelectionEmpty);
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {});
@@ -181,7 +149,7 @@ suite('SQL QueryAction Tests', () => {
 		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
 
 		// If I call run on RunQueryAction when I have a non empty selection
-		let queryAction: RunQueryAction = new RunQueryAction(connectionManagementService.object);
+		let queryAction: RunQueryAction = new RunQueryAction();
 		isSelectionEmpty = false;
 		queryAction.run({ input: queryInput.object, editor: undefined });
 
@@ -234,9 +202,6 @@ suite('SQL QueryAction Tests', () => {
 		// ... Mock "getSelection" in QueryEditor
 		let queryEditor: TypeMoq.Mock<QueryEditor> = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Loose, undefined, new TestThemeService());
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
-		queryEditor.setup(x => x.getSelection()).returns(() => {
-			return selectionToReturnInGetSelection;
-		});
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {}, connectionDialogService.object);
@@ -246,7 +211,7 @@ suite('SQL QueryAction Tests', () => {
 		/// End Setup Test ///
 
 		////// If I call run on RunQueryAction while disconnected and with an undefined selection
-		let queryAction: RunQueryAction = new RunQueryAction(connectionManagementService.object);
+		let queryAction: RunQueryAction = new RunQueryAction();
 		isConnected = false;
 		selectionToReturnInGetSelection = undefined;
 		queryAction.run({ input: queryInput.object, editor: undefined });
@@ -267,9 +232,9 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
 		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.notEqual(showDialogConnectionParams.querySelection, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(showDialogConnectionParams.querySelection.startLine, selectionToReturnInGetSelection.startLine, 'startLine should match');
+		assert.equal(showDialogConnectionParams.querySelection.startLineNumber, selectionToReturnInGetSelection.startLine, 'startLine should match');
 		assert.equal(showDialogConnectionParams.querySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(showDialogConnectionParams.querySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
+		assert.equal(showDialogConnectionParams.querySelection.endLineNumber, selectionToReturnInGetSelection.endLine, 'endLine should match');
 		assert.equal(showDialogConnectionParams.querySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 
 		////// If I call run on RunQueryAction while connected and with an undefined selection
@@ -315,7 +280,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I call run on CancelQueryAction when I am not connected
-		let queryAction: CancelQueryAction = new CancelQueryAction(queryModelService.object, connectionManagementService.object);
+		let queryAction: CancelQueryAction = new CancelQueryAction(CancelQueryAction.ID, CancelQueryAction.LABEL, queryModelService.object, connectionManagementService.object);
 		isConnected = false;
 		queryAction.run({ input: undefined, editor: undefined });
 
@@ -346,7 +311,7 @@ suite('SQL QueryAction Tests', () => {
 		});
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined, undefined, configurationService.object);
+		listItem = new ListDatabasesActionItem(connectionManagementService.object, undefined, undefined, undefined, configurationService.object);
 
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -361,7 +326,7 @@ suite('SQL QueryAction Tests', () => {
 		// When I disconnect, state should return to default
 		isConnected = false;
 		databaseName = undefined;
-		listItem.onDisconnect();
+		listItem.enabled = false;
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
 
@@ -381,7 +346,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(cms.object, null, null, null, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -405,7 +370,7 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(cms.object, null, null, null, configurationService.object);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -432,14 +397,14 @@ suite('SQL QueryAction Tests', () => {
 		cms.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, cms.object, null, null, null, configurationService.object);
+		let listItem = new ListDatabasesActionItem(cms.object, null, null, null, configurationService.object);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{
 			connectionProfile: {
 				databaseName: 'foobarbaz'
 			},
-			connectionUri: editor.object.uri
+			connectionUri: editor.object.input.uri
 		};
 		dbChangedEmitter.fire(eventParams);
 
