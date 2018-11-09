@@ -12,10 +12,3 @@ text-cell-component .notebook-preview {
 	border-top-style: solid;
 	user-select: initial;
 }
-
-text-cell-component .notebook-preview-empty {
-	border-top-width: 1px;
-	border-top-style: solid;
-	user-select: initial;
-	height: 20px;
-}
