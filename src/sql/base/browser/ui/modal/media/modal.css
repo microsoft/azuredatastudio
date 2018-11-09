@@ -236,8 +236,8 @@
 
 .modal.flyout-dialog .dialog-message-detail {
 	margin-top: 5px;
-	white-space: normal;
-	-webkit-user-select: text;
+	white-space: pre-wrap;
+	user-select: text;
 	font-size: 11px;
 }
 
