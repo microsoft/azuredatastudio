@@ -17,7 +17,7 @@ import * as nls from 'vs/nls';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { once, anyEvent } from 'vs/base/common/event';
+import { once, anyEvent, Emitter } from 'vs/base/common/event';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
@@ -176,6 +176,11 @@ export class QueryResultsView extends Disposable {
 
 	private runnerDisposables: IDisposable[];
 
+	private _onDidChange = new Emitter<undefined>();
+	public onDidChange = this._onDidChange.event;
+
+	private activeTab: ResultsTab | ChartTab | QueryPlanTab;
+
 	constructor(
 		container: HTMLElement,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -183,7 +188,7 @@ export class QueryResultsView extends Disposable {
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
-		this.chartTab = this._register(new ChartTab(instantiationService));
+	this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
 		this.qpTab = this._register(new QueryPlanTab());
 		this._panelView.pushTab(this.resultsTab);
@@ -191,6 +196,8 @@ export class QueryResultsView extends Disposable {
 			if (this.input) {
 				this.input.state.activeTab = e;
 			}
+			this.activeTab = [this.resultsTab, this.chartTab, this.qpTab].find(t => t.identifier === e);
+			this._onDidChange.fire();
 		}));
 	}
 
@@ -262,6 +269,14 @@ export class QueryResultsView extends Disposable {
 
 	public layout(dimension: DOM.Dimension) {
 		this._panelView.layout(dimension);
+	}
+
+	public get maximumHeight(): number {
+		return this.activeTab.view.maximumHeight;
+	}
+
+	public get minimumHeight(): number {
+		return this.activeTab.view.minimumHeight;
 	}
 
 	public chartData(dataId: { resultId: number, batchId: number }): void {
