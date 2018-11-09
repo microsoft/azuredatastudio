@@ -1,9 +1,5 @@
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
-import { ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
-import { TaskHistoryViewlet } from 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 
 export class RunCellAction extends Action {
 	public static ID = 'jobaction.notebookRunCell';
@@ -11,7 +7,7 @@ export class RunCellAction extends Action {
 
 	constructor(
 	) {
-		super(RunCellAction.ID, RunCellAction.LABEL, 'newStepIcon');
+		super(RunCellAction.ID, '', 'toolbarIconRun');
 	}
 
 	public run(context: any): TPromise<boolean> {

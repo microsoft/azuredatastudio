@@ -13,3 +13,9 @@ code-component .toolbar {
 	border-right-width: 1px;
 	border-right-style: solid;
 }
+
+code-component .toolbarIconRun {
+	height: 20px;
+	background-image: url('../../../base/browser/ui/taskbar/media/start.svg');
+	padding-bottom: 10px;
+}
