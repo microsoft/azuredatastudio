@@ -8,6 +8,6 @@
 	<div class="notebook-text" style="flex: 0 0 auto;">
 		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()"></code-component>
 	</div>
-	<div #preview [ngClass] = "cellModel.source ? 'notebook-preview' : 'notebook-preview-empty'" style="flex: 0 0 auto;" (dblclick)="toggleEditMode()">
+	<div #preview class="notebook-preview" style="flex: 0 0 auto;" (dblclick)="toggleEditMode()">
 	</div>
 </div>

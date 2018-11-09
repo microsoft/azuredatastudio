@@ -14,6 +14,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
+import * as Constant from '../constants';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
@@ -51,16 +52,22 @@ export class TextCellComponent extends CellView implements OnInit {
 	}
 
 	private updatePreview() {
-		if (this.cellModel.source && this._content !== this.cellModel.source) {
-			this._content = this.sanitizeContent(this.cellModel.source);
-			// todo: pass in the notebook filename instead of undefined value
-			this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
-				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = htmlcontent;
-			});
+		if (this._content !== this.cellModel.source) {
+			if (!this.cellModel.source && !this.isEditMode) {
+				(<HTMLElement>this.output.nativeElement).innerHTML = Constant.doubleClickToEdit;
+			} else {
+				this._content = this.sanitizeContent(this.cellModel.source);
+				// todo: pass in the notebook filename instead of undefined value
+				this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
+					let outputElement = <HTMLElement>this.output.nativeElement;
+					outputElement.innerHTML = htmlcontent;
+				});
+			}
 		}
 	}
 
+
+	private clearPreviw
 	//Sanitizes the content based on trusted mode of Cell Model
 	private sanitizeContent(content: string): string {
 		if (this.cellModel && !this.cellModel.trustedMode) {
@@ -70,6 +77,7 @@ export class TextCellComponent extends CellView implements OnInit {
 	}
 
 	ngOnInit() {
+		this.updatePreview();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 	}
@@ -89,6 +97,7 @@ export class TextCellComponent extends CellView implements OnInit {
 
 	public toggleEditMode(): void {
 		this.isEditMode = !this.isEditMode;
+		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
 }
