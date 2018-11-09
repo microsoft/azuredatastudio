@@ -21,9 +21,9 @@ export class SessionManager implements nb.SessionManager {
 
 	public get specs(): nb.IAllKernels {
 		let allKernels: nb.IAllKernels = {
-            defaultKernel: noKernel,
+			defaultKernel: noKernel,
 			kernels: [noKernelSpec]
-        };
+		};
 		return allKernels;
 	}
 

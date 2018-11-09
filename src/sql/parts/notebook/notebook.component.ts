@@ -5,34 +5,29 @@
 
 import './notebookStyles';
 
-import { nb } from 'sqlops';
-
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
 
-import URI from 'vs/base/common/uri';
-import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
+import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-
-import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, INotebookModel, IModelFactory, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, IModelFactory } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel, ErrorInfo, MessageLevel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
-import * as notebookUtils from './notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { AddCellAction, KernelsDropdown, AttachToDropdown } from 'sql/parts/notebook/notebookActions';
-import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { AttachToDropdown, KernelsDropdownNew } from 'sql/parts/notebook/notebookActions';
+import * as notebookUtils from './notebookUtils';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -187,34 +182,22 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	protected initActionBar() {
-		let kernelInfoText = document.createElement('div');
-		kernelInfoText.className ='notebook-info-label';
-		kernelInfoText.innerText = 'Kernel: ';
+		let kernelContainer = document.createElement('div');
+		let kernelDropdown = new KernelsDropdownNew(kernelContainer, this.contextViewService, this.modelRegistered);
+		kernelDropdown.render(kernelContainer);
+		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
-		let kernelsDropdown = new KernelsDropdown(this.contextViewService, this.modelRegistered);
-		let kernelsDropdownTemplateContainer = document.createElement('div');
-		kernelsDropdownTemplateContainer.className = 'notebook-toolbar-dropdown';
-		kernelsDropdown.render(kernelsDropdownTemplateContainer);
-		attachSelectBoxStyler(kernelsDropdown, this.themeService);
-
-		let attachToDropdown = new AttachToDropdown(this.contextViewService);
-		let attachToDropdownTemplateContainer = document.createElement('div');
-		attachToDropdownTemplateContainer.className = 'notebook-toolbar-dropdown';
-		attachToDropdown.render(attachToDropdownTemplateContainer);
-		attachSelectBoxStyler(attachToDropdown, this.themeService);
-
-		let attachToInfoText = document.createElement('div');
-		attachToInfoText.className ='notebook-info-label';
-		attachToInfoText.innerText = 'Attach To: ';
+		let attachToContainer = document.createElement('div');
+		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService);
+		attachTodropdwon.render(attachToContainer);
+		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
-			{ element: kernelInfoText },
-			{ element: kernelsDropdownTemplateContainer },
-			{ element: attachToInfoText },
-			{ element: attachToDropdownTemplateContainer }
+			{ element: kernelContainer },
+			{ element: attachToContainer }
 		]);
 	}
 
