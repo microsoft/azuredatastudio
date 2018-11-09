@@ -20,17 +20,17 @@ export class SelectBoxWithLabel extends SelectBox {
 	}
 	public render(container: HTMLElement): void {
 		let labelOnTop = false;
-		let outterDiv = document.createElement('div');
+		let outerDiv = document.createElement('div');
 		let selectDiv = document.createElement('div');
-		outterDiv.className = labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
-		outterDiv.classList.add('action-item-label');
+		outerDiv.className = labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
+		outerDiv.classList.add('action-item-label');
 
-		container.appendChild(outterDiv);
+		container.appendChild(outerDiv);
 		let labelText = document.createElement('div');
 		labelText.innerHTML = this._label;
 		labelText.className = 'notebook-info-label';
-		outterDiv.appendChild(labelText);
-		outterDiv.appendChild(selectDiv);
+		outerDiv.appendChild(labelText);
+		outerDiv.appendChild(selectDiv);
 		super.render(selectDiv);
 		selectDiv.getElementsByTagName('select')[0].classList.add('action-item-label');
 	}
