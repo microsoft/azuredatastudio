@@ -14,7 +14,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
-import * as Constants from '../constants';
+import { localize } from 'vs/nls';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
@@ -59,7 +59,7 @@ export class TextCellComponent extends CellView implements OnInit {
 	private updatePreview() {
 		if (this._content !== this.cellModel.source) {
 			if (!this.cellModel.source && !this.isEditMode) {
-				(<HTMLElement>this.output.nativeElement).innerHTML = Constants.doubleClickToEdit;
+				(<HTMLElement>this.output.nativeElement).innerHTML = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
 				// todo: pass in the notebook filename instead of undefined value
