@@ -4,6 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+
+import 'vs/css!./media/selectBox';
+
 import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
@@ -44,6 +47,7 @@ export class SelectBox extends vsSelectBox {
 	private inputValidationWarningBackground: Color;
 	private inputValidationErrorBorder: Color;
 	private inputValidationErrorBackground: Color;
+	private _selectBoxOptions: ISelectBoxOptions;
 	private element: HTMLElement;
 
 	constructor(options: string[], selectedOption: string, contextViewProvider: IContextViewProvider, container?: HTMLElement, selectBoxOptions?: ISelectBoxOptions) {
@@ -72,6 +76,7 @@ export class SelectBox extends vsSelectBox {
 
 		// explicitly set the accessible role so that the screen readers can read the control type properly
 		this.selectElement.setAttribute('role', 'combobox');
+		this._selectBoxOptions = selectBoxOptions;
 	}
 
 	public style(styles: ISelectBoxStyles): void {
@@ -226,4 +231,34 @@ export class SelectBox extends vsSelectBox {
 			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground };
 		}
 	}
+
+	public render(container: HTMLElement): void {
+		let selectOptions: ISelectBoxOptionsWithLabel = this._selectBoxOptions as ISelectBoxOptionsWithLabel;
+
+		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
+			let outerContainer = document.createElement('div');
+			let selectContainer = document.createElement('div');
+
+			outerContainer.className = selectOptions.labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
+
+			let labelText = document.createElement('div');
+			labelText.className = 'action-item-label';
+			labelText.innerHTML = selectOptions.labelText;
+
+			container.appendChild(outerContainer);
+			outerContainer.appendChild(labelText);
+			outerContainer.appendChild(selectContainer);
+
+			super.render(selectContainer);
+			selectContainer.getElementsByTagName('select')[0].classList.add('action-item-label');
+		}
+		else {
+			super.render(container);
+		}
+	}
+}
+
+export interface ISelectBoxOptionsWithLabel extends ISelectBoxOptions {
+	labelText?: string;
+	labelOnTop?: boolean;
 }

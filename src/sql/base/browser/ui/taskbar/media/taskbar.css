@@ -55,7 +55,9 @@
  }
 
 .carbon-taskbar .action-item-label {
+	display: flex;
 	font-size:11px;
+	padding-right: 5px;
 }
 
 .listDatabasesSelectBox {
