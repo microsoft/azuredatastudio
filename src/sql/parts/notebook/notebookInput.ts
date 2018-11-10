@@ -17,7 +17,7 @@ export class NotebookInputModel extends EditorModel {
 	private dirty: boolean;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _providerId: string;
-	constructor(public readonly notebookUri: URI, private readonly handle: number, private saveHandler?: ModeViewSaveHandler) {
+	constructor(public readonly notebookUri: URI, private readonly handle: number, private _isTrusted: boolean = false, private saveHandler?: ModeViewSaveHandler) {
 		super();
 		this.dirty = false;
 	}
@@ -28,6 +28,10 @@ export class NotebookInputModel extends EditorModel {
 
 	public set providerId(value: string) {
 		this._providerId = value;
+	}
+
+	get isTrusted(): boolean {
+		return this._isTrusted;
 	}
 
 	get onDidChangeDirty(): Event<void> {
@@ -91,6 +95,10 @@ export class NotebookInput extends EditorInput {
 
 	public getName(): string {
 		return this._title;
+	}
+
+	public get isTrusted(): boolean {
+		return this._model.isTrusted;
 	}
 
 	public dispose(): void {

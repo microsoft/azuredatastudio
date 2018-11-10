@@ -13,3 +13,5 @@ export abstract class CellView extends AngularDisposable implements OnDestroy {
 
 	public abstract layout(): void;
 }
+
+

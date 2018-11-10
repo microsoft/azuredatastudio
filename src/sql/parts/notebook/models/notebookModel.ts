@@ -20,6 +20,7 @@ import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
+import { INotification, Severity } from 'vs/platform/notification/common/notification';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -71,7 +72,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
-	private onErrorEmitter = new Emitter<ErrorInfo>();
+	private onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
@@ -80,7 +81,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
-		if (!notebookOptions || !notebookOptions.path || !notebookOptions.notebookManager) {
+		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManager) {
 			throw new Error('path or notebook service not defined');
 		}
 		if (startSessionImmediately) {
@@ -147,7 +148,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._inErrorState;
 	}
 
-	public get onError(): Event<ErrorInfo> {
+	public get onError(): Event<INotification> {
 		return this.onErrorEmitter.event;
 	}
 
@@ -182,7 +183,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async requestModelLoad(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
-			let contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.path);
+			let contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = undefined;
@@ -242,12 +243,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private notifyError(error: string): void {
-		this.onErrorEmitter.fire(new ErrorInfo(error, MessageLevel.Error));
+		this.onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
 	public backgroundStartSession(): void {
 		this._clientSession = this.notebookOptions.factory.createClientSession({
-			path: this.notebookOptions.path,
+			notebookUri: this.notebookOptions.notebookUri,
 			notebookManager: this.notebookManager,
 			notificationService: this.notebookOptions.notificationService
 		});
@@ -415,7 +416,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!notebook) {
 			return false;
 		}
-		await this.notebookManager.contentManager.save(this.notebookOptions.path, notebook);
+		await this.notebookManager.contentManager.save(this.notebookOptions.notebookUri, notebook);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.DirtyStateChanged,
 			isDirty: false

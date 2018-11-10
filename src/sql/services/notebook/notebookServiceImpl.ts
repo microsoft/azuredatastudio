@@ -9,17 +9,21 @@ import { nb } from 'sqlops';
 import * as nls from 'vs/nls';
 import { INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import URI from 'vs/base/common/uri';
+import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
+import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { session } from 'electron';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
-
+	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, INotebookProvider> = new Map();
 	private _managers: Map<URI, INotebookManager> = new Map();
 
+
 	constructor() {
+		mimeRegistry: RenderMimeRegistry;
 		let defaultProvider = new BuiltinProvider();
 		this.registerProvider(defaultProvider.providerId, defaultProvider);
 	}
@@ -65,6 +69,18 @@ export class NotebookService implements INotebookService {
 
 		return op(provider);
 	}
+
+	//Returns an instantiation of RenderMimeRegistry class
+	getMimeRegistry(): RenderMimeRegistry {
+		if (!this._mimeRegistry) {
+			return new RenderMimeRegistry({
+				initialFactories: standardRendererFactories
+			});
+		}
+		return this._mimeRegistry;
+	}
+
+
 }
 
 export class BuiltinProvider implements INotebookProvider {

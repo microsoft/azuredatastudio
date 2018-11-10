@@ -8,8 +8,6 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -43,6 +41,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	@Input() cellModel: ICellModel;
 	@Output() public onContentChanged = new EventEmitter<void>();
 
+	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
