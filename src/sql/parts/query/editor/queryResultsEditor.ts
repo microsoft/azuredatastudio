@@ -96,8 +96,6 @@ export class QueryResultsEditor extends BaseEditor {
 	private resultsView: QueryResultsView;
 	private styleSheet = DOM.createStyleSheet();
 
-	public onDidChange: Event<undefined>;
-
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -137,7 +135,6 @@ export class QueryResultsEditor extends BaseEditor {
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
 			this.resultsView = this._register(new QueryResultsView(parent, this._instantiationService, this._queryModelService));
-			this.onDidChange = this.resultsView.onDidChange;
 		}
 	}
 
@@ -149,14 +146,6 @@ export class QueryResultsEditor extends BaseEditor {
 
 	layout(dimension: DOM.Dimension): void {
 		this.resultsView.layout(dimension);
-	}
-
-	public get minimumHeight(): number {
-		return this.resultsView.minimumHeight;
-	}
-
-	public get maximumHeight(): number {
-		return this.resultsView.maximumHeight;
 	}
 
 	setInput(input: QueryInput, options: EditorOptions): Thenable<void> {

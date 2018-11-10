@@ -252,18 +252,13 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	private addResultsEditor() {
-		const _this = this;
 		if (!this.resultsVisible) {
 			this.splitview.addView({
 				element: this.resultsEditorContainer,
 				layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-				get minimumSize() {
-					return _this.resultsEditor.minimumHeight;
-				},
-				get maximumSize() {
-					return _this.resultsEditor.maximumHeight;
-				},
-				onDidChange: this.resultsEditor.onDidChange
+				minimumSize: 220,
+				maximumSize: Number.POSITIVE_INFINITY,
+				onDidChange: Event.None
 			}, Sizing.Distribute);
 			this.resultsVisible = true;
 		}

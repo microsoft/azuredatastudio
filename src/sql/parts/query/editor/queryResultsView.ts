@@ -176,11 +176,6 @@ export class QueryResultsView extends Disposable {
 
 	private runnerDisposables: IDisposable[];
 
-	private _onDidChange = new Emitter<undefined>();
-	public onDidChange = this._onDidChange.event;
-
-	private activeTab: ResultsTab | ChartTab | QueryPlanTab;
-
 	constructor(
 		container: HTMLElement,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -196,8 +191,6 @@ export class QueryResultsView extends Disposable {
 			if (this.input) {
 				this.input.state.activeTab = e;
 			}
-			this.activeTab = [this.resultsTab, this.chartTab, this.qpTab].find(t => t.identifier === e);
-			this._onDidChange.fire();
 		}));
 	}
 
@@ -269,14 +262,6 @@ export class QueryResultsView extends Disposable {
 
 	public layout(dimension: DOM.Dimension) {
 		this._panelView.layout(dimension);
-	}
-
-	public get maximumHeight(): number {
-		return this.activeTab.view.maximumHeight;
-	}
-
-	public get minimumHeight(): number {
-		return this.activeTab.view.minimumHeight;
 	}
 
 	public chartData(dataId: { resultId: number, batchId: number }): void {
