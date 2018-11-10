@@ -37,7 +37,6 @@ export const CODE_SELECTOR: string = 'code-component';
 export class CodeComponent extends AngularDisposable implements OnInit {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	protected _actionBar: Taskbar;
 	@Input() cellModel: ICellModel;
 	@Output() public onContentChanged = new EventEmitter<void>();
 
