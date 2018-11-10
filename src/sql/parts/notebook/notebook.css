@@ -24,3 +24,14 @@
 	display: flex;
 	align-items: center;
 }
+
+.notebookEditor .notebook-info-button {
+	display: inline-block;
+	width: 100%;
+	padding: 4px;
+	text-align: center;
+	cursor: pointer;
+	padding-left: 15px;
+	background-size: 11px;
+	margin-right: 0.3em;
+}
