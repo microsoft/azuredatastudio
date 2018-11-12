@@ -12,20 +12,24 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 
 const msgLoading = localize('loading', 'Loading kernels...');
+
+//Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
-	public static ID = 'notebook.addCell';
-	public static LABEL = 'Cell';
+	public cellType: CellType;
 
 	constructor(
+		id: string, label: string, cssClass: string
 	) {
-		super(AddCellAction.ID, AddCellAction.LABEL, 'newStepIcon');
+		super(id, label, cssClass);
 	}
-
-	public run(context: any): TPromise<boolean> {
+	public run(context: NotebookComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
+				context.addCell(this.cellType);
 				resolve(true);
 			} catch (e) {
 				reject(e);
