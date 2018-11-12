@@ -207,7 +207,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	addCell(cellType: CellType): void {
+	public addCell(cellType: CellType): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
