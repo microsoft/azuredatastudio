@@ -16,6 +16,16 @@ code-component .toolbar {
 
 code-component .toolbarIconRun {
 	height: 20px;
-	background-image: url('../../../base/browser/ui/taskbar/media/start.svg');
+	background-image: url('../media/light/execute_cell.svg');
 	padding-bottom: 10px;
+}
+
+code-component .carbon-taskbar .icon {
+	background-size: 20px;
+	width: 40px;
+}
+
+code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container
+{
+	padding-left: 10px
 }

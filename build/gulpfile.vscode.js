@@ -129,6 +129,7 @@ const vscodeResources = [
 	'out-build/sql/parts/jobManagement/common/media/*.svg',
 	'out-build/sql/media/objectTypes/*.svg',
 	'out-build/sql/media/icons/*.svg',
+	'out-build/sql/parts/notebook/media/**/*.svg',
 	'!**/test/**'
 ];
 
