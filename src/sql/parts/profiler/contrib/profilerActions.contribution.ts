@@ -9,7 +9,7 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import * as nls from 'vs/nls';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService} from 'sql/parts/connection/common/connectionManagement';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -18,6 +18,10 @@ import { IProfilerService } from '../service/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/editor/editor.api';
 import { ProfilerEditor } from '../editor/profilerEditor';
+import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { mssqlProviderName } from 'sql/parts/connection/common/constants';
 
 // Contribute Global Actions
 const category = nls.localize('profilerCategory', "Profiler");
@@ -30,15 +34,45 @@ const newProfilerSchema: IJSONSchema = {
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',
-	handler: (accessor: ServicesAccessor) => {
-		let editorService: IEditorService = accessor.get(IEditorService);
+	handler: (accessor: ServicesAccessor, ...args: any[]) => {
+		let connectionProfile: ConnectionProfile = undefined;
 		let instantiationService: IInstantiationService = accessor.get(IInstantiationService);
+		let editorService: IEditorService = accessor.get(IEditorService);
 		let connectionService: IConnectionManagementService = accessor.get(IConnectionManagementService);
 		let objectExplorerService: IObjectExplorerService = accessor.get(IObjectExplorerService);
+		let connectionDialogService: IConnectionDialogService = accessor.get(IConnectionDialogService);
+		let capabilitiesService: ICapabilitiesService = accessor.get(ICapabilitiesService);
 
-		let connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService);
-		let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
-		return editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => TPromise.as(true));
+		// If a context is available if invoked from the context menu, we will use the connection profiler of the server node
+		if (args && args.length === 1 && args[0] && args[0] instanceof ObjectExplorerActionsContext) {
+			let context = args[0] as ObjectExplorerActionsContext;
+			connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, context.connectionProfile);
+		}
+		else {
+			// No context available, we will try to get the current global active connection
+			connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService) as ConnectionProfile;
+		}
+
+		let promise;
+		if (connectionProfile) {
+			promise = connectionService.connectIfNotConnected(connectionProfile);
+		} else {
+			// if still no luck, we will open the Connection dialog and let user connect to a server
+			promise = connectionDialogService.openDialogAndWait(connectionService, { connectionType: 1, providers: [mssqlProviderName] }).then((profile) => {
+				connectionProfile = profile as ConnectionProfile;
+			});
+		}
+
+		return promise.then(() => {
+			if (!connectionProfile) {
+				connectionProfile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionService, editorService) as ConnectionProfile;
+			}
+
+			if (connectionProfile && connectionProfile.providerName === mssqlProviderName) {
+				let profilerInput = instantiationService.createInstance(ProfilerInput, connectionProfile);
+				editorService.openEditor(profilerInput, { pinned: true }, ACTIVE_GROUP).then(() => TPromise.as(true));
+			}
+		});
 	}
 });
 

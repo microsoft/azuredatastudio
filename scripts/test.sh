@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	realpath() { [[ $1 = /* ]] && echo "$1" || echo "$PWD/${1#./}"; }
 	ROOT=$(dirname $(dirname $(realpath "$0")))
 
@@ -14,7 +14,7 @@ fi
 
 cd $ROOT
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	NAME=`node -p "require('./product.json').nameLong"`
 	CODE="./.build/electron/$NAME.app/Contents/MacOS/Electron"
 else
@@ -30,7 +30,7 @@ node build/lib/electron.js || ./node_modules/.bin/gulp electron
 
 # Unit Tests
 export ELECTRON_RUN_AS_NODE=1
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	cd $ROOT ; ulimit -n 4096 ; \
 		"$CODE" \
 		node_modules/mocha/bin/_mocha "$@"
