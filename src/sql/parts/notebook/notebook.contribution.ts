@@ -71,4 +71,3 @@ actionRegistry.registerWorkbenchAction(
 	OpenNotebookAction.LABEL
 );
 
-
