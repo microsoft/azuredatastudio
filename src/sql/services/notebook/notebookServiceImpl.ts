@@ -35,7 +35,7 @@ export class NotebookService implements INotebookService {
 		let registry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
 		registry.registerNotebookProvider({
 			provider: defaultProvider.providerId,
-			fileTypes: DEFAULT_NOTEBOOK_FILETYPE
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
 		});
 	}
 

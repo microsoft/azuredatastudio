@@ -16,19 +16,19 @@ export const Extensions = {
 
 export interface NotebookProviderDescription {
 	provider: string;
-	fileTypes: string | string[];
+	fileExtensions: string | string[];
 }
 
 let notebookProviderType: IJSONSchema = {
 	type: 'object',
-	default: { provider: '', fileTypes: [] },
+	default: { provider: '', fileExtensions: [] },
 	properties: {
 		provider: {
 			description: localize('carbon.extension.contributes.notebook.provider', 'Identifier of the notebook provider.'),
 			type: 'string'
 		},
-		fileTypes: {
-			description: localize('carbon.extension.contributes.notebook.fileTypes', 'What types of file should be registered to this notebook provider'),
+		fileExtensions: {
+			description: localize('carbon.extension.contributes.notebook.fileExtensions', 'What file extensions should be registered to this notebook provider'),
 			oneOf: [
 				{ type: 'string' },
 				{
@@ -43,7 +43,7 @@ let notebookProviderType: IJSONSchema = {
 };
 
 let notebookContrib: IJSONSchema = {
-	description: localize('vscode.extension.contributes.notebook.providers', "Contributes Notebook providers."),
+	description: localize('vscode.extension.contributes.notebook.providers', "Contributes notebook providers."),
 	oneOf: [
 		notebookProviderType,
 		{
@@ -55,7 +55,7 @@ let notebookContrib: IJSONSchema = {
 
 export interface INotebookProviderRegistry {
 	registerNotebookProvider(provider: NotebookProviderDescription): void;
-	getSupportedFileTypes(): string[];
+	getSupportedFileExtensions(): string[];
 	getProviderForFileType(fileType: string): string;
 }
 
@@ -67,13 +67,13 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 		// Note: this method intentionally overrides default provider for a file type.
 		// This means that any built-in provider will be overridden by registered extensions
 		this.providerIdToProviders.set(provider.provider, provider);
-		if (provider.fileTypes) {
-			if (Array.isArray<string>(provider.fileTypes)) {
-				for (let fileType of provider.fileTypes) {
+		if (provider.fileExtensions) {
+			if (Array.isArray<string>(provider.fileExtensions)) {
+				for (let fileType of provider.fileExtensions) {
 					this.addFileProvider(fileType, provider);
 				}
 			} else {
-				this.addFileProvider(provider.fileTypes, provider);
+				this.addFileProvider(provider.fileExtensions, provider);
 			}
 		}
 	}
@@ -82,7 +82,7 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 		this.fileToProviders.set(fileType.toUpperCase(), provider);
 	}
 
-	getSupportedFileTypes(): string[] {
+	getSupportedFileExtensions(): string[] {
 		return Array.from(this.fileToProviders.keys());
 	}
 

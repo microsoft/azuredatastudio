@@ -166,7 +166,7 @@ function getNotebookEditorUri(input: EditorInput): URI {
 	if (!(input instanceof NotebookInput)) {
 		let uri: URI = getSupportedInputResource(input);
 		if (uri) {
-			if (hasFileExtension(getNotebookFileTypes(), input, false)) {
+			if (hasFileExtension(getNotebookFileExtensions(), input, false)) {
 				return uri;
 			}
 		}
@@ -175,9 +175,9 @@ function getNotebookEditorUri(input: EditorInput): URI {
 	return undefined;
 }
 
-function getNotebookFileTypes() {
+function getNotebookFileExtensions() {
 	let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
-	return notebookRegistry.getSupportedFileTypes();
+	return notebookRegistry.getSupportedFileExtensions();
 }
 
 function getProviderForFileName(fileName: string) {
