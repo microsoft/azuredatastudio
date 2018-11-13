@@ -16,6 +16,7 @@ import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 
 const msgLoading = localize('loading', 'Loading kernels...');
+const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 
 //Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -83,9 +84,30 @@ export class KernelsDropdown extends SelectBox {
 }
 
 export class AttachToDropdown extends SelectBox {
-	constructor(contextViewProvider: IContextViewProvider
-	) {
-		let options: string[] = ['localhost'];
-		super(options, 'localhost', contextViewProvider);
+	private model: INotebookModel;
+
+	constructor(contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>) {
+		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider);
+		if (modelRegistered) {
+			modelRegistered
+			.then((model) => this.updateModel(model))
+			.catch((err) => {
+				// No-op for now
+			});
+		}
+		this.onDidSelect(e => this.doChangeContext(e.selected));
+	}
+
+	public updateModel(model: INotebookModel): void {
+		this.model = model;
+		model.contextsChanged(() => {
+			let contexts = this.model.contexts;
+			let defaultConnectionName = [contexts.defaultConnection.options.host];
+			this.setOptions(defaultConnectionName.concat(contexts.otherConnections.map((context) => context.options.host)));
+		});
+	}
+
+	public doChangeContext(displayName: string): void {
+		this.model.changeContext(displayName);
 	}
 }

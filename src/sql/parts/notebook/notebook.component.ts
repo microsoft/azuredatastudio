@@ -203,7 +203,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		kernelsDropdown.render(kernelsDropdownTemplateContainer);
 		attachSelectBoxStyler(kernelsDropdown, this.themeService);
 
-		let attachToDropdown = new AttachToDropdown(this.contextViewService);
+		let attachToDropdown = new AttachToDropdown(this.contextViewService, this.modelRegistered);
 		let attachToDropdownTemplateContainer = document.createElement('div');
 		attachToDropdownTemplateContainer.className = 'notebook-toolbar-dropdown';
 		attachToDropdown.render(attachToDropdownTemplateContainer);
