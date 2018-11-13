@@ -299,27 +299,26 @@ export enum TaskExecutionMode {
 	script = 1,
 	executeAndScript = 2,
 }
-export interface DacFxExportParams {
-	connectionString: string;
+export interface ExportParams {
+	databaseName: string;
 	packageFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DacFxImportParams {
-	connectionString: string;
+export interface ImportParams {
 	packageFilePath: string;
 	targetDatabaseName: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DacFxImportResponse {
+export interface ImportResponse {
 	operationId: string;
 }
 
-export interface DacFxExtractParams {
-	connectionString: string;
+export interface ExtractParams {
+	databaseName: string;
 	packageFilePath: string;
 	applicationName: string;
 	applicationVersion: string;
@@ -327,36 +326,35 @@ export interface DacFxExtractParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DacFxExtractResult {
+export interface ExtractResult {
 	operationId: string;
 }
 
-export interface DacFxDeployParams {
-	connectionString: string;
+export interface DeployParams {
 	packageFilePath: string;
 	targetDatabaseName: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DacFxDeployResult {
+export interface DeployResult {
 	operationId: string;
 }
 
-export namespace DacFxExportRequest {
-	export const type = new RequestType<DacFxExportParams, sqlops.DacFxExportResult, void, void>('dacfx/export');
+export namespace ExportRequest {
+	export const type = new RequestType<ExportParams, sqlops.ExportResult, void, void>('dacfx/export');
 }
 
-export namespace DacFxImportRequest {
-	export const type = new RequestType<DacFxImportParams, sqlops.DacFxImportResult, void, void>('dacfx/import');
+export namespace ImportRequest {
+	export const type = new RequestType<ImportParams, sqlops.ImportResult, void, void>('dacfx/import');
 }
 
-export namespace DacFxExtractRequest {
-	export const type = new RequestType<DacFxExtractParams, sqlops.DacFxExtractResult, void, void>('dacfx/extract');
+export namespace ExtractRequest {
+	export const type = new RequestType<ExtractParams, sqlops.ExtractResult, void, void>('dacfx/extract');
 }
 
-export namespace DacFxDeployRequest {
-	export const type = new RequestType<DacFxDeployParams, sqlops.DacFxDeployResult, void, void>('dacfx/deploy');
+export namespace DeployRequest {
+	export const type = new RequestType<DeployParams, sqlops.DeployResult, void, void>('dacfx/deploy');
 }
 
 // ------------------------------- < DacFx > ------------------------------------

@@ -41,4 +41,5 @@ export interface DacFxDataModel {
 	serverId: string;
 	databaseName: string;
 	filePath: string;
+	version: string;
 }

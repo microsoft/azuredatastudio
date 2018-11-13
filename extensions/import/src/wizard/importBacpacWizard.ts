@@ -14,7 +14,7 @@ import { DacFxWizard } from './dacfxWizard';
 
 const localize = nls.loadMessageBundle();
 
-export class DacFxImportWizard extends DacFxWizard {
+export class ImportBacpacWizard extends DacFxWizard {
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
 	private importConfigPage: ImportConfigPage;
@@ -88,12 +88,10 @@ export class DacFxImportWizard extends DacFxWizard {
 	}
 
 	private async import() {
-		let connectionstring = await await sqlops.connection.getConnectionString(this.model.serverConnection.connectionId, true);
-		let packageFilePath = this.model.filePath;
-		let targetDatabaseName = this.model.databaseName;
-		let service = await DacFxImportWizard.getService();
+		let service = await ImportBacpacWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
-		let result = await service.importBacpac(connectionstring, packageFilePath, targetDatabaseName, ownerUri, sqlops.TaskExecutionMode.execute);
+
+		let result = await service.importBacpac(this.model.filePath, this.model.databaseName, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

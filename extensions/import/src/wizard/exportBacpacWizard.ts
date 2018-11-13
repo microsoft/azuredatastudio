@@ -14,7 +14,7 @@ import { DacFxWizard } from './dacfxWizard';
 
 const localize = nls.loadMessageBundle();
 
-export class DacFxExportWizard extends DacFxWizard {
+export class ExportWizard extends DacFxWizard {
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
 	private exportConfigPage: ExportConfigPage;
@@ -88,11 +88,10 @@ export class DacFxExportWizard extends DacFxWizard {
 	}
 
 	private async export() {
-		let connectionstring = await this.getConnectionString();
-		let packageFilePath = this.model.filePath;
-		let service = await DacFxExportWizard.getService();
+		let service = await ExportWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
-		let result = await service.exportBacpac(connectionstring, packageFilePath, ownerUri, sqlops.TaskExecutionMode.execute);
+
+		let result = await service.exportBacpac(this.model.databaseName, this.model.filePath, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -107,17 +106,6 @@ export class DacFxExportWizard extends DacFxWizard {
 
 	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
-	}
-
-	private async getConnectionString(): Promise<string> {
-		let connectionstring = await sqlops.connection.getConnectionString(this.model.serverConnection.connectionId, true);
-		let splitted = connectionstring.split(';');
-
-		// set datbase to appropriate value instead of master
-		let temp = splitted.find(s => s.startsWith('Initial Catalog'));
-		splitted[splitted.indexOf(temp)] = 'Initial Catalog=' + this.model.databaseName;
-
-		return splitted.join(';');
 	}
 }
 

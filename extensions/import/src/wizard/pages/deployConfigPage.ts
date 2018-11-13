@@ -10,15 +10,15 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
-import { ImportBacpacWizard } from '../importBacpacWizard';
+import { DeployWizard } from '../deployDacpacWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ImportConfigPage extends DacFxPage {
+export class DeployConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: ImportBacpacWizard;
+	protected readonly instance: DeployWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -28,7 +28,7 @@ export class ImportConfigPage extends DacFxPage {
 	private fileTextBox: sqlops.InputBoxComponent;
 	private fileButton: sqlops.ButtonComponent;
 
-	public constructor(instance: ImportBacpacWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DeployWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
@@ -82,7 +82,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxExport.serverDropdownTitle', 'Server')
+			title: localize('dacFxDeploy.serverDropdownTitle', 'Server')
 		};
 	}
 
@@ -156,7 +156,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.databaseTextBox,
-			title: localize('dacFxImport.databaseNameTextBox', 'New database name')
+			title: localize('dacFxDeploy.databaseNameTextBox', 'New database name')
 		};
 	}
 
@@ -166,7 +166,7 @@ export class ImportConfigPage extends DacFxPage {
 		}).component();
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('dacFxImport.browseFiles', '...'),
+			label: localize('dacFxDeploy.browseFiles', '...'),
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
@@ -175,9 +175,9 @@ export class ImportConfigPage extends DacFxPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					openLabel: localize('dacFxImport.openFile', 'Open'),
+					openLabel: localize('dacFxDeploy.openFile', 'Open'),
 					filters: {
-						'bacpac Files': ['bacpac'],
+						'bacpac Files': ['dacpac'],
 						'All Files': ['*']
 					}
 				}
@@ -202,7 +202,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxImport.fileTextboxTitle', 'Bacpac to import'),
+			title: localize('dacFxDeploy.fileTextboxTitle', 'Dacpac to deploy'),
 			actions: [this.fileButton]
 		};
 	}

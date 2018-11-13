@@ -51,6 +51,24 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "dacFxDeploy.start",
+        "title": "Deploy dacpac",
+        "category": "Deploy Data-tier Application",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
+      },
+      {
+        "command": "dacFxExtract.start",
+        "title": "Extract dacpac",
+        "category": "Extract Data-tier Application",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
       }
     ],
     "keybindings": [
@@ -69,6 +87,11 @@
         },
         {
           "command": "dacFxExport.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "group": "export"
+        },
+        {
+          "command": "dacFxExtract.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "export"
         }

@@ -13,8 +13,10 @@ import { FlatFileWizard } from '../wizard/flatFileWizard';
 import { ServiceClient } from '../services/serviceClient';
 import { ApiType, managerInstance } from '../services/serviceApiManager';
 import { FlatFileProvider } from '../services/contracts';
-import { DacFxExportWizard } from '../wizard/dacfxExportWizard';
-import { DacFxImportWizard } from '../wizard/dacfxImportWizard';
+import { ExportWizard } from '../wizard/exportBacpacWizard';
+import { ImportBacpacWizard } from '../wizard/importBacpacWizard';
+import { ExtractWizard } from '../wizard/extractDacpacWizard';
+import { DeployWizard } from '../wizard/deployDacpacWizard';
 
 /**
  * The main controller class that initializes the extension
@@ -39,6 +41,8 @@ export default class MainController extends ControllerBase {
 
 		this.initializeDacFxExport();
 		this.initializeDacFxImport();
+		this.initializeDacFxExtract();
+		this.initializeDacFxDeploy();
 		return Promise.resolve(true);
 	}
 
@@ -47,10 +51,18 @@ export default class MainController extends ControllerBase {
 	}
 
 	private initializeDacFxExport() {
-		sqlops.tasks.registerTask('dacFxExport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DacFxExportWizard().start(profile, args));
+		sqlops.tasks.registerTask('dacFxExport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new ExportWizard().start(profile, args));
 	}
 
 	private initializeDacFxImport() {
-		sqlops.tasks.registerTask('dacFxImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DacFxImportWizard().start(profile, args));
+		sqlops.tasks.registerTask('dacFxImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new ImportBacpacWizard().start(profile, args));
+	}
+
+	private initializeDacFxExtract() {
+		sqlops.tasks.registerTask('dacFxExtract.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new ExtractWizard().start(profile, args));
+	}
+
+	private initializeDacFxDeploy() {
+		sqlops.tasks.registerTask('dacFxDeploy.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DeployWizard().start(profile, args));
 	}
 }

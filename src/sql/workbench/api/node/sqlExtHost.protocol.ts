@@ -413,22 +413,22 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * DacFx export bacpac
 	 */
-	$exportBacpac(handle: number, connectionstring: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> { throw ni(); }
+	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> { throw ni(); }
 
 	/**
 	 * DacFx import bacpac
 	 */
-	$importBacpac(handle: number, connectionstring: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxImportResult> { throw ni(); }
+	$importBacpac(handle: number, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ImportResult> { throw ni(); }
 
 	/**
 	 * DacFx extract dacpac
 	 */
-	$extractDacpac(handle: number, connectionstring: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExtractResult> { throw ni(); }
+	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> { throw ni(); }
 
 	/**
 	 * DacFx import bacpac
 	 */
-	$deployDacpac(handle: number, connectionstring: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxDeployResult> { throw ni(); }
+	$deployDacpac(handle: number, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> { throw ni(); }
 
 }
 

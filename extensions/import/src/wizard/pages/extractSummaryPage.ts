@@ -7,15 +7,15 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
-import { ImportBacpacWizard } from '../importBacpacWizard';
+import { ExtractWizard } from '../extractDacpacWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ImportSummaryPage extends DacFxPage {
+export class ExtractSummaryPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: ImportBacpacWizard;
+	protected readonly instance: ExtractWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -23,7 +23,7 @@ export class ImportSummaryPage extends DacFxPage {
 	private table: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
 
-	public constructor(instance: ImportBacpacWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: ExtractWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
@@ -34,7 +34,7 @@ export class ImportSummaryPage extends DacFxPage {
 			[
 				{
 					component: this.table,
-					title: localize('dacfxExport.importInformation', 'Import bacpac information')
+					title: localize('dacfxExtract.extractInformation', 'Extract bacpac information')
 				}
 			]
 		).component();
@@ -68,9 +68,10 @@ export class ImportSummaryPage extends DacFxPage {
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
-				[localize('dacfxExport.bacpacLocation', 'Bacpac to import'), this.model.filePath],
-				[localize('dacfxExport.databaseName', 'Database name'), this.model.databaseName]],
+				[localize('dacfxExtract.serverName', 'Server'), this.model.serverName],
+				[localize('dacfxExtract.databaseName', 'Database'), this.model.databaseName],
+				[localize('dacfxExtract.version', 'Version'), this.model.version],
+				[localize('dacfxExtract.dacpacLocation', 'Dacpac location'), this.model.filePath]],
 			columns: ['Setting', 'Value'],
 			width: 600,
 			height: 200
