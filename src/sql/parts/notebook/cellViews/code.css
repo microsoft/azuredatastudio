@@ -20,6 +20,11 @@ code-component .toolbarIconRun {
 	padding-bottom: 10px;
 }
 
+.vs-dark code-component .toolbarIconRun,
+.hc-black code-component .toolbarIconRun {
+	background-image: url('../media/dark/execute_cell_inverse.svg');
+}
+
 code-component .carbon-taskbar .icon {
 	background-size: 20px;
 	width: 40px;

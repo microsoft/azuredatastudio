@@ -5,6 +5,7 @@
 
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { localize } from 'vs/nls';
 
 export class RunCellAction extends Action {
 	public static ID = 'jobaction.notebookRunCell';
@@ -13,7 +14,7 @@ export class RunCellAction extends Action {
 	constructor(
 	) {
 		super(RunCellAction.ID, '', 'toolbarIconRun');
-		this.tooltip = 'Run cell';
+		this.tooltip = localize('runCell','Run cell');
 	}
 
 	public run(context: any): TPromise<boolean> {
