@@ -16,6 +16,7 @@ import { Schemas } from 'vs/base/common/network';
 import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import URI from 'vs/base/common/uri';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 
 let counter = 0;
@@ -32,7 +33,8 @@ export class OpenNotebookAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService private _editorService: IEditorService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
@@ -41,7 +43,7 @@ export class OpenNotebookAction extends Action {
 		return new TPromise<void>((resolve, reject) => {
 			let untitledUri = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter++}`});
 			let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
-			let input = new NotebookInput('modelViewId', model,);
+			let input = this._instantiationService.createInstance(NotebookInput, 'modelViewId', model);
 			this._editorService.openEditor(input, { pinned: true });
 		});
 	}

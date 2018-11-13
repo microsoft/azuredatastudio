@@ -6,26 +6,37 @@
 'use strict';
 
 import { nb } from 'sqlops';
-import * as nls from 'vs/nls';
-import { INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { localize } from 'vs/nls';
 import URI from 'vs/base/common/uri';
+import { Registry } from 'vs/platform/registry/common/platform';
+
+import { INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
-import { session } from 'electron';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
+import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
+
+const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, INotebookProvider> = new Map();
-	private _managers: Map<URI, INotebookManager> = new Map();
-
+	private _managers: Map<string, INotebookManager> = new Map();
 
 	constructor() {
-		mimeRegistry: RenderMimeRegistry;
+		this.registerDefaultProvider();
+	}
+
+	private registerDefaultProvider() {
 		let defaultProvider = new BuiltinProvider();
 		this.registerProvider(defaultProvider.providerId, defaultProvider);
+		let registry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+		registry.registerNotebookProvider({
+			provider: defaultProvider.providerId,
+			fileTypes: DEFAULT_NOTEBOOK_FILETYPE
+		});
 	}
 
 	registerProvider(providerId: string, provider: INotebookProvider): void {
@@ -47,24 +58,37 @@ export class NotebookService implements INotebookService {
 
 	async getOrCreateNotebookManager(providerId: string, uri: URI): Promise<INotebookManager> {
 		if (!uri) {
-			throw new Error(nls.localize('notebookUriNotDefined', 'No URI was passed when creating a notebook manager'));
+			throw new Error(localize('notebookUriNotDefined', 'No URI was passed when creating a notebook manager'));
 		}
-		let manager = this._managers.get(uri);
+		let uriString = uri.toString();
+		let manager = this._managers.get(uriString);
 		if (!manager) {
 			manager = await this.doWithProvider(providerId, (provider) => provider.getNotebookManager(uri));
 			if (manager) {
-				this._managers.set(uri, manager);
+				this._managers.set(uriString, manager);
 			}
 		}
 		return manager;
 	}
+
+	handleNotebookClosed(notebookUri: URI): void {
+		// Remove the manager from the tracked list, and let the notebook provider know that it should update its mappings
+		let uriString = notebookUri.toString();
+		let manager = this._managers.get(uriString);
+		if (manager) {
+			this._managers.delete(uriString);
+			let provider = this._providers.get(manager.providerId);
+			provider.handleNotebookClosed(notebookUri);
+		}
+	}
+
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Thenable<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
 		let provider = this._providers.get(providerId);
 		if (!provider) {
-			return Promise.reject(new Error(nls.localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
+			return Promise.reject(new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
 		}
 
 		return op(provider);
