@@ -468,34 +468,16 @@ export class ProfilerEditor extends BaseEditor {
 			this._connectAction.connected = this.input.state.isConnected;
 
 			if (this.input.state.isConnected) {
-
 				this._updateToolbar();
-				this._sessionSelector.enable();
-				this._profilerService.getXEventSessions(this.input.id).then((r) => {
-					// set undefined result to empty list
-					if (!r) {
-						r = [];
-					}
 
-					this._sessionSelector.setOptions(r);
-					this._sessionsList = r;
-					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
-						let sessionIndex: number = 0;
-						let uiState = this._profilerService.getSessionViewState(this.input.id);
-						if (uiState && uiState.previousSessionName) {
-							sessionIndex = this._sessionsList.indexOf(uiState.previousSessionName);
-						} else {
-							this._profilerService.launchCreateSessionDialog(this.input);
-						}
+				// Launch the create session dialog if openning a new window.
+				let uiState = this._profilerService.getSessionViewState(this.input.id);
+				let previousSessionName = uiState && uiState.previousSessionName;
+				if (!this.input.sessionName && !previousSessionName) {
+					this._profilerService.launchCreateSessionDialog(this.input);
+				}
 
-						if (sessionIndex < 0) {
-							sessionIndex = 0;
-						}
-
-						this.input.sessionName = this._sessionsList[sessionIndex];
-						this._sessionSelector.selectWithOptionName(this.input.sessionName);
-					}
-				});
+				this._updateSessionSelector(previousSessionName);
 			} else {
 				this._startAction.enabled = false;
 				this._stopAction.enabled = false;
@@ -521,26 +503,33 @@ export class ProfilerEditor extends BaseEditor {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				this._sessionSelector.enable();
-				this._profilerService.getXEventSessions(this.input.id).then((r) => {
-					// set undefined result to empty list
-					if (!r) {
-						r = [];
-					}
-
-					this._sessionsList = r;
-					this._sessionSelector.setOptions(r);
-					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
-						this.input.sessionName = this._sessionsList[0];
-					}
-
-					if (this.input.sessionName) {
-						this._sessionSelector.selectWithOptionName(this.input.sessionName);
-					}
-
-				});
+				this._updateSessionSelector();
 			}
 		}
+	}
+
+	private _updateSessionSelector(previousSessionName: string = undefined) {
+		this._sessionSelector.enable();
+		this._profilerService.getXEventSessions(this.input.id).then((r) => {
+			if (!r) {
+				r = [];
+			}
+
+			this._sessionSelector.setOptions(r);
+			this._sessionsList = r;
+			if (this._sessionsList.length > 0) {
+				if (!this.input.sessionName) {
+					this.input.sessionName = previousSessionName;
+				}
+
+				if (this._sessionsList.indexOf(this.input.sessionName) === -1) {
+					this.input.sessionName = this._sessionsList[0];
+				}
+
+				this._sessionSelector.selectWithOptionName(this.input.sessionName);
+			};
+		});
+
 	}
 
 	private _updateToolbar(): void {
