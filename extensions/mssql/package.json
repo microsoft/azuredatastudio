@@ -287,7 +287,7 @@
               "name": "Integrated"
             },
             {
-              "displayName": "Azure Active Directory (MFA)",
+              "displayName": "Azure Active Directory - Universal with MFA support",
               "name": "AzureMFA"
             }
           ],
