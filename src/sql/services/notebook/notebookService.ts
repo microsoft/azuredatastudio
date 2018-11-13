@@ -40,6 +40,8 @@ export interface INotebookService {
 	 */
 	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager>;
 
+	handleNotebookClosed(uri: URI): void;
+
 	shutdown(): void;
 
 	getMimeRegistry(): RenderMimeRegistry;

@@ -3,16 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as path from 'path';
+
+import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorInput, IEditorInput } from 'vs/workbench/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
+import URI from 'vs/base/common/uri';
+
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import URI from 'vs/base/common/uri';
 import { IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
+import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
+import { DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 
 const fs = require('fs');
 
@@ -54,9 +60,15 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		uri = getNotebookEditorUri(input);
 		if(uri){
 			//TODO: We need to pass in notebook data either through notebook input or notebook service
-			let fileName: string = input? input.getName() : 'untitled';
+			let fileName: string = 'untitled';
+			let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
+			if (input) {
+				fileName = input.getName();
+				providerId = getProviderForFileName(fileName);
+			}
 			let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
-			//TO DO: Second paramter has to be the content.
+			notebookInputModel.providerId = providerId;
+			//TO DO: Second parameter has to be the content.
 			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 			return notebookInput;
 		}
@@ -91,7 +103,6 @@ export function getSupportedInputResource(input: IEditorInput): URI {
 // file extensions for the inputs we support (should be all upper case for comparison)
 const sqlFileTypes = ['SQL'];
 const sqlPlanFileTypes = ['SQLPLAN'];
-const notebookFileType = ['IPYNB'];
 
 /**
  * If input is a supported query editor file, return it's URI. Otherwise return undefined.
@@ -155,7 +166,7 @@ function getNotebookEditorUri(input: EditorInput): URI {
 	if (!(input instanceof NotebookInput)) {
 		let uri: URI = getSupportedInputResource(input);
 		if (uri) {
-			if (hasFileExtension(notebookFileType, input, false)) {
+			if (hasFileExtension(getNotebookFileExtensions(), input, false)) {
 				return uri;
 			}
 		}
@@ -163,6 +174,22 @@ function getNotebookEditorUri(input: EditorInput): URI {
 
 	return undefined;
 }
+
+function getNotebookFileExtensions() {
+	let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+	return notebookRegistry.getSupportedFileExtensions();
+}
+
+function getProviderForFileName(fileName: string) {
+	let fileExt = path.extname(fileName);
+	if (fileExt && fileExt.startsWith('.')) {
+		fileExt = fileExt.slice(1,fileExt.length);
+		let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+		return notebookRegistry.getProviderForFileType(fileExt);
+	}
+	return DEFAULT_NOTEBOOK_PROVIDER;
+}
+
 
 /**
  * Checks whether the given EditorInput is set to either undefined or sql mode
