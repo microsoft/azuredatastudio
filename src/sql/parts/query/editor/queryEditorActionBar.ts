@@ -5,7 +5,7 @@
 
 import {
 	ToggleConnectDatabaseAction, ListDatabasesAction, RunQueryAction,
-	ListDatabasesActionItem, IQueryActionContext, ChangeConnectionAction
+	ListDatabasesActionItem, IQueryActionContext, ChangeConnectionAction, EstimatedQueryPlanAction
 } from 'sql/parts/query/execution/queryActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { QueryInput, QueryEditorState } from 'sql/parts/query/common/queryInput';
@@ -20,8 +20,8 @@ export class QueryEditorActionBar extends Taskbar {
 	private runQuery: RunQueryAction;
 	private toggleConnect: ToggleConnectDatabaseAction;
 	private changeConnection: ChangeConnectionAction;
-	private listDatabases: ListDatabasesAction;
 	private listDatabaseActionItem: ListDatabasesActionItem;
+	private estimatedQueryPlan: EstimatedQueryPlanAction;
 
 	private inputDisposables: IDisposable[] = [];
 
@@ -44,14 +44,16 @@ export class QueryEditorActionBar extends Taskbar {
 		this.runQuery = instantiationService.createInstance(RunQueryAction);
 		this.toggleConnect = instantiationService.createInstance(ToggleConnectDatabaseAction);
 		this.changeConnection = instantiationService.createInstance(ChangeConnectionAction);
-		this.listDatabases = instantiationService.createInstance(ListDatabasesAction);
 		this.listDatabaseActionItem = instantiationService.createInstance(ListDatabasesActionItem);
+		this.estimatedQueryPlan = instantiationService.createInstance(EstimatedQueryPlanAction);
 
 		this.setContent([
 			{ action: this.runQuery },
 			{ action: this.toggleConnect },
 			{ action: this.changeConnection },
-			{ action: this.listDatabases }
+			{ action: instantiationService.createInstance(ListDatabasesAction) },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this.estimatedQueryPlan }
 		]);
 	}
 
@@ -68,8 +70,10 @@ export class QueryEditorActionBar extends Taskbar {
 	private parseState(state: QueryEditorState) {
 		this.changeConnection.enabled = state.connected && !state.executing;
 		this.toggleConnect.connected = state.connected;
-		this.runQuery.enabled = state.connected && !state.executing;
+		this.runQuery.enabled = state.connected;
+		this.runQuery.executing = state.executing;
 		this.listDatabaseActionItem.enabled = state.connected && !state.executing;
+		this.estimatedQueryPlan.enabled = state.connected && !state.executing;
 	}
 
 	public set editor(editor: ICodeEditor) {

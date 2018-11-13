@@ -22,7 +22,6 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
-import { CancelQueryAction } from 'sql/parts/query/execution/queryActions';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 const singleQuote = '\'';
@@ -166,6 +165,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 /**
  * Locates the active editor and calls cancelQuery() on the editor if it is a QueryEditor.
  */
+/*
 export class CancelQueryKeyboardAction extends CancelQueryAction {
 
 	public static ID = 'cancelQueryKeyboardAction';
@@ -193,6 +193,7 @@ export class CancelQueryKeyboardAction extends CancelQueryAction {
 		return TPromise.as(null);
 	}
 }
+*/
 
 /**
  * Refresh the IntelliSense cache

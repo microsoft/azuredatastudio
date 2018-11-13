@@ -14,7 +14,6 @@ import { ActionBar } from './actionbar';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Action, IActionRunner, IAction } from 'vs/base/common/actions';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IContextMenuProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
 
 /**

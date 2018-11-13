@@ -24,7 +24,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
-	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
+	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
@@ -35,8 +35,6 @@ import * as Constants from 'sql/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
-
-const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -126,6 +124,7 @@ actionRegistry.registerWorkbenchAction(
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
 
+/*
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		CancelQueryKeyboardAction,
@@ -135,6 +134,7 @@ actionRegistry.registerWorkbenchAction(
 	),
 	CancelQueryKeyboardAction.LABEL
 );
+*/
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(

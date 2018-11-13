@@ -17,7 +17,7 @@ import {
 	RunQueryOnConnectionMode
 } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
-import { RunQueryAction, CancelQueryAction, ListDatabasesActionItem, QueryTaskbarAction } from 'sql/parts/query/execution/queryActions';
+import { RunQueryAction, ListDatabasesActionItem, QueryTaskbarAction } from 'sql/parts/query/execution/queryActions';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
@@ -58,16 +58,6 @@ suite('SQL QueryAction Tests', () => {
 		configurationService.setup(x => x.getValue(TypeMoq.It.isAny())).returns(() => {
 			return {};
 		});
-	});
-
-	test('setClass sets child CSS class correctly', (done) => {
-		// If I create a RunQueryAction
-		let queryAction = new RunQueryAction();
-
-		// "class should automatically get set to include the base class and the RunQueryAction class
-		let className = RunQueryAction.EnabledClass;
-		assert.equal(queryAction.class, className, 'CSS class not properly set');
-		done();
 	});
 
 	test('RunQueryAction calls runQuery() only if URI is connected', (done) => {
@@ -261,38 +251,6 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(runQuerySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
 		assert.equal(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 
-		done();
-	});
-
-	test('CancelQueryAction calls cancelQuery() only if URI is connected', (done) => {
-		// ... Create assert variables
-		let isConnected: boolean = undefined;
-		let calledCancelQuery: boolean = false;
-
-		// ... Mock "isConnected" in ConnectionManagementService
-		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {}, {});
-		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
-
-		// ... Mock QueryModelService
-		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-		queryModelService.setup(x => x.cancelQuery(TypeMoq.It.isAny())).callback(() => {
-			calledCancelQuery = true;
-		});
-
-		// If I call run on CancelQueryAction when I am not connected
-		let queryAction: CancelQueryAction = new CancelQueryAction(CancelQueryAction.ID, CancelQueryAction.LABEL, queryModelService.object, connectionManagementService.object);
-		isConnected = false;
-		queryAction.run({ input: undefined, editor: undefined });
-
-		// cancelQuery should not be run
-		assert.equal(calledCancelQuery, false, 'run should not call cancelQuery');
-
-		// If I call run on CancelQueryAction when I am connected
-		isConnected = true;
-		queryAction.run({ input: undefined, editor: undefined });
-
-		// cancelQuery should be run
-		assert.equal(calledCancelQuery, true, 'run should call cancelQuery');
 		done();
 	});
 

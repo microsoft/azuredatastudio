@@ -236,6 +236,10 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 	}
 
+	public cancelQuery() {
+		this._queryModelService.cancelQuery(this.uri);
+	}
+
 	public runQueryStatement(range: IRange): void {
 		this._queryModelService.runQueryStatement(this.uri, this.rangeToSelection(range), this);
 	}

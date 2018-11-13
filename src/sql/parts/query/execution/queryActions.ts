@@ -7,7 +7,7 @@ import 'vs/css!sql/parts/query/editor/media/queryActions';
 
 import * as nls from 'vs/nls';
 import { Builder, $ } from 'vs/base/browser/builder';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -26,7 +26,6 @@ import {
 	ConnectionType,
 	RunQueryOnConnectionMode
 } from 'sql/parts/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IRange } from 'vs/editor/common/core/range';
@@ -86,55 +85,60 @@ export abstract class QueryTaskbarAction extends Action {
  * Action class that runs a query in the active SQL text document.
  */
 export class RunQueryAction extends Action {
-
-	public static EnabledClass = 'start';
 	public static ID = 'runQueryAction';
-	public static LABEL = nls.localize('runQueryLabel', 'Run');
+
+	public static ExecuteClass = 'start';
+	public static ExecuteLabel = nls.localize('runQueryLabel', 'Run');
+
+	public static CancelLabel = nls.localize('cancelQueryLabel', 'Cancel');
+	public static CancelClass = 'stop';
+
+	private _executing = false;
 
 	constructor() {
-		super(RunQueryAction.ID, RunQueryAction.LABEL, RunQueryAction.EnabledClass);
+		super(RunQueryAction.ID);
+		this.executing = false;
+	}
+
+	public get executing(): boolean {
+		return this._executing;
+	}
+
+	public set executing(value: boolean) {
+		// intentionally always updating, since parent class handles skipping if values
+		this._executing = value;
+		this.updateLabelAndIcon();
+	}
+
+	private updateLabelAndIcon(): void {
+		if (this.executing) {
+			// We are connected, so show option to disconnect
+			this.label = RunQueryAction.CancelLabel;
+			this.class = RunQueryAction.CancelClass;
+		} else {
+			this.label = RunQueryAction.ExecuteLabel;
+			this.class = RunQueryAction.ExecuteClass;
+		}
 	}
 
 	public run(context: IQueryActionContext): TPromise<void> {
-		let range = context.editor.getSelection();
-		if (this.isCursorPosition(range)) {
-			context.input.runQueryStatement(range);
+		if (this.executing) {
+			context.input.cancelQuery();
+			return TPromise.as(null);
 		} else {
-			context.input.runQuery(range);
+			let range = context.editor.getSelection();
+			if (this.isCursorPosition(range)) {
+				context.input.runQueryStatement(range);
+			} else {
+				context.input.runQuery(range);
+			}
+			return TPromise.as(null);
 		}
-		return TPromise.as(null);
 	}
 
 	private isCursorPosition(selection: IRange) {
 		return selection.startLineNumber === selection.endLineNumber
 			&& selection.startColumn === selection.endColumn;
-	}
-}
-
-/**
- * Action class that cancels the running query in the current SQL text document.
- */
-export class CancelQueryAction extends QueryTaskbarAction {
-
-	public static EnabledClass = 'stop';
-	public static ID = 'cancelQueryAction';
-	public static LABEL = nls.localize('cancelQueryLabel', 'Cancel');
-
-	constructor(
-		id: string,
-		label: string,
-		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
-	) {
-		super(connectionManagementService, id, label, CancelQueryAction.EnabledClass);
-		this.enabled = false;
-	}
-
-	public run(context: IQueryActionContext): TPromise<void> {
-		if (this.isConnected(context.input)) {
-			this._queryModelService.cancelQuery(context.input.uri);
-		}
-		return TPromise.as(null);
 	}
 }
 
@@ -267,11 +271,8 @@ export class ListDatabasesAction extends Action {
  * Action item that handles the dropdown (combobox) that lists the available databases.
  * Based off StartDebugActionItem.
  */
-export class ListDatabasesActionItem implements IActionItem {
-	public static ID = 'listDatabaseQueryActionItem';
-
+export class ListDatabasesActionItem extends Disposable implements IActionItem {
 	public actionRunner: IActionRunner;
-	private _toDispose: IDisposable[];
 	private _context: IQueryActionContext;
 	private _currentDatabaseName: string;
 	private _isConnected: boolean;
@@ -290,7 +291,7 @@ export class ListDatabasesActionItem implements IActionItem {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService
 	) {
-		this._toDispose = [];
+		super();
 		this.$databaseListDropdown = $('.databaseListDropdown');
 		this._isInAccessibilityMode = this._configurationService.getValue('editor.accessibilitySupport') === 'on';
 
@@ -308,13 +309,12 @@ export class ListDatabasesActionItem implements IActionItem {
 				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
 			});
 			this._dropdown.onValueChange(s => this.databaseSelected(s));
-			this._toDispose.push(this._dropdown.onFocus(() => { self.onDropdownFocus(); }));
-			this._toDispose.push(attachEditableDropdownStyler(this._dropdown, themeService));
+			this._register(this._dropdown.onFocus(() => { this.onDropdownFocus(); }));
+			this._register(attachEditableDropdownStyler(this._dropdown, themeService));
 		}
 
 		// Register event handlers
-		let self = this;
-		this._toDispose.push(this._connectionManagementService.onConnectionChanged(params => { self.onConnectionChanged(params); }));
+		this._register(this._connectionManagementService.onConnectionChanged(params => { this.onConnectionChanged(params); }));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -353,18 +353,6 @@ export class ListDatabasesActionItem implements IActionItem {
 		} else {
 			this._dropdown.blur();
 		}
-	}
-
-	public attachStyler(themeService: IThemeService): IDisposable {
-		if (this._isInAccessibilityMode) {
-			return attachSelectBoxStyler(this, themeService);
-		} else {
-			return attachEditableDropdownStyler(this, themeService);
-		}
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	// EVENT HANDLERS FROM EDITOR //////////////////////////////////////////
@@ -503,5 +491,4 @@ export class ListDatabasesActionItem implements IActionItem {
 	public get currentDatabaseName(): string {
 		return this._currentDatabaseName;
 	}
-
 }
