@@ -301,7 +301,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string): void;
+	changeContext(host: string, connection?: IConnectionProfile): void;
 
 	/**
 	 * Find a cell's index given its model
@@ -378,5 +378,5 @@ export namespace notebookConstants {
 	export const python3 = 'python3';
 	export const python3DisplayName = 'Python 3';
 	export const defaultSparkKernel = 'pyspark3kernel';
-
+	export const hdfsHost = 'host';
 }

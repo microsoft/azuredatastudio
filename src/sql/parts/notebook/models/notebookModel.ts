@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb, connection } from 'sqlops';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -288,6 +288,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 	}
 
+	private isValidKnoxConnection(profile: IConnectionProfile | connection.Connection) {
+		return profile && profile.providerName === notebookConstants.hadoopKnoxProviderName && profile.options[notebookConstants.hdfsHost] !== undefined;
+    }
+
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._defaultLanguageInfo;
 	}
@@ -318,17 +322,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			});
 	}
 
-	public changeContext(host: string): void {
+	public changeContext(host: string, newConnection?: IConnectionProfile): void {
 		try {
-			let newConnection: IConnectionProfile = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
+			if (!newConnection) {
+				newConnection = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
+			}
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			if (newConnection) {
-				SparkMagicContexts.configureContext(newConnection, this.notebookOptions);
-				this._hadoopConnection = new NotebookConnection(newConnection);
-				this._clientSession.updateConnection(this._hadoopConnection);
-			}
+			SparkMagicContexts.configureContext(this.notebookOptions);
+			this._hadoopConnection = new NotebookConnection(newConnection);
+			this._clientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
@@ -411,8 +415,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		this._activeContexts = await SparkMagicContexts.getContextsForKernel(this.notebookOptions.connectionService, kernelChangedArgs, this.connectionProfile);
 		this._contextsChangedEmitter.fire();
-		let defaultHadoopConnection = new NotebookConnection(this.contexts.defaultConnection);
-		this.changeContext(defaultHadoopConnection.host);
+		if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.options !== undefined) {
+			let defaultHadoopConnection = new NotebookConnection(this.contexts.defaultConnection);
+			this.changeContext(defaultHadoopConnection.host);
+		}
 	}
 
 	/**

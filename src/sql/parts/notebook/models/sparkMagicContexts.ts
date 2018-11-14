@@ -76,10 +76,13 @@ export class SparkMagicContexts {
 		let defaultConnection: IConnectionProfile = SparkMagicContexts.DefaultContext.defaultConnection;
 		let activeConnections: IConnectionProfile[] = await connectionService.getActiveConnections();
 		// If no connections exist, only show 'n/a'
-		if (activeConnections.length === 0) {
-			return SparkMagicContexts.DefaultContext;
-		}
-		activeConnections = activeConnections.filter(conn => conn.providerName === notebookConstants.hadoopKnoxProviderName);
+        if (activeConnections && activeConnections.length > 0) {
+            // Remove all non-Spark connections
+            activeConnections = activeConnections.filter(conn => conn.providerName === notebookConstants.hadoopKnoxProviderName);
+        }
+        if (activeConnections.length === 0) {
+            return SparkMagicContexts.DefaultContext;
+        }
 
 		// If launched from the right click or server dashboard, connection profile data exists, so use that as default
 		if (profile && profile.options) {
@@ -109,13 +112,11 @@ export class SparkMagicContexts {
 		};
 	}
 
-	public static async configureContext(connection: IConnectionProfile, options: INotebookModelOptions): Promise<object> {
+	public static async configureContext(options: INotebookModelOptions): Promise<object> {
 		let sparkmagicConfDir = path.join(notebookUtils.getUserHome(), '.sparkmagic');
 		// TODO NOTEBOOK REFACTOR re-enable this or move to extension. Requires config files to be available in order to work
 		// await notebookUtils.mkDir(sparkmagicConfDir);
 
-		// let hadoopConnection = new Connection({ options: connection.options }, undefined, connection.connectionId);
-		// await hadoopConnection.getCredential();
 		// // Default to localhost in config file.
 		// let creds: ICredentials = {
 		//     'url': 'http://localhost:8088'
