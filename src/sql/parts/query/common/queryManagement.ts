@@ -215,6 +215,7 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 	public disposeQuery(ownerUri: string): Thenable<void> {
+		this._queryRunners.delete(ownerUri);
 		return this._runAction(ownerUri, (runner) => {
 			return runner.disposeQuery(ownerUri);
 		});

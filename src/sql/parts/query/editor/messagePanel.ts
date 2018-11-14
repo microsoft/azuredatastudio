@@ -7,6 +7,7 @@
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { IResultMessage, ISelectionData } from 'sqlops';
 
@@ -28,8 +29,6 @@ import { $ } from 'vs/base/browser/builder';
 import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditor } from 'vs/editor/common/editorCommon';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface IResultMessageIntern extends IResultMessage {
@@ -71,6 +70,10 @@ export class MessagePanelState {
 			this.collapsed = !messagesOpenedSettings;
 		}
 	}
+
+	dispose() {
+
+	}
 }
 
 export class MessagePanel extends ViewletPanel {
@@ -102,6 +105,7 @@ export class MessagePanel extends ViewletPanel {
 			renderer: this.renderer,
 			controller: this.controller
 		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
+		this.disposables.push(this.tree);
 		this.tree.onDidScroll(e => {
 			if (this.state) {
 				this.state.scrollPosition = this.tree.getScrollPosition();
@@ -117,7 +121,7 @@ export class MessagePanel extends ViewletPanel {
 	protected renderBody(container: HTMLElement): void {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		attachListStyler(this.tree, this.themeService);
+		this.disposables.push(attachListStyler(this.tree, this.themeService));
 		container.appendChild(this.container);
 		this.tree.setInput(this.model);
 	}
@@ -193,8 +197,18 @@ export class MessagePanel extends ViewletPanel {
 		}
 		this.setExpanded(!this.state.collapsed);
 	}
+
 	public get state(): MessagePanelState {
 		return this._state;
+	}
+
+	public clear() {
+		this.reset();
+	}
+
+	public dispose() {
+		dispose(this.queryRunnerDisposables);
+		super.dispose();
 	}
 }
 

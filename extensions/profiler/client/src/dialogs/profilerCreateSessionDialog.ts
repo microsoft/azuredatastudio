@@ -12,9 +12,7 @@ import { CreateSessionData } from '../data/createSessionData';
 const localize = nls.loadMessageBundle();
 
 export class CreateSessionDialog {
-
 	// Top level
-	private readonly DialogTitle: string = localize('createSessionDialog.newSession', 'New Session');
 	private readonly CancelButtonText: string = localize('createSessionDialog.cancel', 'Cancel');
 	private readonly CreateButtonText: string = localize('createSessionDialog.create', 'Create');
 	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Create New Profiler Session');
@@ -25,23 +23,28 @@ export class CreateSessionDialog {
 	private sessionNameBox: sqlops.InputBoxComponent;
 
 	private model: CreateSessionData;
+	private readonly _providerType: string;
 
 	private _onSuccess: vscode.EventEmitter<CreateSessionData> = new vscode.EventEmitter<CreateSessionData>();
 	public readonly onSuccess: vscode.Event<CreateSessionData> = this._onSuccess.event;
 
 
-	constructor(ownerUri: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
+	constructor(ownerUri: string, providerType: string, templates: Array<sqlops.ProfilerSessionTemplate>) {
 		if (typeof (templates) === 'undefined' || templates === null) {
 			throw new Error(localize('createSessionDialog.templatesInvalid', "Invalid templates list, cannot open dialog"));
 		}
 		if (typeof (ownerUri) === 'undefined' || ownerUri === null) {
 			throw new Error(localize('createSessionDialog.dialogOwnerInvalid', "Invalid dialog owner, cannot open dialog"));
 		}
+		if (typeof (providerType) === 'undefined' || providerType === null) {
+			throw new Error(localize('createSessionDialog.invalidProviderType', "Invalid provider type, cannot open dialog"));
+		}
+		this._providerType = providerType;
 		this.model = new CreateSessionData(ownerUri, templates);
 	}
 
 	public async showDialog(): Promise<void> {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitleText);
 		this.initializeContent();
 		this.dialog.okButton.onClick(() => this.execute());
 		this.dialog.cancelButton.onClick(() => { });
@@ -76,7 +79,7 @@ export class CreateSessionDialog {
 
 						title: localize('createSessionDialog.enterSessionName', "Enter session name:")
 					}],
-					title: this.DialogTitleText
+					title: ''
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
@@ -97,8 +100,7 @@ export class CreateSessionDialog {
 	}
 
 	private async execute(): Promise<void> {
-		let currentConnection = await sqlops.connection.getCurrentConnection();
-		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(currentConnection.providerName, sqlops.DataProviderType.ProfilerProvider);
+		let profilerService = sqlops.dataprotocol.getProvider<sqlops.ProfilerProvider>(this._providerType, sqlops.DataProviderType.ProfilerProvider);
 
 		let name = this.sessionNameBox.value;
 		let selected = this.templatesBox.value.toString();

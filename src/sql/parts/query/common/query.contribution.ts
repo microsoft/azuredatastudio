@@ -339,7 +339,7 @@ let registryProperties = {
 	'sql.showConnectionInfoInTitle': {
 		'type': 'boolean',
 		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
-		'default': false
+		'default': true
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
