@@ -1,0 +1,43 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+.notebookEditor .editor-toolbar {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.notebookEditor .notebook-cell {
+	margin: 10px 20px 10px;
+	border-width: 1px;
+	border-style: solid;
+}
+
+.notebookEditor .notebook-toolbar-dropdown {
+	width: 150px;
+	padding-right: 10px;
+}
+
+.notebookEditor .notebook-info-label {
+	padding-right: 5px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+}
+
+.notebookEditor .actionbar-container .monaco-action-bar > ul.actions-container {
+	padding-top: 0px;
+}
+
+.notebookEditor .notebook-info-button {
+	display: inline-block;
+	width: 100%;
+	padding: 4px;
+	text-align: center;
+	cursor: pointer;
+	padding-left: 15px;
+	background-size: 11px;
+	margin-right: 0.3em;
+	font-size: 13px;
+	background-image: url("./media/light/add.svg")
+}

@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -546,6 +546,7 @@ export const SqlMainContext = {
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
+	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook')
 };
 
 export const SqlExtHostContext = {
@@ -564,7 +565,8 @@ export const SqlExtHostContext = {
 	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
-	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
+	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
+	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -705,3 +707,26 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
 }
+
+export interface ExtHostNotebookShape {
+
+	/**
+	 * Looks up a notebook manager for a given notebook URI
+	 * @param {number} providerHandle
+	 * @param {vscode.Uri} notebookUri
+	 * @returns {Thenable<string>} handle of the manager to be used when sending
+	 */
+	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
+	$handleNotebookClosed(notebookUri: UriComponents): void;
+	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStopServer(managerHandle: number): Thenable<void>;
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook>;
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook>;
+
+}
+
+export interface MainThreadNotebookShape extends IDisposable {
+	$registerNotebookProvider(providerId: string, handle: number): void;
+	$unregisterNotebookProvider(handle: number): void;
+}
+
