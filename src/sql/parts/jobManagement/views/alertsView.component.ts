@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -41,7 +41,7 @@ export const ROW_HEIGHT: number = 45;
 	templateUrl: decodeURI(require.toUrl('./alertsView.component.html')),
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => AlertsViewComponent) }],
 })
-export class AlertsViewComponent extends JobManagementView implements OnInit {
+export class AlertsViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -69,6 +69,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 	private _isCloud: boolean;
 	private _alertsCacheObject: AlertsCacheObject;
 
+	private _didTabChange: boolean;
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
 	public alerts: sqlops.AgentAlertInfo[];
@@ -86,6 +87,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		this._didTabChange = false;
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 		let alertsCacheObjectMap = this._jobManagementService.alertsCacheObjectMap;
 		let alertsCache = alertsCacheObjectMap[this._serverName];
@@ -102,7 +104,11 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
-	 }
+	}
+
+	ngOnDestroy() {
+		this._didTabChange = true;
+	}
 
 	public layout() {
 		let height = dom.getContentHeight(this._gridEl.nativeElement) - 10;
@@ -166,8 +172,10 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 					// TODO: handle error
 				}
 				this._showProgressWheel = false;
-				if (this.isVisible) {
+				if (this.isVisible && !this._didTabChange) {
 					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
 				}
 			});
 		}

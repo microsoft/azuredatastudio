@@ -25,6 +25,10 @@
 	align-items: center;
 }
 
+.notebookEditor .actionbar-container .monaco-action-bar > ul.actions-container {
+	padding-top: 0px;
+}
+
 .notebookEditor .notebook-button {
 	display: inline-block;
 	width: 100%;

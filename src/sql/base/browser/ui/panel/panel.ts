@@ -36,7 +36,6 @@ export interface IPanelTab {
 interface IInternalPanelTab extends IPanelTab {
 	header: HTMLElement;
 	label: HTMLElement;
-	dispose(): void;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -143,8 +142,6 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this.tabList.appendChild(tabHeaderElement);
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
-		tab.dispose = () => { };
-		this._register(tab);
 	}
 
 	public showTab(id: PanelTabIdentifier): void {
