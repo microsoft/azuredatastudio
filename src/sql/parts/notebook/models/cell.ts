@@ -220,6 +220,8 @@ export class CellModel implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
+			// deletes transient node in the serialized JSON
+			delete output['transient'];
 			this._outputs.push(output);
 			this.fireOutputsChanged();
 		}
@@ -241,7 +243,6 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language,
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = 1; // TODO: keep track of actual execution count
-
 		}
 		return cellJson as nb.ICell;
 	}
