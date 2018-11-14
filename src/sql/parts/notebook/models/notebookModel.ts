@@ -79,6 +79,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
 	private _hadoopConnection: NotebookConnection;
 	private _defaultKernel: nb.IKernelSpec;
+	private _activeCell: ICellModel;
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -207,17 +208,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public addCell(cellType: CellType): void {
-		if (this.inErrorState || !this._cells) {
-			return;
-		}
-		let cell = this.createCell(cellType);
-		this._cells.push(cell);
-		this._contentChangedEmitter.fire({
-			changeType: NotebookChangeType.CellsAdded,
-			cells: [cell]
-		});
-	}
+	public addCell(cellType: CellType, index?: number): void {
+        if (this.inErrorState || !this._cells) {
+            return;
+        }
+        let cell = this.createCell(cellType);
+
+        if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
+            this._cells.splice(index, 0, cell);
+        } else {
+            this._cells.push(cell);
+            index = undefined;
+        }
+
+        this._contentChangedEmitter.fire({
+            changeType: NotebookChangeType.CellsAdded,
+            cells: [cell],
+            cellIndex: index
+        });
+    }
 
 	private createCell(cellType: CellType): ICellModel {
 		let singleCell: nb.ICell = {
@@ -229,7 +238,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
-	deleteCell(cellModel: CellModel): void {
+	deleteCell(cellModel: ICellModel): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
@@ -244,6 +253,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} else {
 			this.notifyError(localize('deleteCellFailed', 'Failed to delete cell.'));
 		}
+	}
+
+	public get activeCell(): ICellModel {
+		return this._activeCell;
+	}
+
+	public set activeCell(value: ICellModel) {
+		this._activeCell = value;
 	}
 
 	private notifyError(error: string): void {

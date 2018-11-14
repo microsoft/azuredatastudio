@@ -6,6 +6,9 @@
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
+import { CellType } from 'sql/parts/notebook/models/contracts';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 
 export class RunCellAction extends Action {
 	public static ID = 'jobaction.notebookRunCell';
@@ -23,6 +26,52 @@ export class RunCellAction extends Action {
 				resolve(true);
 			} catch (e) {
 				reject(e);
+			}
+		});
+	}
+}
+
+export class AddCellAction extends Action {
+	constructor(
+		id: string, label: string, private cellType: CellType, private isAfter: boolean
+	) {
+		super(id, label);
+	}
+	public run(model: NotebookModel): TPromise<boolean> {
+		return new TPromise<boolean>((resolve, reject) => {
+			try {
+				if (!model) {
+					return;
+				}
+				let index = model.cells.findIndex((cell) => cell.id === model.activeCell.id);
+				if (index !== undefined && this.isAfter) {
+					index += 1;
+				}
+				model.addCell(this.cellType, index);
+			} catch (error) {
+				let message = getErrorMessage(error);
+				//ApiWrapper.showErrorMessage(message);
+			}
+		});
+	}
+}
+
+export class DeleteCellAction extends Action {
+	constructor(
+		id: string, label: string, private cellType: CellType, private isAfter: boolean
+	) {
+		super(id, label);
+	}
+	public run(model: NotebookModel): TPromise<boolean> {
+		return new TPromise<boolean>((resolve, reject) => {
+			try {
+				if (!model) {
+					return;
+				}
+				model.deleteCell(model.activeCell);
+			} catch (error) {
+				let message = getErrorMessage(error);
+				//ApiWrapper.showErrorMessage(message);
 			}
 		});
 	}
