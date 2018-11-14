@@ -33,6 +33,7 @@ import { RunCellAction, DeleteCellAction, AddCellAction } from 'sql/parts/notebo
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const CODE_SELECTOR: string = 'code-component';
 
@@ -45,16 +46,12 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	@ViewChild('moreactions', { read: ElementRef }) private moreactionsElement: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
+
+	@Output() public onContentChanged = new EventEmitter<void>();
+
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
 	}
-	get model(): NotebookModel {
-		return this._model;
-	}
-
-	private _model: NotebookModel;
-
-	@Output() public onContentChanged = new EventEmitter<void>();
 
 	protected _actionBar: Taskbar;
 	protected _moreActions: ActionBar;
@@ -63,6 +60,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _uri: string;
+	private _model: NotebookModel;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -72,7 +70,8 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(INotificationService) private notificationService: INotificationService,
 	) {
 		super();
 	}
@@ -95,6 +94,10 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		}));
 	}
 
+	get model(): NotebookModel {
+		return this._model;
+	}
+	
 	private createEditor(): void {
 		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
@@ -142,11 +145,11 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._moreActions.context = { target: moreActionsElement };
 
 		let actions: Action[] = [];
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true));
-		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), CellTypes.Code, false));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false, this.notificationService));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true, this.notificationService));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false, this.notificationService));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true, this.notificationService));
+		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), CellTypes.Code, false, this.notificationService));
 
 		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, this.model, this.contextMenuService), { icon: true, label: false });
 	}
@@ -180,4 +183,5 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		let moreactionsEl = <HTMLElement>this.moreactionsElement.nativeElement;
 		moreactionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
+
 }
