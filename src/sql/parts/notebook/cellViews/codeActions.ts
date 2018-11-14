@@ -31,7 +31,7 @@ export class RunCellAction extends Action {
 	}
 }
 
-export class MoreActions extends Action {
+export class AddCellAction extends Action {
 	constructor(
 		id: string, label: string, private cellType: CellType, private isAfter: boolean
 	) {
@@ -48,6 +48,27 @@ export class MoreActions extends Action {
 					index += 1;
 				}
 				model.addCell(this.cellType, index);
+			} catch (error) {
+				let message = getErrorMessage(error);
+				//ApiWrapper.showErrorMessage(message);
+			}
+		});
+	}
+}
+
+export class DeleteCellAction extends Action {
+	constructor(
+		id: string, label: string, private cellType: CellType, private isAfter: boolean
+	) {
+		super(id, label);
+	}
+	public run(model: NotebookModel): TPromise<boolean> {
+		return new TPromise<boolean>((resolve, reject) => {
+			try {
+				if (!model) {
+					return;
+				}
+				model.deleteCell(model.activeCell);
 			} catch (error) {
 				let message = getErrorMessage(error);
 				//ApiWrapper.showErrorMessage(message);

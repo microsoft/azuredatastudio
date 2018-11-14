@@ -29,7 +29,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunCellAction, MoreActions } from 'sql/parts/notebook/cellViews/codeActions';
+import { RunCellAction, DeleteCellAction, AddCellAction } from 'sql/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
@@ -142,10 +142,12 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._moreActions.context = { target: moreActionsElement };
 
 		let actions: Action[] = [];
-		actions.push(this._instantiationService.createInstance(MoreActions, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
-		actions.push(this._instantiationService.createInstance(MoreActions, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
-		actions.push(this._instantiationService.createInstance(MoreActions, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
-		actions.push(this._instantiationService.createInstance(MoreActions, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, false));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, false));
+		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'delete'), CellTypes.Code, false));
+
 		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, this.model, this.contextMenuService), { icon: true, label: false });
 	}
 

@@ -238,7 +238,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
-	deleteCell(cellModel: CellModel): void {
+	deleteCell(cellModel: ICellModel): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
