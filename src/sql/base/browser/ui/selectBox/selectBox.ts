@@ -250,7 +250,7 @@ export class SelectBox extends vsSelectBox {
 			outerContainer.appendChild(selectContainer);
 
 			super.render(selectContainer);
-			selectContainer.getElementsByTagName('select')[0].classList.add('action-item-label');
+			this.selectElement.classList.add('action-item-label');
 		}
 		else {
 			super.render(container);
