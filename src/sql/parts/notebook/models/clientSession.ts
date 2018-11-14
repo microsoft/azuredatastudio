@@ -276,7 +276,7 @@ export class ClientSession implements IClientSession {
 
 	public async updateConnection(connection: NotebookConnection): Promise<void> {
 		if (!this.kernel) {
-			// TODO is there any case where skipping causes errors? Do far it seems like it gets called twice
+			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
 		this._connection = (connection.connectionProfile.id !== '-1') ? connection : this._connection;
