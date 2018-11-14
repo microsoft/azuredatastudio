@@ -287,8 +287,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.doChangeKernel(spec);
 	}
 
-	private doChangeKernel(kernelSpec: nb.IKernelSpec): void {
-		this._clientSession.changeKernel(kernelSpec)
+	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
+        return this._clientSession.changeKernel(kernelSpec)
 		.then((kernel) => {
 				kernel.ready.then(() => {
 					if (kernel.info) {
@@ -300,7 +300,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.notifyError(localize('changeKernelFailed', 'Failed to change kernel: {0}', notebookUtils.getErrorMessage(err)));
 				// TODO should revert kernels dropdown
 			});
-
 	}
 
 	public changeContext(host: string): void {
