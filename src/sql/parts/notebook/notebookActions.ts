@@ -14,7 +14,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 import { NotificationService } from 'vs/workbench/services/notification/common/notificationService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
@@ -41,31 +41,41 @@ export class AddCellAction extends Action {
 }
 
 export class TrustedAction extends Action {
+	//Constants
 	private static readonly trustLabel = localize('trustLabel', 'Trusted');
 	private static readonly notTrustLabel = localize('untrustLabel', 'Not Trusted');
 	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', 'Notebook is already trusted.');
+	private static readonly trustedCssClass = 'notebook-button icon-trusted';
+	private static readonly notTrustedCssClass = 'notebook-button icon-notTrusted';
+	//Properties
+	private _isTrusted: boolean = false;
+	public get trusted(): boolean {
+		return this._isTrusted;
+	}
+	public set trusted(value: boolean) {
+		this._isTrusted = value;
+		this._setClass(value ? TrustedAction.trustedCssClass : TrustedAction.notTrustedCssClass);
+		this._setLabel(value ? TrustedAction.trustLabel : TrustedAction.notTrustLabel);
+	}
 
 	constructor(
-		id: string, isTrusted: boolean
+		id: string,
+		@INotificationService private _notificationService: INotificationService
 	) {
-		if (isTrusted) {
-			super(id, TrustedAction.trustLabel, 'notebook-button icon-trusted');
-		}
-		else {
-			super(id, TrustedAction.notTrustLabel, 'notebook-button icon-notTrusted');
-		}
+		super(id, TrustedAction.notTrustLabel, TrustedAction.notTrustedCssClass);
 	}
+
 	public run(context: NotebookComponent): TPromise<boolean> {
+		let self = this;
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
-				if (context._model.trustedMode) {
-					 let notificationService = new NotificationService();
-					 notificationService.notify({severity: Severity.Info, message: TrustedAction.alreadyTrustedMsg});
+				if (self._isTrusted) {
+					const actions: INotificationActions = { primary: [] };
+					self._notificationService.notify({ severity: Severity.Info, message: TrustedAction.alreadyTrustedMsg, actions });
 				}
 				else {
-					context.updateModelTrustDetails(!context._model.trustedMode);
-					this._setLabel(TrustedAction.trustLabel);
-					this._setClass('notebook-button icon-trusted');
+					self.trusted = !self._isTrusted;
+					context.updateModelTrustDetails(self.trusted);
 				}
 				resolve(true);
 			} catch (e) {
@@ -74,7 +84,6 @@ export class TrustedAction extends Action {
 		});
 	}
 }
-
 
 export class KernelsDropdown extends SelectBox {
 	private model: INotebookModel;

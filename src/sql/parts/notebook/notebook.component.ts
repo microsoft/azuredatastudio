@@ -43,7 +43,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 })
 export class NotebookComponent extends AngularDisposable implements OnInit {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
-	public _model: NotebookModel;
+	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
 	protected _actionBar: Taskbar;
@@ -53,6 +53,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
+	private _trustedAction: TrustedAction;
 
 
 	constructor(
@@ -170,15 +171,21 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		await model.requestModelLoad(this.notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		this._model = model;
-		if(this._actionBar)
-		{
-			let addTrustedButton = new TrustedAction('notebook.Trusted', this._model.trustedMode);
-			this._actionBar.addContent({ action: addTrustedButton});
-		}
+		this.updateToolbarComponents(this._model.trustedMode);
 		this._register(model);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
 		this._changeRef.detectChanges();
+	}
+
+	//Updates toolbar components
+	private updateToolbarComponents(isTrusted: boolean)
+	{
+		if(this._trustedAction)
+		{
+			this._trustedAction.enabled = true;
+			this._trustedAction.trusted = isTrusted;
+		}
 	}
 
 	private get modelFactory(): IModelFactory {
@@ -235,6 +242,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell',localize('text', 'Text'), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
+		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
+		//this._trustedAction = new TrustedAction('notebook.Trusted');
+		this._trustedAction.enabled = false;
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
@@ -244,7 +255,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			{ element: attachToInfoText },
 			{ element: attachToDropdownTemplateContainer },
 			{ action: addCodeCellButton},
-			{ action: addTextCellButton}
+			{ action: addTextCellButton},
+			{ action: this._trustedAction}
 		]);
 	}
 
