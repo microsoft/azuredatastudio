@@ -15,6 +15,7 @@ import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { localize } from 'vs/nls';
 
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryResultsEditor } from 'sql/parts/query/editor/queryResultsEditor';
@@ -25,14 +26,13 @@ import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, CancelQueryKeyboardAction
 } from 'sql/parts/query/execution/keyboardQueryActions';
 import * as gridActions from 'sql/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/parts/grid/views/gridCommands';
 import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
-import { localize } from 'vs/nls';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
@@ -124,7 +124,6 @@ actionRegistry.registerWorkbenchAction(
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
 
-/*
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		CancelQueryKeyboardAction,
@@ -134,7 +133,6 @@ actionRegistry.registerWorkbenchAction(
 	),
 	CancelQueryKeyboardAction.LABEL
 );
-*/
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(

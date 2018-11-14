@@ -5,7 +5,7 @@
 
 import {
 	ToggleConnectDatabaseAction, ListDatabasesAction, RunQueryAction,
-	ListDatabasesActionItem, IQueryActionContext, ChangeConnectionAction, EstimatedQueryPlanAction
+	ListDatabasesActionItem, IQueryActionContext, ChangeConnectionAction, EstimatedQueryPlanAction, CancelQueryAction
 } from 'sql/parts/query/execution/queryActions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { QueryInput, QueryEditorState } from 'sql/parts/query/common/queryInput';
@@ -18,6 +18,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 export class QueryEditorActionBar extends Taskbar {
 
 	private runQuery: RunQueryAction;
+	private cancelQuery: CancelQueryAction;
 	private toggleConnect: ToggleConnectDatabaseAction;
 	private changeConnection: ChangeConnectionAction;
 	private listDatabaseActionItem: ListDatabasesActionItem;
@@ -41,7 +42,8 @@ export class QueryEditorActionBar extends Taskbar {
 				return undefined;
 			}
 		});
-		this.runQuery = instantiationService.createInstance(RunQueryAction);
+		this.runQuery = instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.Label);
+		this.cancelQuery = instantiationService.createInstance(CancelQueryAction, CancelQueryAction.ID, CancelQueryAction.Label);
 		this.toggleConnect = instantiationService.createInstance(ToggleConnectDatabaseAction);
 		this.changeConnection = instantiationService.createInstance(ChangeConnectionAction);
 		this.listDatabaseActionItem = instantiationService.createInstance(ListDatabasesActionItem);
@@ -49,6 +51,7 @@ export class QueryEditorActionBar extends Taskbar {
 
 		this.setContent([
 			{ action: this.runQuery },
+			{ action: this.cancelQuery },
 			{ action: this.toggleConnect },
 			{ action: this.changeConnection },
 			{ action: instantiationService.createInstance(ListDatabasesAction) },
@@ -68,10 +71,10 @@ export class QueryEditorActionBar extends Taskbar {
 	}
 
 	private parseState(state: QueryEditorState) {
+		this.runQuery.enabled = state.connected && !state.executing;
+		this.cancelQuery.enabled = state.connected && state.executing;
 		this.changeConnection.enabled = state.connected && !state.executing;
 		this.toggleConnect.connected = state.connected;
-		this.runQuery.enabled = state.connected;
-		this.runQuery.executing = state.executing;
 		this.listDatabaseActionItem.enabled = state.connected && !state.executing;
 		this.estimatedQueryPlan.enabled = state.connected && !state.executing;
 	}

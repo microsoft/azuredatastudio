@@ -87,58 +87,45 @@ export abstract class QueryTaskbarAction extends Action {
 export class RunQueryAction extends Action {
 	public static ID = 'runQueryAction';
 
-	public static ExecuteClass = 'start';
-	public static ExecuteLabel = nls.localize('runQueryLabel', 'Run');
+	public static Class = 'start';
+	public static Label = nls.localize('runQueryLabel', 'Run');
 
-	public static CancelLabel = nls.localize('cancelQueryLabel', 'Cancel');
-	public static CancelClass = 'stop';
-
-	private _executing = false;
-
-	constructor() {
-		super(RunQueryAction.ID);
-		this.executing = false;
-	}
-
-	public get executing(): boolean {
-		return this._executing;
-	}
-
-	public set executing(value: boolean) {
-		// intentionally always updating, since parent class handles skipping if values
-		this._executing = value;
-		this.updateLabelAndIcon();
-	}
-
-	private updateLabelAndIcon(): void {
-		if (this.executing) {
-			// We are connected, so show option to disconnect
-			this.label = RunQueryAction.CancelLabel;
-			this.class = RunQueryAction.CancelClass;
-		} else {
-			this.label = RunQueryAction.ExecuteLabel;
-			this.class = RunQueryAction.ExecuteClass;
-		}
+	constructor(id: string, label: string) {
+		super(id, label, RunQueryAction.Class);
 	}
 
 	public run(context: IQueryActionContext): TPromise<void> {
-		if (this.executing) {
-			context.input.cancelQuery();
-			return TPromise.as(null);
+		let range = context.editor.getSelection();
+		if (this.isCursorPosition(range)) {
+			context.input.runQueryStatement(range);
 		} else {
-			let range = context.editor.getSelection();
-			if (this.isCursorPosition(range)) {
-				context.input.runQueryStatement(range);
-			} else {
-				context.input.runQuery(range);
-			}
-			return TPromise.as(null);
+			context.input.runQuery(range);
 		}
+		return TPromise.as(null);
 	}
 
 	private isCursorPosition(selection: IRange) {
 		return selection.startLineNumber === selection.endLineNumber
 			&& selection.startColumn === selection.endColumn;
+	}
+}
+
+/**
+ * Cancel a query if it is actively running
+ */
+export class CancelQueryAction extends Action {
+	public static ID = 'cancelQueryAction';
+
+	public static Label = nls.localize('cancelQueryLabel', 'Cancel');
+	public static Class = 'stop';
+
+	constructor(id: string, label: string) {
+		super(id, label, CancelQueryAction.Class);
+	}
+
+	public run(context: IQueryActionContext): TPromise<void> {
+		context.input.cancelQuery();
+		return TPromise.as(null);
 	}
 }
 

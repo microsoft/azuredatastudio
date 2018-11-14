@@ -23,6 +23,7 @@ import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { RunQueryAction, CancelQueryAction } from 'sql/parts/query/execution/queryActions';
 
 const singleQuote = '\'';
 
@@ -54,7 +55,6 @@ function escapeSqlString(input: string, escapeChar: string) {
 	}
 	return output;
 }
-
 
 /**
  * Locates the active editor and call focus() on the editor if it is a QueryEditor.
@@ -165,7 +165,6 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 /**
  * Locates the active editor and calls cancelQuery() on the editor if it is a QueryEditor.
  */
-/*
 export class CancelQueryKeyboardAction extends CancelQueryAction {
 
 	public static ID = 'cancelQueryKeyboardAction';
@@ -174,12 +173,9 @@ export class CancelQueryKeyboardAction extends CancelQueryAction {
 	constructor(
 		id: string,
 		label: string,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IQueryModelService queryModelService: IQueryModelService,
 		@IEditorService private editorService: IEditorService
 	) {
-		super(id, label, queryModelService, connectionManagementService);
-		this.enabled = true;
+		super(id, label);
 	}
 
 	public run(): TPromise<void> {
@@ -193,7 +189,6 @@ export class CancelQueryKeyboardAction extends CancelQueryAction {
 		return TPromise.as(null);
 	}
 }
-*/
 
 /**
  * Refresh the IntelliSense cache
