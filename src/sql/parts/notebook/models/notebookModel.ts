@@ -207,16 +207,28 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public addCell(cellType: CellType): void {
+	public findCellIndex(cellModel: CellModel): number {
+        return this._cells.findIndex((cell) => cell.equals(cellModel));
+    }
+
+	public addCell(cellType: CellType, index?: number): void {
 		if (this.inErrorState || !this._cells) {
-			return;
-		}
-		let cell = this.createCell(cellType);
-		this._cells.push(cell);
-		this._contentChangedEmitter.fire({
-			changeType: NotebookChangeType.CellsAdded,
-			cells: [cell]
-		});
+            return;
+        }
+        let cell = this.createCell(cellType);
+
+        if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
+            this._cells.splice(index, 0, cell);
+        } else {
+            this._cells.push(cell);
+            index = undefined;
+        }
+
+        this._contentChangedEmitter.fire({
+            changeType: NotebookChangeType.CellsAdded,
+            cells: [cell],
+            cellIndex: index
+        });
 	}
 
 	private createCell(cellType: CellType): ICellModel {

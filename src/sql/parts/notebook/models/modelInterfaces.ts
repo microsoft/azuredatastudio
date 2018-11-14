@@ -288,7 +288,7 @@ export interface INotebookModel {
 	readonly contexts: IDefaultConnection | undefined;
 
 	/**
-	 * The trusted mode of the NoteBook
+	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
 
@@ -304,9 +304,14 @@ export interface INotebookModel {
 	changeContext(host: string): void;
 
 	/**
+	 * Find a cell's index given its model
+	 */
+	findCellIndex(cellModel: ICellModel): number;
+
+	/**
 	 * Adds a cell to the end of the model
 	 */
-	addCell(cellType: CellType): void;
+	addCell(cellType: CellType, index?: number): void;
 
 	/**
 	 * Deletes a cell
