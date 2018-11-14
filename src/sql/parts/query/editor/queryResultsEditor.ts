@@ -90,7 +90,6 @@ export class QueryResultsEditor extends BaseEditor {
 	public static ID: string = 'workbench.editor.queryResultsEditor';
 	public static AngularSelectorString: string = 'slickgrid-container.slickgridContainer';
 	protected _rawOptions: BareResultsGridInfo;
-	protected _input: QueryResultsInput;
 
 	private resultsView: QueryResultsView;
 	private styleSheet = DOM.createStyleSheet();
@@ -104,17 +103,17 @@ export class QueryResultsEditor extends BaseEditor {
 	) {
 		super(QueryResultsEditor.ID, telemetryService, themeService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
-		this._configurationService.onDidChangeConfiguration(e => {
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('resultsGrid')) {
 				this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
 				this.applySettings();
 			}
-		});
+		}));
 		this.applySettings();
 	}
 
 	public get input(): QueryResultsInput {
-		return this._input;
+		return this._input as QueryResultsInput;
 	}
 
 	private applySettings() {
@@ -133,8 +132,14 @@ export class QueryResultsEditor extends BaseEditor {
 		this.styleSheet.remove();
 		parent.appendChild(this.styleSheet);
 		if (!this.resultsView) {
-			this.resultsView = new QueryResultsView(parent, this._instantiationService, this._queryModelService);
+			this.resultsView = this._register(new QueryResultsView(parent, this._instantiationService, this._queryModelService));
 		}
+	}
+
+	dispose() {
+		this.styleSheet.remove();
+		this.styleSheet = undefined;
+		super.dispose();
 	}
 
 	layout(dimension: DOM.Dimension): void {
@@ -147,18 +152,16 @@ export class QueryResultsEditor extends BaseEditor {
 		return TPromise.wrap<void>(null);
 	}
 
+	clearInput() {
+		this.resultsView.clearInput();
+		super.clearInput();
+	}
+
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.resultsView.chartData(dataId);
 	}
 
 	public showQueryPlan(xml: string) {
 		this.resultsView.showPlan(xml);
-	}
-
-	public dispose(): void {
-		super.dispose();
-		if (this.resultsView) {
-			this.resultsView.dispose();
-		}
 	}
 }
