@@ -145,7 +145,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
 		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
 		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, false));
+		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true));
 		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'delete'), CellTypes.Code, false));
 
 		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, this.model, this.contextMenuService), { icon: true, label: false });
