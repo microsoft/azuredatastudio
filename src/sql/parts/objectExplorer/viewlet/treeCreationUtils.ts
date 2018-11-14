@@ -31,8 +31,8 @@ export class TreeCreationUtils {
 
 		return new Tree(treeContainer, { dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider },
 			{
-				indentPixels: 10,
-				twistiePixels: 20,
+				indentPixels: 0,
+				twistiePixels: 0,
 				ariaLabel: nls.localize('treeAriaLabel', "Recent Connections")
 			});
 	}

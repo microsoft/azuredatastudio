@@ -13,3 +13,24 @@ code-component .toolbar {
 	border-right-width: 1px;
 	border-right-style: solid;
 }
+
+code-component .toolbarIconRun {
+	height: 20px;
+	background-image: url('../media/light/execute_cell.svg');
+	padding-bottom: 10px;
+}
+
+.vs-dark code-component .toolbarIconRun,
+.hc-black code-component .toolbarIconRun {
+	background-image: url('../media/dark/execute_cell_inverse.svg');
+}
+
+code-component .carbon-taskbar .icon {
+	background-size: 20px;
+	width: 40px;
+}
+
+code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container
+{
+	padding-left: 10px
+}

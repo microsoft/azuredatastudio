@@ -12,7 +12,7 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -22,6 +22,7 @@ import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/
 import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 import URI from 'vs/base/common/uri';
+import Severity from 'vs/base/common/severity';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -41,7 +42,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
 
 	constructor(
-		private _connection: IConnectionProfile,
+		public connection: IConnectionProfile,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@INotificationService private _notificationService: INotificationService,
@@ -58,7 +59,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-		this._profilerService.registerSession(generateUuid(), _connection, this).then((id) => {
+		this._profilerService.registerSession(generateUuid(), connection, this).then((id) => {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
@@ -72,23 +73,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			return ret;
 		};
 		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn);
+	}
 
-		this.onDispose(() => {
-			if (this._state.isRunning || this.state.isPaused) {
-				let confirm: IConfirmation = {
-					message: nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
-					primaryButton: nls.localize('profilerClosingActions.yes', 'Yes'),
-					secondaryButton: nls.localize('profilerClosingActions.no', 'No'),
-					type: 'question'
-				};
-
-				this._dialogService.confirm(confirm).then(result => {
-					if (result.confirmed) {
-						this._profilerService.stopSession(this.id);
-					}
-				});
-			}
-		});
+	public get providerType(): string {
+		return this.connection ? this.connection.providerName : undefined;
 	}
 
 	public set viewTemplate(template: IProfilerViewTemplate) {
@@ -114,7 +102,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public set sessionName(name: string) {
-		if (!this._state.isRunning || !this.state.isPaused) {
+		if (!this.state.isRunning || !this.state.isPaused) {
 			this._sessionName = name;
 		}
 	}
@@ -133,10 +121,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public getName(): string {
 		let name: string = nls.localize('profilerInput.profiler', 'Profiler');
-		if (!this._connection) {
+		if (!this.connection) {
 			return name;
 		}
-		name += ': ' + this._connection.serverName.substring(0, 20);
+		name += ': ' + this.connection.serverName.substring(0, 20);
 		return name;
 	}
 
@@ -178,11 +166,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public get connectionName(): string {
-		if (!types.isUndefinedOrNull(this._connection)) {
-			if (this._connection.databaseName) {
-				return `${this._connection.serverName} ${this._connection.databaseName}`;
+		if (!types.isUndefinedOrNull(this.connection)) {
+			if (this.connection.databaseName) {
+				return `${this.connection.serverName} ${this.connection.databaseName}`;
 			} else {
-				return `${this._connection.serverName}`;
+				return `${this.connection.serverName}`;
 			}
 		}
 		else {
@@ -199,7 +187,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
-		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this._connection.serverName));
+		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
 
 		this.state.change({
 			isStopped: true,
@@ -240,7 +228,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	public onMoreRows(eventMessage: sqlops.ProfilerSessionEvents) {
 		if (eventMessage.eventsLost) {
-			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this._connection.serverName));
+			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this.connection.serverName));
 		}
 
 		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
@@ -263,5 +251,32 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._data.push(data);
 		}
 
+	}
+
+	confirmSave(): TPromise<ConfirmResult> {
+		if (this.state.isRunning || this.state.isPaused) {
+			return this._dialogService.show(Severity.Warning,
+				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
+				[
+					nls.localize('profilerClosingActions.yes', 'Yes'),
+					nls.localize('profilerClosingActions.no', 'No'),
+					nls.localize('profilerClosingActions.cancel', 'Cancel')
+				]).then((selection: number) => {
+					if (selection === 0) {
+						this._profilerService.stopSession(this.id);
+						return ConfirmResult.DONT_SAVE;
+					} else if (selection === 1) {
+						return ConfirmResult.DONT_SAVE;
+					} else {
+						return ConfirmResult.CANCEL;
+					}
+				});;
+		} else {
+			return TPromise.wrap(ConfirmResult.DONT_SAVE);
+		}
+	}
+
+	isDirty(): boolean {
+		return this.state.isRunning || this.state.isPaused;
 	}
 }

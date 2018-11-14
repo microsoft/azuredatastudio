@@ -33,4 +33,8 @@ export class ChartTab implements IPanelTab {
 	public dispose() {
 		this.view.dispose();
 	}
+
+	public clear() {
+		this.view.clear();
+	}
 }

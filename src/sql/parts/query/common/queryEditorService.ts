@@ -32,9 +32,6 @@ export interface IQueryEditorService {
 	// Creates new edit data session
 	newEditDataEditor(schemaName: string, tableName: string, queryString: string): Promise<IConnectableInput>;
 
-	// Clears any QueryEditor data for the given URI held by this service
-	onQueryInputClosed(uri: string): void;
-
 	/**
 	 * Handles updating of SQL files on a save as event. These need special consideration
 	 * due to query results and other information being tied to the URI of the file

@@ -21,6 +21,7 @@ import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
+import { Schemas } from 'vs/base/common/network';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -183,7 +184,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async requestModelLoad(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
-			let contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
+			let contents = null;
+			if(this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
+				contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
+			}
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = undefined;
@@ -203,7 +207,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	addCell(cellType: CellType): void {
+	public addCell(cellType: CellType): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}

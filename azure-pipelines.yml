@@ -1,0 +1,29 @@
+trigger:
+- master
+- releases/*
+
+jobs:
+
+# All tasks on Windows
+- job: build_all_windows
+  displayName: Build all tasks (Windows)
+  pool:
+    vmImage: vs2017-win2016
+  steps:
+  - template: azure-pipelines-windows.yml
+
+# All tasks on Linux
+- job: build_all_linux
+  displayName: Build all tasks (Linux)
+  pool:
+    vmImage: 'Ubuntu 16.04'
+  steps:
+  - template: azure-pipelines-linux-mac.yml
+
+# All tasks on macOS
+- job: build_all_darwin
+  displayName: Build all tasks (macOS)
+  pool:
+    vmImage: macos-10.13
+  steps:
+  - template: azure-pipelines-linux-mac.yml

@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -42,7 +42,7 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => OperatorsViewComponent) }],
 })
 
-export class OperatorsViewComponent extends JobManagementView implements OnInit {
+export class OperatorsViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -68,6 +68,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	private _isCloud: boolean;
 	private _operatorsCacheObject: OperatorsCacheObject;
 
+	private _didTabChange: boolean;
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
 	public operators: sqlops.AgentOperatorInfo[];
@@ -102,6 +103,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
+	}
+
+	ngOnDestroy() {
+		this._didTabChange = true;
 	}
 
 	public layout() {
@@ -169,8 +174,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 					// TODO: handle error
 				}
 				this._showProgressWheel = false;
-				if (this.isVisible) {
+				if (this.isVisible && !this._didTabChange) {
 					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
 				}
 			});
 		}

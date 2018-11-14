@@ -478,11 +478,11 @@ export class QueryEditor extends BaseEditor {
 
 		this.setTaskbarContent();
 
-		this._configurationService.onDidChangeConfiguration(e => {
+		this._toDispose.push(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
 				this.setTaskbarContent();
 			}
-		});
+		}));
 	}
 
 	private setTaskbarContent(): void {

@@ -10,6 +10,7 @@ import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
+import { INotebookService } from 'sql/services/notebook/notebookService';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -66,11 +67,17 @@ export class NotebookInput extends EditorInput {
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _parentContainer: HTMLElement;
 
-	constructor(private _title: string, private _model: NotebookInputModel,
+	constructor(private _title: string,
+		private _model: NotebookInputModel,
+		@INotebookService private notebookService: INotebookService
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
-
+		this.onDispose(() => {
+			if (this.notebookService) {
+				this.notebookService.handleNotebookClosed(this.notebookUri);
+			}
+		});
 	}
 
 	public get title(): string {

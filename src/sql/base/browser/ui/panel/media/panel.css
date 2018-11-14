@@ -46,9 +46,9 @@ panel {
 }
 
 .tabbedPanel .tabList .tab .tabLabel {
-	text-transform: uppercase;
-	font-size: 13px;
+	font-size: 14px;
 	padding-bottom: 4px;
+	font-weight: 600;
 }
 
 .tabbedPanel.vertical .tabList .tab .tabLabel {

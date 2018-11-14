@@ -19,17 +19,17 @@ const attachToLabel: string = localize('AttachTo', 'Attach to: ');
 const msgLocalHost: string = localize('localhost', 'Localhost');
 
 export class AddCellAction extends Action {
-	public static ID = 'notebook.addCell';
-	public static LABEL = 'Cell';
+	public cellType: CellType;
 
 	constructor(
+		id: string, label: string, cssClass: string
 	) {
-		super(AddCellAction.ID, AddCellAction.LABEL, 'newStepIcon');
+		super(id, label, cssClass);
 	}
-
-	public run(context: any): TPromise<boolean> {
+	public run(context: NotebookComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
+				context.addCell(this.cellType);
 				resolve(true);
 			} catch (e) {
 				reject(e);

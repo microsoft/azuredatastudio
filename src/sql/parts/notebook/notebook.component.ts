@@ -28,6 +28,10 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AttachToDropdown, KernelsDropdown } from 'sql/parts/notebook/notebookActions';
 import * as notebookUtils from './notebookUtils';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { KernelsDropdown, AttachToDropdown, AddCellAction } from 'sql/parts/notebook/notebookActions';
+import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -75,7 +79,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	public get modelRegistered(): Promise<NotebookModel> {
-        return this._modelRegisteredDeferred.promise;
+		return this._modelRegisteredDeferred.promise;
 	}
 
 	protected get cells(): ReadonlyArray<ICellModel> {
@@ -88,7 +92,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	public selectCell(cell: ICellModel) {
-		if (cell !== this._activeCell) {
+		if (cell !
+        
+        this._activeCell) {
 			if (this._activeCell) {
 				this._activeCell.active = false;
 			}
@@ -98,11 +104,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
+	//Add cell based on cell type
+	public addCell(cellType: CellType)
+	{
+		this._model.addCell(cellType);
+	}
+
 	public onKeyDown(event) {
 		switch (event.key) {
 			case 'ArrowDown':
 			case 'ArrowRight':
-				let nextIndex = (this.findCellIndex(this._activeCell) + 1)%this.cells.length;
+				let nextIndex = (this.findCellIndex(this._activeCell) + 1) % this.cells.length;
 				this.selectCell(this.cells[nextIndex]);
 				break;
 			case 'ArrowUp':
@@ -171,7 +183,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	findCellIndex(cellModel: ICellModel): number {
-        return this._model.cells.findIndex((cell) => cell.id === cellModel.id);
+		return this._model.cells.findIndex((cell) => cell.id === cellModel.id);
 	}
 
 	private setViewInErrorState(error: any): any {
@@ -192,12 +204,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		attachTodropdwon.render(attachToContainer);
 		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 
+		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-info-button');
+		addCodeCellButton.cellType = CellTypes.Code;
+
+		let addTextCellButton = new AddCellAction('notebook.AddTextCell',localize('text', 'Text'), 'notebook-info-button');
+		addTextCellButton.cellType = CellTypes.Markdown;
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },
 			{ element: attachToContainer }
+			{ action: addCodeCellButton},
+			{ action: addTextCellButton}
 		]);
 	}
 

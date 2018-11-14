@@ -8,12 +8,12 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2030731
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2030736
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2030738
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2030741
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2030746
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2030750
+Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2038320
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2038323
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2038327
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2038332
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2038401
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2038405
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -61,6 +61,12 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* rdaniels6813  for `Add query plan theme support #3031`
+* Ruturaj123 for `Fixed some typos and grammatical errors #3027`
+* PromoFaux for `Use emoji shortcodes in CONTRIBUTING.md instead of � #3009`
+* ckaczor for `Fix: DATETIMEOFFSET data types should be ISO formatted #714`
+* hi-im-T0dd for `Fixed sync issue with my forked master so this commit is correct #2948`
+* hi-im-T0dd for `Fixed when right clicking and selecting Manage-correct name displays #2794`
 * philoushka  for `center the icon #2760`
 * anthonypants for `Typo #2775`
 * kstolte for `Fix Invalid Configuration in Launch.json #2789`
@@ -102,7 +108,6 @@ We would like to thank all our users who raised issues, and in particular the fo
   * Korean: Do-Kyun Kim, Evelyn Kim, Helen Jung, Hong Jmee, jeongwoo choi, Jun Hyoung Lee, Jungsun Kim정선, Justin Yoo, Kavrith mucha, Kiwoong Youm, MinGyu Ju,  MVP_JUNO BEA, Sejun Kim, SOONMAN KWON, sung man ko, Yeongrak Choi, younggun kim, Youngjae Kim, 소영 이
   * Russian: Andrey Veselov, Anton Fontanov, Anton Savin, Elena Ostrovskaia, Igor Babichev, Maxim Zelensky, Rodion Fedechkin, Tasha T, Vladimir Zyryanov
   * Portuguese Brazil: Daniel de Sousa, Diogo Duarte, Douglas Correa, Douglas Eccker, José Emanuel Mendes, Marcelo Fernandes, Marcondes Alexandre, Roberto Fonseca, Rodrigo Crespi
-
 
 And of course, we'd like to thank the authors of all upstream dependencies.  Please see a full list in the [ThirdPartyNotices.txt](https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/ThirdPartyNotices.txt)
 
