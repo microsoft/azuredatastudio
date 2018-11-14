@@ -59,6 +59,8 @@ export function activate(context: vscode.ExtensionContext) {
 	commandManager.register(new commands.OnPreviewStyleLoadErrorCommand());
 	commandManager.register(new commands.OpenDocumentLinkCommand(engine));
 	commandManager.register(new commands.ToggleLockCommand(previewManager));
+	// {{SQL CARBON EDIT}}
+	commandManager.register(new commands.ShowNotebookPreview(engine));
 
 	context.subscriptions.push(vscode.workspace.onDidChangeConfiguration(() => {
 		logger.updateConfiguration();

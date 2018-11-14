@@ -8,7 +8,8 @@ import * as vscode from 'vscode';
 export interface Command {
 	readonly id: string;
 
-	execute(...args: any[]): void;
+	// {{SQL CARBON EDIT}}
+	execute(...args: any[]): any;
 }
 
 export class CommandManager {
@@ -26,7 +27,8 @@ export class CommandManager {
 		return command;
 	}
 
-	private registerCommand(id: string, impl: (...args: any[]) => void, thisArg?: any) {
+	// {{SQL CARBON EDIT}}
+	private registerCommand(id: string, impl: (...args: any[]) => any, thisArg?: any) {
 		if (this.commands.has(id)) {
 			return;
 		}

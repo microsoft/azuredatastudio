@@ -23,7 +23,8 @@
 		"onCommand:markdown.showLockedPreviewToSide",
 		"onCommand:markdown.showSource",
 		"onCommand:markdown.showPreviewSecuritySelector",
-		"onWebviewPanel:markdown.preview"
+		"onWebviewPanel:markdown.preview",
+		"onCommand:notebook.showPreview"
 	],
 	"contributes": {
 		"commands": [
@@ -77,6 +78,11 @@
 				"command": "markdown.preview.toggleLock",
 				"title": "%markdown.preview.toggleLock.title%",
 				"category": "Markdown"
+			},
+			{
+				"command": "notebook.showPreview",
+				"title": "notebook.showPreview",
+				"category": "Notebook"
 			}
 		],
 		"menus": {
@@ -154,6 +160,10 @@
 				{
 					"command": "markdown.preview.toggleLock",
 					"when": "markdownPreviewFocus"
+				},
+				{
+					"command": "notebook.showPreview",
+					"when": "false"
 				}
 			]
 		},
