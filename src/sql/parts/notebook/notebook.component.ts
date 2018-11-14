@@ -79,6 +79,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this.doLoad();
 	}
 
+	public get model(): NotebookModel {
+		return this._model;
+	}
+	
 	public get modelRegistered(): Promise<NotebookModel> {
 		return this._modelRegisteredDeferred.promise;
 	}
@@ -99,6 +103,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			}
 			this._activeCell = cell;
 			this._activeCell.active = true;
+			this._model.activeCell = this._activeCell;
 			this._changeRef.detectChanges();
 		}
 	}
