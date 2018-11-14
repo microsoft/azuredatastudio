@@ -69,7 +69,7 @@ configurationRegistry.registerConfiguration({
 		'notebook.enabled': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebook.enabledDescription', 'Enable.')
+			'description': localize('notebook.enabledDescription', 'Enable viewing notebook files using built-in notebook editor.')
 		}
 	}
 });
