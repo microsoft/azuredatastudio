@@ -166,6 +166,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public get hadoopConnection(): NotebookConnection {
+        return this._hadoopConnection;
+    }
+
 	/**
 	 * Indicates the server has finished loading. It may have failed to load in
 	 * which case the view will be in an error state.

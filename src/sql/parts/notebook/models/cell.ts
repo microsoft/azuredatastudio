@@ -156,7 +156,7 @@ export class CellModel implements ICellModel {
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 	}
 
-	private clearOutputs(): void {
+	public clearOutputs(): void {
 		this._outputs = [];
 		this.fireOutputsChanged();
 	}
@@ -172,7 +172,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	public get outputs(): ReadonlyArray<nb.ICellOutput> {
+	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
 	}
 
