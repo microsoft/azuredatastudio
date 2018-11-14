@@ -10,9 +10,14 @@ import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
+import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+
 import { INotebookService } from 'sql/services/notebook/notebookService';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
+
+export let notebooksEnabledCondition = ContextKeyExpr.equals('config.notebook.enabled', true);
+
 
 export class NotebookInputModel extends EditorModel {
 	private dirty: boolean;
@@ -59,6 +64,16 @@ export class NotebookInputModel extends EditorModel {
 		return TPromise.wrap(true);
 	}
 }
+
+export class NotebookInputValidator {
+
+	constructor(@IContextKeyService private readonly _contextKeyService: IContextKeyService) {}
+
+	public isNotebookEnabled(): boolean {
+		return this._contextKeyService.contextMatchesRules(notebooksEnabledCondition);
+	}
+}
+
 export class NotebookInput extends EditorInput {
 
 	public static ID: string = 'workbench.editorinputs.notebookInput';
