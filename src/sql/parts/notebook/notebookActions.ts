@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- import * as sqlops from 'sqlops';
+import * as sqlops from 'sqlops';
 
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -14,6 +14,8 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { NotificationService } from 'vs/workbench/services/notification/common/notificationService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 
@@ -37,6 +39,42 @@ export class AddCellAction extends Action {
 		});
 	}
 }
+
+export class TrustedAction extends Action {
+	private static readonly trustLabel = localize('trustLabel', 'Trusted');
+	private static readonly notTrustLabel = localize('untrustLabel', 'Not Trusted');
+	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', 'Notebook is already trusted.');
+
+	constructor(
+		id: string, isTrusted: boolean
+	) {
+		if (isTrusted) {
+			super(id, TrustedAction.trustLabel, 'notebook-button icon-trusted');
+		}
+		else {
+			super(id, TrustedAction.notTrustLabel, 'notebook-button icon-notTrusted');
+		}
+	}
+	public run(context: NotebookComponent): TPromise<boolean> {
+		return new TPromise<boolean>((resolve, reject) => {
+			try {
+				if (context._model.trustedMode) {
+					 let notificationService = new NotificationService();
+					 notificationService.notify({severity: Severity.Info, message: TrustedAction.alreadyTrustedMsg});
+				}
+				else {
+					context.updateModelTrustDetails(!context._model.trustedMode);
+					this._setLabel(TrustedAction.trustLabel);
+					this._setClass('notebook-button icon-trusted');
+				}
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
 
 export class KernelsDropdown extends SelectBox {
 	private model: INotebookModel;

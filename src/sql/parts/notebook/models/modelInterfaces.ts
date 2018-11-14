@@ -341,6 +341,7 @@ export interface ICellModel {
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICell;
+	onOutputsChanged:  Event<ReadonlyArray<nb.ICellOutput>>;
 }
 
 export interface IModelFactory {

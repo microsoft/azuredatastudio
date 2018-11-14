@@ -130,6 +130,14 @@ export class Taskbar {
 		}
 	}
 
+	public addContent(content: ITaskbarContent): void {
+		if (content.action) {
+			this.actionBar.pushAction(content.action, { icon: true, label: true, keybinding: this.getKeybindingLabel(content.action) });
+		} else if (content.element) {
+			this.actionBar.pushElement(content.element);
+		}
+	}
+
 	private getKeybindingLabel(action: IAction): string {
 		const key = this.lookupKeybindings ? this.options.getKeyBinding(action) : void 0;
 		return key ? key.getLabel() : '';
@@ -146,4 +154,6 @@ export class Taskbar {
 	public dispose(): void {
 		this.actionBar.dispose();
 	}
+
+
 }

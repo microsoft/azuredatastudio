@@ -31,7 +31,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { KernelsDropdown, AttachToDropdown, AddCellAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -43,7 +43,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 })
 export class NotebookComponent extends AngularDisposable implements OnInit {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
-	private _model: NotebookModel;
+	public _model: NotebookModel;
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
 	protected _actionBar: Taskbar;
@@ -109,6 +109,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._model.addCell(cellType);
 	}
 
+	//Updates Notebook model's trust details
+	public updateModelTrustDetails(isTrusted: boolean)
+	{
+		this._model.trustedMode = isTrusted;
+		this._model.cells.forEach(cell => {
+			cell.trustedMode = isTrusted;
+		});
+		this.setDirty(true);
+		this._changeRef.detectChanges();
+	}
+
 	public onKeyDown(event) {
 		switch (event.key) {
 			case 'ArrowDown':
@@ -159,6 +170,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		await model.requestModelLoad(this.notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		this._model = model;
+		if(this._actionBar)
+		{
+			let addTrustedButton = new TrustedAction('notebook.Trusted', this._model.trustedMode);
+			this._actionBar.addContent({ action: addTrustedButton});
+		}
 		this._register(model);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
@@ -213,10 +229,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		attachToInfoText.className = 'notebook-info-label';
 		attachToInfoText.innerText = 'Attach To: ';
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-info-button');
+		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell',localize('text', 'Text'), 'notebook-info-button');
+		let addTextCellButton = new AddCellAction('notebook.AddTextCell',localize('text', 'Text'), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
