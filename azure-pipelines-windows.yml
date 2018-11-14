@@ -17,8 +17,7 @@ steps:
   displayName: 'Compile'
 
 - script: |
-    .\scripts\test.bat
-    .\scripts\test-integration.bat
+    .\scripts\test.bat --reporter mocha-junit-reporter
   displayName: 'Test'
 
 - task: PublishTestResults@2
