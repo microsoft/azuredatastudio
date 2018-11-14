@@ -332,11 +332,26 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			SparkMagicContexts.configureContext(this.notebookOptions);
 			this._hadoopConnection = new NotebookConnection(newConnection);
+			this.refreshConnections(newConnection);
 			this._clientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
 		}
+	}
+
+	private refreshConnections(newConnection: IConnectionProfile) {
+		if (this.isValidKnoxConnection(newConnection) &&
+                this._hadoopConnection.connectionProfile.id !== '-1' &&
+                this._hadoopConnection.connectionProfile.id !== this._activeContexts.defaultConnection.id) {
+            // Put the defaultConnection to the head of otherConnections
+            if (this.isValidKnoxConnection(this._activeContexts.defaultConnection)) {
+                this._activeContexts.otherConnections = this._activeContexts.otherConnections.filter(conn => conn.id !== this._activeContexts.defaultConnection.id);
+                this._activeContexts.otherConnections.unshift(this._activeContexts.defaultConnection);
+            }
+            // Change the defaultConnection to newConnection
+            this._activeContexts.defaultConnection = newConnection;
+        }
 	}
 
 	private loadKernelInfo(): void {
