@@ -10,12 +10,15 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 
-import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
+import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 
 const msgLoading = localize('loading', 'Loading kernels...');
+const kernelLabel: string = localize('Kernel', 'Kernel: ');
+const attachToLabel: string = localize('AttachTo', 'Attach to: ');
+const msgLocalHost: string = localize('localhost', 'Localhost');
 
 //Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -40,15 +43,19 @@ export class AddCellAction extends Action {
 
 export class KernelsDropdown extends SelectBox {
 	private model: INotebookModel;
-	constructor(contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>
 	) {
-		super( [msgLoading], msgLoading, contextViewProvider);
+		let selectBoxOptionsWithLabel: ISelectBoxOptionsWithLabel = {
+			labelText: kernelLabel,
+			labelOnTop: false
+		};
+		super([msgLoading], msgLoading, contextViewProvider, container, selectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
-			.then((model) => this.updateModel(model))
-			.catch((err) => {
-				// No-op for now
-			});
+				.then((model) => this.updateModel(model))
+				.catch((err) => {
+					// No-op for now
+				});
 		}
 
 		this.onDidSelect(e => this.doChangeKernel(e.selected));
@@ -83,9 +90,11 @@ export class KernelsDropdown extends SelectBox {
 }
 
 export class AttachToDropdown extends SelectBox {
-	constructor(contextViewProvider: IContextViewProvider
-	) {
-		let options: string[] = ['localhost'];
-		super(options, 'localhost', contextViewProvider);
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider) {
+		let selectBoxOptionsWithLabel: ISelectBoxOptionsWithLabel = {
+			labelText: attachToLabel,
+			labelOnTop: false
+		};
+		super([msgLocalHost], msgLocalHost, contextViewProvider, container, selectBoxOptionsWithLabel);
 	}
 }
