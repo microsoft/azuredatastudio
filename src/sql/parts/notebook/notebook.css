@@ -13,11 +13,6 @@
 	border-style: solid;
 }
 
-.notebookEditor .notebook-toolbar-dropdown {
-	width: 150px;
-	padding-right: 10px;
-}
-
 .notebookEditor .notebook-info-label {
 	padding-right: 5px;
 	text-align: center;
@@ -32,13 +27,13 @@
 .notebookEditor .notebook-button {
 	display: inline-block;
 	width: 100%;
-	padding: 4px;
+	padding: 0px;
 	text-align: center;
 	cursor: pointer;
 	padding-left: 15px;
 	background-size: 11px;
 	margin-right: 0.3em;
-	font-size: 13px;
+	font-size: 11px;
 }
 
 .notebookEditor .notebook-button.icon-add{

@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
+import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { Action } from 'vs/base/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -15,8 +15,9 @@ import URI from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
+import { NotebookInput, NotebookInputModel, notebooksEnabledCondition } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
 
 let counter = 0;
@@ -25,10 +26,10 @@ let counter = 0;
  * todo: Will remove this code.
  * This is the entry point to open the new Notebook
  */
-export class OpenNotebookAction extends Action {
+export class NewNotebookAction extends Action {
 
-	public static ID = 'OpenNotebookAction';
-	public static LABEL = localize('OpenNotebookAction', 'Open Notebook editor');
+	public static ID = 'workbench.action.newnotebook';
+	public static LABEL = localize('workbench.action.newnotebook.description', 'New Notebook');
 
 	constructor(
 		id: string,
@@ -40,12 +41,11 @@ export class OpenNotebookAction extends Action {
 	}
 
 	public run(): TPromise<void> {
-		return new TPromise<void>((resolve, reject) => {
-			let untitledUri = URI.from({ scheme: Schemas.untitled, path: `Untitled-${counter++}`});
-			let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
-			let input = this._instantiationService.createInstance(NotebookInput, 'modelViewId', model);
-			this._editorService.openEditor(input, { pinned: true });
-		});
+		let title = `Untitled-${counter++}`;
+		let untitledUri = URI.from({ scheme: Schemas.untitled, path: title });
+		let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
+		let input = this._instantiationService.createInstance(NotebookInput, title, model);
+		return this._editorService.openEditor(input, { pinned: true }).then(() => undefined);
 	}
 }
 
@@ -59,15 +59,30 @@ const viewModelEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(NotebookInput)]);
 
-// todo: Will remove this code.
-// this is the entry point to open the new Notebook
-let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		OpenNotebookAction,
-		OpenNotebookAction.ID,
-		OpenNotebookAction.LABEL
-	),
-	OpenNotebookAction.LABEL
-);
+// Feature flag for built-in Notebooks. Will be removed in the future.
+const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.enabled': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.enabledDescription', 'Enable viewing notebook files using built-in notebook editor.')
+		}
+	}
+});
 
+// this is the entry point to open the new Notebook
+CommandsRegistry.registerCommand(NewNotebookAction.ID, serviceAccessor => {
+	serviceAccessor.get(IInstantiationService).createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run();
+});
+
+MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
+	command: {
+		id: NewNotebookAction.ID,
+		title:NewNotebookAction.LABEL,
+	},
+	when: notebooksEnabledCondition
+});

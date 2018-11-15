@@ -16,7 +16,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
-import { NotebookInput, NotebookInputModel } from 'sql/parts/notebook/notebookInput';
+import { NotebookInput, NotebookInputModel, NotebookInputValidator } from 'sql/parts/notebook/notebookInput';
 import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
 import { DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 
@@ -57,8 +57,9 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		}
 
 		//Notebook
+		let notebookValidator = instantiationService.createInstance(NotebookInputValidator);
 		uri = getNotebookEditorUri(input);
-		if(uri){
+		if(uri && notebookValidator.isNotebookEnabled()){
 			//TODO: We need to pass in notebook data either through notebook input or notebook service
 			let fileName: string = 'untitled';
 			let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
@@ -161,6 +162,8 @@ function getNotebookEditorUri(input: EditorInput): URI {
 	if (!input || !input.getName()) {
 		return undefined;
 	}
+
+
 
 	// If this editor is not already of type notebook input
 	if (!(input instanceof NotebookInput)) {
