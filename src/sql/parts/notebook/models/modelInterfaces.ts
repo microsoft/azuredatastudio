@@ -19,6 +19,7 @@ import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { connection } from 'sqlops';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -301,7 +302,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile): void;
+	changeContext(host: string, connection?: connection.Connection): void;
 
 	/**
 	 * Find a cell's index given its model
@@ -378,5 +379,5 @@ export namespace notebookConstants {
 	export const python3 = 'python3';
 	export const python3DisplayName = 'Python 3';
 	export const defaultSparkKernel = 'pyspark3kernel';
-	export const hdfsHost = 'host';
+	export const hostPropName = 'host';
 }

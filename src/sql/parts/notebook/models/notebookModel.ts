@@ -289,7 +289,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidKnoxConnection(profile: IConnectionProfile | connection.Connection) {
-		return profile && profile.providerName === notebookConstants.hadoopKnoxProviderName && profile.options[notebookConstants.hdfsHost] !== undefined;
+		return profile && profile.providerName === notebookConstants.hadoopKnoxProviderName && profile.options[notebookConstants.hostPropName] !== undefined;
     }
 
 	public get languageInfo(): nb.ILanguageInfo {
@@ -322,17 +322,28 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			});
 	}
 
-	public changeContext(host: string, newConnection?: IConnectionProfile): void {
+	public changeContext(host: string, newConnection?: connection.Connection): void {
 		try {
+			let newConnectionProfile;
 			if (!newConnection) {
-				newConnection = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
+				newConnectionProfile = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
+				newConnection = {
+					providerName: newConnectionProfile.providerName,
+					connectionId: newConnectionProfile.id,
+					options: newConnectionProfile.options
+				};
 			}
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
-				newConnection = this._activeContexts.defaultConnection;
+				newConnectionProfile = this._activeContexts.defaultConnection;
+				newConnection = {
+					providerName: newConnectionProfile.providerName,
+					connectionId: newConnectionProfile.id,
+					options: newConnectionProfile.options
+				}
 			}
 			SparkMagicContexts.configureContext(this.notebookOptions);
-			this._hadoopConnection = new NotebookConnection(newConnection);
-			this.refreshConnections(newConnection);
+			this._hadoopConnection = new NotebookConnection(newConnectionProfile);
+			this.refreshConnections(newConnectionProfile);
 			this._clientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
