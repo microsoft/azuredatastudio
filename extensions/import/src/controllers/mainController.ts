@@ -13,8 +13,7 @@ import { FlatFileWizard } from '../wizard/flatFileWizard';
 import { ServiceClient } from '../services/serviceClient';
 import { ApiType, managerInstance } from '../services/serviceApiManager';
 import { FlatFileProvider } from '../services/contracts';
-import { DacFxExportWizard } from '../wizard/dacfxExportWizard';
-import { DacFxImportWizard } from '../wizard/dacfxImportWizard';
+import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
 
 /**
  * The main controller class that initializes the extension
@@ -37,8 +36,7 @@ export default class MainController extends ControllerBase {
 			this.initializeFlatFileProvider(provider);
 		});
 
-		this.initializeDacFxExport();
-		this.initializeDacFxImport();
+		this.initializeDacFxWizard();
 		return Promise.resolve(true);
 	}
 
@@ -46,11 +44,7 @@ export default class MainController extends ControllerBase {
 		sqlops.tasks.registerTask('flatFileImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new FlatFileWizard(provider).start(profile, args));
 	}
 
-	private initializeDacFxExport() {
-		sqlops.tasks.registerTask('dacFxExport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DacFxExportWizard().start(profile, args));
-	}
-
-	private initializeDacFxImport() {
-		sqlops.tasks.registerTask('dacFxImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DacFxImportWizard().start(profile, args));
+	private initializeDacFxWizard() {
+		sqlops.tasks.registerTask('dacFx.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
 	}
 }

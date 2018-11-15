@@ -15,7 +15,7 @@ import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ExportConfigPage extends DacFxPage {
+export class ExtractConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
@@ -27,6 +27,7 @@ export class ExportConfigPage extends DacFxPage {
 	private form: sqlops.FormContainer;
 	private fileTextBox: sqlops.InputBoxComponent;
 	private fileButton: sqlops.ButtonComponent;
+	private versionTextBox: sqlops.InputBoxComponent;
 
 	private databaseLoader: sqlops.LoadingComponent;
 
@@ -38,12 +39,14 @@ export class ExportConfigPage extends DacFxPage {
 		let databaseComponent = await this.createDatabaseDropdown();
 		let serverComponent = await this.createServerDropdown();
 		let fileBrowserComponent = await this.createFileBrowser();
+		let versionComponent = await this.createVersionTextBox();
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					serverComponent,
 					databaseComponent,
+					versionComponent,
 					fileBrowserComponent,
 				], {
 					horizontal: true
@@ -89,7 +92,7 @@ export class ExportConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxExport.serverDropdownTitle', 'Server the database is in')
+			title: localize('dacFxExtract.serverDropdownTitle', 'Server the database is in')
 		};
 	}
 
@@ -168,7 +171,7 @@ export class ExportConfigPage extends DacFxPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFxExport.databaseDropdownTitle', 'Database to export')
+			title: localize('dacFxExtract.databaseDropdownTitle', 'Database to extract')
 		};
 	}
 
@@ -203,8 +206,9 @@ export class ExportConfigPage extends DacFxPage {
 			delete this.model.databaseName;
 		}
 
-		console.error('in populateDatabaseDropdown');
 		this.model.databaseName = values[0].name;
+		this.model.filePath = this.generateFilePath();
+		this.fileTextBox.value = this.model.filePath;
 
 		this.databaseDropdown.updateProperties({
 			values: values
@@ -223,16 +227,16 @@ export class ExportConfigPage extends DacFxPage {
 		this.fileTextBox.value = this.generateFilePath();
 		this.model.filePath = this.fileTextBox.value;
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('dacFxExport.browseFiles', '...'),
+			label: localize('dacFxExtract.browseFiles', '...'),
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
 			let fileUri = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(this.fileTextBox.value),
-					saveLabel: localize('dacfxExport.saveFile', 'Save'),
+					saveLabel: localize('dacfxExtract.saveFile', 'Save'),
 					filters: {
-						'bacpac Files': ['bacpac'],
+						'bacpac Files': ['dacpac'],
 						'All Files': ['*']
 					}
 				}
@@ -252,15 +256,34 @@ export class ExportConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExport.fileTextboxTitle', 'Location to save bacpac'),
+			title: localize('dacFxExtract.fileTextboxTitle', 'Location to save dacpac'),
 			actions: [this.fileButton]
+		};
+	}
+
+	private async createVersionTextBox(): Promise<sqlops.FormComponent> {
+		this.versionTextBox = this.view.modelBuilder.inputBox().withProperties({
+			required: true
+		}).component();
+
+		// default filepath
+		this.versionTextBox.value = '1.0.0.0';
+		this.model.version = this.versionTextBox.value;
+
+		this.versionTextBox.onTextChanged(async () => {
+			this.model.version = this.versionTextBox.value;
+		});
+
+		return {
+			component: this.versionTextBox,
+			title: localize('dacFxExtract.versionTextboxTitle', 'Version (use x.x.x.x where x is a number)'),
 		};
 	}
 
 	private generateFilePath(): string {
 		let now = new Date();
 		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		return path.join(os.homedir(), this.model.databaseName + '-' + datetime + '.bacpac');
+		return path.join(os.homedir(), this.model.databaseName + '-' + datetime + '.dacpac');
 	}
 }
 

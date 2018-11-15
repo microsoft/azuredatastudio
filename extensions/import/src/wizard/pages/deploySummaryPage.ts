@@ -12,7 +12,7 @@ import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ImportSummaryPage extends DacFxPage {
+export class DeploySummaryPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
@@ -34,7 +34,7 @@ export class ImportSummaryPage extends DacFxPage {
 			[
 				{
 					component: this.table,
-					title: localize('dacfxExport.importInformation', 'Import bacpac information')
+					title: localize('dacfxExport.deployInformation', 'Deploy dacpac information')
 				}
 			]
 		).component();
@@ -68,9 +68,9 @@ export class ImportSummaryPage extends DacFxPage {
 	private populateTable() {
 		this.table.updateProperties({
 			data: [
-				[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
-				[localize('dacfxExport.bacpacLocation', 'Bacpac to import'), this.model.filePath],
-				[localize('dacfxExport.databaseName', 'Database name'), this.model.databaseName]],
+				[localize('dacfxDeploy.serverName', 'Server'), this.model.serverName],
+				[localize('dacfxDeploy.dacpacLocation', 'Dacpac to deploy'), this.model.filePath],
+				[localize('dacfxDeploy.databaseName', 'Database name'), this.model.databaseName]],
 			columns: ['Setting', 'Value'],
 			width: 600,
 			height: 200

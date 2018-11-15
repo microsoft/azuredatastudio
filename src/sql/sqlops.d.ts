@@ -1585,32 +1585,57 @@ declare module 'sqlops' {
 	}
 
 	// DacFx interfaces  -----------------------------------------------------------------------
-	export interface DacFxExportResult extends ResultStatus {
+	export interface ExportResult extends ResultStatus {
 		operationId: string;
 	}
 
-	export interface DacFxImportResult extends ResultStatus {
+	export interface ImportResult extends ResultStatus {
 		operationId: string;
 	}
 
-	export interface DacFxExportParams {
-		connectionString: string;
+	export interface ExtractResult extends ResultStatus {
+		operationId: string;
+	}
+
+	export interface DeployResult extends ResultStatus {
+		operationId: string;
+	}
+
+	export interface ExportParams {
+		databaseName: string;
 		packageFilePath: string;
-		owneruri: string;
+		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
 
-	export interface DacFxImportParams {
-		connectionString: string;
+	export interface ImportParams {
 		packageFilePath: string;
 		targetDatabaseName: string;
-		owneruri: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ExtractParams {
+		databaseName: string;
+		packageFilePath: string;
+		applicationName: string;
+		applicationVersion: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DeployParams {
+		packageFilePath: string;
+		targetDatabaseName: string;
+		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
 
 	export interface DacFxServicesProvider extends DataProvider {
-		exportBacpac(connectionstring: string, packageFilePath: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxExportResult>;
-		importBacpac(connectionstring: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode:TaskExecutionMode): Thenable<DacFxImportResult>;
+		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExportResult>;
+		importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ImportResult>;
+		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExtractResult>;
+		deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DeployResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

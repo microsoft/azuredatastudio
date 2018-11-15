@@ -2,7 +2,7 @@
   "name": "import",
   "displayName": "SQL Server Import",
   "description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
-  "version": "0.4.0",
+  "version": "0.3.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -35,18 +35,9 @@
         }
       },
       {
-        "command": "dacFxExport.start",
-        "title": "Export bacpac",
-        "category": "Export Data-tier Application",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
-      },
-      {
-        "command": "dacFxImport.start",
-        "title": "Import bacpac",
-        "category": "Import Data-tier Application",
+        "command": "dacFx.start",
+        "title": "Data-tier Application Wizard",
+        "category": "Data-tier Application",
         "icon": {
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
@@ -68,7 +59,7 @@
           "group": "import"
         },
         {
-          "command": "dacFxExport.start",
+          "command": "dacFx.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "export"
         }

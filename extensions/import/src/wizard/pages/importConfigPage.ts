@@ -7,9 +7,10 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
+import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
-import { DacFxImportWizard } from '../dacFxImportWizard';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
@@ -17,7 +18,7 @@ const localize = nls.loadMessageBundle();
 export class ImportConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: DacFxImportWizard;
+	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -27,7 +28,7 @@ export class ImportConfigPage extends DacFxPage {
 	private fileTextBox: sqlops.InputBoxComponent;
 	private fileButton: sqlops.ButtonComponent;
 
-	public constructor(instance: DacFxImportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
@@ -39,8 +40,8 @@ export class ImportConfigPage extends DacFxPage {
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
-					serverComponent,
 					fileBrowserComponent,
+					serverComponent,
 					databaseComponent,
 				], {
 					horizontal: true
@@ -50,7 +51,8 @@ export class ImportConfigPage extends DacFxPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		return await this.populateServerDropdown();
+		let r1 = await this.populateServerDropdown();
+		return r1;
 	}
 
 	async onPageLeave(): Promise<boolean> {
@@ -80,7 +82,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxImport.serverDropdownTitle', 'Server')
+			title: localize('dacFxExport.serverDropdownTitle', 'Server')
 		};
 	}
 
@@ -200,7 +202,7 @@ export class ImportConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxImport.fileTextboxTitle', 'Location of bacpac'),
+			title: localize('dacFxImport.fileTextboxTitle', 'Bacpac to import'),
 			actions: [this.fileButton]
 		};
 	}

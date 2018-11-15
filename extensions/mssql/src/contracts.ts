@@ -299,31 +299,62 @@ export enum TaskExecutionMode {
 	script = 1,
 	executeAndScript = 2,
 }
-export interface DacFxExportParams {
-	connectionString: string;
+export interface ExportParams {
+	databaseName: string;
 	packageFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DacFxImportParams {
-	connectionString: string;
+export interface ImportParams {
 	packageFilePath: string;
 	targetDatabaseName: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DacFxImportResponse {
+export interface ImportResponse {
 	operationId: string;
 }
 
-export namespace DacFxExportRequest {
-	export const type = new RequestType<DacFxExportParams, sqlops.DacFxExportResult, void, void>('dacfx/export');
+export interface ExtractParams {
+	databaseName: string;
+	packageFilePath: string;
+	applicationName: string;
+	applicationVersion: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
 }
 
-export namespace DacFxImportRequest {
-	export const type = new RequestType<DacFxImportParams, sqlops.DacFxImportResult, void, void>('dacfx/import');
+export interface ExtractResult {
+	operationId: string;
+}
+
+export interface DeployParams {
+	packageFilePath: string;
+	targetDatabaseName: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface DeployResult {
+	operationId: string;
+}
+
+export namespace ExportRequest {
+	export const type = new RequestType<ExportParams, sqlops.ExportResult, void, void>('dacfx/export');
+}
+
+export namespace ImportRequest {
+	export const type = new RequestType<ImportParams, sqlops.ImportResult, void, void>('dacfx/import');
+}
+
+export namespace ExtractRequest {
+	export const type = new RequestType<ExtractParams, sqlops.ExtractResult, void, void>('dacfx/extract');
+}
+
+export namespace DeployRequest {
+	export const type = new RequestType<DeployParams, sqlops.DeployResult, void, void>('dacfx/deploy');
 }
 
 // ------------------------------- < DacFx > ------------------------------------

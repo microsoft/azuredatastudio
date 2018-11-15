@@ -30,7 +30,10 @@ export class TelemetryFeature implements StaticFeature {
 
 export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
-		contracts.DacFxExportRequest.type
+		contracts.ExportRequest.type,
+		contracts.ImportRequest.type,
+		contracts.ExtractRequest.type,
+		contracts.DeployRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -51,29 +54,57 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 		let self = this;
 
-		let exportBacpac = (connectionString: string, packageFilePath: string, ownerUri: string, taskExecutionMode:sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
-			let params: contracts.DacFxExportParams = { connectionString: connectionString, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.DacFxExportRequest.type, params).then(
+		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> => {
+			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.ExportRequest.type, params).then(
 				r => {
 					return r;
 				},
 				e => {
 					console.error("error sending request");
-					client.logFailedRequest(contracts.AgentJobsRequest.type, e);
+					client.logFailedRequest(contracts.ExportRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
 		};
 
-		let importBacpac = (connectionString: string, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode:sqlops.TaskExecutionMode): Thenable<sqlops.DacFxExportResult> => {
-			let params: contracts.DacFxImportParams = { connectionString: connectionString, packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.DacFxImportRequest.type, params).then(
+		let importBacpac = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ImportResult> => {
+			let params: contracts.ImportParams = { packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.ImportRequest.type, params).then(
 				r => {
 					return r;
 				},
 				e => {
 					console.error("error sending request");
-					client.logFailedRequest(contracts.AgentJobsRequest.type, e);
+					client.logFailedRequest(contracts.ImportRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let extractDacpac = (databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> => {
+			let params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.ExtractRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					console.error("error sending request");
+					client.logFailedRequest(contracts.ExtractRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let deployDacpac = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> => {
+			let params: contracts.DeployParams = { packageFilePath: packageFilePath, targetDatabaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.DeployRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					console.error("error sending request");
+					client.logFailedRequest(contracts.DeployRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
@@ -82,7 +113,9 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		return sqlops.dataprotocol.registerDacFxServicesProvider({
 			providerId: client.providerId,
 			exportBacpac,
-			importBacpac
+			importBacpac,
+			extractDacpac,
+			deployDacpac
 		});
 	}
 }
