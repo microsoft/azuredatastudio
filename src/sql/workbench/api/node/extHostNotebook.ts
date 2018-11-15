@@ -14,9 +14,9 @@ import { localize } from 'vs/nls';
 import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel;
+type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
 
 export class ExtHostNotebook implements ExtHostNotebookShape {
 	private static _handlePool: number = 0;
@@ -134,13 +134,29 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return kernel.requestComplete(content);
 	}
 
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): number {
-		// let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
-		// let future = kernel.requestExecute(content, disposeOnDone);
-		// if (future) {
-		// 	TODO hook up future callbacks to main thread proxy
-		// }
-		return undefined;
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<IFutureDetails> {
+		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		let future = kernel.requestExecute(content, disposeOnDone);
+		let futureId = this._addNewAdapter(future);
+		return Promise.resolve({
+			futureId: futureId,
+			msg: future.msg
+		});
+	}
+
+	$interruptKernel(kernelId: number): Thenable<void> {
+		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		return kernel.interrupt();
+	}
+
+	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void {
+		let future = this._getAdapter<sqlops.nb.IFuture>(futureId);
+		return future.sendInputReply(content);
+	}
+
+	$disposeFuture(futureId: number): void {
+		let future = this._getAdapter<sqlops.nb.IFuture>(futureId);
+		future.dispose();
 	}
 
 	//#endregion

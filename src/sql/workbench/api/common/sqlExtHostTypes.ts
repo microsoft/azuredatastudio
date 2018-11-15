@@ -437,3 +437,13 @@ export interface IKernelDetails {
 	readonly info?: any;
 }
 
+export interface IFutureDetails {
+	readonly futureId: number;
+	readonly msg: any;
+}
+
+export enum FutureMessageType {
+	Reply = 0,
+	StdIn = 1,
+	IOPub = 2
+}

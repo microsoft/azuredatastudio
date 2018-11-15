@@ -13,7 +13,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, ISessionDetails, IKernelDetails, FutureMessageType, IFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
 
@@ -22,6 +22,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 
 	private _proxy: ExtHostNotebookShape;
 	private _providers = new Map<number, NotebookProviderWrapper>();
+	private _futures = new Map<number, FutureWrapper>();
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -33,9 +34,21 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
+	public addFuture(futureId: number, future: FutureWrapper): void {
+		this._futures.set(futureId, future);
+	}
+
+	public disposeFuture(futureId: number): void {
+		this._futures.delete(futureId);
+	}
+
 	//#region Extension host callable methods
 	public $registerNotebookProvider(providerId: string, handle: number): void {
-		let notebookProvider = new NotebookProviderWrapper(this._proxy, providerId, handle);
+		let proxy: Proxies = {
+			main: this,
+			ext: this._proxy
+		};
+		let notebookProvider = new NotebookProviderWrapper(proxy, providerId, handle);
 		this._providers.set(handle, notebookProvider);
 		this.notebookService.registerProvider(providerId, notebookProvider);
 	}
@@ -49,13 +62,24 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
+	public $onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void {
+		let future = this._futures.get(futureId);
+		if (future) {
+			future.onMessage(type, payload);
+		}
+	}
 	//#endregion
+}
+
+interface Proxies {
+	main: MainThreadNotebook;
+	ext: ExtHostNotebookShape;
 }
 
 class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 	private _managers = new Map<string, NotebookManagerWrapper>();
 
-	constructor(private _proxy: ExtHostNotebookShape, public readonly providerId, public readonly providerHandle: number) {
+	constructor(private _proxy: Proxies, public readonly providerId, public readonly providerHandle: number) {
 		super();
 	}
 
@@ -77,7 +101,7 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 
 	handleNotebookClosed(notebookUri: URI): void {
 		this._managers.delete(notebookUri.toString());
-		this._proxy.$handleNotebookClosed(notebookUri);
+		this._proxy.ext.$handleNotebookClosed(notebookUri);
 	}
 }
 
@@ -87,13 +111,13 @@ class NotebookManagerWrapper implements INotebookManager {
 	private _serverManager: sqlops.nb.ServerManager;
 	private managerDetails: INotebookManagerDetails;
 
-	constructor(private _proxy: ExtHostNotebookShape,
+	constructor(private _proxy: Proxies,
 		public readonly providerId,
 		private notebookUri: URI
 	) { }
 
 	public async initialize(providerHandle: number): Promise<NotebookManagerWrapper> {
-		this.managerDetails = await this._proxy.$getNotebookManager(providerHandle, this.notebookUri);
+		this.managerDetails = await this._proxy.ext.$getNotebookManager(providerHandle, this.notebookUri);
 		let managerHandle = this.managerDetails.handle;
 		this._contentManager = this.managerDetails.hasContentManager ? new ContentManagerWrapper(managerHandle, this._proxy) : new LocalContentManager();
 		this._serverManager = this.managerDetails.hasServerManager ? new ServerManagerWrapper(managerHandle, this._proxy) : undefined;
@@ -119,21 +143,21 @@ class NotebookManagerWrapper implements INotebookManager {
 
 class ContentManagerWrapper implements sqlops.nb.ContentManager {
 
-	constructor(private handle: number, private _proxy: ExtHostNotebookShape) {
+	constructor(private handle: number, private _proxy: Proxies) {
 	}
 	getNotebookContents(notebookUri: URI): Thenable<sqlops.nb.INotebook> {
-		return this._proxy.$getNotebookContents(this.handle, notebookUri);
+		return this._proxy.ext.$getNotebookContents(this.handle, notebookUri);
 	}
 
 	save(path: URI, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook> {
-		return this._proxy.$save(this.handle, path, notebook);
+		return this._proxy.ext.$save(this.handle, path, notebook);
 	}
 }
 
 class ServerManagerWrapper implements sqlops.nb.ServerManager {
 	private onServerStartedEmitter = new Emitter<void>();
 	private _isStarted: boolean;
-	constructor(private handle: number, private _proxy: ExtHostNotebookShape) {
+	constructor(private handle: number, private _proxy: Proxies) {
 		this._isStarted = false;
 	}
 
@@ -150,7 +174,7 @@ class ServerManagerWrapper implements sqlops.nb.ServerManager {
 	}
 
 	private async doStartServer(): Promise<void> {
-		await this._proxy.$doStartServer(this.handle);
+		await this._proxy.ext.$doStartServer(this.handle);
 		this._isStarted = true;
 		this.onServerStartedEmitter.fire();
 	}
@@ -161,7 +185,7 @@ class ServerManagerWrapper implements sqlops.nb.ServerManager {
 
 	private async doStopServer(): Promise<void> {
 		try {
-			await this._proxy.$doStopServer(this.handle);
+			await this._proxy.ext.$doStopServer(this.handle);
 		} finally {
 			// Always consider this a stopping event, even if a failure occurred.
 			this._isStarted = false;
@@ -173,7 +197,7 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 	private readyPromise: Promise<void>;
 	private _isReady: boolean;
 	private _specs: sqlops.nb.IAllKernels;
-	constructor(private managerHandle: number, private _proxy: ExtHostNotebookShape) {
+	constructor(private managerHandle: number, private _proxy: Proxies) {
 		this._isReady = false;
 		this.readyPromise = this.initializeSessionManager();
 	}
@@ -196,7 +220,7 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 	}
 
 	private async doStartNew(options: sqlops.nb.ISessionOptions): Promise<sqlops.nb.ISession> {
-		let sessionDetails = await this._proxy.$startNewSession(this.managerHandle, options);
+		let sessionDetails = await this._proxy.ext.$startNewSession(this.managerHandle, options);
 		return new SessionWrapper(this._proxy, sessionDetails);
 	}
 
@@ -216,7 +240,7 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 	}
 
 	private async refreshSpecs(): Promise<void> {
-		let specs = await this._proxy.$refreshSpecs(this.managerHandle);
+		let specs = await this._proxy.ext.$refreshSpecs(this.managerHandle);
 		if (specs) {
 			this._specs = specs;
 		}
@@ -226,9 +250,9 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 
 class SessionWrapper implements sqlops.nb.ISession {
 	private _kernel: KernelWrapper;
-	constructor(private proxy: ExtHostNotebookShape, private sessionDetails: ISessionDetails) {
+	constructor(private _proxy: Proxies, private sessionDetails: ISessionDetails) {
 		if (sessionDetails && sessionDetails.kernelDetails) {
-			this._kernel = new KernelWrapper(proxy, sessionDetails.kernelDetails);
+			this._kernel = new KernelWrapper(_proxy, sessionDetails.kernelDetails);
 		}
 	}
 
@@ -265,8 +289,8 @@ class SessionWrapper implements sqlops.nb.ISession {
 	}
 
 	private async doChangeKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<sqlops.nb.IKernel> {
-		let kernelDetails = await this.proxy.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
-		this._kernel = new KernelWrapper(this.proxy, kernelDetails);
+		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
+		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
 		return this._kernel;
 	}
 }
@@ -275,13 +299,13 @@ class KernelWrapper implements sqlops.nb.IKernel {
 	private _isReady: boolean = false;
 	private _ready = new Deferred<void>();
 	private _info: sqlops.nb.IInfoReply;
-	constructor(private proxy: ExtHostNotebookShape, private kernelDetails: IKernelDetails) {
+	constructor(private _proxy: Proxies, private kernelDetails: IKernelDetails) {
 		this.initialize(kernelDetails);
 	}
 
 	private async initialize(kernelDetails: IKernelDetails): Promise<void> {
 		try {
-			this._info = await this.proxy.$getKernelReadyStatus(kernelDetails.kernelId);
+			this._info = await this._proxy.ext.$getKernelReadyStatus(kernelDetails.kernelId);
 			this._isReady = true;
 			this._ready.resolve();
 		} catch (error) {
@@ -314,14 +338,105 @@ class KernelWrapper implements sqlops.nb.IKernel {
 	}
 
 	getSpec(): Thenable<sqlops.nb.IKernelSpec> {
-		return this.proxy.$getKernelSpec(this.kernelDetails.kernelId);
-	}
-
-	requestExecute(content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): sqlops.nb.IFuture {
-		throw new Error('Method not implemented.');
+		return this._proxy.ext.$getKernelSpec(this.kernelDetails.kernelId);
 	}
 
 	requestComplete(content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
-		return this.proxy.$requestComplete(this.kernelDetails.kernelId, content);
+		return this._proxy.ext.$requestComplete(this.kernelDetails.kernelId, content);
 	}
+
+	requestExecute(content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): sqlops.nb.IFuture {
+		let future = new FutureWrapper(this._proxy);
+		this._proxy.ext.$requestExecute(this.kernelDetails.kernelId, content, disposeOnDone)
+		.then(details => {
+			future.setDetails(details), error => future.setError(error);
+			this._proxy.main.addFuture(details.futureId, future);
+		});
+		return future;
+	}
+
+	interrupt(): Thenable<void> {
+		return this._proxy.ext.$interruptKernel(this.kernelDetails.kernelId);
+	}
+}
+
+
+class FutureWrapper implements sqlops.nb.IFuture {
+	private _futureId: number;
+	private _done = new Deferred<sqlops.nb.IShellMessage>();
+	private _messageHandlers = new Map<FutureMessageType, Array<sqlops.nb.MessageHandler<sqlops.nb.IMessage>>>();
+	private _msg: sqlops.nb.IMessage;
+
+	constructor(private _proxy: Proxies) {
+
+	}
+
+	public setDetails(details: IFutureDetails): void {
+		this._futureId = details.futureId;
+		this._msg = details.msg;
+	}
+
+	public setError(error: Error | string): void {
+		this._done.reject(error);
+	}
+
+	onMessage(type: FutureMessageType, payload: sqlops.nb.IMessage): void {
+		let handlers = this._messageHandlers.get(type);
+		if (handlers && handlers.length > 0) {
+			for(let handler of handlers) {
+				try {
+					handler.handle(payload);
+				} catch (error) {
+					// TODO log errors from the handlers
+				}
+			}
+		}
+	}
+
+	private addMessageHandler(type: FutureMessageType, handler: sqlops.nb.MessageHandler<sqlops.nb.IMessage>): void {
+		let handlers = this._messageHandlers.get(type);
+		if (!handlers) {
+			handlers = [];
+			this._messageHandlers.set(type, handlers);
+		}
+		handlers.push(handler);
+	}
+
+	//#region Public API
+	get msg(): sqlops.nb.IMessage {
+		return this._msg;
+	}
+
+	get done(): Thenable<sqlops.nb.IShellMessage> {
+		return this._done.promise;
+	}
+
+	setReplyHandler(handler: sqlops.nb.MessageHandler<sqlops.nb.IShellMessage>): void {
+		this.addMessageHandler(FutureMessageType.Reply, handler);
+	}
+
+	setStdInHandler(handler: sqlops.nb.MessageHandler<sqlops.nb.IStdinMessage>): void {
+		this.addMessageHandler(FutureMessageType.StdIn, handler);
+	}
+
+	setIOPubHandler(handler: sqlops.nb.MessageHandler<sqlops.nb.IIOPubMessage>): void {
+		this.addMessageHandler(FutureMessageType.IOPub, handler);
+	}
+
+	sendInputReply(content: sqlops.nb.IInputReply): void {
+		this._proxy.ext.$sendInputReply(this._futureId, content);
+	}
+
+	dispose() {
+		this._proxy.main.disposeFuture(this._futureId);
+		this._proxy.ext.$disposeFuture(this._futureId);
+	}
+
+	registerMessageHook(hook: (msg: sqlops.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		throw new Error('Method not implemented.');
+	}
+	removeMessageHook(hook: (msg: sqlops.nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		throw new Error('Method not implemented.');
+	}
+	//#endregion
 }

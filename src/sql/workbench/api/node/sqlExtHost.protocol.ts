@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, ISessionDetails, IKernelDetails
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails, FutureMessageType
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -737,11 +737,17 @@ export interface ExtHostNotebookShape {
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
 	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec>;
 	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg>;
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): number;
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<IFutureDetails>;
+	$interruptKernel(kernelId: number): Thenable<void>;
+
+	// Future APIs
+	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void;
+	$disposeFuture(futureId: number): void;
 }
 
 export interface MainThreadNotebookShape extends IDisposable {
 	$registerNotebookProvider(providerId: string, handle: number): void;
 	$unregisterNotebookProvider(handle: number): void;
+	$onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void;
 }
 

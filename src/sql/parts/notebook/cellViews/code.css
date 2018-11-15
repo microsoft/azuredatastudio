@@ -25,6 +25,17 @@ code-component .toolbarIconRun {
 	background-image: url('../media/dark/execute_cell_inverse.svg');
 }
 
+code-component .toolbarIconStop {
+	height: 20px;
+	background-image: url('../media/light/stop_cell.svg');
+	padding-bottom: 10px;
+}
+
+.vs-dark code-component .toolbarIconStop,
+.hc-black code-component .toolbarIconStop {
+	background-image: url('../media/dark/stop_cell_inverse.svg');
+}
+
 code-component .carbon-taskbar .icon {
 	background-size: 20px;
 	width: 40px;
