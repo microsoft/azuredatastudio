@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, ISessionDetails, IKernelDetails
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -717,11 +717,27 @@ export interface ExtHostNotebookShape {
 	 */
 	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
 	$handleNotebookClosed(notebookUri: UriComponents): void;
+
+	// Server Manager APIs
 	$doStartServer(managerHandle: number): Thenable<void>;
 	$doStopServer(managerHandle: number): Thenable<void>;
+
+	// Content Manager APIs
 	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook>;
 	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook>;
 
+	// Session Manager APIs
+	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels>;
+	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<ISessionDetails>;
+
+	// Session APIs
+	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<IKernelDetails>;
+
+	// Kernel APIs
+	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
+	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec>;
+	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg>;
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): number;
 }
 
 export interface MainThreadNotebookShape extends IDisposable {

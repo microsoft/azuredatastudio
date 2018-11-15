@@ -417,3 +417,23 @@ export interface INotebookManagerDetails {
 	hasContentManager: boolean;
 	hasServerManager: boolean;
 }
+
+export interface ISessionDetails {
+	readonly sessionId: number;
+	readonly canChangeKernels: boolean;
+	readonly id: string;
+	readonly path: string;
+	readonly name: string;
+	readonly type: string;
+	readonly status: string;
+	readonly kernelDetails: IKernelDetails;
+}
+
+export interface IKernelDetails {
+	readonly kernelId: number;
+	readonly id: string;
+	readonly name: string;
+	readonly supportsIntellisense: boolean;
+	readonly info?: any;
+}
+

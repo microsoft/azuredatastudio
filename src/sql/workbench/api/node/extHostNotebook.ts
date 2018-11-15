@@ -6,24 +6,25 @@
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
+
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { localize } from 'vs/nls';
-
+import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import URI, { UriComponents } from 'vs/base/common/uri';
-import { INotebookManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, ISessionDetails, IKernelDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+
+type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel;
 
 export class ExtHostNotebook implements ExtHostNotebookShape {
 	private static _handlePool: number = 0;
 
 	private readonly _proxy: MainThreadNotebookShape;
-	private _providers = new Map<number, sqlops.nb.NotebookProvider>();
+	private _adapters = new Map<number, Adapter>();
 	// Notebook URI to manager lookup.
-	private _managers = new Map<number, NotebookManagerAdapter>();
-	constructor(private _mainContext: IMainContext) {
+	constructor(_mainContext: IMainContext) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadNotebook);
 	}
 
@@ -39,7 +40,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 
 		return {
-			handle: adapter.managerHandle,
+			handle: adapter.handle,
 			hasContentManager: !!adapter.contentManager,
 			hasServerManager: !!adapter.serverManager
 		};
@@ -50,7 +51,9 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let manager = this.findManagerForUri(uriString);
 		if (manager) {
 			manager.provider.handleNotebookClosed(uri);
-			this._managers.delete(manager.managerHandle);
+			// Note: deliberately not removing handle.
+			// Operations such as shutdown may be processed after closing a notebook
+			// this._managers.delete(manager.managerHandle);
 		}
 	}
 
@@ -70,6 +73,76 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
 	}
 
+	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			await sessionManager.ready;
+			return sessionManager.specs;
+		});
+	}
+
+	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<ISessionDetails> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			let session = await sessionManager.startNew(options);
+			let sessionId = this._addNewAdapter(session);
+			let kernelDetails: IKernelDetails = undefined;
+			if (session.kernel) {
+				kernelDetails = this.saveKernel(session.kernel);
+			}
+			let details: ISessionDetails = {
+				sessionId: sessionId,
+				id: session.id,
+				path: session.path,
+				name: session.name,
+				type: session.type,
+				status: session.status,
+				canChangeKernels: session.canChangeKernels,
+				kernelDetails: kernelDetails
+			};
+			return details;
+		});
+	}
+
+	private saveKernel(kernel: sqlops.nb.IKernel): IKernelDetails {
+		let kernelId = this._addNewAdapter(kernel);
+		let kernelDetails: IKernelDetails = {
+			kernelId: kernelId,
+			id: kernel.id,
+			info: kernel.info,
+			name: kernel.name,
+			supportsIntellisense: kernel.supportsIntellisense
+		};
+		return kernelDetails;
+	}
+
+	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<IKernelDetails> {
+		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
+		return session.changeKernel(kernelInfo).then(kernel => this.saveKernel(kernel));
+	}
+
+	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {
+		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		return kernel.ready.then(success => kernel.info);
+	}
+
+	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec> {
+		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		return kernel.getSpec();
+	}
+
+	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
+		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		return kernel.requestComplete(content);
+	}
+
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): number {
+		// let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
+		// let future = kernel.requestExecute(content, disposeOnDone);
+		// if (future) {
+		// 	TODO hook up future callbacks to main thread proxy
+		// }
+		return undefined;
+	}
+
 	//#endregion
 
 	//#region APIs called by extensions
@@ -77,7 +150,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));
 		}
-		const handle = this._addNewProvider(provider);
+		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerNotebookProvider(provider.providerId, handle);
 		return this._createDisposable(handle);
 	}
@@ -86,8 +159,18 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	//#region private methods
 
+	private getAdapters<A>(ctor: { new(...args: any[]): A }): A[] {
+		let matchingAdapters = [];
+		this._adapters.forEach(a => {
+			if (a instanceof ctor) {
+				matchingAdapters.push(a);
+			}
+		});
+		return matchingAdapters;
+	}
+
 	private findManagerForUri(uriString: string): NotebookManagerAdapter {
-		for(let manager of Array.from(this._managers.values())) {
+		for(let manager of this.getAdapters(NotebookManagerAdapter)) {
 			if (manager.uriString === uriString) {
 				return manager;
 			}
@@ -98,15 +181,14 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private async createManager(provider: sqlops.nb.NotebookProvider, notebookUri: URI): Promise<NotebookManagerAdapter> {
 		let manager = await provider.getNotebookManager(notebookUri);
 		let uriString = notebookUri.toString();
-		let handle = this._nextHandle();
-		let adapter = new NotebookManagerAdapter(provider, handle, manager, uriString);
-		this._managers.set(handle, adapter);
+		let adapter = new NotebookManagerAdapter(provider, manager, uriString);
+		adapter.handle = this._addNewAdapter(adapter);
 		return adapter;
 	}
 
 	private _createDisposable(handle: number): Disposable {
 		return new Disposable(() => {
-			this._providers.delete(handle);
+			this._adapters.delete(handle);
 			this._proxy.$unregisterNotebookProvider(handle);
 		});
 	}
@@ -116,7 +198,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private _withProvider<R>(handle: number, callback: (provider: sqlops.nb.NotebookProvider) => R | PromiseLike<R>): TPromise<R> {
-		let provider = this._providers.get(handle);
+		let provider = this._adapters.get(handle) as sqlops.nb.NotebookProvider;
 		if (provider === undefined) {
 			return TPromise.wrapError<R>(new Error(localize('errNoProvider', 'no notebook provider found')));
 		}
@@ -124,7 +206,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	}
 
 	private _withNotebookManager<R>(handle: number, callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>): TPromise<R> {
-		let manager = this._managers.get(handle);
+		let manager = this._adapters.get(handle) as NotebookManagerAdapter;
 		if (manager === undefined) {
 			return TPromise.wrapError<R>(new Error(localize('errNoManager', 'No Manager found')));
 		}
@@ -161,19 +243,28 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private _addNewProvider(adapter: sqlops.nb.NotebookProvider): number {
+	private _addNewAdapter(adapter: Adapter): number {
 		const handle = this._nextHandle();
-		this._providers.set(handle, adapter);
+		this._adapters.set(handle, adapter);
 		return handle;
 	}
+
+	private _getAdapter<T>(id: number): T {
+		let adapter = <T><any>this._adapters.get(id);
+		if (adapter === undefined) {
+			throw new Error('No adapter found');
+		}
+		return adapter;
+	}
+
 	//#endregion
 }
 
 
 class NotebookManagerAdapter implements sqlops.nb.NotebookManager {
+	public handle: number;
 	constructor(
 		public readonly provider: sqlops.nb.NotebookProvider,
-		public readonly managerHandle: number,
 		private manager: sqlops.nb.NotebookManager,
 		public readonly uriString: string
 	) {
@@ -190,5 +281,4 @@ class NotebookManagerAdapter implements sqlops.nb.NotebookManager {
 	public get serverManager(): sqlops.nb.ServerManager {
 		return this.manager.serverManager;
 	}
-
 }
