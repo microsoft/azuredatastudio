@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
-import { DeployWizard } from '../deployDacpacWizard';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
@@ -18,7 +18,7 @@ const localize = nls.loadMessageBundle();
 export class DeployConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: DeployWizard;
+	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -28,7 +28,7 @@ export class DeployConfigPage extends DacFxPage {
 	private fileTextBox: sqlops.InputBoxComponent;
 	private fileButton: sqlops.ButtonComponent;
 
-	public constructor(instance: DeployWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 

@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
-import { DacFxWizard } from '../dacFxWizard';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
@@ -18,7 +18,7 @@ const localize = nls.loadMessageBundle();
 export class ExportConfigPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: DacFxWizard;
+	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -30,7 +30,7 @@ export class ExportConfigPage extends DacFxPage {
 
 	private databaseLoader: sqlops.LoadingComponent;
 
-	public constructor(instance: DacFxWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
@@ -203,9 +203,8 @@ export class ExportConfigPage extends DacFxPage {
 			delete this.model.databaseName;
 		}
 
+		console.error('in populateDatabaseDropdown');
 		this.model.databaseName = values[0].name;
-		this.model.filePath = this.generateFilePath();
-		this.fileTextBox.value = this.model.filePath;
 
 		this.databaseDropdown.updateProperties({
 			values: values

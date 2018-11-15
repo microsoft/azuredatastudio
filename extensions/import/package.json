@@ -35,36 +35,9 @@
         }
       },
       {
-        "command": "dacFxExport.start",
-        "title": "Export bacpac",
-        "category": "Export Data-tier Application",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
-      },
-      {
-        "command": "dacFxImport.start",
-        "title": "Import bacpac",
-        "category": "Import Data-tier Application",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
-      },
-      {
-        "command": "dacFxDeploy.start",
-        "title": "Deploy dacpac",
-        "category": "Deploy Data-tier Application",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
-      },
-      {
-        "command": "dacFxExtract.start",
-        "title": "Extract dacpac",
-        "category": "Extract Data-tier Application",
+        "command": "dacFx.start",
+        "title": "Data-tier Application Operations",
+        "category": "Data-tier Application",
         "icon": {
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
@@ -86,12 +59,7 @@
           "group": "import"
         },
         {
-          "command": "dacFxExport.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
-          "group": "export"
-        },
-        {
-          "command": "dacFxExtract.start",
+          "command": "dacFx.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "export"
         }

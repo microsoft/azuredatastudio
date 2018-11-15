@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
-import { ExportWizard } from '../exportBacpacWizard';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
@@ -15,7 +15,7 @@ const localize = nls.loadMessageBundle();
 export class ExportSummaryPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	protected readonly instance: ExportWizard;
+	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
 
@@ -23,7 +23,7 @@ export class ExportSummaryPage extends DacFxPage {
 	private table: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
 
-	public constructor(instance: ExportWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 
