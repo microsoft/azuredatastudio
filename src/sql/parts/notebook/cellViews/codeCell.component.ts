@@ -23,7 +23,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 })
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('codeCellOutput', { read: ElementRef }) private outputPreview: ElementRef;
-	
+
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -57,6 +57,13 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
+	get model(): NotebookModel {
+		return this._model;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
+	}
 
 	// Todo: implement layout
 	public layout() {
@@ -66,14 +73,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	private updateTheme(theme: IColorTheme): void {
 		let outputElement = <HTMLElement>this.outputPreview.nativeElement;
 		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
-	}
-
-	get model(): NotebookModel {
-		return this._model;
-	}
-
-	get activeCellId(): string {
-		return this._activeCellId;
 	}
 
 }
