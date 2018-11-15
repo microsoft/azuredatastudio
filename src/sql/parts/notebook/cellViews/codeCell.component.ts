@@ -22,7 +22,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 	templateUrl: decodeURI(require.toUrl('./codeCell.component.html'))
 })
 export class CodeCellComponent extends CellView implements OnInit {
-	@ViewChild('codeCellOutput', { read: ElementRef }) private outputPreview: ElementRef;
+	@ViewChild('celloutput', { read: ElementRef }) private outputPreview: ElementRef;
 	private _model: NotebookModel;
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
