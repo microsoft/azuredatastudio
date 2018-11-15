@@ -147,7 +147,6 @@ class NotebookManagerWrapper implements INotebookManager {
 	public get managerHandle(): number {
 		return this.managerDetails.handle;
 	}
-
 }
 
 class ContentManagerWrapper implements sqlops.nb.ContentManager {
@@ -211,7 +210,6 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 		this.readyPromise = this.initializeSessionManager();
 	}
 
-	//#region Public APIs
 	get isReady(): boolean {
 		return this._isReady;
 	}
@@ -237,13 +235,6 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 		return this._proxy.ext.$shutdownSession(this.managerHandle, id);
 	}
 
-	//#endregion
-
-	//#region Call throughs from extension host
-
-	//#endregion
-
-	//#region Private methods
 	private async initializeSessionManager(): Promise<void> {
 		await this.refreshSpecs();
 		this._isReady = true;
@@ -255,7 +246,6 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 			this._specs = specs;
 		}
 	}
-	//#endregion
 }
 
 class SessionWrapper implements sqlops.nb.ISession {
@@ -413,7 +403,6 @@ class FutureWrapper implements FutureInternal {
 		}
 	}
 
-
 	private addMessageHandler(type: FutureMessageType, handler: sqlops.nb.MessageHandler<sqlops.nb.IMessage>): void {
 		let handlers = this._messageHandlers.get(type);
 		if (!handlers) {
@@ -423,7 +412,7 @@ class FutureWrapper implements FutureInternal {
 		handlers.push(handler);
 	}
 
-	//#region Public API
+	//#region Public APIs
 	get inProgress(): boolean {
 		return this._inProgress;
 	}
