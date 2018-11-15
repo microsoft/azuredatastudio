@@ -19,7 +19,7 @@ import { NotificationService } from 'vs/workbench/services/notification/common/n
 
 const msgLoading = localize('loading', 'Loading kernels...');
 
-//Action to add a cell to notebook based on cell type(code/markdown).
+// Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
 	public cellType: CellType;
 
@@ -41,13 +41,13 @@ export class AddCellAction extends Action {
 }
 
 export class TrustedAction extends Action {
-	//Constants
+	// Constants
 	private static readonly trustLabel = localize('trustLabel', 'Trusted');
 	private static readonly notTrustLabel = localize('untrustLabel', 'Not Trusted');
 	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', 'Notebook is already trusted.');
 	private static readonly trustedCssClass = 'notebook-button icon-trusted';
 	private static readonly notTrustedCssClass = 'notebook-button icon-notTrusted';
-	//Properties
+	// Properties
 	private _isTrusted: boolean = false;
 	public get trusted(): boolean {
 		return this._isTrusted;

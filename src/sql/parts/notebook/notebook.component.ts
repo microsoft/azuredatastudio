@@ -104,13 +104,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
-	//Add cell based on cell type
+	// Add cell based on cell type
 	public addCell(cellType: CellType)
 	{
 		this._model.addCell(cellType);
 	}
 
-	//Updates Notebook model's trust details
+	// Updates Notebook model's trust details
 	public updateModelTrustDetails(isTrusted: boolean)
 	{
 		this._model.trustedMode = isTrusted;
@@ -178,7 +178,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._changeRef.detectChanges();
 	}
 
-	//Updates toolbar components
+	// Updates toolbar components
 	private updateToolbarComponents(isTrusted: boolean)
 	{
 		if(this._trustedAction)
@@ -243,7 +243,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
-		//this._trustedAction = new TrustedAction('notebook.Trusted');
 		this._trustedAction.enabled = false;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
