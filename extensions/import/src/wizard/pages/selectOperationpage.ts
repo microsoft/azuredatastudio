@@ -53,13 +53,10 @@ export class SelectOperationPage extends DacFxPage {
 
 	async onPageEnter(): Promise<boolean> {
 		let numPages = this.instance.wizard.pages.length;
-		console.error('in onPageEnter');
 		for(let i= numPages -1; i > 2; --i) {
 			await this.instance.wizard.removePage(i);
-			console.error('removing page: ' + i + ' length is now ' + this.instance.wizard.pages.length);
 		}
 
-		console.error('numpages after removing: ' + this.instance.wizard.pages.length);
 		return true;
 	}
 
@@ -89,12 +86,11 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(2);
 			this.instance.wizard.removePage(1);
 
-			// add deploy config page
-			console.error('adding deploy pages');
-			let page = this.instance.pages.get(1);
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(2);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
+			// add deploy pages
+			let page = this.instance.wizardPages.get(1);
+			this.instance.wizard.addPage(page, 1);
+			let page2 = this.instance.wizardPages.get(2);
+			this.instance.wizard.addPage(page2, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.deploy);
@@ -118,12 +114,11 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(2);
 			this.instance.wizard.removePage(1);
 
-			// add the extract config page
-			let page = this.instance.pages.get(3);
-			console.error('adding extract page');
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(4);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
+			// add the extract pages
+			let page = this.instance.wizardPages.get(3);
+			this.instance.wizard.addPage(page, 1);
+			let page2 = this.instance.wizardPages.get(4);
+			this.instance.wizard.addPage(page2, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.extract);
@@ -147,12 +142,12 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(2);
 			this.instance.wizard.removePage(1);
 
-			// add the import config page
-			let page = this.instance.pages.get(5);
-			console.error('adding import page');
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(6);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
+			// add the import pages
+
+			let page = this.instance.wizardPages.get(5);
+			this.instance.wizard.addPage(page, 1);
+			let page2 = this.instance.wizardPages.get(6);
+			this.instance.wizard.addPage(page2, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.import);
@@ -176,12 +171,11 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(2);
 			this.instance.wizard.removePage(1);
 
-			// add the export config page
-			let page = this.instance.pages.get(7);
-			console.error('adding export page');
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(8);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
+			// add the export pages
+			let page = this.instance.wizardPages.get(7);
+			this.instance.wizard.addPage(page, 1);
+			let page2 = this.instance.wizardPages.get(8);
+			this.instance.wizard.addPage(page2, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.export);
