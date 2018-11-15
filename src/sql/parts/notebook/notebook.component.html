@@ -10,7 +10,7 @@
 	<div class="scrollable" style="flex: 1 1 auto; position: relative">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<div class="notebook-cell" *ngFor="let cell of cells" (click)="selectCell(cell)" [class.active]="cell.active" (keydown)="onKeyDown($event)">
-			<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model">
+			<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 			</code-cell-component>
 			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell">
 			</text-cell-component>

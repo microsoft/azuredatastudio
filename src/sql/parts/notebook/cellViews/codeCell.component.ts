@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./codeCell';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
@@ -21,13 +21,19 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 	selector: CODE_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./codeCell.component.html'))
 })
-export class CodeCellComponent extends CellView implements OnInit {
+export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('codeCellOutput', { read: ElementRef }) private outputPreview: ElementRef;
-	private _model: NotebookModel;
+	
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
 	}
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
+	}
+
+	private _model: NotebookModel;
+	private _activeCellId: string;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -41,6 +47,17 @@ export class CodeCellComponent extends CellView implements OnInit {
 		this.updateTheme(this.themeService.getColorTheme());
 	}
 
+	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+		for (let propName in changes) {
+			if (propName === 'activeCellId') {
+				let changedProp = changes[propName];
+				this._activeCellId = changedProp.currentValue;
+				break;
+			}
+		}
+	}
+
+
 	// Todo: implement layout
 	public layout() {
 
@@ -53,6 +70,10 @@ export class CodeCellComponent extends CellView implements OnInit {
 
 	get model(): NotebookModel {
 		return this._model;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
 	}
 
 }
