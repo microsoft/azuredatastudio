@@ -151,7 +151,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true));
 		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete')));
 
-		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, context, this.contextMenuService), { icon: true, label: false });
+		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, context), { icon: true, label: false });
 	}
 
 	private createUri(): URI {
