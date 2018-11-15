@@ -41,7 +41,7 @@ export class DataTierApplicationWizard {
 	public wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
 	private model: DacFxDataModel;
-	public pages:  Map<number, Page> = new Map<number, Page>();
+	public pages: Map<number, Page> = new Map<number, Page>();
 	private selectedOperation: Operation;
 	public wizardPages: Map<number, sqlops.window.modelviewdialog.WizardPage> = new Map<number, sqlops.window.modelviewdialog.WizardPage>();
 
@@ -159,9 +159,8 @@ export class DataTierApplicationWizard {
 			let page = this.pages.get(idx);
 
 			// get appropriate summary page
-			if(idx === 2)
-			{
-				switch(this.selectedOperation) {
+			if (idx === 2) {
+				switch (this.selectedOperation) {
 					case Operation.deploy: {
 						page = this.pages.get(2);
 						break;
@@ -208,8 +207,8 @@ export class DataTierApplicationWizard {
 		this.wizard.registerNavigationValidator(validator);
 	}
 
-	public setDoneButton(operation: Operation) : void {
-		switch(operation) {
+	public setDoneButton(operation: Operation): void {
+		switch (operation) {
 			case Operation.deploy: {
 				this.wizard.doneButton.label = localize('dacFx.deployButton', 'Deploy');
 				this.selectedOperation = Operation.deploy;
@@ -234,7 +233,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async executeOperation() {
-		switch(this.selectedOperation) {
+		switch (this.selectedOperation) {
 			case Operation.deploy: {
 				await this.deploy();
 				break;
@@ -269,7 +268,7 @@ export class DataTierApplicationWizard {
 		let service = await DataTierApplicationWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
 
-		let result = await service.extractDacpac(this.model.databaseName, this.model.filePath, this.model.databaseName, this.model.version,ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.extractDacpac(this.model.databaseName, this.model.filePath, this.model.databaseName, this.model.version, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

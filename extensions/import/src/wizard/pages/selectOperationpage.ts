@@ -53,7 +53,7 @@ export class SelectOperationPage extends DacFxPage {
 
 	async onPageEnter(): Promise<boolean> {
 		let numPages = this.instance.wizard.pages.length;
-		for(let i= numPages -1; i > 2; --i) {
+		for (let i = numPages - 1; i > 2; --i) {
 			await this.instance.wizard.removePage(i);
 		}
 
@@ -76,10 +76,10 @@ export class SelectOperationPage extends DacFxPage {
 
 	private async createDeployRadioButton(): Promise<sqlops.FormComponent> {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
-		.withProperties({
-			name: 'selectedOperation',
-			label: 'Deploy Dacpac',
-		}).component();
+			.withProperties({
+				name: 'selectedOperation',
+				label: 'Deploy Dacpac',
+			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
 			// remove the 2 previous pages
@@ -104,10 +104,10 @@ export class SelectOperationPage extends DacFxPage {
 
 	private async createExtractRadioButton(): Promise<sqlops.FormComponent> {
 		this.extractRadioButton = this.view.modelBuilder.radioButton()
-		.withProperties({
-			name: 'selectedOperation',
-			label: 'Extract Dacpac',
-		}).component();
+			.withProperties({
+				name: 'selectedOperation',
+				label: 'Extract Dacpac',
+			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
 			// remove the 2 previous pages
@@ -132,10 +132,10 @@ export class SelectOperationPage extends DacFxPage {
 
 	private async createImportRadioButton(): Promise<sqlops.FormComponent> {
 		this.importRadioButton = this.view.modelBuilder.radioButton()
-		.withProperties({
-			name: 'selectedOperation',
-			label: 'Import Bacpac',
-		}).component();
+			.withProperties({
+				name: 'selectedOperation',
+				label: 'Import Bacpac',
+			}).component();
 
 		this.importRadioButton.onDidClick(() => {
 			// remove the 2 previous pages and action
@@ -161,10 +161,10 @@ export class SelectOperationPage extends DacFxPage {
 
 	private async createExportRadioButton(): Promise<sqlops.FormComponent> {
 		this.exportRadioButton = this.view.modelBuilder.radioButton()
-		.withProperties({
-			name: 'selectedOperation',
-			label: 'Export Bacpac',
-		}).component();
+			.withProperties({
+				name: 'selectedOperation',
+				label: 'Export Bacpac',
+			}).component();
 
 		this.exportRadioButton.onDidClick(() => {
 			// remove the 2 previous pages
