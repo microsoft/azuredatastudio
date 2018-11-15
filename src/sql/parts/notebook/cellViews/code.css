@@ -25,6 +25,11 @@ code-component .toolbarIconRun {
 	background-image: url('../media/dark/execute_cell_inverse.svg');
 }
 
+/* overview ruler */
+code-component .monaco-editor .decorationsOverviewRuler {
+	visibility: hidden;
+}
+
 code-component .carbon-taskbar .icon {
 	background-size: 20px;
 	width: 40px;
