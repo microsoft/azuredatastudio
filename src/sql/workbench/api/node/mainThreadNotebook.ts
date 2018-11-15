@@ -13,9 +13,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails, FutureMessageType, IFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, ISessionDetails, IKernelDetails, FutureMessageType, IFutureDetails, IFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
+import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -67,6 +68,14 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		if (future) {
 			future.onMessage(type, payload);
 		}
+	}
+
+	public $onFutureDone(futureId: number, done: IFutureDone): void {
+		let future = this._futures.get(futureId);
+		if (future) {
+			future.onDone(done);
+		}
+
 	}
 	//#endregion
 }
@@ -361,14 +370,15 @@ class KernelWrapper implements sqlops.nb.IKernel {
 }
 
 
-class FutureWrapper implements sqlops.nb.IFuture {
+class FutureWrapper implements FutureInternal {
 	private _futureId: number;
 	private _done = new Deferred<sqlops.nb.IShellMessage>();
 	private _messageHandlers = new Map<FutureMessageType, Array<sqlops.nb.MessageHandler<sqlops.nb.IMessage>>>();
 	private _msg: sqlops.nb.IMessage;
+	private _inProgress: boolean;
 
 	constructor(private _proxy: Proxies) {
-
+        this._inProgress = true;
 	}
 
 	public setDetails(details: IFutureDetails): void {
@@ -380,7 +390,7 @@ class FutureWrapper implements sqlops.nb.IFuture {
 		this._done.reject(error);
 	}
 
-	onMessage(type: FutureMessageType, payload: sqlops.nb.IMessage): void {
+	public onMessage(type: FutureMessageType, payload: sqlops.nb.IMessage): void {
 		let handlers = this._messageHandlers.get(type);
 		if (handlers && handlers.length > 0) {
 			for(let handler of handlers) {
@@ -393,6 +403,16 @@ class FutureWrapper implements sqlops.nb.IFuture {
 		}
 	}
 
+	public onDone(done: IFutureDone): void {
+		this._inProgress = false;
+		if (done.succeeded) {
+			this._done.resolve();
+		} else {
+			this._done.reject(new Error(done.rejectReason));
+		}
+	}
+
+
 	private addMessageHandler(type: FutureMessageType, handler: sqlops.nb.MessageHandler<sqlops.nb.IMessage>): void {
 		let handlers = this._messageHandlers.get(type);
 		if (!handlers) {
@@ -403,6 +423,14 @@ class FutureWrapper implements sqlops.nb.IFuture {
 	}
 
 	//#region Public API
+	get inProgress(): boolean {
+		return this._inProgress;
+	}
+
+	set inProgress(value: boolean) {
+		this._inProgress = value;
+	}
+
 	get msg(): sqlops.nb.IMessage {
 		return this._msg;
 	}

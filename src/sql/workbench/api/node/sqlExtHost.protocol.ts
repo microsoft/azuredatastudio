@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails, FutureMessageType
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails, FutureMessageType, IFutureDone
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -749,5 +749,6 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$registerNotebookProvider(providerId: string, handle: number): void;
 	$unregisterNotebookProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void;
+	$onFutureDone(futureId: number, done: IFutureDone): void;
 }
 

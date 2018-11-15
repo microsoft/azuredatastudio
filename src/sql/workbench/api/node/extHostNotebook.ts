@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
 
@@ -138,10 +138,36 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
 		let future = kernel.requestExecute(content, disposeOnDone);
 		let futureId = this._addNewAdapter(future);
+		this.hookFutureDone(futureId, future);
+		this.hookFutureMessages(futureId, future);
 		return Promise.resolve({
 			futureId: futureId,
 			msg: future.msg
 		});
+	}
+
+	private hookFutureDone(futureId: number, future: sqlops.nb.IFuture): void {
+		future.done.then(success => {
+			return this._proxy.$onFutureDone(futureId, { succeeded: true, rejectReason: undefined });
+		}, err => {
+			let rejectReason: string;
+			if (typeof err === 'string') {
+				rejectReason = err;
+			}
+			else if (err instanceof Error && typeof err.message === 'string') {
+				rejectReason = err.message;
+			}
+			else {
+				rejectReason = err;
+			}
+			return this._proxy.$onFutureDone(futureId, { succeeded: false, rejectReason: rejectReason });
+		});
+	}
+
+	private hookFutureMessages(futureId: number, future: sqlops.nb.IFuture): void {
+		future.setReplyHandler({ handle: (msg) => this._proxy.$onFutureMessage(futureId, FutureMessageType.Reply, msg) });
+		future.setStdInHandler({ handle: (msg) => this._proxy.$onFutureMessage(futureId, FutureMessageType.StdIn, msg) });
+		future.setIOPubHandler({ handle: (msg) => this._proxy.$onFutureMessage(futureId, FutureMessageType.IOPub, msg) });
 	}
 
 	$interruptKernel(kernelId: number): Thenable<void> {

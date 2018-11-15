@@ -447,3 +447,8 @@ export enum FutureMessageType {
 	StdIn = 1,
 	IOPub = 2
 }
+
+export interface IFutureDone {
+	succeeded: boolean;
+	rejectReason: string;
+}
