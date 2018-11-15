@@ -22,8 +22,8 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 	templateUrl: decodeURI(require.toUrl('./codeCell.component.html'))
 })
 export class CodeCellComponent extends CellView implements OnInit {
+	@ViewChild('codeCellOutput', { read: ElementRef }) private outputPreview: ElementRef;
 	private _model: NotebookModel;
-
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -47,6 +47,8 @@ export class CodeCellComponent extends CellView implements OnInit {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
+		let outputElement = <HTMLElement>this.outputPreview.nativeElement;
+		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
 	get model(): NotebookModel {

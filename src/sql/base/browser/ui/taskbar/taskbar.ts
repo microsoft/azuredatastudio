@@ -146,4 +146,5 @@ export class Taskbar {
 	public dispose(): void {
 		this.actionBar.dispose();
 	}
+
 }

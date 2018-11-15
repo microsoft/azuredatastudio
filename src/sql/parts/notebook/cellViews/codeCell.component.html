@@ -8,7 +8,7 @@
 	<div class="notebook-code" style="flex: 0 0 auto;">
 		<code-component [cellModel]="cellModel" [model]="model"></code-component>
 	</div>
-	<div class="notebook-output" style="flex: 0 0 auto;">
+	<div #codeCellOutput class="notebook-output" style="flex: 0 0 auto;">
 		<output-area-component *ngIf="cellModel.outputs && cellModel.outputs.length > 0" [cellModel]="cellModel">
 		</output-area-component>
 	</div>
