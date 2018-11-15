@@ -198,11 +198,6 @@ export class AccountManagementService implements IAccountManagementService {
 	public getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
 		let self = this;
 
-		// Make sure the provider exists before attempting to retrieve accounts
-		// if (!this._providers[providerId]) {
-		// 	return Promise.reject(new Error(nls.localize('accountManagementNoProvider', 'Account provider does not exist'))).then();
-		// }
-
 		// 1) Get the accounts from the store
 		// 2) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
