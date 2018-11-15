@@ -10,6 +10,8 @@ import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation } from '../DataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
+const localize = nls.loadMessageBundle();
+
 export class SelectOperationPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
@@ -78,7 +80,7 @@ export class SelectOperationPage extends DacFxPage {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: 'Deploy Dacpac',
+				label:  localize('dacFx.deployRadioButtonLabel', 'Deploy Dacpac'),
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
@@ -87,10 +89,10 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(1);
 
 			// add deploy pages
-			let page = this.instance.wizardPages.get(1);
-			this.instance.wizard.addPage(page, 1);
-			let page2 = this.instance.wizardPages.get(2);
-			this.instance.wizard.addPage(page2, 2);
+			let page = this.instance.pages.get(1);
+			this.instance.wizard.addPage(page.wizardPage, 1);
+			let page2 = this.instance.pages.get(2);
+			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.deploy);
@@ -106,7 +108,7 @@ export class SelectOperationPage extends DacFxPage {
 		this.extractRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: 'Extract Dacpac',
+				label: localize('dacFx.extractRadioButtonLabel', 'Extract Dacpac'),
 			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
@@ -115,10 +117,10 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(1);
 
 			// add the extract pages
-			let page = this.instance.wizardPages.get(3);
-			this.instance.wizard.addPage(page, 1);
-			let page2 = this.instance.wizardPages.get(4);
-			this.instance.wizard.addPage(page2, 2);
+			let page = this.instance.pages.get(3);
+			this.instance.wizard.addPage(page.wizardPage, 1);
+			let page2 = this.instance.pages.get(4);
+			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.extract);
@@ -134,7 +136,7 @@ export class SelectOperationPage extends DacFxPage {
 		this.importRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: 'Import Bacpac',
+				label: localize('dacFx.importRadioButtonLabel', 'Import Bacpac'),
 			}).component();
 
 		this.importRadioButton.onDidClick(() => {
@@ -144,10 +146,10 @@ export class SelectOperationPage extends DacFxPage {
 
 			// add the import pages
 
-			let page = this.instance.wizardPages.get(5);
-			this.instance.wizard.addPage(page, 1);
-			let page2 = this.instance.wizardPages.get(6);
-			this.instance.wizard.addPage(page2, 2);
+			let page = this.instance.pages.get(5);
+			this.instance.wizard.addPage(page.wizardPage, 1);
+			let page2 = this.instance.pages.get(6);
+			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.import);
@@ -163,7 +165,7 @@ export class SelectOperationPage extends DacFxPage {
 		this.exportRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: 'Export Bacpac',
+				label: localize('dacFx.exportRadioButtonLabel', 'Export Bacpac'),
 			}).component();
 
 		this.exportRadioButton.onDidClick(() => {
@@ -172,10 +174,10 @@ export class SelectOperationPage extends DacFxPage {
 			this.instance.wizard.removePage(1);
 
 			// add the export pages
-			let page = this.instance.wizardPages.get(7);
-			this.instance.wizard.addPage(page, 1);
-			let page2 = this.instance.wizardPages.get(8);
-			this.instance.wizard.addPage(page2, 2);
+			let page = this.instance.pages.get(7);
+			this.instance.wizard.addPage(page.wizardPage, 1);
+			let page2 = this.instance.pages.get(8);
+			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.export);

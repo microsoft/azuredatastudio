@@ -36,7 +36,7 @@
       },
       {
         "command": "dacFx.start",
-        "title": "Data-tier Application Operations",
+        "title": "Data-tier Application Wizard",
         "category": "Data-tier Application",
         "icon": {
           "light": "./images/light_icon.svg",

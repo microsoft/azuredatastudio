@@ -24,9 +24,8 @@ class Page {
 	wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	dacFxPage: DacFxPage;
 
-	constructor(wizardPage: sqlops.window.modelviewdialog.WizardPage, dacFxPage: DacFxPage) {
+	constructor(wizardPage: sqlops.window.modelviewdialog.WizardPage) {
 		this.wizardPage = wizardPage;
-		this.dacFxPage = dacFxPage;
 	}
 }
 
@@ -43,7 +42,6 @@ export class DataTierApplicationWizard {
 	private model: DacFxDataModel;
 	public pages: Map<number, Page> = new Map<number, Page>();
 	private selectedOperation: Operation;
-	public wizardPages: Map<number, sqlops.window.modelviewdialog.WizardPage> = new Map<number, sqlops.window.modelviewdialog.WizardPage>();
 
 	constructor() {
 	}
@@ -64,7 +62,7 @@ export class DataTierApplicationWizard {
 		}
 
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Data-tier Application Wizard');
-		let selectOperationWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.selectOperationPageName', 'Select Operation'));
+		let selectOperationWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
 		let deployConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployConfigPageName', 'Deploy Settings'));
 		let deploySummaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deploySummaryPageName', 'Deploy Summary'));
 		let extractConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractConfigPageName', 'Extract Settings'));
@@ -74,19 +72,19 @@ export class DataTierApplicationWizard {
 		let exportConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportConfigPageName', 'Export Settings'));
 		let exportSummaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportSummaryPageName', 'Export Summary'));
 
-		this.wizardPages.set(0, selectOperationWizardPage);
-		this.wizardPages.set(1, deployConfigWizardPage);
-		this.wizardPages.set(2, deploySummaryWizardPage);
-		this.wizardPages.set(3, extractConfigWizardPage);
-		this.wizardPages.set(4, extractSummaryWizardPage);
-		this.wizardPages.set(5, importConfigWizardPage);
-		this.wizardPages.set(6, importSummaryWizardPage);
-		this.wizardPages.set(7, exportConfigWizardPage);
-		this.wizardPages.set(8, exportSummaryWizardPage);
+		this.pages.set(0, new Page(selectOperationWizardPage));
+		this.pages.set(1, new Page(deployConfigWizardPage));
+		this.pages.set(2, new Page(deploySummaryWizardPage));
+		this.pages.set(3, new Page(extractConfigWizardPage));
+		this.pages.set(4, new Page(extractSummaryWizardPage));
+		this.pages.set(5, new Page(importConfigWizardPage));
+		this.pages.set(6, new Page(importSummaryWizardPage));
+		this.pages.set(7, new Page(exportConfigWizardPage));
+		this.pages.set(8, new Page(exportSummaryWizardPage));
 
 		selectOperationWizardPage.registerContent(async (view) => {
 			let selectOperationDacFxPage = new SelectOperationPage(this, selectOperationWizardPage, this.model, view);
-			this.pages.set(0, new Page(selectOperationWizardPage, selectOperationDacFxPage));
+			this.pages.get(0).dacFxPage = selectOperationDacFxPage;
 			await selectOperationDacFxPage.start().then(() => {
 				selectOperationDacFxPage.setupNavigationValidator();
 				selectOperationDacFxPage.onPageEnter();
@@ -95,7 +93,7 @@ export class DataTierApplicationWizard {
 
 		deployConfigWizardPage.registerContent(async (view) => {
 			let deployConfigDacFxPage = new DeployConfigPage(this, deployConfigWizardPage, this.model, view);
-			this.pages.set(1, new Page(deployConfigWizardPage, deployConfigDacFxPage));
+			this.pages.get(1).dacFxPage = deployConfigDacFxPage;
 			await deployConfigDacFxPage.start().then(() => {
 				deployConfigDacFxPage.setupNavigationValidator();
 				deployConfigDacFxPage.onPageEnter();
@@ -104,13 +102,13 @@ export class DataTierApplicationWizard {
 
 		deploySummaryWizardPage.registerContent(async (view) => {
 			let deploySummaryDacFxPage = new DeploySummaryPage(this, deploySummaryWizardPage, this.model, view);
-			this.pages.set(2, new Page(deploySummaryWizardPage, deploySummaryDacFxPage));
+			this.pages.get(2).dacFxPage = deploySummaryDacFxPage;
 			await deploySummaryDacFxPage.start();
 		});
 
 		extractConfigWizardPage.registerContent(async (view) => {
 			let extractConfigDacFxPage = new ExtractConfigPage(this, extractConfigWizardPage, this.model, view);
-			this.pages.set(3, new Page(extractConfigWizardPage, extractConfigDacFxPage));
+			this.pages.get(3).dacFxPage = extractConfigDacFxPage;
 			await extractConfigDacFxPage.start().then(() => {
 				extractConfigDacFxPage.setupNavigationValidator();
 				extractConfigDacFxPage.onPageEnter();
@@ -119,13 +117,13 @@ export class DataTierApplicationWizard {
 
 		extractSummaryWizardPage.registerContent(async (view) => {
 			let extractSummaryDacFxPage = new ExtractSummaryPage(this, extractSummaryWizardPage, this.model, view);
-			this.pages.set(4, new Page(extractSummaryWizardPage, extractSummaryDacFxPage));
+			this.pages.get(4).dacFxPage = extractSummaryDacFxPage;
 			await extractSummaryDacFxPage.start();
 		});
 
 		importConfigWizardPage.registerContent(async (view) => {
 			let importConfigDacFxPage = new ImportConfigPage(this, importConfigWizardPage, this.model, view);
-			this.pages.set(5, new Page(importConfigWizardPage, importConfigDacFxPage));
+			this.pages.get(5).dacFxPage = importConfigDacFxPage;
 			await importConfigDacFxPage.start().then(() => {
 				importConfigDacFxPage.setupNavigationValidator();
 				importConfigDacFxPage.onPageEnter();
@@ -134,13 +132,13 @@ export class DataTierApplicationWizard {
 
 		importSummaryWizardPage.registerContent(async (view) => {
 			let importSummaryDacFxPage = new ImportSummaryPage(this, importSummaryWizardPage, this.model, view);
-			this.pages.set(6, new Page(importSummaryWizardPage, importSummaryDacFxPage));
+			this.pages.get(6).dacFxPage = importSummaryDacFxPage;
 			await importSummaryDacFxPage.start();
 		});
 
 		exportConfigWizardPage.registerContent(async (view) => {
 			let exportConfigDacFxPage = new ExportConfigPage(this, exportConfigWizardPage, this.model, view);
-			this.pages.set(7, new Page(exportConfigWizardPage, exportConfigDacFxPage));
+			this.pages.get(7).dacFxPage = exportConfigDacFxPage;
 			await exportConfigDacFxPage.start().then(() => {
 				exportConfigDacFxPage.setupNavigationValidator();
 				exportConfigDacFxPage.onPageEnter();
@@ -149,7 +147,7 @@ export class DataTierApplicationWizard {
 
 		exportSummaryWizardPage.registerContent(async (view) => {
 			let exportSummaryDacFxPage = new ExportSummaryPage(this, exportSummaryWizardPage, this.model, view);
-			this.pages.set(8, new Page(exportSummaryWizardPage, exportSummaryDacFxPage));
+			this.pages.get(8).dacFxPage = exportSummaryDacFxPage;
 			await exportSummaryDacFxPage.start();
 		});
 
