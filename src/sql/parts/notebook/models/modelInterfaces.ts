@@ -304,9 +304,9 @@ export interface INotebookModel {
 	changeContext(host: string): void;
 
 	/**
-	 * Adds a cell to the end of the model
+	 * Adds a cell to the index of the model
 	 */
-	addCell(cellType: CellType): void;
+	addCell(cellType: CellType, index?: number): void;
 
 	/**
 	 * Deletes a cell
