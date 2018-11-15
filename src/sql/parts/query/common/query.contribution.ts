@@ -36,9 +36,7 @@ import * as Constants from 'sql/parts/query/common/constants';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 
-export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
-export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
-export const ResultsMessagesFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsMessagesFocussedId));
+import 'sql/parts/query/execution/queryActions';
 
 // Editor
 const queryResultsEditorDescriptor = new EditorDescriptor(
@@ -91,6 +89,7 @@ const editDataResultsEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
+/*
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 // Query Actions
@@ -163,7 +162,6 @@ actionRegistry.registerWorkbenchAction(
 );
 
 // Grid actions
-
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		ToggleQueryResultsKeyboardAction,
@@ -270,6 +268,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
 	handler: gridCommands.goToNextQueryOutputTab
 });
+*/
 
 // Intellisense and other configuration options
 let registryProperties = {
@@ -365,7 +364,7 @@ let registryProperties = {
 		'description': localize('mssql.intelliSense.lowerCaseSuggestions', 'Should IntelliSense suggestions be lowercase')
 	}
 };
-
+/*DisconnectAction
 // Setup keybindings
 let initialShortcuts = [
 	{ name: 'sp_help', primary: KeyMod.Alt + KeyCode.F2 },
@@ -397,6 +396,7 @@ for (let i = 0; i < 9; i++) {
 			queryIndex)
 	};
 }
+*/
 
 // Register the query-related configuration options
 let configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
@@ -406,6 +406,3 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
-
-
-

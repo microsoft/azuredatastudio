@@ -15,6 +15,7 @@ import { Builder, $ } from 'vs/base/browser/builder';
 import { Action, IActionRunner, IAction } from 'vs/base/common/actions';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
+import { isArray } from 'vs/base/common/types';
 
 /**
  * A wrapper for the different types of content a QueryTaskbar can display
@@ -116,15 +117,29 @@ export class Taskbar {
 	/**
 	 * Push HTMLElements and icons for IActions into the ActionBar UI. Push IActions into ActionBar's private collection.
 	 */
-	public setContent(content: ITaskbarContent[]): void {
-		let contentToSet: ITaskbarContent[] = content ? content.slice(0) : [];
+	public setContent(content: IAction[][]): void;
+	public setContent(content: ITaskbarContent[]): void;
+	public setContent(content: IAction[][] | ITaskbarContent[]): void {
 		this.actionBar.clear();
+		if (content.length > 0) {
+			if (isArray(content[0])) {
+				let contentToSet = content.slice(0) as IAction[][];
+				for (let group of contentToSet) {
+					for (let item of group) {
+						this.actionBar.pushAction(item, { icon: true, label: true });
+					}
+					this.actionBar.pushElement(Taskbar.createTaskbarSeparator());
+				}
+			} else {
+				let contentToSet = content.slice(0) as ITaskbarContent[];
 
-		for (let item of contentToSet) {
-			if (item.action) {
-				this.actionBar.pushAction(item.action, { icon: true, label: true, keybinding: this.getKeybindingLabel(item.action) });
-			} else if (item.element) {
-				this.actionBar.pushElement(item.element);
+				for (let item of contentToSet) {
+					if (item.action) {
+						this.actionBar.pushAction(item.action, { icon: true, label: true, keybinding: this.getKeybindingLabel(item.action) });
+					} else if (item.element) {
+						this.actionBar.pushElement(item.element);
+					}
+				}
 			}
 		}
 	}
