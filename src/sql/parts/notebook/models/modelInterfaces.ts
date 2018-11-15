@@ -310,7 +310,7 @@ export interface INotebookModel {
 	findCellIndex(cellModel: ICellModel): number;
 
 	/**
-	 * Adds a cell to the end of the model
+	 * Adds a cell to the index of the model
 	 */
 	addCell(cellType: CellType, index?: number): void;
 
@@ -347,6 +347,7 @@ export interface ICellModel {
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICell;
+	onOutputsChanged:  Event<ReadonlyArray<nb.ICellOutput>>;
 }
 
 export interface IModelFactory {

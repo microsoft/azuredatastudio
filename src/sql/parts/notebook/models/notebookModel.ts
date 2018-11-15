@@ -79,6 +79,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
 	private _hadoopConnection: NotebookConnection;
 	private _defaultKernel: nb.IKernelSpec;
+	private _activeCell: ICellModel;
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -245,7 +246,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
-	deleteCell(cellModel: CellModel): void {
+	deleteCell(cellModel: ICellModel): void {
 		if (this.inErrorState || !this._cells) {
 			return;
 		}
@@ -260,6 +261,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		} else {
 			this.notifyError(localize('deleteCellFailed', 'Failed to delete cell.'));
 		}
+	}
+
+	public get activeCell(): ICellModel {
+		return this._activeCell;
+	}
+
+	public set activeCell(value: ICellModel) {
+		this._activeCell = value;
 	}
 
 	private notifyError(error: string): void {

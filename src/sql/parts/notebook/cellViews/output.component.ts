@@ -22,7 +22,8 @@ export const OUTPUT_SELECTOR: string = 'output-component';
 export class OutputComponent extends AngularDisposable implements OnInit {
 	@ViewChild('output', { read: ElementRef }) private outputElement: ElementRef;
 	@Input() cellOutput: nb.ICellOutput;
-	@Input() trustedMode: boolean;
+	private _trusted: boolean;
+	private _initialized: boolean = false;
 	private readonly _minimumHeight = 30;
 	registry: RenderMimeRegistry;
 
@@ -35,6 +36,11 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	}
 
 	ngOnInit() {
+		this.renderOutput();
+		this._initialized = true;
+	}
+
+	private renderOutput() {
 		let node = this.outputElement.nativeElement;
 		let output = this.cellOutput;
 		let options = outputProcessor.getBundleOptions({ value: output, trusted: this.trustedMode });
@@ -43,6 +49,18 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 	}
 
 	public layout(): void {
+	}
+
+	get trustedMode(): boolean {
+		return this._trusted;
+	}
+
+	@Input()
+	set trustedMode(value: boolean) {
+		this._trusted = value;
+		if (this._initialized) {
+			this.renderOutput();
+		}
 	}
 
 	protected createRenderedMimetype(options: MimeModel.IOptions, node: HTMLElement): void {
