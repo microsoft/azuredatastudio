@@ -53,7 +53,7 @@ export interface IToggleableState {
 	isOn: boolean;
 }
 
-export class ToggleableAction extends Action {
+export abstract class ToggleableAction extends Action {
 
 	constructor(id: string, protected state: IToggleableState) {
 		super(id, '');
