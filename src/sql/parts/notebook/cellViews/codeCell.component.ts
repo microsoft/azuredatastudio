@@ -21,6 +21,7 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 	templateUrl: decodeURI(require.toUrl('./codeCell.component.html'))
 })
 export class CodeCellComponent extends CellView implements OnInit {
+	@ViewChild('codeCellOutput', { read: ElementRef }) private outputPreview: ElementRef;
 	@Input() cellModel: ICellModel;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -40,5 +41,7 @@ export class CodeCellComponent extends CellView implements OnInit {
 	}
 
 	private updateTheme(theme: IColorTheme): void {
+		let outputElement = <HTMLElement>this.outputPreview.nativeElement;
+		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 }
