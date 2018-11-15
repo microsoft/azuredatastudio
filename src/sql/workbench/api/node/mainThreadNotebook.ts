@@ -234,8 +234,9 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 	}
 
 	shutdown(id: string): Thenable<void> {
-		throw new Error('Method not implemented.');
+		return this._proxy.ext.$shutdownSession(this.managerHandle, id);
 	}
+
 	//#endregion
 
 	//#region Call throughs from extension host

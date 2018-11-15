@@ -107,8 +107,6 @@ export class TrustedAction extends ToggleableAction {
 	}
 	public set trusted(value: boolean) {
 		this.toggle(value);
-		this._setClass(value ? TrustedAction.trustedCssClass : TrustedAction.notTrustedCssClass);
-		this._setLabel(value ? TrustedAction.trustedLabel : TrustedAction.notTrustedLabel);
 	}
 
 	public run(context: NotebookComponent): TPromise<boolean> {

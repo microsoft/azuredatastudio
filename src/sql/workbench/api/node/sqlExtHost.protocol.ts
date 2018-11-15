@@ -729,6 +729,7 @@ export interface ExtHostNotebookShape {
 	// Session Manager APIs
 	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels>;
 	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<ISessionDetails>;
+	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
 
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<IKernelDetails>;

@@ -114,6 +114,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return kernelDetails;
 	}
 
+	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
+		return this._withSessionManager(managerHandle, async (sessionManager) => {
+			return sessionManager.shutdown(sessionId);
+		});
+	}
+
 	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<IKernelDetails> {
 		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
 		return session.changeKernel(kernelInfo).then(kernel => this.saveKernel(kernel));
