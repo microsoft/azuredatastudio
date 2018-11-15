@@ -52,8 +52,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		if (manager) {
 			manager.provider.handleNotebookClosed(uri);
 			// Note: deliberately not removing handle.
-			// Operations such as shutdown may be processed after closing a notebook
-			// this._managers.delete(manager.managerHandle);
 		}
 	}
 
