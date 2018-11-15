@@ -10,19 +10,18 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
-import { NotificationService } from 'vs/workbench/services/notification/common/notificationService';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
 import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
+import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
 const attachToLabel: string = localize('AttachTo', 'Attach to: ');
-const msgLocalHost: string = localize('localhost', 'Localhost');
 const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
@@ -145,12 +144,11 @@ export class KernelsDropdown extends SelectBox {
 export class AttachToDropdown extends SelectBox {
 	private model: INotebookModel;
 
-	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>) {
-		let selectBoxOptionsWithLabel: ISelectBoxOptionsWithLabel = {
-			labelText: attachToLabel,
-			labelOnTop: false
-		};
-		super([msgLocalHost], msgLocalHost, contextViewProvider, container, selectBoxOptionsWithLabel);
+	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
+		@INotificationService private _notificationService: INotificationService) {
+		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false} as ISelectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
 			.then((model) => this.updateModel(model))
@@ -159,12 +157,7 @@ export class AttachToDropdown extends SelectBox {
 			});
 		}
 		this.onDidSelect(e => {
-			let connectionProfile = this.model.contexts.otherConnections.find((c) => c.options.host === e.selected);
-			let connection: sqlops.connection.Connection = {
-				providerName: connectionProfile.providerName,
-				connectionId: connectionProfile.id,
-				options: connectionProfile.options
-			};
+			let connection = this.model.contexts.otherConnections.find((c) => c.options.host === e.selected);
 			this.doChangeContext(connection);
 		});
 	}
@@ -172,9 +165,10 @@ export class AttachToDropdown extends SelectBox {
 	public updateModel(model: INotebookModel): void {
 		this.model = model;
 		model.contextsChanged(() => {
-			let contexts = this.model.contexts;
-			let defaultConnectionName = [contexts.defaultConnection.options.host];
-			this.setOptions(defaultConnectionName.concat(contexts.otherConnections.map((context) => context.options.host)));
+			if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
+				let currentKernel = this.model.clientSession.kernel.name;
+				this.loadAttachToDropdown(this.model, currentKernel);
+			}
 		});
 	}
 
@@ -201,7 +195,7 @@ export class AttachToDropdown extends SelectBox {
 
 	    //Get hadoop connections from context
 		public getHadoopConnections(model: INotebookModel): string[] {
-			let otherHadoopConnections: sqlops.IConnectionProfile[] = [];
+			let otherHadoopConnections: IConnectionProfile[] = [];
 			model.contexts.otherConnections.forEach((conn) => { otherHadoopConnections.push(conn); });
 			this.selectWithOptionName(model.contexts.defaultConnection.options.host);
 			otherHadoopConnections = this.setHadoopConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
@@ -220,7 +214,7 @@ export class AttachToDropdown extends SelectBox {
 			return otherHadoopConnections;
 		}
 
-	public doChangeContext(connection?: sqlops.connection.Connection): void {
+	public doChangeContext(connection?: IConnectionProfile): void {
 		if (this.value === msgAddNewConnection) {
             this.openConnectionDialog();
         } else {
@@ -236,7 +230,8 @@ export class AttachToDropdown extends SelectBox {
      **/
     public async openConnectionDialog(): Promise<void> {
         try {
-            await sqlops.connection.openConnectionDialog([notebookConstants.hadoopKnoxProviderName]).then(connection => {
+			//TODO: Figure out how to plumb through the correct provider here
+			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }, undefined).then(connection => {
                 let attachToConnections = this.values;
                 if (!connection) {
                     this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
@@ -260,10 +255,11 @@ export class AttachToDropdown extends SelectBox {
 
                 // Call doChangeContext to set the newly chosen connection in the model
                 this.doChangeContext(connection);
-            });
+			});
         }
         catch (error) {
-            // vscode.window.showErrorMessage("openConnectionDialog: {0}", utils.getErrorMessage(error));
+			const actions: INotificationActions = { primary: [] };
+			this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
         }
     }
 }

@@ -331,28 +331,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			});
 	}
 
-	public changeContext(host: string, newConnection?: connection.Connection): void {
+	public changeContext(host: string, newConnection?: IConnectionProfile): void {
 		try {
-			let newConnectionProfile;
 			if (!newConnection) {
-				newConnectionProfile = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
-				newConnection = {
-					providerName: newConnectionProfile.providerName,
-					connectionId: newConnectionProfile.id,
-					options: newConnectionProfile.options
-				};
+				newConnection = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
 			}
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
-				newConnectionProfile = this._activeContexts.defaultConnection;
-				newConnection = {
-					providerName: newConnectionProfile.providerName,
-					connectionId: newConnectionProfile.id,
-					options: newConnectionProfile.options
-				}
+				newConnection = this._activeContexts.defaultConnection;
 			}
 			SparkMagicContexts.configureContext(this.notebookOptions);
-			this._hadoopConnection = new NotebookConnection(newConnectionProfile);
-			this.refreshConnections(newConnectionProfile);
+			this._hadoopConnection = new NotebookConnection(newConnection);
+			this.refreshConnections(newConnection);
 			this._clientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
