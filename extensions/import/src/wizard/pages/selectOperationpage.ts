@@ -80,7 +80,7 @@ export class SelectOperationPage extends DacFxPage {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label:  localize('dacFx.deployRadioButtonLabel', 'Deploy Dacpac'),
+				label: localize('dacFx.deployRadioButtonLabel', 'Deploy Dacpac'),
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
