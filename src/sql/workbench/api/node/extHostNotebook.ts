@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
 
@@ -80,15 +80,15 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<ISessionDetails> {
+	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
 		return this._withSessionManager(managerHandle, async (sessionManager) => {
 			let session = await sessionManager.startNew(options);
 			let sessionId = this._addNewAdapter(session);
-			let kernelDetails: IKernelDetails = undefined;
+			let kernelDetails: INotebookKernelDetails = undefined;
 			if (session.kernel) {
 				kernelDetails = this.saveKernel(session.kernel);
 			}
-			let details: ISessionDetails = {
+			let details: INotebookSessionDetails = {
 				sessionId: sessionId,
 				id: session.id,
 				path: session.path,
@@ -102,9 +102,9 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private saveKernel(kernel: sqlops.nb.IKernel): IKernelDetails {
+	private saveKernel(kernel: sqlops.nb.IKernel): INotebookKernelDetails {
 		let kernelId = this._addNewAdapter(kernel);
-		let kernelDetails: IKernelDetails = {
+		let kernelDetails: INotebookKernelDetails = {
 			kernelId: kernelId,
 			id: kernel.id,
 			info: kernel.info,
@@ -120,7 +120,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<IKernelDetails> {
+	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
 		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
 		return session.changeKernel(kernelInfo).then(kernel => this.saveKernel(kernel));
 	}
@@ -140,7 +140,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return kernel.requestComplete(content);
 	}
 
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<IFutureDetails> {
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
 		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
 		let future = kernel.requestExecute(content, disposeOnDone);
 		let futureId = this._addNewAdapter(future);

@@ -13,7 +13,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails, FutureMessageType, IFutureDetails, IFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
@@ -70,7 +70,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 		}
 	}
 
-	public $onFutureDone(futureId: number, done: IFutureDone): void {
+	public $onFutureDone(futureId: number, done: INotebookFutureDone): void {
 		let future = this._futures.get(futureId);
 		if (future) {
 			future.onDone(done);
@@ -260,7 +260,7 @@ class SessionManagerWrapper implements sqlops.nb.SessionManager {
 
 class SessionWrapper implements sqlops.nb.ISession {
 	private _kernel: KernelWrapper;
-	constructor(private _proxy: Proxies, private sessionDetails: ISessionDetails) {
+	constructor(private _proxy: Proxies, private sessionDetails: INotebookSessionDetails) {
 		if (sessionDetails && sessionDetails.kernelDetails) {
 			this._kernel = new KernelWrapper(_proxy, sessionDetails.kernelDetails);
 		}
@@ -309,11 +309,11 @@ class KernelWrapper implements sqlops.nb.IKernel {
 	private _isReady: boolean = false;
 	private _ready = new Deferred<void>();
 	private _info: sqlops.nb.IInfoReply;
-	constructor(private _proxy: Proxies, private kernelDetails: IKernelDetails) {
+	constructor(private _proxy: Proxies, private kernelDetails: INotebookKernelDetails) {
 		this.initialize(kernelDetails);
 	}
 
-	private async initialize(kernelDetails: IKernelDetails): Promise<void> {
+	private async initialize(kernelDetails: INotebookKernelDetails): Promise<void> {
 		try {
 			this._info = await this._proxy.ext.$getKernelReadyStatus(kernelDetails.kernelId);
 			this._isReady = true;
@@ -382,7 +382,7 @@ class FutureWrapper implements FutureInternal {
         this._inProgress = true;
 	}
 
-	public setDetails(details: IFutureDetails): void {
+	public setDetails(details: INotebookFutureDetails): void {
 		this._futureId = details.futureId;
 		this._msg = details.msg;
 	}
@@ -404,7 +404,7 @@ class FutureWrapper implements FutureInternal {
 		}
 	}
 
-	public onDone(done: IFutureDone): void {
+	public onDone(done: INotebookFutureDone): void {
 		this._inProgress = false;
 		if (done.succeeded) {
 			this._done.resolve();

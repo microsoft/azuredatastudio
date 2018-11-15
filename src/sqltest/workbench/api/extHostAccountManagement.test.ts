@@ -17,6 +17,7 @@ import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import * as testUtils from '../../utils/testUtils';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
@@ -36,7 +37,7 @@ suite('ExtHostAccountManagement', () => {
 		instantiationService.stub(IRPCProtocol, threadService);
 		instantiationService.stub(IAccountManagementService, accountMgmtStub);
 
-		const accountMgmtService = instantiationService.createInstance(MainThreadAccountManagement);
+		const accountMgmtService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountMgmtService);
 
 		mockAccountMetadata = {
@@ -356,7 +357,7 @@ suite('ExtHostAccountManagement', () => {
 
 		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
 		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
-		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
 
 		// Setup: Create ext host account management with registered account provider
@@ -366,7 +367,7 @@ suite('ExtHostAccountManagement', () => {
 		extHost.$getAllAccounts()
 			.then((accounts) => {
 		    		// If: I get security token
-					extHost.$getSecurityToken(mockAccount1)
+					return extHost.$getSecurityToken(mockAccount1)
 						.then((securityToken) => {
 							// Then: The call should have been passed to the account management service
 							mockAccountManagementService.verify(
@@ -379,7 +380,7 @@ suite('ExtHostAccountManagement', () => {
 			).then(() => done(), (err) => done(err));
 	});
 
-	test('GetSecurityToken - Account not found', (done) => {
+	test('GetSecurityToken - Account not found', async () => {
 		let mockAccountProviderMetadata = {
 			id: 'azure',
 			displayName: 'Azure'
@@ -402,7 +403,7 @@ suite('ExtHostAccountManagement', () => {
 
 		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
 		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
-		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
 
 		// Setup: Create ext host account management with registered account provider
@@ -423,18 +424,10 @@ suite('ExtHostAccountManagement', () => {
 			isStale: false
 		};
 
-		extHost.$getAllAccounts().then((accounts) => {
-			// If: I get security token for mockAccount2
-			// Then: It should throw
-			assert.throws(
-				() => extHost.$getSecurityToken(mockAccount2),
-				(error) => {
-					return error.message === `Account ${mockAccount2.key.accountId} not found.`;
-				}
-			);
-		});
-
-		done();
+		let accounts = await extHost.$getAllAccounts();
+		await testUtils.assertThrowsAsync(
+			() => extHost.$getSecurityToken(mockAccount2),
+			{ message: `Account ${mockAccount2.key.accountId} not found.` });
 	});
 });
 

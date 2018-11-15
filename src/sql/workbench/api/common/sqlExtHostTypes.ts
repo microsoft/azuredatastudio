@@ -418,7 +418,7 @@ export interface INotebookManagerDetails {
 	hasServerManager: boolean;
 }
 
-export interface ISessionDetails {
+export interface INotebookSessionDetails {
 	readonly sessionId: number;
 	readonly canChangeKernels: boolean;
 	readonly id: string;
@@ -426,10 +426,10 @@ export interface ISessionDetails {
 	readonly name: string;
 	readonly type: string;
 	readonly status: string;
-	readonly kernelDetails: IKernelDetails;
+	readonly kernelDetails: INotebookKernelDetails;
 }
 
-export interface IKernelDetails {
+export interface INotebookKernelDetails {
 	readonly kernelId: number;
 	readonly id: string;
 	readonly name: string;
@@ -437,7 +437,7 @@ export interface IKernelDetails {
 	readonly info?: any;
 }
 
-export interface IFutureDetails {
+export interface INotebookFutureDetails {
 	readonly futureId: number;
 	readonly msg: any;
 }
@@ -448,7 +448,7 @@ export enum FutureMessageType {
 	IOPub = 2
 }
 
-export interface IFutureDone {
+export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
 }

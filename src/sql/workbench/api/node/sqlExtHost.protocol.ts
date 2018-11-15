@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, ISessionDetails, IKernelDetails, IFutureDetails, FutureMessageType, IFutureDone
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -728,17 +728,17 @@ export interface ExtHostNotebookShape {
 
 	// Session Manager APIs
 	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels>;
-	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<ISessionDetails>;
+	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
 	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
 
 	// Session APIs
-	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<IKernelDetails>;
+	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
 
 	// Kernel APIs
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
 	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec>;
 	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg>;
-	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<IFutureDetails>;
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
 	$interruptKernel(kernelId: number): Thenable<void>;
 
 	// Future APIs
@@ -750,6 +750,6 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$registerNotebookProvider(providerId: string, handle: number): void;
 	$unregisterNotebookProvider(handle: number): void;
 	$onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void;
-	$onFutureDone(futureId: number, done: IFutureDone): void;
+	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
 }
 
