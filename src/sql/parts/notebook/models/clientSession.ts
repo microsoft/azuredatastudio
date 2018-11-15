@@ -299,7 +299,7 @@ export class ClientSession implements IClientSession {
 	public async shutdown(): Promise<void> {
 		// Always try to shut down session
 		if (this._session && this._session.id) {
-			await this.notebookManager.sessionManager.shutdown(this._session.id);
+			this.notebookManager.sessionManager.shutdown(this._session.id);
 		}
 		let serverManager = this.notebookManager.serverManager;
 		if (serverManager) {

@@ -13,9 +13,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
-import { INotebookManagerDetails, ISessionDetails, IKernelDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
-import { Deferred } from 'sql/base/common/promise';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -50,6 +49,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 	}
 
 	//#endregion
+
 }
 
 class NotebookProviderWrapper extends Disposable implements INotebookProvider {
@@ -76,9 +76,9 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 	}
 
 	handleNotebookClosed(notebookUri: URI): void {
-		this._managers.delete(notebookUri.toString());
 		this._proxy.$handleNotebookClosed(notebookUri);
 	}
+
 }
 
 class NotebookManagerWrapper implements INotebookManager {
@@ -131,7 +131,7 @@ class ContentManagerWrapper implements sqlops.nb.ContentManager {
 }
 
 class ServerManagerWrapper implements sqlops.nb.ServerManager {
-	private onServerStartedEmitter = new Emitter<void>();
+	private onServerStartedEmitter: Emitter<void>;
 	private _isStarted: boolean;
 	constructor(private handle: number, private _proxy: ExtHostNotebookShape) {
 		this._isStarted = false;
@@ -170,158 +170,30 @@ class ServerManagerWrapper implements sqlops.nb.ServerManager {
 }
 
 class SessionManagerWrapper implements sqlops.nb.SessionManager {
-	private readyPromise: Promise<void>;
-	private _isReady: boolean;
-	private _specs: sqlops.nb.IAllKernels;
-	constructor(private managerHandle: number, private _proxy: ExtHostNotebookShape) {
-		this._isReady = false;
-		this.readyPromise = this.initializeSessionManager();
+	constructor(private handle: number, private _proxy: ExtHostNotebookShape) {
 	}
 
-	//#region Public APIs
 	get isReady(): boolean {
-		return this._isReady;
+		throw new Error('Method not implemented.');
+
 	}
 
 	get ready(): Thenable<void> {
-		return this.readyPromise;
-	}
+		throw new Error('Method not implemented.');
 
+	}
 	get specs(): sqlops.nb.IAllKernels {
-		return this._specs;
+		throw new Error('Method not implemented.');
+
 	}
 
 	startNew(options: sqlops.nb.ISessionOptions): Thenable<sqlops.nb.ISession> {
-		return this.doStartNew(options);
-	}
-
-	private async doStartNew(options: sqlops.nb.ISessionOptions): Promise<sqlops.nb.ISession> {
-		let sessionDetails = await this._proxy.$startNewSession(this.managerHandle, options);
-		return new SessionWrapper(this._proxy, sessionDetails);
+		throw new Error('Method not implemented.');
 	}
 
 	shutdown(id: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	//#endregion
 
-	//#region Call throughs from extension host
 
-	//#endregion
-
-	//#region Private methods
-	private async initializeSessionManager(): Promise<void> {
-		await this.refreshSpecs();
-		this._isReady = true;
-	}
-
-	private async refreshSpecs(): Promise<void> {
-		let specs = await this._proxy.$refreshSpecs(this.managerHandle);
-		if (specs) {
-			this._specs = specs;
-		}
-	}
-	//#endregion
-}
-
-class SessionWrapper implements sqlops.nb.ISession {
-	private _kernel: KernelWrapper;
-	constructor(private proxy: ExtHostNotebookShape, private sessionDetails: ISessionDetails) {
-		if (sessionDetails && sessionDetails.kernelDetails) {
-			this._kernel = new KernelWrapper(proxy, sessionDetails.kernelDetails);
-		}
-	}
-
-	get canChangeKernels(): boolean {
-		return this.sessionDetails.canChangeKernels;
-	}
-
-	get id(): string {
-		return this.sessionDetails.id;
-	}
-
-	get path(): string {
-		return this.sessionDetails.path;
-	}
-
-	get name(): string {
-		return this.sessionDetails.name;
-	}
-
-	get type(): string {
-		return this.sessionDetails.type;
-	}
-
-	get status(): sqlops.nb.KernelStatus {
-		return this.sessionDetails.status as sqlops.nb.KernelStatus;
-	}
-
-	get kernel(): sqlops.nb.IKernel {
-		return this._kernel;
-	}
-
-	changeKernel(kernelInfo: sqlops.nb.IKernelSpec): Thenable<sqlops.nb.IKernel> {
-		return this.doChangeKernel(kernelInfo);
-	}
-
-	private async doChangeKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<sqlops.nb.IKernel> {
-		let kernelDetails = await this.proxy.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
-		this._kernel = new KernelWrapper(this.proxy, kernelDetails);
-		return this._kernel;
-	}
-}
-
-class KernelWrapper implements sqlops.nb.IKernel {
-	private _isReady: boolean = false;
-	private _ready = new Deferred<void>();
-	private _info: sqlops.nb.IInfoReply;
-	constructor(private proxy: ExtHostNotebookShape, private kernelDetails: IKernelDetails) {
-		this.initialize(kernelDetails);
-	}
-
-	private async initialize(kernelDetails: IKernelDetails): Promise<void> {
-		try {
-			this._info = await this.proxy.$getKernelReadyStatus(kernelDetails.kernelId);
-			this._isReady = true;
-			this._ready.resolve();
-		} catch (error) {
-			this._isReady = false;
-			this._ready.reject(error);
-		}
-	}
-
-	get isReady(): boolean {
-		return this._isReady;
-	}
-	get ready(): Thenable<void> {
-		return this._ready.promise;
-	}
-
-	get id(): string {
-		return this.kernelDetails.id;
-	}
-
-	get name(): string {
-		return this.kernelDetails.name;
-	}
-
-	get supportsIntellisense(): boolean {
-		return this.kernelDetails.supportsIntellisense;
-	}
-
-	get info(): sqlops.nb.IInfoReply {
-		return this._info;
-	}
-
-	getSpec(): Thenable<sqlops.nb.IKernelSpec> {
-		return this.proxy.$getKernelSpec(this.kernelDetails.kernelId);
-	}
-
-	requestExecute(content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): sqlops.nb.IFuture {
-		throw new Error('Method not implemented.');
-	}
-
-	requestComplete(content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
-		return this.proxy.$requestComplete(this.kernelDetails.kernelId, content);
-	}
 }
