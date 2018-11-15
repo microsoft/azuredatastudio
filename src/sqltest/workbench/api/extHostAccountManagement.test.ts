@@ -17,7 +17,6 @@ import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import * as testUtils from '../../utils/testUtils';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
 
@@ -367,20 +366,12 @@ suite('ExtHostAccountManagement', () => {
 		extHost.$getAllAccounts()
 			.then((accounts) => {
 		    		// If: I get security token
-					return extHost.$getSecurityToken(mockAccount1)
-						.then((securityToken) => {
-							// Then: The call should have been passed to the account management service
-							mockAccountManagementService.verify(
-								(obj) => obj.getSecurityToken(TypeMoq.It.isAny()),
-								TypeMoq.Times.once()
-							);
-						}
-					);
+					return extHost.$getSecurityToken(mockAccount1);
 				}
-			).then(() => done(), (err) => done(err));
+			).then(() => done(), (err) => done(new Error(err)));
 	});
 
-	test('GetSecurityToken - Account not found', async () => {
+	test('GetSecurityToken - Account not found', (done) => {
 		let mockAccountProviderMetadata = {
 			id: 'azure',
 			displayName: 'Azure'
@@ -424,10 +415,16 @@ suite('ExtHostAccountManagement', () => {
 			isStale: false
 		};
 
-		let accounts = await extHost.$getAllAccounts();
-		await testUtils.assertThrowsAsync(
-			() => extHost.$getSecurityToken(mockAccount2),
-			{ message: `Account ${mockAccount2.key.accountId} not found.` });
+		extHost.$getAllAccounts()
+		.then(accounts => {
+			return extHost.$getSecurityToken(mockAccount2);
+		})
+		.then((noError) => {
+			done(new Error('Expected getSecurityToken to throw'));
+		}, (err) => {
+			// Expected error caught
+			done();
+		});
 	});
 });
 
