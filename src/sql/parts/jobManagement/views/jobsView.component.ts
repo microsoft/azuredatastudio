@@ -134,7 +134,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	public layout() {
-		let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
+		let jobsViewToolbar = $('jobsview-component .agent-actionbar-container').get(0);
 		let statusBar = $('.part.statusbar').get(0);
 		if (jobsViewToolbar && statusBar) {
 			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;

@@ -343,10 +343,16 @@ export interface ICellModel {
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
+	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	setFuture(future: FutureInternal): void;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICell;
-	onOutputsChanged:  Event<ReadonlyArray<nb.ICellOutput>>;
+}
+
+export interface FutureInternal extends nb.IFuture {
+	inProgress: boolean;
 }
 
 export interface IModelFactory {
