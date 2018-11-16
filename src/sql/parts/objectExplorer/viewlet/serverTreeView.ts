@@ -217,12 +217,6 @@ export class ServerTreeView {
 		}
 	}
 
-	private onObjectExplorerSessionDisconnected(connection: IConnectionProfile) {
-
-		let a = 0;
-
-	}
-
 	public addObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
 		this.messages.hide();
 		if (!this._objectExplorerService.getObjectExplorerNode(connection)) {
@@ -233,16 +227,17 @@ export class ServerTreeView {
 		}
 	}
 
-	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
+	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Thenable<void> {
 		if (connection) {
 			var conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
+				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
 					this._tree.collapse(conn);
 					this._tree.refresh(conn);
 				});
 			}
 		}
+		return new Promise<void>(()=>{});
 	}
 
 	public refreshTree(): void {

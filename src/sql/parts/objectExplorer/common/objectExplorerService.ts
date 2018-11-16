@@ -215,17 +215,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (this._sessions[session.sessionId]) {
 			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
 			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
-				//connection.isDisconnecting = true;
-				//this._connectionManagementService.disconnect(connection).then((value) => {
-					let uri: string = Utils.generateUri(connection);
-					if (this._serverTreeView.isObjectExplorerConnectionUri(uri)) {
-						this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection);
-					}
-					//connection.isDisconnecting = false;
-					this.sendUpdateNodeEvent(connection, session.errorMessage);
-				// }).catch(disconnectError => {
-				// 	///
-				// });
+				let uri: string = Utils.generateUri(connection);
+				if (this._serverTreeView.isObjectExplorerConnectionUri(uri)) {
+					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
+						this.sendUpdateNodeEvent(connection, session.errorMessage);
+						connection.isDisconnecting = true;
+						this._connectionManagementService.disconnect(connection).then((value) => {
+							connection.isDisconnecting = false;
+						});
+					});
+				}
 			}
 		} else {
 			warn(`Cannot find session ${session.sessionId}`);
@@ -415,7 +414,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		parentTree: TreeNode,
 		refresh: boolean = false): Thenable<TreeNode[]> {
 		return new Promise<TreeNode[]>((resolve, reject) => {
-				this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
+			this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
 				let children: TreeNode[] = [];
 				if (expandResult && expandResult.nodes) {
 					children = expandResult.nodes.map(node => {
