@@ -43,7 +43,7 @@ export const CODE_SELECTOR: string = 'code-component';
 })
 export class CodeComponent extends AngularDisposable implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
-	@ViewChild('moreactions', { read: ElementRef }) private moreactionsElement: ElementRef;
+	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
 
@@ -173,7 +173,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private toggleMoreActions(showIcon: boolean) {
 		if (showIcon) {
-			let moreActionsElement = <HTMLElement>this.moreactionsElement.nativeElement;
+			let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
 			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 			this._moreActions.context = { target: moreActionsElement };
 			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this.model, this.contextMenuService), { icon: showIcon, label: false });
@@ -208,7 +208,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let toolbarEl = <HTMLElement>this.toolbarElement.nativeElement;
 		toolbarEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 
-		let moreactionsEl = <HTMLElement>this.moreactionsElement.nativeElement;
+		let moreactionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
 		moreactionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
