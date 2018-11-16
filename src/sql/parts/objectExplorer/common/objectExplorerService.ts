@@ -414,7 +414,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		parentTree: TreeNode,
 		refresh: boolean = false): Thenable<TreeNode[]> {
 		return new Promise<TreeNode[]>((resolve, reject) => {
-				this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
+			this.callExpandOrRefreshFromService(parentTree.getConnectionProfile().providerName, session, parentTree.nodePath, refresh).then(expandResult => {
 				let children: TreeNode[] = [];
 				if (expandResult && expandResult.nodes) {
 					children = expandResult.nodes.map(node => {
