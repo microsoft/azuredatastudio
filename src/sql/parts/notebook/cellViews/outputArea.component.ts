@@ -4,9 +4,8 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 import 'vs/css!./outputArea';
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -24,7 +23,8 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	private readonly _minimumHeight = 30;
 
 	constructor(
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 		super();
 	}
@@ -32,6 +32,11 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		if (this.cellModel) {
+			this.cellModel.onOutputsChanged(() => {
+				this._changeRef.detectChanges();
+			});
+		}
 	}
 
 	private updateTheme(theme: IColorTheme): void {

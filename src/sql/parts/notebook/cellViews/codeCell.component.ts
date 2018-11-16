@@ -29,6 +29,11 @@ export class CodeCellComponent extends CellView implements OnInit {
 	}
 
 	ngOnInit() {
+		if (this.cellModel) {
+			this.cellModel.onOutputsChanged(() => {
+				this._changeRef.detectChanges();
+			});
+		}
 	}
 
 	// Todo: implement layout

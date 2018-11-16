@@ -1170,8 +1170,9 @@ declare module 'sqlops' {
 
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
 
-		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
+		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 
+		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
