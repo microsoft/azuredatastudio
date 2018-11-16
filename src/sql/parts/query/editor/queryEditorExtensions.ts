@@ -5,13 +5,20 @@
 'use strict';
 
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { EditorAction, IActionOptions, registerEditorAction } from 'vs/editor/browser/editorExtensions';
+import { EditorAction, IActionOptions, IEditorCommandMenuOptions } from 'vs/editor/browser/editorExtensions';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Registry } from 'vs/platform/registry/common/platform';
+import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import URI from 'vs/base/common/uri';
+
+export interface IQueryEditorCommandMenuOptions extends IEditorCommandMenuOptions {
+	iconDark?: string;
+	iconLight?: string;
+}
 
 export interface IQueryActionOptions extends IActionOptions {
-	class: string;
+	menuOpts?: IQueryEditorCommandMenuOptions;
 }
 
 /**
@@ -20,84 +27,32 @@ export interface IQueryActionOptions extends IActionOptions {
  */
 export abstract class QueryEditorAction extends EditorAction {
 
-	public class: string;
-
-	constructor(opts: IQueryActionOptions) {
+	constructor(private opts: IQueryActionOptions) {
 		super(opts);
-		this.class = opts.class;
+	}
+
+	public register(): void {
+
+		if (this.opts.menuOpts) {
+			MenuRegistry.appendMenuItem(MenuId.EditorActionBar, {
+				command: {
+					id: this.id,
+					title: this.label,
+					iconLocation: {
+						dark: URI.parse(require.toUrl(`sql/parts/query/editor/media/${this.opts.menuOpts.iconDark}`)),
+						light: URI.parse(require.toUrl(`sql/parts/query/editor/media/${this.opts.menuOpts.iconLight}`))
+					}
+				},
+				when: ContextKeyExpr.and(this.precondition, this.opts.menuOpts.when),
+				group: this.opts.menuOpts.group,
+				order: this.opts.menuOpts.order
+			});
+		}
+		super.register();
 	}
 
 	/**
 	 * This method is executed when the button is clicked.
 	 */
 	public abstract run(accessor: ServicesAccessor, editor: ICodeEditor): TPromise<void>;
-}
-
-
-// Editor extension points
-const Extensions = {
-	EditorCommonContributions: 'editor.query.contributions'
-};
-
-class QueryEditorContributionRegistry {
-
-	public static readonly INSTANCE = new QueryEditorContributionRegistry();
-
-	// private queryEditorContributions: IEditorContributionCtor[];
-	private queryEditorActions: QueryEditorAction[];
-	// private queryDditorCommands: { [commandId: string]: EditorCommand; };
-
-	constructor() {
-		// this.queryEditorContributions = [];
-		this.queryEditorActions = [];
-		// this.queryEditorCommands = Object.create(null);
-	}
-
-	// public registerQueryEditorContribution(ctor: IEditorContributionCtor): void {
-	// 	this.queryEditorContributions.push(ctor);
-	// }
-
-	public registerQueryEditorAction(action: QueryEditorAction) {
-		action.register();
-		this.queryEditorActions.push(action);
-	}
-
-	// public getQueryEditorContributions(): IEditorContributionCtor[] {
-	// 	return this.queryEditorContributions.slice(0);
-	// }
-
-	public getQueryEditorActions(): QueryEditorAction[] {
-		return this.queryEditorActions.slice(0);
-	}
-
-	// public registerEditorCommand(editorCommand: EditorCommand) {
-	// 	editorCommand.register();
-	// 	this.queryEditorCommands[editorCommand.id] = editorCommand;
-	// }
-
-	// public getEditorCommand(commandId: string): EditorCommand {
-	// 	return (this.editorCommands[commandId] || null);
-	// }
-
-}
-Registry.add(Extensions.EditorCommonContributions, QueryEditorContributionRegistry.INSTANCE);
-
-export namespace QueryEditorExtensionsRegistry {
-
-	// export function getEditorCommand(commandId: string): EditorCommand {
-	// 	return QueryEditorContributionRegistry.INSTANCE.getEditorCommand(commandId);
-	// }
-
-	export function getEditorActions(): QueryEditorAction[] {
-		return QueryEditorContributionRegistry.INSTANCE.getQueryEditorActions();
-	}
-
-	// export function getEditorContributions(): IEditorContributionCtor[] {
-	// 	return QueryEditorContributionRegistry.INSTANCE.getEditorContributions();
-	// }
-}
-
-export function registerQueryEditorAction(ctor: { new(): QueryEditorAction; }): void {
-	QueryEditorContributionRegistry.INSTANCE.registerQueryEditorAction(new ctor());
-	registerEditorAction(ctor);
 }

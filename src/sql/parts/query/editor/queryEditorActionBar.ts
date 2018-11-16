@@ -4,34 +4,30 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as actions from 'sql/parts/query/execution/queryActions';
-import { QueryInput, QueryEditorState } from 'sql/parts/query/common/queryInput';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { QueryEditorExtensionsRegistry, QueryEditorAction } from 'sql/parts/query/editor/queryEditorExtensions';
-import { MenuRegistry, MenuId, IMenuItem, IMenuService } from 'vs/platform/actions/common/actions';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { Themable } from 'vs/workbench/common/theme';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { fillInActionBarActions } from 'vs/platform/actions/browser/menuItemActionItem';
-import { IAction } from 'vs/base/common/actions';
+import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { fillInActionBarActions, createActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
+import { IAction, Action, IActionItem } from 'vs/base/common/actions';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { prepareActions } from 'vs/workbench/browser/actions';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 
-export class QueryEditorActionBar extends Themable {
-/*
-	private runQuery: actions.RunQueryAction;
-	private cancelQuery: actions.CancelQueryAction;
-	private connect: actions.ConnectAction;
-	private disconnect: actions.DisconnectAction;
-	private changeConnection: actions.ChangeConnectionAction;
-	private estimatedQueryPlan: actions.EstimatedQueryPlanAction;
-	*/
+export class QueryEditorActionBar extends Disposable {
+
 	private listDatabaseActionItem: actions.ListDatabasesActionItem;
 
-	private inputDisposables: IDisposable[] = [];
 	private editorToolBarMenuDisposables: IDisposable[] = [];
+
+	private toolbar: ToolBar;
 
 	private _context: actions.IQueryActionContext = {
 		input: undefined,
@@ -39,26 +35,46 @@ export class QueryEditorActionBar extends Themable {
 	};
 
 	constructor(container: HTMLElement,
-		@IThemeService themeService: IThemeService,
 		@IInstantiationService instantiationService: IInstantiationService,
+		@IKeybindingService private keybindingService: IKeybindingService,
+		@INotificationService private notificationService: INotificationService,
+		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private contextKeyService: IContextKeyService,
 	) {
-		super(themeService);
-		// super(container, {
-		// 	actionItemProvider: action => {
-		// 		if (action.id === actions.ListDatabasesAction.ID) {
-		// 			return this.listDatabaseActionItem;
-		// 		}
-		// 		return undefined;
-		// 	}
-		// });
+		super();
+		this.toolbar = this._register(new ToolBar(container, contextMenuService, {
+			actionItemProvider: action => {
+				if (action.id === actions.ListDatabasesAction.ID) {
+					return this.listDatabaseActionItem;
+				}
+				return this.actionItemProvider(action as Action);
+			},
+			orientation: ActionsOrientation.HORIZONTAL_REVERSE
+		}));
 
 		this.listDatabaseActionItem = instantiationService.createInstance(actions.ListDatabasesActionItem);
 	}
 
-	private updateMenuBar() {
+	private actionItemProvider(action: Action): IActionItem {
+		// const activeControl = this.group.activeControl;
 
+		// // Check Active Editor
+		let actionItem: IActionItem;
+		// if (activeControl instanceof BaseEditor) {
+		// 	actionItem = activeControl.getActionItem(action);
+		// }
+
+		// Check extensions
+		if (!actionItem) {
+			actionItem = createActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
+		}
+
+		return actionItem;
+	}
+
+
+	private updateMenuBar() {
 		// Dispose previous listeners
 		this.editorToolBarMenuDisposables = dispose(this.editorToolBarMenuDisposables);
 
@@ -67,33 +83,25 @@ export class QueryEditorActionBar extends Themable {
 		this.editorToolBarMenuDisposables.push((menuBar.onDidChange(() => {
 			this.updateMenuBar();
 		})));
-		fillInActionBarActions(menuBar, {}, new Array<IAction>());
+		const actions = new Array<IAction>();
+		fillInActionBarActions(menuBar, {}, actions);
+		this.toolbar.setActions(prepareActions(actions))();
 	}
 
 	public setInput(input: QueryInput): TPromise<void> {
-		dispose(this.inputDisposables);
-		this.inputDisposables = [];
-		this.inputDisposables.push(input.state.onChange(() => this.parseState(input.state)));
-		this.parseState(input.state);
+		this.updateMenuBar();
 		this._context.input = input;
-		this.context = this._context;
+		this.toolbar.context = this._context;
 		return TPromise.as(undefined);
-	}
-
-	private parseState(state: QueryEditorState) {
-		/*
-		this.runQuery.enabled = state.connected && !state.executing;
-		this.cancelQuery.enabled = state.connected && state.executing;
-		this.changeConnection.enabled = state.connected && !state.executing;
-		this.connect.enabled = !state.connected;
-		this.disconnect.enabled = state.connected;
-		this.listDatabaseActionItem.enabled = state.connected && !state.executing;
-		this.estimatedQueryPlan.enabled = state.connected && !state.executing;
-		*/
 	}
 
 	public set editor(editor: ICodeEditor) {
 		this._context.editor = editor;
-		this.context = this._context;
+		this.toolbar.context = this._context;
+	}
+
+	public dispose() {
+		dispose(this.editorToolBarMenuDisposables);
+		super.dispose();
 	}
 }

@@ -22,6 +22,8 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { registerEditorAction } from 'vs/editor/browser/editorExtensions';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
@@ -34,7 +36,8 @@ import {
 } from 'sql/parts/connection/common/connectionManagement';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { QueryEditorAction, registerQueryEditorAction } from 'sql/parts/query/editor/queryEditorExtensions';
+import { QueryEditorAction } from 'sql/parts/query/editor/queryEditorExtensions';
+import { QueryEditorContextKeys } from 'sql/parts/query/editor/queryEditorContextKeys';
 
 export interface IQueryActionContext {
 	input: QueryInput;
@@ -56,15 +59,16 @@ export class RunQueryAction extends QueryEditorAction {
 			id: RunQueryAction.ID,
 			label: nls.localize('runQueryLabel', 'Run Query'),
 			alias: 'Run Query',
-			class: 'start',
-			precondition: undefined,
+			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isConnected, QueryEditorContextKeys.isExecuting.toNegated()),
 			kbOpts: {
 				primary: runQueryKb,
 				weight: KeybindingWeight.EditorContrib
 			},
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'start.svg',
+				iconLight: 'start.svg',
 			}
 		});
 	}
@@ -101,11 +105,12 @@ export class CancelQueryAction extends QueryEditorAction {
 			id: CancelQueryAction.ID,
 			label: nls.localize('cancelQuery', 'Cancel Query'),
 			alias: 'Cancel Query',
-			class: 'stop',
-			precondition: undefined,
+			precondition: QueryEditorContextKeys.isExecuting,
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'stop.svg',
+				iconLight: 'stop.svg',
 			}
 		});
 	}
@@ -122,18 +127,19 @@ export class CancelQueryAction extends QueryEditorAction {
  */
 export class EstimatedQueryPlanAction extends QueryEditorAction {
 
-	public static ID = 'estimatedQueryPlanAction';
+	public static ID = 'editor.action.estimatedQueryPlan';
 
 	constructor() {
 		super({
 			id: EstimatedQueryPlanAction.ID,
 			label: nls.localize('estimatedQueryPlan', 'Estimated Query Plan'),
 			alias: 'Estimated Query Plan',
-			class: 'estimatedQueryPlan',
-			precondition: undefined,
+			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'query-plan-inverse.svg',
+				iconLight: 'query-plan.svg',
 			}
 		});
 	}
@@ -148,18 +154,19 @@ export class EstimatedQueryPlanAction extends QueryEditorAction {
 }
 
 export class ActualQueryPlanAction extends QueryEditorAction {
-	public static ID = 'actualQueryPlanAction';
+	public static ID = 'editor.action.actualQueryPlan';
 
 	constructor() {
 		super({
 			id: EstimatedQueryPlanAction.ID,
 			label: nls.localize('actualQueryPlan', 'Actual Query Plan'),
 			alias: 'Actual Query Plan',
-			class: 'actualQueryPlan',
-			precondition: undefined,
+			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'query-plan-inverse.svg',
+				iconLight: 'query-plan.svg'
 			}
 		});
 	}
@@ -174,18 +181,19 @@ export class ActualQueryPlanAction extends QueryEditorAction {
 }
 
 export class DisconnectAction extends QueryEditorAction {
-	public static ID = 'disconnectAction';
+	public static ID = 'editor.action.disconnect';
 
 	constructor() {
 		super({
 			id: DisconnectAction.ID,
 			label: nls.localize('disconnectLabel', 'Disconnect'),
 			alias: 'Disconnect',
-			class: 'disconnect',
-			precondition: undefined,
+			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'disconnect_inverse.svg',
+				iconLight: 'disconnect.svg'
 			}
 		});
 	}
@@ -199,18 +207,19 @@ export class DisconnectAction extends QueryEditorAction {
 }
 
 export class ConnectAction extends QueryEditorAction {
-	public static ID = 'connectionAction';
+	public static ID = 'editor.action.connect';
 
 	constructor() {
 		super({
 			id: ConnectAction.ID,
 			label: nls.localize('connectLabel', 'Connect'),
 			alias: 'Connect',
-			class: 'connect',
-			precondition: undefined,
+			precondition: QueryEditorContextKeys.isConnected.toNegated(),
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'connect_inverse.svg',
+				iconLight: 'connect.svg',
 			}
 		});
 	}
@@ -229,18 +238,19 @@ export class ConnectAction extends QueryEditorAction {
 }
 
 export class ChangeConnectionAction extends QueryEditorAction {
-	public static ID = 'changeConnection';
+	public static ID = 'editor.action.changeConnection';
 
 	constructor() {
 		super({
 			id: ChangeConnectionAction.ID,
 			label: nls.localize('changeConnection', 'Change Connection'),
 			alias: 'Change Connection',
-			class: 'changeConnection',
-			precondition: undefined,
+			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
+				iconDark: 'change_connection_inverse.svg',
+				iconLight: 'change_connection.svg',
 			}
 		});
 	}
@@ -261,12 +271,21 @@ export class ChangeConnectionAction extends QueryEditorAction {
 /**
  * Action class that is tied with ListDatabasesActionItem.
  */
-export class ListDatabasesAction extends Action {
+export class ListDatabasesAction extends QueryEditorAction {
 
-	public static ID = 'listDatabaseQueryAction';
+	public static ID = 'editor.action.listDatabase';
 
 	constructor() {
-		super(ListDatabasesAction.ID);
+		super({
+			id: ChangeConnectionAction.ID,
+			label: nls.localize('listDatabase', 'List Database'),
+			alias: 'List Database',
+			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
+			menuOpts: {
+				group: 'query',
+				order: 1.1
+			}
+		});
 	}
 
 	public run(): TPromise<void> {
@@ -500,10 +519,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionItem {
 	}
 }
 
-registerQueryEditorAction(RunQueryAction);
-registerQueryEditorAction(CancelQueryAction);
-registerQueryEditorAction(EstimatedQueryPlanAction);
-registerQueryEditorAction(ActualQueryPlanAction);
-registerQueryEditorAction(DisconnectAction);
-registerQueryEditorAction(ConnectAction);
-registerQueryEditorAction(ChangeConnectionAction);
+registerEditorAction(RunQueryAction);
+registerEditorAction(CancelQueryAction);
+registerEditorAction(EstimatedQueryPlanAction);
+registerEditorAction(ActualQueryPlanAction);
+registerEditorAction(DisconnectAction);
+registerEditorAction(ConnectAction);
+registerEditorAction(ChangeConnectionAction);
+registerEditorAction(ListDatabasesAction);

@@ -27,3 +27,13 @@
 	display: flex;
 	flex-direction: column;
 }
+
+.monaco-workbench > .part.editor .query-editor-taskbar .action-label {
+	display: block;
+	height: 35px;
+	line-height: 35px;
+	min-width: 28px;
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
