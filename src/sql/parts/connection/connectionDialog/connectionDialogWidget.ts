@@ -83,6 +83,8 @@ export class ConnectionDialogWidget extends Modal {
 	private _onResetConnection = new Emitter<void>();
 	public onResetConnection: Event<void> = this._onResetConnection.event;
 
+	private _connecting = false;
+
 	constructor(
 		private providerTypeOptions: string[],
 		private selectedProviderType: string,
@@ -248,6 +250,7 @@ export class ConnectionDialogWidget extends Modal {
 
 	private connect(element?: IConnectionProfile): void {
 		if (this._connectButton.enabled) {
+			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
 			this.showSpinner();
@@ -268,8 +271,9 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private cancel() {
+		let wasConnecting = this._connecting;
 		this._onCancel.fire();
-		if (!this._databaseDropdownExpanded) {
+		if (!this._databaseDropdownExpanded && !wasConnecting) {
 			this.close();
 		}
 	}
@@ -426,6 +430,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectButton.enabled = true;
 		this._providerTypeSelectBox.enable();
 		this._onResetConnection.fire();
+		this._connecting = false;
 	}
 
 	public get newConnectionParams(): INewConnectionParams {

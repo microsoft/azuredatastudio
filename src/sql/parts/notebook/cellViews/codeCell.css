@@ -1,0 +1,14 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+code-cell-component {
+	display: block;
+}
+
+code-cell-component .notebook-output {
+	border-top-width: 1px;
+	border-top-style: solid;
+	user-select: initial;
+}

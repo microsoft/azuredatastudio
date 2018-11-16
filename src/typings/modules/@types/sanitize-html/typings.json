@@ -1,0 +1,28 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "C:\\Raj\\CodeBase\\Branch\\azuredatastudio\\node_modules\\@types\\sanitize-html\\package.json",
+    "raw": "npm:@types/sanitize-html",
+    "main": "index",
+    "version": "1.18.2",
+    "dependencies": {
+      "@types/htmlparser2": {
+        "src": "C:\\Raj\\CodeBase\\Branch\\azuredatastudio\\node_modules\\@types\\htmlparser2\\package.json",
+        "raw": "npm:@types/htmlparser2",
+        "main": "",
+        "version": "3.7.31",
+        "dependencies": {
+          "@types/node": {
+            "src": "C:\\Raj\\CodeBase\\Branch\\azuredatastudio\\node_modules\\@types\\node\\package.json",
+            "raw": "npm:@types/node",
+            "main": "",
+            "version": "4.2.22",
+            "name": "@types/node"
+          }
+        },
+        "name": "@types/htmlparser2"
+      }
+    },
+    "name": "@types/sanitize-html"
+  }
+}

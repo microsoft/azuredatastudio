@@ -70,6 +70,9 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.minimap = {
 				enabled: false
 			};
+			options.overviewRulerLanes = 0;
+			options.overviewRulerBorder = false;
+			options.hideCursorInOverviewRuler = true;
 		}
 		return options;
 	}
