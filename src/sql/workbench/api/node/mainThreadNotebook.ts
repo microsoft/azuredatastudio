@@ -86,7 +86,7 @@ interface Proxies {
 }
 
 class NotebookProviderWrapper extends Disposable implements INotebookProvider {
-	private _managers = new Map<string, NotebookManagerWrapper>();
+	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
 
 	constructor(private _proxy: Proxies, public readonly providerId, public readonly providerHandle: number) {
 		super();
@@ -99,17 +99,17 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 
 	private async doGetNotebookManager(notebookUri: URI): Promise<INotebookManager> {
 		let uriString = notebookUri.toString();
-		let manager = this._managers.get(uriString);
+		let manager = this._notebookUriToManagerMap.get(uriString);
 		if (!manager) {
 			manager = new NotebookManagerWrapper(this._proxy, this.providerId, notebookUri);
 			await manager.initialize(this.providerHandle);
-			this._managers.set(uriString, manager);
+			this._notebookUriToManagerMap.set(uriString, manager);
 		}
 		return manager;
 	}
 
 	handleNotebookClosed(notebookUri: URI): void {
-		this._managers.delete(notebookUri.toString());
+		this._notebookUriToManagerMap.delete(notebookUri.toString());
 		this._proxy.ext.$handleNotebookClosed(notebookUri);
 	}
 }
@@ -349,9 +349,10 @@ class KernelWrapper implements sqlops.nb.IKernel {
 		let future = new FutureWrapper(this._proxy);
 		this._proxy.ext.$requestExecute(this.kernelDetails.kernelId, content, disposeOnDone)
 		.then(details => {
-			future.setDetails(details), error => future.setError(error);
+			future.setDetails(details);
+			// Save the future in the main thread notebook so extension can call through and reference it
 			this._proxy.main.addFuture(details.futureId, future);
-		});
+		}, error => future.setError(error));
 		return future;
 	}
 
@@ -364,7 +365,7 @@ class KernelWrapper implements sqlops.nb.IKernel {
 class FutureWrapper implements FutureInternal {
 	private _futureId: number;
 	private _done = new Deferred<sqlops.nb.IShellMessage>();
-	private _messageHandlers = new Map<FutureMessageType, Array<sqlops.nb.MessageHandler<sqlops.nb.IMessage>>>();
+	private _messageHandlers = new Map<FutureMessageType, sqlops.nb.MessageHandler<sqlops.nb.IMessage>>();
 	private _msg: sqlops.nb.IMessage;
 	private _inProgress: boolean;
 
@@ -382,14 +383,12 @@ class FutureWrapper implements FutureInternal {
 	}
 
 	public onMessage(type: FutureMessageType, payload: sqlops.nb.IMessage): void {
-		let handlers = this._messageHandlers.get(type);
-		if (handlers && handlers.length > 0) {
-			for(let handler of handlers) {
-				try {
-					handler.handle(payload);
-				} catch (error) {
-					// TODO log errors from the handlers
-				}
+		let handler = this._messageHandlers.get(type);
+		if (handler) {
+			try {
+				handler.handle(payload);
+			} catch (error) {
+				// TODO log errors from the handler
 			}
 		}
 	}
@@ -404,12 +403,9 @@ class FutureWrapper implements FutureInternal {
 	}
 
 	private addMessageHandler(type: FutureMessageType, handler: sqlops.nb.MessageHandler<sqlops.nb.IMessage>): void {
-		let handlers = this._messageHandlers.get(type);
-		if (!handlers) {
-			handlers = [];
-			this._messageHandlers.set(type, handlers);
-		}
-		handlers.push(handler);
+		// Note: there can only be 1 message handler according to the Jupyter Notebook spec.
+		// You can use a message hook to override this / add additional side-processors
+		this._messageHandlers.set(type, handler);
 	}
 
 	//#region Public APIs
