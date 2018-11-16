@@ -318,12 +318,15 @@ function main() {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
+			'ansi_up',
 			'pretty-data',
 			'html-query-plan',
 			'ng2-charts/ng2-charts',
 			'rxjs/Observable',
 			'rxjs/Subject',
-			'rxjs/Observer'
+			'rxjs/Observer',
+			'htmlparser2',
+			'sanitize'
 		]
 	});
 

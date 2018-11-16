@@ -166,6 +166,8 @@ import { DashboardViewService } from 'sql/services/dashboard/common/dashboardVie
 import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
+import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
+import { INotebookService } from 'sql/services/notebook/notebookService';
 
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -578,6 +580,8 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IInsightsDialogService, this.instantiationService.createInstance(InsightsDialogService));
 		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
 		serviceCollection.set(IAccountManagementService, accountManagementService);
+		let notebookService = this.instantiationService.createInstance(NotebookService);
+		serviceCollection.set(INotebookService, notebookService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
 		// {{SQL CARBON EDIT}}
@@ -587,6 +591,7 @@ export class Workbench extends Disposable implements IPartService {
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
+		this._register(toDisposable(() => notebookService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));
 	}
 

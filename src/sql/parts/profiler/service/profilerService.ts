@@ -141,7 +141,10 @@ export class ProfilerService implements IProfilerService {
 			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
 			return true;
 		}, (reason) => {
-			this._notificationService.error(reason.message);
+			// The error won't be actionable to the user, so only log it to console.
+			// In case of error, the state of the UI is not usable, makes more sense to
+			// set it to stopped so that user can restart it or pick a different session
+			this._sessionMap.get(this._idMap.reverseGet(id)).onSessionStateChanged({ isStopped: true, isPaused: false, isRunning: false });
 		});
 	}
 
