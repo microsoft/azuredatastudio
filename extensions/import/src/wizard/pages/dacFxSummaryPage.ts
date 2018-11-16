@@ -59,7 +59,7 @@ export class DacFxSummaryPage extends DacFxPage {
 
 	private populateTable() {
 		let data = [];
-		switch(this.instance.selectedOperation) {
+		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
 				data = [
 					[localize('dacfxDeploy.serverName', 'Server'), this.model.serverName],
