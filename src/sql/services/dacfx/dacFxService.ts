@@ -19,9 +19,9 @@ export interface IDacFxService {
 	_serviceBrand: any;
 
 	registerProvider(providerId: string, provider: sqlops.DacFxServicesProvider): void;
-	exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
+	exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 	importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
+	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 	deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 }
 
@@ -38,9 +38,9 @@ export class DacFxService implements IDacFxService {
 		this._providers[providerId] = provider;
 	}
 
-	exportBacpac(databasesName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+	exportBacpac(sourceDatabasesName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.exportBacpac(databasesName, packageFilePath, ownerUri, taskExecutionMode);
+			return runner.exportBacpac(sourceDatabasesName, packageFilePath, ownerUri, taskExecutionMode);
 		});
 	}
 
@@ -50,9 +50,9 @@ export class DacFxService implements IDacFxService {
 		});
 	}
 
-	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.extractDacpac(databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
+			return runner.extractDacpac(sourceDatabaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
 		});
 	}
 

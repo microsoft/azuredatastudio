@@ -67,7 +67,7 @@ export class DeployConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxDeploy.serverDropdownTitle', 'Server')
+			title: localize('dacFxDeploy.serverDropdownTitle', 'Target Server')
 		};
 	}
 
@@ -141,7 +141,7 @@ export class DeployConfigPage extends DacFxPage {
 
 		return {
 			component: this.databaseTextBox,
-			title: localize('dacFxDeploy.databaseNameTextBox', 'New database name')
+			title: localize('dacFxDeploy.databaseNameTextBox', 'Target Database')
 		};
 	}
 
@@ -187,7 +187,7 @@ export class DeployConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxDeploy.fileTextboxTitle', 'Dacpac to deploy'),
+			title: localize('dacFxDeploy.fileTextboxTitle', 'Dacpac location'),
 			actions: [this.fileButton]
 		};
 	}

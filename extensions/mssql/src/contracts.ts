@@ -300,7 +300,7 @@ export enum TaskExecutionMode {
 	executeAndScript = 2,
 }
 export interface ExportParams {
-	databaseName: string;
+	sourceDatabaseName: string;
 	packageFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -318,7 +318,7 @@ export interface ImportResponse {
 }
 
 export interface ExtractParams {
-	databaseName: string;
+	sourceDatabaseName: string;
 	packageFilePath: string;
 	applicationName: string;
 	applicationVersion: string;

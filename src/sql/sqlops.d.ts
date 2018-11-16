@@ -1602,7 +1602,7 @@ declare module 'sqlops' {
 	}
 
 	export interface ExportParams {
-		databaseName: string;
+		soureceDatabaseName: string;
 		packageFilePath: string;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
@@ -1616,7 +1616,7 @@ declare module 'sqlops' {
 	}
 
 	export interface ExtractParams {
-		databaseName: string;
+		sourceDatabaseName: string;
 		packageFilePath: string;
 		applicationName: string;
 		applicationVersion: string;
@@ -1632,9 +1632,9 @@ declare module 'sqlops' {
 	}
 
 	export interface DacFxServicesProvider extends DataProvider {
-		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExportResult>;
+		exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExportResult>;
 		importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ImportResult>;
-		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExtractResult>;
+		extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExtractResult>;
 		deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DeployResult>;
 	}
 

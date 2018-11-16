@@ -81,7 +81,7 @@ export class ExportConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxExport.serverDropdownTitle', 'Server the database is in')
+			title: localize('dacFxExport.serverDropdownTitle', 'Source Server')
 		};
 	}
 
@@ -160,7 +160,7 @@ export class ExportConfigPage extends DacFxPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFxExport.databaseDropdownTitle', 'Database to export')
+			title: localize('dacFxExport.databaseDropdownTitle', 'Source Database')
 		};
 	}
 
@@ -244,7 +244,7 @@ export class ExportConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExport.fileTextboxTitle', 'Location to save bacpac'),
+			title: localize('dacFxExport.fileTextboxTitle', 'Bacpac location'),
 			actions: [this.fileButton]
 		};
 	}

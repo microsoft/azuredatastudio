@@ -54,8 +54,8 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 		const client = this._client;
 		let self = this;
 
-		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> => {
-			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+		let exportBacpac = (sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> => {
+			let params: contracts.ExportParams = { sourceDatabaseName: sourceDatabaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.ExportRequest.type, params).then(
 				r => {
 					return r;
@@ -82,8 +82,8 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let extractDacpac = (databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> => {
-			let params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+		let extractDacpac = (sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> => {
+			let params: contracts.ExtractParams = { sourceDatabaseName: sourceDatabaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.ExtractRequest.type, params).then(
 				r => {
 					return r;

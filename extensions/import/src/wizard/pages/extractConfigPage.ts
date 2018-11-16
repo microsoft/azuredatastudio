@@ -84,7 +84,7 @@ export class ExtractConfigPage extends DacFxPage {
 
 		return {
 			component: this.serverDropdown,
-			title: localize('dacFxExtract.serverDropdownTitle', 'Server the database is in')
+			title: localize('dacFxExtract.serverDropdownTitle', 'Source Server')
 		};
 	}
 
@@ -163,7 +163,7 @@ export class ExtractConfigPage extends DacFxPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFxExtract.databaseDropdownTitle', 'Database to extract')
+			title: localize('dacFxExtract.databaseDropdownTitle', 'Source Database')
 		};
 	}
 
@@ -248,7 +248,7 @@ export class ExtractConfigPage extends DacFxPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExtract.fileTextboxTitle', 'Location to save dacpac'),
+			title: localize('dacFxExtract.fileTextboxTitle', 'Dacpac location'),
 			actions: [this.fileButton]
 		};
 	}

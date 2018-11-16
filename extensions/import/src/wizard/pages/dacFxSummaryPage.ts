@@ -62,32 +62,32 @@ export class DacFxSummaryPage extends DacFxPage {
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
 				data = [
-					[localize('dacfxDeploy.serverName', 'Server'), this.model.serverName],
-					[localize('dacfxDeploy.dacpacLocation', 'Dacpac to deploy'), this.model.filePath],
-					[localize('dacfxDeploy.databaseName', 'Database name'), this.model.databaseName]];
+					[localize('dacfxDeploy.serverName', 'Target Server'), this.model.serverName],
+					[localize('dacfxDeploy.dacpacLocation', 'Dacpac location'), this.model.filePath],
+					[localize('dacfxDeploy.databaseName', 'Target Database'), this.model.databaseName]];
 				// this.form.items[0] =
 				break;
 			}
 			case Operation.extract: {
 				data = [
-					[localize('dacfxExtract.serverName', 'Server'), this.model.serverName],
-					[localize('dacfxExtract.databaseName', 'Database'), this.model.databaseName],
+					[localize('dacfxExtract.serverName', 'Source Server'), this.model.serverName],
+					[localize('dacfxExtract.databaseName', 'Source Database'), this.model.databaseName],
 					[localize('dacfxExtract.version', 'Version'), this.model.version],
 					[localize('dacfxExtract.dacpacLocation', 'Dacpac location'), this.model.filePath]];
 				break;
 			}
 			case Operation.import: {
 				data = [
-					[localize('dacfxImport.serverName', 'Server'), this.model.serverName],
-					[localize('dacfxImport.bacpacLocation', 'Bacpac to import'), this.model.filePath],
-					[localize('dacfxImport.databaseName', 'Database name'), this.model.databaseName]];
+					[localize('dacfxImport.serverName', 'Target Server'), this.model.serverName],
+					[localize('dacfxImport.bacpacLocation', 'Bacpac location'), this.model.filePath],
+					[localize('dacfxImport.databaseName', 'Target Database'), this.model.databaseName]];
 				break;
 			}
 			case Operation.export: {
 				data = [
-					[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
-					[localize('dacfxExport.databaseName', 'Database'), this.model.databaseName],
-					[localize('dacfxExport.bacpacLocation', 'Bacpac location'), this.model.filePath]];
+					[localize('dacfxExport.serverName', 'Source Server'), this.model.serverName],
+					[localize('dacfxExport.databaseName', 'Source Database'), this.model.databaseName],
+					[localize('dacfxExport.bacpacLocation', 'Bacpac'), this.model.filePath]];
 				break;
 			}
 		}
