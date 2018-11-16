@@ -86,11 +86,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
-		this._actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
-		this._actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
-		this._actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
-		this._actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, false));
-		this._actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'delete'), CellTypes.Code, true));
+		this._actions.push(
+			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false, this.notificationService),
+			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true, this.notificationService),
+			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false, this.notificationService),
+			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true, this.notificationService),
+			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), CellTypes.Code, true, this.notificationService)
+			);
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -100,10 +102,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				if (this.cellModel.id === changedProp.currentValue) {
-					this.toggleMoreAcitons(true);
+					this.toggleMoreActions(true);
 				}
 				else {
-					this.toggleMoreAcitons(false);
+					this.toggleMoreActions(false);
 				}
 				break;
 			}
@@ -168,8 +170,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		]);
 
 	}
-	
-	private toggleMoreAcitons(showIcon: boolean) {
+
+	private toggleMoreActions(showIcon: boolean) {
 		if (showIcon) {
 			let moreActionsElement = <HTMLElement>this.moreactionsElement.nativeElement;
 			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
