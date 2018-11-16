@@ -237,7 +237,7 @@ export class ServerTreeView {
 				});
 			}
 		}
-		return new Promise<void>(()=>{});
+		return Promise.resolve();
 	}
 
 	public refreshTree(): void {
