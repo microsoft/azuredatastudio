@@ -36,7 +36,7 @@ suite('ExtHostAccountManagement', () => {
 		instantiationService.stub(IRPCProtocol, threadService);
 		instantiationService.stub(IAccountManagementService, accountMgmtStub);
 
-		const accountMgmtService = instantiationService.createInstance(MainThreadAccountManagement);
+		const accountMgmtService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountMgmtService);
 
 		mockAccountMetadata = {
@@ -356,7 +356,7 @@ suite('ExtHostAccountManagement', () => {
 
 		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
 		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
-		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
 
 		// Setup: Create ext host account management with registered account provider
@@ -365,18 +365,10 @@ suite('ExtHostAccountManagement', () => {
 
 		extHost.$getAllAccounts()
 			.then((accounts) => {
-		    		// If: I get security token
-					extHost.$getSecurityToken(mockAccount1)
-						.then((securityToken) => {
-							// Then: The call should have been passed to the account management service
-							mockAccountManagementService.verify(
-								(obj) => obj.getSecurityToken(TypeMoq.It.isAny()),
-								TypeMoq.Times.once()
-							);
-						}
-					);
+		    		// If: I get security token it will not throw
+					return extHost.$getSecurityToken(mockAccount1);
 				}
-			).then(() => done(), (err) => done(err));
+			).then(() => done(), (err) => done(new Error(err)));
 	});
 
 	test('GetSecurityToken - Account not found', (done) => {
@@ -402,7 +394,7 @@ suite('ExtHostAccountManagement', () => {
 
 		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
 		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
-		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
 
 		// Setup: Create ext host account management with registered account provider
@@ -423,18 +415,16 @@ suite('ExtHostAccountManagement', () => {
 			isStale: false
 		};
 
-		extHost.$getAllAccounts().then((accounts) => {
-			// If: I get security token for mockAccount2
-			// Then: It should throw
-			assert.throws(
-				() => extHost.$getSecurityToken(mockAccount2),
-				(error) => {
-					return error.message === `Account ${mockAccount2.key.accountId} not found.`;
-				}
-			);
+		extHost.$getAllAccounts()
+		.then(accounts => {
+			return extHost.$getSecurityToken(mockAccount2);
+		})
+		.then((noError) => {
+			done(new Error('Expected getSecurityToken to throw'));
+		}, (err) => {
+			// Expected error caught
+			done();
 		});
-
-		done();
 	});
 });
 
