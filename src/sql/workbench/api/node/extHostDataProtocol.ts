@@ -353,6 +353,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$onObjectExplorerSessionCreated(handle, response);
 	}
 
+	public $onObjectExplorerSessionDisconnected(handle: number, response: sqlops.ObjectExplorerSession): void {
+		this._proxy.$onObjectExplorerSessionDisconnected(handle, response);
+	}
+
 	public $onObjectExplorerNodeExpanded(handle: number, response: sqlops.ObjectExplorerExpandInfo): void {
 		this._proxy.$onObjectExplorerNodeExpanded(handle, response);
 	}

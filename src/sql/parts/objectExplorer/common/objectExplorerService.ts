@@ -20,6 +20,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import * as Utils from 'sql/parts/connection/common/utils';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -41,6 +42,8 @@ export interface IObjectExplorerService {
 	refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]>;
 
 	onSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
+
+	onSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
 
 	onNodeExpanded(handle: number, sessionResponse: sqlops.ObjectExplorerExpandInfo);
 
@@ -203,6 +206,29 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		this.sendUpdateNodeEvent(connection, errorMessage);
+	}
+
+	/**
+	 * Gets called when session is disconnected
+	 */
+	public onSessionDisconnected(handle: number, session: sqlops.ObjectExplorerSession) {
+		if (this._sessions[session.sessionId]) {
+			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
+			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
+				let uri: string = Utils.generateUri(connection);
+				if (this._serverTreeView.isObjectExplorerConnectionUri(uri)) {
+					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
+						this.sendUpdateNodeEvent(connection, session.errorMessage);
+						connection.isDisconnecting = true;
+						this._connectionManagementService.disconnect(connection).then((value) => {
+							connection.isDisconnecting = false;
+						});
+					});
+				}
+			}
+		} else {
+			warn(`Cannot find session ${session.sessionId}`);
+		}
 	}
 
 	private sendUpdateNodeEvent(connection: ConnectionProfile, errorMessage: string = undefined) {

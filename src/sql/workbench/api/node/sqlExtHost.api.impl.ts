@@ -217,6 +217,12 @@ export function createApiFactory(
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
 				});
 
+				if (provider.registerOnSessionDisconnected) {
+					provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
+						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
+					});
+				}
+
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
 				});
