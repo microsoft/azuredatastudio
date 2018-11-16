@@ -83,7 +83,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	public get model(): NotebookModel {
 		return this._model;
 	}
-	
+
 	public get modelRegistered(): Promise<NotebookModel> {
 		return this._modelRegisteredDeferred.promise;
 	}
@@ -245,7 +245,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._trustedAction.enabled = false;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },

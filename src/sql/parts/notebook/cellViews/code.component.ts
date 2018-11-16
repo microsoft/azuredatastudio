@@ -97,7 +97,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	get model(): NotebookModel {
 		return this._model;
 	}
-	
+
 	private createEditor(): void {
 		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
@@ -134,7 +134,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		let runCellAction = this._instantiationService.createInstance(RunCellAction);
 
 		let taskbar = <HTMLElement>this.toolbarElement.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ action: runCellAction }
