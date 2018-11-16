@@ -442,6 +442,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._objectExplorerService.onSessionCreated(handle, sessionResponse);
 	}
 
+	public $onObjectExplorerSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession): void {
+		this._objectExplorerService.onSessionDisconnected(handle, sessionResponse);
+	}
+
 	public $onObjectExplorerNodeExpanded(handle: number, expandResponse: sqlops.ObjectExplorerExpandInfo): void {
 		this._objectExplorerService.onNodeExpanded(handle, expandResponse);
 	}

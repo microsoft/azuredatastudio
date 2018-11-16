@@ -150,7 +150,7 @@ export class ServerTreeView {
 		});
 	}
 
-	private isObjectExplorerConnectionUri(uri: string): boolean {
+	public isObjectExplorerConnectionUri(uri: string): boolean {
 		let isBackupRestoreUri: boolean = uri.indexOf(ConnectionUtils.ConnectionUriBackupIdAttributeName) >= 0 ||
 			uri.indexOf(ConnectionUtils.ConnectionUriRestoreIdAttributeName) >= 0;
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
@@ -227,16 +227,17 @@ export class ServerTreeView {
 		}
 	}
 
-	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
+	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Thenable<void> {
 		if (connection) {
 			var conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
+				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
 					this._tree.collapse(conn);
 					this._tree.refresh(conn);
 				});
 			}
 		}
+		return Promise.resolve();
 	}
 
 	public refreshTree(): void {
