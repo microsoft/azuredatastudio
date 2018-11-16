@@ -33,7 +33,7 @@ export class JobManagementUtilities {
 			case(4): return nls.localize('agentUtilities.idle', 'Idle');
 			case(5): return nls.localize('agentUtilities.suspended', 'Suspended');
 			case(6): return nls.localize('agentUtilities.obsolete', '[Obsolete]');
-			case(7): return nls.localize('agentUtilities.performingCompletionActions', 'PerformingCompletionActions');
+			case(7): return 'PerformingCompletionActions';
 			default: return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
 		}
 	}
