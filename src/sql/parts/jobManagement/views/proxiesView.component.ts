@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as dom from 'vs/base/browser/dom';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -42,7 +42,7 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => ProxiesViewComponent) }],
 })
 
-export class ProxiesViewComponent extends JobManagementView implements OnInit {
+export class ProxiesViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
 	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
@@ -75,6 +75,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	public proxies: sqlops.AgentProxyInfo[];
 	public readonly contextAction = NewProxyAction;
 
+	private _didTabChange: boolean;
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
 
 	constructor(
@@ -106,6 +107,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
+	}
+
+	ngOnDestroy() {
+		this._didTabChange = true;
 	}
 
 	public layout() {
@@ -172,8 +177,10 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 					// TODO: handle error
 				}
 				this._showProgressWheel = false;
-				if (this.isVisible) {
+				if (this.isVisible && !this._didTabChange) {
 					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
 				}
 			});
 		}
