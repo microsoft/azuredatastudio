@@ -22,7 +22,7 @@ export class QueryEditorContext extends Disposable {
 		super();
 
 		this._isConnected = QueryEditorContextKeys.isConnected.bindTo(contextKeyService);
-		this._isExecuting= QueryEditorContextKeys.isExecuting.bindTo(contextKeyService);
+		this._isExecuting = QueryEditorContextKeys.isExecuting.bindTo(contextKeyService);
 	}
 
 	public setState(state: QueryEditorState) {
