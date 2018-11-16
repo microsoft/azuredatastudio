@@ -62,20 +62,6 @@ export class SelectOperationPage extends DacFxPage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
-		return true;
-	}
-
-	public async cleanup(): Promise<boolean> {
-		return true;
-	}
-
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator(() => {
-			return true;
-		});
-	}
-
 	private async createDeployRadioButton(): Promise<sqlops.FormComponent> {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
@@ -84,15 +70,12 @@ export class SelectOperationPage extends DacFxPage {
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
-			// remove the 2 previous pages
-			this.instance.wizard.removePage(2);
+			// remove the previous page
 			this.instance.wizard.removePage(1);
 
-			// add deploy pages
-			let page = this.instance.pages.get(1);
+			// add deploy page
+			let page = this.instance.pages.get('deployConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(2);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.deploy);
@@ -112,15 +95,12 @@ export class SelectOperationPage extends DacFxPage {
 			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
-			// remove the 2 previous pages
-			this.instance.wizard.removePage(2);
+			// remove the previous pages
 			this.instance.wizard.removePage(1);
 
-			// add the extract pages
-			let page = this.instance.pages.get(3);
+			// add the extract page
+			let page = this.instance.pages.get('extractConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(4);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.extract);
@@ -140,16 +120,12 @@ export class SelectOperationPage extends DacFxPage {
 			}).component();
 
 		this.importRadioButton.onDidClick(() => {
-			// remove the 2 previous pages and action
-			this.instance.wizard.removePage(2);
+			// remove the  previous page
 			this.instance.wizard.removePage(1);
 
-			// add the import pages
-
-			let page = this.instance.pages.get(5);
+			// add the import page
+			let page = this.instance.pages.get('importConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(6);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.import);
@@ -170,14 +146,11 @@ export class SelectOperationPage extends DacFxPage {
 
 		this.exportRadioButton.onDidClick(() => {
 			// remove the 2 previous pages
-			this.instance.wizard.removePage(2);
 			this.instance.wizard.removePage(1);
 
 			// add the export pages
-			let page = this.instance.pages.get(7);
+			let page = this.instance.pages.get('exportConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
-			let page2 = this.instance.pages.get(8);
-			this.instance.wizard.addPage(page2.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.export);

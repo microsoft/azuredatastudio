@@ -7,12 +7,12 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ImportSummaryPage extends DacFxPage {
+export class DacFxSummaryPage extends DacFxPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
@@ -34,7 +34,7 @@ export class ImportSummaryPage extends DacFxPage {
 			[
 				{
 					component: this.table,
-					title: localize('dacfxExport.importInformation', 'Import bacpac information')
+					title: ''
 				}
 			]
 		).component();
@@ -48,14 +48,6 @@ export class ImportSummaryPage extends DacFxPage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
-		return true;
-	}
-
-	public async cleanup(): Promise<boolean> {
-		return true;
-	}
-
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
 			if (this.loader.loading) {
@@ -66,11 +58,42 @@ export class ImportSummaryPage extends DacFxPage {
 	}
 
 	private populateTable() {
+		let data = [];
+		switch(this.instance.selectedOperation) {
+			case Operation.deploy: {
+				data = [
+					[localize('dacfxDeploy.serverName', 'Server'), this.model.serverName],
+					[localize('dacfxDeploy.dacpacLocation', 'Dacpac to deploy'), this.model.filePath],
+					[localize('dacfxDeploy.databaseName', 'Database name'), this.model.databaseName]];
+				// this.form.items[0] =
+				break;
+			}
+			case Operation.extract: {
+				data = [
+					[localize('dacfxExtract.serverName', 'Server'), this.model.serverName],
+					[localize('dacfxExtract.databaseName', 'Database'), this.model.databaseName],
+					[localize('dacfxExtract.version', 'Version'), this.model.version],
+					[localize('dacfxExtract.dacpacLocation', 'Dacpac location'), this.model.filePath]];
+				break;
+			}
+			case Operation.import: {
+				data = [
+					[localize('dacfxImport.serverName', 'Server'), this.model.serverName],
+					[localize('dacfxImport.bacpacLocation', 'Bacpac to import'), this.model.filePath],
+					[localize('dacfxImport.databaseName', 'Database name'), this.model.databaseName]];
+				break;
+			}
+			case Operation.export: {
+				data = [
+					[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
+					[localize('dacfxExport.databaseName', 'Database'), this.model.databaseName],
+					[localize('dacfxExport.bacpacLocation', 'Bacpac location'), this.model.filePath]];
+				break;
+			}
+		}
+
 		this.table.updateProperties({
-			data: [
-				[localize('dacfxExport.serverName', 'Server'), this.model.serverName],
-				[localize('dacfxExport.bacpacLocation', 'Bacpac to import'), this.model.filePath],
-				[localize('dacfxExport.databaseName', 'Database name'), this.model.databaseName]],
+			data: data,
 			columns: ['Setting', 'Value'],
 			width: 600,
 			height: 200

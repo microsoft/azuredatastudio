@@ -61,14 +61,6 @@ export class ExtractConfigPage extends DacFxPage {
 		return r1 && r2;
 	}
 
-	async onPageLeave(): Promise<boolean> {
-		return true;
-	}
-
-	public async cleanup(): Promise<boolean> {
-		return true;
-	}
-
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
 			if (this.databaseLoader.loading) {

@@ -8,13 +8,10 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
-import { DeploySummaryPage } from './pages/deploySummaryPage';
+import { DacFxSummaryPage } from './pages/dacFxSummaryPage';
 import { ExportConfigPage } from './pages/exportConfigPage';
-import { ExportSummaryPage } from './pages/exportSummaryPage';
 import { ExtractConfigPage } from './pages/extractConfigPage';
-import { ExtractSummaryPage } from './pages/extractSummaryPage';
 import { ImportConfigPage } from './pages/importConfigPage';
-import { ImportSummaryPage } from './pages/importSummaryPage';
 import { DacFxDataModel } from './api/models';
 import { DacFxPage } from './api/dacFxPage';
 
@@ -40,8 +37,8 @@ export class DataTierApplicationWizard {
 	public wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
 	private model: DacFxDataModel;
-	public pages: Map<number, Page> = new Map<number, Page>();
-	private selectedOperation: Operation;
+	public pages: Map<string, Page> = new Map<string, Page>();
+	public selectedOperation: Operation;
 
 	constructor() {
 	}
@@ -49,7 +46,7 @@ export class DataTierApplicationWizard {
 	public async start(p: any, ...args: any[]) {
 		this.model = <DacFxDataModel>{};
 
-		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : null;
+		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.model.serverId = profile.id;
 			this.model.databaseName = profile.databaseName;
@@ -57,34 +54,27 @@ export class DataTierApplicationWizard {
 
 		this.connection = await sqlops.connection.getCurrentConnection();
 		if (!this.connection) {
-			vscode.window.showErrorMessage(localize('dacFx.needConnection', 'Please connect to a server before using this wizard.'));
-			return;
+			this.connection = await sqlops.connection.openConnectionDialog();
 		}
 
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Data-tier Application Wizard');
 		let selectOperationWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
 		let deployConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployConfigPageName', 'Deploy Settings'));
-		let deploySummaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deploySummaryPageName', 'Deploy Summary'));
+		let summaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
 		let extractConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractConfigPageName', 'Extract Settings'));
-		let extractSummaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractSummaryPageName', 'Extract Summary'));
 		let importConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.importConfigPageName', 'Import Settings'));
-		let importSummaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.importSummaryPageName', 'Import Summary'));
 		let exportConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportConfigPageName', 'Export Settings'));
-		let exportSummaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportSummaryPageName', 'Export Summary'));
 
-		this.pages.set(0, new Page(selectOperationWizardPage));
-		this.pages.set(1, new Page(deployConfigWizardPage));
-		this.pages.set(2, new Page(deploySummaryWizardPage));
-		this.pages.set(3, new Page(extractConfigWizardPage));
-		this.pages.set(4, new Page(extractSummaryWizardPage));
-		this.pages.set(5, new Page(importConfigWizardPage));
-		this.pages.set(6, new Page(importSummaryWizardPage));
-		this.pages.set(7, new Page(exportConfigWizardPage));
-		this.pages.set(8, new Page(exportSummaryWizardPage));
+		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
+		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
+		this.pages.set('extractConfig', new Page(extractConfigWizardPage));
+		this.pages.set('importConfig', new Page(importConfigWizardPage));
+		this.pages.set('exportConfig', new Page(exportConfigWizardPage));
+		this.pages.set('summary', new Page(summaryWizardPage));
 
 		selectOperationWizardPage.registerContent(async (view) => {
 			let selectOperationDacFxPage = new SelectOperationPage(this, selectOperationWizardPage, this.model, view);
-			this.pages.get(0).dacFxPage = selectOperationDacFxPage;
+			this.pages.get('selectOperation').dacFxPage = selectOperationDacFxPage;
 			await selectOperationDacFxPage.start().then(() => {
 				selectOperationDacFxPage.setupNavigationValidator();
 				selectOperationDacFxPage.onPageEnter();
@@ -93,108 +83,62 @@ export class DataTierApplicationWizard {
 
 		deployConfigWizardPage.registerContent(async (view) => {
 			let deployConfigDacFxPage = new DeployConfigPage(this, deployConfigWizardPage, this.model, view);
-			this.pages.get(1).dacFxPage = deployConfigDacFxPage;
+			this.pages.get('deployConfig').dacFxPage = deployConfigDacFxPage;
 			await deployConfigDacFxPage.start().then(() => {
 				deployConfigDacFxPage.setupNavigationValidator();
 				deployConfigDacFxPage.onPageEnter();
 			});
 		});
 
-		deploySummaryWizardPage.registerContent(async (view) => {
-			let deploySummaryDacFxPage = new DeploySummaryPage(this, deploySummaryWizardPage, this.model, view);
-			this.pages.get(2).dacFxPage = deploySummaryDacFxPage;
-			await deploySummaryDacFxPage.start();
-		});
-
 		extractConfigWizardPage.registerContent(async (view) => {
 			let extractConfigDacFxPage = new ExtractConfigPage(this, extractConfigWizardPage, this.model, view);
-			this.pages.get(3).dacFxPage = extractConfigDacFxPage;
+			this.pages.get('extractConfig').dacFxPage = extractConfigDacFxPage;
 			await extractConfigDacFxPage.start().then(() => {
 				extractConfigDacFxPage.setupNavigationValidator();
 				extractConfigDacFxPage.onPageEnter();
 			});
 		});
 
-		extractSummaryWizardPage.registerContent(async (view) => {
-			let extractSummaryDacFxPage = new ExtractSummaryPage(this, extractSummaryWizardPage, this.model, view);
-			this.pages.get(4).dacFxPage = extractSummaryDacFxPage;
-			await extractSummaryDacFxPage.start();
-		});
-
 		importConfigWizardPage.registerContent(async (view) => {
 			let importConfigDacFxPage = new ImportConfigPage(this, importConfigWizardPage, this.model, view);
-			this.pages.get(5).dacFxPage = importConfigDacFxPage;
+			this.pages.get('importConfig').dacFxPage = importConfigDacFxPage;
 			await importConfigDacFxPage.start().then(() => {
 				importConfigDacFxPage.setupNavigationValidator();
 				importConfigDacFxPage.onPageEnter();
 			});
 		});
 
-		importSummaryWizardPage.registerContent(async (view) => {
-			let importSummaryDacFxPage = new ImportSummaryPage(this, importSummaryWizardPage, this.model, view);
-			this.pages.get(6).dacFxPage = importSummaryDacFxPage;
-			await importSummaryDacFxPage.start();
-		});
-
 		exportConfigWizardPage.registerContent(async (view) => {
 			let exportConfigDacFxPage = new ExportConfigPage(this, exportConfigWizardPage, this.model, view);
-			this.pages.get(7).dacFxPage = exportConfigDacFxPage;
+			this.pages.get('exportConfig').dacFxPage = exportConfigDacFxPage;
 			await exportConfigDacFxPage.start().then(() => {
 				exportConfigDacFxPage.setupNavigationValidator();
 				exportConfigDacFxPage.onPageEnter();
 			});
 		});
 
-		exportSummaryWizardPage.registerContent(async (view) => {
-			let exportSummaryDacFxPage = new ExportSummaryPage(this, exportSummaryWizardPage, this.model, view);
-			this.pages.get(8).dacFxPage = exportSummaryDacFxPage;
-			await exportSummaryDacFxPage.start();
+		summaryWizardPage.registerContent(async (view) => {
+			let summaryDacFxPage = new DacFxSummaryPage(this, summaryWizardPage, this.model, view);
+			this.pages.get('summary').dacFxPage = summaryDacFxPage;
+			await summaryDacFxPage.start();
 		});
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.newPage;
+			let page;
 
-			let page = this.pages.get(idx);
-
-			// get appropriate summary page
+			//  summary page
 			if (idx === 2) {
-				switch (this.selectedOperation) {
-					case Operation.deploy: {
-						page = this.pages.get(2);
-						break;
-					}
-					case Operation.extract: {
-						page = this.pages.get(4);
-						break;
-					}
-					case Operation.import: {
-						page = this.pages.get(6);
-						break;
-					}
-					case Operation.export: {
-						page = this.pages.get(8);
-						break;
-					}
-				}
+				page = this.pages.get('summary');
 			}
 
-			if (page) {
+			if (page !== undefined) {
 				page.dacFxPage.setupNavigationValidator();
 				page.dacFxPage.onPageEnter();
 			}
 		});
 
-		// none of the onPageLeaves do anything right now
-		this.wizard.onPageChanged(async (event) => {
-			let idx = event.lastPage;
-
-			let page = this.pages.get(idx);
-			if (page) {
-				page.dacFxPage.onPageLeave();
-			}
-		});
-
-		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deploySummaryWizardPage];
+		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, summaryWizardPage];
 		this.wizard.generateScriptButton.hidden = true;
 		this.wizard.doneButton.onClick(async () => await this.executeOperation());
 
@@ -301,8 +245,3 @@ export class DataTierApplicationWizard {
 		return service;
 	}
 }
-
-
-
-
-

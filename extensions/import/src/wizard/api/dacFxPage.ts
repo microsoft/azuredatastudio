@@ -29,22 +29,12 @@ export abstract class DacFxPage {
 	public async abstract start(): Promise<boolean>;
 
 	/**
-	 * This method is called when the user is entering the page.
-	 * @returns {Promise<boolean>}
-	 */
-	public async abstract onPageEnter(): Promise<boolean>;
-
-	/**
 	 * This method is called when the user is leaving the page.
 	 * @returns {Promise<boolean>}
 	 */
-	public async abstract onPageLeave(): Promise<boolean>;
-
-	/**
-	 * Sets up a navigation validator.
-	 * This will be called right before onPageEnter().
-	 */
-	public abstract setupNavigationValidator();
+	async onPageLeave(): Promise<boolean> {
+		return true;
+	}
 
 	/**
 	 * Override this method to cleanup what you don't need cached in the page.
@@ -52,5 +42,15 @@ export abstract class DacFxPage {
 	 */
 	public async cleanup(): Promise<boolean> {
 		return true;
+	}
+
+	/**
+	 * Sets up a navigation validator.
+	 * This will be called right before onPageEnter().
+	 */
+	public setupNavigationValidator() {
+		this.instance.registerNavigationValidator(() => {
+			return true;
+		});
 	}
 }

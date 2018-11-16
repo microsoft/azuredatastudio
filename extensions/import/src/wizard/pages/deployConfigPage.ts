@@ -7,7 +7,6 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
-import * as os from 'os';
 import * as path from 'path';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
@@ -53,20 +52,6 @@ export class DeployConfigPage extends DacFxPage {
 	async onPageEnter(): Promise<boolean> {
 		let r1 = await this.populateServerDropdown();
 		return r1;
-	}
-
-	async onPageLeave(): Promise<boolean> {
-		return true;
-	}
-
-	public async cleanup(): Promise<boolean> {
-		return true;
-	}
-
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator(() => {
-			return true;
-		});
 	}
 
 	private async createServerDropdown(): Promise<sqlops.FormComponent> {
