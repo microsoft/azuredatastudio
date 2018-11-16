@@ -2,8 +2,11 @@
 
 import { nb } from 'sqlops';
 import { localize } from 'vs/nls';
+import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 
 const noKernel: string = localize('noKernel', 'No Kernel');
+const runNotebookDisabled = localize('runNotebookDisabled', 'Cannot run cells as no kernel has been configured');
+
 let noKernelSpec: nb.IKernelSpec = ({
 	name: noKernel,
 	language: 'python',
@@ -130,7 +133,7 @@ class EmptyKernel implements nb.IKernel {
 	}
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
-		throw new Error('Method not implemented.');
+		return new EmptyFuture();
 	}
 
 	requestComplete(content: nb.ICompleteRequest): Thenable<nb.ICompleteReplyMsg> {
@@ -138,4 +141,72 @@ class EmptyKernel implements nb.IKernel {
 		return Promise.resolve(response as nb.ICompleteReplyMsg);
 	}
 
+	interrupt(): Thenable<void> {
+		return Promise.resolve(undefined);
+	}
+}
+
+class EmptyFuture implements FutureInternal {
+
+
+	get inProgress(): boolean {
+		return false;
+	}
+
+	get msg(): nb.IMessage {
+		return undefined;
+	}
+
+	get done(): Thenable<nb.IShellMessage> {
+		let msg: nb.IShellMessage = {
+			channel: 'shell',
+			type: 'shell',
+			content: runNotebookDisabled,
+			header: undefined,
+			metadata: undefined,
+			parent_header: undefined
+		};
+
+		return Promise.resolve(msg);
+	}
+
+	sendInputReply(content: nb.IInputReply): void {
+		// no-op
+	}
+	dispose() {
+		// No-op
+	}
+
+	setReplyHandler(handler: nb.MessageHandler<nb.IShellMessage>): void {
+		// no-op
+	}
+	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
+		// no-op
+	}
+	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
+		setTimeout(() => {
+			let msg: nb.IIOPubMessage = {
+				channel: 'iopub',
+				type: 'iopub',
+				header: <nb.IHeader> {
+					msg_id: '0',
+					msg_type: 'error'
+				},
+				content: <nb.IErrorResult> {
+					ename: localize('errorName', 'Error'),
+					evalue: runNotebookDisabled,
+					output_type: 'error'
+				},
+				metadata: undefined,
+				parent_header: undefined
+			};
+			handler.handle(msg);
+		}, 10);
+	}
+	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		// no-op
+	}
+	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
+		// no-op
+	}
 }

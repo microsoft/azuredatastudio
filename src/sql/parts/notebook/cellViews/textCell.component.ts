@@ -83,6 +83,9 @@ export class TextCellComponent extends CellView implements OnInit {
 		this.updatePreview();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.cellModel.onOutputsChanged(e => {
+			this.updatePreview();
+		});
 	}
 
 	// Todo: implement layout

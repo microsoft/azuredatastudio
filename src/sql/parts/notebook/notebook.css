@@ -13,11 +13,6 @@
 	border-style: solid;
 }
 
-.notebookEditor .notebook-toolbar-dropdown {
-	width: 150px;
-	padding-right: 10px;
-}
-
 .notebookEditor .notebook-info-label {
 	padding-right: 5px;
 	text-align: center;
@@ -29,15 +24,41 @@
 	padding-top: 0px;
 }
 
-.notebookEditor .notebook-info-button {
+.notebookEditor .notebook-button {
 	display: inline-block;
 	width: 100%;
-	padding: 4px;
+	padding: 0px;
 	text-align: center;
 	cursor: pointer;
 	padding-left: 15px;
 	background-size: 11px;
 	margin-right: 0.3em;
-	font-size: 13px;
-	background-image: url("./media/light/add.svg")
+	font-size: 11px;
+}
+
+.notebookEditor .notebook-button.icon-add{
+	background-image: url("./media/light/add.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-add,
+.hc-black .notebookEditor .notebook-button.icon-add{
+	background-image: url("./media/dark/add_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-trusted{
+	background-image: url("./media/light/trusted.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-trusted,
+.hc-black .notebookEditor .notebook-button.icon-trusted{
+	background-image: url("./media/dark/trusted_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-notTrusted{
+	background-image: url("./media/light/nottrusted.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-notTrusted,
+.hc-black .notebookEditor .notebook-button.icon-notTrusted{
+	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
