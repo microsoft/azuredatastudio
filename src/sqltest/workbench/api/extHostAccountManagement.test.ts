@@ -365,7 +365,7 @@ suite('ExtHostAccountManagement', () => {
 
 		extHost.$getAllAccounts()
 			.then((accounts) => {
-		    		// If: I get security token
+		    		// If: I get security token it will not throw
 					return extHost.$getSecurityToken(mockAccount1);
 				}
 			).then(() => done(), (err) => done(new Error(err)));
