@@ -46,7 +46,8 @@ export class ExportConfigPage extends DacFxPage {
 					databaseComponent,
 					fileBrowserComponent,
 				], {
-					horizontal: true
+					horizontal: true,
+					componentWidth: 400
 				}).component();
 		await this.view.initializeModel(this.form);
 		return true;

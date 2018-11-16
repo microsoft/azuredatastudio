@@ -43,7 +43,8 @@ export class DeployConfigPage extends DacFxPage {
 					serverComponent,
 					databaseComponent,
 				], {
-					horizontal: true
+					horizontal: true,
+					componentWidth: 400
 				}).component();
 		await this.view.initializeModel(this.form);
 		return true;
