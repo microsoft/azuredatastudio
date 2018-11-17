@@ -84,7 +84,10 @@ class BasicView extends View {
 			this._previousSize = this.size;
 			this.setFixed(this.headerSize);
 		} else {
-			this.setFlexible(this._previousSize);
+			// Enforce the min height for the view when user is doing expand operation,
+			// to make sure the view has a reasonable height.
+			const minHeight = 200;
+			this.setFlexible(Math.max(this._previousSize, minHeight));
 		}
 	}
 

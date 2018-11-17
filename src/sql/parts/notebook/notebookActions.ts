@@ -43,41 +43,82 @@ export class AddCellAction extends Action {
 	}
 }
 
-export class TrustedAction extends Action {
+export interface IToggleableState {
+	baseClass?: string;
+	shouldToggleTooltip?: boolean;
+	toggleOnClass: string;
+	toggleOnLabel: string;
+	toggleOffLabel: string;
+	toggleOffClass: string;
+	isOn: boolean;
+}
+
+export abstract class ToggleableAction extends Action {
+
+	constructor(id: string, protected state: IToggleableState) {
+		super(id, '');
+		this.updateLabelAndIcon();
+	}
+
+	private updateLabelAndIcon() {
+		if (this.state.shouldToggleTooltip) {
+			this.tooltip = this.state.isOn ? this.state.toggleOnLabel : this.state.toggleOffLabel;
+		} else {
+			this.label = this.state.isOn ? this.state.toggleOnLabel : this.state.toggleOffLabel;
+		}
+		let classes = this.state.baseClass ? `${this.state.baseClass} ` : '';
+		classes += this.state.isOn ? this.state.toggleOnClass : this.state.toggleOffClass;
+		this.class = classes;
+	}
+
+	protected toggle(isOn: boolean): void {
+		this.state.isOn = isOn;
+		this.updateLabelAndIcon();
+	}
+}
+
+export class TrustedAction extends ToggleableAction {
 	// Constants
-	private static readonly trustLabel = localize('trustLabel', 'Trusted');
-	private static readonly notTrustLabel = localize('untrustLabel', 'Not Trusted');
+	private static readonly trustedLabel = localize('trustLabel', 'Trusted');
+	private static readonly notTrustedLabel = localize('untrustLabel', 'Not Trusted');
 	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', 'Notebook is already trusted.');
-	private static readonly trustedCssClass = 'notebook-button icon-trusted';
-	private static readonly notTrustedCssClass = 'notebook-button icon-notTrusted';
+	private static readonly baseClass = 'notebook-button';
+	private static readonly trustedCssClass = 'icon-trusted';
+	private static readonly notTrustedCssClass = 'icon-notTrusted';
+
 	// Properties
-	private _isTrusted: boolean = false;
-	public get trusted(): boolean {
-		return this._isTrusted;
-	}
-	public set trusted(value: boolean) {
-		this._isTrusted = value;
-		this._setClass(value ? TrustedAction.trustedCssClass : TrustedAction.notTrustedCssClass);
-		this._setLabel(value ? TrustedAction.trustLabel : TrustedAction.notTrustLabel);
-	}
 
 	constructor(
 		id: string,
 		@INotificationService private _notificationService: INotificationService
 	) {
-		super(id, TrustedAction.notTrustLabel, TrustedAction.notTrustedCssClass);
+		super(id, {
+			baseClass: TrustedAction.baseClass,
+			toggleOnLabel: TrustedAction.trustedLabel,
+			toggleOnClass: TrustedAction.trustedCssClass,
+			toggleOffLabel: TrustedAction.notTrustedLabel,
+			toggleOffClass: TrustedAction.notTrustedCssClass,
+			isOn: false
+		});
+	}
+
+	public get trusted(): boolean {
+		return this.state.isOn;
+	}
+	public set trusted(value: boolean) {
+		this.toggle(value);
 	}
 
 	public run(context: NotebookComponent): TPromise<boolean> {
 		let self = this;
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
-				if (self._isTrusted) {
+				if (self.trusted) {
 					const actions: INotificationActions = { primary: [] };
 					self._notificationService.notify({ severity: Severity.Info, message: TrustedAction.alreadyTrustedMsg, actions });
 				}
 				else {
-					self.trusted = !self._isTrusted;
+					self.trusted = !self.trusted;
 					context.updateModelTrustDetails(self.trusted);
 				}
 				resolve(true);

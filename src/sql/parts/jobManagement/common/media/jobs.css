@@ -304,15 +304,15 @@ table.jobprevruns > tbody {
 	background-image: url('refresh_inverse.svg');
 }
 
-.actionbar-container .monaco-action-bar > ul.actions-container {
+.agent-actionbar-container .monaco-action-bar > ul.actions-container {
 	padding-top: 10px;
 }
 
-jobsview-component .actionbar-container {
+jobsview-component .agent-actionbar-container {
     height: 40px;
 }
 
-.actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
+.agent-actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
 	padding-left: 20px;
 }
 
