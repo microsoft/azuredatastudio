@@ -168,8 +168,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get hadoopConnection(): NotebookConnection {
-        return this._hadoopConnection;
-    }
+		return this._hadoopConnection;
+	}
 
 	/**
 	 * Indicates the server has finished loading. It may have failed to load in
@@ -190,7 +190,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
-			if(this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
+			if (this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
 				contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
 			}
 			let factory = this.notebookOptions.factory;
@@ -213,27 +213,27 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public findCellIndex(cellModel: CellModel): number {
-        return this._cells.findIndex((cell) => cell.equals(cellModel));
-    }
+		return this._cells.findIndex((cell) => cell.equals(cellModel));
+	}
 
 	public addCell(cellType: CellType, index?: number): void {
 		if (this.inErrorState || !this._cells) {
-            return;
-        }
-        let cell = this.createCell(cellType);
+			return;
+		}
+		let cell = this.createCell(cellType);
 
-        if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
-            this._cells.splice(index, 0, cell);
-        } else {
-            this._cells.push(cell);
-            index = undefined;
-        }
+		if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
+			this._cells.splice(index, 0, cell);
+		} else {
+			this._cells.push(cell);
+			index = undefined;
+		}
 
-        this._contentChangedEmitter.fire({
-            changeType: NotebookChangeType.CellsAdded,
-            cells: [cell],
-            cellIndex: index
-        });
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsAdded,
+			cells: [cell],
+			cellIndex: index
+		});
 	}
 
 	private createCell(cellType: CellType): ICellModel {
@@ -291,15 +291,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			} else {
 				this._onClientSessionReady.fire(this._clientSession);
 				// Once session is loaded, can use the session manager to retrieve useful info
-					this.loadKernelInfo();
-					await this.loadActiveContexts(undefined);
+				this.loadKernelInfo();
+				await this.loadActiveContexts(undefined);
 			}
 		});
 	}
 
 	private isValidKnoxConnection(profile: IConnectionProfile | connection.Connection) {
 		return profile && profile.providerName === notebookConstants.hadoopKnoxProviderName && profile.options[notebookConstants.hostPropName] !== undefined;
-    }
+	}
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._defaultLanguageInfo;
@@ -317,8 +317,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
-        return this._clientSession.changeKernel(kernelSpec)
-		.then((kernel) => {
+		return this._clientSession.changeKernel(kernelSpec)
+			.then((kernel) => {
 				kernel.ready.then(() => {
 					if (kernel.info) {
 						this.updateLanguageInfo(kernel.info.language_info);
@@ -351,16 +351,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private refreshConnections(newConnection: IConnectionProfile) {
 		if (this.isValidKnoxConnection(newConnection) &&
-                this._hadoopConnection.connectionProfile.id !== '-1' &&
-                this._hadoopConnection.connectionProfile.id !== this._activeContexts.defaultConnection.id) {
-            // Put the defaultConnection to the head of otherConnections
-            if (this.isValidKnoxConnection(this._activeContexts.defaultConnection)) {
-                this._activeContexts.otherConnections = this._activeContexts.otherConnections.filter(conn => conn.id !== this._activeContexts.defaultConnection.id);
-                this._activeContexts.otherConnections.unshift(this._activeContexts.defaultConnection);
-            }
-            // Change the defaultConnection to newConnection
-            this._activeContexts.defaultConnection = newConnection;
-        }
+			this._hadoopConnection.connectionProfile.id !== '-1' &&
+			this._hadoopConnection.connectionProfile.id !== this._activeContexts.defaultConnection.id) {
+			// Put the defaultConnection to the head of otherConnections
+			if (this.isValidKnoxConnection(this._activeContexts.defaultConnection)) {
+				this._activeContexts.otherConnections = this._activeContexts.otherConnections.filter(conn => conn.id !== this._activeContexts.defaultConnection.id);
+				this._activeContexts.otherConnections.unshift(this._activeContexts.defaultConnection);
+			}
+			// Change the defaultConnection to newConnection
+			this._activeContexts.defaultConnection = newConnection;
+		}
 	}
 
 	private loadKernelInfo(): void {
@@ -516,7 +516,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				changeInfo.isDirty = true;
 				break;
 			default:
-				// Do nothing for now
+			// Do nothing for now
 		}
 		this._contentChangedEmitter.fire(changeInfo);
 	}

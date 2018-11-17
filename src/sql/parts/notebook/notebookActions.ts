@@ -189,13 +189,13 @@ export class AttachToDropdown extends SelectBox {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@INotificationService private _notificationService: INotificationService) {
-		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false} as ISelectBoxOptionsWithLabel);
+		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
-			.then((model) => this.updateModel(model))
-			.catch((err) => {
-				// No-op for now
-			});
+				.then((model) => this.updateModel(model))
+				.catch((err) => {
+					// No-op for now
+				});
 		}
 		this.onDidSelect(e => {
 			let connection = this.model.contexts.otherConnections.find((c) => c.options.host === e.selected);
@@ -234,33 +234,33 @@ export class AttachToDropdown extends SelectBox {
 
 	}
 
-	    //Get hadoop connections from context
-		public getHadoopConnections(model: INotebookModel): string[] {
-			let otherHadoopConnections: IConnectionProfile[] = [];
-			model.contexts.otherConnections.forEach((conn) => { otherHadoopConnections.push(conn); });
-			this.selectWithOptionName(model.contexts.defaultConnection.options.host);
-			otherHadoopConnections = this.setHadoopConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-			let hadoopConnections = otherHadoopConnections.map((context) => context.options.host);
-			return hadoopConnections;
-		}
+	//Get hadoop connections from context
+	public getHadoopConnections(model: INotebookModel): string[] {
+		let otherHadoopConnections: IConnectionProfile[] = [];
+		model.contexts.otherConnections.forEach((conn) => { otherHadoopConnections.push(conn); });
+		this.selectWithOptionName(model.contexts.defaultConnection.options.host);
+		otherHadoopConnections = this.setHadoopConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
+		let hadoopConnections = otherHadoopConnections.map((context) => context.options.host);
+		return hadoopConnections;
+	}
 
-		private setHadoopConnectionsList(defaultHadoopConnection: IConnectionProfile, otherHadoopConnections: IConnectionProfile[]) {
-			if (defaultHadoopConnection.options.host !== msgSelectConnection) {
-				otherHadoopConnections = otherHadoopConnections.filter(conn => conn.options.host !== defaultHadoopConnection.options.host);
-				otherHadoopConnections.unshift(defaultHadoopConnection);
-				if (otherHadoopConnections.length > 1) {
-					otherHadoopConnections = otherHadoopConnections.filter(val => val.options.host !== msgSelectConnection);
-				}
+	private setHadoopConnectionsList(defaultHadoopConnection: IConnectionProfile, otherHadoopConnections: IConnectionProfile[]) {
+		if (defaultHadoopConnection.options.host !== msgSelectConnection) {
+			otherHadoopConnections = otherHadoopConnections.filter(conn => conn.options.host !== defaultHadoopConnection.options.host);
+			otherHadoopConnections.unshift(defaultHadoopConnection);
+			if (otherHadoopConnections.length > 1) {
+				otherHadoopConnections = otherHadoopConnections.filter(val => val.options.host !== msgSelectConnection);
 			}
-			return otherHadoopConnections;
 		}
+		return otherHadoopConnections;
+	}
 
 	public doChangeContext(connection?: IConnectionProfile): void {
 		if (this.value === msgAddNewConnection) {
-            this.openConnectionDialog();
-        } else {
-            this.model.changeContext(this.value, connection);
-        }
+			this.openConnectionDialog();
+		} else {
+			this.model.changeContext(this.value, connection);
+		}
 	}
 
 	/**
@@ -269,38 +269,38 @@ export class AttachToDropdown extends SelectBox {
      * Bind the server value to 'Attach To' drop down
      * Connected server is displayed at the top of drop down
      **/
-    public async openConnectionDialog(): Promise<void> {
-        try {
+	public async openConnectionDialog(): Promise<void> {
+		try {
 			//TODO: Figure out how to plumb through the correct provider here
 			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }, undefined).then(connection => {
-                let attachToConnections = this.values;
-                if (!connection) {
-                    this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
-                    return;
-                }
-                let connectedServer = connection.options[notebookConstants.hostPropName];
-                //Check to see if the same host is already there in dropdown. We only have host names in dropdown
-                if (attachToConnections.some(val => val === connectedServer)) {
-                    this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
-                    this.doChangeContext();
-                    return;
-                }
-                else {
-                    attachToConnections.unshift(connectedServer);
-                }
-                //To ignore n/a after we have at least one valid connection
+				let attachToConnections = this.values;
+				if (!connection) {
+					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
+					return;
+				}
+				let connectedServer = connection.options[notebookConstants.hostPropName];
+				//Check to see if the same host is already there in dropdown. We only have host names in dropdown
+				if (attachToConnections.some(val => val === connectedServer)) {
+					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
+					this.doChangeContext();
+					return;
+				}
+				else {
+					attachToConnections.unshift(connectedServer);
+				}
+				//To ignore n/a after we have at least one valid connection
 				attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
 				let index = attachToConnections.findIndex((connection => connection === connectedServer));
 				this.setOptions(attachToConnections, index);
 
-                // Call doChangeContext to set the newly chosen connection in the model
-                this.doChangeContext(connection);
+				// Call doChangeContext to set the newly chosen connection in the model
+				this.doChangeContext(connection);
 			});
-        }
-        catch (error) {
+		}
+		catch (error) {
 			const actions: INotificationActions = { primary: [] };
 			this._notificationService.notify({ severity: Severity.Error, message: getErrorMessage(error), actions });
-        }
-    }
+		}
+	}
 }
