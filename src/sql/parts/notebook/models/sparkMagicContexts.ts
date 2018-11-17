@@ -26,7 +26,7 @@ export class SparkMagicContexts {
 			id: '-1',
 			options:
 			{
-				host: localize('selectConnection', 'Select Connection')
+				host: localize('selectConnection', 'Select connection')
 			}
 		};
 

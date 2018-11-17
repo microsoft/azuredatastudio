@@ -272,7 +272,7 @@ export class AttachToDropdown extends SelectBox {
 	public async openConnectionDialog(): Promise<void> {
 		try {
 			//TODO: Figure out how to plumb through the correct provider here
-			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }, undefined).then(connection => {
+			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
@@ -292,7 +292,11 @@ export class AttachToDropdown extends SelectBox {
 				attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
 				let index = attachToConnections.findIndex((connection => connection === connectedServer));
-				this.setOptions(attachToConnections, index);
+				this.setOptions(attachToConnections);
+				if (!index || index < 0 || index >= attachToConnections.length) {
+					index = 0;
+				}
+				this.select(index);
 
 				// Call doChangeContext to set the newly chosen connection in the model
 				this.doChangeContext(connection);
