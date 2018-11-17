@@ -156,7 +156,7 @@ export class CellModel implements ICellModel {
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 	}
 
-	private clearOutputs(): void {
+	public clearOutputs(): void {
 		this._outputs = [];
 		this.fireOutputsChanged();
 	}
@@ -172,7 +172,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	public get outputs(): ReadonlyArray<nb.ICellOutput> {
+	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
 	}
 
@@ -220,6 +220,8 @@ export class CellModel implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
+			// deletes transient node in the serialized JSON
+			delete output['transient'];
 			this._outputs.push(output);
 			this.fireOutputsChanged();
 		}
@@ -241,7 +243,6 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language,
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = 1; // TODO: keep track of actual execution count
-
 		}
 		return cellJson as nb.ICell;
 	}
