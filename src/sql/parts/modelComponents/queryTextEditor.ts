@@ -73,6 +73,7 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.overviewRulerLanes = 0;
 			options.overviewRulerBorder = false;
 			options.hideCursorInOverviewRuler = true;
+			options.renderLineHighlight = 'none';
 		}
 		return options;
 	}
