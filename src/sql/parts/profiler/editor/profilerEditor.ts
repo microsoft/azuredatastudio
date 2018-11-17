@@ -233,7 +233,8 @@ export class ProfilerEditor extends BaseEditor {
 			}
 		}));
 		let sessionsContainer = document.createElement('div');
-		sessionsContainer.style.width = '150px';
+		sessionsContainer.style.minWidth = '150px';
+		sessionsContainer.style.maxWidth = '250px';
 		sessionsContainer.style.paddingRight = '5px';
 		this._sessionSelector.render(sessionsContainer);
 
