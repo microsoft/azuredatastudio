@@ -1,0 +1,10 @@
+.labelOnTopContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+.labelOnLeftContainer {
+    display: flex;
+    flex-direction: row;
+    margin-right: 5px;
+}

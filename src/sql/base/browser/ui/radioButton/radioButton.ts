@@ -28,8 +28,11 @@ export class RadioButton extends Widget {
 		super();
 		this.inputElement = document.createElement('input');
 		this.inputElement.type = 'radio';
+		this.inputElement.style.verticalAlign = 'middle';
+		this.inputElement.style.margin = '3px';
 
 		this._label = document.createElement('span');
+		this._label.style.verticalAlign = 'middle';
 
 		this.label = opts.label;
 		this.enabled = opts.enabled || true;

@@ -34,6 +34,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     jquery-ui: https://github.com/jquery/jquery-ui
     jquery.event.drag: https://github.com/devongovett/jquery.event.drag
     jschardet: https://github.com/aadsm/jschardet
+    JupyterLab: https://github.com/jupyterlab/jupyterlab
     make-error: https://github.com/JsCommunity/make-error
     minimist: https://github.com/substack/minimist
     moment: https://github.com/moment/moment
@@ -1165,6 +1166,43 @@ necessary.  Here is a sample; alter the names:
 That's all there is to it!
 =========================================
 END OF jschardet NOTICES AND INFORMATION
+
+%% JupyterLab NOTICES AND INFORMATION BEGIN HERE
+Copyright (c) 2015 Project Jupyter Contributors
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its
+   contributors may be used to endorse or promote products derived from
+   this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Semver File License
+===================
+
+The semver.py file is from https://github.com/podhmo/python-semver
+which is licensed under the "MIT" license.  See the semver.py file for details.
+
+END OF JupyterLab NOTICES AND INFORMATION
 
 %% make-error NOTICES AND INFORMATION BEGIN HERE
 =========================================
