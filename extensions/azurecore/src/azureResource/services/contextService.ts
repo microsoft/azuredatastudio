@@ -12,7 +12,7 @@ import { IAzureResourceContextService } from '../interfaces';
 
 export class AzureResourceContextService implements IAzureResourceContextService {
 	public constructor(
-	context: ExtensionContext,
+		context: ExtensionContext,
 		apiWrapper: ApiWrapper
 	) {
 		this._context = context;

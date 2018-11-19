@@ -278,7 +278,7 @@ export class RowDetailView {
 		item._isPadding = false;
 		item._parent = parent;
 		item._offset = offset;
-		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError','Loading Error...');
+		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError', 'Loading Error...');
 		parent._child = item;
 		return item;
 	}

@@ -72,7 +72,7 @@ export class PlanNode {
 	indexObject: IndexObject;
 
 	public addChildren(children: PlanNode[]): void {
-		if(children) {
+		if (children) {
 			children.forEach(element => {
 				element.parent = this;
 			});
@@ -212,7 +212,7 @@ export class PlanXmlParser {
 			}
 			let result = this.findChildren(element.children[index], elementName, untilNode);
 			if (result !== undefined) {
-				 	return result;
+				return result;
 			}
 		}
 

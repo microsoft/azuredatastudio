@@ -179,7 +179,7 @@ export class ResultSerializer {
 
 	private getResultsFileExtension(saveRequest: ISaveRequest): FileFilter[] {
 		let fileFilters = new Array<FileFilter>();
-		let fileFilter:  { extensions: string[]; name: string } = { extensions: undefined, name: undefined};
+		let fileFilter: { extensions: string[]; name: string } = { extensions: undefined, name: undefined };
 
 		switch (saveRequest.format) {
 			case SaveFormat.CSV:
@@ -372,14 +372,14 @@ export class ResultSerializer {
 
 		this._editorService.openEditor(input, { pinned: true })
 			.then(
-				(success) => {
-				},
-				(error: any) => {
-					this._notificationService.notify({
-						severity: Severity.Error,
-						message: error
-					});
-				}
+			(success) => {
+			},
+			(error: any) => {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: error
+				});
+			}
 			);
 	}
 }

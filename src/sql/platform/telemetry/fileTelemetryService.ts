@@ -19,10 +19,10 @@ export class FileTelemetryService implements ITelemetryService {
 	}
 
 	publicLog(eventName: string, data?: ITelemetryData) {
-		let telemetryData = JSON.stringify(Object.assign({eventName: eventName, data: data}));
+		let telemetryData = JSON.stringify(Object.assign({ eventName: eventName, data: data }));
 		if (this._outputFile) {
 			if (this._isFirst) {
-				fs.open(this._outputFile,  fs.O_WRONLY | fs.O_CREAT, (err, fr) => {
+				fs.open(this._outputFile, fs.O_WRONLY | fs.O_CREAT, (err, fr) => {
 					fs.writeFileSync(this._outputFile, telemetryData + '\n');
 					this._isFirst = false;
 				});

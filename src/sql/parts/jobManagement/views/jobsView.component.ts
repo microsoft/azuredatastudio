@@ -105,7 +105,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
@@ -122,7 +122,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
-	ngOnInit(){
+	ngOnInit() {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
@@ -184,7 +184,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, {columns}, options);
+		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -506,11 +506,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td>${runChart[0] ? runChart[0] : '<div></div>' }</td>
-					<td>${runChart[1] ? runChart[1] : '<div></div>' }</td>
-					<td>${runChart[2] ? runChart[2] : '<div></div>' }</td>
-					<td>${runChart[3] ? runChart[3] : '<div></div>' }</td>
-					<td>${runChart[4] ? runChart[4] : '<div></div>' }</td>
+					<td>${runChart[0] ? runChart[0] : '<div></div>'}</td>
+					<td>${runChart[1] ? runChart[1] : '<div></div>'}</td>
+					<td>${runChart[2] ? runChart[2] : '<div></div>'}</td>
+					<td>${runChart[3] ? runChart[3] : '<div></div>'}</td>
+					<td>${runChart[4] ? runChart[4] : '<div></div>'}</td>
 				</tr>
 			</table>`;
 		} else {
@@ -588,7 +588,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		jobs.forEach(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async (result) => {
 				if (result) {
 					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
 					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
@@ -916,7 +916,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			return undefined;
 		}
 
-		let jobId =  data.getItem(rowIndex).jobId;
+		let jobId = data.getItem(rowIndex).jobId;
 		if (!jobId) {
 			// if we couldn't find the ID, check if it's an
 			// error row
