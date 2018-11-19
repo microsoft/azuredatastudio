@@ -171,11 +171,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private toggleMoreActions(showIcon: boolean) {
+		let context = new CellContext(this.model, this.cellModel);
 		if (showIcon) {
 			let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
 			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 			this._moreActions.context = { target: moreActionsElement };
-			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this.model, this.contextMenuService), { icon: showIcon, label: false });
+			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
 		} else if (this._moreActions !== undefined) {
 				this._moreActions.clear();
 		}
