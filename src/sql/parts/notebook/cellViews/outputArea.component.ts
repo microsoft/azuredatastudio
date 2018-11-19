@@ -3,9 +3,8 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
@@ -20,11 +19,15 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	private readonly _minimumHeight = 30;
 
 	constructor(
-		@Inject(IModeService) private _modeService: IModeService
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 	) {
 		super();
 	}
 	ngOnInit(): void {
-
+		if (this.cellModel) {
+			this.cellModel.onOutputsChanged(() => {
+				this._changeRef.detectChanges();
+			});
+		}
 	}
 }

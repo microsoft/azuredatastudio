@@ -40,7 +40,7 @@ export function getData(output: nb.ICellOutput): JSONObject {
             bundle['application/vnd.jupyter.stdout'] = output.text;
         }
     } else if (nbformat.isError(output)) {
-        let traceback = output.traceback.join('\n');
+        let traceback = output.traceback ? output.traceback.join('\n') : undefined;
         bundle['application/vnd.jupyter.stderr'] =
             traceback || `${output.ename}: ${output.evalue}`;
     }

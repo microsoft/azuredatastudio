@@ -29,7 +29,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunCellAction, DeleteCellAction, AddCellAction } from 'sql/parts/notebook/cellViews/codeActions';
+import { RunCellAction, DeleteCellAction, AddCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
@@ -91,7 +91,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true, this.notificationService),
 			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false, this.notificationService),
 			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true, this.notificationService),
-			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), CellTypes.Code, true, this.notificationService)
+			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), this.notificationService)
 			);
 	}
 
@@ -159,16 +159,15 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	protected initActionBar() {
-
+		let context = new CellContext(this.model, this.cellModel);
 		let runCellAction = this._instantiationService.createInstance(RunCellAction);
 
 		let taskbar = <HTMLElement>this.toolbarElement.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = this;
+		this._actionBar.context = context;
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
-
 	}
 
 	private toggleMoreActions(showIcon: boolean) {

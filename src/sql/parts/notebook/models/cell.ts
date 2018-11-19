@@ -10,7 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 
 import { nb } from 'sqlops';
-import { ICellModelOptions, IModelFactory } from './modelInterfaces';
+import { ICellModelOptions, IModelFactory, FutureInternal } from './modelInterfaces';
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
@@ -24,7 +24,7 @@ export class CellModel implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string;
 	private _language: string;
-	private _future: nb.IFuture;
+	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<ReadonlyArray<nb.ICellOutput>>();
@@ -69,7 +69,7 @@ export class CellModel implements ICellModel {
 		return this._isEditMode;
 	}
 
-	public get future(): nb.IFuture {
+	public get future(): FutureInternal {
 		return this._future;
 	}
 
@@ -137,7 +137,7 @@ export class CellModel implements ICellModel {
 	 * Sets the future which will be used to update the output
 	 * area for this cell
 	 */
-	setFuture(future: nb.IFuture): void {
+	setFuture(future: FutureInternal): void {
 		if (this._future === future) {
 			// Nothing to do
 			return;
@@ -156,7 +156,7 @@ export class CellModel implements ICellModel {
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 	}
 
-	private clearOutputs(): void {
+	public clearOutputs(): void {
 		this._outputs = [];
 		this.fireOutputsChanged();
 	}
@@ -172,7 +172,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	public get outputs(): ReadonlyArray<nb.ICellOutput> {
+	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
 	}
 
@@ -220,6 +220,8 @@ export class CellModel implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
+			// deletes transient node in the serialized JSON
+			delete output['transient'];
 			this._outputs.push(output);
 			this.fireOutputsChanged();
 		}
@@ -241,7 +243,6 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language,
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = 1; // TODO: keep track of actual execution count
-
 		}
 		return cellJson as nb.ICell;
 	}
