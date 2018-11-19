@@ -75,9 +75,9 @@ core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
   integrity sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=
 
-"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.2.8":
-  version "0.2.8"
-  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/3ec3ec3fa63a8dae958c18a85b91fec74c50aec5"
+"dataprotocol-client@github:Microsoft/sqlops-dataprotocolclient#0.2.9":
+  version "0.2.9"
+  resolved "https://codeload.github.com/Microsoft/sqlops-dataprotocolclient/tar.gz/0a3c0f22940d1c67bb567171508ccb1169c6313a"
   dependencies:
     vscode-languageclient "3.5.1"
 
