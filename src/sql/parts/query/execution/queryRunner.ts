@@ -24,7 +24,7 @@ import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
+import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Deferred } from 'sql/base/common/promise';
 

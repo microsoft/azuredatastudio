@@ -408,7 +408,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 					};
 					sibling.onmouseleave = (e) => {
 						targetChildren.removeClass('hovered');
-					}
+					};
 					break;
 				}
 			}

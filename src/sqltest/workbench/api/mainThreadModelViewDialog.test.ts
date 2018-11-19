@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
 import { MainThreadModelViewDialog } from 'sql/workbench/api/node/mainThreadModelViewDialog';
@@ -13,7 +15,6 @@ import { Dialog, DialogTab, Wizard } from 'sql/platform/dialog/dialogTypes';
 import { ExtHostModelViewDialogShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { Emitter } from 'vs/base/common/event';
 
-'use strict';
 
 suite('MainThreadModelViewDialog Tests', () => {
 	let mainThreadModelViewDialog: MainThreadModelViewDialog;

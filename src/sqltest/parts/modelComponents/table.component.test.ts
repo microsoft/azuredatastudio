@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as assert from 'assert';
-import TableComponent from 'sql/parts/modelComponents/table.component';
-
 'use strict';
 
+import * as assert from 'assert';
+import TableComponent from 'sql/parts/modelComponents/table.component';
 
 suite('TableComponent Tests', () => {
 

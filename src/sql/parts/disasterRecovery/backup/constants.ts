@@ -39,8 +39,8 @@ export const aes192 = 'AES 192';
 export const aes256 = 'AES 256';
 export const tripleDES = 'Triple DES';
 
-export const serverCertificate = "Server Certificate";
-export const asymmetricKey = "Asymmetric Key";
+export const serverCertificate = 'Server Certificate';
+export const asymmetricKey = 'Asymmetric Key';
 
 export const fileFiltersSet: {label: string, filters: string[]}[] = [
 	{ label: localize('backup.filterBackupFiles', "Backup Files"), filters: ['*.bak', '*.trn', '*.log'] },

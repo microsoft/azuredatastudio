@@ -5,9 +5,9 @@
 
 'use strict';
 
-import { ExtensionContext } from "vscode";
+import { ExtensionContext } from 'vscode';
 
-import { IAzureResourceCacheService } from "../interfaces";
+import { IAzureResourceCacheService } from '../interfaces';
 
 export class AzureResourceCacheService implements IAzureResourceCacheService {
 	public constructor(

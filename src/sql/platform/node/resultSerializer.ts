@@ -10,7 +10,6 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { SaveResultsRequestParams } from 'sqlops';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/parts/grid/common/interfaces';
-import * as PathUtilities from 'sql/common/pathUtilities';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IOutputService, IOutputChannel, IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/parts/output/common/output';
@@ -25,12 +24,12 @@ import * as paths from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import * as pretty from 'pretty-data';
 
-import * as path from 'path';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/node/pathUtilities';
 
 let prevSavePath: string;
 
@@ -137,7 +136,7 @@ export class ResultSerializer {
 	}
 
 	private get rootPath(): string {
-		return PathUtilities.getRootPath(this._contextService);
+		return getRootPath(this._contextService);
 	}
 
 	private logToOutputChannel(message: string): void {
@@ -145,8 +144,8 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : PathUtilities.resolveCurrentDirectory(this._uri, this.rootPath);
-		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
+		let filepathPlaceHolder = (prevSavePath) ? paths.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
+		filepathPlaceHolder = paths.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		return this._windowService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
 			defaultPath: paths.normalize(filepathPlaceHolder, true),
@@ -256,8 +255,8 @@ export class ResultSerializer {
 
 	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams: SaveResultsRequestParams;
-		if (!path.isAbsolute(filePath)) {
-			this._filePath = PathUtilities.resolveFilePath(this._uri, filePath, this.rootPath);
+		if (!paths.isAbsolute(filePath)) {
+			this._filePath = resolveFilePath(this._uri, filePath, this.rootPath);
 		} else {
 			this._filePath = filePath;
 		}

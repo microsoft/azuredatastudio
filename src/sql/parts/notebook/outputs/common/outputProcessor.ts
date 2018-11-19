@@ -4,9 +4,8 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-import { JSONObject } from './jsonext';
+import { JSONObject, isPrimitive } from './jsonext';
 import { MimeModel } from './mimemodel';
-import * as JSONExt from './jsonext';
 import { nbformat } from './nbformat';
 import { nb } from 'sqlops';
 
@@ -77,7 +76,7 @@ export function getBundleOptions(
  */
 export function extract(value: JSONObject, key: string): {} {
     let item = value[key];
-    if (JSONExt.isPrimitive(item)) {
+    if (isPrimitive(item)) {
         return item;
     }
     return JSON.parse(JSON.stringify(item));

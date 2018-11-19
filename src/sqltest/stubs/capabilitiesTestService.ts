@@ -6,7 +6,7 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import { ICapabilitiesService, clientCapabilities, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { Event, Emitter } from 'vs/base/common/event';
@@ -15,8 +15,6 @@ import { Action } from 'vs/base/common/actions';
 export class CapabilitiesTestService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
-
-	private _providers: sqlops.CapabilitiesProvider[] = [];
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
 
@@ -113,7 +111,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	}
 
 	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	public get providers(): { [id: string]: ProviderFeatures } {
