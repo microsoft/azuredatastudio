@@ -51,6 +51,7 @@
 			// !!! Do not relax these rules !!!
 			// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			{
+				// vs/base/common cannot depend on anything else
 				"target": "**/{vs,sql}/base/common/**",
 				"restrictions": [
 					"vs/nls",
@@ -58,6 +59,7 @@
 				]
 			},
 			{
+				// vs/base/test/common contains tests for vs/base/common
 				"target": "**/{vs,sql}/base/test/common/**",
 				"restrictions": [
 					"assert",
@@ -67,19 +69,12 @@
 				]
 			},
 			{
+				// vs/base/browser can only depend on vs/base/common
 				"target": "**/{vs,sql}/base/browser/**",
 				"restrictions": [
 					"vs/nls",
 					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"*" // node modules
 				]
 			},
 			{
@@ -110,34 +105,6 @@
 				]
 			},
 			{
-				"target": "**/{vs,sql}/base/parts/*/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/base/parts/*/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
-					"*" // node modules
-				]
-			},
-			{
 				"target": "**/{vs,sql}/platform/*/common/**",
 				"restrictions": [
 					"vs/nls",
@@ -165,40 +132,6 @@
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser}/**",
 					"**/{vs,sql}/platform/*/{common,browser}/**"
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/node/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"**/{vs,sql}/platform/node/*",
-					"**/{vs,sql}/platform/*/{common,browser,node}/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-browser/**",
-				"restrictions": [
-					"vs/nls",
-					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/platform/node/*",
-					"**/{vs,sql}/platform/*/{common,browser,node,electron-browser}/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/{vs,sql}/platform/*/electron-main/**",
-				"restrictions": [
-					"vs/nls",
-					"**/{vs,sql}/base/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/platform/node/*",
-					"**/{vs,sql}/platform/*/{common,browser,node,electron-main}/**",
-					"*" // node modules
 				]
 			},
 			{
@@ -335,6 +268,7 @@
 				"target": "**/{vs,sql}/workbench/common/**",
 				"restrictions": [
 					"vs/nls",
+					"vs/css!./**/*",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/parts/*/common/**",
 					"**/{vs,sql}/platform/*/common/**",
@@ -386,6 +320,7 @@
 				"target": "**/{vs,sql}/workbench/node/**",
 				"restrictions": [
 					"vs/nls",
+					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,node}/**",
 					"**/{vs,sql}/platform/node/**",
@@ -407,7 +342,6 @@
 					"**/{vs,sql}/editor/**",
 					"**/{vs,sql}/workbench/{common,browser,node,electron-browser}/**",
 					"vs/workbench/parts/files/common/editors/fileEditorInput",
-					// TODO, We might need to add our inputs
 					"**/{vs,sql}/workbench/services/**",
 					"**/{vs,sql}/workbench/test/**",
 					"*" // node modules
@@ -417,6 +351,7 @@
 				"target": "**/{vs,sql}/workbench/services/**/common/**",
 				"restrictions": [
 					"vs/nls",
+					"vs/css!./**/*",
 					"**/{vs,sql}/base/**/common/**",
 					"**/{vs,sql}/platform/**/common/**",
 					"**/{vs,sql}/editor/common/**",
@@ -440,6 +375,7 @@
 				"target": "**/{vs,sql}/workbench/services/**/node/**",
 				"restrictions": [
 					"vs/nls",
+					"vs/css!./**/*",
 					"**/{vs,sql}/base/**/{common,node}/**",
 					"**/{vs,sql}/platform/**/{common,node}/**",
 					"**/{vs,sql}/editor/{common,node}/**",
@@ -462,13 +398,14 @@
 				]
 			},
 			{
-				"target": "**/{vs,sql}/code/node/**",
+				"target": "**/{vs,sql}/code/electron-browser/**",
 				"restrictions": [
 					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser,node}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node}/**",
-					"**/{vs,sql}/code/**/{common,browser,node}/**",
+					"vs/css!./**/*",
+					"vs/nls",
+					"**/{vs,sql}/base/**",
+					"**/{vs,sql}/platform/**",
+					"**/{vs,sql}/code/**",
 					"*" // node modules
 				]
 			},
@@ -477,22 +414,20 @@
 				"restrictions": [
 					"vs/nls",
 					"vs/css!./**/*",
-					"**/{vs,sql}/base/**/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node,electron-browser}/**",
-					"**/{vs,sql}/code/**/{common,browser,node,electron-browser}/**",
+					"vs/nls",
+					"**/{vs,sql}/base/**",
+					"**/{vs,sql}/platform/**",
+					"**/{vs,sql}/code/**",
 					"*" // node modules
 				]
 			},
 			{
-				"target": "**/{vs,sql}/code/electron-main/**",
+				"target": "**/{vs,sql}/code/**",
 				"restrictions": [
 					"vs/nls",
-					"**/{vs,sql}/base/**/{common,browser,node}/**",
-					"**/{vs,sql}/base/parts/**/{common,browser,node,electron-main}/**",
-					"**/{vs,sql}/platform/**/{common,browser,node,electron-main}/**",
-					"**/{vs,sql}/code/**/{common,browser,node,electron-main}/**",
-					"**/{vs,sql}/code/code.main",
+					"**/{vs,sql}/base/**",
+					"**/{vs,sql}/platform/**",
+					"**/{vs,sql}/code/**",
 					"*" // node modules
 				]
 			},
@@ -524,7 +459,6 @@
 			}
 		],
 		"duplicate-imports": true,
-		"no-new-buffer": true,
 		"translation-remind": true,
 		"no-standalone-editor": true
 	},
