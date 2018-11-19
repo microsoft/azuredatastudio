@@ -8,6 +8,7 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxPage } from '../api/dacFxPage';
@@ -61,6 +62,7 @@ export class DeployConfigPage extends DacFxPage {
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
+					defaultUri: vscode.Uri.file(os.homedir()),
 					openLabel: localize('dacFxDeploy.openFile', 'Open'),
 					filters: {
 						'dacpac Files': ['dacpac'],
