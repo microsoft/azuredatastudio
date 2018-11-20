@@ -14,7 +14,7 @@ import { BasePage } from './basePage';
 
 const localize = nls.loadMessageBundle();
 
-export abstract class DacFxConfigPage extends BasePage{
+export abstract class DacFxConfigPage extends BasePage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;

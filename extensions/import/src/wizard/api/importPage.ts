@@ -10,7 +10,7 @@ import { FlatFileProvider } from '../../services/contracts';
 import { FlatFileWizard } from '../flatFileWizard';
 import { BasePage } from './basePage';
 
-export abstract class ImportPage extends BasePage{
+export abstract class ImportPage extends BasePage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: FlatFileWizard;

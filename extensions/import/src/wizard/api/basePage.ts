@@ -47,7 +47,7 @@ export abstract class BasePage {
 	 */
 	public abstract setupNavigationValidator();
 
-	protected async getServerValues(): Promise<{connection,displayName,name}[]> {
+	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
 		let cons = await sqlops.connection.getActiveConnections();
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
@@ -100,7 +100,7 @@ export abstract class BasePage {
 		return values;
 	}
 
-	protected async getDatabaseValues(): Promise<{displayName,name}[]> {
+	protected async getDatabaseValues(): Promise<{ displayName, name }[]> {
 		let idx = -1;
 		let count = -1;
 		let values = (await sqlops.connection.listDatabases(this.model.server.connectionId)).map(db => {

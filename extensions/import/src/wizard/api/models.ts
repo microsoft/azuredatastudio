@@ -15,7 +15,7 @@ export interface BaseDataModel {
 /**
  * The main data model that communicates between the pages.
  */
-export interface ImportDataModel extends BaseDataModel{
+export interface ImportDataModel extends BaseDataModel {
 	ownerUri: string;
 	proseColumns: ColumnMetadata[];
 	proseDataPreview: string[][];
@@ -39,7 +39,7 @@ export interface ColumnMetadata {
 /**
  * Data model to communicate between DacFx pages
  */
-export interface DacFxDataModel extends BaseDataModel{
+export interface DacFxDataModel extends BaseDataModel {
 	serverName: string;
 	serverId: string;
 	filePath: string;
