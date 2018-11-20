@@ -102,57 +102,9 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async populateServerDropdown(): Promise<boolean> {
-		let cons = await sqlops.connection.getActiveConnections();
-		// This user has no active connections ABORT MISSION
-		if (!cons || cons.length === 0) {
-			return true;
-		}
-
-
-		let count = -1;
-		let idx = -1;
-
-
-		let values = cons.map(c => {
-			// Handle the code to remember what the user's choice was from before
-			count++;
-			if (idx === -1) {
-				if (this.model.server && c.connectionId === this.model.server.connectionId) {
-					idx = count;
-				} else if (this.model.serverId && c.connectionId === this.model.serverId) {
-					idx = count;
-				}
-			}
-
-			let db = c.options.databaseDisplayName;
-			let usr = c.options.user;
-			let srv = c.options.server;
-
-			if (!db) {
-				db = '<default>';
-			}
-
-			if (!usr) {
-				usr = 'default';
-			}
-
-			let finalName = `${srv}, ${db} (${usr})`;
-			return {
-				connection: c,
-				displayName: finalName,
-				name: c.connectionId
-			};
-		});
-
-		if (idx >= 0) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
-		} else {
-			delete this.model.server;
-			delete this.model.serverId;
-			delete this.model.database;
-			delete this.model.schema;
+		let values = await this.getServerValues();
+		if (values === undefined) {
+			return false;
 		}
 
 		this.model.server = values[0].connection;
@@ -195,29 +147,7 @@ export class FileConfigPage extends ImportPage {
 			return false;
 		}
 
-
-		let idx = -1;
-		let count = -1;
-		let values = (await sqlops.connection.listDatabases(this.model.server.connectionId)).map(db => {
-			count++;
-			if (this.model.database && db === this.model.database) {
-				idx = count;
-			}
-
-			return {
-				displayName: db,
-				name: db
-			};
-		});
-
-		if (idx >= 0) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
-		} else {
-			delete this.model.database;
-			delete this.model.schema;
-		}
+		let values = await this.getDatabaseValues();
 
 		this.model.database = values[0].name;
 
@@ -375,6 +305,18 @@ export class FileConfigPage extends ImportPage {
 
 		this.schemaLoader.loading = false;
 		return true;
+	}
+
+	protected deleteServerValues() {
+		delete this.model.server;
+		delete this.model.serverId;
+		delete this.model.database;
+		delete this.model.schema;
+	}
+
+	protected deleteDatabaseValues() {
+		delete this.model.database;
+		delete this.model.schema;
 	}
 
 	// private async populateTableNames(): Promise<boolean> {

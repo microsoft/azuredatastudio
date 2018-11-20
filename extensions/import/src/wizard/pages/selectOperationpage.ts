@@ -8,11 +8,11 @@ import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard, Operation } from '../DataTierApplicationWizard';
-import { DacFxPage } from '../api/dacFxPage';
+import { BasePage } from '../api/basePage';
 
 const localize = nls.loadMessageBundle();
 
-export class SelectOperationPage extends DacFxPage {
+export class SelectOperationPage extends BasePage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
@@ -26,7 +26,11 @@ export class SelectOperationPage extends DacFxPage {
 	private form: sqlops.FormContainer;
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
-		super(instance, wizardPage, model, view);
+		super();
+		this.instance = instance;
+		this.wizardPage = wizardPage;
+		this.model = model;
+		this.view = view;
 	}
 
 	async start(): Promise<boolean> {
@@ -160,5 +164,11 @@ export class SelectOperationPage extends DacFxPage {
 			component: this.exportRadioButton,
 			title: ''
 		};
+	}
+
+	public setupNavigationValidator() {
+		this.instance.registerNavigationValidator(() => {
+			return true;
+		});
 	}
 }

@@ -13,13 +13,13 @@ import { ExportConfigPage } from './pages/exportConfigPage';
 import { ExtractConfigPage } from './pages/extractConfigPage';
 import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
-import { DacFxPage } from './api/dacFxPage';
+import { BasePage } from './api/basePage';
 
 const localize = nls.loadMessageBundle();
 
 class Page {
 	wizardPage: sqlops.window.modelviewdialog.WizardPage;
-	dacFxPage: DacFxPage;
+	page: BasePage;
 
 	constructor(wizardPage: sqlops.window.modelviewdialog.WizardPage) {
 		this.wizardPage = wizardPage;
@@ -49,7 +49,7 @@ export class DataTierApplicationWizard {
 		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.model.serverId = profile.id;
-			this.model.databaseName = profile.databaseName;
+			this.model.database = profile.databaseName;
 		}
 
 		this.connection = await sqlops.connection.getCurrentConnection();
@@ -74,7 +74,7 @@ export class DataTierApplicationWizard {
 
 		selectOperationWizardPage.registerContent(async (view) => {
 			let selectOperationDacFxPage = new SelectOperationPage(this, selectOperationWizardPage, this.model, view);
-			this.pages.get('selectOperation').dacFxPage = selectOperationDacFxPage;
+			this.pages.get('selectOperation').page = selectOperationDacFxPage;
 			await selectOperationDacFxPage.start().then(() => {
 				selectOperationDacFxPage.setupNavigationValidator();
 				selectOperationDacFxPage.onPageEnter();
@@ -83,7 +83,7 @@ export class DataTierApplicationWizard {
 
 		deployConfigWizardPage.registerContent(async (view) => {
 			let deployConfigDacFxPage = new DeployConfigPage(this, deployConfigWizardPage, this.model, view);
-			this.pages.get('deployConfig').dacFxPage = deployConfigDacFxPage;
+			this.pages.get('deployConfig').page = deployConfigDacFxPage;
 			await deployConfigDacFxPage.start().then(() => {
 				deployConfigDacFxPage.setupNavigationValidator();
 				deployConfigDacFxPage.onPageEnter();
@@ -92,7 +92,7 @@ export class DataTierApplicationWizard {
 
 		extractConfigWizardPage.registerContent(async (view) => {
 			let extractConfigDacFxPage = new ExtractConfigPage(this, extractConfigWizardPage, this.model, view);
-			this.pages.get('extractConfig').dacFxPage = extractConfigDacFxPage;
+			this.pages.get('extractConfig').page = extractConfigDacFxPage;
 			await extractConfigDacFxPage.start().then(() => {
 				extractConfigDacFxPage.setupNavigationValidator();
 				extractConfigDacFxPage.onPageEnter();
@@ -101,7 +101,7 @@ export class DataTierApplicationWizard {
 
 		importConfigWizardPage.registerContent(async (view) => {
 			let importConfigDacFxPage = new ImportConfigPage(this, importConfigWizardPage, this.model, view);
-			this.pages.get('importConfig').dacFxPage = importConfigDacFxPage;
+			this.pages.get('importConfig').page = importConfigDacFxPage;
 			await importConfigDacFxPage.start().then(() => {
 				importConfigDacFxPage.setupNavigationValidator();
 				importConfigDacFxPage.onPageEnter();
@@ -110,7 +110,7 @@ export class DataTierApplicationWizard {
 
 		exportConfigWizardPage.registerContent(async (view) => {
 			let exportConfigDacFxPage = new ExportConfigPage(this, exportConfigWizardPage, this.model, view);
-			this.pages.get('exportConfig').dacFxPage = exportConfigDacFxPage;
+			this.pages.get('exportConfig').page = exportConfigDacFxPage;
 			await exportConfigDacFxPage.start().then(() => {
 				exportConfigDacFxPage.setupNavigationValidator();
 				exportConfigDacFxPage.onPageEnter();
@@ -119,7 +119,7 @@ export class DataTierApplicationWizard {
 
 		summaryWizardPage.registerContent(async (view) => {
 			let summaryDacFxPage = new DacFxSummaryPage(this, summaryWizardPage, this.model, view);
-			this.pages.get('summary').dacFxPage = summaryDacFxPage;
+			this.pages.get('summary').page = summaryDacFxPage;
 			await summaryDacFxPage.start();
 		});
 
@@ -197,9 +197,9 @@ export class DataTierApplicationWizard {
 
 	private async deploy() {
 		let service = await DataTierApplicationWizard.getService();
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.deployDacpac(this.model.filePath, this.model.databaseName, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.deployDacpac(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -208,9 +208,9 @@ export class DataTierApplicationWizard {
 
 	private async extract() {
 		let service = await DataTierApplicationWizard.getService();
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.extractDacpac(this.model.databaseName, this.model.filePath, this.model.databaseName, this.model.version, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -219,9 +219,9 @@ export class DataTierApplicationWizard {
 
 	private async export() {
 		let service = await DataTierApplicationWizard.getService();
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.exportBacpac(this.model.databaseName, this.model.filePath, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -230,9 +230,9 @@ export class DataTierApplicationWizard {
 
 	private async import() {
 		let service = await DataTierApplicationWizard.getService();
-		let ownerUri = await sqlops.connection.getUriForConnection(this.model.serverConnection.connectionId);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.importBacpac(this.model.filePath, this.model.databaseName, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

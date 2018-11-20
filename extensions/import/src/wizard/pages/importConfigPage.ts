@@ -11,11 +11,11 @@ import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
-import { DacFxPage } from '../api/dacFxPage';
+import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ImportConfigPage extends DacFxPage {
+export class ImportConfigPage extends DacFxConfigPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
@@ -78,14 +78,14 @@ export class ImportConfigPage extends DacFxPage {
 			let fileUri = fileUris[0];
 			this.fileTextBox.value = fileUri.fsPath;
 			this.model.filePath = fileUri.fsPath;
-			this.model.databaseName = this.generateDatabaseName(this.model.filePath);
-			this.databaseTextBox.value = this.model.databaseName;
+			this.model.database = this.generateDatabaseName(this.model.filePath);
+			this.databaseTextBox.value = this.model.database;
 		});
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
-			this.model.databaseName = this.generateDatabaseName(this.model.filePath);
-			this.databaseTextBox.value = this.model.databaseName;
+			this.model.database = this.generateDatabaseName(this.model.filePath);
+			this.databaseTextBox.value = this.model.database;
 		});
 
 		return {

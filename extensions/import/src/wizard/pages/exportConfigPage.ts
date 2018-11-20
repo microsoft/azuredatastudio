@@ -9,11 +9,11 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { DacFxDataModel } from '../api/models';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
-import { DacFxPage } from '../api/dacFxPage';
+import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
-export class ExportConfigPage extends DacFxPage {
+export class ExportConfigPage extends DacFxConfigPage {
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;

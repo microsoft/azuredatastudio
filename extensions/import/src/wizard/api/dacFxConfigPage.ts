@@ -6,14 +6,15 @@
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
-import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
-import { DacFxDataModel } from './models';
 import * as os from 'os';
 import * as path from 'path';
+import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+import { DacFxDataModel } from './models';
+import { BasePage } from './basePage';
 
 const localize = nls.loadMessageBundle();
 
-export abstract class DacFxPage {
+export abstract class DacFxConfigPage extends BasePage{
 
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
@@ -28,38 +29,13 @@ export abstract class DacFxPage {
 	protected fileExtension: string;
 
 	protected constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;
 		this.model = model;
 		this.view = view;
 	}
 
-	/**
-	 * This method constructs all the elements of the page.
-	 * @returns {Promise<boolean>}
-	 */
-	public async abstract start(): Promise<boolean>;
-
-	/**
-	 * This method is called when the user is leaving the page.
-	 * @returns {Promise<boolean>}
-	 */
-	async onPageLeave(): Promise<boolean> {
-		return true;
-	}
-
-	/**
-	 * Override this method to cleanup what you don't need cached in the page.
-	 * @returns {Promise<boolean>}
-	 */
-	public async cleanup(): Promise<boolean> {
-		return true;
-	}
-
-	/**
-	 * Sets up a navigation validator.
-	 * This will be called right before onPageEnter().
-	 */
 	public setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
 			return true;
@@ -73,8 +49,9 @@ export abstract class DacFxPage {
 
 		// Handle server changes
 		this.serverDropdown.onValueChanged(async () => {
-			this.model.serverConnection = (this.serverDropdown.value as ConnectionDropdownValue).connection;
+			this.model.server = (this.serverDropdown.value as ConnectionDropdownValue).connection;
 			this.model.serverName = (this.serverDropdown.value as ConnectionDropdownValue).displayName;
+			await this.populateDatabaseDropdown();
 		});
 
 		let targetServerTitle = localize('dacFx.targetServerDropdownTitle', 'Target Server');
@@ -87,58 +64,14 @@ export abstract class DacFxPage {
 	}
 
 	protected async populateServerDropdown(): Promise<boolean> {
-		let cons = await sqlops.connection.getActiveConnections();
-		// This user has no active connections ABORT MISSION
-		if (!cons || cons.length === 0) {
-			return true;
+		let values = await this.getServerValues();
+		if (values === undefined) {
+			return false;
 		}
 
-		let count = -1;
-		let idx = -1;
-
-		let values = cons.map(c => {
-			// Handle the code to remember what the user's choice was from before
-			count++;
-			if (idx === -1) {
-				if (this.model.serverConnection && c.connectionId === this.model.serverConnection.connectionId) {
-					idx = count;
-				} else if (this.model.serverId && c.connectionId === this.model.serverId) {
-					idx = count;
-				}
-			}
-
-			let db = c.options.databaseDisplayName;
-			let usr = c.options.user;
-			let srv = c.options.server;
-
-			if (!db) {
-				db = '<default>';
-			}
-
-			if (!usr) {
-				usr = 'default';
-			}
-
-			let finalName = `${srv}, ${db} (${usr})`;
-			return {
-				connection: c,
-				displayName: finalName,
-				name: c.connectionId
-			};
-		});
-
-		if (idx >= 0) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
-		} else {
-			delete this.model.serverConnection;
-			delete this.model.serverId;
-			delete this.model.databaseName;
-		}
-
-		this.model.serverConnection = values[0].connection;
+		this.model.server = values[0].connection;
 		this.model.serverName = values[0].displayName;
+
 		this.serverDropdown.updateProperties({
 			values: values
 		});
@@ -151,7 +84,7 @@ export abstract class DacFxPage {
 		}).component();
 
 		this.databaseTextBox.onTextChanged(async () => {
-			this.model.databaseName = this.databaseTextBox.value;
+			this.model.database = this.databaseTextBox.value;
 		});
 
 		return {
@@ -167,7 +100,7 @@ export abstract class DacFxPage {
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
-			this.model.databaseName = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 			this.fileTextBox.value = this.generateFilePath();
 			this.model.filePath = this.fileTextBox.value;
 		});
@@ -184,34 +117,13 @@ export abstract class DacFxPage {
 		this.databaseLoader.loading = true;
 		this.databaseDropdown.updateProperties({ values: [] });
 
-		if (!this.model.serverConnection) {
+		if (!this.model.server) {
 			this.databaseLoader.loading = false;
 			return false;
 		}
 
-		let idx = -1;
-		let count = -1;
-		let values = (await sqlops.connection.listDatabases(this.model.serverConnection.connectionId)).map(db => {
-			count++;
-			if (this.model.databaseName && db === this.model.databaseName) {
-				idx = count;
-			}
-
-			return {
-				displayName: db,
-				name: db
-			};
-		});
-
-		if (idx >= 0) {
-			let tmp = values[0];
-			values[0] = values[idx];
-			values[idx] = tmp;
-		} else {
-			delete this.model.databaseName;
-		}
-
-		this.model.databaseName = values[0].name;
+		let values = await this.getDatabaseValues();
+		this.model.database = values[0].name;
 		this.model.filePath = this.generateFilePath();
 		this.fileTextBox.value = this.model.filePath;
 
@@ -236,7 +148,7 @@ export abstract class DacFxPage {
 	protected generateFilePath(): string {
 		let now = new Date();
 		let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
-		return path.join(os.homedir(), this.model.databaseName + '-' + datetime + this.fileExtension);
+		return path.join(os.homedir(), this.model.database + '-' + datetime + this.fileExtension);
 	}
 }
 
