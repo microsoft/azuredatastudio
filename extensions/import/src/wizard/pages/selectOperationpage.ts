@@ -70,7 +70,7 @@ export class SelectOperationPage extends BasePage {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.deployRadioButtonLabel', 'Deploy Dacpac'),
+				label: localize('dacFx.deployRadioButtonLabel', 'Deploy Dacpac \n Deploy a data-tier application (DAC) package file to an instance of SQL Server'),
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
@@ -95,7 +95,7 @@ export class SelectOperationPage extends BasePage {
 		this.extractRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.extractRadioButtonLabel', 'Extract Dacpac'),
+				label: localize('dacFx.extractRadioButtonLabel', 'Extract Dacpac \n Extract a data-tier application (DAC) from an instance of SQL Server to a DAC package'),
 			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
@@ -120,7 +120,7 @@ export class SelectOperationPage extends BasePage {
 		this.importRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.importRadioButtonLabel', 'Import Bacpac'),
+				label: localize('dacFx.importRadioButtonLabel', 'Import Bacpac \n Create a database from a BACPAC file'),
 			}).component();
 
 		this.importRadioButton.onDidClick(() => {
@@ -145,7 +145,7 @@ export class SelectOperationPage extends BasePage {
 		this.exportRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.exportRadioButtonLabel', 'Export Bacpac'),
+				label: localize('dacFx.exportRadioButtonLabel', 'Export Bacpac \n Export the schema and data from a database to the logical BACPAC file format'),
 			}).component();
 
 		this.exportRadioButton.onDidClick(() => {
