@@ -117,7 +117,7 @@ export class DataTierApplicationWizard {
 			let idx = event.newPage;
 			let page: Page;
 
-			if (idx === 1 ) {
+			if (idx === 1) {
 				switch (this.selectedOperation) {
 					case Operation.deploy: {
 						page = this.pages.get('deployConfig');
