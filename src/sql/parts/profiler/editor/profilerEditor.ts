@@ -252,7 +252,6 @@ export class ProfilerEditor extends BaseEditor {
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
 			{ element: viewTemplateContainer },
-			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
 		]);
