@@ -106,10 +106,8 @@ export class DataTierApplicationWizard {
 		});
 
 		summaryWizardPage.registerContent(async (view) => {
-			console.error('creating summarypage');
 			let summaryDacFxPage = new DacFxSummaryPage(this, summaryWizardPage, this.model, view);
 			this.pages.get('summary').dacFxPage = summaryDacFxPage;
-			console.error('summarypage.dacfxpage ' + this.pages.get('summary').dacFxPage);
 			await summaryDacFxPage.start();
 		});
 
