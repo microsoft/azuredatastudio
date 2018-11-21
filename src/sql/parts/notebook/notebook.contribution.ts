@@ -59,20 +59,6 @@ const viewModelEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(NotebookInput)]);
 
-// Feature flag for built-in Notebooks. Will be removed in the future.
-const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration);
-configurationRegistry.registerConfiguration({
-	'id': 'notebook',
-	'title': 'Notebook',
-	'type': 'object',
-	'properties': {
-		'notebook.enabled': {
-			'type': 'boolean',
-			'default': false,
-			'description': localize('notebook.enabledDescription', 'Enable viewing notebook files using built-in notebook editor.')
-		}
-	}
-});
 
 // this is the entry point to open the new Notebook
 CommandsRegistry.registerCommand(NewNotebookAction.ID, serviceAccessor => {

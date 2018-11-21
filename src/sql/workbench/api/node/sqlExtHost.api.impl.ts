@@ -411,6 +411,21 @@ export function createApiFactory(
 			};
 
 			const nb = {
+				get notebookDocuments() {
+					return extHostNotebook.notebookDocuments;
+				},
+				get activeNotebook() {
+					return extHostNotebook.activeNotebook;
+				},
+				get onDidOpenNotebookDocument() {
+					return extHostNotebook.onDidOpenNotebookDocument;
+				},
+				get onDidChangeNotebookCell() {
+					return extHostNotebook.onDidChangeNotebookCell;
+				},
+				openNotebookDocument(uri) {
+					return extHostNotebook.openNotebookDocument(uri);
+				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
 				}

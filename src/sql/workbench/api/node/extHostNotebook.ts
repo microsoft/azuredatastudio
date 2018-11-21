@@ -15,6 +15,7 @@ import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Event, Emitter } from 'vs/base/common/event';
 
 type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
 
@@ -23,6 +24,12 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	private readonly _proxy: MainThreadNotebookShape;
 	private _adapters = new Map<number, Adapter>();
+	private _onDidOpenNotebook = new Emitter<sqlops.nb.NotebookDocument>();
+	private _onDidChangeNotebookCell = new Emitter<sqlops.nb.NotebookCellChangeEvent>();
+
+	public readonly onDidOpenNotebookDocument: Event<sqlops.nb.NotebookDocument> = this._onDidOpenNotebook.event;
+	public readonly onDidChangeNotebookCell: Event<sqlops.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
+
 	// Notebook URI to manager lookup.
 	constructor(_mainContext: IMainContext) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadNotebook);
@@ -63,11 +70,11 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withServerManager(managerHandle, (serverManager) => serverManager.stopServer());
 	}
 
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook> {
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebookContents> {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.getNotebookContents(URI.revive(notebookUri)));
 	}
 
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook> {
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
 	}
 
@@ -192,6 +199,18 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#endregion
 
 	//#region APIs called by extensions
+	get notebookDocuments(): sqlops.nb.NotebookDocument[] {
+		throw new Error();
+	}
+
+	get activeNotebook(): sqlops.nb.NotebookDocument {
+		throw new Error();
+	}
+
+	openNotebookDocument(uri: vscode.Uri): Thenable<sqlops.nb.NotebookDocument> {
+		return TPromise.wrapError(new Error('Not implemented'));
+	}
+
 	registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));

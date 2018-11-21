@@ -34,7 +34,7 @@ export class CellModel implements ICellModel {
 	private _active: boolean;
 	private _cellUri: URI;
 
-	constructor(private factory: IModelFactory, cellData?: nb.ICell, private _options?: ICellModelOptions) {
+	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
 		CellModel.CreateLanguageMappings();
 		// Do nothing for now
@@ -232,8 +232,8 @@ export class CellModel implements ICellModel {
 		return transient['display_id'] as string;
 	}
 
-	public toJSON(): nb.ICell {
-		let cellJson: Partial<nb.ICell> = {
+	public toJSON(): nb.ICellContents {
+		let cellJson: Partial<nb.ICellContents> = {
 			cell_type: this._cellType,
 			source: this._source,
 			metadata: {
@@ -244,10 +244,10 @@ export class CellModel implements ICellModel {
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = 1; // TODO: keep track of actual execution count
 		}
-		return cellJson as nb.ICell;
+		return cellJson as nb.ICellContents;
 	}
 
-	public fromJSON(cell: nb.ICell): void {
+	public fromJSON(cell: nb.ICellContents): void {
 		if (!cell) {
 			return;
 		}
