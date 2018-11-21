@@ -26,6 +26,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { DataTransfers } from 'vs/base/browser/dnd';
 import { DefaultTreestyler } from './treeDefaults';
 import { Delayer } from 'vs/base/common/async';
+import { JobStepsViewDataSource } from 'sql/parts/jobManagement/views/jobStepsViewTree';
 
 export interface IRow {
 	element: HTMLElement;
@@ -511,10 +512,19 @@ export class TreeView extends HeightMap {
 			vertical: (typeof context.options.verticalScrollMode !== 'undefined' ? context.options.verticalScrollMode : ScrollbarVisibility.Auto),
 			useShadows: context.options.useShadows
 		});
-		this.scrollableElement.onScroll((e) => {
-			this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth);
-			this._onDidScroll.fire();
-		});
+
+		// {{SQL CARBON EDIT}}
+		if (this.context.dataSource instanceof JobStepsViewDataSource) {
+			this.scrollableElement.onScroll((e) => {
+				this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth, e.scrollHeight);
+				this._onDidScroll.fire();
+			});
+		} else {
+			this.scrollableElement.onScroll((e) => {
+				this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth);
+				this._onDidScroll.fire();
+			});
+		}
 
 		if (Browser.isIE) {
 			this.wrapper.style.msTouchAction = 'none';
@@ -658,12 +668,14 @@ export class TreeView extends HeightMap {
 		return item && item.model.getElement();
 	}
 
-	private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
+	// {{SQL CARBON EDIT}}
+	private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number, scrollHeight: number = null): void {
 		var i: number;
 		var stop: number;
 
 		var renderTop = scrollTop;
-		var renderBottom = scrollTop + viewHeight;
+		// {{SQL CARBON EDIT}}
+		var renderBottom = scrollHeight ? scrollTop + scrollHeight : scrollTop + viewHeight;
 		var thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
 
 		// when view scrolls down, start rendering from the renderBottom

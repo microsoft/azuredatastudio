@@ -36,7 +36,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	private _treeDataSource = new JobStepsViewDataSource();
 	private _treeRenderer = new JobStepsViewRenderer();
 	private _treeFilter =  new JobStepsViewFilter();
-	private _pageSize = 1024;
+	private _pageSize = 485;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -57,19 +57,10 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	ngAfterContentChecked() {
 		if (this._jobHistoryComponent.stepRows.length > 0) {
 			this._treeDataSource.data = this._jobHistoryComponent.stepRows;
-			if (!this._tree) {
-				this._tree = new Tree(this._tableContainer.nativeElement, {
-					controller: this._treeController,
-					dataSource: this._treeDataSource,
-					filter: this._treeFilter,
-					renderer: this._treeRenderer
-				}, { verticalScrollMode: ScrollbarVisibility.Visible });
-				this._register(attachListStyler(this._tree, this.themeService));
-			}
-			this._tree.layout(this._pageSize);
-			this._tree.setInput(new JobStepsViewModel());
 			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
 			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
+			this._tree.layout(this._pageSize);
+			this._tree.setInput(new JobStepsViewModel());
 		}
 	}
 
