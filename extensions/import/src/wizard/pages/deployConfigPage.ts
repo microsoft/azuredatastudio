@@ -88,14 +88,14 @@ export class DeployConfigPage extends DacFxConfigPage {
 			let fileUri = fileUris[0];
 			this.fileTextBox.value = fileUri.fsPath;
 			this.model.filePath = fileUri.fsPath;
-			this.model.database = this.generateDatabaseName(this.model.filePath);
-			this.databaseTextBox.value = this.model.database;
 		});
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
-			this.model.database = this.generateDatabaseName(this.model.filePath);
-			this.databaseTextBox.value = this.model.database;
+			if (!this.upgradeCheckbox.checked) {
+				this.model.database = this.generateDatabaseName(this.model.filePath);
+			}
+			this.databaseTextBox.value = this.generateDatabaseName(this.model.filePath);
 		});
 
 		return {
@@ -115,9 +115,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			if (this.model.upgradeExisting) {
 				this.formBuilder.removeFormItem(this.databaseComponent);
 				this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
+				this.model.database =  (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 			} else {
 				this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 				this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
+				this.model.database = this.databaseTextBox.value;
 			}
 		});
 		return {
@@ -149,7 +151,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			return false;
 		}
 		let values = await this.getDatabaseValues();
-		this.model.database = values[0].name;
+
+		if(this.model.database === undefined) {
+			this.model.database = values[0].name;
+		}
+
 		this.databaseDropdown.updateProperties({
 			values: values
 		});

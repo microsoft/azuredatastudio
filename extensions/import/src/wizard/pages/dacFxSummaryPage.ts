@@ -76,7 +76,6 @@ export class DacFxSummaryPage extends BasePage {
 					[targetServer, this.model.serverName],
 					[dacpacLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
-				// this.form.items[0] =
 				break;
 			}
 			case Operation.extract: {
