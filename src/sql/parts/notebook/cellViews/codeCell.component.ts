@@ -39,6 +39,11 @@ export class CodeCellComponent extends CellView implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		if (this.cellModel) {
+			this.cellModel.onOutputsChanged(() => {
+				this._changeRef.detectChanges();
+			});
+		}
 	}
 
 	// Todo: implement layout

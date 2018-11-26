@@ -122,6 +122,10 @@ export class SelectBox extends vsSelectBox {
 		return this._selectedOption;
 	}
 
+	public get values(): string[] {
+		return this._dialogOptions;
+	}
+
 	public enable(): void {
 		this.selectElement.disabled = false;
 		this.selectBackground = this.enabledSelectBackground;

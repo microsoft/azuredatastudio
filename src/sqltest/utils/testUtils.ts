@@ -8,7 +8,7 @@
 
 import * as assert from 'assert';
 
-export async function assertThrowsAsync(fn, regExp?: string): Promise<void> {
+export async function assertThrowsAsync(fn, regExp?: any): Promise<void> {
     let f = () => {
         // Empty
     };
