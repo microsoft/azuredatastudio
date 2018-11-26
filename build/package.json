@@ -13,6 +13,7 @@
     "@types/xml2js": "0.0.33",
     "azure-storage": "^2.1.0",
     "decompress": "^4.2.0",
+    "del": "^3.0.0",
     "documentdb": "1.13.0",
     "fs-extra-promise": "^1.0.1",
     "github-releases": "^0.4.1",
@@ -29,8 +30,5 @@
     "watch": "tsc -p tsconfig.build.json --watch",
     "postinstall": "npm run compile",
     "npmCheckJs": "tsc --noEmit"
-  },
-  "dependencies": {
-    "del": "^3.0.0"
   }
 }
