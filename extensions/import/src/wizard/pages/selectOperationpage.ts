@@ -70,7 +70,7 @@ export class SelectOperationPage extends BasePage {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.deployRadioButtonLabel', 'Deploy Dacpac \n Deploy a data-tier application (DAC) package file to an instance of SQL Server'),
+				label: localize('dacFx.deployRadioButtonLabel', 'Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]'),
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
@@ -95,7 +95,7 @@ export class SelectOperationPage extends BasePage {
 		this.extractRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.extractRadioButtonLabel', 'Extract Dacpac \n Extract a data-tier application (DAC) from an instance of SQL Server to a DAC package'),
+				label: localize('dacFx.extractRadioButtonLabel', 'Extract a data-tier application from an instance of SQL Server to a .dacpac file [Extract Dacpac]'),
 			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
@@ -120,7 +120,7 @@ export class SelectOperationPage extends BasePage {
 		this.importRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.importRadioButtonLabel', 'Import Bacpac \n Create a database from a BACPAC file'),
+				label: localize('dacFx.importRadioButtonLabel', 'Create a database from a .bacpac file [Import Bacpac]'),
 			}).component();
 
 		this.importRadioButton.onDidClick(() => {
@@ -145,7 +145,7 @@ export class SelectOperationPage extends BasePage {
 		this.exportRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
 				name: 'selectedOperation',
-				label: localize('dacFx.exportRadioButtonLabel', 'Export Bacpac \n Export the schema and data from a database to the logical BACPAC file format'),
+				label: localize('dacFx.exportRadioButtonLabel', 'Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]'),
 			}).component();
 
 		this.exportRadioButton.onDidClick(() => {

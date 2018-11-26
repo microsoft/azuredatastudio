@@ -59,11 +59,11 @@ export class DataTierApplicationWizard {
 
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Data-tier Application Wizard');
 		let selectOperationWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
-		let deployConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployConfigPageName', 'Deploy Settings'));
+		let deployConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
 		let summaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
-		let extractConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractConfigPageName', 'Extract Settings'));
-		let importConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.importConfigPageName', 'Import Settings'));
-		let exportConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportConfigPageName', 'Export Settings'));
+		let extractConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
+		let importConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
+		let exportConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
 
 		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
 		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
