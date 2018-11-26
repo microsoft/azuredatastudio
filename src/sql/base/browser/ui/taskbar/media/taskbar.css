@@ -19,8 +19,7 @@
 .carbon-taskbar {
 	width: 100%;
 	position: relative;
-	padding: 10px 0px 10px 0px;
-	font-size: 12px !important;
+	margin: 2px 0px 2px 0px;
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
@@ -48,8 +47,7 @@
 .carbon-taskbar .action-label {
 	background-repeat: no-repeat;
 	background-position: 0% 50%;
-	padding-left: 20px;
-	font-size: inherit;
+	padding-left: 15px;
  }
 
  .carbon-taskbar .action-item-label {
@@ -84,5 +82,5 @@
 /* Taskbar Icons */
 
 .carbon-taskbar .icon {
-	background-size: 16px;
+	background-size: 11px;
 }
