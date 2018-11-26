@@ -257,14 +257,14 @@ jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
 	padding-left: 20px;
 }
 
-jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #f4f4f4;
 }
 
-.vs-dark jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+.vs-dark jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #444444;
 }
 
-.hc-black jobhistory-component > .actionbar-container .monaco-action-bar > ul.actions-container {
+.hc-black jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #2b56f2;
 }

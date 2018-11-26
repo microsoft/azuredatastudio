@@ -19,11 +19,13 @@
 .carbon-taskbar {
 	width: 100%;
 	position: relative;
+	padding: 10px 0px 10px 0px;
+	font-size: 12px !important;
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
 	justify-content: flex-start;
-	padding: 5px 5px 5px 15px;
+	padding-left: 15px;
 	flex-wrap: wrap;
 }
 
@@ -39,11 +41,6 @@
 	align-items: center;
 }
 
-.carbon-taskbar {
-	margin-top: 2px;
-	margin-bottom: 2px;
-}
-
 .carbon-taskbar .action-item {
 	margin-right: 5px;
 }
@@ -51,7 +48,13 @@
 .carbon-taskbar .action-label {
 	background-repeat: no-repeat;
 	background-position: 0% 50%;
-	padding-left: 15px;
+	padding-left: 20px;
+	font-size: inherit;
+ }
+
+ .carbon-taskbar .action-item-label {
+	display: flex;
+	padding-right: 5px;
  }
 
 .listDatabasesSelectBox {
@@ -81,5 +84,5 @@
 /* Taskbar Icons */
 
 .carbon-taskbar .icon {
-	background-size: 11px;
+	background-size: 16px;
 }

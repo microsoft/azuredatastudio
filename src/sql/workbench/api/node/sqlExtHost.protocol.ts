@@ -21,7 +21,7 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export abstract class ExtHostAccountManagementShape {
@@ -491,6 +491,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
 	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
 	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
+	$onObjectExplorerSessionDisconnected(handle: number, message: sqlops.ObjectExplorerSession): void;
 	$onObjectExplorerNodeExpanded(handle: number, message: sqlops.ObjectExplorerExpandInfo): void;
 	$onTaskCreated(handle: number, sessionResponse: sqlops.TaskInfo): void;
 	$onTaskStatusChanged(handle: number, sessionResponse: sqlops.TaskProgressInfo): void;
@@ -550,6 +551,7 @@ export const SqlMainContext = {
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
+	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook')
 };
 
 export const SqlExtHostContext = {
@@ -568,7 +570,8 @@ export const SqlExtHostContext = {
 	ExtHostModelViewTreeViews: createExtId<ExtHostModelViewTreeViewsShape>('ExtHostModelViewTreeViews'),
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
-	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor')
+	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
+	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -709,3 +712,50 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
 }
+
+export interface ExtHostNotebookShape {
+
+	/**
+	 * Looks up a notebook manager for a given notebook URI
+	 * @param {number} providerHandle
+	 * @param {vscode.Uri} notebookUri
+	 * @returns {Thenable<string>} handle of the manager to be used when sending
+	 */
+	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails>;
+	$handleNotebookClosed(notebookUri: UriComponents): void;
+
+	// Server Manager APIs
+	$doStartServer(managerHandle: number): Thenable<void>;
+	$doStopServer(managerHandle: number): Thenable<void>;
+
+	// Content Manager APIs
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook>;
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook>;
+
+	// Session Manager APIs
+	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels>;
+	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails>;
+	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void>;
+
+	// Session APIs
+	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
+
+	// Kernel APIs
+	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
+	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec>;
+	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg>;
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails>;
+	$interruptKernel(kernelId: number): Thenable<void>;
+
+	// Future APIs
+	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void;
+	$disposeFuture(futureId: number): void;
+}
+
+export interface MainThreadNotebookShape extends IDisposable {
+	$registerNotebookProvider(providerId: string, handle: number): void;
+	$unregisterNotebookProvider(handle: number): void;
+	$onFutureMessage(futureId: number, type: FutureMessageType, payload: sqlops.nb.IMessage): void;
+	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
+}
+
