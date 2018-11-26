@@ -76,7 +76,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 					openLabel: localize('dacFxDeploy.openFile', 'Open'),
 					filters: {
 						'dacpac Files': ['dacpac'],
-						'All Files': ['*']
 					}
 				}
 			);
@@ -139,7 +138,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.targetDatabaseDropdownTitle', 'Target Database')
+			title: localize('dacFx.targetDatabaseDropdownTitle', 'Database Name')
 		};
 	}
 

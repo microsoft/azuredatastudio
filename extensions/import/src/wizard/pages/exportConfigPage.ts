@@ -75,7 +75,6 @@ export class ExportConfigPage extends DacFxConfigPage {
 					saveLabel: localize('dacfxExport.saveFile', 'Save'),
 					filters: {
 						'bacpac Files': ['bacpac'],
-						'All Files': ['*']
 					}
 				}
 			);

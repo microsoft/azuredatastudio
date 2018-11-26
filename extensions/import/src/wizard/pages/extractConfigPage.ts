@@ -78,7 +78,6 @@ export class ExtractConfigPage extends DacFxConfigPage {
 					saveLabel: localize('dacfxExtract.saveFile', 'Save'),
 					filters: {
 						'dacpac Files': ['dacpac'],
-						'All Files': ['*']
 					}
 				}
 			);

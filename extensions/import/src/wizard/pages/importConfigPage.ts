@@ -66,7 +66,6 @@ export class ImportConfigPage extends DacFxConfigPage {
 					openLabel: localize('dacFxImport.openFile', 'Open'),
 					filters: {
 						'bacpac Files': ['bacpac'],
-						'All Files': ['*']
 					}
 				}
 			);
