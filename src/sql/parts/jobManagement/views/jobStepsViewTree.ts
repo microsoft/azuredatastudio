@@ -109,6 +109,9 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 	}
 
 	public renderElement(tree: tree.ITree, element: JobStepsViewRow, templateId: string, templateData: IListTemplate): void {
+		if (templateData.label.children.length > 0) {
+			return;
+		}
 		let stepIdCol: HTMLElement = DOM.$('div');
 		stepIdCol.className = 'tree-id-col';
 		stepIdCol.innerText = element.stepId;
