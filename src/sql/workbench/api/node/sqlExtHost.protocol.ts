@@ -426,10 +426,9 @@ export abstract class ExtHostDataProtocolShape {
 	$extractDacpac(handle: number, sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> { throw ni(); }
 
 	/**
-	 * DacFx import bacpac
+	 * DacFx deploy dacpac
 	 */
-	$deployDacpac(handle: number, packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> { throw ni(); }
-
+	$deployDacpac(handle: number, packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> { throw ni(); }
 }
 
 /**

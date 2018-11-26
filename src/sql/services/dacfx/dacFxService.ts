@@ -22,7 +22,7 @@ export interface IDacFxService {
 	exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 	importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
-	deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
+	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 }
 
 export class DacFxService implements IDacFxService {
@@ -56,9 +56,9 @@ export class DacFxService implements IDacFxService {
 		});
 	}
 
-	deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
-		return this._runAction(ownerUri, (runner) => {
-			return runner.deployDacpac(packageFilePath, targetDatabaseName, ownerUri, taskExecutionMode);
+	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+			return this._runAction(ownerUri, (runner) => {
+				return runner.deployDacpac(packageFilePath, targetDatabaseName, upgradeExisting, ownerUri, taskExecutionMode);
 		});
 	}
 

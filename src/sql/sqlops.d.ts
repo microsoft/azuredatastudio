@@ -1628,6 +1628,7 @@ declare module 'sqlops' {
 	export interface DeployParams {
 		packageFilePath: string;
 		targetDatabaseName: string;
+		upgradeExisting: boolean;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
@@ -1636,7 +1637,7 @@ declare module 'sqlops' {
 		exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExportResult>;
 		importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ImportResult>;
 		extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<ExtractResult>;
-		deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DeployResult>;
+		deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DeployResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

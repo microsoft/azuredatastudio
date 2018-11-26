@@ -413,8 +413,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> {
 				return self._proxy.$extractDacpac(handle, sourceDatabaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
 			},
-			deployDacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> {
-				return self._proxy.$deployDacpac(handle, packageFilePath, targetDatabaseName, ownerUri, taskExecutionMode);
+			deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> {
+				return self._proxy.$deployDacpac(handle, packageFilePath, targetDatabaseName, upgradeExisting, ownerUri, taskExecutionMode);
 			}
 		});
 

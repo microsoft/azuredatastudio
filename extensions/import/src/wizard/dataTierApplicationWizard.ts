@@ -205,7 +205,7 @@ export class DataTierApplicationWizard {
 		let service = await DataTierApplicationWizard.getService();
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.deployDacpac(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
+		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

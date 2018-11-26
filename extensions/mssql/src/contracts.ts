@@ -333,6 +333,7 @@ export interface ExtractResult {
 export interface DeployParams {
 	packageFilePath: string;
 	targetDatabaseName: string;
+	upgradeExisting: boolean;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
