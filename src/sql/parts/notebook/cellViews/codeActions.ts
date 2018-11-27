@@ -173,7 +173,7 @@ export class DeleteCellAction extends CellActionBase {
 
 	runCellAction(context: CellContext): Promise<void> {
 		try {
-				context.model.deleteCell(context.cell);
+			context.model.deleteCell(context.cell);
 		} catch (error) {
 			let message = getErrorMessage(error);
 
