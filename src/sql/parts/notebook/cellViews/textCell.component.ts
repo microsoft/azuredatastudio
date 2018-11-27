@@ -119,7 +119,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleEditMode(): void {
-		this.isEditMode =!this.isEditMode;
+		this.isEditMode = !this.isEditMode;
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
