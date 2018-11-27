@@ -20,7 +20,7 @@ import { AccountDialogController } from 'sql/parts/accountManagement/accountDial
 import { AutoOAuthDialogController } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController';
 import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class AccountManagementService implements IAccountManagementService {
@@ -217,11 +217,12 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Generates a security token by asking the account's provider
 	 * @param {Account} account Account to generate security token for
+	 * @param {AzureResource} resource The resource to get the security token for
 	 * @return {Thenable<{}>} Promise to return the security token
 	 */
-	public getSecurityToken(account: sqlops.Account): Thenable<{}> {
+	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
 		return this.doWithProvider(account.key.providerId, provider => {
-			return provider.provider.getSecurityToken(account);
+			return provider.provider.getSecurityToken(account, resource);
 		});
 	}
 

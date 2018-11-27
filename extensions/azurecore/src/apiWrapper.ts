@@ -212,8 +212,8 @@ export class ApiWrapper {
 		return sqlops.accounts.getAllAccounts();
 	}
 
-	public getSecurityToken(account: sqlops.Account): Thenable<{}> {
-		return sqlops.accounts.getSecurityToken(account);
+	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
+		return sqlops.accounts.getSecurityToken(account, resource);
 	}
 
 	public readonly onDidChangeAccounts = sqlops.accounts.onDidChangeAccounts;

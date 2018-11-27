@@ -34,12 +34,13 @@ import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { values } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 
 import * as sqlops from 'sqlops';
 
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
@@ -58,7 +59,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -100,7 +100,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService
+		@IAngularEventingService private _angularEventing: IAngularEventingService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super();
 		if (this._instantiationService) {
@@ -248,7 +249,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
-	public addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
+	public async addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
+		await this.fillInAzureTokenIfNeeded(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -274,7 +276,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		let self = this;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			// Load the password if it's not already loaded
-			self._connectionStore.addSavedPassword(connection).then(result => {
+			self._connectionStore.addSavedPassword(connection).then(async result => {
 				let newConnection = result.profile;
 				let foundPassword = result.savedCred;
 
@@ -286,8 +288,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						foundPassword = true;
 					}
 				}
+
+				// Fill in the Azure account token if needed and open the connection dialog if it fails
+				let tokenFillSuccess = await self.fillInAzureTokenIfNeeded(newConnection);
+
 				// If the password is required and still not loaded show the dialog
-				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
+				if ((!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
 					resolve(self.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
 				} else {
 					// Try to connect
@@ -449,9 +455,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				showFirewallRuleOnError: true
 			};
 		}
-		return new Promise<IConnectionResult>((resolve, reject) => {
+		return new Promise<IConnectionResult>(async (resolve, reject) => {
 			if (callbacks.onConnectStart) {
 				callbacks.onConnectStart();
+			}
+			let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(connection);
+			if (!tokenFillSuccess) {
+				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -743,8 +753,33 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
+	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
+		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
+			return true;
+		}
+		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		if (accounts && accounts.length > 0) {
+			let account = accounts.find(account => account.key.accountId === connection.userName);
+			if (account) {
+				if (account.isStale) {
+					try {
+						account = await this._accountManagementService.refreshAccount(account);
+					} catch {
+						// refreshAccount throws an error if the user cancels the dialog
+						return false;
+					}
+				}
+				let tokens = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+				connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
+				connection.options['password'] = '';
+				return true;
+			}
+		}
+		return false;
+	}
+
 	// Request Senders
-	private sendConnectRequest(connection: IConnectionProfile, uri: string): Thenable<boolean> {
+	private async sendConnectRequest(connection: IConnectionProfile, uri: string): Promise<boolean> {
 		let connectionInfo = Object.assign({}, {
 			options: connection.options
 		});

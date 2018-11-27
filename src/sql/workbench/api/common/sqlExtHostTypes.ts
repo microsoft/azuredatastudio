@@ -314,6 +314,11 @@ export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
 }
 
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
+}
+
 export class SqlThemeIcon {
 
 	static readonly Folder = new SqlThemeIcon('Folder');
