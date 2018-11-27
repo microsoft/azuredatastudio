@@ -141,7 +141,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		}).component();
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
-			label: localize('dacFx.browseFiles', '...'),
+			label: '•••',
 		}).component();
 	}
 

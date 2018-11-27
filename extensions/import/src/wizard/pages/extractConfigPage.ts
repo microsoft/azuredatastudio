@@ -96,7 +96,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxExtract.fileTextboxTitle', 'Dacpac location'),
+			title: localize('dacFxExtract.fileTextboxTitle', 'File Location'),
 			actions: [this.fileButton]
 		};
 	}

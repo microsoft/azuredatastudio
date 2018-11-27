@@ -21,7 +21,6 @@ export class DeployConfigPage extends DacFxConfigPage {
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
-	private upgradeCheckbox: sqlops.CheckBoxComponent;
 	private databaseDropdownComponent: sqlops.FormComponent;
 	private databaseComponent: sqlops.FormComponent;
 	private formBuilder: sqlops.FormBuilder;
@@ -33,19 +32,20 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-		this.databaseComponent = await this.createDatabaseTextBox();
-		let serverComponent = await this.createServerDropdown(true);
+				let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
-		let upgradeComponent = await this.createUpgradeCheckbox();
+		this.databaseComponent = await this.createDatabaseTextBox();
+		this.databaseComponent.title = localize('dacFx.databaseNameTextBox', 'Database Name');
 		this.databaseDropdownComponent = await this.createDeployDatabaseDropdown();
-		this.upgradeCheckbox.checked = true;
+		this.databaseDropdownComponent.title = localize('dacFx.databaseNameDropdown', 'Database Name');
+		let radioButtons = await this.createRadiobuttons();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					fileBrowserComponent,
 					serverComponent,
-					upgradeComponent,
+					radioButtons,
 					this.databaseDropdownComponent
 				], {
 					horizontal: true,
@@ -91,44 +91,65 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		this.fileTextBox.onTextChanged(async () => {
 			this.model.filePath = this.fileTextBox.value;
-			if (!this.upgradeCheckbox.checked) {
-				this.model.database = this.generateDatabaseName(this.model.filePath);
-			}
 			this.databaseTextBox.value = this.generateDatabaseName(this.model.filePath);
+			if (!this.model.upgradeExisting) {
+				this.model.database = this.databaseTextBox.value;
+			}
 		});
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxDeploy.fileTextboxTitle', 'Dacpac location'),
+			title: localize('dacFxDeploy.fileTextboxTitle', 'File Location'),
 			actions: [this.fileButton]
 		};
 	}
 
-	private async createUpgradeCheckbox(): Promise<sqlops.FormComponent> {
-		this.upgradeCheckbox = this.view.modelBuilder.checkBox()
+	private async createRadiobuttons(): Promise<sqlops.FormComponent> {
+		let upgradeRadioButton = this.view.modelBuilder.radioButton()
 			.withProperties({
-				label: localize('dacFx.upgradeCheckboxLabel', 'Upgrade Existing Database'),
+				name: 'updateExisting',
+				label: localize('dacFx.upgradeRadioButtonLabel', 'Upgrade Existing Database'),
 			}).component();
-		this.upgradeCheckbox.onChanged(() => {
-			this.model.upgradeExisting = this.upgradeCheckbox.checked ? true : false;
-			if (this.model.upgradeExisting) {
-				this.formBuilder.removeFormItem(this.databaseComponent);
-				this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
-				this.model.database =  (<sqlops.CategoryValue>this.databaseDropdown.value).name;
-			} else {
-				this.formBuilder.removeFormItem(this.databaseDropdownComponent);
-				this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
-				this.model.database = this.databaseTextBox.value;
-			}
+
+		let newRadioButton = this.view.modelBuilder.radioButton()
+			.withProperties({
+				name: 'updateExisting',
+				label: localize('dacFx.newRadioButtonLabel', 'New Database'),
+			}).component();
+
+		upgradeRadioButton.onDidClick(() => {
+			this.model.upgradeExisting = true;
+			this.formBuilder.removeFormItem(this.databaseComponent);
+			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
+			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 		});
+
+		newRadioButton.onDidClick(() => {
+			this.model.upgradeExisting = false;
+			this.formBuilder.removeFormItem(this.databaseDropdownComponent);
+			this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
+			this.model.database = this.databaseTextBox.value;
+		});
+
+		// Initialize with upgrade existing true
+		upgradeRadioButton.checked = true;
+		this.model.upgradeExisting = true;
+
+		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
+			.withLayout({
+				flexFlow: 'row',
+			}).withItems([
+				upgradeRadioButton, newRadioButton]
+			).component();
+
 		return {
-			component: this.upgradeCheckbox,
-			title: ''
+			component: flexRadioButtonsModel,
+			title: 'Target Database'
 		};
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<sqlops.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
 		// Handle database changes
@@ -151,7 +172,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		}
 		let values = await this.getDatabaseValues();
 
-		if(this.model.database === undefined) {
+		if (this.model.database === undefined) {
 			this.model.database = values[0].name;
 		}
 

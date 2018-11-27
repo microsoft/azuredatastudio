@@ -67,14 +67,13 @@ export class DacFxSummaryPage extends BasePage {
 		let targetDatabase = localize('dacfx.targetDatabaseName', 'Target Database');
 		let sourceServer = localize('dacfx.sourceServerName', 'Source Server');
 		let sourceDatabase = localize('dacfx.sourceDatabaseName', 'Source Database');
-		let dacpacLocation = localize('dacfx.dacpacLocation', 'Dacpac location');
-		let bacpacLocation = localize('dacfx.bacpacLocation', 'Bacpac location');
+		let fileLocation = localize('dacfx.fileLocation', 'File Location');
 
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
 				data = [
 					[targetServer, this.model.serverName],
-					[dacpacLocation, this.model.filePath],
+					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
 				break;
 			}
@@ -83,13 +82,13 @@ export class DacFxSummaryPage extends BasePage {
 					[sourceServer, this.model.serverName],
 					[sourceDatabase, this.model.database],
 					[localize('dacfxExtract.version', 'Version'), this.model.version],
-					[dacpacLocation, this.model.filePath]];
+					[fileLocation, this.model.filePath]];
 				break;
 			}
 			case Operation.import: {
 				data = [
 					[targetServer, this.model.serverName],
-					[bacpacLocation, this.model.filePath],
+					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
 				break;
 			}
@@ -97,7 +96,7 @@ export class DacFxSummaryPage extends BasePage {
 				data = [
 					[sourceServer, this.model.serverName],
 					[sourceDatabase, this.model.database],
-					[bacpacLocation, this.model.filePath]];
+					[fileLocation, this.model.filePath]];
 				break;
 			}
 		}

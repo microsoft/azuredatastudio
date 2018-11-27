@@ -133,7 +133,7 @@ export abstract class BasePage {
 	}
 
 	protected deleteDatabaseValues() {
-		delete this.model.database;
+		return;
 	}
 }
 

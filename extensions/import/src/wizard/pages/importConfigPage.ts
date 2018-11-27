@@ -89,7 +89,7 @@ export class ImportConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.fileTextBox,
-			title: localize('dacFxImport.fileTextboxTitle', 'Bacpac location'),
+			title: localize('dacFxImport.fileTextboxTitle', 'File Location'),
 			actions: [this.fileButton]
 		};
 	}
