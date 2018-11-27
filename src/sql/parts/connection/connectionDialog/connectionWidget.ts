@@ -22,6 +22,8 @@ import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import { ConnectionProfile } from '../common/connectionProfile';
+import * as styler from 'sql/common/theme/styler';
+import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
 
 import * as sqlops from 'sqlops';
 
@@ -30,7 +32,6 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import * as styler from 'vs/platform/theme/common/styler';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
@@ -50,6 +51,11 @@ export class ConnectionWidget {
 	private _passwordInputBox: InputBox;
 	private _password: string;
 	private _rememberPasswordCheckBox: Checkbox;
+	private _azureAccountDropdown: SelectBox;
+	private _refreshCredentialsLinkBuilder: Builder;
+	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
+	private readonly _azureProviderId = 'azurePublicCloud';
+	private _azureAccountList: sqlops.Account[];
 	private _advancedButton: Button;
 	private _callbacks: IConnectionComponentCallbacks;
 	private _authTypeSelectBox: SelectBox;
@@ -59,7 +65,7 @@ export class ConnectionWidget {
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _providerName: string;
 	private _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.mssqlProviderName]: [new AuthenticationType(Constants.integrated, false), new AuthenticationType(Constants.sqlLogin, true)]
+		[Constants.mssqlProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
 	};
 	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
@@ -96,7 +102,8 @@ export class ConnectionWidget {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		this._callbacks = callbacks;
 		this._toDispose = [];
@@ -109,9 +116,9 @@ export class ConnectionWidget {
 		var authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
 			if (OS === OperatingSystem.Windows) {
-				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.integrated);
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
 			} else {
-				authTypeOption.defaultValue = this.getAuthTypeDisplayName(Constants.sqlLogin);
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
 			}
 			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
 		}
@@ -182,7 +189,7 @@ export class ConnectionWidget {
 		// Username
 		let self = this;
 		let userNameOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
-		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input');
+		let userNameBuilder = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._userNameInputBox = new InputBox(userNameBuilder.getHTMLElement(), this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
@@ -191,14 +198,22 @@ export class ConnectionWidget {
 		});
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
-		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input');
+		let passwordBuilder = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._passwordInputBox = new InputBox(passwordBuilder.getHTMLElement(), this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._passwordInputBox.inputElement.type = 'password';
 		this._password = '';
 
 		// Remember password
 		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
-		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', false);
+		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-checkbox', 'connection-input', 'username-password-row', false);
+
+		// Azure account picker
+		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
+		let accountDropdownBuilder = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
+		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdownBuilder.getContainer(), { ariaLabel: accountLabel });
+		DialogHelper.appendInputSelectBox(accountDropdownBuilder, this._azureAccountDropdown);
+		let refreshCredentialsBuilder = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', 'azure-account-row refresh-credentials-link');
+		this._refreshCredentialsLinkBuilder = refreshCredentialsBuilder.a({ href: '#' }).text(localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials'));
 
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
@@ -228,7 +243,7 @@ export class ConnectionWidget {
 
 	private validateUsername(value: string, isOptionRequired: boolean): boolean {
 		let currentAuthType = this._authTypeSelectBox ? this.getMatchingAuthType(this._authTypeSelectBox.value) : undefined;
-		if (!currentAuthType || currentAuthType.showUsernameAndPassword) {
+		if (!currentAuthType || currentAuthType === AuthenticationType.SqlLogin) {
 			if (!value && isOptionRequired) {
 				return true;
 			}
@@ -254,9 +269,9 @@ export class ConnectionWidget {
 		return button;
 	}
 
-	private appendCheckbox(container: Builder, label: string, checkboxClass: string, cellContainerClass: string, isChecked: boolean): Checkbox {
+	private appendCheckbox(container: Builder, label: string, checkboxClass: string, cellContainerClass: string, rowContainerClass: string, isChecked: boolean): Checkbox {
 		let checkbox: Checkbox;
-		container.element('tr', {}, (rowContainer) => {
+		container.element('tr', { class: rowContainerClass }, (rowContainer) => {
 			rowContainer.element('td');
 			rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
 				checkbox = new Checkbox(inputCellContainer.getHTMLElement(), { label, checked: isChecked, ariaLabel: label });
@@ -275,6 +290,7 @@ export class ConnectionWidget {
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
 		this._toDispose.push(attachButtonStyler(this._advancedButton, this._themeService));
 		this._toDispose.push(attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
+		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
@@ -282,6 +298,23 @@ export class ConnectionWidget {
 			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
 				this.setConnectButton();
+			}));
+		}
+
+		if (this._azureAccountDropdown) {
+			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
+				this.onAzureAccountSelected();
+			}));
+		}
+
+		if (this._refreshCredentialsLinkBuilder) {
+			this._toDispose.push(this._refreshCredentialsLinkBuilder.on(DOM.EventType.CLICK, async () => {
+				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+				if (account) {
+					await this._accountManagementService.refreshAccount(account);
+					this.fillInAzureAccountOptions();
+				}
 			}));
 		}
 
@@ -342,7 +375,7 @@ export class ConnectionWidget {
 	private setConnectButton(): void {
 		let showUsernameAndPassword: boolean = true;
 		if (this.authType) {
-			showUsernameAndPassword = this.authType.showUsernameAndPassword;
+			showUsernameAndPassword = this.authType === AuthenticationType.SqlLogin;
 		}
 		showUsernameAndPassword ? this._callbacks.onSetConnectButton(!!this.serverName && !!this.userName) :
 			this._callbacks.onSetConnectButton(!!this.serverName);
@@ -350,7 +383,7 @@ export class ConnectionWidget {
 
 	private onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		if (!currentAuthType.showUsernameAndPassword) {
+		if (currentAuthType !== AuthenticationType.SqlLogin) {
 			this._userNameInputBox.disable();
 			this._passwordInputBox.disable();
 			this._userNameInputBox.hideMessage();
@@ -366,6 +399,68 @@ export class ConnectionWidget {
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
 		}
+
+		if (currentAuthType === AuthenticationType.AzureMFA) {
+			this.fillInAzureAccountOptions();
+			this._azureAccountDropdown.enable();
+			let tableContainer = this._tableContainer.getContainer();
+			tableContainer.classList.add('hide-username-password');
+			tableContainer.classList.remove('hide-azure-accounts');
+		} else {
+			this._azureAccountDropdown.disable();
+			let tableContainer = this._tableContainer.getContainer();
+			tableContainer.classList.remove('hide-username-password');
+			tableContainer.classList.add('hide-azure-accounts');
+			this._azureAccountDropdown.hideMessage();
+		}
+	}
+
+	private async fillInAzureAccountOptions(): Promise<void> {
+		let oldSelection = this._azureAccountDropdown.value;
+		this._azureAccountList = await this._accountManagementService.getAccountsForProvider(this._azureProviderId);
+		let accountDropdownOptions = this._azureAccountList.map(account => account.key.accountId);
+		if (accountDropdownOptions.length === 0) {
+			// If there are no accounts add a blank option so that add account isn't automatically selected
+			accountDropdownOptions.unshift('');
+		}
+		accountDropdownOptions.push(this._addAzureAccountMessage);
+		this._azureAccountDropdown.setOptions(accountDropdownOptions);
+		this._azureAccountDropdown.selectWithOptionName(oldSelection);
+		this.updateRefreshCredentialsLink();
+	}
+
+	private async updateRefreshCredentialsLink(): Promise<void> {
+		let chosenAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
+		if (chosenAccount && chosenAccount.isStale) {
+			this._tableContainer.getContainer().classList.remove('hide-refresh-link');
+		} else {
+			this._tableContainer.getContainer().classList.add('hide-refresh-link');
+		}
+	}
+
+	private async onAzureAccountSelected(): Promise<void> {
+		// Reset the dropdown's validation message if the old selection was not valid but the new one is
+		this.validateAzureAccountSelection(false);
+		this._refreshCredentialsLinkBuilder.display('none');
+
+		// Open the add account dialog if needed, then select the added account
+		if (this._azureAccountDropdown.value === this._addAzureAccountMessage) {
+			let oldAccountIds = this._azureAccountList.map(account => account.key.accountId);
+			await this._accountManagementService.addAccount(this._azureProviderId);
+
+			// Refresh the dropdown's list to include the added account
+			await this.fillInAzureAccountOptions();
+
+			// If a new account was added find it and select it, otherwise select the first account
+			let newAccount = this._azureAccountList.find(option => !oldAccountIds.some(oldId => oldId === option.key.accountId));
+			if (newAccount) {
+				this._azureAccountDropdown.selectWithOptionName(newAccount.key.accountId);
+			} else {
+				this._azureAccountDropdown.select(0);
+			}
+		}
+
+		this.updateRefreshCredentialsLink();
 	}
 
 	private serverNameChanged(serverName: string) {
@@ -407,6 +502,7 @@ export class ConnectionWidget {
 	private clearValidationMessages(): void {
 		this._serverNameInputBox.hideMessage();
 		this._userNameInputBox.hideMessage();
+		this._azureAccountDropdown.hideMessage();
 	}
 
 	private getModelValue(value: string): string {
@@ -449,8 +545,8 @@ export class ConnectionWidget {
 
 			if (this._authTypeSelectBox) {
 				this.onAuthTypeSelected(this._authTypeSelectBox.value);
-
 			}
+
 			// Disable connect button if -
 			// 1. Authentication type is SQL Login and no username is provided
 			// 2. No server name is provided
@@ -513,7 +609,7 @@ export class ConnectionWidget {
 			currentAuthType = this.getMatchingAuthType(this._authTypeSelectBox.value);
 		}
 
-		if (!currentAuthType || currentAuthType.showUsernameAndPassword) {
+		if (!currentAuthType || currentAuthType === AuthenticationType.SqlLogin) {
 			this._userNameInputBox.enable();
 			this._passwordInputBox.enable();
 			this._rememberPasswordCheckBox.enabled = true;
@@ -537,7 +633,7 @@ export class ConnectionWidget {
 	}
 
 	public get userName(): string {
-		return this._userNameInputBox.value;
+		return this.authenticationType === AuthenticationType.AzureMFA ? this._azureAccountDropdown.value : this._userNameInputBox.value;
 	}
 
 	public get password(): string {
@@ -546,6 +642,27 @@ export class ConnectionWidget {
 
 	public get authenticationType(): string {
 		return this._authTypeSelectBox ? this.getAuthTypeName(this._authTypeSelectBox.value) : undefined;
+	}
+
+	private validateAzureAccountSelection(showMessage: boolean = true): boolean {
+		if (this.authType !== AuthenticationType.AzureMFA) {
+			return true;
+		}
+
+		let selected = this._azureAccountDropdown.value;
+		if (selected === '' || selected === this._addAzureAccountMessage) {
+			if (showMessage) {
+				this._azureAccountDropdown.showMessage({
+					content: localize('connectionWidget.invalidAzureAccount', 'You must select an account'),
+					type: MessageType.ERROR
+				});
+			}
+			return false;
+		} else {
+			this._azureAccountDropdown.hideMessage();
+		}
+
+		return true;
 	}
 
 	private validateInputs(): boolean {
@@ -565,7 +682,12 @@ export class ConnectionWidget {
 			this._passwordInputBox.focus();
 			isFocused = true;
 		}
-		return validateServerName && validateUserName && validatePassword;
+		let validateAzureAccount = this.validateAzureAccountSelection();
+		if (!validateAzureAccount && !isFocused) {
+			this._azureAccountDropdown.focus();
+			isFocused = true;
+		}
+		return validateServerName && validateUserName && validatePassword && validateAzureAccount;
 	}
 
 	public connect(model: IConnectionProfile): boolean {
@@ -613,7 +735,7 @@ export class ConnectionWidget {
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {
 		const authType = this._authTypeMap[this._providerName];
-		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType.name) === displayName) : undefined;
+		return authType ? authType.find(authType => this.getAuthTypeDisplayName(authType) === displayName) : undefined;
 	}
 
 	public closeDatabaseDropdown(): void {
@@ -634,18 +756,14 @@ export class ConnectionWidget {
 	}
 
 	private focusPasswordIfNeeded(): void {
-		if (this.authType && this.authType.showUsernameAndPassword && this.userName && !this.password) {
+		if (this.authType && this.authType === AuthenticationType.SqlLogin && this.userName && !this.password) {
 			this._passwordInputBox.focus();
 		}
 	}
 }
 
-class AuthenticationType {
-	public name: string;
-	public showUsernameAndPassword: boolean;
-
-	constructor(name: string, showUsernameAndPassword: boolean) {
-		this.name = name;
-		this.showUsernameAndPassword = showUsernameAndPassword;
-	}
+enum AuthenticationType {
+	SqlLogin = 'SqlLogin',
+	Integrated = 'Integrated',
+	AzureMFA = 'AzureMFA'
 }

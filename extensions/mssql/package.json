@@ -285,6 +285,10 @@
             {
               "displayName": "Windows Authentication",
               "name": "Integrated"
+            },
+            {
+              "displayName": "Azure Active Directory - Universal with MFA support",
+              "name": "AzureMFA"
             }
           ],
           "isRequired": true,
