@@ -1912,10 +1912,11 @@ declare module 'sqlops' {
 
 		/**
 		 * Generates a security token by asking the account's provider
-		 * @param {Account} account Account to generate security token for
+		 * @param {Account} account Account to generate security token for (defaults to
+		 * AzureResource.ResourceManagement if not given)
 		 * @return {Thenable<{}>} Promise to return the security token
 		 */
-		export function getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
+		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
