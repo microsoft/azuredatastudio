@@ -1917,7 +1917,7 @@ declare module 'sqlops' {
 		 * @param {Account} account Account to generate security token for
 		 * @return {Thenable<{}>} Promise to return the security token
 		 */
-		export function getSecurityToken(account: Account): Thenable<{}>;
+		export function getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -1990,6 +1990,11 @@ declare module 'sqlops' {
 		isStale: boolean;
 	}
 
+	export enum AzureResource {
+		ResourceManagement = 0,
+		Sql = 1
+	}
+
 	export interface DidChangeAccountsParams {
 		// Updated accounts
 		accounts: Account[];
@@ -2047,9 +2052,10 @@ declare module 'sqlops' {
 		/**
 		 * Generates a security token for the provided account
 		 * @param {Account} account The account to generate a security token for
+		 * @param {AzureResource} resource The resource to get the token for
 		 * @return {Thenable<{}>} Promise to return a security token object
 		 */
-		getSecurityToken(account: Account): Thenable<{}>;
+		getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
 
 		/**
 		 * Prompts the user to enter account information.
