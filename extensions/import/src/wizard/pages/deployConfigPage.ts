@@ -144,7 +144,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: flexRadioButtonsModel,
-			title: 'Target Database'
+			title: localize('dacFx.targetDatabaseRadioButtonsTitle', 'Target Database')
 		};
 	}
 

@@ -61,7 +61,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					console.error("error sending request");
 					client.logFailedRequest(contracts.ExportRequest.type, e);
 					return Promise.resolve(undefined);
 				}
@@ -75,7 +74,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					console.error("error sending request");
 					client.logFailedRequest(contracts.ImportRequest.type, e);
 					return Promise.resolve(undefined);
 				}
@@ -89,7 +87,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					console.error("error sending request");
 					client.logFailedRequest(contracts.ExtractRequest.type, e);
 					return Promise.resolve(undefined);
 				}
@@ -103,7 +100,6 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					console.error("error sending request");
 					client.logFailedRequest(contracts.DeployRequest.type, e);
 					return Promise.resolve(undefined);
 				}
