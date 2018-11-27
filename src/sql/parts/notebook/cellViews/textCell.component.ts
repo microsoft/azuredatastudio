@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./textCell';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
@@ -22,12 +22,16 @@ export const TEXT_SELECTOR: string = 'text-cell-component';
 	selector: TEXT_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./textCell.component.html'))
 })
-export class TextCellComponent extends CellView implements OnInit {
+export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@Input() cellModel: ICellModel;
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
+	}
 	private _content: string;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
+	private _activeCellId: string;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -39,8 +43,15 @@ export class TextCellComponent extends CellView implements OnInit {
 		this.isEditMode = false;
 	}
 
-	ngOnChanges() {
+	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		this.updatePreview();
+		for (let propName in changes) {
+			if (propName === 'activeCellId') {
+				let changedProp = changes[propName];
+				this._activeCellId = changedProp.currentValue;
+				break;
+			}
+		}
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -49,6 +60,10 @@ export class TextCellComponent extends CellView implements OnInit {
 			return this._sanitizer;
 		}
 		return this._sanitizer = defaultSanitizer;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
 	}
 
 	/**
