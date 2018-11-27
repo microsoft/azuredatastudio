@@ -98,7 +98,7 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 
 		let deployDacpac = (packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
 			let params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-				return client.sendRequest(contracts.DeployRequest.type, params).then(
+			return client.sendRequest(contracts.DeployRequest.type, params).then(
 				r => {
 					return r;
 				},

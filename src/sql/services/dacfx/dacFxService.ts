@@ -57,8 +57,8 @@ export class DacFxService implements IDacFxService {
 	}
 
 	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
-			return this._runAction(ownerUri, (runner) => {
-				return runner.deployDacpac(packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
+		return this._runAction(ownerUri, (runner) => {
+			return runner.deployDacpac(packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 		});
 	}
 
