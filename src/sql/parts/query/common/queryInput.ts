@@ -116,11 +116,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		if (this._configurationService) {
-			this._configurationService.onDidChangeConfiguration(e => {
+			this._toDispose.push(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
-			});
+			}));
 		}
 
 		this.onDisconnect();
@@ -196,17 +196,17 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	// State update funtions
 	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this._queryModelService.runQuery(this.uri, selection, this.uri, this, executePlanOptions);
+		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.showQueryResultsEditor();
 	}
 
 	public runQueryStatement(selection: ISelectionData): void {
-		this._queryModelService.runQueryStatement(this.uri, selection, this.uri, this);
+		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.showQueryResultsEditor();
 	}
 
 	public runQueryString(text: string): void {
-		this._queryModelService.runQueryString(this.uri, text, this.uri, this);
+		this._queryModelService.runQueryString(this.uri, text, this);
 		this.showQueryResultsEditor();
 	}
 
@@ -276,7 +276,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	// Clean up functions
 	public dispose(): void {
-		this._queryModelService.disposeQuery(this.uri);
 		this._sql.dispose();
 		this._results.dispose();
 		this._toDispose = dispose(this._toDispose);
@@ -285,7 +284,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public close(): void {
-		this._queryEditorService.onQueryInputClosed(this.uri);
+		this._queryModelService.disposeQuery(this.uri);
 		this._connectionManagementService.disconnectEditor(this, true);
 
 		this._sql.close();

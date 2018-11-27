@@ -20,7 +20,7 @@ import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -62,7 +62,7 @@ export interface IGridMessage extends sqlops.IResultMessage {
 * Query Runner class which handles running a query, reports the results to the content manager,
 * and handles getting more rows from the service layer and disposing when the content is closed.
 */
-export default class QueryRunner {
+export default class QueryRunner extends Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _resultLineOffset: number;
 	private _totalElapsedMilliseconds: number = 0;
@@ -76,7 +76,7 @@ export default class QueryRunner {
 	private _planXml = new Deferred<string>();
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
 
-	private _onMessage = new Emitter<sqlops.IResultMessage>();
+	private _onMessage = this._register(new Emitter<sqlops.IResultMessage>());
 	private _debouncedMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(this._onMessage.event, (l, e) => {
 		// on first run
 		if (types.isUndefinedOrNull(l)) {
@@ -88,7 +88,7 @@ export default class QueryRunner {
 	private _echoedMessages = echo(this._debouncedMessage.event);
 	public readonly onMessage = this._echoedMessages.event;
 
-	private _onResultSet = new Emitter<sqlops.ResultSetSummary>();
+	private _onResultSet = this._register(new Emitter<sqlops.ResultSetSummary>());
 	private _debouncedResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSet.event, (l, e) => {
 		// on first run
 		if (types.isUndefinedOrNull(l)) {
@@ -100,16 +100,28 @@ export default class QueryRunner {
 	private _echoedResultSet = echo(this._debouncedResultSet.event);
 	public readonly onResultSet = this._echoedResultSet.event;
 
-	private _onQueryStart = new Emitter<void>();
+	private _onResultSetUpdate = this._register(new Emitter<sqlops.ResultSetSummary>());
+	private _debouncedResultSetUpdate = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSetUpdate.event, (l, e) => {
+		// on first run
+		if (types.isUndefinedOrNull(l)) {
+			return [e];
+		} else {
+			return l.concat(e);
+		}
+	});
+	private _echoedResultSetUpdate = echo(this._debouncedResultSetUpdate.event);
+	public readonly onResultSetUpdate = this._echoedResultSetUpdate.event;
+
+	private _onQueryStart = this._register(new Emitter<void>());
 	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
 
-	private _onQueryEnd = new Emitter<string>();
+	private _onQueryEnd = this._register(new Emitter<string>());
 	public readonly onQueryEnd: Event<string> = this._onQueryEnd.event;
 
-	private _onBatchStart = new Emitter<sqlops.BatchSummary>();
+	private _onBatchStart = this._register(new Emitter<sqlops.BatchSummary>());
 	public readonly onBatchStart: Event<sqlops.BatchSummary> = this._onBatchStart.event;
 
-	private _onBatchEnd = new Emitter<sqlops.BatchSummary>();
+	private _onBatchEnd = this._register(new Emitter<sqlops.BatchSummary>());
 	public readonly onBatchEnd: Event<sqlops.BatchSummary> = this._onBatchEnd.event;
 
 	private _queryStartTime: Date;
@@ -124,13 +136,14 @@ export default class QueryRunner {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		public uri: string,
-		public title: string,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IInstantiationService private instantiationService: IInstantiationService
-	) { }
+	) {
+		super();
+	}
 
 	get isExecuting(): boolean {
 		return this._isExecuting;
@@ -335,7 +348,7 @@ export default class QueryRunner {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetAvailable(result: sqlops.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: sqlops.BatchSummary;
@@ -369,6 +382,27 @@ export default class QueryRunner {
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
 				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
 				this._onResultSet.fire(resultSet);
+			}
+		}
+	}
+
+	public handleResultSetUpdated(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+		if (result && result.resultSetSummary) {
+			let resultSet = result.resultSetSummary;
+			let batchSet: sqlops.BatchSummary;
+			batchSet = this.batchSets[resultSet.batchId];
+			// handle getting queryPlanxml if we need too
+			if (this.isQueryPlan) {
+				// check if this result has show plan, this needs work, it won't work for any other provider
+				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+				if (hasShowPlan) {
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				}
+			}
+			if (batchSet) {
+				// Store the result set in the batch and emit that a result set has completed
+				batchSet.resultSetSummaries[resultSet.id] = resultSet;
+				this._onResultSetUpdate.fire(resultSet);
 			}
 		}
 	}
@@ -504,10 +538,16 @@ export default class QueryRunner {
 
 	/**
 	 * Disposes the Query from the service client
-	 * @returns A promise that will be rejected if a problem occured
 	 */
 	public disposeQuery(): void {
-		this._queryManagementService.disposeQuery(this.uri);
+		this._queryManagementService.disposeQuery(this.uri).then(() => {
+			this.dispose();
+		});
+	}
+
+	public dispose() {
+		this._batchSets = undefined;
+		super.dispose();
 	}
 
 	get totalElapsedMilliseconds(): number {

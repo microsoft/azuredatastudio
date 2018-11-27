@@ -37,6 +37,7 @@ import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewD
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
+import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -73,6 +74,7 @@ export function createApiFactory(
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
+	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 
 
 	return {
@@ -195,8 +197,12 @@ export function createApiFactory(
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
-					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				provider.registerOnResultSetAvailable((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
+				});
+
+				provider.registerOnResultSetUpdated((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
 				});
 
 				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
@@ -214,6 +220,12 @@ export function createApiFactory(
 				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
 				});
+
+				if (provider.registerOnSessionDisconnected) {
+					provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
+						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
+					});
+				}
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
@@ -402,6 +414,12 @@ export function createApiFactory(
 				}
 			};
 
+			const nb = {
+				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
+					return extHostNotebook.registerNotebookProvider(provider);
+				}
+			};
+
 			return {
 				accounts,
 				connection,
@@ -438,6 +456,7 @@ export function createApiFactory(
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
+				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource
 			};
 		}

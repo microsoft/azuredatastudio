@@ -24,7 +24,6 @@ import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { NewProfilerAction } from 'sql/parts/profiler/contrib/profilerActions';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
@@ -90,9 +89,11 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	 * Return actions for connection elements
 	 */
 	public getConnectionActions(tree: ITree, profile: ConnectionProfile): IAction[] {
+		let node = new TreeNode(NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
 		return this.getAllActions({
 			tree: tree,
-			profile: profile
+			profile: profile,
+			treeNode: node
 		}, (context) => this.getBuiltinConnectionActions(context));
 	}
 
@@ -124,10 +125,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		}
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
-
-		if (process.env['VSCODE_DEV'] && constants.MssqlProviderId === context.profile.providerName) {
-			actions.push(this._instantiationService.createInstance(OEAction, NewProfilerAction.ID, NewProfilerAction.LABEL));
-		}
 
 		return actions;
 	}

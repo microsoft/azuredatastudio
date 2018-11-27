@@ -84,7 +84,10 @@ class BasicView extends View {
 			this._previousSize = this.size;
 			this.setFixed(this.headerSize);
 		} else {
-			this.setFlexible(this._previousSize);
+			// Enforce the min height for the view when user is doing expand operation,
+			// to make sure the view has a reasonable height.
+			const minHeight = 200;
+			this.setFlexible(Math.max(this._previousSize, minHeight));
 		}
 	}
 
@@ -122,7 +125,6 @@ export class ProfilerEditor extends BaseEditor {
 	private _viewTemplates: Array<IProfilerViewTemplate>;
 	private _sessionSelector: SelectBox;
 	private _sessionsList: Array<string>;
-	private _connectionInfoText: HTMLElement;
 
 	// Actions
 	private _connectAction: Actions.ProfilerConnect;
@@ -211,6 +213,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._viewTemplates = this._profilerService.getViewTemplates();
 		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
+		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', 'Select View'));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
@@ -223,40 +226,45 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._sessionsList = [''];
 		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
+		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', 'Select Session'));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionName = e.selected;
 			}
 		}));
 		let sessionsContainer = document.createElement('div');
-		sessionsContainer.style.width = '150px';
+		sessionsContainer.style.minWidth = '150px';
+		sessionsContainer.style.maxWidth = '250px';
 		sessionsContainer.style.paddingRight = '5px';
 		this._sessionSelector.render(sessionsContainer);
-
-		this._connectionInfoText = document.createElement('div');
-		this._connectionInfoText.style.paddingRight = '5px';
-		this._connectionInfoText.innerText = '';
-		this._connectionInfoText.style.textAlign = 'center';
-		this._connectionInfoText.style.display = 'flex';
-		this._connectionInfoText.style.alignItems = 'center';
 
 		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
 		this._register(attachSelectBoxStyler(this._sessionSelector, this.themeService));
 
 		this._actionBar.setContent([
-			{ action: this._startAction },
-			{ action: this._stopAction },
-			{ element: sessionsContainer },
 			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
+			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', 'Select Session:')) },
+			{ element: sessionsContainer },
+			{ action: this._startAction },
+			{ action: this._stopAction },
 			{ action: this._pauseAction },
-			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
 			{ element: Taskbar.createTaskbarSeparator() },
+			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
 			{ element: viewTemplateContainer },
-			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._connectionInfoText }
+			{ action: this._autoscrollAction },
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
 		]);
+	}
+
+	private _createTextElement(text: string): HTMLDivElement {
+		let textElement = document.createElement('div');
+		textElement.style.paddingRight = '10px';
+		textElement.innerText = text;
+		textElement.style.textAlign = 'center';
+		textElement.style.display = 'flex';
+		textElement.style.alignItems = 'center';
+		return textElement;
 	}
 
 	private _createProfilerTable(): HTMLElement {
@@ -417,7 +425,6 @@ export class ProfilerEditor extends BaseEditor {
 				autoscroll: true,
 				isPanelCollapsed: true
 			});
-			this._connectionInfoText.innerText = input.connectionName;
 			this._profilerTableEditor.updateState();
 			this._splitView.layout();
 			this._profilerTableEditor.focus();
@@ -464,34 +471,16 @@ export class ProfilerEditor extends BaseEditor {
 			this._connectAction.connected = this.input.state.isConnected;
 
 			if (this.input.state.isConnected) {
-
 				this._updateToolbar();
-				this._sessionSelector.enable();
-				this._profilerService.getXEventSessions(this.input.id).then((r) => {
-					// set undefined result to empty list
-					if (!r) {
-						r = [];
-					}
 
-					this._sessionSelector.setOptions(r);
-					this._sessionsList = r;
-					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
-						let sessionIndex: number = 0;
-						let uiState = this._profilerService.getSessionViewState(this.input.id);
-						if (uiState && uiState.previousSessionName) {
-							sessionIndex = this._sessionsList.indexOf(uiState.previousSessionName);
-						} else {
-							this._profilerService.launchCreateSessionDialog(this.input);
-						}
+				// Launch the create session dialog if openning a new window.
+				let uiState = this._profilerService.getSessionViewState(this.input.id);
+				let previousSessionName = uiState && uiState.previousSessionName;
+				if (!this.input.sessionName && !previousSessionName) {
+					this._profilerService.launchCreateSessionDialog(this.input);
+				}
 
-						if (sessionIndex < 0) {
-							sessionIndex = 0;
-						}
-
-						this.input.sessionName = this._sessionsList[sessionIndex];
-						this._sessionSelector.selectWithOptionName(this.input.sessionName);
-					}
-				});
+				this._updateSessionSelector(previousSessionName);
 			} else {
 				this._startAction.enabled = false;
 				this._stopAction.enabled = false;
@@ -517,21 +506,33 @@ export class ProfilerEditor extends BaseEditor {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				this._sessionSelector.enable();
-				this._profilerService.getXEventSessions(this.input.id).then((r) => {
-					// set undefined result to empty list
-					if (!r) {
-						r = [];
-					}
-
-					this._sessionsList = r;
-					this._sessionSelector.setOptions(r);
-					if ((this.input.sessionName === undefined || this.input.sessionName === '') && this._sessionsList.length > 0) {
-						this.input.sessionName = this._sessionsList[0];
-					}
-				});
+				this._updateSessionSelector();
 			}
 		}
+	}
+
+	private _updateSessionSelector(previousSessionName: string = undefined) {
+		this._sessionSelector.enable();
+		this._profilerService.getXEventSessions(this.input.id).then((r) => {
+			if (!r) {
+				r = [];
+			}
+
+			this._sessionSelector.setOptions(r);
+			this._sessionsList = r;
+			if (this._sessionsList.length > 0) {
+				if (!this.input.sessionName) {
+					this.input.sessionName = previousSessionName;
+				}
+
+				if (this._sessionsList.indexOf(this.input.sessionName) === -1) {
+					this.input.sessionName = this._sessionsList[0];
+				}
+
+				this._sessionSelector.selectWithOptionName(this.input.sessionName);
+			};
+		});
+
 	}
 
 	private _updateToolbar(): void {

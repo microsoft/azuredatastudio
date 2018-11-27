@@ -11,3 +11,5 @@ export { RefreshPreviewCommand } from './refreshPreview';
 export { ShowPreviewSecuritySelectorCommand } from './showPreviewSecuritySelector';
 export { MoveCursorToPositionCommand } from './moveCursorToPosition';
 export { ToggleLockCommand } from './toggleLock';
+// {{SQL CARBON EDIT}}
+export { ShowNotebookPreview } from './showNotebookPreview';

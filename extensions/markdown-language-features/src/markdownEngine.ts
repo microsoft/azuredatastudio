@@ -86,6 +86,12 @@ export class MarkdownEngine {
 		return { text, offset };
 	}
 
+	// {{SQL CARBON EDIT}}
+	public async renderText(document: vscode.Uri, text: string): Promise<string> {
+		const engine = await this.getEngine(document);
+		return engine.render(text);
+	}
+
 	public async render(document: vscode.Uri, stripFrontmatter: boolean, text: string): Promise<string> {
 		let offset = 0;
 		if (stripFrontmatter) {

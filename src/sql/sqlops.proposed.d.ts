@@ -52,8 +52,8 @@ declare module 'sqlops' {
 	}
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
-		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
+		onNodeCheckedChanged: vscode.Event<NodeCheckedEventParameters<T>>;
+		onDidChangeSelection: vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
@@ -1365,4 +1365,633 @@ declare module 'sqlops' {
 		 */
 		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
 	}
+
+	export namespace nb {
+		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
+
+		export interface NotebookProvider {
+			readonly providerId: string;
+			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
+			handleNotebookClosed(notebookUri: vscode.Uri): void;
+		}
+
+		export interface NotebookManager {
+			/**
+			 * Manages reading and writing contents to/from files.
+			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
+			 * from specific notebook file types to and from a standard type for this UI
+			 */
+			readonly contentManager: ContentManager;
+			/**
+			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
+			 * Each notebook has 1 session associated with it, and the session is responsible
+			 * for kernel management
+			 */
+			readonly sessionManager: SessionManager;
+			/**
+			 * (Optional) ServerManager to handle server lifetime management operations.
+			 * Depending on the implementation this may not be needed.
+			 */
+			readonly serverManager?: ServerManager;
+		}
+
+		/**
+		 * Defines the contracts needed to manage the lifetime of a notebook server.
+		 */
+		export interface ServerManager {
+			/**
+			 * Indicates if the server is started at the current time
+			 */
+			readonly isStarted: boolean;
+
+			/**
+			 * Event sent when the server has started. This can be used to query
+			 * the manager for server settings
+			 */
+			readonly onServerStarted: vscode.Event<void>;
+
+			/**
+			 * Starts the server. Some server types may not support or require this.
+			 * Should no-op if server is already started
+			 */
+			startServer(): Thenable<void>;
+
+			/**
+			 * Stops the server. Some server types may not support or require this
+			 */
+			stopServer(): Thenable<void>;
+		}
+
+		//#region Content APIs
+		/**
+		 * Handles interacting with file and folder contents
+		 */
+		export interface ContentManager {
+			/* Reads contents from a Uri representing a local or remote notebook and returns a
+			 * JSON object containing the cells and metadata about the notebook
+			 */
+			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebook>;
+
+			/**
+			 * Save a file.
+			 *
+			 * @param notebookUri - The desired file path.
+			 *
+			 * @param notebook - notebook to be saved.
+			 *
+			 * @returns A thenable which resolves with the file content model when the
+			 *   file is saved.
+			 */
+			save(notebookUri: vscode.Uri, notebook: INotebook): Thenable<INotebook>;
+		}
+
+		export interface INotebook {
+
+			readonly cells: ICell[];
+			readonly metadata: INotebookMetadata;
+			readonly nbformat: number;
+			readonly nbformat_minor: number;
+		}
+
+		export interface INotebookMetadata {
+			kernelspec: IKernelInfo;
+			language_info?: ILanguageInfo;
+		}
+
+		export interface IKernelInfo {
+			name: string;
+			language?: string;
+			display_name?: string;
+		}
+
+		export interface ILanguageInfo {
+			name: string;
+			version: string;
+			mimetype?: string;
+			codemirror_mode?: string | ICodeMirrorMode;
+		}
+
+		export interface ICodeMirrorMode {
+			name: string;
+			version: string;
+		}
+
+		export interface ICell {
+			cell_type: CellType;
+			source: string | string[];
+			metadata: {
+				language?: string;
+			};
+			execution_count: number;
+			outputs?: ICellOutput[];
+		}
+
+		export type CellType = 'code' | 'markdown' | 'raw';
+
+		export interface ICellOutput {
+			output_type: OutputType;
+		}
+		export interface IStreamResult extends ICellOutput {
+			/**
+			 * Stream output field defining the stream name, for example stdout
+			 */
+			name: string;
+			/**
+			 * Stream output field defining the multiline stream text
+			 */
+			text: string | Buffer;
+		}
+		export interface IDisplayResult extends ICellOutput {
+			/**
+			 * Mime bundle expected to contain mime type -> contents mappings.
+			 * This is dynamic and is controlled by kernels, so cannot be more specific
+			 */
+			data: {};
+			/**
+			 * Optional metadata, also a mime bundle
+			 */
+			metadata?: {};
+		}
+		export interface IExecuteResult extends IDisplayResult {
+			/**
+			 * Number of times the cell was executed
+			 */
+			executionCount: number;
+		}
+		export interface IErrorResult extends ICellOutput {
+			/**
+			 * Exception name
+			 */
+			ename: string;
+			/**
+			 * Exception value
+			 */
+			evalue: string;
+			/**
+			 * Stacktrace equivalent
+			 */
+			traceback?: string[];
+		}
+
+		export type OutputType =
+			| 'execute_result'
+			| 'display_data'
+			| 'stream'
+			| 'error'
+			| 'update_display_data';
+
+		//#endregion
+
+		//#region Session APIs
+		export interface SessionManager {
+			/**
+			 * Indicates whether the manager is ready.
+			 */
+			readonly isReady: boolean;
+
+			/**
+			 * A Thenable that is fulfilled when the manager is ready.
+			 */
+			readonly ready: Thenable<void>;
+
+			readonly specs: IAllKernels | undefined;
+
+			startNew(options: ISessionOptions): Thenable<ISession>;
+
+			shutdown(id: string): Thenable<void>;
+		}
+
+		export interface ISession {
+			/**
+			 * Is change of kernels supported for this session?
+			 */
+			canChangeKernels: boolean;
+			/*
+			 * Unique id of the session.
+			 */
+			readonly id: string;
+
+			/**
+			 * The current path associated with the session.
+			 */
+			readonly path: string;
+
+			/**
+			 * The current name associated with the session.
+			 */
+			readonly name: string;
+
+			/**
+			 * The type of the session.
+			 */
+			readonly type: string;
+
+			/**
+			 * The status indicates if the kernel is healthy, dead, starting, etc.
+			 */
+			readonly status: KernelStatus;
+
+			/**
+			 * The kernel.
+			 *
+			 * #### Notes
+			 * This is a read-only property, and can be altered by [changeKernel].
+			 */
+			readonly kernel: IKernel;
+
+			/**
+			 * Tracks whether the default kernel failed to load
+			 * This could be for a reason such as the kernel name not being recognized as a valid kernel;
+			 */
+			defaultKernelLoaded?: boolean;
+
+			changeKernel(kernelInfo: IKernelSpec): Thenable<IKernel>;
+		}
+
+		export interface ISessionOptions {
+			/**
+			 * The path (not including name) to the session.
+			 */
+			path: string;
+			/**
+			 * The name of the session.
+			 */
+			name?: string;
+			/**
+			 * The type of the session.
+			 */
+			type?: string;
+			/**
+			 * The type of kernel (e.g. python3).
+			 */
+			kernelName?: string;
+			/**
+			 * The id of an existing kernel.
+			 */
+			kernelId?: string;
+		}
+
+		export interface IKernel {
+			readonly id: string;
+			readonly name: string;
+			readonly supportsIntellisense: boolean;
+			/**
+			 * Test whether the kernel is ready.
+			 */
+			readonly isReady: boolean;
+
+			/**
+			 * A Thenable that is fulfilled when the kernel is ready.
+			 */
+			readonly ready: Thenable<void>;
+
+			/**
+			 * The cached kernel info.
+			 *
+			 * #### Notes
+			 * This value will be null until the kernel is ready.
+			 */
+			readonly info: IInfoReply | null;
+
+			/**
+			 * Gets the full specification for this kernel, which can be serialized to
+			 * a noteobok file
+			 */
+			getSpec(): Thenable<IKernelSpec>;
+
+			/**
+			 * Send an `execute_request` message.
+			 *
+			 * @param content - The content of the request.
+			 *
+			 * @param disposeOnDone - Whether to dispose of the future when done.
+			 *
+			 * @returns A kernel future.
+			 *
+			 * #### Notes
+			 * See [Messaging in
+			 * Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#execute).
+			 *
+			 * This method returns a kernel future, rather than a Thenable, since execution may
+			 * have many response messages (for example, many iopub display messages).
+			 *
+			 * Future `onReply` is called with the `execute_reply` content when the
+			 * shell reply is received and validated.
+			 *
+			 * **See also:** [[IExecuteReply]]
+			 */
+			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean): IFuture;
+
+
+			/**
+			 * Send a `complete_request` message.
+			 *
+			 * @param content - The content of the request.
+			 *
+			 * @returns A Thenable that resolves with the response message.
+			 *
+			 * #### Notes
+			 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#completion).
+			 *
+			 * Fulfills with the `complete_reply` content when the shell reply is
+			 * received and validated.
+			 */
+			requestComplete(content: ICompleteRequest): Thenable<ICompleteReplyMsg>;
+
+			/**
+			 * Interrupt a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/master/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			interrupt(): Thenable<void>;
+		}
+
+		export interface IInfoReply {
+			protocol_version: string;
+			implementation: string;
+			implementation_version: string;
+			language_info: ILanguageInfo;
+			banner: string;
+			help_links: {
+				text: string;
+				url: string;
+			}[];
+		}
+
+		/**
+		 * The contents of a requestExecute message sent to the server.
+		 */
+		export interface IExecuteRequest extends IExecuteOptions {
+			code: string;
+		}
+
+		/**
+		 * The options used to configure an execute request.
+		 */
+		export interface IExecuteOptions {
+			/**
+			 * Whether to execute the code as quietly as possible.
+			 * The default is `false`.
+			 */
+			silent?: boolean;
+
+			/**
+			 * Whether to store history of the execution.
+			 * The default `true` if silent is False.
+			 * It is forced to  `false ` if silent is `true`.
+			 */
+			store_history?: boolean;
+
+			/**
+			 * A mapping of names to expressions to be evaluated in the
+			 * kernel's interactive namespace.
+			 */
+			user_expressions?: {};
+
+			/**
+			 * Whether to allow stdin requests.
+			 * The default is `true`.
+			 */
+			allow_stdin?: boolean;
+
+			/**
+			 * Whether to the abort execution queue on an error.
+			 * The default is `false`.
+			 */
+			stop_on_error?: boolean;
+		}
+
+		/**
+		 * The content of a `'complete_request'` message.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#completion).
+		 *
+		 * **See also:** [[ICompleteReply]], [[IKernel.complete]]
+		 */
+		export interface ICompleteRequest {
+			code: string;
+			cursor_pos: number;
+		}
+
+		export interface ICompletionContent {
+			matches: string[];
+			cursor_start: number;
+			cursor_end: number;
+			metadata: any;
+			status: 'ok' | 'error';
+		}
+		/**
+		 * A `'complete_reply'` message on the `'stream'` channel.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#completion).
+		 *
+		 * **See also:** [[ICompleteRequest]], [[IKernel.complete]]
+		 */
+		export interface ICompleteReplyMsg extends IShellMessage {
+			content: ICompletionContent;
+		}
+
+		/**
+		 * The valid Kernel status states.
+		 */
+		export type KernelStatus =
+			| 'unknown'
+			| 'starting'
+			| 'reconnecting'
+			| 'idle'
+			| 'busy'
+			| 'restarting'
+			| 'dead'
+			| 'connected';
+
+		/**
+		 * An arguments object for the kernel changed event.
+		 */
+		export interface IKernelChangedArgs {
+			oldValue: IKernel | null;
+			newValue: IKernel | null;
+		}
+
+		/// -------- JSON objects, and objects primarily intended not to have methods -----------
+		export interface IAllKernels {
+			defaultKernel: string;
+			kernels: IKernelSpec[];
+		}
+		export interface IKernelSpec {
+			name: string;
+			language?: string;
+			display_name?: string;
+		}
+
+		export interface MessageHandler<T extends IMessage> {
+			handle(message: T): void | Thenable<void>;
+		}
+
+
+		/**
+		 * A Future interface for responses from the kernel.
+		 *
+		 * When a message is sent to a kernel, a Future is created to handle any
+		 * responses that may come from the kernel.
+		 */
+		export interface IFuture extends vscode.Disposable {
+
+			/**
+			 * The original outgoing message.
+			 */
+			readonly msg: IMessage;
+
+			/**
+			 * A Thenable that resolves when the future is done.
+			 *
+			 * #### Notes
+			 * The future is done when there are no more responses expected from the
+			 * kernel.
+			 *
+			 * The `done` Thenable resolves to the reply message if there is one,
+			 * otherwise it resolves to `undefined`.
+			 */
+			readonly done: Thenable<IShellMessage | undefined>;
+
+			/**
+			 * Set the reply handler for the kernel future.
+			 *
+			 * #### Notes
+			 * If the handler returns a Thenable, all kernel message processing pauses
+			 * until the Thenable is resolved. If there is a reply message, the future
+			 * `done` Thenable also resolves to the reply message after this handler has
+			 * been called.
+			 */
+			setReplyHandler(handler: MessageHandler<IShellMessage>): void;
+
+			/**
+			 * Sets the stdin handler for the kernel future.
+			 *
+			 * #### Notes
+			 * If the handler returns a Thenable, all kernel message processing pauses
+			 * until the Thenable is resolved.
+			 */
+			setStdInHandler(handler: MessageHandler<IStdinMessage>): void;
+
+			/**
+			 * Sets the iopub handler for the kernel future.
+			 *
+			 * #### Notes
+			 * If the handler returns a Thenable, all kernel message processing pauses
+			 * until the Thenable is resolved.
+			 */
+			setIOPubHandler(handler: MessageHandler<IIOPubMessage>): void;
+
+			/**
+			 * Register hook for IOPub messages.
+			 *
+			 * @param hook - The callback invoked for an IOPub message.
+			 *
+			 * #### Notes
+			 * The IOPub hook system allows you to preempt the handlers for IOPub
+			 * messages handled by the future.
+			 *
+			 * The most recently registered hook is run first. A hook can return a
+			 * boolean or a Thenable to a boolean, in which case all kernel message
+			 * processing pauses until the Thenable is fulfilled. If a hook return value
+			 * resolves to false, any later hooks will not run and the function will
+			 * return a Thenable resolving to false. If a hook throws an error, the error
+			 * is logged to the console and the next hook is run. If a hook is
+			 * registered during the hook processing, it will not run until the next
+			 * message. If a hook is removed during the hook processing, it will be
+			 * deactivated immediately.
+			 */
+			registerMessageHook(
+				hook: (msg: IIOPubMessage) => boolean | Thenable<boolean>
+			): void;
+
+			/**
+			 * Remove a hook for IOPub messages.
+			 *
+			 * @param hook - The hook to remove.
+			 *
+			 * #### Notes
+			 * If a hook is removed during the hook processing, it will be deactivated immediately.
+			 */
+			removeMessageHook(
+				hook: (msg: IIOPubMessage) => boolean | Thenable<boolean>
+			): void;
+
+			/**
+			 * Send an `input_reply` message.
+			 */
+			sendInputReply(content: IInputReply): void;
+		}
+
+		/**
+		 * The valid channel names.
+		 */
+		export type Channel = 'shell' | 'iopub' | 'stdin';
+
+		/**
+		 * Kernel message header content.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#general-message-format).
+		 *
+		 * **See also:** [[IMessage]]
+		 */
+		export interface IHeader {
+			username: string;
+			version: string;
+			session: string;
+			msg_id: string;
+			msg_type: string;
+		}
+
+		/**
+		 * A kernel message
+		 */
+		export interface IMessage {
+			type: Channel;
+			header: IHeader;
+			parent_header: IHeader | {};
+			metadata: {};
+			content: any;
+		}
+
+		/**
+		 * A kernel message on the `'shell'` channel.
+		 */
+		export interface IShellMessage extends IMessage {
+			channel: 'shell';
+		}
+
+		/**
+		 * A kernel message on the `'iopub'` channel.
+		 */
+		export interface IIOPubMessage extends IMessage {
+			channel: 'iopub';
+		}
+
+		/**
+		 * A kernel message on the `'stdin'` channel.
+		 */
+		export interface IStdinMessage extends IMessage {
+			channel: 'stdin';
+		}
+
+		/**
+		 * The content of an `'input_reply'` message.
+		 */
+		export interface IInputReply {
+			value: string;
+		}
+
+		//#endregion
+
+	}
+
 }

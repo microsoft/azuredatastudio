@@ -34,6 +34,9 @@ export class WizardModal extends Modal {
 	// Wizard HTML elements
 	private _body: HTMLElement;
 
+	private _messageAndPageContainer: HTMLElement;
+	private _pageContainer: HTMLElement;
+
 	// Buttons
 	private _previousButton: Button;
 	private _nextButton: Button;
@@ -53,6 +56,7 @@ export class WizardModal extends Modal {
 		@IClipboardService clipboardService: IClipboardService
 	) {
 		super(_wizard.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
+		this._useDefaultMessageBoxLocation = false;
 	}
 
 	public layout(): void {
@@ -126,11 +130,20 @@ export class WizardModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
+		let bodyBuilderObj;
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
+			bodyBuilderObj = bodyBuilder;
 			this._body = bodyBuilder.getHTMLElement();
 		});
 
 		this.initializeNavigation(this._body);
+
+		bodyBuilderObj.div({ class: 'dialog-message-and-page-container' }, (mpContainer) => {
+			this._messageAndPageContainer = mpContainer.getHTMLElement();
+			mpContainer.append(this._messageElement);
+			this._pageContainer = mpContainer.div({ class: 'dialogModal-page-container' }).getHTMLElement();
+		});
+
 
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);
@@ -159,7 +172,7 @@ export class WizardModal extends Modal {
 
 	private registerPage(page: WizardPage): void {
 		let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._instantiationService, this._wizard.displayPageTitles, page.description);
-		dialogPane.createBody(this._body);
+		dialogPane.createBody(this._pageContainer);
 		this._dialogPanes.set(page, dialogPane);
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}

@@ -209,32 +209,28 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */
-	public runQuery(uri: string, selection: sqlops.ISelectionData,
-		title: string, queryInput: QueryInput, runOptions?: sqlops.ExecutionPlanOptions): void {
-		this.doRunQuery(uri, selection, title, queryInput, false, runOptions);
+	public runQuery(uri: string, selection: sqlops.ISelectionData, queryInput: QueryInput, runOptions?: sqlops.ExecutionPlanOptions): void {
+		this.doRunQuery(uri, selection, queryInput, false, runOptions);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryStatement(uri: string, selection: sqlops.ISelectionData,
-		title: string, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, title, queryInput, true);
+	public runQueryStatement(uri: string, selection: sqlops.ISelectionData, queryInput: QueryInput): void {
+		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryString(uri: string, selection: string,
-		title: string, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, title, queryInput, true);
+	public runQueryString(uri: string, selection: string, queryInput: QueryInput): void {
+		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: sqlops.ISelectionData | string,
-		title: string, queryInput: QueryInput,
+	private doRunQuery(uri: string, selection: sqlops.ISelectionData | string, queryInput: QueryInput,
 		runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): void {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
@@ -256,7 +252,7 @@ export class QueryModelService implements IQueryModelService {
 		} else {
 			// We do not have a query runner for this editor, so create a new one
 			// and map it to the results uri
-			info = this.initQueryRunner(uri, title);
+			info = this.initQueryRunner(uri);
 			queryRunner = info.queryRunner;
 		}
 
@@ -277,8 +273,8 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	private initQueryRunner(uri: string, title: string): QueryInfo {
-		let queryRunner = this._instantiationService.createInstance(QueryRunner, uri, title);
+	private initQueryRunner(uri: string): QueryInfo {
+		let queryRunner = this._instantiationService.createInstance(QueryRunner, uri);
 		let info = new QueryInfo();
 		queryRunner.addListener(QREvents.RESULT_SET, e => {
 			this._fireQueryEvent(uri, 'resultSet', e);
@@ -363,6 +359,10 @@ export class QueryModelService implements IQueryModelService {
 		if (queryRunner) {
 			queryRunner.disposeQuery();
 		}
+		// remove our info map
+		if (this._queryInfoMap.has(ownerUri)) {
+			this._queryInfoMap.delete(ownerUri);
+		}
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////
@@ -386,7 +386,7 @@ export class QueryModelService implements IQueryModelService {
 
 			// We do not have a query runner for this editor, so create a new one
 			// and map it to the results uri
-			queryRunner = this._instantiationService.createInstance(QueryRunner, ownerUri, ownerUri);
+			queryRunner = this._instantiationService.createInstance(QueryRunner, ownerUri);
 			queryRunner.addListener(QREvents.RESULT_SET, resultSet => {
 				this._fireQueryEvent(ownerUri, 'resultSet', resultSet);
 			});

@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -47,7 +47,7 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
-export class JobsViewComponent extends JobManagementView implements OnInit  {
+export class JobsViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -91,6 +91,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
 
+	private _didTabChange: boolean;
+
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
 	constructor(
@@ -107,6 +109,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		this._didTabChange = false;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -126,8 +129,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 	}
 
+	ngOnDestroy() {
+		this._didTabChange = true;
+	}
+
 	public layout() {
-		let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
+		let jobsViewToolbar = $('jobsview-component .agent-actionbar-container').get(0);
 		let statusBar = $('.part.statusbar').get(0);
 		if (jobsViewToolbar && statusBar) {
 			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
@@ -208,8 +215,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 				}
 
 				this._showProgressWheel = false;
-				if (this.isVisible) {
+				if (this.isVisible && !this._didTabChange) {
 					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
 				}
 			});
 		}
@@ -579,7 +588,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		jobs.forEach(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then((result) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
 				if (result) {
 					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
 					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
@@ -594,7 +603,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					} else {
 						previousRuns = jobHistories;
 					}
-					self.createJobChart(job.jobId, previousRuns);
+					// dont create the charts if the tab changed
+					if (!self._didTabChange) {
+						self.createJobChart(job.jobId, previousRuns);
+					}
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
 						let lastJobHistory = jobHistories[jobHistories.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');

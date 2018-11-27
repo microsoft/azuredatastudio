@@ -29,6 +29,13 @@ export class ResultsViewState {
 	constructor(@IConfigurationService private configurationService: IConfigurationService) {
 
 	}
+
+	dispose() {
+		this.gridPanelState.dispose();
+		this.messagePanelState.dispose();
+		this.chartState.dispose();
+		this.queryPlanState.dispose();
+	}
 }
 
 /**
@@ -50,7 +57,11 @@ export class QueryResultsInput extends EditorInput {
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
 
-	public readonly state = new ResultsViewState(this.configurationService);
+	private _state = new ResultsViewState(this.configurationService);
+
+	public get state(): ResultsViewState {
+		return this._state;
+	}
 
 	constructor(private _uri: string,
 		@IConfigurationService private configurationService: IConfigurationService
@@ -58,6 +69,12 @@ export class QueryResultsInput extends EditorInput {
 		super();
 		this._visible = false;
 		this._hasBootstrapped = false;
+	}
+
+	close() {
+		this.state.dispose();
+		this._state = undefined;
+		super.close();
 	}
 
 	getTypeId(): string {

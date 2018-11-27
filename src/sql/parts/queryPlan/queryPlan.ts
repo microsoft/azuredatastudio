@@ -15,6 +15,9 @@ import { dispose, Disposable } from 'vs/base/common/lifecycle';
 
 export class QueryPlanState {
 	xml: string;
+	dispose() {
+
+	}
 }
 
 export class QueryPlanTab implements IPanelTab {
@@ -28,6 +31,10 @@ export class QueryPlanTab implements IPanelTab {
 
 	public dispose() {
 		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
 	}
 }
 
@@ -57,6 +64,12 @@ export class QueryPlanView implements IPanelView {
 	public layout(dimension: Dimension): void {
 		this.container.style.width = dimension.width + 'px';
 		this.container.style.height = dimension.height + 'px';
+	}
+
+	public clear() {
+		if (this.qp) {
+			this.qp.xml = undefined;
+		}
 	}
 
 	public showPlan(xml: string) {
@@ -90,13 +103,15 @@ export class QueryPlan {
 	public set xml(xml: string) {
 		this._xml = xml;
 		new Builder(this.container).empty();
-		QP.showPlan(this.container, this._xml, {
-			jsTooltips: false
-		});
-		(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip=>{
-			toolTip.classList.add('monaco-editor');
-			toolTip.classList.add('monaco-editor-hover');
-		});
+		if (this.xml) {
+			QP.showPlan(this.container, this._xml, {
+				jsTooltips: false
+			});
+			(<any>this.container.querySelectorAll('div.qp-tt')).forEach(toolTip => {
+				toolTip.classList.add('monaco-editor');
+				toolTip.classList.add('monaco-editor-hover');
+			});
+		}
 	}
 
 	public get xml(): string {

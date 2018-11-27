@@ -5,7 +5,7 @@
 
 import 'vs/css!./loadingComponent';
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, OnDestroy, AfterViewInit, ViewChild, ElementRef
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, OnDestroy, AfterViewInit, ElementRef
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -30,9 +30,6 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
-
-	@ViewChild('spinnerElement', { read: ElementRef }) private _spinnerElement: ElementRef;
-	@ViewChild('childElement', { read: ElementRef }) private _childElement: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
