@@ -249,9 +249,9 @@ export class QueryEditorService implements IQueryEditorService {
 				QueryEditorService.editorService.openEditor(newEditorInput, options, group).then((editor) => {
 					resolve(QueryEditorService._onEditorOpened(editor, uri.toString(), undefined, options.pinned));
 				},
-					(error) => {
-						reject(error);
-					});
+				(error) => {
+					reject(error);
+				});
 			});
 		});
 	}

@@ -830,7 +830,7 @@ declare namespace Slick {
 		* @param newData New databinding source using a regular JavaScript array..
 		* @param scrollToTop If true, the grid will reset the vertical scroll position to the top of the grid.
 		**/
-		public setData(newData: T[], scrollToTop?: boolean): void;
+		public setData(newData: T[], scrollToTop: boolean): void;
 
 		/**
 		* Sets a new source for databinding and removes all rendered rows. Note that this doesn't render the new rows - you can follow it with a call to render() to do that.
