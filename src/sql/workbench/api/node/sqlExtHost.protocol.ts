@@ -193,11 +193,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Callback when a result set has been returned from query execution and can be displayed
 	 */
-	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void { throw ni(); }
-	/**
-	 * Callback when a result set has been returned from query execution and can be displayed
-	 */
-	$onResultSetUpdate(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void { throw ni(); }
+	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void { throw ni(); }
 	/**
 	 * Callback when a message generated during query execution is issued
 	 */
@@ -487,8 +483,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onQueryComplete(handle: number, result: sqlops.QueryExecuteCompleteNotificationResult): void;
 	$onBatchStart(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
 	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
-	$onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
+	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
 	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
 	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
 	$onObjectExplorerSessionDisconnected(handle: number, message: sqlops.ObjectExplorerSession): void;

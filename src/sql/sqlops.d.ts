@@ -692,8 +692,7 @@ declare module 'sqlops' {
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
 		registerOnBatchStart(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
 		registerOnBatchComplete(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
-		registerOnResultSetAvailable(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
-		registerOnResultSetUpdated(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
+		registerOnResultSetComplete(handler: (resultSetInfo: QueryExecuteResultSetCompleteNotificationParams) => any): void;
 		registerOnMessage(handler: (message: QueryExecuteMessageParams) => any): void;
 
 		// Edit Data Requests
@@ -768,7 +767,6 @@ declare module 'sqlops' {
 		batchId: number;
 		rowCount: number;
 		columnInfo: IDbColumn[];
-		complete: boolean;
 	}
 
 	export interface BatchSummary {
@@ -837,7 +835,7 @@ declare module 'sqlops' {
 	}
 
 
-	export interface QueryExecuteResultSetNotificationParams {
+	export interface QueryExecuteResultSetCompleteNotificationParams {
 		resultSetSummary: ResultSetSummary;
 		ownerUri: string;
 	}

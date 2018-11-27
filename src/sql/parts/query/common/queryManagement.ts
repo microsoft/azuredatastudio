@@ -29,7 +29,7 @@ export interface IQueryManagementService {
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
-	parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult>;
+	parseSyntax(ownerUri:string, query: string): Thenable<sqlops.SyntaxParseResult>;
 	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
@@ -38,8 +38,7 @@ export interface IQueryManagementService {
 	onQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void;
 	onBatchStart(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
 	onBatchComplete(batchInfo: sqlops.QueryExecuteBatchNotificationParams): void;
-	onResultSetAvailable(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
-	onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void;
+	onResultSetComplete(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void;
 	onMessage(message: sqlops.QueryExecuteMessageParams): void;
 
 	// Edit Data Callbacks
@@ -66,7 +65,7 @@ export interface IQueryRequestHandler {
 	runQueryStatement(ownerUri: string, line: number, column: number): Thenable<void>;
 	runQueryString(ownerUri: string, queryString: string): Thenable<void>;
 	runQueryAndReturn(ownerUri: string, queryString: string): Thenable<sqlops.SimpleExecuteResult>;
-	parseSyntax(ownerUri: string, query: string): Thenable<sqlops.SyntaxParseResult>;
+	parseSyntax(ownerUri:string, query: string): Thenable<sqlops.SyntaxParseResult>;
 	getQueryRows(rowData: sqlops.QueryExecuteSubsetParams): Thenable<sqlops.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Thenable<void>;
 	saveResults(requestParams: sqlops.SaveResultsRequestParams): Thenable<sqlops.SaveResultRequestResult>;
@@ -245,15 +244,9 @@ export class QueryManagementService implements IQueryManagementService {
 		});
 	}
 
-	public onResultSetAvailable(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+	public onResultSetComplete(resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetAvailable(resultSetInfo);
-		});
-	}
-
-	public onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
-		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
-			runner.handleResultSetUpdated(resultSetInfo);
+			runner.handleResultSetComplete(resultSetInfo);
 		});
 	}
 
