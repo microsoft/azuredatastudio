@@ -38,27 +38,27 @@ export class DacFxService implements IDacFxService {
 		this._providers[providerId] = provider;
 	}
 
-	exportBacpac(sourceDatabasesName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+	exportBacpac(databasesName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.exportBacpac(sourceDatabasesName, packageFilePath, ownerUri, taskExecutionMode);
+			return runner.exportBacpac(databasesName, packageFilePath, ownerUri, taskExecutionMode);
 		});
 	}
 
-	importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+	importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.importBacpac(packageFilePath, targetDatabaseName, ownerUri, taskExecutionMode);
+			return runner.importBacpac(packageFilePath, databaseName, ownerUri, taskExecutionMode);
 		});
 	}
 
-	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+	extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.extractDacpac(sourceDatabaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
+			return runner.extractDacpac(databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
 		});
 	}
 
-	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
+	deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
 			return this._runAction(ownerUri, (runner) => {
-				return runner.deployDacpac(packageFilePath, targetDatabaseName, upgradeExisting, ownerUri, taskExecutionMode);
+				return runner.deployDacpac(packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 		});
 	}
 

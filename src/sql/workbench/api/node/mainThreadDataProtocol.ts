@@ -404,17 +404,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider>{
-			exportBacpac(sourceDatabaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExportResult> {
-				return self._proxy.$exportBacpac(handle, sourceDatabaseName, packageFilePath, ownerUri, taskExecutionMode);
+			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
 			},
-			importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ImportResult> {
-				return self._proxy.$importBacpac(handle, packageFilePath, targetDatabaseName, ownerUri, taskExecutionMode);
+			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
 			},
-			extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.ExtractResult> {
-				return self._proxy.$extractDacpac(handle, sourceDatabaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
+			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
 			},
-			deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DeployResult> {
-				return self._proxy.$deployDacpac(handle, packageFilePath, targetDatabaseName, upgradeExisting, ownerUri, taskExecutionMode);
+			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 			}
 		});
 

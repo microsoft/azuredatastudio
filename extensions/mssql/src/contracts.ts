@@ -300,7 +300,7 @@ export enum TaskExecutionMode {
 	executeAndScript = 2,
 }
 export interface ExportParams {
-	sourceDatabaseName: string;
+	databaseName: string;
 	packageFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
@@ -308,17 +308,14 @@ export interface ExportParams {
 
 export interface ImportParams {
 	packageFilePath: string;
-	targetDatabaseName: string;
+	databaseName: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface ImportResponse {
-	operationId: string;
-}
 
 export interface ExtractParams {
-	sourceDatabaseName: string;
+	databaseName: string;
 	packageFilePath: string;
 	applicationName: string;
 	applicationVersion: string;
@@ -326,36 +323,28 @@ export interface ExtractParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface ExtractResult {
-	operationId: string;
-}
-
 export interface DeployParams {
 	packageFilePath: string;
-	targetDatabaseName: string;
+	databaseName: string;
 	upgradeExisting: boolean;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface DeployResult {
-	operationId: string;
-}
-
 export namespace ExportRequest {
-	export const type = new RequestType<ExportParams, sqlops.ExportResult, void, void>('dacfx/export');
+	export const type = new RequestType<ExportParams, sqlops.DacFxResult, void, void>('dacfx/export');
 }
 
 export namespace ImportRequest {
-	export const type = new RequestType<ImportParams, sqlops.ImportResult, void, void>('dacfx/import');
+	export const type = new RequestType<ImportParams, sqlops.DacFxResult, void, void>('dacfx/import');
 }
 
 export namespace ExtractRequest {
-	export const type = new RequestType<ExtractParams, sqlops.ExtractResult, void, void>('dacfx/extract');
+	export const type = new RequestType<ExtractParams, sqlops.DacFxResult, void, void>('dacfx/extract');
 }
 
 export namespace DeployRequest {
-	export const type = new RequestType<DeployParams, sqlops.DeployResult, void, void>('dacfx/deploy');
+	export const type = new RequestType<DeployParams, sqlops.DacFxResult, void, void>('dacfx/deploy');
 }
 
 // ------------------------------- < DacFx > ------------------------------------
