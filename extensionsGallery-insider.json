@@ -14,14 +14,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.35.0",
-							"lastUpdated": "11/1/2018",
+							"version": "0.35.1",
+							"lastUpdated": "11/27/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.35.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.35.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -470,14 +470,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.0",
-							"lastUpdated": "11/13/2018",
+							"version": "0.5.1",
+							"lastUpdated": "11/27/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.4.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.5.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -698,14 +698,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.0",
-							"lastUpdated": "11/1/2018",
+							"version": "0.4.1",
+							"lastUpdated": "11/27/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.4.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.4.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -909,63 +909,63 @@
 									"value": "*"
 								}
 							]
-						},
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "27",
+					"extensionName": "newdatabase",
+					"displayName": "New Database",
+					"shortDescription": "Adds a 'New Database' command. Right-click on the Databases for a connection in Object Explorer, or run 'New Database' from the command palette.",
+					"publisher": {
+						"displayName": "Kevin Cunnane",
+						"publisherId": "kevcunnane",
+						"publisherName": "kevcunnane"
+					},
+					"versions": [
 						{
-							"extensionId": "27",
-							"extensionName": "newdatabase",
-							"displayName": "New Database",
-							"shortDescription": "Adds a 'New Database' command. Right-click on the Databases for a connection in Object Explorer, or run 'New Database' from the command palette.",
-							"publisher": {
-								"displayName": "Kevin Cunnane",
-								"publisherId": "kevcunnane",
-								"publisherName": "kevcunnane"
-							},
-							"versions": [
+							"version": "0.0.3",
+							"lastUpdated": "11/27/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
 								{
-									"version": "0.0.3",
-									"lastUpdated": "11/19/2018",
-									"assetUri": "",
-									"fallbackAssetUri": "fallbackAssetUri",
-									"files": [
-										{
-											"assetType": "Microsoft.SQLOps.DownloadPage",
-											"source": "https://github.com/kevcunnane/azuredatastudio-newdatabase/releases/tag/0.0.2"
-										},
-										{
-											"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-											"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/images/sqlserver.png"
-										},
-										{
-											"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-											"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/README.md"
-										},
-										{
-											"assetType": "Microsoft.VisualStudio.Code.Manifest",
-											"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/package.json"
-										},
-										{
-											"assetType": "Microsoft.VisualStudio.Services.Content.License",
-											"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/LICENSE"
-										}
-									],
-									"properties": [
-										{
-											"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
-											"value": ""
-										},
-										{
-											"key": "Microsoft.VisualStudio.Services.Links.Source",
-											"value": "https://github.com/kevcunnane/azuredatastudio-newdatabase"
-										},
-										{
-											"key": "Microsoft.VisualStudio.Code.Engine",
-											"value": "*"
-										}
-									]
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/kevcunnane/azuredatastudio-newdatabase/releases/tag/0.0.3"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/kevcunnane/azuredatastudio-newdatabase/master/LICENSE"
 								}
 							],
-							"statistics": [],
-							"flags": "preview"
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/kevcunnane/azuredatastudio-newdatabase"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
 						}
 					],
 					"statistics": [],
@@ -978,7 +978,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 16
+							"count": 17
 						}
 					]
 				}
