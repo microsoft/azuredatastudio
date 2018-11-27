@@ -927,13 +927,13 @@
 					"versions": [
 						{
 							"version": "0.0.3",
-							"lastUpdated": "11/19/2018",
+							"lastUpdated": "11/27/2018",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/kevcunnane/azuredatastudio-newdatabase/releases/tag/0.0.2"
+									"source": "https://github.com/kevcunnane/azuredatastudio-newdatabase/releases/tag/0.0.3"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -978,7 +978,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 16
+							"count": 17
 						}
 					]
 				}
