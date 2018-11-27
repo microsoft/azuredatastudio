@@ -377,7 +377,9 @@ export default class QueryRunner extends Disposable {
 					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
 				}
 			}
-			if (batchSet) {
+			// we will just ignore the set if we already have it
+			// ideally this should never happen
+			if (batchSet && !batchSet.resultSetSummaries[resultSet.id]) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
 				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
