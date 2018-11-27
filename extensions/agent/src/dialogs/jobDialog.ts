@@ -279,8 +279,17 @@ export class JobDialog extends AgentDialog<JobData>  {
 					this.deleteStepButton.enabled = true;
 					this.editStepButton.enabled = true;
 					this.editStepButton.onDidClick(() => {
-						let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData, true);
-						stepDialog.openDialog();
+						let editStepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData, true);
+						editStepDialog.onSuccess((step) => {
+							let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
+							for (let i = 0; i < this.steps.length; i++) {
+								if (this.steps[i].id === stepInfo.id) {
+									this.steps[i] = stepInfo;
+								}
+							}
+							this.stepsTable.data = this.convertStepsToData(this.steps);
+						});
+						editStepDialog.openDialog();
 					});
 
 					this.deleteStepButton.onDidClick(() => {
