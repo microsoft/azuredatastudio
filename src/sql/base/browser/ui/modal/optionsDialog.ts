@@ -18,7 +18,7 @@ import * as sqlops from 'sqlops';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -29,18 +29,42 @@ import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { SplitView } from 'vs/base/browser/ui/splitview/splitview';
-import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { getContentHeight } from 'vs/base/browser/dom';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ViewletPanel } from 'sql/base/browser/ui/scrollableSplitview/panelViewlet';
 
 export class CategoryView extends ViewletPanel {
 
+	constructor(
+		private contentElement: HTMLElement,
+		private size: number,
+		options: IViewletPanelOptions,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IConfigurationService configurationService: IConfigurationService
+	) {
+		super(options, keybindingService, contextMenuService, configurationService);
+	}
+
+	// we want a fixed size, so when we render to will measure our content and set that to be our
+	// minimum and max size
 	protected renderBody(container: HTMLElement): void {
-		throw new Error('Method not implemented.');
+		container.appendChild(this.contentElement);
+		this.maximumBodySize = this.size;
+		this.minimumBodySize = this.size;
 	}
 
 	protected layoutBody(size: number): void {
-		throw new Error('Method not implemented.');
+		//
 	}
+}
+
+export interface IOptionsDialogOptions extends IModalOptions {
+	cancelLabel?: string;
 }
 
 export class OptionsDialog extends Modal {
@@ -64,10 +88,11 @@ export class OptionsDialog extends Modal {
 	constructor(
 		title: string,
 		name: string,
-		options: IModalOptions,
+		private options: IOptionsDialogOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
@@ -83,7 +108,7 @@ export class OptionsDialog extends Modal {
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
 		let okButton = this.addFooterButton(localize('optionsDialog.ok', 'OK'), () => this.ok());
-		let closeButton = this.addFooterButton(localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
+		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
@@ -204,7 +229,7 @@ export class OptionsDialog extends Modal {
 			containerGroup = container;
 			this._optionGroups = container.getHTMLElement();
 		});
-		let splitview = new SplitView(containerGroup.getHTMLElement());
+		let splitview = new ScrollableSplitView(containerGroup.getHTMLElement(), { enableResizing: false });
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		for (let category in categoryMap) {
 			let serviceOptions: sqlops.ServiceOption[] = categoryMap[category];
@@ -214,8 +239,8 @@ export class OptionsDialog extends Modal {
 
 			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
 			layoutSize += (viewSize + this._categoryHeaderSize);
-			let categoryView = new CategoryView(category, bodyContainer.getHTMLElement(), false, viewSize, this._categoryHeaderSize);
-			splitview.addView(categoryView);
+			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer.getHTMLElement(), viewSize, { title: category, ariaHeaderLabel: category, id: category });
+			splitview.addView(categoryView, 0);
 
 			if (!firstOption) {
 				firstOption = serviceOptions[0].name;
@@ -232,7 +257,6 @@ export class OptionsDialog extends Modal {
 
 	protected layout(height?: number): void {
 		// Nothing currently laid out in this class
-		this
 	}
 
 	public dispose(): void {

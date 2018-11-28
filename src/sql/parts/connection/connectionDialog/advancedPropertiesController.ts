@@ -13,8 +13,6 @@ import { localize } from 'vs/nls';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export class AdvancedPropertiesController {
-	private _container: HTMLElement;
-
 	private _advancedDialog: OptionsDialog;
 	private _options: { [name: string]: any };
 
@@ -30,7 +28,6 @@ export class AdvancedPropertiesController {
 
 	public showDialog(providerOptions: sqlops.ConnectionOption[], container: HTMLElement, options: { [name: string]: any }): void {
 		this._options = options;
-		this._container = container;
 		var serviceOptions = providerOptions.map(option => AdvancedPropertiesController.connectionOptionToServiceOption(option));
 		this.advancedDialog.open(serviceOptions, this._options);
 	}
@@ -38,8 +35,7 @@ export class AdvancedPropertiesController {
 	public get advancedDialog() {
 		if (!this._advancedDialog) {
 			this._advancedDialog = this._instantiationService.createInstance(
-				OptionsDialog, localize('connectionAdvancedProperties', 'Advanced Properties'), TelemetryKeys.ConnectionAdvancedProperties, { hasBackButton: true });
-			this._advancedDialog.cancelLabel = localize('advancedProperties.discard', 'Discard');
+				OptionsDialog, localize('connectionAdvancedProperties', 'Advanced Properties'), TelemetryKeys.ConnectionAdvancedProperties, { hasBackButton: true, cancelLabel: localize('advancedProperties.discard', 'Discard') });
 			this._advancedDialog.onCloseEvent(() => this._onCloseAdvancedProperties());
 			this._advancedDialog.onOk(() => this.handleOnOk());
 			this._advancedDialog.render();
