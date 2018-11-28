@@ -20,7 +20,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory } from 'sql/parts/notebook/models/modelInterfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel, ErrorInfo, MessageLevel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
@@ -54,6 +54,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
+	private _activeCellId: string;
 
 
 	constructor(
@@ -66,7 +67,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IBootstrapParams) private notebookParams: INotebookParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService
 	) {
 		super();
 		this.profile = this.notebookParams!.profile;
@@ -83,7 +85,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	public get model(): NotebookModel {
 		return this._model;
 	}
-	
+
+	public get activeCellId(): string {
+		return this._activeCellId;
+	}
+
 	public get modelRegistered(): Promise<NotebookModel> {
 		return this._modelRegisteredDeferred.promise;
 	}
@@ -105,6 +111,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			this._activeCell = cell;
 			this._activeCell.active = true;
 			this._model.activeCell = this._activeCell;
+			this._activeCellId = cell.id;
 			this._changeRef.detectChanges();
 		}
 	}
@@ -227,7 +234,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('div');
-		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService);
+		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
+			this.connectionManagementService, this.connectionDialogService, this.notificationService);
 		attachTodropdwon.render(attachToContainer);
 		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 

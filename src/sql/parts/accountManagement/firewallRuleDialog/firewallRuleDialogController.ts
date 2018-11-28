@@ -12,7 +12,7 @@ import * as sqlops from 'sqlops';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { FirewallRuleDialog } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 
@@ -61,7 +61,7 @@ export class FirewallRuleDialogController {
 	private handleOnCreateFirewallRule(): void {
 		let resourceProviderId = this._resourceProviderId;
 
-		this._accountManagementService.getSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount).then(tokenMappings => {
+		this._accountManagementService.getSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount, AzureResource.ResourceManagement).then(tokenMappings => {
 			let firewallRuleInfo: sqlops.FirewallRuleInfo = {
 				startIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.fromSubnetIPRange,
 				endIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.toSubnetIPRange,

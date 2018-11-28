@@ -75,7 +75,12 @@ export class SelectBox extends vsSelectBox {
 
 		// explicitly set the accessible role so that the screen readers can read the control type properly
 		this.selectElement.setAttribute('role', 'combobox');
+
 		this._selectBoxOptions = selectBoxOptions;
+		var focusTracker = dom.trackFocus(this.selectElement);
+		this._register(focusTracker);
+		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
+		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
 
 	public style(styles: ISelectBoxStyles): void {
@@ -122,6 +127,10 @@ export class SelectBox extends vsSelectBox {
 		return this._selectedOption;
 	}
 
+	public get values(): string[] {
+		return this._dialogOptions;
+	}
+
 	public enable(): void {
 		this.selectElement.disabled = false;
 		this.selectBackground = this.enabledSelectBackground;
@@ -136,6 +145,10 @@ export class SelectBox extends vsSelectBox {
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
 		this.applyStyles();
+	}
+
+	public hasFocus(): boolean {
+		return document.activeElement === this.selectElement;
 	}
 
 	public showMessage(message: IMessage): void {
@@ -159,7 +172,9 @@ export class SelectBox extends vsSelectBox {
 
 		aria.alert(alertText);
 
-		this._showMessage();
+		if (this.hasFocus()) {
+			this._showMessage();
+		}
 	}
 
 	public _showMessage(): void {

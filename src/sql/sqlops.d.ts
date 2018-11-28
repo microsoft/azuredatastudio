@@ -37,6 +37,8 @@ declare module 'sqlops' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
+		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -1583,6 +1585,49 @@ declare module 'sqlops' {
 		registerOnUpdated(handler: () => any): void;
 	}
 
+	// DacFx interfaces  -----------------------------------------------------------------------
+	export interface DacFxResult extends ResultStatus {
+		operationId: string;
+	}
+
+	export interface ExportParams {
+		databaseName: string;
+		packageFilePath: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ImportParams {
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ExtractParams {
+		databaseName: string;
+		packageFilePath: string;
+		applicationName: string;
+		applicationVersion: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DeployParams {
+		packageFilePath: string;
+		databaseName: string;
+		upgradeExisting: boolean;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DacFxServicesProvider extends DataProvider {
+		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+	}
+
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -1912,10 +1957,11 @@ declare module 'sqlops' {
 
 		/**
 		 * Generates a security token by asking the account's provider
-		 * @param {Account} account Account to generate security token for
+		 * @param {Account} account Account to generate security token for (defaults to
+		 * AzureResource.ResourceManagement if not given)
 		 * @return {Thenable<{}>} Promise to return the security token
 		 */
-		export function getSecurityToken(account: Account): Thenable<{}>;
+		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
 
 		/**
 		 * An [event](#Event) which fires when the accounts have changed.
@@ -1988,6 +2034,11 @@ declare module 'sqlops' {
 		isStale: boolean;
 	}
 
+	export enum AzureResource {
+		ResourceManagement = 0,
+		Sql = 1
+	}
+
 	export interface DidChangeAccountsParams {
 		// Updated accounts
 		accounts: Account[];
@@ -2045,9 +2096,10 @@ declare module 'sqlops' {
 		/**
 		 * Generates a security token for the provided account
 		 * @param {Account} account The account to generate a security token for
+		 * @param {AzureResource} resource The resource to get the token for
 		 * @return {Thenable<{}>} Promise to return a security token object
 		 */
-		getSecurityToken(account: Account): Thenable<{}>;
+		getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
 
 		/**
 		 * Prompts the user to enter account information.

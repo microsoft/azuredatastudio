@@ -26,6 +26,7 @@ import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { ISerializationService } from 'sql/services/serialization/serializationService';
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IDacFxService } from 'sql/services/dacfx/dacFxService';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 /**
@@ -55,7 +56,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
+		@IDacFxService private _dacFxService: IDacFxService,
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
@@ -393,6 +395,26 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._capabilitiesService.registerProvider(<sqlops.CapabilitiesProvider>{
 			getServerCapabilities(client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> {
 				return self._proxy.$getServerCapabilities(handle, client);
+			}
+		});
+
+		return undefined;
+	}
+
+	public $registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider>{
+			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
+			},
+			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
+			},
+			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
+			},
+			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 			}
 		});
 

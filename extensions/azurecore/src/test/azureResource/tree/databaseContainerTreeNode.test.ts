@@ -118,7 +118,7 @@ describe('AzureResourceDatabaseContainerTreeNode.getChildren', function(): void 
 		mockServicePool.credentialService = mockCredentialService.object;
 		mockServicePool.databaseService = mockDatabaseService.object;
 
-		mockCredentialService.setup((o) => o.getCredentials(mockAccount)).returns(() => Promise.resolve(mockCredentials));
+		mockCredentialService.setup((o) => o.getCredentials(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockCredentials));
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockDatabaseContainerCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockDatabaseContainerCache.databases[mockSubscription.id] = mockDatabases);
 	});
@@ -130,7 +130,7 @@ describe('AzureResourceDatabaseContainerTreeNode.getChildren', function(): void 
 
 		const children = await databaseContainerTreeNode.getChildren();
 
-		mockCredentialService.verify((o) => o.getCredentials(mockAccount), TypeMoq.Times.once());
+		mockCredentialService.verify((o) => o.getCredentials(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockDatabaseService.verify((o) => o.getDatabases(mockSubscription, mockCredentials), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -160,7 +160,7 @@ describe('AzureResourceDatabaseContainerTreeNode.getChildren', function(): void 
 		await databaseContainerTreeNode.getChildren();
 		const children = await databaseContainerTreeNode.getChildren();
 
-		mockCredentialService.verify((o) => o.getCredentials(mockAccount), TypeMoq.Times.exactly(1));
+		mockCredentialService.verify((o) => o.getCredentials(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.exactly(1));
 		mockDatabaseService.verify((o) => o.getDatabases(mockSubscription, mockCredentials), TypeMoq.Times.exactly(1));
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(2));
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(1));
@@ -193,7 +193,7 @@ describe('AzureResourceDatabaseContainerTreeNode.getChildren', function(): void 
 		const databaseContainerTreeNode = new AzureResourceDatabaseContainerTreeNode(mockSubscription, mockAccount, mockTreeChangeHandler.object, undefined);
 		const children = await databaseContainerTreeNode.getChildren();
 
-		mockCredentialService.verify((o) => o.getCredentials(mockAccount), TypeMoq.Times.once());
+		mockCredentialService.verify((o) => o.getCredentials(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
 		mockDatabaseService.verify((o) => o.getDatabases(mockSubscription, mockCredentials), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.never());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.never());

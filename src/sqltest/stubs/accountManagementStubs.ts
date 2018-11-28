@@ -50,7 +50,7 @@ export class AccountManagementTestService implements IAccountManagementService {
 		return undefined;
 	}
 
-	getSecurityToken(account: sqlops.Account): Thenable<{}> {
+	getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
 		return undefined;
 	}
 
@@ -88,7 +88,7 @@ export class AccountProviderStub implements sqlops.AccountProvider {
 		return Promise.resolve();
 	}
 
-	getSecurityToken(account: sqlops.Account): Thenable<{}> {
+	getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
 		return Promise.resolve({});
 	}
 

@@ -27,7 +27,7 @@ import {
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
 	$clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> { throw ni(); }
-	$getSecurityToken(account: sqlops.Account): Thenable<{}> { throw ni(); }
+	$getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> { throw ni(); }
 	$initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> { throw ni(); }
 	$prompt(handle: number): Thenable<sqlops.Account> { throw ni(); }
 	$refresh(handle: number, account: sqlops.Account): Thenable<sqlops.Account> { throw ni(); }
@@ -409,6 +409,26 @@ export abstract class ExtHostDataProtocolShape {
 	 * Get Agent Credentials list
 	 */
 	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.GetCredentialsResult> { throw ni(); }
+
+	/**
+	 * DacFx export bacpac
+	 */
+	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx import bacpac
+	 */
+	$importBacpac(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx extract dacpac
+	 */
+	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx deploy dacpac
+	 */
+	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
 }
 
 /**
@@ -476,6 +496,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
