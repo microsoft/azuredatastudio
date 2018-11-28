@@ -40,7 +40,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(ICommandService) private _commandService: ICommandService
 	) {
 		super();
-		this.isEditMode = true;
+		this.isEditMode = false;
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -49,7 +49,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
 				if (this._activeCellId) {
-					this.toggleEditMode();
+					this.toggleEditMode(this._activeCellId === this.cellModel.id);
 				}
 				break;
 			}
@@ -76,7 +76,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updatePreview() {
 		if (this._content !== this.cellModel.source || this.cellModel.source.length === 0) {
 			if (!this.cellModel.source && !this.isEditMode) {
-				(<HTMLElement>this.output.nativeElement).innerHTML = localize('doubleClickEdit', 'Select the cell to edit');
+				(<HTMLElement>this.output.nativeElement).innerHTML = localize('clickEdit', 'Click the cell to edit');
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
 				// todo: pass in the notebook filename instead of undefined value
@@ -118,8 +118,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updatePreview();
 	}
 
-	public toggleEditMode(): void {
-		this.isEditMode = !this.isEditMode;
+	public toggleEditMode(editMode?: boolean): void {
+		this.isEditMode = editMode !== undefined ? editMode : !this.isEditMode;
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
