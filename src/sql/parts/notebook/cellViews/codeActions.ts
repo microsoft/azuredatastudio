@@ -5,20 +5,13 @@
 
 import { nb } from 'sqlops';
 
-import { ElementRef, SimpleChange } from '@angular/core';
-
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-
-import { CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
+import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ICellModel, FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 import { ToggleableAction } from 'sql/parts/notebook/notebookActions';
 
@@ -190,52 +183,5 @@ export class DeleteCellAction extends CellActionBase {
 			});
 		}
 		return Promise.resolve();
-	}
-}
-
-export class NotebookCellToggleMoreActon {
-	private _actions: Action[] = [];
-	private _moreActions: ActionBar;
-
-	constructor (
-		private _instantiationService: IInstantiationService,
-		private contextMenuService: IContextMenuService,
-		private notificationService: INotificationService,
-		private moreActionElementRef: ElementRef,
-		private model: NotebookModel
-	) {
-		this._actions.push(
-			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false, this.notificationService),
-			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true, this.notificationService),
-			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false, this.notificationService),
-			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true, this.notificationService),
-			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), this.notificationService)
-		);
-		let moreActionsElement = <HTMLElement>this.moreActionElementRef.nativeElement;
-		this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
-		this._moreActions.context = { target: moreActionsElement };
-	}
-
-	toggle(showIcon: boolean): void {
-		if (showIcon) {
-			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this.model, this.contextMenuService), { icon: showIcon, label: false });
-		} else if (this._moreActions) {
-			this._moreActions.clear();
-		}
-	}
-
-	public onChange(cellModel: ICellModel, changes: { [propKey: string]: SimpleChange }): void {
-		for (let propName in changes) {
-			if (propName === 'activeCellId') {
-				let changedProp = changes[propName];
-				if (cellModel.id === changedProp.currentValue) {
-					this.toggle(true);
-				}
-				else {
-					this.toggle(false);
-				}
-				break;
-			}
-		}
 	}
 }

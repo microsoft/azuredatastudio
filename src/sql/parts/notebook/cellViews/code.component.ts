@@ -29,7 +29,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunCellAction, CellContext, NotebookCellToggleMoreActon } from 'sql/parts/notebook/cellViews/codeActions';
+import { RunCellAction, DeleteCellAction, AddCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
@@ -46,7 +46,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
-	@Input() hideVerticalToolbar: boolean = false;
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -59,14 +58,15 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	protected _actionBar: Taskbar;
+	protected _moreActions: ActionBar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _uri: string;
 	private _model: NotebookModel;
+	private _actions: Action[] = [];
 	private _activeCellId: string;
-	private _toggleMoreActions: NotebookCellToggleMoreActon;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -85,25 +85,30 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		if (!this.hideVerticalToolbar) {
-			this.initActionBar();
-		}
-	}
-
-	ngAfterViewInit() {
-		this._toggleMoreActions = new NotebookCellToggleMoreActon(
-			this._instantiationService,
-			this.contextMenuService,
-			this.notificationService,
-			this.moreActionsElementRef,
-			this.model);
+		this.initActionBar();
+		this._actions.push(
+			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
+			this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
+			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
+			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
+			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'))
+			);
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		this.updateLanguageMode();
 		this.updateModel();
-		if (this._toggleMoreActions) {
-			this._toggleMoreActions.onChange(this.cellModel, changes);
+		for (let propName in changes) {
+			if (propName === 'activeCellId') {
+				let changedProp = changes[propName];
+				if (this.cellModel.id === changedProp.currentValue) {
+					this.toggleMoreActions(true);
+				}
+				else {
+					this.toggleMoreActions(false);
+				}
+				break;
+			}
 		}
 	}
 
@@ -165,6 +170,17 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		]);
 	}
 
+	private toggleMoreActions(showIcon: boolean) {
+		let context = new CellContext(this.model, this.cellModel);
+		if (showIcon) {
+			let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
+			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
+			this._moreActions.context = { target: moreActionsElement };
+			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
+		} else if (this._moreActions !== undefined) {
+				this._moreActions.clear();
+		}
+	}
 
 	private createUri(): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
