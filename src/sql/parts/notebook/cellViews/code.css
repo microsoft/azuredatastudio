@@ -11,6 +11,7 @@ code-component {
 
 code-component .toolbar {
 	border-right-width: 1px;
+	border-right-style: solid;
 }
 
 code-component .toolbarIconRun {
