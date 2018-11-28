@@ -202,23 +202,24 @@ export class NotebookCellToggleMoreActon {
 		private contextMenuService: IContextMenuService,
 		private notificationService: INotificationService,
 		private moreActionElementRef: ElementRef,
-		private model: NotebookModel
+		private model: NotebookModel,
+		private context: CellContext
 	) {
 		this._actions.push(
-			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false, this.notificationService),
-			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true, this.notificationService),
-			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false, this.notificationService),
-			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true, this.notificationService),
-			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'), this.notificationService)
+			new AddCellAction('codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false, this.notificationService),
+			new AddCellAction('codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true, this.notificationService),
+			new AddCellAction('markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false, this.notificationService),
+			new AddCellAction('markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true, this.notificationService),
+			new DeleteCellAction('delete', localize('delete', 'Delete'), this.notificationService)
 		);
-		let moreActionsElement = <HTMLElement>this.moreActionElementRef.nativeElement;
+		let moreActionsElement = <HTMLElement>moreActionElementRef.nativeElement;
 		this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: moreActionsElement };
 	}
 
 	toggle(showIcon: boolean): void {
 		if (showIcon) {
-			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this.model, this.contextMenuService), { icon: showIcon, label: false });
+			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, this.context), { icon: showIcon, label: false });
 		} else if (this._moreActions) {
 			this._moreActions.clear();
 		}

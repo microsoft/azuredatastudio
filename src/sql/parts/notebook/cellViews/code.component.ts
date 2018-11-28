@@ -91,12 +91,14 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	ngAfterViewInit() {
+		let context = new CellContext(this.model, this.cellModel);
 		this._toggleMoreActions = new NotebookCellToggleMoreActon(
 			this._instantiationService,
 			this.contextMenuService,
 			this.notificationService,
 			this.moreActionsElementRef,
-			this.model);
+			this.model,
+			context);
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
