@@ -49,7 +49,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
 				if (this._activeCellId) {
-					this.toggleEditMode(this._activeCellId === this.cellModel.id);
+					this.toggleEditMode(false);
 				}
 				break;
 			}
@@ -76,7 +76,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updatePreview() {
 		if (this._content !== this.cellModel.source || this.cellModel.source.length === 0) {
 			if (!this.cellModel.source && !this.isEditMode) {
-				(<HTMLElement>this.output.nativeElement).innerHTML = localize('clickEdit', 'Click the cell to edit');
+				(<HTMLElement>this.output.nativeElement).innerHTML = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
 				// todo: pass in the notebook filename instead of undefined value
