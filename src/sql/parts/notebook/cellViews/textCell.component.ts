@@ -15,6 +15,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
 import { localize } from 'vs/nls';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
@@ -25,12 +26,17 @@ export const TEXT_SELECTOR: string = 'text-cell-component';
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
 	@Input() cellModel: ICellModel;
+	
+	@Input() set model(value: NotebookModel) {
+		this._model = value;
+	}
 	@Input() set activeCellId(value: string) {
 		this._activeCellId = value;
 	}
 	private _content: string;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
+	private _model: NotebookModel;
 	private _activeCellId: string;
 
 	constructor(
@@ -60,6 +66,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			return this._sanitizer;
 		}
 		return this._sanitizer = defaultSanitizer;
+	}
+
+	get model(): NotebookModel {
+		return this._model;
 	}
 
 	get activeCellId(): string {
