@@ -97,7 +97,7 @@ export function createApiFactory(
 				getAllAccounts(): Thenable<sqlops.Account[]> {
 					return extHostAccountManagement.$getAllAccounts();
 				},
-				getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
+				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
 					return extHostAccountManagement.$getSecurityToken(account, resource);
 				},
 				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
