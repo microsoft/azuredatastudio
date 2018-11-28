@@ -66,10 +66,4 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	public layout() {
 
 	}
-
-	private updateTheme(theme: IColorTheme): void {
-		let outputElement = <HTMLElement>this.outputPreview.nativeElement;
-		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
-	}
-
 }
