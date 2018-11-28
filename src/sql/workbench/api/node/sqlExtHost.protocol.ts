@@ -409,6 +409,26 @@ export abstract class ExtHostDataProtocolShape {
 	 * Get Agent Credentials list
 	 */
 	$getCredentials(handle: number, connectionUri: string): Thenable<sqlops.GetCredentialsResult> { throw ni(); }
+
+	/**
+	 * DacFx export bacpac
+	 */
+	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx import bacpac
+	 */
+	$importBacpac(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx extract dacpac
+	 */
+	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx deploy dacpac
+	 */
+	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
 }
 
 /**
@@ -476,6 +496,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

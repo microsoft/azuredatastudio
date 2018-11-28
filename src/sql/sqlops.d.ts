@@ -37,6 +37,8 @@ declare module 'sqlops' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
+		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -1581,6 +1583,49 @@ declare module 'sqlops' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
+	}
+
+	// DacFx interfaces  -----------------------------------------------------------------------
+	export interface DacFxResult extends ResultStatus {
+		operationId: string;
+	}
+
+	export interface ExportParams {
+		databaseName: string;
+		packageFilePath: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ImportParams {
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ExtractParams {
+		databaseName: string;
+		packageFilePath: string;
+		applicationName: string;
+		applicationVersion: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DeployParams {
+		packageFilePath: string;
+		databaseName: string;
+		upgradeExisting: boolean;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DacFxServicesProvider extends DataProvider {
+		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
