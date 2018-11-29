@@ -26,6 +26,7 @@ const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
 const msgConnectionNotApplicable = localize('connectionNotSupported', 'n/a');
+const msgLocalHost = localize('localhost', 'Localhost');
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -216,8 +217,7 @@ export class AttachToDropdown extends SelectBox {
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
 	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
 		if (currentKernel === notebookConstants.python3) {
-			this.setOptions([msgConnectionNotApplicable]);
-			this.disable();
+			this.setOptions([msgLocalHost]);
 		}
 		else {
 			let hadoopConnections = this.getHadoopConnections(model);
