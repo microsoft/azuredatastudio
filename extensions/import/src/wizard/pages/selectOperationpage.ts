@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, Operation } from '../DataTierApplicationWizard';
+import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { BasePage } from '../api/basePage';
 
 const localize = nls.loadMessageBundle();
