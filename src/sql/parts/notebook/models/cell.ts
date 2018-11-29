@@ -27,7 +27,7 @@ export class CellModel implements ICellModel {
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
 	private _isEditMode: boolean;
-	private _onOutputsChanged = new Emitter<Array<nb.ICellOutput>>();
+	private _onOutputsChanged = new Emitter<ReadonlyArray<nb.ICellOutput>>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	public id: string;
 	private _isTrusted: boolean;
@@ -57,7 +57,7 @@ export class CellModel implements ICellModel {
 		return other && other.id === this.id;
 	}
 
-	public get onOutputsChanged(): Event<Array<nb.ICellOutput>> {
+	public get onOutputsChanged(): Event<ReadonlyArray<nb.ICellOutput>> {
 		return this._onOutputsChanged.event;
 	}
 

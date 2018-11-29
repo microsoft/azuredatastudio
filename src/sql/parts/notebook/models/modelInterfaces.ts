@@ -344,8 +344,8 @@ export interface ICellModel {
 	trustedMode: boolean;
 	active: boolean;
 	readonly future: FutureInternal;
-	outputs: Array<nb.ICellOutput>;
-	readonly onOutputsChanged: Event<Array<nb.ICellOutput>>;
+	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
 	setFuture(future: FutureInternal): void;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICell;
