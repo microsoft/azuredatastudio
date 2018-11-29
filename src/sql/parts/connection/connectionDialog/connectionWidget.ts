@@ -545,6 +545,10 @@ export class ConnectionWidget {
 
 			if (this._authTypeSelectBox) {
 				this.onAuthTypeSelected(this._authTypeSelectBox.value);
+			} else {
+				let tableContainerElement = this._tableContainer.getContainer();
+				tableContainerElement.classList.remove('hide-username-password');
+				tableContainerElement.classList.add('hide-azure-accounts');
 			}
 
 			// Disable connect button if -
