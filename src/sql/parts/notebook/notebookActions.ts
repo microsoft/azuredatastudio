@@ -62,14 +62,13 @@ export class SaveNotebookAction extends Action {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
 				const actions: INotificationActions = { primary: [] };
-				if(context.save())
-				{
-					this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-				}
-				else
-				{
-					this._notificationService.error( SaveNotebookAction.notebookFailedSaveMsg);
-				}
+				context.save().then(value => {
+					if (value) {
+						this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
+					} else {
+						this._notificationService.error(SaveNotebookAction.notebookFailedSaveMsg);
+					}
+				});
 				resolve(true);
 			} catch (e) {
 				reject(e);
