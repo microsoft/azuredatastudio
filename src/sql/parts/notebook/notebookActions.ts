@@ -58,22 +58,15 @@ export class SaveNotebookAction extends Action {
 		super(id, label, cssClass);
 	}
 
-	public run(context: NotebookComponent): TPromise<boolean> {
-		return new TPromise<boolean>((resolve, reject) => {
-			try {
-				const actions: INotificationActions = { primary: [] };
-				context.save().then(value => {
-					if (value) {
-						this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-					} else {
-						this._notificationService.error(SaveNotebookAction.notebookFailedSaveMsg);
-					}
-				});
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: NotebookComponent): TPromise<boolean> {
+		const actions: INotificationActions = { primary: [] };
+		let saved = await context.save();
+		if (saved) {
+			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
+		} else {
+			this._notificationService.error(SaveNotebookAction.notebookFailedSaveMsg);
+		}
+		return saved;
 	}
 }
 
