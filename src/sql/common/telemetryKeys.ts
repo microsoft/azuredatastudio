@@ -25,7 +25,6 @@ export const NewQuery = 'NewQuery';
 export const FirewallRuleRequested = 'FirewallRuleCreated';
 export const DashboardNavigated = 'DashboardNavigated';
 
-
 // Telemetry Properties
 
 // Modal Dialogs:
@@ -42,3 +41,37 @@ export const Accounts = 'Accounts';
 export const FireWallRule = 'FirewallRule';
 export const AutoOAuth = 'AutoOAuth';
 export const AddNewDashboardTab = 'AddNewDashboardTab';
+
+// SQL Agent Events:
+
+// Views
+export const JobsView = 'JobsViewOpened';
+export const JobHistoryView = 'JobHistoryViewOpened';
+export const JobStepsView = 'JobStepsViewOpened';
+
+// Dialogs
+export const NewJobDialog = 'NewJobDialogOpened';
+export const EditJobDialog = 'EditJobDialogOpened';
+
+export const NewStepDialog = 'NewStepDialogOpened';
+export const EditStepDialog = 'EditStepDialogOpened';
+
+export const NewAlertDialog = 'NewAlertDialogOpen';
+export const EditAlertDialog = 'EditAlertDialogOpened';
+
+export const NewOperatorDialog = 'NewOperatorDialogOpened';
+export const EditOperatorDialog = 'EditOperatorDialogOpened';
+
+export const NewProxyDialog = 'NewProxyDialogOpened';
+export const EditProxyDialog = 'EditProxyDialogOpened';
+
+// Actions
+export const RunAgentJob = 'RunAgentJob';
+export const StopAgentJob = 'StopAgentJob';
+export const DeleteAgentJob = 'DeleteAgentJob';
+export const DeleteAgentJobStep = 'DeleteAgentJobStep';
+export const DeleteAgentAlert = 'DeleteAgentAlert';
+export const DeleteAgentOperator = 'DeleteAgentOperator';
+export const DeleteAgentProxy = 'DeleteAgentProxy';
+
+
