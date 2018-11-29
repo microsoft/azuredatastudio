@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./panelviewlet';
+
 import { Panel } from 'sql/base/browser/ui/scrollableSplitview/panel';
 import { IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 

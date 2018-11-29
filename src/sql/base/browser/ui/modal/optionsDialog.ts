@@ -32,7 +32,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { getContentHeight } from 'vs/base/browser/dom';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ViewletPanel } from 'sql/base/browser/ui/scrollableSplitview/panelViewlet';

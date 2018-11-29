@@ -5,6 +5,7 @@
 
 'use strict';
 
+import 'vs/css!./panelview';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter, chain } from 'vs/base/common/event';
 import { domEvent } from 'vs/base/browser/event';
