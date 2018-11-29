@@ -285,7 +285,8 @@ export enum DataProviderType {
 	QueryProvider = 'QueryProvider',
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
-	CapabilitiesProvider = 'CapabilitiesProvider'
+	CapabilitiesProvider = 'CapabilitiesProvider',
+	DacFxServicesProvider = 'DacFxServicesProvider',
 }
 
 export enum DeclarativeDataType {
@@ -311,6 +312,11 @@ export interface ToolbarLayout {
 
 export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
+}
+
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
 }
 
 export class SqlThemeIcon {

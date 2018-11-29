@@ -349,7 +349,7 @@ suite('SQL QueryEditor Tests', () => {
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
 				.returns((definition, editor, action, selectBox) => {
 					if (definition.ID === 'listDatabaseQueryActionItem') {
-						let item = new ListDatabasesActionItem(editor, action, queryConnectionService.object, undefined, undefined, undefined, configurationService.object);
+						let item = new ListDatabasesActionItem(editor, action, queryConnectionService.object, undefined, undefined, undefined,configurationService.object);
 						return item;
 					}
 					// Default

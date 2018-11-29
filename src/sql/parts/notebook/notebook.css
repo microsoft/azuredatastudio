@@ -31,9 +31,9 @@
 	text-align: center;
 	cursor: pointer;
 	padding-left: 15px;
-	background-size: 11px;
+	background-size: 13px;
 	margin-right: 0.3em;
-	font-size: 11px;
+	font-size: 13px;
 }
 
 .notebookEditor .notebook-button.icon-add{

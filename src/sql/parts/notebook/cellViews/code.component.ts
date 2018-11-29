@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
@@ -41,16 +41,21 @@ export const CODE_SELECTOR: string = 'code-component';
 	selector: CODE_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./code.component.html'))
 })
-export class CodeComponent extends AngularDisposable implements OnInit {
+export class CodeComponent extends AngularDisposable implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
-	@ViewChild('moreactions', { read: ElementRef }) private moreactionsElement: ElementRef;
+	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
+	@Input() hideVerticalToolbar: boolean = false;
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
+	}
+
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
 	}
 
 	protected _actionBar: Taskbar;
@@ -61,6 +66,8 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 	private _editorModel: ITextModel;
 	private _uri: string;
 	private _model: NotebookModel;
+	private _actions: Action[] = [];
+	private _activeCellId: string;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -74,17 +81,38 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		@Inject(INotificationService) private notificationService: INotificationService,
 	) {
 		super();
+		this._actions.push(
+			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
+			this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
+			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
+			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
+			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'))
+		);
 	}
 
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.initActionBar();
+		if (!this.hideVerticalToolbar) {
+			this.initActionBar();
+		}
 	}
 
-	ngOnChanges() {
+	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		this.updateLanguageMode();
 		this.updateModel();
+		for (let propName in changes) {
+			if (propName === 'activeCellId') {
+				let changedProp = changes[propName];
+				if (this.cellModel.id === changedProp.currentValue) {
+					this.toggleMoreActions(true);
+				}
+				else {
+					this.toggleMoreActions(false);
+				}
+				break;
+			}
+		}
 	}
 
 	ngAfterContentInit(): void {
@@ -96,6 +124,10 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 
 	get model(): NotebookModel {
 		return this._model;
+	}
+
+	get activeCellId(): string {
+		return this._activeCellId;
 	}
 
 	private createEditor(): void {
@@ -139,19 +171,22 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
+	}
 
-		let moreActionsElement = <HTMLElement>this.moreactionsElement.nativeElement;
-		this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
-		this._moreActions.context = { target: moreActionsElement };
-
-		let actions: Action[] = [];
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true));
-		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete')));
-
-		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, context), { icon: true, label: false });
+	private toggleMoreActions(showIcon: boolean) {
+		let context = new CellContext(this.model, this.cellModel);
+		let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		if (showIcon) {
+			if (moreActionsElement.childNodes.length > 0) {
+				moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
+			}
+			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
+			this._moreActions.context = { target: moreActionsElement };
+			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
+		}
+		else if (moreActionsElement.childNodes.length > 0) {
+			moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
+		}
 	}
 
 	private createUri(): URI {
@@ -180,8 +215,8 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		let toolbarEl = <HTMLElement>this.toolbarElement.nativeElement;
 		toolbarEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 
-		let moreactionsEl = <HTMLElement>this.moreactionsElement.nativeElement;
-		moreactionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
 }

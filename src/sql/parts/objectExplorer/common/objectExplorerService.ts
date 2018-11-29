@@ -261,7 +261,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._activeObjectExplorerNodes[connection.id];
 	}
 
-	public createNewSession(providerId: string, connection: ConnectionProfile): Thenable<sqlops.ObjectExplorerSessionResponse> {
+	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<sqlops.ObjectExplorerSessionResponse> {
 		let self = this;
 		return new Promise<sqlops.ObjectExplorerSessionResponse>((resolve, reject) => {
 			let provider = this._providers[providerId];

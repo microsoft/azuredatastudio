@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { Account } from 'sqlops';
+import * as sqlops from 'sqlops';
 import { TokenCredentials, ServiceClientCredentials } from 'ms-rest';
 import { ApiWrapper } from '../../apiWrapper';
 import * as nls from 'vscode-nls';
@@ -21,10 +21,10 @@ export class AzureResourceCredentialService implements IAzureResourceCredentialS
 		this._apiWrapper = apiWrapper;
 	}
 
-	public async getCredentials(account: Account): Promise<ServiceClientCredentials[]> {
+	public async getCredentials(account: sqlops.Account, resource: sqlops.AzureResource): Promise<ServiceClientCredentials[]> {
 		try {
 			let credentials: TokenCredentials[] = [];
-			let tokens = await this._apiWrapper.getSecurityToken(account);
+			let tokens = await this._apiWrapper.getSecurityToken(account, resource);
 
 			for (let tenant of account.properties.tenants) {
 				let token = tokens[tenant.id].token;
