@@ -519,6 +519,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
+		this.model.command = this.commandTextBox.value ? this.commandTextBox.value : '';
 	}
 
 	public async initializeDialog() {

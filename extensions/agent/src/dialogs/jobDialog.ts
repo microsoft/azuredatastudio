@@ -46,7 +46,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit');
 	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete');
 	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', 'Move Step Up');
-	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Up');
+	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Down');
 
 	// Notifications tab strings
 	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
@@ -230,7 +230,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.moveStepDownButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepDownButtonString,
-					width: 80
+					width: 120
 				}).component();
 
 			this.moveStepUpButton.enabled = false;
@@ -270,31 +270,87 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.editStepButton.enabled = false;
 			this.deleteStepButton.enabled = false;
 
+			this.moveStepUpButton.onDidClick(() => {
+                if (this.stepsTable.selectedRows.length === 1) {
+                    let rowNumber = this.stepsTable.selectedRows[0];
+                    // if it's not the first step
+                    if (rowNumber !== 0) {
+                        let previousRow = rowNumber - 1;
+                        let previousStep = this.steps[previousRow];
+                        let previousStepId = this.steps[previousRow].id;
+                        let currentStep = this.steps[rowNumber];
+                        let currentStepId = this.steps[rowNumber].id;
+                        this.steps[previousRow] = currentStep;
+                        this.steps[rowNumber] = previousStep;
+                        this.stepsTable.data = this.convertStepsToData(this.steps);
+                        this.steps[previousRow].id = previousStepId;
+                        this.steps[rowNumber].id = currentStepId;
+                    }
+                }
+			});
+
+			this.moveStepDownButton.onDidClick(() => {
+				if (this.stepsTable.selectedRows.length === 1) {
+					let rowNumber = this.stepsTable.selectedRows[0];
+					// if it's not the last step
+					if (this.steps.length !== rowNumber + 1) {
+						let nextRow = rowNumber + 1;
+						let nextStep = this.steps[nextRow];
+						let nextStepId = this.steps[nextRow].id;
+						let currentStep = this.steps[rowNumber];
+						let currentStepId = this.steps[rowNumber].id;
+						this.steps[nextRow] = currentStep;
+						this.steps[rowNumber] = nextStep;
+						this.stepsTable.data = this.convertStepsToData(this.steps);
+						this.steps[nextRow].id = nextStepId;
+						this.steps[rowNumber].id = currentStepId;
+					}
+				}
+			});
+
+			this.editStepButton.onDidClick(() => {
+				if (this.stepsTable.selectedRows.length === 1) {
+					let rowNumber = this.stepsTable.selectedRows[0];
+					let stepData = this.model.jobSteps[rowNumber];
+					let editStepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData, true);
+					editStepDialog.onSuccess((step) => {
+						let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
+						for (let i = 0; i < this.steps.length; i++) {
+							if (this.steps[i].id === stepInfo.id) {
+								this.steps[i] = stepInfo;
+							}
+						}
+						this.stepsTable.data = this.convertStepsToData(this.steps);
+					});
+					editStepDialog.openDialog();
+				}
+			});
+
+			this.deleteStepButton.onDidClick(() => {
+				if (this.stepsTable.selectedRows.length === 1) {
+					let rowNumber = this.stepsTable.selectedRows[0];
+					AgentUtils.getAgentService().then((agentService) => {
+						let steps = this.model.jobSteps ? this.model.jobSteps : [];
+						let stepData = this.model.jobSteps[rowNumber];
+						agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
+							if (result && result.success) {
+								delete steps[rowNumber];
+								let data = this.convertStepsToData(steps);
+								this.stepsTable.data = data;
+							}
+						});
+					});
+				}
+			});
+
 			this.stepsTable.onRowSelected(() => {
 				// only let edit or delete steps if there's
 				// one step selection
 				if (this.stepsTable.selectedRows.length === 1) {
-					let rowNumber = this.stepsTable.selectedRows[0];
-					let stepData = this.model.jobSteps[rowNumber];
+					this.moveStepUpButton.enabled = true;
+					this.moveStepDownButton.enabled = true;
 					this.deleteStepButton.enabled = true;
 					this.editStepButton.enabled = true;
-					this.editStepButton.onDidClick(() => {
-						let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData, true);
-						stepDialog.openDialog();
-					});
-
-					this.deleteStepButton.onDidClick(() => {
-						AgentUtils.getAgentService().then((agentService) => {
-							let steps = this.model.jobSteps ? this.model.jobSteps : [];
-							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
-								if (result && result.success) {
-									delete steps[rowNumber];
-									let data = this.convertStepsToData(steps);
-									this.stepsTable.data = data;
-								}
-							});
-						});
-					});
 				}
 			});
 
