@@ -253,7 +253,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._trustedAction.enabled = false;
 
 		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
-		addCodeCellButton.cellType = CellTypes.Code;
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
