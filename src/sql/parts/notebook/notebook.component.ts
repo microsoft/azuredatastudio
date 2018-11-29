@@ -239,9 +239,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		attachTodropdwon.render(attachToContainer);
 		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 
-		let attachToInfoText = document.createElement('div');
-		attachToInfoText.className = 'notebook-info-label';
-		attachToInfoText.innerText = 'Attach To: ';
 
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
 		addCodeCellButton.cellType = CellTypes.Code;
