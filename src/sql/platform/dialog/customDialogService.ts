@@ -22,8 +22,9 @@ export class CustomDialogService {
 
 	constructor( @IInstantiationService private _instantiationService: IInstantiationService) { }
 
-	public showDialog(dialog: Dialog, options?: IModalOptions): void {
-		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, 'CustomDialog', options || defaultOptions);
+	public showDialog(dialog: Dialog, eventName?: string, options?: IModalOptions): void {
+		let eventString = eventName ? eventName : 'CustomDialog';
+		let dialogModal = this._instantiationService.createInstance(DialogModal, dialog, eventString, options || defaultOptions);
 		this._dialogModals.set(dialog, dialogModal);
 		dialogModal.render();
 		dialogModal.open();

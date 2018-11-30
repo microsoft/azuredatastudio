@@ -59,14 +59,14 @@ export class NewJobAction extends Action {
 	public static ID = 'jobaction.newJob';
 	public static LABEL = nls.localize('jobaction.newJob', "New Job");
 
-	constructor(@ITelemetryService private _telemetryService: ITelemetryService) {
+	constructor(
+	) {
 		super(NewJobAction.ID, NewJobAction.LABEL, 'newStepIcon');
 	}
 
 	public run(context: JobsViewComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
-				this._telemetryService.publicLog(TelemetryKeys.NewJobDialog);
 				context.openCreateJobDialog();
 				resolve(true);
 			} catch (e) {
@@ -161,14 +161,12 @@ export class EditJobAction extends Action {
 	public static LABEL = nls.localize('jobaction.editJob', "Edit Job");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(EditJobAction.ID, EditJobAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
-		this._telemetryService.publicLog(TelemetryKeys.EditJobDialog);
 		this._commandService.executeCommand(
 			'agent.openJobDialog',
 			 actionInfo.ownerUri,
@@ -223,8 +221,7 @@ export class NewStepAction extends Action {
 	public static LABEL = nls.localize('jobaction.newStep', "New Step");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(NewStepAction.ID, NewStepAction.LABEL, 'newStepIcon');
 	}
@@ -234,7 +231,6 @@ export class NewStepAction extends Action {
 		let server = context.serverName;
 		let jobInfo = context.agentJobInfo;
 		return new TPromise<boolean>((resolve, reject) => {
-			this._telemetryService.publicLog(TelemetryKeys.NewStepDialog);
 			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, server, jobInfo , null));
 		});
 	}
@@ -290,14 +286,14 @@ export class NewAlertAction extends Action {
 	public static ID = 'jobaction.newAlert';
 	public static LABEL = nls.localize('jobaction.newAlert', "New Alert");
 
-	constructor(@ITelemetryService private _telemetryService: ITelemetryService) {
+	constructor(
+	) {
 		super(NewAlertAction.ID, NewAlertAction.LABEL, 'newStepIcon');
 	}
 
 	public run(context: AlertsViewComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
-				this._telemetryService.publicLog(TelemetryKeys.NewAlertDialog);
 				context.openCreateAlertDialog();
 				resolve(true);
 			} catch (e) {
@@ -312,14 +308,12 @@ export class EditAlertAction extends Action {
 	public static LABEL = nls.localize('jobaction.editAlert', "Edit Alert");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
-		this._telemetryService.publicLog(TelemetryKeys.EditAlertDialog);
 		this._commandService.executeCommand(
 			'agent.openAlertDialog',
 			 actionInfo.ownerUri,
@@ -374,7 +368,7 @@ export class NewOperatorAction extends Action {
 	public static ID = 'jobaction.newOperator';
 	public static LABEL = nls.localize('jobaction.newOperator', "New Operator");
 
-	constructor(@ITelemetryService private _telemetryService: ITelemetryService
+	constructor(
 	) {
 		super(NewOperatorAction.ID, NewOperatorAction.LABEL, 'newStepIcon');
 	}
@@ -382,7 +376,6 @@ export class NewOperatorAction extends Action {
 	public run(context: OperatorsViewComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
-				this._telemetryService.publicLog(TelemetryKeys.NewOperatorDialog);
 				context.openCreateOperatorDialog();
 				resolve(true);
 			} catch (e) {
@@ -397,14 +390,12 @@ export class EditOperatorAction extends Action {
 	public static LABEL = nls.localize('jobaction.editOperator', "Edit Operator");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(EditOperatorAction.ID, EditOperatorAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
-		this._telemetryService.publicLog(TelemetryKeys.EditOperatorDialog);
 		this._commandService.executeCommand(
 			'agent.openOperatorDialog',
 			 actionInfo.ownerUri,
@@ -459,7 +450,7 @@ export class NewProxyAction extends Action {
 	public static ID = 'jobaction.newProxy';
 	public static LABEL = nls.localize('jobaction.newProxy', "New Proxy");
 
-	constructor(@ITelemetryService private _telemetryService: ITelemetryService
+	constructor(
 	) {
 		super(NewProxyAction.ID, NewProxyAction.LABEL, 'newStepIcon');
 	}
@@ -467,7 +458,6 @@ export class NewProxyAction extends Action {
 	public run(context: ProxiesViewComponent): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			try {
-				this._telemetryService.publicLog(TelemetryKeys.NewProxyDialog);
 				context.openCreateProxyDialog();
 				resolve(true);
 			} catch (e) {
@@ -482,14 +472,12 @@ export class EditProxyAction extends Action {
 	public static LABEL = nls.localize('jobaction.editProxy', "Edit Proxy");
 
 	constructor(
-		@ICommandService private _commandService: ICommandService,
-		@ITelemetryService private _telemetryService: ITelemetryService
+		@ICommandService private _commandService: ICommandService
 	) {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
-		this._telemetryService.publicLog(TelemetryKeys.EditProxyDialog);
 		this._commandService.executeCommand(
 			'agent.openProxyDialog',
 			 actionInfo.ownerUri,

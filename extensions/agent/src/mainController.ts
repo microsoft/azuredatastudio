@@ -40,7 +40,7 @@ export class MainController {
     public activate(): void {
         vscode.commands.registerCommand('agent.openJobDialog', (ownerUri: string, jobInfo: sqlops.AgentJobInfo) => {
             let dialog = new JobDialog(ownerUri, jobInfo);
-            dialog.openDialog();
+            dialog.eventName ? dialog.openDialog(dialog.eventName) : dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobInfo: sqlops.AgentJobInfo, jobStepInfo: sqlops.AgentJobStepInfo) => {
             AgentUtils.getAgentService().then((agentService) => {

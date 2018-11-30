@@ -49,22 +49,6 @@ export const JobsView = 'JobsViewOpened';
 export const JobHistoryView = 'JobHistoryViewOpened';
 export const JobStepsView = 'JobStepsViewOpened';
 
-// Dialogs
-export const NewJobDialog = 'NewJobDialogOpened';
-export const EditJobDialog = 'EditJobDialogOpened';
-
-export const NewStepDialog = 'NewStepDialogOpened';
-export const EditStepDialog = 'EditStepDialogOpened';
-
-export const NewAlertDialog = 'NewAlertDialogOpen';
-export const EditAlertDialog = 'EditAlertDialogOpened';
-
-export const NewOperatorDialog = 'NewOperatorDialogOpened';
-export const EditOperatorDialog = 'EditOperatorDialogOpened';
-
-export const NewProxyDialog = 'NewProxyDialogOpened';
-export const EditProxyDialog = 'EditProxyDialogOpened';
-
 // Actions
 export const RunAgentJob = 'RunAgentJob';
 export const StopAgentJob = 'StopAgentJob';

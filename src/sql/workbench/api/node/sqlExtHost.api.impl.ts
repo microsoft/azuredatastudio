@@ -342,8 +342,8 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title, extension.extensionLocation);
+				createDialog(title: string, eventName?: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title, eventName, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
