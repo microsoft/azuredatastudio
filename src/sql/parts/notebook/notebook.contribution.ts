@@ -45,7 +45,10 @@ export class NewNotebookAction extends Action {
 		let title = `Untitled-${counter++}`;
 		let untitledUri = URI.from({ scheme: Schemas.untitled, path: title });
 		let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
-		model.providerId = JUPYTER_NOTEBOOK_PROVIDER;
+		if(model)
+		{
+			model.providerId = JUPYTER_NOTEBOOK_PROVIDER;
+		}
 		let input = this._instantiationService.createInstance(NotebookInput, title, model);
 		return this._editorService.openEditor(input, { pinned: true }).then(() => undefined);
 	}
