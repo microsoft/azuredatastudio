@@ -164,7 +164,7 @@ suite('commandLineService tests', () => {
 		environmentService.setup(e => e.args).returns(() => args).verifiable(TypeMoq.Times.atLeastOnce());
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
-		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), 'connection'))
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), 'connection', true))
 		.returns(() =>  new Promise<string>((resolve, reject) => { reject('unused');}))
 		.verifiable(TypeMoq.Times.once());
 		let service = getCommandLineService(connectionManagementService.object, environmentService.object, capabilitiesService);
