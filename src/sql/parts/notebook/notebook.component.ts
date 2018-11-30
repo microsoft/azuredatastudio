@@ -31,7 +31,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, IActionItem } from 'vs/base/common/actions';
@@ -260,6 +260,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
+		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
+
 		const notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
 		let primary: IAction[] = [];
@@ -272,9 +274,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._actionBar.setContent([
 			{ element: kernelContainer },
 			{ element: attachToContainer },
-			{ action: addCodeCellButton},
-			{ action: addTextCellButton},
-			{ action: this._trustedAction}
+			{ action: addCodeCellButton },
+			{ action: addTextCellButton },
+			{ action: saveNotebookButton },
+			{ action: this._trustedAction }
 		]);
 
 		// Primary actions are categorized as those that are added to the 'horizontal' group.

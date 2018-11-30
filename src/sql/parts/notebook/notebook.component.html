@@ -12,7 +12,7 @@
 		<div class="notebook-cell" *ngFor="let cell of cells" (click)="selectCell(cell)" [class.active]="cell.active" (keydown)="onKeyDown($event)">
 			<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 			</code-cell-component>
-			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [activeCellId]="activeCellId">
+			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 			</text-cell-component>
 		</div>
 	</div>
