@@ -18,6 +18,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { NotebookInput, NotebookInputModel, notebooksEnabledCondition } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { JUPYTER_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 
 
 let counter = 0;
@@ -44,6 +45,7 @@ export class NewNotebookAction extends Action {
 		let title = `Untitled-${counter++}`;
 		let untitledUri = URI.from({ scheme: Schemas.untitled, path: title });
 		let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
+		model.providerId = JUPYTER_NOTEBOOK_PROVIDER;
 		let input = this._instantiationService.createInstance(NotebookInput, title, model);
 		return this._editorService.openEditor(input, { pinned: true }).then(() => undefined);
 	}
