@@ -33,7 +33,7 @@ export class ProfilerState implements IDisposable {
 	private _isPaused: boolean;
 	private _isStopped: boolean;
 	private _autoscroll: boolean;
-	private _isPanelCollapsed: boolean;
+	private _isPanelCollapsed = true;
 	private _eventEmitter: EventEmitter;
 
 	public get isConnected(): boolean { return this._isConnected; }

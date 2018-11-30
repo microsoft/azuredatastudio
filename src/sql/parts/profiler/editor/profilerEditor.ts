@@ -156,14 +156,13 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService editorService: IEditorService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (_editorService) {
-			_editorService.overrideOpenEditor((editor, options, group) => {
+		if (editorService) {
+			editorService.overrideOpenEditor((editor, options, group) => {
 				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
 					this.saveEditorViewState();
 				}
