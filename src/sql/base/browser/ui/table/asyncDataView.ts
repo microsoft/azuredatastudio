@@ -9,36 +9,27 @@ export interface IObservableCollection<T> {
 	getLength(): number;
 	at(index: number): T;
 	getRange(start: number, end: number): T[];
-	setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void;
+	setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void;
+	setLength(number): void;
 	dispose(): void;
-}
-
-export interface IGridDataRow {
-	row?: number;
-	values: any[];
-}
-
-export enum CollectionChange {
-	ItemsReplaced
 }
 
 class LoadCancellationToken {
 	isCancelled: boolean;
 }
 
-class DataWindow<TData> {
-	private _data: TData[];
+class DataWindow<T> {
+	private _data: T[];
 	private _length: number = 0;
 	private _offsetFromDataSource: number = -1;
 
 	private lastLoadCancellationToken: LoadCancellationToken;
 
 	constructor(
-		private loadFunction: (offset: number, count: number) => Thenable<TData[]>,
-		private placeholderItemGenerator: (index: number) => TData,
+		private loadFunction: (offset: number, count: number) => Thenable<T[]>,
+		private placeholderItemGenerator: (index: number) => T,
 		private loadCompleteCallback: (start: number, end: number) => void
-	) {
-	}
+	) { }
 
 	dispose() {
 		this._data = undefined;
@@ -50,26 +41,26 @@ class DataWindow<TData> {
 		}
 	}
 
-	getStartIndex(): number {
+	public getStartIndex(): number {
 		return this._offsetFromDataSource;
 	}
 
-	getEndIndex(): number {
+	public getEndIndex(): number {
 		return this._offsetFromDataSource + this._length;
 	}
 
-	contains(dataSourceIndex: number): boolean {
+	public contains(dataSourceIndex: number): boolean {
 		return dataSourceIndex >= this.getStartIndex() && dataSourceIndex < this.getEndIndex();
 	}
 
-	getItem(index: number): TData {
+	public getItem(index: number): T {
 		if (!this._data) {
 			return this.placeholderItemGenerator(index);
 		}
 		return this._data[index - this._offsetFromDataSource];
 	}
 
-	positionWindow(offset: number, length: number): void {
+	public positionWindow(offset: number, length: number): void {
 		this._offsetFromDataSource = offset;
 		this._length = length;
 		this._data = undefined;
@@ -92,34 +83,28 @@ class DataWindow<TData> {
 	}
 }
 
-export class VirtualizedCollection<TData> implements IObservableCollection<TData> {
+export class VirtualizedCollection<T extends Slick.SlickData> implements IObservableCollection<T> {
+	private _bufferWindowBefore: DataWindow<T>;
+	private _window: DataWindow<T>;
+	private _bufferWindowAfter: DataWindow<T>;
 
-	private _length: number;
-	private _windowSize: number;
-	private _bufferWindowBefore: DataWindow<TData>;
-	private _window: DataWindow<TData>;
-	private _bufferWindowAfter: DataWindow<TData>;
-
-	private collectionChangedCallback: (change: CollectionChange, startIndex: number, count: number) => void;
+	private collectionChangedCallback: (startIndex: number, count: number) => void;
 
 	constructor(
-		windowSize: number,
-		length: number,
-		loadFn: (offset: number, count: number) => Thenable<TData[]>,
-		private _placeHolderGenerator: (index: number) => TData
+		private readonly windowSize: number,
+		private placeHolderGenerator: (index: number) => T,
+		private length: number,
+		loadFn: (offset: number, count: number) => Thenable<T[]>
 	) {
-		this._windowSize = windowSize;
-		this._length = length;
-
 		let loadCompleteCallback = (start: number, end: number) => {
 			if (this.collectionChangedCallback) {
-				this.collectionChangedCallback(CollectionChange.ItemsReplaced, start, end - start);
+				this.collectionChangedCallback(start, end - start);
 			}
 		};
 
-		this._bufferWindowBefore = new DataWindow(loadFn, _placeHolderGenerator, loadCompleteCallback);
-		this._window = new DataWindow(loadFn, _placeHolderGenerator, loadCompleteCallback);
-		this._bufferWindowAfter = new DataWindow(loadFn, _placeHolderGenerator, loadCompleteCallback);
+		this._bufferWindowBefore = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
+		this._window = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
+		this._bufferWindowAfter = new DataWindow(loadFn, placeHolderGenerator, loadCompleteCallback);
 	}
 
 	dispose() {
@@ -128,19 +113,23 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 		this._window.dispose();
 	}
 
-	setCollectionChangedCallback(callback: (change: CollectionChange, startIndex: number, count: number) => void): void {
+	public setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void {
 		this.collectionChangedCallback = callback;
 	}
 
-	getLength(): number {
-		return this._length;
+	public getLength(): number {
+		return this.length;
 	}
 
-	at(index: number): TData {
+	setLength(number: any): void {
+		this.length = number;
+	}
+
+	public at(index: number): T {
 		return this.getRange(index, index + 1)[0];
 	}
 
-	getRange(start: number, end: number): TData[] {
+	public getRange(start: number, end: number): T[] {
 
 		// current data may contain placeholders
 		let currentData = this.getRangeFromCurrent(start, end);
@@ -155,7 +144,7 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 			this._bufferWindowAfter = this._window;
 			this._window = this._bufferWindowBefore;
 			this._bufferWindowBefore = windowToRecycle;
-			let newWindowOffset = Math.max(0, this._window.getStartIndex() - this._windowSize);
+			let newWindowOffset = Math.max(0, this._window.getStartIndex() - this.windowSize);
 
 			this._bufferWindowBefore.positionWindow(newWindowOffset, this._window.getStartIndex() - newWindowOffset);
 		} else if (start >= this._bufferWindowAfter.getStartIndex()) {
@@ -164,8 +153,8 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 			this._bufferWindowBefore = this._window;
 			this._window = this._bufferWindowAfter;
 			this._bufferWindowAfter = windowToRecycle;
-			let newWindowOffset = Math.min(this._window.getStartIndex() + this._windowSize, this._length);
-			let newWindowLength = Math.min(this._length - newWindowOffset, this._windowSize);
+			let newWindowOffset = Math.min(this._window.getStartIndex() + this.windowSize, this.length);
+			let newWindowLength = Math.min(this.length - newWindowOffset, this.windowSize);
 
 			this._bufferWindowAfter.positionWindow(newWindowOffset, newWindowLength);
 		}
@@ -173,7 +162,7 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 		return currentData;
 	}
 
-	private getRangeFromCurrent(start: number, end: number): TData[] {
+	private getRangeFromCurrent(start: number, end: number): T[] {
 		let currentData = [];
 		for (let i = 0; i < end - start; i++) {
 			currentData.push(this.getDataFromCurrent(start + i));
@@ -182,7 +171,7 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 		return currentData;
 	}
 
-	private getDataFromCurrent(index: number): TData {
+	private getDataFromCurrent(index: number): T {
 		if (this._bufferWindowBefore.contains(index)) {
 			return this._bufferWindowBefore.getItem(index);
 		} else if (this._bufferWindowAfter.contains(index)) {
@@ -191,39 +180,47 @@ export class VirtualizedCollection<TData> implements IObservableCollection<TData
 			return this._window.getItem(index);
 		}
 
-		return this._placeHolderGenerator(index);
+		return this.placeHolderGenerator(index);
 	}
 
 	private resetWindowsAroundIndex(index: number): void {
 
-		let bufferWindowBeforeStart = Math.max(0, index - this._windowSize * 1.5);
-		let bufferWindowBeforeEnd = Math.max(0, index - this._windowSize / 2);
+		let bufferWindowBeforeStart = Math.max(0, index - this.windowSize * 1.5);
+		let bufferWindowBeforeEnd = Math.max(0, index - this.windowSize / 2);
 		this._bufferWindowBefore.positionWindow(bufferWindowBeforeStart, bufferWindowBeforeEnd - bufferWindowBeforeStart);
 
 		let mainWindowStart = bufferWindowBeforeEnd;
-		let mainWindowEnd = Math.min(mainWindowStart + this._windowSize, this._length);
+		let mainWindowEnd = Math.min(mainWindowStart + this.windowSize, this.length);
 		this._window.positionWindow(mainWindowStart, mainWindowEnd - mainWindowStart);
 
 		let bufferWindowAfterStart = mainWindowEnd;
-		let bufferWindowAfterEnd = Math.min(bufferWindowAfterStart + this._windowSize, this._length);
+		let bufferWindowAfterEnd = Math.min(bufferWindowAfterStart + this.windowSize, this.length);
 		this._bufferWindowAfter.positionWindow(bufferWindowAfterStart, bufferWindowAfterEnd - bufferWindowAfterStart);
 	}
 }
 
-export class AsyncDataProvider<TData extends IGridDataRow> implements IDisposableDataProvider<TData> {
+export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 
-	constructor(private dataRows: IObservableCollection<TData>) { }
+	constructor(public dataRows: IObservableCollection<T>) { }
 
 	public getLength(): number {
-		return this.dataRows ? this.dataRows.getLength() : 0;
+		return this.dataRows.getLength();
 	}
 
-	public getItem(index: number): TData {
-		return !this.dataRows ? undefined : this.dataRows.at(index);
+	public getItem(index: number): T {
+		return this.dataRows.at(index);
 	}
 
-	public getRange(start: number, end: number): TData[] {
-		return !this.dataRows ? undefined : this.dataRows.getRange(start, end);
+	public getRange(start: number, end: number): T[] {
+		return this.dataRows.getRange(start, end);
+	}
+
+	public set length(length: number) {
+		this.dataRows.setLength(length);
+	}
+
+	public get length(): number {
+		return this.dataRows.getLength();
 	}
 
 	dispose() {

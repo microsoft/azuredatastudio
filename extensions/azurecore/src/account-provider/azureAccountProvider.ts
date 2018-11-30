@@ -69,8 +69,8 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 		return this._tokenCache.clear();
 	}
 
-	public getSecurityToken(account: AzureAccount): Thenable<AzureAccountSecurityTokenCollection> {
-		return this.doIfInitialized(() => this.getAccessTokens(account));
+	public getSecurityToken(account: AzureAccount, resource: sqlops.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
+		return this.doIfInitialized(() => this.getAccessTokens(account, resource));
 	}
 
 	public initialize(restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
@@ -90,7 +90,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 
 			// Attempt to get fresh tokens. If this fails then the account is stale.
 			// NOTE: Based on ADAL implementation, getting tokens should use the refresh token if necessary
-			let task = this.getAccessTokens(account)
+			let task = this.getAccessTokens(account, sqlops.AzureResource.ResourceManagement)
 				.then(
 				() => {
 					return account;
@@ -161,8 +161,13 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 			: Promise.reject(localize('accountProviderNotInitialized', 'Account provider not initialized, cannot perform action'));
 	}
 
-	private getAccessTokens(account: AzureAccount): Thenable<AzureAccountSecurityTokenCollection> {
+	private getAccessTokens(account: AzureAccount, resource: sqlops.AzureResource): Thenable<AzureAccountSecurityTokenCollection> {
 		let self = this;
+
+		const resourceIdMap = new Map<sqlops.AzureResource, string>([
+			[sqlops.AzureResource.ResourceManagement, self._metadata.settings.armResource.id],
+			[sqlops.AzureResource.Sql, self._metadata.settings.sqlResource.id]
+		]);
 
 		let accessTokenPromises: Thenable<void>[] = [];
 		let tokenCollection: AzureAccountSecurityTokenCollection = {};
@@ -172,7 +177,7 @@ export class AzureAccountProvider implements sqlops.AccountProvider {
 				let context = new adal.AuthenticationContext(authorityUrl, null, self._tokenCache);
 
 				context.acquireToken(
-					self._metadata.settings.armResource.id,
+					resourceIdMap.get(resource),
 					tenant.userId,
 					self._metadata.settings.clientId,
 					(error: Error, response: adal.TokenResponse | adal.ErrorResponse) => {

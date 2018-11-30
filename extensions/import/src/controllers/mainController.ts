@@ -13,6 +13,7 @@ import { FlatFileWizard } from '../wizard/flatFileWizard';
 import { ServiceClient } from '../services/serviceClient';
 import { ApiType, managerInstance } from '../services/serviceApiManager';
 import { FlatFileProvider } from '../services/contracts';
+import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
 
 /**
  * The main controller class that initializes the extension
@@ -35,10 +36,15 @@ export default class MainController extends ControllerBase {
 			this.initializeFlatFileProvider(provider);
 		});
 
+		this.initializeDacFxWizard();
 		return Promise.resolve(true);
 	}
 
 	private initializeFlatFileProvider(provider: FlatFileProvider) {
 		sqlops.tasks.registerTask('flatFileImport.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new FlatFileWizard(provider).start(profile, args));
+	}
+
+	private initializeDacFxWizard() {
+		sqlops.tasks.registerTask('dacFx.start', (profile: sqlops.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
 	}
 }
