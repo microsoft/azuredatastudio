@@ -84,7 +84,10 @@ class BasicView extends View {
 			this._previousSize = this.size;
 			this.setFixed(this.headerSize);
 		} else {
-			this.setFlexible(this._previousSize);
+			// Enforce the min height for the view when user is doing expand operation,
+			// to make sure the view has a reasonable height.
+			const minHeight = 200;
+			this.setFlexible(Math.max(this._previousSize, minHeight));
 		}
 	}
 
@@ -230,7 +233,8 @@ export class ProfilerEditor extends BaseEditor {
 			}
 		}));
 		let sessionsContainer = document.createElement('div');
-		sessionsContainer.style.width = '150px';
+		sessionsContainer.style.minWidth = '150px';
+		sessionsContainer.style.maxWidth = '250px';
 		sessionsContainer.style.paddingRight = '5px';
 		this._sessionSelector.render(sessionsContainer);
 
@@ -248,7 +252,6 @@ export class ProfilerEditor extends BaseEditor {
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
 			{ element: viewTemplateContainer },
-			{ element: Taskbar.createTaskbarSeparator() },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
 		]);

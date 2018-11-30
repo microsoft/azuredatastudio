@@ -291,3 +291,60 @@ export namespace DeleteAgentJobScheduleRequest {
 }
 
 // ------------------------------- < Agent Management > ------------------------------------
+
+// ------------------------------- < DacFx > ------------------------------------
+
+export enum TaskExecutionMode {
+	execute = 0,
+	script = 1,
+	executeAndScript = 2,
+}
+export interface ExportParams {
+	databaseName: string;
+	packageFilePath: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface ImportParams {
+	packageFilePath: string;
+	databaseName: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+
+export interface ExtractParams {
+	databaseName: string;
+	packageFilePath: string;
+	applicationName: string;
+	applicationVersion: string;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export interface DeployParams {
+	packageFilePath: string;
+	databaseName: string;
+	upgradeExisting: boolean;
+	ownerUri: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
+export namespace ExportRequest {
+	export const type = new RequestType<ExportParams, sqlops.DacFxResult, void, void>('dacfx/export');
+}
+
+export namespace ImportRequest {
+	export const type = new RequestType<ImportParams, sqlops.DacFxResult, void, void>('dacfx/import');
+}
+
+export namespace ExtractRequest {
+	export const type = new RequestType<ExtractParams, sqlops.DacFxResult, void, void>('dacfx/extract');
+}
+
+export namespace DeployRequest {
+	export const type = new RequestType<DeployParams, sqlops.DacFxResult, void, void>('dacfx/deploy');
+}
+
+// ------------------------------- < DacFx > ------------------------------------

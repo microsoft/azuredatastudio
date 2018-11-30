@@ -288,7 +288,7 @@ export interface INotebookModel {
 	readonly contexts: IDefaultConnection | undefined;
 
 	/**
-	 * The trusted mode of the NoteBook
+	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
 
@@ -301,12 +301,17 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string): void;
+	changeContext(host: string, connection?: IConnectionProfile): void;
 
 	/**
-	 * Adds a cell to the end of the model
+	 * Find a cell's index given its model
 	 */
-	addCell(cellType: CellType): void;
+	findCellIndex(cellModel: ICellModel): number;
+
+	/**
+	 * Adds a cell to the index of the model
+	 */
+	addCell(cellType: CellType, index?: number): void;
 
 	/**
 	 * Deletes a cell
@@ -338,9 +343,16 @@ export interface ICellModel {
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
+	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
+	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	setFuture(future: FutureInternal): void;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICell;
+}
+
+export interface FutureInternal extends nb.IFuture {
+	inProgress: boolean;
 }
 
 export interface IModelFactory {
@@ -373,5 +385,5 @@ export namespace notebookConstants {
 	export const python3 = 'python3';
 	export const python3DisplayName = 'Python 3';
 	export const defaultSparkKernel = 'pyspark3kernel';
-
+	export const hostPropName = 'host';
 }

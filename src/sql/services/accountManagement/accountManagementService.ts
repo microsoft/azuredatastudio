@@ -212,11 +212,12 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Generates a security token by asking the account's provider
 	 * @param {Account} account Account to generate security token for
+	 * @param {sqlops.AzureResource} resource The resource to get the security token for
 	 * @return {Thenable<{}>} Promise to return the security token
 	 */
-	public getSecurityToken(account: sqlops.Account): Thenable<{}> {
+	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
 		return this.doWithProvider(account.key.providerId, provider => {
-			return provider.provider.getSecurityToken(account);
+			return provider.provider.getSecurityToken(account, resource);
 		});
 	}
 

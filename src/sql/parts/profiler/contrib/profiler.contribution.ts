@@ -45,7 +45,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'TextData',
-					eventsMapped: ['options_text', 'batch_text']
+					eventsMapped: ['options_text', 'batch_text', 'statement']
 				},
 				{
 					name: 'ApplicationName',
@@ -99,7 +99,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'TextData',
-					eventsMapped: ['options_text', 'batch_text']
+					eventsMapped: ['options_text', 'batch_text', 'statement']
 				},
 				{
 					name: 'SPID',
@@ -120,7 +120,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'TextData',
-					eventsMapped: ['options_text', 'batch_text']
+					eventsMapped: ['options_text', 'batch_text', 'statement']
 				},
 				{
 					name: 'Duration',
@@ -157,7 +157,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'TextData',
-					eventsMapped: ['options_text', 'batch_text']
+					eventsMapped: ['options_text', 'batch_text', 'statement']
 				},
 				{
 					name: 'ApplicationName',
@@ -214,7 +214,7 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				},
 				{
 					name: 'TextData',
-					eventsMapped: ['options_text', 'batch_text']
+					eventsMapped: ['options_text', 'batch_text', 'statement']
 				},
 				{
 					name: 'SPID',
