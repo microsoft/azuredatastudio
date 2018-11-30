@@ -288,3 +288,12 @@ export class ContextAwareMenuItemActionItem extends MenuItemActionItem {
 			.done(undefined, err => this._notificationService.error(err));
 	}
 }
+
+// Always show label for action items, instead of whether they don't have
+// an icon/CSS class. Useful for some toolbar scenarios in particular with
+// contributed actions from other extensions
+export class LabeledMenuItemActionItem extends MenuItemActionItem {
+	_updateLabel(): void {
+		this.$e.text(this._commandAction.label);
+	}
+}
