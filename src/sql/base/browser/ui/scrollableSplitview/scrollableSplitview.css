@@ -3,6 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- .monaco-scroll-split-view {
+.split-view-container {
 	position: relative;
 }

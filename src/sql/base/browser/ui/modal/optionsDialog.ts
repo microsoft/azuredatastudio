@@ -29,12 +29,11 @@ import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ViewletPanel } from 'sql/base/browser/ui/scrollableSplitview/panelViewlet';
 
 export class CategoryView extends ViewletPanel {
 
@@ -77,6 +76,8 @@ export class OptionsDialog extends Modal {
 	private _optionRowSize = 31;
 	private _optionCategoryPadding = 30;
 	private _categoryHeaderSize = 22;
+	private height: number;
+	private splitview: ScrollableSplitView;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -223,12 +224,11 @@ export class OptionsDialog extends Modal {
 		this._optionValues = optionValues;
 		let firstOption: string;
 		let containerGroup: Builder;
-		let layoutSize = 0;
 		let optionsContentBuilder: Builder = $().div({ class: 'optionsDialog-options-groups' }, (container) => {
 			containerGroup = container;
 			this._optionGroups = container.getHTMLElement();
 		});
-		let splitview = new ScrollableSplitView(containerGroup.getHTMLElement(), { enableResizing: false });
+		this.splitview = new ScrollableSplitView(containerGroup.getHTMLElement(), { enableResizing: false, scrollDebounce: 0 });
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		for (let category in categoryMap) {
 			let serviceOptions: sqlops.ServiceOption[] = categoryMap[category];
@@ -237,15 +237,17 @@ export class OptionsDialog extends Modal {
 			});
 
 			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			layoutSize += (viewSize + this._categoryHeaderSize);
 			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer.getHTMLElement(), viewSize, { title: category, ariaHeaderLabel: category, id: category });
-			splitview.addView(categoryView, 0);
+			this.splitview.addView(categoryView, viewSize);
+			categoryView.render();
 
 			if (!firstOption) {
 				firstOption = serviceOptions[0].name;
 			}
 		}
-		splitview.layout(layoutSize);
+		if (this.height) {
+			this.splitview.layout(this.height - 120);
+		}
 		let body = new Builder(this._body);
 		body.append(optionsContentBuilder.getHTMLElement(), 0);
 		this.show();
@@ -255,7 +257,8 @@ export class OptionsDialog extends Modal {
 	}
 
 	protected layout(height?: number): void {
-		// Nothing currently laid out in this class
+		this.height = height;
+		this.splitview.layout(this.height - 120);
 	}
 
 	public dispose(): void {

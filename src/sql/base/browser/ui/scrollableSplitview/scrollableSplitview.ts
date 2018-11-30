@@ -31,6 +31,7 @@ export interface ISplitViewOptions {
 	orthogonalEndSash?: Sash;
 	inverseAltBehavior?: boolean;
 	enableResizing?: boolean;
+	scrollDebounce?: number;
 	verticalScrollbarVisibility?: ScrollbarVisibility;
 }
 
@@ -185,7 +186,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		this.el = document.createElement('div');
 		this.scrollable = new ScrollableElement(this.el, { vertical: options.verticalScrollbarVisibility });
-		debounceEvent(this.scrollable.onScroll, (l, e) => e, 25)(e => {
+		debounceEvent(this.scrollable.onScroll, (l, e) => e, types.isNumber(this.options.scrollDebounce) ? this.options.scrollDebounce : 25)(e => {
 			this.render(e.scrollTop, e.height);
 			this.relayout();
 			this._onScroll.fire(e.scrollTop);
@@ -269,6 +270,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 			const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
 			this.viewItems.splice(index, 0, item);
+
+			this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
 
 			// Add sash
 			if (this.options.enableResizing && this.viewItems.length > 1) {
@@ -364,6 +367,8 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
 		this.viewItems.splice(index, 0, item);
+
+		this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
 
 		// Add sash
 		if (this.options.enableResizing && this.viewItems.length > 1) {
@@ -485,6 +490,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 	layout(size: number): void {
 		const previousSize = Math.max(this.size, this.contentSize);
 		this.size = size;
+		this.contentSize = 0;
+		this.lastRenderHeight = undefined;
+		this.lastRenderTop = undefined;
 
 		if (!this.proportions) {
 			this.resize(this.viewItems.length - 1, size - previousSize);
@@ -694,7 +702,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		let topItem = this.itemAtIndex(this.indexAt(renderTop));
 
 		if (topItem) {
-			this.el.style.top = (topItem.top - renderTop) + 'px';
+			this.viewContainer.style.top = (topItem.top - renderTop) + 'px';
 		}
 
 		this.lastRenderTop = renderTop;
