@@ -221,13 +221,13 @@ suite('Account Management Service Tests:', () => {
 		let ams = getTestState().accountManagementService;
 
 		// If: I add an account when the provider doesn't exist
-		// Then: It should be rejected
-		ams.addAccount('doesNotExist')
-			.then(
-			() => done('Promise resolved when it should have rejected'),
-			() => done()
-			);
-
+		// Then: It should not resolve
+		Promise.race([
+			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
+			ams.addAccount('doesNotExist').then((
+				() => done('Promise resolved when the provider did not exist')
+			))
+		]).then(() => done(), err => done(err));
 	});
 
 	test('Add account - provider exists, provider fails', done => {
@@ -305,12 +305,13 @@ suite('Account Management Service Tests:', () => {
 		let ams = getTestState().accountManagementService;
 
 		// If: I get accounts when the provider doesn't exist
-		// Then: It should be rejected
-		ams.getAccountsForProvider('doesNotExist')
-			.then(
-			() => done('Promise resolved when it should have rejected'),
-			() => done()
-			);
+		// Then: It should not resolve
+		Promise.race([
+			new Promise((resolve, reject) => setTimeout(() => resolve(), 100)),
+			ams.getAccountsForProvider('doesNotExist').then((
+				() => done('Promise resolved when the provider did not exist')
+			))
+		]).then(() => done(), err => done(err));
 	});
 
 	test('Get accounts by provider - provider exists, no accounts', done => {
