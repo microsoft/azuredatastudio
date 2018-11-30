@@ -226,8 +226,8 @@ export default class TokenCache implements adal.TokenCache {
 					let cacheCipher = fs.readFileSync(self._cacheSerializationPath, TokenCache.FsOptions);
 
 					let decipher = crypto.createDecipheriv(TokenCache.CipherAlgorithm, encryptionParams.key, encryptionParams.initializationVector);
-					let cacheJson = decipher.update(cacheCipher, 'hex', 'binary');
-					cacheJson += decipher.final('binary');
+					let cacheJson = decipher.update(cacheCipher, 'hex', 'utf8');
+					cacheJson += decipher.final('utf8');
 
 					// Deserialize the JSON into the array of tokens
 					let cacheObj = <adal.TokenResponse[]>JSON.parse(cacheJson);
@@ -274,7 +274,7 @@ export default class TokenCache implements adal.TokenCache {
 					let cacheJson = JSON.stringify(cache);
 
 					let cipher = crypto.createCipheriv(TokenCache.CipherAlgorithm, encryptionParams.key, encryptionParams.initializationVector);
-					let cacheCipher = cipher.update(cacheJson, 'binary', 'hex');
+					let cacheCipher = cipher.update(cacheJson, 'utf8', 'hex');
 					cacheCipher += cipher.final('hex');
 
 					fs.writeFileSync(self._cacheSerializationPath, cacheCipher, TokenCache.FsOptions);
