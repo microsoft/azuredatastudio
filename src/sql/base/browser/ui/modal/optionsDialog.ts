@@ -12,6 +12,7 @@ import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import * as sqlops from 'sqlops';
 
@@ -32,7 +33,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class CategoryView extends ViewletPanel {
@@ -75,7 +75,6 @@ export class OptionsDialog extends Modal {
 	private _optionValues: { [optionName: string]: string };
 	private _optionRowSize = 31;
 	private _optionCategoryPadding = 30;
-	private _categoryHeaderSize = 22;
 	private height: number;
 	private splitview: ScrollableSplitView;
 

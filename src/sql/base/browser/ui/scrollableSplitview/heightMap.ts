@@ -6,7 +6,7 @@
 import { INextIterator } from 'vs/base/common/iterator';
 
 export interface IView {
-	id: string;
+	id?: string;
 }
 
 export interface IViewItem {

@@ -22,6 +22,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ISplitViewStyles, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Color } from 'vs/base/common/color';
 import { domEvent } from 'vs/base/browser/event';
+import { generateUuid } from 'vs/base/common/uuid';
 export { Orientation } from 'vs/base/browser/ui/sash/sash';
 
 export interface ISplitViewOptions {
@@ -228,6 +229,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				size = sizes;
 			}
 			const view = views[i];
+			view.id = view.id || generateUuid();
 			// Add view
 			const container = dom.$('.split-view-view');
 
@@ -325,6 +327,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		this.state = State.Busy;
 
+		view.id = view.id || generateUuid();
 		// Add view
 		const container = dom.$('.split-view-view');
 
