@@ -994,16 +994,16 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/blob/master/images/icon.png"
+									"source": "https://raw.githubusercontent.com/PejmanNik/sqlops-spexecutesql-to-sql/master/images/icon.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/blob/master/README.md"
+									"source": "https://raw.githubusercontent.com/PejmanNik/sqlops-spexecutesql-to-sql/master/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/blob/master/package.json"
-								},
+									"source": "https://raw.githubusercontent.com/PejmanNik/sqlops-spexecutesql-to-sql/master/package.json"
+								}
 							],
 							"properties": [
 								{
