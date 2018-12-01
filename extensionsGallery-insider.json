@@ -970,6 +970,59 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "28",
+					"extensionName": "sp_executesqlToSQL",
+					"displayName": "sp_executesql to SQL",
+					"shortDescription": "Convert sp_executesql to sql",
+					"publisher": {
+						"displayName": "Pejman Nikram",
+						"publisherId": "pejmannikram",
+						"publisherName": "pejmannikram"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "11/13/2018",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/releases/tag/0.0.1"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/blob/master/images/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/blob/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/blob/master/package.json"
+								},
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -978,7 +1031,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 17
+							"count": 18
 						}
 					]
 				}
