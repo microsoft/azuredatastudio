@@ -129,7 +129,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
 		this.alerts = this.model.alerts ? this.model.alerts : [];
 		this.isEdit = jobInfo ? true : false;
-		this.eventName = this.isEdit ? this.EditJobDialogEvent : this.NewJobDialogEvent;
+		this.dialogName = this.isEdit ? this.EditJobDialogEvent : this.NewJobDialogEvent;
 	}
 
 	protected async initializeDialog() {

@@ -70,9 +70,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		return this._proxy.$handleSave(handle);
 	}
 
-	public $openDialog(handle: number, eventName?: string): Thenable<void> {
+	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		eventName ? this._dialogService.showDialog(dialog, eventName) : this._dialogService.showDialog(dialog);
+		dialogName ? this._dialogService.showDialog(dialog, dialogName) : this._dialogService.showDialog(dialog);
 		return Promise.resolve();
 	}
 

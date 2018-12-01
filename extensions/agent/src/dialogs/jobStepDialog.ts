@@ -134,7 +134,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.jobModel = jobModel;
 		this.jobName = this.jobName ?  this.jobName : this.jobModel.name;
 		this.server = server;
-		this.eventName = this.isEdit ? this.EditStepDialog : this.NewStepDialog;
+		this.dialogName = this.isEdit ? this.EditStepDialog : this.NewStepDialog;
 	}
 
 	private initializeUIComponents() {

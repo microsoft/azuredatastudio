@@ -80,7 +80,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			new OperatorData(ownerUri, operatorInfo),
 			operatorInfo ? OperatorDialog.EditDialogTitle : OperatorDialog.CreateDialogTitle);
 		this.isEdit = operatorInfo ? true : false;
-		this.eventName = this.isEdit ? this.EditOperatorDialog : this.NewOperatorDialog;
+		this.dialogName = this.isEdit ? this.EditOperatorDialog : this.NewOperatorDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

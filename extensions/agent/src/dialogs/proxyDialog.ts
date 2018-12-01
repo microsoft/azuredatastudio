@@ -68,7 +68,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 			proxyInfo ? ProxyDialog.EditDialogTitle : ProxyDialog.CreateDialogTitle);
 		this.credentials = credentials;
 		this.isEdit = proxyInfo ? true : false;
-		this.eventName = this.isEdit ? this.EditProxyDialog : this.NewProxyDialog;
+		this.dialogName = this.isEdit ? this.EditProxyDialog : this.NewProxyDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

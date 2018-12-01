@@ -172,7 +172,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.jobId = this.jobId ? this.jobId : this.jobModel.jobId;
 		this.jobName = this.jobName ? this.jobName : this.jobModel.name;
 		this.isEdit = alertInfo ? true : false;
-		this.eventName = this.isEdit ? this.EditAlertDialog : this.NewAlertDialog;
+		this.dialogName = this.isEdit ? this.EditAlertDialog : this.NewAlertDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

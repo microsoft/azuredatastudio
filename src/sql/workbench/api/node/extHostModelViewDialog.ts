@@ -127,7 +127,7 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	private _message: sqlops.window.modelviewdialog.DialogMessage;
 	private _closeValidator: () => boolean | Thenable<boolean>;
 	private _operationHandler: BackgroundOperationHandler;
-	private _eventName: string;
+	private _dialogName: string;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -160,12 +160,12 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 		this._extHostModelViewDialog.updateDialogContent(this);
 	}
 
-	public get eventName(): string {
-		return this._eventName;
+	public get dialogName(): string {
+		return this._dialogName;
 	}
 
-	public set eventName(value: string) {
-		this._eventName = value;
+	public set dialogName(value: string) {
+		this._dialogName = value;
 	}
 
 	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
@@ -514,7 +514,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
 		let handle = this.getHandle(dialog);
 		this.updateDialogContent(dialog);
-		dialog.eventName ? this._proxy.$openDialog(handle, dialog.eventName) :
+		dialog.dialogName ? this._proxy.$openDialog(handle, dialog.dialogName) :
 						   this._proxy.$openDialog(handle);
 	}
 
@@ -572,10 +572,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, eventName?: string, extensionLocation?: URI): sqlops.window.modelviewdialog.Dialog {
+	public createDialog(title: string, dialogName?: string, extensionLocation?: URI): sqlops.window.modelviewdialog.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extensionLocation);
-		if (eventName) {
-			dialog.eventName = eventName;
+		if (dialogName) {
+			dialog.dialogName = dialogName;
 		}
 		dialog.title = title;
 		dialog.handle = this.getHandle(dialog);
