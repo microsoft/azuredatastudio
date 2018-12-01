@@ -259,11 +259,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 
 		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
 
+		// Get all of the menu contributions that use the ID 'notebook/toolbar'.
+		// Then, find all groups (currently we don't leverage the contributed
+		// groups functionality for the notebook toolbar), and fill in the 'primary'
+		// array with items that don't list a group. Finally, add any actions from
+		// the primary array to the end of the toolbar.
 		const notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
 		let primary: IAction[] = [];
 		let secondary: IAction[] = [];
-		fillInActions(groups, {primary, secondary}, false, (group: string) => group === 'horizontal');
+		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action)});
@@ -305,7 +310,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService, 'notebook-button');
 		}
 		return undefined;
 	}
