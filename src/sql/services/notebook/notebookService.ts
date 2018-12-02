@@ -6,12 +6,15 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+
+import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import URI from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -20,6 +23,9 @@ export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 
 export interface INotebookService {
 	_serviceBrand: any;
+
+	onNotebookEditorAdd: Event<INotebookEditor>;
+	onNotebookEditorRemove: Event<INotebookEditor>;
 
 	/**
 	 * Register a metadata provider
@@ -40,7 +46,9 @@ export interface INotebookService {
 	 */
 	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager>;
 
-	handleNotebookClosed(uri: URI): void;
+	addNotebookEditor(editor: INotebookEditor): void;
+
+	removeNotebookEditor(editor: INotebookEditor): void;
 
 	shutdown(): void;
 
@@ -62,8 +70,14 @@ export interface INotebookManager {
 
 export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
+	input: NotebookInput;
 	providerId: string;
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
+}
+
+export interface INotebookEditor {
+	readonly notebookParams: INotebookParams;
+	readonly id: string;
 }

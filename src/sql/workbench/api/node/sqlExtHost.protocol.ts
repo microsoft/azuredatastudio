@@ -23,6 +23,7 @@ import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
 	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone
 } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -546,7 +547,9 @@ export const SqlMainContext = {
 	MainThreadDashboard: createMainId<MainThreadDashboardShape>('MainThreadDashboard'),
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
-	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook')
+	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
+	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors')
+
 };
 
 export const SqlExtHostContext = {
@@ -566,7 +569,8 @@ export const SqlExtHostContext = {
 	ExtHostDashboard: createExtId<ExtHostDashboardShape>('ExtHostDashboard'),
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
-	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook')
+	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
+	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -754,3 +758,30 @@ export interface MainThreadNotebookShape extends IDisposable {
 	$onFutureDone(futureId: number, done: INotebookFutureDone): void;
 }
 
+export interface INotebookDocumentsAndEditorsDelta {
+	removedDocuments?: UriComponents[];
+	addedDocuments?: INotebookModelAddedData[];
+	removedEditors?: string[];
+	addedEditors?: INotebookEditorAddData[];
+	newActiveEditor?: string;
+}
+
+export interface INotebookModelAddedData {
+	uri: UriComponents;
+	providerId: string;
+	isDirty: boolean;
+}
+
+export interface INotebookEditorAddData {
+	id: string;
+	documentUri: UriComponents;
+	editorPosition: EditorViewColumn;
+}
+
+export interface ExtHostNotebookDocumentsAndEditorsShape {
+	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void;
+}
+
+export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
+	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
+}

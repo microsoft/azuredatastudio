@@ -38,6 +38,7 @@ import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelVi
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocuments';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -75,6 +76,7 @@ export function createApiFactory(
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
+	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 
 
 	return {
@@ -412,10 +414,13 @@ export function createApiFactory(
 
 			const nb = {
 				get notebookDocuments() {
-					return extHostNotebook.notebookDocuments;
+					return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => doc.document);
 				},
-				get activeNotebook() {
-					return extHostNotebook.activeNotebook;
+				get activeNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.getActiveEditor();
+				},
+				get visibleNotebookEditors() {
+					return extHostNotebookDocumentsAndEditors.getAllEditors();
 				},
 				get onDidOpenNotebookDocument() {
 					return extHostNotebook.onDidOpenNotebookDocument;
@@ -423,8 +428,11 @@ export function createApiFactory(
 				get onDidChangeNotebookCell() {
 					return extHostNotebook.onDidChangeNotebookCell;
 				},
-				openNotebookDocument(uri) {
-					return extHostNotebook.openNotebookDocument(uri);
+				openNotebookDocument(uri: vscode.Uri) {
+					return extHostNotebookDocumentsAndEditors.openNotebookDocument(uri);
+				},
+				showNotebookDocument(document: sqlops.nb.NotebookDocument, column?: vscode.ViewColumn, preserveFocus?: boolean) {
+					return extHostNotebookDocumentsAndEditors.showNotebookDocument(document, column);
 				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);

@@ -88,11 +88,6 @@ export class NotebookInput extends EditorInput {
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
-		this.onDispose(() => {
-			if (this.notebookService) {
-				this.notebookService.handleNotebookClosed(this.notebookUri);
-			}
-		});
 	}
 
 	public get title(): string {

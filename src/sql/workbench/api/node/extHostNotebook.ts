@@ -199,18 +199,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#endregion
 
 	//#region APIs called by extensions
-	get notebookDocuments(): sqlops.nb.NotebookDocument[] {
-		throw new Error();
-	}
-
-	get activeNotebook(): sqlops.nb.NotebookDocument {
-		throw new Error();
-	}
-
-	openNotebookDocument(uri: vscode.Uri): Thenable<sqlops.nb.NotebookDocument> {
-		return TPromise.wrapError(new Error('Not implemented'));
-	}
-
 	registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
 			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));

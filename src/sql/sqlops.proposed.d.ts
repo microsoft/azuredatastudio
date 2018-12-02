@@ -1375,6 +1375,18 @@ declare module 'sqlops' {
 		export let notebookDocuments: NotebookDocument[];
 
 		/**
+		 * The currently active Notebook editor or `undefined`. The active editor is the one
+		 * that currently has focus or, when none has focus, the one that has changed
+		 * input most recently.
+		 */
+		export let activeNotebookEditor: NotebookEditor | undefined;
+
+		/**
+		 * The currently visible editors or an empty array.
+		 */
+		export let visibleNotebookEditors: NotebookEditor[];
+
+		/**
 		 * An event that is emitted when a [notebool document](#TextDocument) is opened.
 		 *
 		 * To add an event listener when a visible text document is opened, use the [TextEditor](#TextEditor) events in the
@@ -1407,6 +1419,19 @@ declare module 'sqlops' {
 		 * @return A promise that resolves to a [document](#TextDocument).
 		 */
 		export function openNotebookDocument(uri: vscode.Uri): Thenable<NotebookDocument>;
+
+		/**
+		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
+		 * to control where the editor is being shown. Might change the [active editor](#window.activeTextEditor).
+		 *
+		 * @param document A text document to be shown.
+		 * @param column A view column in which the [editor](#NotebookEditor) should be shown. The default is the [active](#ViewColumn.Active), other values
+		 * are adjusted to be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside)
+		 * to open the editor to the side of the currently active one.
+		 * @param preserveFocus When `true` the editor will not take focus.
+		 * @return A promise that resolves to a [notebook editor](#NotebookEditor).
+		 */
+		export function showNotebookDocument(document: NotebookDocument, column?: vscode.ViewColumn, preserveFocus?: boolean): Thenable<NotebookEditor>;
 
 		export interface NotebookDocument {
 			/**
@@ -1468,6 +1493,12 @@ declare module 'sqlops' {
 			 * The document associated with this editor. The document will be the same for the entire lifetime of this editor.
 			 */
 			readonly document: NotebookDocument;
+			/**
+			 * The column in which this editor shows. Will be `undefined` in case this
+			 * isn't one of the main editors, e.g an embedded editor, or when the editor
+			 * column is larger than three.
+			 */
+			viewColumn?: vscode.ViewColumn;
 		}
 
 		export interface NotebookCell {
