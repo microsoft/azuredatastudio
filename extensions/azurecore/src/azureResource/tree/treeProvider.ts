@@ -6,8 +6,7 @@
 'use strict';
 
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
-import { DidChangeAccountsParams } from 'sqlops';
-import { TreeNode } from '../../treeNodes';
+import { TreeNode } from '../treeNode';
 import { setInterval, clearInterval } from 'timers';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -15,19 +14,12 @@ const localize = nls.loadMessageBundle();
 import { AzureResourceServicePool } from '../servicePool';
 import { AzureResourceAccountTreeNode } from './accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
-import { AzureResourceMessageTreeNode } from './messageTreeNode';
-import { AzureResourceContainerTreeNodeBase, AzureResourceTreeNodeBase } from './baseTreeNodes';
+import { AzureResourceMessageTreeNode } from '../messageTreeNode';
+import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil } from '../utils';
-
-export interface IAzureResourceTreeChangeHandler {
-	notifyNodeChanged(node: TreeNode): void;
-}
+import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 
 export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
-	public constructor() {
-		AzureResourceServicePool.getInstance().accountService.onDidChangeAccounts((e: DidChangeAccountsParams) => { this._onDidChangeTreeData.fire(undefined); });
-	}
-
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
 			return element.getChildren(true);
@@ -51,9 +43,9 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 					// System not initialized yet
 					this.isSystemInitialized = false;
 				}
-			}, AzureResourceTreeProvider.LoadingTimerInterval);
+			}, AzureResourceTreeProvider.loadingTimerInterval);
 
-			return [AzureResourceMessageTreeNode.create(AzureResourceTreeProvider.Loading, undefined)];
+			return [AzureResourceMessageTreeNode.create(AzureResourceTreeProvider.loading, undefined)];
 		}
 
 		try {
@@ -96,6 +88,6 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 	private _loadingTimer: NodeJS.Timer = undefined;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
-	private static readonly Loading = localize('azureResource.tree.treeProvider.loading', 'Loading ...');
-	private static readonly LoadingTimerInterval = 5000;
+	private static readonly loading = localize('azureResource.tree.treeProvider.loading', 'Loading ...');
+	private static readonly loadingTimerInterval = 5000;
 }

@@ -5,15 +5,16 @@
 
 'use strict';
 
+import { ExtensionContext } from 'vscode';
+import { ApiWrapper } from '../apiWrapper';
+
 import {
 	IAzureResourceAccountService,
-	IAzureResourceCredentialService,
 	IAzureResourceSubscriptionService,
 	IAzureResourceSubscriptionFilterService,
-	IAzureResourceDatabaseService,
-	IAzureResourceDatabaseServerService,
+	IAzureResourceTenantService,
 	IAzureResourceCacheService,
-	IAzureResourceContextService } from './interfaces';
+	ILogService} from './interfaces';
 
 export class AzureResourceServicePool {
 	private constructor() { }
@@ -22,14 +23,14 @@ export class AzureResourceServicePool {
 		return AzureResourceServicePool._instance;
 	}
 
-	public contextService: IAzureResourceContextService;
+	public logSerivce: ILogService;
+	public extensionContext: ExtensionContext;
+	public apiWrapper: ApiWrapper;
 	public cacheService: IAzureResourceCacheService;
 	public accountService: IAzureResourceAccountService;
-	public credentialService: IAzureResourceCredentialService;
 	public subscriptionService: IAzureResourceSubscriptionService;
 	public subscriptionFilterService: IAzureResourceSubscriptionFilterService;
-	public databaseService: IAzureResourceDatabaseService;
-	public databaseServerService: IAzureResourceDatabaseServerService;
+	public tenantServicxe: IAzureResourceTenantService;
 
 	private static readonly _instance = new AzureResourceServicePool();
 }

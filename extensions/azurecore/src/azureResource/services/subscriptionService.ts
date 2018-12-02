@@ -5,20 +5,19 @@
 
 'use strict';
 
-import { Account } from 'sqlops';
+import { Account, azureResource } from 'sqlops';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionClient } from 'azure-arm-resource';
 
 import { IAzureResourceSubscriptionService } from '../interfaces';
-import { AzureResourceSubscription } from '../models';
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
-	public async getSubscriptions(account: Account, credentials: ServiceClientCredentials[]): Promise<AzureResourceSubscription[]> {
-		let subscriptions: AzureResourceSubscription[] = [];
-		for (let cred of credentials) {
-			let subClient = new SubscriptionClient.SubscriptionClient(cred);
+	public async getSubscriptions(account: Account, credentials: ServiceClientCredentials[]): Promise<azureResource.AzureResourceSubscription[]> {
+		const subscriptions: azureResource.AzureResourceSubscription[] = [];
+		for (const cred of credentials) {
+			const subClient = new SubscriptionClient.SubscriptionClient(cred);
 			try {
-				let subs = await subClient.subscriptions.list();
+				const subs = await subClient.subscriptions.list();
 				subs.forEach((sub) => subscriptions.push({
 					id: sub.subscriptionId,
 					name: sub.displayName

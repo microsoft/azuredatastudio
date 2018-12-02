@@ -5,12 +5,9 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
-import { ServiceClientCredentials } from 'ms-rest';
-import { TreeNode } from '../../treeNodes';
+import { TreeNode } from '../treeNode';
 
 import { AzureResourceServicePool } from '../servicePool';
-import { AzureResourceCredentialError } from '../errors';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 
 export abstract class AzureResourceTreeNodeBase extends TreeNode {
@@ -28,7 +25,6 @@ export abstract class AzureResourceTreeNodeBase extends TreeNode {
 
 export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTreeNodeBase {
 	public constructor(
-		public readonly account: sqlops.Account,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
@@ -43,29 +39,18 @@ export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTr
 		return this._isClearingCache;
 	}
 
-	protected async getCredentials(): Promise<ServiceClientCredentials[]> {
-		try {
-			return await this.servicePool.credentialService.getCredentials(this.account, sqlops.AzureResource.ResourceManagement);
-		} catch (error) {
-			if (error instanceof AzureResourceCredentialError) {
-				this.servicePool.contextService.showErrorMessage(error.message);
-
-				this.servicePool.contextService.executeCommand('azureresource.signin');
-			} else {
-				throw error;
-			}
-		}
-	}
+	protected setCacheKey(id: string): void {
+        this._cacheKey = this.servicePool.cacheService.generateKey(id);
+    }
 
 	protected updateCache<T>(cache: T): void {
-		this.servicePool.cacheService.update<T>(this.cacheKey, cache);
+		this.servicePool.cacheService.update<T>(this._cacheKey, cache);
 	}
 
 	protected getCache<T>(): T {
-		return this.servicePool.cacheService.get<T>(this.cacheKey);
+		return this.servicePool.cacheService.get<T>(this._cacheKey);
 	}
 
-	protected abstract get cacheKey(): string;
-
 	protected _isClearingCache = true;
+	private _cacheKey: string = undefined;
 }

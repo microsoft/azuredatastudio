@@ -6,35 +6,48 @@
 'use strict';
 
 import { window, QuickPickItem } from 'vscode';
-import * as sqlops from 'sqlops';
-import { generateGuid } from './utils';
-import { ApiWrapper } from '../apiWrapper';
-import { TreeNode } from '../treeNodes';
+import { azureResource, AzureResource } from 'sqlops';
+import { TreeNode } from './treeNode';
+import { TokenCredentials } from 'ms-rest';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
+import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
-import { AzureResourceDatabaseServerTreeNode } from './tree/databaseServerTreeNode';
-import { AzureResourceDatabaseTreeNode } from './tree/databaseTreeNode';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { AzureResourceServicePool } from './servicePool';
-import { AzureResourceSubscription } from './models';
 
-export function registerAzureResourceCommands(apiWrapper: ApiWrapper, tree: AzureResourceTreeProvider): void {
-	apiWrapper.registerCommand('azureresource.selectsubscriptions', async (node?: TreeNode) => {
+export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): void {
+	const servicePool = AzureResourceServicePool.getInstance();
+
+	servicePool.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
 			return;
 		}
 
 		const accountNode = node as AzureResourceAccountTreeNode;
 
-		const servicePool = AzureResourceServicePool.getInstance();
-
 		let subscriptions = await accountNode.getCachedSubscriptions();
 		if (!subscriptions || subscriptions.length === 0) {
-			const credentials = await servicePool.credentialService.getCredentials(accountNode.account, sqlops.AzureResource.ResourceManagement);
+			const credentials: TokenCredentials[] = [];
+
+			try {
+				const tokens = await this.servicePool.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
+
+				for (const tenant of this.account.properties.tenants) {
+					const token = tokens[tenant.id].token;
+					const tokenType = tokens[tenant.id].tokenType;
+
+					credentials.push(new TokenCredentials(token, tokenType));
+				}
+			} catch (error) {
+				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
+			}
+
 			subscriptions = await servicePool.subscriptionService.getSubscriptions(accountNode.account, credentials);
 		}
 
-		const selectedSubscriptions = (await servicePool.subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <AzureResourceSubscription[]>[];
+		const selectedSubscriptions = (await servicePool.subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
 		const selectedSubscriptionIds: string[] = [];
 		if (selectedSubscriptions.length > 0) {
 			selectedSubscriptionIds.push(...selectedSubscriptions.map((subscription) => subscription.id));
@@ -44,7 +57,7 @@ export function registerAzureResourceCommands(apiWrapper: ApiWrapper, tree: Azur
 		}
 
 		interface SubscriptionQuickPickItem extends QuickPickItem {
-			subscription: AzureResourceSubscription;
+			subscription: azureResource.AzureResourceSubscription;
 		}
 
 		const subscriptionItems: SubscriptionQuickPickItem[] = subscriptions.map((subscription) => {
@@ -64,57 +77,13 @@ export function registerAzureResourceCommands(apiWrapper: ApiWrapper, tree: Azur
 		}
 	});
 
-	apiWrapper.registerCommand('azureresource.refreshall', () => tree.notifyNodeChanged(undefined));
+	servicePool.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
 
-	apiWrapper.registerCommand('azureresource.refresh', async (node?: TreeNode) => {
+	servicePool.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
 		tree.refresh(node, true);
 	});
 
-	apiWrapper.registerCommand('azureresource.connectsqldb', async (node?: TreeNode) => {
-		let connectionProfile: sqlops.IConnectionProfile = {
-			id: generateGuid(),
-			connectionName: undefined,
-			serverName: undefined,
-			databaseName: undefined,
-			userName: undefined,
-			password: '',
-			authenticationType: undefined,
-			savePassword: true,
-			groupFullName: '',
-			groupId: '',
-			providerName: undefined,
-			saveProfile: true,
-			options: {
-			}
-		};
-
-		if (node instanceof AzureResourceDatabaseServerTreeNode) {
-			let databaseServer = node.databaseServer;
-			connectionProfile.connectionName = `connection to '${databaseServer.defaultDatabaseName}' on '${databaseServer.fullName}'`;
-			connectionProfile.serverName = databaseServer.fullName;
-			connectionProfile.databaseName = databaseServer.defaultDatabaseName;
-			connectionProfile.userName = databaseServer.loginName;
-			connectionProfile.authenticationType = 'SqlLogin';
-			connectionProfile.providerName = 'MSSQL';
-		}
-
-		if (node instanceof AzureResourceDatabaseTreeNode) {
-			let database = node.database;
-			connectionProfile.connectionName = `connection to '${database.name}' on '${database.serverFullName}'`;
-			connectionProfile.serverName = database.serverFullName;
-			connectionProfile.databaseName = database.name;
-			connectionProfile.userName = database.loginName;
-			connectionProfile.authenticationType = 'SqlLogin';
-			connectionProfile.providerName = 'MSSQL';
-		}
-
-		const conn = await apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
-		if (conn) {
-			apiWrapper.executeCommand('workbench.view.connections');
-		}
-	});
-
-	apiWrapper.registerCommand('azureresource.signin', async (node?: TreeNode) => {
-		apiWrapper.executeCommand('sql.action.accounts.manageLinkedAccount');
+	servicePool.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
+		servicePool.apiWrapper.executeCommand('sql.action.accounts.manageLinkedAccount');
 	});
 }

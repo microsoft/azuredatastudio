@@ -7,9 +7,9 @@
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { NodeInfo } from 'sqlops';
-import { TreeNode } from '../../treeNodes';
+import { TreeNode } from './treeNode';
 
-import { AzureResourceItemType } from '../constants';
+import { AzureResourceItemType } from './constants';
 
 export class AzureResourceMessageTreeNode extends TreeNode {
 	public constructor(
