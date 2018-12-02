@@ -121,7 +121,7 @@ export interface IConnectionManagementService {
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): Promise<string>;
+	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection?: boolean): Promise<string>;
 
 	/**
 	 * Adds the successful connection to MRU and send the connection error back to the connection handler for failed connections

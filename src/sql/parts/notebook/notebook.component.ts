@@ -31,7 +31,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction } from 'sql/parts/notebook/notebookActions';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -239,9 +239,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		attachTodropdwon.render(attachToContainer);
 		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 
-		let attachToInfoText = document.createElement('div');
-		attachToInfoText.className = 'notebook-info-label';
-		attachToInfoText.innerText = 'Attach To: ';
 
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
 		addCodeCellButton.cellType = CellTypes.Code;
@@ -252,15 +249,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
 
+		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },
 			{ element: attachToContainer },
-			{ action: addCodeCellButton},
-			{ action: addTextCellButton},
-			{ action: this._trustedAction}
+			{ action: addCodeCellButton },
+			{ action: addTextCellButton },
+			{ action: saveNotebookButton },
+			{ action: this._trustedAction }
 		]);
 	}
 

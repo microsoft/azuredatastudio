@@ -46,6 +46,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
+	@Input() hideVerticalToolbar: boolean = false;
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -80,19 +81,21 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(INotificationService) private notificationService: INotificationService,
 	) {
 		super();
-	}
-
-	ngOnInit() {
-		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
-		this.updateTheme(this.themeService.getColorTheme());
-		this.initActionBar();
 		this._actions.push(
 			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
 			this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
 			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
 			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
 			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'))
-			);
+		);
+	}
+
+	ngOnInit() {
+		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
+		this.updateTheme(this.themeService.getColorTheme());
+		if (!this.hideVerticalToolbar) {
+			this.initActionBar();
+		}
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -172,13 +175,17 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private toggleMoreActions(showIcon: boolean) {
 		let context = new CellContext(this.model, this.cellModel);
+		let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
 		if (showIcon) {
-			let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
+			if (moreActionsElement.childNodes.length > 0) {
+				moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
+			}
 			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 			this._moreActions.context = { target: moreActionsElement };
 			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
-		} else if (this._moreActions !== undefined) {
-				this._moreActions.clear();
+		}
+		else if (moreActionsElement.childNodes.length > 0) {
+			moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
 		}
 	}
 
@@ -208,8 +215,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let toolbarEl = <HTMLElement>this.toolbarElement.nativeElement;
 		toolbarEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 
-		let moreactionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
-		moreactionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
 }
