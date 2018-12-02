@@ -6,7 +6,7 @@
 'use strict';
 
 import { window, QuickPickItem } from 'vscode';
-import { IConnectionProfile } from 'sqlops';
+import * as sqlops from 'sqlops';
 import { generateGuid } from './utils';
 import { ApiWrapper } from '../apiWrapper';
 import { TreeNode } from '../treeNodes';
@@ -30,7 +30,7 @@ export function registerAzureResourceCommands(apiWrapper: ApiWrapper, tree: Azur
 
 		let subscriptions = await accountNode.getCachedSubscriptions();
 		if (!subscriptions || subscriptions.length === 0) {
-			const credentials = await servicePool.credentialService.getCredentials(accountNode.account);
+			const credentials = await servicePool.credentialService.getCredentials(accountNode.account, sqlops.AzureResource.ResourceManagement);
 			subscriptions = await servicePool.subscriptionService.getSubscriptions(accountNode.account, credentials);
 		}
 
@@ -71,7 +71,7 @@ export function registerAzureResourceCommands(apiWrapper: ApiWrapper, tree: Azur
 	});
 
 	apiWrapper.registerCommand('azureresource.connectsqldb', async (node?: TreeNode) => {
-		let connectionProfile: IConnectionProfile = {
+		let connectionProfile: sqlops.IConnectionProfile = {
 			id: generateGuid(),
 			connectionName: undefined,
 			serverName: undefined,

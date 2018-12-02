@@ -14,6 +14,7 @@ import { ICellModelOptions, IModelFactory, FutureInternal } from './modelInterfa
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 let modelId = 0;
 
@@ -222,9 +223,39 @@ export class CellModel implements ICellModel {
 		if (output) {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
-			this._outputs.push(output);
+			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
 		}
+	}
+
+	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
+		// Only rewrite if this is coming back during execution, not when loading from disk.
+		// A good approximation is that the model has a future (needed for execution)
+		if (this.future) {
+			try {
+				let result = output as nb.IDisplayResult;
+				if (result && result.data && result.data['text/html']) {
+					let nbm = (this as CellModel).options.notebook as NotebookModel;
+					if (nbm.hadoopConnection) {
+						let host = nbm.hadoopConnection.host;
+						let html = result.data['text/html'];
+						html = html.replace(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, function (a, b, c) {
+							let ret = '';
+							if (b !== '') {
+								ret = 'https://' + host + ':30443/gateway/default/yarn/proxy';
+							}
+							if (c !== '') {
+								ret = ret + c;
+							}
+							return ret;
+						});
+						(<nb.IDisplayResult>output).data['text/html'] = html;
+					}
+				}
+			}
+			catch (e) {}
+		}
+		return output;
 	}
 
 	private getDisplayId(msg: nb.IIOPubMessage): string | undefined {

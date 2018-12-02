@@ -28,11 +28,12 @@
 	overflow: hidden;
 	margin: 0px 11px;
 }
+
 .connection-dialog .tabBody {
 	overflow: hidden;
-    flex: 1 1;
-    display: flex;
-    flex-direction: column;
+	flex: 1 1;
+	display: flex;
+	flex-direction: column;
 }
 
 .connection-recent, .connection-saved {
@@ -114,4 +115,16 @@
 	margin: 5px 0px;
 	padding: 5px 15px;
 	font-weight: 600;
+}
+
+.hide-azure-accounts .azure-account-row {
+	display: none;
+}
+
+.hide-username-password .username-password-row {
+	display: none;
+}
+
+.hide-refresh-link .azure-account-row.refresh-credentials-link {
+	display: none;
 }

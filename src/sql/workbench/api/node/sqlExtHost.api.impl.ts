@@ -99,8 +99,8 @@ export function createApiFactory(
 				getAllAccounts(): Thenable<sqlops.Account[]> {
 					return extHostAccountManagement.$getAllAccounts();
 				},
-				getSecurityToken(account: sqlops.Account): Thenable<{}> {
-					return extHostAccountManagement.$getSecurityToken(account);
+				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
+					return extHostAccountManagement.$getSecurityToken(account, resource);
 				},
 				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
@@ -199,8 +199,12 @@ export function createApiFactory(
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
-					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				provider.registerOnResultSetAvailable((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
+				});
+
+				provider.registerOnResultSetUpdated((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
 				});
 
 				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
@@ -312,6 +316,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
+			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerDacFxServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
@@ -327,6 +335,7 @@ export function createApiFactory(
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
+				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -475,7 +484,8 @@ export function createApiFactory(
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
-				nb: nb
+				nb: nb,
+				AzureResource: sqlExtHostTypes.AzureResource
 			};
 		}
 	};

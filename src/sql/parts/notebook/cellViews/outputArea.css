@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-code-cell-component {
+output-area-component {
 	display: block;
 }
 
-code-cell-component .notebook-output {
+output-area-component .notebook-output {
 	border-top-width: 1px;
 	border-top-style: solid;
 	user-select: initial;
+	padding: 5px 20px 0px;
+	box-shadow: rgba(120, 120, 120, 0.75) 0px -2px 1px -2px;
 }

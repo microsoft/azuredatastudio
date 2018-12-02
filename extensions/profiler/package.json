@@ -2,7 +2,7 @@
   "name": "profiler",
   "displayName": "SQL Server Profiler",
   "description": "SQL Server Profiler for Azure Data Studio",
-  "version": "0.4.0",
+  "version": "0.5.1",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -26,8 +26,7 @@
     "Microsoft.mssql"
   ],
   "contributes": {
-    "commands": [
-      {
+    "commands": [{
         "command": "profiler.newProfiler",
         "title": "Launch Profiler",
         "category": "Profiler"
@@ -49,13 +48,23 @@
       }
     ],
     "menus": {
-      "objectExplorer/item/context": [
+      "commandPalette": [{
+          "command": "profiler.start",
+          "when": "False"
+        },
         {
-          "command": "profiler.newProfiler",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
-          "group": "profiler"
+          "command": "profiler.stop",
+          "when": "False"
+        }, {
+          "command": "profiler.openCreateSessionDialog",
+          "when": "False"
         }
-      ]
+      ],
+      "objectExplorer/item/context": [{
+        "command": "profiler.newProfiler",
+        "when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+        "group": "profiler"
+      }]
     },
     "outputChannels": [
       "sqlprofiler"

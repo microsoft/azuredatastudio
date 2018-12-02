@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { Account } from 'sqlops';
+import * as sqlops from 'sqlops';
 import { ServiceClientCredentials } from 'ms-rest';
 import { TreeNode } from '../../treeNodes';
 
@@ -28,7 +28,7 @@ export abstract class AzureResourceTreeNodeBase extends TreeNode {
 
 export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTreeNodeBase {
 	public constructor(
-		public readonly account: Account,
+		public readonly account: sqlops.Account,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
@@ -45,7 +45,7 @@ export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTr
 
 	protected async getCredentials(): Promise<ServiceClientCredentials[]> {
 		try {
-			return await this.servicePool.credentialService.getCredentials(this.account);
+			return await this.servicePool.credentialService.getCredentials(this.account, sqlops.AzureResource.ResourceManagement);
 		} catch (error) {
 			if (error instanceof AzureResourceCredentialError) {
 				this.servicePool.contextService.showErrorMessage(error.message);
