@@ -14,7 +14,7 @@ import { AzureAccountProviderService } from './account-provider/azureAccountProv
 
 import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
 import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
-import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaserProvider';
+import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
 import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
 
 let controllers: ControllerBase[] = [];
@@ -71,7 +71,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 		provideResources() {
 			return [
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext),
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
 			];
 		}
 	};

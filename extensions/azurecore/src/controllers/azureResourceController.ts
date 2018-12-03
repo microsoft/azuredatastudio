@@ -23,11 +23,12 @@ import { registerAzureResourceDatabaseCommands } from '../azureResource/provider
 
 export default class AzureResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {
-		const outputChannel = this.apiWrapper.createOutputChannel('Azure Resource Debug');
-		outputChannel.show(false);
+		const debugOutputChannel = this.apiWrapper.createOutputChannel('Azure Resource Debug');
+		debugOutputChannel.show(false);
 
 		let servicePool = AzureResourceServicePool.getInstance();
-		servicePool.logSerivce = new AzureResourceLogService(outputChannel);
+
+		servicePool.logSerivce = new AzureResourceLogService(debugOutputChannel);
 		servicePool.extensionContext = this.extensionContext;
 		servicePool.apiWrapper = this.apiWrapper;
 		servicePool.cacheService = new AzureResourceCacheService(this.extensionContext);
@@ -36,13 +37,12 @@ export default class AzureResourceController extends ControllerBase {
 		servicePool.subscriptionFilterService = new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(this.extensionContext));
 		servicePool.tenantServicxe = new AzureResourceTenantService();
 
-		let azureResourceTree = new AzureResourceTreeProvider();
+		const azureResourceTree = new AzureResourceTreeProvider();
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 
 		servicePool.accountService.onDidChangeAccounts((e: DidChangeAccountsParams) => { azureResourceTree.notifyNodeChanged(undefined); });
 
 		registerAzureResourceCommands(azureResourceTree);
-
 		registerAzureResourceDatabaseServerCommands();
 		registerAzureResourceDatabaseCommands();
 

@@ -34,9 +34,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
-		const outputChannel = this.servicePool.apiWrapper.createOutputChannel('Azure Resource Test');
-		outputChannel.show(false);
-
 		try {
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
 
@@ -89,8 +86,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				}));
 			}
 		} catch (error) {
-			outputChannel.appendLine(error.toString());
-
 			if (error instanceof AzureResourceCredentialError) {
 				this.servicePool.apiWrapper.showErrorMessage(error.message);
 
