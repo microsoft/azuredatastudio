@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- 'use strict';
+'use strict';
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
@@ -33,16 +33,16 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 
 async function openNotebook(): Promise<void> {
 	try {
-	let filter = {};
-	// TODO support querying valid notebook file types
-	filter[localize('notebookFiles', 'Notebooks')] = ['ipynb'];
-	let file = await vscode.window.showOpenDialog({
-		filters: filter
-	});
-	if (file) {
-		let doc = await vscode.workspace.openTextDocument(file[0]);
-		vscode.window.showTextDocument(doc);
-	}
+		let filter = {};
+		// TODO support querying valid notebook file types
+		filter[localize('notebookFiles', 'Notebooks')] = ['ipynb'];
+		let file = await vscode.window.showOpenDialog({
+			filters: filter
+		});
+		if (file) {
+			let doc = await vscode.workspace.openTextDocument(file[0]);
+			vscode.window.showTextDocument(doc);
+		}
 	} catch (err) {
 		vscode.window.showErrorMessage(err);
 	}

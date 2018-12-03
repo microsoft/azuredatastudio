@@ -18,7 +18,8 @@ import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 
-import { MainThreadNotebookShape, SqlMainContext, INotebookDocumentsAndEditorsDelta,
+import {
+	MainThreadNotebookShape, SqlMainContext, INotebookDocumentsAndEditorsDelta,
 	ExtHostNotebookDocumentsAndEditorsShape, MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 

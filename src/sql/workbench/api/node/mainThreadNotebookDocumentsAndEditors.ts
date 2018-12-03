@@ -16,7 +16,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 
-import { SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
+import {
+	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
@@ -160,7 +161,7 @@ class NotebookEditorState {
 
 	constructor(
 		readonly textEditors: Map<string, INotebookEditor>,
-		readonly activeEditor: string) {}
+		readonly activeEditor: string) { }
 }
 
 class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
@@ -269,7 +270,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let id: string = undefined;
 		let attemptsLeft = 10;
 		let timeoutMs = 20;
-		while(!id && attemptsLeft > 0) {
+		while (!id && attemptsLeft > 0) {
 			id = this.findNotebookEditorIdFor(input);
 			if (!id) {
 				await wait(timeoutMs);
