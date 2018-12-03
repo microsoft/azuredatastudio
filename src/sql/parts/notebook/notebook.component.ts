@@ -17,12 +17,12 @@ import { localize } from 'vs/nls';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
-import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory } from 'sql/parts/notebook/models/modelInterfaces';
+import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel, ErrorInfo, MessageLevel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import * as notebookUtils from './notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
@@ -32,6 +32,13 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { IAction, Action, IActionItem } from 'vs/base/common/actions';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -62,6 +69,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
+		@Inject(IObjectExplorerService) private objectExplorerService: IObjectExplorerService,
+		@Inject(IEditorService) private editorService: IEditorService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
@@ -69,11 +78,31 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
-		@Inject(IEditorService) private editorService: IEditorService
+		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
+		@Inject(IMenuService) private menuService: IMenuService,
+		@Inject(IKeybindingService) private keybindingService: IKeybindingService
 	) {
 		super();
-		this.profile = this._notebookParams!.profile;
+		this.updateProfile();
 		this.isLoading = true;
+	}
+
+	private updateProfile(): void {
+		this.profile = this.notebookParams!.profile;
+		if (!this.profile) {
+			// use global connection if possible
+			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
+			if (profile && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
+				this.profile = profile;
+			} else {
+				// if not, try 1st active connection that matches our filter
+				let profiles = this.connectionManagementService.getActiveConnections([notebookConstants.hadoopKnoxProviderName]);
+				if (profiles && profiles.length > 0) {
+					this.profile = profiles[0];
+				}
+			}
+		}
 	}
 
 	ngOnInit() {
@@ -259,8 +288,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
 
+		// Get all of the menu contributions that use the ID 'notebook/toolbar'.
+		// Then, find all groups (currently we don't leverage the contributed
+		// groups functionality for the notebook toolbar), and fill in the 'primary'
+		// array with items that don't list a group. Finally, add any actions from
+		// the primary array to the end of the toolbar.
+		const notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
+		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
+		let primary: IAction[] = [];
+		let secondary: IAction[] = [];
+		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action)});
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },
@@ -270,6 +310,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ action: saveNotebookButton },
 			{ action: this._trustedAction }
 		]);
+
+		// Primary actions are categorized as those that are added to the 'horizontal' group.
+		// For the vertical toolbar, we can do the same thing and instead use the 'vertical' group.
+		for (let action of primary) {
+			this._actionBar.addAction(action);
+		}
 	}
 
 	public async save(): Promise<boolean> {
@@ -287,6 +333,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// if (this.editor) {
 		//     this.editor.isDirty = isDirty;
 		// }
+	}
+
+	private actionItemProvider(action: Action): IActionItem {
+		// Check extensions to create ActionItem; otherwise, return undefined
+		// This is similar behavior that exists in MenuItemActionItem
+		if (action instanceof MenuItemAction) {
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService, 'notebook-button');
+		}
+		return undefined;
 	}
 
 	public get notebookParams(): INotebookParams {

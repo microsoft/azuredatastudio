@@ -68,7 +68,7 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 			width: this.currentColumnWidth,
 			resizable: false,
 			cssClass: this.options.cssClass,
-			focusable: true,
+			focusable: false,
 			selectable: false,
 			formatter: (r, c, v, cd, dc) => this.formatter(r, c, v, cd, dc)
 		};
