@@ -50,6 +50,8 @@ export interface INotebookService {
 
 	removeNotebookEditor(editor: INotebookEditor): void;
 
+	listNotebookEditors(): INotebookEditor[];
+
 	shutdown(): void;
 
 	getMimeRegistry(): RenderMimeRegistry;
@@ -80,4 +82,7 @@ export interface INotebookParams extends IBootstrapParams {
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
+	isActive(): boolean;
+	isVisible(): boolean;
+	save(): Promise<boolean>;
 }

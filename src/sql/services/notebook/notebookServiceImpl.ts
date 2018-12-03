@@ -87,7 +87,6 @@ export class NotebookService implements INotebookService {
 		this._onNotebookEditorAdd.fire(editor);
 	}
 
-
 	removeNotebookEditor(editor: INotebookEditor): void {
 		if (this._editors.delete(editor.id)) {
 			this._onNotebookEditorRemove.fire(editor);
@@ -96,6 +95,11 @@ export class NotebookService implements INotebookService {
 		this.sendNotebookCloseToProvider(editor);
 	}
 
+	listNotebookEditors(): INotebookEditor[] {
+		let editors = [];
+		this._editors.forEach(e => editors.push(e));
+		return editors;
+	}
 
 	private sendNotebookCloseToProvider(editor: INotebookEditor) {
 		let notebookUri = editor.notebookParams.notebookUri;

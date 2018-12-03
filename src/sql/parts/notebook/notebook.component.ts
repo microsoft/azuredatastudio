@@ -32,6 +32,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -67,7 +68,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService
+		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
+		@Inject(IEditorService) private editorService: IEditorService
 	) {
 		super();
 		this.profile = this._notebookParams!.profile;
@@ -295,4 +297,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._notebookParams.notebookUri.toString();
 	}
 
+	isActive(): boolean {
+		return this.editorService.activeEditor === this.notebookParams.input;
+	}
+
+	isVisible(): boolean {
+		let notebookEditor = this.notebookParams.input;
+		return this.editorService.visibleEditors.some(e => e === notebookEditor);
+	}
 }
