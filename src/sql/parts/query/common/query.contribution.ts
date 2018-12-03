@@ -305,6 +305,11 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
 		'default': 'utf-8'
 	},
+	'sql.results.streaming': {
+		'type': 'boolean',
+		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
+		'default': false
+	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
