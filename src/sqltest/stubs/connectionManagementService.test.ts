@@ -234,7 +234,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return [];
 	}
 
-	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): Promise<string> {
+	connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
 		return undefined;
 	}
 
