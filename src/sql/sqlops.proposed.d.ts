@@ -1388,14 +1388,14 @@ declare module 'sqlops' {
 		export let visibleNotebookEditors: NotebookEditor[];
 
 		/**
-		 * An event that is emitted when a [notebool document](#TextDocument) is opened.
+		 * An event that is emitted when a [notebook document](#NotebookDocument) is opened.
 		 *
 		 * To add an event listener when a visible text document is opened, use the [TextEditor](#TextEditor) events in the
 		 * [window](#window) namespace. Note that:
 		 *
-		 * - The event is emitted before the [document](#TextDocument) is updated in the
-		 * [active text editor](#window.activeTextEditor)
-		 * - When a [text document](#TextDocument) is already open (e.g.: open in another [visible text editor](#window.visibleTextEditors)) this event is not emitted
+		 * - The event is emitted before the [document](#NotebookDocument) is updated in the
+		 * [active notebook editor](#nb.activeNotebookEditor)
+		 * - When a [notebook document](#NotebookDocument) is already open (e.g.: open in another visible notebook editor) this event is not emitted
 		 *
 		 */
 		export const onDidOpenNotebookDocument: vscode.Event<NotebookDocument>;
@@ -1404,16 +1404,16 @@ declare module 'sqlops' {
 
 		/**
 		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
-		 * to control where the editor is being shown. Might change the [active editor](#window.activeTextEditor).
+		 * to control where the editor is being shown. Might change the [active editor](#nb.activeNotebookEditor).
 		 *
 		 * The document is denoted by an [uri](#Uri). Depending on the [scheme](#Uri.scheme) the
 		 * following rules apply:
 		 * `file`-scheme: Open a file on disk, will be rejected if the file does not exist or cannot be loaded.
 		 * `untitled`-scheme: A new file that should be saved on disk, e.g. `untitled:c:\frodo\new.js`. The language
 		 * will be derived from the file name.
-		 * For all other schemes the registered text document content [providers](#TextDocumentContentProvider) are consulted.
+		 * For all other schemes the registered notebook providers are consulted.
 		 *
-		 * @param document A text document to be shown.
+		 * @param document A document to be shown.
 		 * @param column A view column in which the [editor](#NotebookEditor) should be shown. The default is the [active](#ViewColumn.Active), other values
 		 * are adjusted to be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside)
 		 * to open the editor to the side of the currently active one.
@@ -1429,8 +1429,6 @@ declare module 'sqlops' {
 			 * *Note* that most documents use the `file`-scheme, which means they are files on disk. However, **not** all documents are
 			 * saved on disk and therefore the `scheme` must be checked before trying to access the underlying file or siblings on disk.
 			 *
-			 * @see [FileSystemProvider](#FileSystemProvider)
-			 * @see [TextDocumentContentProvider](#TextDocumentContentProvider)
 			 */
 			readonly uri: vscode.Uri;
 
