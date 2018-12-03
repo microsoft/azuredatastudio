@@ -82,6 +82,7 @@ export interface INotebookParams extends IBootstrapParams {
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
+	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
 	save(): Promise<boolean>;

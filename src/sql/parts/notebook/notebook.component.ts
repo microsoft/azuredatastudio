@@ -305,4 +305,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let notebookEditor = this.notebookParams.input;
 		return this.editorService.visibleEditors.some(e => e === notebookEditor);
 	}
+
+	isDirty(): boolean {
+		return this.notebookParams.input.isDirty();
+	}
 }

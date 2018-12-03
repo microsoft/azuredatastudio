@@ -47,6 +47,21 @@
 					"light": "resources/light/open_notebook.svg"
 				}
 			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "notebook.command.new",
+					"when": "notebook.enabled == true"
+				}
+			]
+		},
+		"keybindings": [
+			{
+				"command": "notebook.command.new",
+				"key": "Ctrl+Shift+N",
+				"when": "notebook.enabled == true"
+			}
 		]
 	},
 	"dependencies": {},

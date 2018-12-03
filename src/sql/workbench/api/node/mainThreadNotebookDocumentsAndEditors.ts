@@ -17,7 +17,7 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 
 import { SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
-	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions
+	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
@@ -27,6 +27,22 @@ class MainThreadNotebookEditor extends Disposable {
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
+	}
+
+	public get uri(): URI {
+		return this.editor.notebookParams.notebookUri;
+	}
+
+	public get id(): string {
+		return this.editor.id;
+	}
+
+	public get isDirty(): boolean {
+		return this.editor.isDirty();
+	}
+
+	public get providerId(): string {
+		return this.editor.notebookParams.providerId;
 	}
 
 	public save(): Thenable<boolean> {
@@ -173,11 +189,11 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 	private _updateState(): void {
 		// editor
 		const editors = new Map<string, INotebookEditor>();
-		let activeEditor: string = null;
+		let activeEditor: string = undefined;
 
 		for (const editor of this._notebookService.listNotebookEditors()) {
 			editors.set(editor.id, editor);
-			if (editor.isActive) {
+			if (editor.isActive()) {
 				activeEditor = editor.id;
 			}
 		}
@@ -246,7 +262,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let foundId: string = undefined;
 		this._notebookEditors.forEach(e => {
 			if (e.matches(input)) {
-				foundId = e.editor.id;
+				foundId = e.id;
 			}
 		});
 		return foundId;
@@ -258,6 +274,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 	private _onDelta(delta: NotebookEditorStateDelta): void {
 		let removedEditors: string[] = [];
+		let removedDocuments: URI[] = [];
 		let addedEditors: MainThreadNotebookEditor[] = [];
 
 		// added editors
@@ -272,6 +289,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		for (const { id } of delta.removedEditors) {
 			const mainThreadEditor = this._notebookEditors.get(id);
 			if (mainThreadEditor) {
+				removedDocuments.push(mainThreadEditor.uri);
 				mainThreadEditor.dispose();
 				this._notebookEditors.delete(id);
 				removedEditors.push(id);
@@ -284,13 +302,23 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			empty = false;
 			extHostDelta.newActiveEditor = delta.newActiveEditor;
 		}
+		if (removedDocuments.length > 0) {
+			empty = false;
+			extHostDelta.removedDocuments = removedDocuments;
+		}
 		if (removedEditors.length > 0) {
 			empty = false;
 			extHostDelta.removedEditors = removedEditors;
 		}
 		if (delta.addedEditors.length > 0) {
 			empty = false;
-			extHostDelta.addedEditors = addedEditors.map(e => this._toNotebookEditorAddData(e));
+			extHostDelta.addedDocuments = [];
+			extHostDelta.addedEditors = [];
+			for (let editor of addedEditors) {
+				extHostDelta.addedEditors.push(this._toNotebookEditorAddData(editor));
+				// For now, add 1 document for each editor. In the future these may be trackable independently
+				extHostDelta.addedDocuments.push(this._toNotebookModelAddData(editor));
+			}
 		}
 
 		if (!empty) {
@@ -300,9 +328,18 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 	private _toNotebookEditorAddData(editor: MainThreadNotebookEditor): INotebookEditorAddData {
 		let addData: INotebookEditorAddData = {
-			documentUri: editor.editor.notebookParams.notebookUri,
+			documentUri: editor.uri,
 			editorPosition: undefined,
 			id: editor.editor.id
+		};
+		return addData;
+	}
+
+	private _toNotebookModelAddData(editor: MainThreadNotebookEditor): INotebookModelAddedData {
+		let addData: INotebookModelAddedData = {
+			uri: editor.uri,
+			isDirty: editor.isDirty,
+			providerId: editor.providerId
 		};
 		return addData;
 	}

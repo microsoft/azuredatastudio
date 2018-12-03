@@ -19,36 +19,6 @@ import { NotebookInput, NotebookInputModel, notebooksEnabledCondition } from 'sq
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 
-
-let counter = 0;
-
-/**
- * todo: Will remove this code.
- * This is the entry point to open the new Notebook
- */
-export class NewNotebookAction extends Action {
-
-	public static ID = 'workbench.action.newnotebook';
-	public static LABEL = localize('workbench.action.newnotebook.description', 'New Notebook');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService,
-		@IInstantiationService private _instantiationService: IInstantiationService
-	) {
-		super(id, label);
-	}
-
-	public run(): TPromise<void> {
-		let title = `Untitled-${counter++}`;
-		let untitledUri = URI.from({ scheme: Schemas.untitled, path: title });
-		let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
-		let input = this._instantiationService.createInstance(NotebookInput, title, model);
-		return this._editorService.openEditor(input, { pinned: true }).then(() => undefined);
-	}
-}
-
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
 	NotebookEditor,
@@ -58,17 +28,3 @@ const viewModelEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(NotebookInput)]);
-
-
-// this is the entry point to open the new Notebook
-CommandsRegistry.registerCommand(NewNotebookAction.ID, serviceAccessor => {
-	serviceAccessor.get(IInstantiationService).createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run();
-});
-
-MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
-	command: {
-		id: NewNotebookAction.ID,
-		title:NewNotebookAction.LABEL,
-	},
-	when: notebooksEnabledCondition
-});
