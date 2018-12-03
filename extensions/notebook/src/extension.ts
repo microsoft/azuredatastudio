@@ -12,9 +12,6 @@ const localize = nls.loadMessageBundle();
 
 let counter = 0;
 
-
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', () => {
 		let title = `Untitled-${counter++}`;
