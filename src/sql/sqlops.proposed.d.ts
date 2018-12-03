@@ -1527,15 +1527,15 @@ declare module 'sqlops' {
 		}
 
 		/**
-		 * Represents an event describing the change in a [notebook editor's cells](#NotebookEditor.cells).
+		 * Represents an event describing the change in a [notebook documents's cells](#NotebookDocument.cells).
 		 */
 		export interface NotebookCellChangeEvent {
 			/**
-			 * The [notebook editor](#NotebookEditor) for which the selections have changed.
+			 * The [notebook document](#NotebookDocument) for which the selections have changed.
 			 */
 			notebook: NotebookDocument;
 			/**
-			 * The new value for the [text editor's cells](#NotebookEditor.cells).
+			 * The new value for the [notebook documents's cells](#NotebookDocument.cells).
 			 */
 			cell: NotebookCell[];
 			/**
