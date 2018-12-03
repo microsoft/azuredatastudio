@@ -223,22 +223,16 @@ export default class TokenCache implements adal.TokenCache {
 		return this.getOrCreateEncryptionParams()
 			.then(encryptionParams => {
 				try {
-					let cacheCipher = fs.readFileSync(self._cacheSerializationPath, TokenCache.FsOptions);
-
-					let decipher = crypto.createDecipheriv(TokenCache.CipherAlgorithm, encryptionParams.key, encryptionParams.initializationVector);
-					let cacheJson = decipher.update(cacheCipher, 'hex', 'utf8');
-					cacheJson += decipher.final('utf8');
-
-					// Deserialize the JSON into the array of tokens
-					let cacheObj = <adal.TokenResponse[]>JSON.parse(cacheJson);
-					for (let objIndex in cacheObj) {
-						// Rehydrate Date objects since they will always serialize as a string
-						cacheObj[objIndex].expiresOn = new Date(<string>cacheObj[objIndex].expiresOn);
-					}
-
-					return cacheObj;
+					return self.decryptCache('utf8', encryptionParams);
 				} catch (e) {
-					throw e;
+					try {
+						// try to parse using 'binary' encoding and rewrite cache as UTF8
+						let response = self.decryptCache('binary', encryptionParams);
+						self.writeCache(response);
+						return response;
+					} catch (e) {
+						throw e;
+					}
 				}
 			})
 			.then(null, err => {
@@ -246,6 +240,22 @@ export default class TokenCache implements adal.TokenCache {
 				console.warn(`Failed to read token cache: ${err}`);
 				return [];
 			});
+	}
+
+	private decryptCache(encoding: string, encryptionParams: EncryptionParams): adal.TokenResponse[] {
+		let cacheCipher = fs.readFileSync(this._cacheSerializationPath, TokenCache.FsOptions);
+		let decipher = crypto.createDecipheriv(TokenCache.CipherAlgorithm, encryptionParams.key, encryptionParams.initializationVector);
+		let cacheJson = decipher.update(cacheCipher, 'hex', <any>encoding);
+		cacheJson += decipher.final(<any>encoding);
+
+		// Deserialize the JSON into the array of tokens
+		let cacheObj = <adal.TokenResponse[]>JSON.parse(cacheJson);
+		for (let objIndex in cacheObj) {
+			// Rehydrate Date objects since they will always serialize as a string
+			cacheObj[objIndex].expiresOn = new Date(<string>cacheObj[objIndex].expiresOn);
+		}
+
+		return cacheObj;
 	}
 
 	private removeFromCache(cache: adal.TokenResponse[], entries: adal.TokenResponse[]): adal.TokenResponse[] {
