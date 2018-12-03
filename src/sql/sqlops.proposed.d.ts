@@ -1496,7 +1496,7 @@ declare module 'sqlops' {
 
 		export interface NotebookShowOptions {
 			/**
-			 * An optional view column in which the [editor](#TextEditor) should be shown.
+			 * An optional view column in which the [editor](#NotebookEditor) should be shown.
 			 * The default is the [active](#ViewColumn.Active), other values are adjusted to
 			 * be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is
 			 * not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside) to open the
@@ -1505,12 +1505,12 @@ declare module 'sqlops' {
 			viewColumn?: vscode.ViewColumn;
 
 			/**
-			 * An optional flag that when `true` will stop the [editor](#TextEditor) from taking focus.
+			 * An optional flag that when `true` will stop the [editor](#NotebookEditor) from taking focus.
 			 */
 			preserveFocus?: boolean;
 
 			/**
-			 * An optional flag that controls if an [editor](#TextEditor)-tab will be replaced
+			 * An optional flag that controls if an [editor](#NotebookEditor)-tab will be replaced
 			 * with the next editor or if it will be kept.
 			 */
 			preview?: boolean;
@@ -1527,15 +1527,15 @@ declare module 'sqlops' {
 		}
 
 		/**
-		 * Represents an event describing the change in a [text editor's selections](#TextEditor.selections).
+		 * Represents an event describing the change in a [notebook editor's cells](#NotebookEditor.cells).
 		 */
 		export interface NotebookCellChangeEvent {
 			/**
-			 * The [notebook editor](#TextEditor) for which the selections have changed.
+			 * The [notebook editor](#NotebookEditor) for which the selections have changed.
 			 */
 			notebook: NotebookDocument;
 			/**
-			 * The new value for the [text editor's selections](#TextEditor.selections).
+			 * The new value for the [text editor's cells](#NotebookEditor.cells).
 			 */
 			cell: NotebookCell[];
 			/**
