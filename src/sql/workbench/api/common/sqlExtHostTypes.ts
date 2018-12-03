@@ -285,7 +285,8 @@ export enum DataProviderType {
 	QueryProvider = 'QueryProvider',
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
-	CapabilitiesProvider = 'CapabilitiesProvider'
+	CapabilitiesProvider = 'CapabilitiesProvider',
+	DacFxServicesProvider = 'DacFxServicesProvider',
 }
 
 export enum DeclarativeDataType {
@@ -311,6 +312,11 @@ export interface ToolbarLayout {
 
 export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
+}
+
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
 }
 
 export class SqlThemeIcon {
@@ -416,4 +422,39 @@ export interface INotebookManagerDetails {
 	handle: number;
 	hasContentManager: boolean;
 	hasServerManager: boolean;
+}
+
+export interface INotebookSessionDetails {
+	readonly sessionId: number;
+	readonly canChangeKernels: boolean;
+	readonly id: string;
+	readonly path: string;
+	readonly name: string;
+	readonly type: string;
+	readonly status: string;
+	readonly kernelDetails: INotebookKernelDetails;
+}
+
+export interface INotebookKernelDetails {
+	readonly kernelId: number;
+	readonly id: string;
+	readonly name: string;
+	readonly supportsIntellisense: boolean;
+	readonly info?: any;
+}
+
+export interface INotebookFutureDetails {
+	readonly futureId: number;
+	readonly msg: any;
+}
+
+export enum FutureMessageType {
+	Reply = 0,
+	StdIn = 1,
+	IOPub = 2
+}
+
+export interface INotebookFutureDone {
+	succeeded: boolean;
+	rejectReason: string;
 }

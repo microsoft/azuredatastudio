@@ -22,7 +22,7 @@ export interface IAccountManagementService {
 	addAccount(providerId: string): Thenable<void>;
 	getAccountProviderMetadata(): Thenable<sqlops.AccountProviderMetadata[]>;
 	getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]>;
-	getSecurityToken(account: sqlops.Account): Thenable<{}>;
+	getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}>;
 	removeAccount(accountKey: sqlops.AccountKey): Thenable<boolean>;
 	refreshAccount(account: sqlops.Account): Thenable<sqlops.Account>;
 
@@ -42,6 +42,12 @@ export interface IAccountManagementService {
 	readonly addAccountProviderEvent: Event<AccountProviderAddedEventParams>;
 	readonly removeAccountProviderEvent: Event<sqlops.AccountProviderMetadata>;
 	readonly updateAccountListEvent: Event<UpdateAccountListEventParams>;
+}
+
+// Enum matching the AzureResource enum from sqlops.d.ts
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
 }
 
 export interface IAccountStore {

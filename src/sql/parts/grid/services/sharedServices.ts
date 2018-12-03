@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { $ } from 'vs/base/browser/dom';
 import { escape } from 'sql/base/common/strings';
 
 export class DBCellValue {
@@ -41,20 +40,24 @@ export function hyperLinkFormatter(row: number, cell: any, value: any, columnDef
  */
 export function textFormatter(row: number, cell: any, value: any, columnDef: any, dataContext: any): string {
 	let cellClasses = 'grid-cell-value-container';
-	let valueToDisplay: string = '';
+	let valueToDisplay = '';
+	let titleValue = '';
 
 	if (DBCellValue.isDBCellValue(value)) {
 		valueToDisplay = 'NULL';
 		if (!value.isNull) {
-			valueToDisplay = escape(value.displayValue.replace(/(\r\n|\n|\r)/g, ' '));
+			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
+			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
+			titleValue = value.displayValue;
 		} else {
 			cellClasses += ' missing-value';
 		}
 	} else if (typeof value === 'string') {
-		valueToDisplay = escape(value);
+		valueToDisplay = escape(value.length > 250 ? value.slice(0, 250) + '...' : value);
+		titleValue = value;
 	}
 
-	return `<span title="${valueToDisplay}" class="${cellClasses}">${valueToDisplay}</span>`;
+	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
 }
 
 /** The following code is a rewrite over the both formatter function using dom builder

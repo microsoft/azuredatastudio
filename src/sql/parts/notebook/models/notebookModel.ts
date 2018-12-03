@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb, connection } from 'sqlops';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -167,6 +167,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public get hadoopConnection(): NotebookConnection {
+		return this._hadoopConnection;
+	}
+
 	/**
 	 * Indicates the server has finished loading. It may have failed to load in
 	 * which case the view will be in an error state.
@@ -186,7 +190,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
-			if(this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
+			if (this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
 				contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
 			}
 			let factory = this.notebookOptions.factory;
@@ -208,25 +212,29 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public findCellIndex(cellModel: CellModel): number {
+		return this._cells.findIndex((cell) => cell.equals(cellModel));
+	}
+
 	public addCell(cellType: CellType, index?: number): void {
-        if (this.inErrorState || !this._cells) {
-            return;
-        }
-        let cell = this.createCell(cellType);
+		if (this.inErrorState || !this._cells) {
+			return;
+		}
+		let cell = this.createCell(cellType);
 
-        if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
-            this._cells.splice(index, 0, cell);
-        } else {
-            this._cells.push(cell);
-            index = undefined;
-        }
+		if (index !== undefined && index !== null && index >= 0 && index < this._cells.length) {
+			this._cells.splice(index, 0, cell);
+		} else {
+			this._cells.push(cell);
+			index = undefined;
+		}
 
-        this._contentChangedEmitter.fire({
-            changeType: NotebookChangeType.CellsAdded,
-            cells: [cell],
-            cellIndex: index
-        });
-    }
+		this._contentChangedEmitter.fire({
+			changeType: NotebookChangeType.CellsAdded,
+			cells: [cell],
+			cellIndex: index
+		});
+	}
 
 	private createCell(cellType: CellType): ICellModel {
 		let singleCell: nb.ICell = {
@@ -283,10 +291,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			} else {
 				this._onClientSessionReady.fire(this._clientSession);
 				// Once session is loaded, can use the session manager to retrieve useful info
-					this.loadKernelInfo();
-					await this.loadActiveContexts(undefined);
+				this.loadKernelInfo();
+				await this.loadActiveContexts(undefined);
 			}
 		});
+	}
+
+	private isValidKnoxConnection(profile: IConnectionProfile | connection.Connection) {
+		return profile && profile.providerName === notebookConstants.hadoopKnoxProviderName && profile.options[notebookConstants.hostPropName] !== undefined;
 	}
 
 	public get languageInfo(): nb.ILanguageInfo {
@@ -304,9 +316,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.doChangeKernel(spec);
 	}
 
-	private doChangeKernel(kernelSpec: nb.IKernelSpec): void {
-		this._clientSession.changeKernel(kernelSpec)
-		.then((kernel) => {
+	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
+		return this._clientSession.changeKernel(kernelSpec)
+			.then((kernel) => {
 				kernel.ready.then(() => {
 					if (kernel.info) {
 						this.updateLanguageInfo(kernel.info.language_info);
@@ -317,23 +329,37 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.notifyError(localize('changeKernelFailed', 'Failed to change kernel: {0}', notebookUtils.getErrorMessage(err)));
 				// TODO should revert kernels dropdown
 			});
-
 	}
 
-	public changeContext(host: string): void {
+	public changeContext(host: string, newConnection?: IConnectionProfile): void {
 		try {
-			let newConnection: IConnectionProfile = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
+			if (!newConnection) {
+				newConnection = this._activeContexts.otherConnections.find((connection) => connection.options['host'] === host);
+			}
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			if (newConnection) {
-				SparkMagicContexts.configureContext(newConnection, this.notebookOptions);
-				this._hadoopConnection = new NotebookConnection(newConnection);
-				this._clientSession.updateConnection(this._hadoopConnection);
-			}
+			SparkMagicContexts.configureContext(this.notebookOptions);
+			this._hadoopConnection = new NotebookConnection(newConnection);
+			this.refreshConnections(newConnection);
+			this._clientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
+		}
+	}
+
+	private refreshConnections(newConnection: IConnectionProfile) {
+		if (this.isValidKnoxConnection(newConnection) &&
+			this._hadoopConnection.connectionProfile.id !== '-1' &&
+			this._hadoopConnection.connectionProfile.id !== this._activeContexts.defaultConnection.id) {
+			// Put the defaultConnection to the head of otherConnections
+			if (this.isValidKnoxConnection(this._activeContexts.defaultConnection)) {
+				this._activeContexts.otherConnections = this._activeContexts.otherConnections.filter(conn => conn.id !== this._activeContexts.defaultConnection.id);
+				this._activeContexts.otherConnections.unshift(this._activeContexts.defaultConnection);
+			}
+			// Change the defaultConnection to newConnection
+			this._activeContexts.defaultConnection = newConnection;
 		}
 	}
 
@@ -413,8 +439,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		this._activeContexts = await SparkMagicContexts.getContextsForKernel(this.notebookOptions.connectionService, kernelChangedArgs, this.connectionProfile);
 		this._contextsChangedEmitter.fire();
-		let defaultHadoopConnection = new NotebookConnection(this.contexts.defaultConnection);
-		this.changeContext(defaultHadoopConnection.host);
+		if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.options !== undefined) {
+			let defaultHadoopConnection = new NotebookConnection(this.contexts.defaultConnection);
+			this.changeContext(defaultHadoopConnection.host);
+		}
 	}
 
 	/**
@@ -488,7 +516,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				changeInfo.isDirty = true;
 				break;
 			default:
-				// Do nothing for now
+			// Do nothing for now
 		}
 		this._contentChangedEmitter.fire(changeInfo);
 	}

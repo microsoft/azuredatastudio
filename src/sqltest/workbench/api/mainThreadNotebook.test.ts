@@ -6,17 +6,18 @@
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
+import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
 
-import URI from 'vs/base/common/uri';
+import URI, { UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 
 import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';
 import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
 import { INotebookProvider } from 'sql/services/notebook/notebookService';
-import { INotebookManagerDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
-
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -26,14 +27,7 @@ suite('MainThreadNotebook Tests', () => {
 	let mockNotebookService: TypeMoq.Mock<NotebookService>;
 	let providerId = 'TestProvider';
 	setup(() => {
-		mockProxy = TypeMoq.Mock.ofInstance(<ExtHostNotebookShape> {
-			$getNotebookManager: (handle, uri) => undefined,
-			$handleNotebookClosed: (uri) => undefined,
-			$getNotebookContents: (handle, uri) => undefined,
-			$save: (handle, uri, notebook) => undefined,
-			$doStartServer: (handle) => undefined,
-			$doStopServer: (handle) => undefined
-		});
+		mockProxy = TypeMoq.Mock.ofType(ExtHostNotebookStub);
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};
@@ -85,6 +79,8 @@ suite('MainThreadNotebook Tests', () => {
 			});
 			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
 
+			// Always return empty specs in this test suite
+			mockProxy.setup(p => p.$refreshSpecs(TypeMoq.It.isAnyNumber())).returns(() => Promise.resolve(undefined));
 		});
 
 		test('should return manager with default content manager & undefined server manager if extension host has none', async () => {
@@ -121,3 +117,57 @@ suite('MainThreadNotebook Tests', () => {
 	});
 
 });
+
+class ExtHostNotebookStub implements ExtHostNotebookShape {
+	$getNotebookManager(providerHandle: number, notebookUri: UriComponents): Thenable<INotebookManagerDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$handleNotebookClosed(notebookUri: UriComponents): void {
+		throw new Error('Method not implemented.');
+	}
+	$doStartServer(managerHandle: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$doStopServer(managerHandle: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook> {
+		throw new Error('Method not implemented.');
+	}
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook> {
+		throw new Error('Method not implemented.');
+	}
+	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels> {
+		throw new Error('Method not implemented.');
+	}
+	$startNewSession(managerHandle: number, options: sqlops.nb.ISessionOptions): Thenable<INotebookSessionDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$shutdownSession(managerHandle: number, sessionId: string): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {
+		throw new Error('Method not implemented.');
+	}
+	$getKernelSpec(kernelId: number): Thenable<sqlops.nb.IKernelSpec> {
+		throw new Error('Method not implemented.');
+	}
+	$requestComplete(kernelId: number, content: sqlops.nb.ICompleteRequest): Thenable<sqlops.nb.ICompleteReplyMsg> {
+		throw new Error('Method not implemented.');
+	}
+	$requestExecute(kernelId: number, content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): Thenable<INotebookFutureDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$interruptKernel(kernelId: number): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$sendInputReply(futureId: number, content: sqlops.nb.IInputReply): void {
+		throw new Error('Method not implemented.');
+	}
+	$disposeFuture(futureId: number): void {
+		throw new Error('Method not implemented.');
+	}
+}

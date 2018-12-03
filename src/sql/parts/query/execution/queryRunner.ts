@@ -100,6 +100,18 @@ export default class QueryRunner extends Disposable {
 	private _echoedResultSet = echo(this._debouncedResultSet.event);
 	public readonly onResultSet = this._echoedResultSet.event;
 
+	private _onResultSetUpdate = this._register(new Emitter<sqlops.ResultSetSummary>());
+	private _debouncedResultSetUpdate = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSetUpdate.event, (l, e) => {
+		// on first run
+		if (types.isUndefinedOrNull(l)) {
+			return [e];
+		} else {
+			return l.concat(e);
+		}
+	});
+	private _echoedResultSetUpdate = echo(this._debouncedResultSetUpdate.event);
+	public readonly onResultSetUpdate = this._echoedResultSetUpdate.event;
+
 	private _onQueryStart = this._register(new Emitter<void>());
 	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
 
@@ -336,7 +348,7 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetAvailable(result: sqlops.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: sqlops.BatchSummary;
@@ -365,11 +377,34 @@ export default class QueryRunner extends Disposable {
 					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
 				}
 			}
-			if (batchSet) {
+			// we will just ignore the set if we already have it
+			// ideally this should never happen
+			if (batchSet && !batchSet.resultSetSummaries[resultSet.id]) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
 				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
 				this._onResultSet.fire(resultSet);
+			}
+		}
+	}
+
+	public handleResultSetUpdated(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+		if (result && result.resultSetSummary) {
+			let resultSet = result.resultSetSummary;
+			let batchSet: sqlops.BatchSummary;
+			batchSet = this.batchSets[resultSet.batchId];
+			// handle getting queryPlanxml if we need too
+			if (this.isQueryPlan) {
+				// check if this result has show plan, this needs work, it won't work for any other provider
+				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+				if (hasShowPlan) {
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				}
+			}
+			if (batchSet) {
+				// Store the result set in the batch and emit that a result set has completed
+				batchSet.resultSetSummaries[resultSet.id] = resultSet;
+				this._onResultSetUpdate.fire(resultSet);
 			}
 		}
 	}
