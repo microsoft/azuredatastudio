@@ -9,7 +9,6 @@ import { nb } from 'sqlops';
 
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
 
-import URI from 'vs/base/common/uri';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
@@ -18,12 +17,12 @@ import { localize } from 'vs/nls';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
-import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory } from 'sql/parts/notebook/models/modelInterfaces';
+import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel, ErrorInfo, MessageLevel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import * as notebookUtils from './notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
@@ -33,6 +32,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -62,6 +64,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
+		@Inject(IObjectExplorerService) private objectExplorerService: IObjectExplorerService,
+		@Inject(IEditorService) private editorService: IEditorService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
 		@Inject(IBootstrapParams) private notebookParams: INotebookParams,
@@ -71,8 +75,26 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService
 	) {
 		super();
-		this.profile = this.notebookParams!.profile;
+		this.updateProfile();
 		this.isLoading = true;
+	}
+
+	private updateProfile(): void {
+		this.profile = this.notebookParams!.profile;
+		if (!this.profile) {
+			// use global connection if possible
+			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
+			if (profile && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
+				this.profile = profile;
+			} else {
+				// if not, try 1st active connection that matches our filter
+				let profiles = this.connectionManagementService.getActiveConnections([notebookConstants.hadoopKnoxProviderName]);
+				if (profiles && profiles.length > 0) {
+					this.profile = profiles[0];
+				}
+			}
+		}
 	}
 
 	ngOnInit() {
