@@ -234,6 +234,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		this._register(this._instantiationService.createInstance(MainThreadNotebookDocumentAndEditorStateComputer, delta => this._onDelta(delta)));
 	}
 
+	//#region extension host callable APIs
 	$trySaveDocument(uri: UriComponents): Thenable<boolean> {
 		let uriString = URI.revive(uri).toString();
 		let editor = this._notebookEditors.get(uriString);
@@ -247,6 +248,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {
 		return TPromise.wrap(this.doOpenEditor(resource, options));
 	}
+	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
 		const uri = URI.revive(resource);
