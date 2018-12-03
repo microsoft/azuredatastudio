@@ -19,7 +19,7 @@ import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 
 import { MainThreadNotebookShape, SqlMainContext, INotebookDocumentsAndEditorsDelta,
-	ExtHostNotebookDocumentsAndEditorsShape, MainThreadNotebookDocumentsAndEditorsShape
+	ExtHostNotebookDocumentsAndEditorsShape, MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
 
@@ -233,7 +233,14 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	}
 
 	private async doShowNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions): Promise<sqlops.nb.NotebookEditor> {
-		let id = await this._proxy.$tryShowNotebookDocument(uri, showOptions);
+		let options: INotebookShowOptions = {};
+		if (showOptions) {
+			options.preserveFocus = showOptions.preserveFocus;
+			options.position = showOptions.viewColumn;
+			options.providerId = showOptions.providerId;
+			options.connectionId = showOptions.connectionId;
+		}
+		let id = await this._proxy.$tryShowNotebookDocument(uri, options);
 		let editor = this.getEditor(id);
 		if (editor) {
 			return editor;

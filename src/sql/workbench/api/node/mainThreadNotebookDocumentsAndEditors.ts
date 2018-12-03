@@ -57,6 +57,11 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 }
 
+function wait(timeMs: number): Promise<void> {
+	return new Promise(resolve => setTimeout(resolve, timeMs));
+}
+
+
 namespace mapset {
 
 	export function setValues<T>(set: Set<T>): T[] {
@@ -239,6 +244,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {
+		return TPromise.wrap(this.doOpenEditor(resource, options));
+	}
+
+	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
 		const uri = URI.revive(resource);
 
 		const editorOptions: ITextEditorOptions = {
@@ -249,14 +258,25 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let model = new NotebookInputModel(uri, undefined, false, undefined);
 		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
 
-		return TPromise.wrap(this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position)).then(editor => {
-			if (!editor) {
-				return undefined;
-			}
-			return this.findNotebookEditorIdFor(input);
-		}));
+		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
+		if (!editor) {
+			return undefined;
+		}
+		return this.waitOnEditor(input);
 	}
 
+	private async waitOnEditor(input: NotebookInput): Promise<string> {
+		let id: string = undefined;
+		let attemptsLeft = 10;
+		let timeoutMs = 20;
+		while(!id && attemptsLeft > 0) {
+			id = this.findNotebookEditorIdFor(input);
+			if (!id) {
+				await wait(timeoutMs);
+			}
+		}
+		return id;
+	}
 
 	findNotebookEditorIdFor(input: NotebookInput): string {
 		let foundId: string = undefined;

@@ -52,7 +52,11 @@
 			"commandPalette": [
 				{
 					"command": "notebook.command.new",
-					"when": "notebook.enabled == true"
+					"when": "config.notebook.enabled"
+				},
+				{
+					"command": "notebook.command.open",
+					"when": "config.notebook.enabled"
 				}
 			]
 		},
@@ -60,11 +64,13 @@
 			{
 				"command": "notebook.command.new",
 				"key": "Ctrl+Shift+N",
-				"when": "notebook.enabled == true"
+				"when": "config.notebook.enabled"
 			}
 		]
 	},
-	"dependencies": {},
+	"dependencies": {
+		"vscode-nls": "^4.0.0"
+	},
 	"devDependencies": {
 		"@types/node": "8.0.33"
 	}
