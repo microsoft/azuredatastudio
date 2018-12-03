@@ -38,7 +38,7 @@ import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelVi
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
-import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocuments';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -437,11 +437,8 @@ export function createApiFactory(
 				get onDidChangeNotebookCell() {
 					return extHostNotebook.onDidChangeNotebookCell;
 				},
-				openNotebookDocument(uri: vscode.Uri) {
-					return extHostNotebookDocumentsAndEditors.openNotebookDocument(uri);
-				},
-				showNotebookDocument(document: sqlops.nb.NotebookDocument, column?: vscode.ViewColumn, preserveFocus?: boolean) {
-					return extHostNotebookDocumentsAndEditors.showNotebookDocument(document, column);
+				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
+					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);

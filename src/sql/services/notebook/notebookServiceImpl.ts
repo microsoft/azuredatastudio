@@ -132,8 +132,6 @@ export class NotebookService implements INotebookService {
 		}
 		return this._mimeRegistry;
 	}
-
-
 }
 
 export class BuiltinProvider implements INotebookProvider {

@@ -1403,27 +1403,15 @@ declare module 'sqlops' {
 		export const onDidChangeNotebookCell: vscode.Event<NotebookCellChangeEvent>;
 
 		/**
-		 * Opens a Notebook document. Will return early if this document is already open. Otherwise
-		 * the document is loaded and the [didOpen](#nb.onDidOpenNotebookDocument)-event fires.
+		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
+		 * to control where the editor is being shown. Might change the [active editor](#window.activeTextEditor).
 		 *
 		 * The document is denoted by an [uri](#Uri). Depending on the [scheme](#Uri.scheme) the
 		 * following rules apply:
-		 * * `file`-scheme: Open a file on disk, will be rejected if the file does not exist or cannot be loaded.
-		 * * `untitled`-scheme: A new file that should be saved on disk, e.g. `untitled:c:\frodo\new.js`. The language
+		 * `file`-scheme: Open a file on disk, will be rejected if the file does not exist or cannot be loaded.
+		 * `untitled`-scheme: A new file that should be saved on disk, e.g. `untitled:c:\frodo\new.js`. The language
 		 * will be derived from the file name.
-		 * * For all other schemes the registered text document content [providers](#TextDocumentContentProvider) are consulted.
-		 *
-		 * *Note* that the lifecycle of the returned document is owned by the editor and not by the extension. That means an
-		 * [`onDidClose`](#workspace.onDidCloseTextDocument)-event can occur at any time after opening it.
-		 *
-		 * @param uri Identifies the resource to open.
-		 * @return A promise that resolves to a [document](#TextDocument).
-		 */
-		export function openNotebookDocument(uri: vscode.Uri): Thenable<NotebookDocument>;
-
-		/**
-		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
-		 * to control where the editor is being shown. Might change the [active editor](#window.activeTextEditor).
+		 * For all other schemes the registered text document content [providers](#TextDocumentContentProvider) are consulted.
 		 *
 		 * @param document A text document to be shown.
 		 * @param column A view column in which the [editor](#NotebookEditor) should be shown. The default is the [active](#ViewColumn.Active), other values
@@ -1432,7 +1420,7 @@ declare module 'sqlops' {
 		 * @param preserveFocus When `true` the editor will not take focus.
 		 * @return A promise that resolves to a [notebook editor](#NotebookEditor).
 		 */
-		export function showNotebookDocument(document: NotebookDocument, column?: vscode.ViewColumn, preserveFocus?: boolean): Thenable<NotebookEditor>;
+		export function showNotebookDocument(uri: vscode.Uri, showOptions?: NotebookShowOptions): Thenable<NotebookEditor>;
 
 		export interface NotebookDocument {
 			/**
@@ -1504,6 +1492,38 @@ declare module 'sqlops' {
 
 		export interface NotebookCell {
 			contents: ICellContents;
+		}
+
+		export interface NotebookShowOptions {
+			/**
+			 * An optional view column in which the [editor](#TextEditor) should be shown.
+			 * The default is the [active](#ViewColumn.Active), other values are adjusted to
+			 * be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is
+			 * not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside) to open the
+			 * editor to the side of the currently active one.
+			 */
+			viewColumn?: vscode.ViewColumn;
+
+			/**
+			 * An optional flag that when `true` will stop the [editor](#TextEditor) from taking focus.
+			 */
+			preserveFocus?: boolean;
+
+			/**
+			 * An optional flag that controls if an [editor](#TextEditor)-tab will be replaced
+			 * with the next editor or if it will be kept.
+			 */
+			preview?: boolean;
+
+			/**
+			 * An optional string indicating which notebook provider to initially use
+			 */
+			providerId?: string;
+
+			/**
+			 * Optional ID indicating the initial connection to use for this editor
+			 */
+			connectionId?: string;
 		}
 
 		/**

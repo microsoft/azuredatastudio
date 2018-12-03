@@ -804,10 +804,19 @@ export interface INotebookEditorAddData {
 	editorPosition: EditorViewColumn;
 }
 
+export interface INotebookShowOptions {
+	position?: EditorViewColumn;
+	preserveFocus?: boolean;
+	pinned?: boolean;
+	providerId?: string;
+	connectionId?: string;
+}
+
 export interface ExtHostNotebookDocumentsAndEditorsShape {
 	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void;
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
 }

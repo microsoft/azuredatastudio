@@ -6,16 +6,22 @@
 
 import * as sqlops from 'sqlops';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 
-import { SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape, INotebookDocumentsAndEditorsDelta, INotebookEditorAddData } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import URI, { UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
-import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
+import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
+
+import { SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
+	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions
+} from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 class MainThreadNotebookEditor extends Disposable {
 
@@ -25,6 +31,13 @@ class MainThreadNotebookEditor extends Disposable {
 
 	public save(): Thenable<boolean> {
 		return this.editor.save();
+	}
+
+	public matches(input: NotebookInput): boolean {
+		if (!input) {
+			return false;
+		}
+		return input === this.editor.notebookParams.input;
 	}
 }
 
@@ -179,21 +192,24 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 	}
 }
 
-
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebookDocumentsAndEditors)
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
-	private _stateComputer: MainThreadNotebookDocumentAndEditorStateComputer
+
 	constructor(
 		extHostContext: IExtHostContext,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
 	) {
 		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors);
 		}
-		this._stateComputer = instantiationService.createInstance(MainThreadNotebookDocumentAndEditorStateComputer, delta => this._onDelta(delta));
+
+		// Create a state computer that actually tracks all required changes. This is hooked to onDelta which notifies extension host
+		this._register(this._instantiationService.createInstance(MainThreadNotebookDocumentAndEditorStateComputer, delta => this._onDelta(delta)));
 	}
 
 	$trySaveDocument(uri: UriComponents): Thenable<boolean> {
@@ -206,6 +222,39 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 	}
 
+	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {
+		const uri = URI.revive(resource);
+
+		const editorOptions: ITextEditorOptions = {
+			preserveFocus: options.preserveFocus,
+			pinned: options.pinned
+		};
+
+		let model = new NotebookInputModel(uri, undefined, false, undefined);
+		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
+
+		return TPromise.wrap(this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position)).then(editor => {
+			if (!editor) {
+				return undefined;
+			}
+			return this.findNotebookEditorIdFor(input);
+		}));
+	}
+
+
+	findNotebookEditorIdFor(input: NotebookInput): string {
+		let foundId: string = undefined;
+		this._notebookEditors.forEach(e => {
+			if (e.matches(input)) {
+				foundId = e.editor.id;
+			}
+		});
+		return foundId;
+	}
+
+	getEditor(id: string): MainThreadNotebookEditor {
+		return this._notebookEditors.get(id);
+	}
 
 	private _onDelta(delta: NotebookEditorStateDelta): void {
 		let removedEditors: string[] = [];

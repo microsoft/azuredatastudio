@@ -11,6 +11,7 @@ import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/edi
 import { Emitter, Event } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import * as resources from 'vs/base/common/resources';
 
 import { INotebookService } from 'sql/services/notebook/notebookService';
 
@@ -90,10 +91,6 @@ export class NotebookInput extends EditorInput {
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 	}
 
-	public get title(): string {
-		return this._title;
-	}
-
 	public get notebookUri(): URI {
 		return this._model.notebookUri;
 	}
@@ -111,6 +108,10 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public getName(): string {
+		if (!this._title) {
+			this._title = resources.basenameOrAuthority(this._model.notebookUri);
+		}
+
 		return this._title;
 	}
 

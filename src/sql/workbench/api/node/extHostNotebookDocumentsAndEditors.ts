@@ -117,6 +117,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private _disposables: Disposable[] = [];
 
 	private _activeEditorId: string;
+	private _proxy: MainThreadNotebookDocumentsAndEditorsShape;
 
 	private readonly _editors = new Map<string, ExtHostNotebookEditor>();
 	private readonly _documents = new Map<string, ExtHostNotebookDocumentData>();
@@ -133,7 +134,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	constructor(
 		private readonly _mainContext: IMainContext,
-	) { }
+	) {
+		if (this._mainContext) {
+			this._proxy = this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors);
+		}
+	}
 
 	dispose() {
 		this._disposables = dispose(this._disposables);
@@ -162,7 +167,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 				ok(!this._documents.has(resource.toString()), `document '${resource} already exists!'`);
 
 				const documentData = new ExtHostNotebookDocumentData(
-					this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors),
+					this._proxy,
 					resource,
 					data.providerId,
 					data.isDirty
@@ -223,12 +228,18 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	//#endregion
 
 	//#region Extension accessible methods
-	openNotebookDocument(uri: vscode.Uri): Thenable<sqlops.nb.NotebookDocument> {
-		return TPromise.wrapError(new Error('Not implemented'));
+	showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions): Thenable<sqlops.nb.NotebookEditor> {
+		return this.doShowNotebookDocument(uri, showOptions);
 	}
 
-	showNotebookDocument(document: sqlops.nb.NotebookDocument, column?: vscode.ViewColumn, preserveFocus?: boolean): Thenable<sqlops.nb.NotebookEditor> {
-		return TPromise.wrapError(new Error('Not implemented'));
+	private async doShowNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions): Promise<sqlops.nb.NotebookEditor> {
+		let id = await this._proxy.$tryShowNotebookDocument(uri, showOptions);
+		let editor = this.getEditor(id);
+		if (editor) {
+			return editor;
+		} else {
+			throw new Error(`Failed to show notebook document ${uri.toString()}, should show in editor #${id}`);
+		}
 	}
 
 	getDocument(strUrl: string): ExtHostNotebookDocumentData {
