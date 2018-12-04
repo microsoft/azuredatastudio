@@ -321,6 +321,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public async save(): Promise<boolean> {
 		try {
 			let saved = await this._model.saveModel();
+			if (saved) {
+				this.setDirty(false);
+			}
 			return saved;
 		} catch (err) {
 			this.notificationService.error(localize('saveFailed', 'Failed to save notebook: {0}', notebookUtils.getErrorMessage(err)));
@@ -329,10 +332,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private setDirty(isDirty: boolean): void {
-		// TODO reenable handling of isDirty
-		// if (this.editor) {
-		//     this.editor.isDirty = isDirty;
-		// }
+		if(this._notebookParams.input){
+			this._notebookParams.input.setDirty(isDirty);
+		}
 	}
 
 	private actionItemProvider(action: Action): IActionItem {
