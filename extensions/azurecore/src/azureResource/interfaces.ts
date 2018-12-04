@@ -9,12 +9,6 @@ import { ServiceClientCredentials } from 'ms-rest';
 import { Account, DidChangeAccountsParams, azureResource } from 'sqlops';
 import { Event } from 'vscode';
 
-export interface ILogService {
-    logInfo(info: string);
-
-    logError(error: any);
-}
-
 export interface IAzureResourceAccountService {
 	getAccounts(): Promise<Account[]>;
 

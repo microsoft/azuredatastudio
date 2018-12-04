@@ -16,19 +16,14 @@ import { AzureResourceSubscriptionService } from '../azureResource/services/subs
 import { AzureResourceSubscriptionFilterService } from '../azureResource/services/subscriptionFilterService';
 import { AzureResourceCacheService } from '../azureResource/services/cacheService';
 import { AzureResourceTenantService } from '../azureResource/services/tenantService';
-import { AzureResourceLogService } from '../azureResource/services/logService';
 
 import { registerAzureResourceDatabaseServerCommands } from '../azureResource/providers/databaseServer/commands';
 import { registerAzureResourceDatabaseCommands } from '../azureResource/providers/database/commands';
 
 export default class AzureResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {
-		const debugOutputChannel = this.apiWrapper.createOutputChannel('Azure Resource Debug');
-		debugOutputChannel.show(false);
+		const servicePool = AzureResourceServicePool.getInstance();
 
-		let servicePool = AzureResourceServicePool.getInstance();
-
-		servicePool.logSerivce = new AzureResourceLogService(debugOutputChannel);
 		servicePool.extensionContext = this.extensionContext;
 		servicePool.apiWrapper = this.apiWrapper;
 		servicePool.cacheService = new AzureResourceCacheService(this.extensionContext);

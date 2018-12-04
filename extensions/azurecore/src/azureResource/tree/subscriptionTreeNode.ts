@@ -52,7 +52,6 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
-					AzureResourceServicePool.getInstance().logSerivce.logInfo(child.resourceNode.treeItem.id);
 					return new AzureResourceResourceTreeNode(child, this);
 				});
 			}

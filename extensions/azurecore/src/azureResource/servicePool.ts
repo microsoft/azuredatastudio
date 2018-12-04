@@ -13,8 +13,7 @@ import {
 	IAzureResourceSubscriptionService,
 	IAzureResourceSubscriptionFilterService,
 	IAzureResourceTenantService,
-	IAzureResourceCacheService,
-	ILogService} from './interfaces';
+	IAzureResourceCacheService } from './interfaces';
 
 export class AzureResourceServicePool {
 	private constructor() { }
@@ -23,7 +22,6 @@ export class AzureResourceServicePool {
 		return AzureResourceServicePool._instance;
 	}
 
-	public logSerivce: ILogService;
 	public extensionContext: ExtensionContext;
 	public apiWrapper: ApiWrapper;
 	public cacheService: IAzureResourceCacheService;
