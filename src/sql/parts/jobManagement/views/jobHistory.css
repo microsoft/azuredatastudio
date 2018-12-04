@@ -182,6 +182,7 @@ table.step-list tr.step-row td {
 }
 
 .history-details > .job-steps {
+	flex: 1 1 auto;
 	display: flex;
 	border-left: 3px solid #f4f4f4;
 	padding-left: 10px;
