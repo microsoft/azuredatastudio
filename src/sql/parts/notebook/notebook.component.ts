@@ -7,7 +7,7 @@ import './notebookStyles';
 
 import { nb } from 'sqlops';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -20,7 +20,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
@@ -48,7 +48,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 	selector: NOTEBOOK_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
 })
-export class NotebookComponent extends AngularDisposable implements OnInit {
+export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
@@ -73,7 +73,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IEditorService) private editorService: IEditorService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
-		@Inject(IBootstrapParams) private notebookParams: INotebookParams,
+		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
@@ -108,8 +108,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
+	}
+
+	ngOnDestroy() {
+		if (this.notebookService) {
+			this.notebookService.removeNotebookEditor(this);
+		}
 	}
 
 	public get model(): NotebookModel {
@@ -201,16 +208,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private async loadModel(): Promise<void> {
-		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this.notebookParams.providerId, this.notebookParams.notebookUri);
+		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
 		let model = new NotebookModel({
 			factory: this.modelFactory,
-			notebookUri: this.notebookParams.notebookUri,
+			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManager: this.notebookManager
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		await model.requestModelLoad(this.notebookParams.isTrusted);
+		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		this._model = model;
 		this.updateToolbarComponents(this._model.trustedMode);
@@ -231,10 +238,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private get modelFactory(): IModelFactory {
-		if (!this.notebookParams.modelFactory) {
-			this.notebookParams.modelFactory = new ModelFactory();
+		if (!this._notebookParams.modelFactory) {
+			this._notebookParams.modelFactory = new ModelFactory();
 		}
-		return this.notebookParams.modelFactory;
+		return this._notebookParams.modelFactory;
 	}
 	private handleModelError(notification: INotification): void {
 		this.notificationService.notify(notification);
@@ -337,4 +344,24 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		return undefined;
 	}
 
+	public get notebookParams(): INotebookParams {
+		return this._notebookParams;
+	}
+
+	public get id(): string {
+		return this._notebookParams.notebookUri.toString();
+	}
+
+	isActive(): boolean {
+		return this.editorService.activeEditor === this.notebookParams.input;
+	}
+
+	isVisible(): boolean {
+		let notebookEditor = this.notebookParams.input;
+		return this.editorService.visibleEditors.some(e => e === notebookEditor);
+	}
+
+	isDirty(): boolean {
+		return this.notebookParams.input.isDirty();
+	}
 }
