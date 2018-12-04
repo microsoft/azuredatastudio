@@ -26,7 +26,7 @@ import { ConnectionManagementService } from 'sql/parts/connection/common/connect
 import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 
-let expectedNotebookContent: nb.INotebook = {
+let expectedNotebookContent: nb.INotebookContents = {
     cells: [{
         cell_type: CellTypes.Code,
         source: 'insert into t1 values (c1, c2)',
@@ -48,7 +48,7 @@ let expectedNotebookContent: nb.INotebook = {
     nbformat_minor: 0
 };
 
-let expectedNotebookContentOneCell: nb.INotebook = {
+let expectedNotebookContentOneCell: nb.INotebookContents = {
     cells: [{
         cell_type: CellTypes.Code,
         source: 'insert into t1 values (c1, c2)',
@@ -104,7 +104,7 @@ describe('notebook model', function(): void {
 
     it('Should create single cell if model has no contents', async function(): Promise<void> {
         // Given an empty notebook
-        let emptyNotebook: nb.INotebook = {
+        let emptyNotebook: nb.INotebookContents = {
             cells: [],
             metadata: {
                 kernelspec: {
@@ -243,7 +243,7 @@ describe('notebook model', function(): void {
         verifyCellModel(model.cells[0], { cell_type: CellTypes.Code, source: 'insert into t1 values (c1, c2)', metadata: { language: 'python' }, execution_count: 1 });
     }
 
-    function verifyCellModel(cellModel: ICellModel, expected: nb.ICell): void {
+    function verifyCellModel(cellModel: ICellModel, expected: nb.ICellContents): void {
         should(cellModel.cellType).equal(expected.cell_type);
         should(cellModel.source).equal(expected.source);
     }
