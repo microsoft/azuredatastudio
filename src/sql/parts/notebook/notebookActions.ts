@@ -314,6 +314,7 @@ export class AttachToDropdown extends SelectBox {
 				attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
 				let index = attachToConnections.findIndex((connection => connection === connectedServer));
+				this.setOptions([]);
 				this.setOptions(attachToConnections);
 				if (!index || index < 0 || index >= attachToConnections.length) {
 					index = 0;
