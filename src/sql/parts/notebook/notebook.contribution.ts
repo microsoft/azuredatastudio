@@ -19,9 +19,14 @@ import { NotebookInput, NotebookInputModel, notebooksEnabledCondition } from 'sq
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { JUPYTER_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
+export const Extensions = {
+	NotebookProviderContribution: 'notebook.providers'
+};
 
 
 let counter = 0;
+const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 /**
  * todo: Will remove this code.
@@ -45,9 +50,10 @@ export class NewNotebookAction extends Action {
 		let title = `Untitled-${counter++}`;
 		let untitledUri = URI.from({ scheme: Schemas.untitled, path: title });
 		let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
-		if(model)
+		if(!model.providerId)
 		{
-			model.providerId = JUPYTER_NOTEBOOK_PROVIDER;
+			let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+			model.providerId = notebookRegistry.getProviderForFileType(DEFAULT_NOTEBOOK_FILETYPE);
 		}
 		let input = this._instantiationService.createInstance(NotebookInput, title, model);
 		return this._editorService.openEditor(input, { pinned: true }).then(() => undefined);

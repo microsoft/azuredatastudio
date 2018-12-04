@@ -16,6 +16,7 @@ import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories'
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
 import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
+import { editorSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 
 const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
@@ -86,12 +87,17 @@ export class NotebookService implements INotebookService {
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Thenable<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider = this._providers.get(providerId);
-		provider = !provider ? this._providers.get(DEFAULT_NOTEBOOK_PROVIDER) : provider;
+		let provider: INotebookProvider;
+		if (this._providers.has(providerId)) {
+			provider = this._providers.get(providerId);
+		}
+		else {
+			provider = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+		}
+
 		if (!provider) {
 			return Promise.reject(new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
 		}
-
 		return op(provider);
 	}
 
