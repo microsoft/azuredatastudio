@@ -102,8 +102,6 @@ export class NewDashboardTabDialog extends Modal {
 	private _addNewTabButton: Button;
 	private _cancelButton: Button;
 	private _extensionList: List<IDashboardUITab>;
-	private _extensionTabView: FixedListView<IDashboardUITab>;
-	private _container: HTMLElement;
 	private _extensionViewContainer: HTMLElement;
 	private _noExtensionViewContainer: HTMLElement;
 
@@ -119,9 +117,6 @@ export class NewDashboardTabDialog extends Modal {
 	constructor(
 		@IPartService partService: IPartService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IKeybindingService private _keybindingService: IKeybindingService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
@@ -147,7 +142,7 @@ export class NewDashboardTabDialog extends Modal {
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
 	protected layout(height?: number): void {
-		// Nothing currently laid out in this class
+		this._extensionList.layout(height);
 	}
 
 	public render() {
@@ -160,7 +155,6 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement) {
-		this._container = container;
 		this._extensionViewContainer = DOM.$('div.extension-view');
 		DOM.append(container, this._extensionViewContainer);
 
@@ -179,19 +173,6 @@ export class NewDashboardTabDialog extends Modal {
 		let delegate = new ExtensionListDelegate(NewDashboardTabDialog.EXTENSIONLIST_HEIGHT);
 		let extensionTabRenderer = new ExtensionListRenderer();
 		this._extensionList = new List<IDashboardUITab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
-		this._extensionTabView = new FixedListView<IDashboardUITab>(
-			undefined,
-			false,
-			localize('allFeatures', 'All features'),
-			this._extensionList,
-			extensionTabViewContainer,
-			22,
-			[],
-			undefined,
-			this._contextMenuService,
-			this._keybindingService,
-			this._themeService
-		);
 
 		this._extensionList.onMouseDblClick(e => this.onAccept());
 		this._extensionList.onKeyDown(e => {
@@ -203,8 +184,7 @@ export class NewDashboardTabDialog extends Modal {
 			}
 		});
 
-		this._extensionTabView.render(container, Orientation.VERTICAL);
-		this._extensionTabView.hideHeader();
+		DOM.append(container, extensionTabViewContainer);
 
 		this._register(attachListStyler(this._extensionList, this._themeService));
 	}
@@ -246,7 +226,7 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	private onUpdateTabList(tabs: IDashboardUITab[]) {
-		this._extensionTabView.updateList(tabs);
+		this._extensionList.splice(0, this._extensionList.length, tabs);
 		this.layout();
 		if (this._extensionList.length > 0) {
 			this._extensionViewContainer.hidden = false;
