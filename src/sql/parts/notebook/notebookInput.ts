@@ -169,4 +169,12 @@ export class NotebookInput extends EditorInput {
 	save(): TPromise<boolean> {
 		return this._model.save();
 	}
+
+	/**
+	 * Sets active editor with dirty value.
+	 * @param isDirty boolean value to set editor dirty
+	 */
+	setDirty(isDirty: boolean): void {
+		this._model.setDirty(isDirty);
+	}
 }
