@@ -12,7 +12,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
-	JobStepsViewRenderer, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
+	JobStepsViewRenderer, JobStepsViewModel, JobStepsTree} from 'sql/parts/jobManagement/views/jobStepsTree';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
@@ -20,7 +20,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -31,12 +30,12 @@ export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 })
 export class JobStepsViewComponent extends JobManagementView  implements OnInit, AfterContentChecked {
 
-	private _tree: Tree;
+	private _tree: JobStepsTree;
 	private _treeController = new JobStepsViewController();
 	private _treeDataSource = new JobStepsViewDataSource();
 	private _treeRenderer = new JobStepsViewRenderer();
 	private _treeFilter =  new JobStepsViewFilter();
-	private _pageSize = 1024;
+	private _pageSize = 485;
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 
@@ -57,24 +56,15 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	ngAfterContentChecked() {
 		if (this._jobHistoryComponent.stepRows.length > 0) {
 			this._treeDataSource.data = this._jobHistoryComponent.stepRows;
-			if (!this._tree) {
-				this._tree = new Tree(this._tableContainer.nativeElement, {
-					controller: this._treeController,
-					dataSource: this._treeDataSource,
-					filter: this._treeFilter,
-					renderer: this._treeRenderer
-				}, { verticalScrollMode: ScrollbarVisibility.Visible });
-				this._register(attachListStyler(this._tree, this.themeService));
-			}
-			this._tree.layout(this._pageSize);
-			this._tree.setInput(new JobStepsViewModel());
 			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
 			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
+			this._tree.setInput(new JobStepsViewModel());
+			this._tree.layout(this._pageSize);
 		}
 	}
 
 	ngOnInit() {
-		this._tree = new Tree(this._tableContainer.nativeElement, {
+		this._tree = new JobStepsTree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,

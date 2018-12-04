@@ -2,55 +2,23 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import 'vs/css!./tree';
-import * as WinJS from 'vs/base/common/winjs.base';
+import * as DOM from 'vs/base/browser/dom';
+import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
+import { Promise, TPromise } from 'vs/base/common/winjs.base';
+import { IMouseEvent } from 'vs/base/browser/mouseEvent';
+import { generateUuid } from 'vs/base/common/uuid';
+import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import * as Model from 'vs/base/parts/tree/browser/treeModel';
-import * as View from './treeView';
-import * as _ from 'vs/base/parts/tree/browser/tree';
+import { Color } from 'vs/base/common/color';
 import { INavigator, MappedNavigator } from 'vs/base/common/iterator';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
-import { Color } from 'vs/base/common/color';
+import { TreeContext } from 'vs/base/parts/tree/browser/treeImpl';
 import { mixin } from 'vs/base/common/objects';
+import { JobStepsTreeView } from 'sql/parts/jobManagement/views/jobStepsTreeView';
 
-export class TreeContext implements _.ITreeContext {
-
-	public tree: _.ITree;
-	public configuration: _.ITreeConfiguration;
-	public options: _.ITreeOptions;
-
-	public dataSource: _.IDataSource;
-	public renderer: _.IRenderer;
-	public controller: _.IController;
-	public dnd: _.IDragAndDrop;
-	public filter: _.IFilter;
-	public sorter: _.ISorter;
-	public accessibilityProvider: _.IAccessibilityProvider;
-	public styler: _.ITreeStyler;
-
-	constructor(tree: _.ITree, configuration: _.ITreeConfiguration, options: _.ITreeOptions = {}) {
-		this.tree = tree;
-		this.configuration = configuration;
-		this.options = options;
-
-		if (!configuration.dataSource) {
-			throw new Error('You must provide a Data Source to the tree.');
-		}
-
-		this.dataSource = configuration.dataSource;
-		this.renderer = configuration.renderer;
-		this.controller = configuration.controller || new TreeDefaults.DefaultController({ clickBehavior: TreeDefaults.ClickBehavior.ON_MOUSE_UP, keyboardSupport: typeof options.keyboardSupport !== 'boolean' || options.keyboardSupport });
-		this.dnd = configuration.dnd || new TreeDefaults.DefaultDragAndDrop();
-		this.filter = configuration.filter || new TreeDefaults.DefaultFilter();
-		this.sorter = configuration.sorter || null;
-		this.accessibilityProvider = configuration.accessibilityProvider || new TreeDefaults.DefaultAccessibilityProvider();
-		this.styler = configuration.styler || null;
-	}
-}
-
-const defaultStyles: _.ITreeStyles = {
+const defaultStyles: tree.ITreeStyles = {
 	listFocusBackground: Color.fromHex('#073655'),
 	listActiveSelectionBackground: Color.fromHex('#0E639C'),
 	listActiveSelectionForeground: Color.fromHex('#FFFFFF'),
@@ -61,30 +29,28 @@ const defaultStyles: _.ITreeStyles = {
 	listDropBackground: Color.fromHex('#383B3D')
 };
 
-export class Tree implements _.ITree {
+export class JobStepsTree implements tree.ITree {
 
 	private container: HTMLElement;
 
-	// {{ SQL CARBON EDIT }}
-	protected context: _.ITreeContext;
+	protected context: tree.ITreeContext;
 	private model: Model.TreeModel;
-	// {{ SQL CARBON EDIT }}
-	protected view: View.TreeView;
+	protected view: JobStepsTreeView;
 
-	private _onDidChangeFocus = new Relay<_.IFocusEvent>();
-	readonly onDidChangeFocus: Event<_.IFocusEvent> = this._onDidChangeFocus.event;
-	private _onDidChangeSelection = new Relay<_.ISelectionEvent>();
-	readonly onDidChangeSelection: Event<_.ISelectionEvent> = this._onDidChangeSelection.event;
-	private _onHighlightChange = new Relay<_.IHighlightEvent>();
-	readonly onDidChangeHighlight: Event<_.IHighlightEvent> = this._onHighlightChange.event;
-	private _onDidExpandItem = new Relay<Model.IItemExpandEvent>();
-	readonly onDidExpandItem: Event<Model.IItemExpandEvent> = this._onDidExpandItem.event;
-	private _onDidCollapseItem = new Relay<Model.IItemCollapseEvent>();
-	readonly onDidCollapseItem: Event<Model.IItemCollapseEvent> = this._onDidCollapseItem.event;
-	private _onDispose = new Emitter<void>();
-	readonly onDidDispose: Event<void> = this._onDispose.event;
+	private treeonDidChangeFocus = new Relay<tree.IFocusEvent>();
+	readonly onDidChangeFocus: Event<tree.IFocusEvent> = this.treeonDidChangeFocus.event;
+	private treeonDidChangeSelection = new Relay<tree.ISelectionEvent>();
+	readonly onDidChangeSelection: Event<tree.ISelectionEvent> = this.treeonDidChangeSelection.event;
+	private treeonHighlightChange = new Relay<tree.IHighlightEvent>();
+	readonly onDidChangeHighlight: Event<tree.IHighlightEvent> = this.treeonHighlightChange.event;
+	private treeonDidExpandItem = new Relay<Model.IItemExpandEvent>();
+	readonly onDidExpandItem: Event<Model.IItemExpandEvent> = this.treeonDidExpandItem.event;
+	private treeonDidCollapseItem = new Relay<Model.IItemCollapseEvent>();
+	readonly onDidCollapseItem: Event<Model.IItemCollapseEvent> = this.treeonDidCollapseItem.event;
+	private treeonDispose = new Emitter<void>();
+	readonly onDidDispose: Event<void> = this.treeonDispose.event;
 
-	constructor(container: HTMLElement, configuration: _.ITreeConfiguration, options: _.ITreeOptions = {}) {
+	constructor(container: HTMLElement, configuration: tree.ITreeConfiguration, options: tree.ITreeOptions = {}) {
 		this.container = container;
 		mixin(options, defaultStyles, false);
 
@@ -98,18 +64,18 @@ export class Tree implements _.ITree {
 
 		this.context = new TreeContext(this, configuration, options);
 		this.model = new Model.TreeModel(this.context);
-		this.view = new View.TreeView(this.context, this.container);
+		this.view = new JobStepsTreeView(this.context, this.container);
 
 		this.view.setModel(this.model);
 
-		this._onDidChangeFocus.input = this.model.onDidFocus;
-		this._onDidChangeSelection.input = this.model.onDidSelect;
-		this._onHighlightChange.input = this.model.onDidHighlight;
-		this._onDidExpandItem.input = this.model.onDidExpandItem;
-		this._onDidCollapseItem.input = this.model.onDidCollapseItem;
+		this.treeonDidChangeFocus.input = this.model.onDidFocus;
+		this.treeonDidChangeSelection.input = this.model.onDidSelect;
+		this.treeonHighlightChange.input = this.model.onDidHighlight;
+		this.treeonDidExpandItem.input = this.model.onDidExpandItem;
+		this.treeonDidCollapseItem.input = this.model.onDidCollapseItem;
 	}
 
-	public style(styles: _.ITreeStyles): void {
+	public style(styles: tree.ITreeStyles): void {
 		this.view.applyStyles(styles);
 	}
 
@@ -153,7 +119,7 @@ export class Tree implements _.ITree {
 		this.view.onHidden();
 	}
 
-	public setInput(element: any): WinJS.Promise {
+	public setInput(element: any): Promise {
 		return this.model.setInput(element);
 	}
 
@@ -161,7 +127,7 @@ export class Tree implements _.ITree {
 		return this.model.getInput();
 	}
 
-	public refresh(element: any = null, recursive = true): WinJS.Promise {
+	public refresh(element: any = null, recursive = true): Promise {
 		return this.model.refresh(element, recursive);
 	}
 
@@ -170,27 +136,27 @@ export class Tree implements _.ITree {
 		return this.view.updateWidth(item);
 	}
 
-	public expand(element: any): WinJS.Promise {
+	public expand(element: any): Promise {
 		return this.model.expand(element);
 	}
 
-	public expandAll(elements: any[]): WinJS.Promise {
+	public expandAll(elements: any[]): Promise {
 		return this.model.expandAll(elements);
 	}
 
-	public collapse(element: any, recursive: boolean = false): WinJS.Promise {
+	public collapse(element: any, recursive: boolean = false): Promise {
 		return this.model.collapse(element, recursive);
 	}
 
-	public collapseAll(elements: any[] = null, recursive: boolean = false): WinJS.Promise {
+	public collapseAll(elements: any[] = null, recursive: boolean = false): Promise {
 		return this.model.collapseAll(elements, recursive);
 	}
 
-	public toggleExpansion(element: any, recursive: boolean = false): WinJS.Promise {
+	public toggleExpansion(element: any, recursive: boolean = false): Promise {
 		return this.model.toggleExpansion(element, recursive);
 	}
 
-	public toggleExpansionAll(elements: any[]): WinJS.Promise {
+	public toggleExpansionAll(elements: any[]): Promise {
 		return this.model.toggleExpansionAll(elements);
 	}
 
@@ -202,7 +168,7 @@ export class Tree implements _.ITree {
 		return this.model.getExpandedElements();
 	}
 
-	public reveal(element: any, relativeTop: number = null): WinJS.Promise {
+	public reveal(element: any, relativeTop: number = null): Promise {
 		return this.model.reveal(element, relativeTop);
 	}
 
@@ -374,7 +340,7 @@ export class Tree implements _.ITree {
 	}
 
 	public dispose(): void {
-		this._onDispose.fire();
+		this.treeonDispose.fire();
 
 		if (this.model !== null) {
 			this.model.dispose();
@@ -385,11 +351,162 @@ export class Tree implements _.ITree {
 			this.view = null;
 		}
 
-		this._onDidChangeFocus.dispose();
-		this._onDidChangeSelection.dispose();
-		this._onHighlightChange.dispose();
-		this._onDidExpandItem.dispose();
-		this._onDidCollapseItem.dispose();
-		this._onDispose.dispose();
+		this.treeonDidChangeFocus.dispose();
+		this.treeonDidChangeSelection.dispose();
+		this.treeonHighlightChange.dispose();
+		this.treeonDidExpandItem.dispose();
+		this.treeonDidCollapseItem.dispose();
+		this.treeonDispose.dispose();
+	}
+}
+
+
+export class JobStepsViewRow {
+	public stepId: string;
+	public stepName: string;
+	public message: string;
+	public rowID: string = generateUuid();
+	public runStatus: string;
+}
+
+// Empty class just for tree input
+export class JobStepsViewModel {
+	public static readonly id = generateUuid();
+}
+
+export class JobStepsViewController extends TreeDefaults.DefaultController {
+
+	protected onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+		return true;
+	}
+
+	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
+		return true;
+	}
+
+}
+
+export class JobStepsViewDataSource implements tree.IDataSource {
+	private treedata: JobStepsViewRow[];
+
+	public getId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {
+		if (element instanceof JobStepsViewModel) {
+			return JobStepsViewModel.id;
+		} else {
+			return (element as JobStepsViewRow).rowID;
+		}
+	}
+
+	public hasChildren(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): boolean {
+		if (element instanceof JobStepsViewModel) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public getChildren(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise {
+		if (element instanceof JobStepsViewModel) {
+			return TPromise.as(this.treedata);
+		} else {
+			return TPromise.as(undefined);
+		}
+	}
+
+	public getParent(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): Promise {
+		if (element instanceof JobStepsViewModel) {
+			return TPromise.as(undefined);
+		} else {
+			return TPromise.as(new JobStepsViewModel());
+		}
+	}
+
+	public set data(data: JobStepsViewRow[]) {
+		this.treedata = data;
+	}
+}
+
+export interface IListTemplate {
+	statusIcon: HTMLElement;
+	label: HTMLElement;
+}
+
+export class JobStepsViewRenderer implements tree.IRenderer {
+	private treestatusIcon: HTMLElement;
+
+	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
+		return 22 * Math.ceil(element.message.length/JobManagementUtilities.jobMessageLength);
+	}
+
+	public getTemplateId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {
+		if (element instanceof JobStepsViewModel) {
+			return 'jobStepsViewModel';
+		} else {
+			return 'jobStepsViewRow';
+		}
+	}
+
+	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): IListTemplate {
+		let row = DOM.$('.list-row');
+		let label = DOM.$('.label');
+		this.treestatusIcon = this.createStatusIcon();
+		row.appendChild(this.treestatusIcon);
+		row.appendChild(label);
+		container.appendChild(row);
+		let statusIcon = this.treestatusIcon;
+		return { statusIcon, label };
+	}
+
+	public renderElement(tree: tree.ITree, element: JobStepsViewRow, templateId: string, templateData: IListTemplate): void {
+		if (templateData.label.children.length > 0) {
+			return;
+		}
+		let stepIdCol: HTMLElement = DOM.$('div');
+		stepIdCol.className = 'tree-id-col';
+		stepIdCol.innerText = element.stepId;
+		let stepNameCol: HTMLElement = DOM.$('div');
+		stepNameCol.className = 'tree-name-col';
+		stepNameCol.innerText = element.stepName;
+		let stepMessageCol: HTMLElement = DOM.$('div');
+		stepMessageCol.className = 'tree-message-col';
+		stepMessageCol.innerText = element.message;
+		templateData.label.appendChild(stepIdCol);
+		templateData.label.appendChild(stepNameCol);
+		templateData.label.appendChild(stepMessageCol);
+		let statusClass: string;
+		if (element.runStatus === 'Succeeded') {
+			statusClass = ' step-passed';
+		} else if (element.runStatus === 'Failed') {
+			statusClass = ' step-failed';
+		} else {
+			statusClass = ' step-unknown';
+		}
+		this.treestatusIcon.className += statusClass;
+	}
+
+	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: IListTemplate): void {
+		// no op
+	}
+
+	private createStatusIcon(): HTMLElement {
+		let statusIcon: HTMLElement = DOM.$('div');
+		statusIcon.className += 'status-icon';
+		return statusIcon;
+	}
+}
+
+export class JobStepsViewFilter implements tree.IFilter {
+	private treefilterString: string;
+
+	public isVisible(tree: tree.ITree, element: JobStepsViewRow): boolean {
+		return this.treeisJobVisible();
+	}
+
+	private treeisJobVisible(): boolean {
+		return true;
+	}
+
+	public set filterString(val: string) {
+		this.treefilterString = val;
 	}
 }

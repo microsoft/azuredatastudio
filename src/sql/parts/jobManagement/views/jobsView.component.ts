@@ -37,6 +37,7 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
+import BarChart from 'sql/parts/dashboard/widgets/insights/views/charts/types/barChart.component';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -94,6 +95,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private _didTabChange: boolean;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
+	@ViewChild('jobsprevruns') _graphContainer: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
@@ -504,7 +506,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private renderChartsPostHistory(row, cell, value, columnDef, dataContext) {
 		let runChart = this._jobCacheObject.getRunChart(dataContext.id);
 		if (runChart && runChart.length > 0) {
-			return `<table class="jobprevruns" id="${dataContext.id}">
+			return `<table #jobprevruns class="jobprevruns" id="${dataContext.id}">
 				<tr>
 					<td>${runChart[0] ? runChart[0] : '<div></div>' }</td>
 					<td>${runChart[1] ? runChart[1] : '<div></div>' }</td>
@@ -514,7 +516,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				</tr>
 			</table>`;
 		} else {
-			return `<table class="jobprevruns" id="${dataContext.id}">
+			return `<table #jobprevruns class="jobprevruns" id="${dataContext.id}">
 			<tr>
 				<td><div class="bar0"></div></td>
 				<td><div class="bar1"></div></td>
@@ -588,7 +590,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		jobs.forEach(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
+			this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async (result) => {
 				if (result) {
 					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
 					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
@@ -604,7 +606,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 						previousRuns = jobHistories;
 					}
 					// dont create the charts if the tab changed
-					if (!self._didTabChange) {
+					if (!self._didTabChange || previousRuns.length > 0) {
 						self.createJobChart(job.jobId, previousRuns);
 					}
 					if (self._agentViewComponent.expanded.has(job.jobId)) {

@@ -15,7 +15,8 @@ import * as strings from 'vs/base/common/strings';
 import * as Mouse from 'vs/base/browser/mouseEvent';
 import * as Keyboard from 'vs/base/browser/keyboardEvent';
 import * as Model from 'vs/base/parts/tree/browser/treeModel';
-import * as dnd from './treeDnd';
+import * as dnd from 'vs/base/parts/tree/browser/treeDnd';
+import * as View from 'vs/base/parts/tree/browser/treeView';
 import { ArrayIterator, MappedIterator } from 'vs/base/common/iterator';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -24,374 +25,11 @@ import * as _ from 'vs/base/parts/tree/browser/tree';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Event, Emitter } from 'vs/base/common/event';
 import { DataTransfers } from 'vs/base/browser/dnd';
-import { DefaultTreestyler } from './treeDefaults';
+import { DefaultTreestyler } from 'vs/base/parts/tree/browser/treeDefaults';
 import { Delayer } from 'vs/base/common/async';
 
-export interface IRow {
-	element: HTMLElement;
-	templateId: string;
-	templateData: any;
-}
 
-// {{ SQL CARBON EDIT }}
-export function removeFromParent(element: HTMLElement): void {
-	try {
-		element.parentElement.removeChild(element);
-	} catch (e) {
-		// this will throw if this happens due to a blur event, nasty business
-	}
-}
-
-export class RowCache implements Lifecycle.IDisposable {
-
-	private _cache: { [templateId: string]: IRow[]; };
-
-	constructor(private context: _.ITreeContext) {
-		this._cache = { '': [] };
-	}
-
-	public alloc(templateId: string): IRow {
-		var result = this.cache(templateId).pop();
-
-		if (!result) {
-			var content = document.createElement('div');
-			content.className = 'content';
-
-			var row = document.createElement('div');
-			row.appendChild(content);
-
-			result = {
-				element: row,
-				templateId: templateId,
-				templateData: this.context.renderer.renderTemplate(this.context.tree, templateId, content)
-			};
-		}
-
-		return result;
-	}
-
-	public release(templateId: string, row: IRow): void {
-		removeFromParent(row.element);
-		this.cache(templateId).push(row);
-	}
-
-	private cache(templateId: string): IRow[] {
-		return this._cache[templateId] || (this._cache[templateId] = []);
-	}
-
-	public garbageCollect(): void {
-		if (this._cache) {
-			Object.keys(this._cache).forEach(templateId => {
-				this._cache[templateId].forEach(cachedRow => {
-					this.context.renderer.disposeTemplate(this.context.tree, templateId, cachedRow.templateData);
-					cachedRow.element = null;
-					cachedRow.templateData = null;
-				});
-
-				delete this._cache[templateId];
-			});
-		}
-	}
-
-	public dispose(): void {
-		this.garbageCollect();
-		this._cache = null;
-		this.context = null;
-	}
-}
-
-export interface IViewContext extends _.ITreeContext {
-	cache: RowCache;
-	horizontalScrolling: boolean;
-}
-
-export class ViewItem implements IViewItem {
-
-	private context: IViewContext;
-
-	public model: Model.Item;
-	public id: string;
-	protected row: IRow;
-
-	public top: number;
-	public height: number;
-	public width: number = 0;
-	public onDragStart: (e: DragEvent) => void;
-
-	public needsRender: boolean;
-	public uri: string;
-	public unbindDragStart: Lifecycle.IDisposable;
-	public loadingTimer: number;
-
-	public _styles: any;
-	private _draggable: boolean;
-
-	constructor(context: IViewContext, model: Model.Item) {
-		this.context = context;
-		this.model = model;
-
-		this.id = this.model.id;
-		this.row = null;
-
-		this.top = 0;
-		this.height = model.getHeight();
-
-		this._styles = {};
-		model.getAllTraits().forEach(t => this._styles[t] = true);
-
-		if (model.isExpanded()) {
-			this.addClass('expanded');
-		}
-	}
-
-	set expanded(value: boolean) {
-		value ? this.addClass('expanded') : this.removeClass('expanded');
-	}
-
-	set loading(value: boolean) {
-		value ? this.addClass('loading') : this.removeClass('loading');
-	}
-
-	set draggable(value: boolean) {
-		this._draggable = value;
-		this.render(true);
-	}
-
-	get draggable() {
-		return this._draggable;
-	}
-
-	set dropTarget(value: boolean) {
-		value ? this.addClass('drop-target') : this.removeClass('drop-target');
-	}
-
-	public get element(): HTMLElement {
-		return this.row && this.row.element;
-	}
-
-	private _templateId: string;
-	private get templateId(): string {
-		return this._templateId || (this._templateId = (this.context.renderer.getTemplateId && this.context.renderer.getTemplateId(this.context.tree, this.model.getElement())));
-	}
-
-	public addClass(name: string): void {
-		this._styles[name] = true;
-		this.render(true);
-	}
-
-	public removeClass(name: string): void {
-		delete this._styles[name]; // is this slow?
-		this.render(true);
-	}
-
-	public render(skipUserRender = false): void {
-		if (!this.model || !this.element) {
-			return;
-		}
-
-		var classes = ['monaco-tree-row'];
-		classes.push.apply(classes, Object.keys(this._styles));
-
-		if (this.model.hasChildren()) {
-			classes.push('has-children');
-		}
-
-		this.element.className = classes.join(' ');
-		this.element.draggable = this.draggable;
-		this.element.style.height = this.height + 'px';
-
-		// ARIA
-		this.element.setAttribute('role', 'treeitem');
-		const accessibility = this.context.accessibilityProvider;
-		const ariaLabel = accessibility.getAriaLabel(this.context.tree, this.model.getElement());
-		if (ariaLabel) {
-			this.element.setAttribute('aria-label', ariaLabel);
-		}
-		if (accessibility.getPosInSet && accessibility.getSetSize) {
-			this.element.setAttribute('aria-setsize', accessibility.getSetSize());
-			this.element.setAttribute('aria-posinset', accessibility.getPosInSet(this.context.tree, this.model.getElement()));
-		}
-		if (this.model.hasTrait('focused')) {
-			const base64Id = strings.safeBtoa(this.model.id);
-
-			this.element.setAttribute('aria-selected', 'true');
-			this.element.setAttribute('id', base64Id);
-		} else {
-			this.element.setAttribute('aria-selected', 'false');
-			this.element.removeAttribute('id');
-		}
-		if (this.model.hasChildren()) {
-			this.element.setAttribute('aria-expanded', String(!!this._styles['expanded']));
-		} else {
-			this.element.removeAttribute('aria-expanded');
-		}
-		this.element.setAttribute('aria-level', String(this.model.getDepth()));
-
-		if (this.context.options.paddingOnRow) {
-			this.element.style.paddingLeft = this.context.options.twistiePixels + ((this.model.getDepth() - 1) * this.context.options.indentPixels) + 'px';
-		} else {
-			this.element.style.paddingLeft = ((this.model.getDepth() - 1) * this.context.options.indentPixels) + 'px';
-			(<HTMLElement>this.row.element.firstElementChild).style.paddingLeft = this.context.options.twistiePixels + 'px';
-		}
-
-		var uri = this.context.dnd.getDragURI(this.context.tree, this.model.getElement());
-
-		if (uri !== this.uri) {
-			if (this.unbindDragStart) {
-				this.unbindDragStart.dispose();
-				this.unbindDragStart = null;
-			}
-
-			if (uri) {
-				this.uri = uri;
-				this.draggable = true;
-				this.unbindDragStart = DOM.addDisposableListener(this.element, 'dragstart', (e) => {
-					this.onDragStart(e);
-				});
-			} else {
-				this.uri = null;
-			}
-		}
-
-		if (!skipUserRender && this.element) {
-			const style = window.getComputedStyle(this.element);
-			const paddingLeft = parseFloat(style.paddingLeft);
-
-			if (this.context.horizontalScrolling) {
-				this.element.style.width = 'fit-content';
-			}
-
-			this.context.renderer.renderElement(this.context.tree, this.model.getElement(), this.templateId, this.row.templateData);
-
-			if (this.context.horizontalScrolling) {
-				this.width = DOM.getContentWidth(this.element) + paddingLeft;
-				this.element.style.width = '';
-			}
-		}
-	}
-
-	updateWidth(): any {
-		if (!this.context.horizontalScrolling || !this.element) {
-			return;
-		}
-
-		const style = window.getComputedStyle(this.element);
-		const paddingLeft = parseFloat(style.paddingLeft);
-		this.element.style.width = 'fit-content';
-		this.width = DOM.getContentWidth(this.element) + paddingLeft;
-		this.element.style.width = '';
-	}
-
-	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
-		if (!this.row) {
-			this.row = this.context.cache.alloc(this.templateId);
-
-			// used in reverse lookup from HTMLElement to Item
-			(<any>this.element)[TreeView.BINDING] = this;
-		}
-
-		if (this.element.parentElement) {
-			return;
-		}
-
-		if (afterElement === null) {
-			container.appendChild(this.element);
-		} else {
-			try {
-				container.insertBefore(this.element, afterElement);
-			} catch (e) {
-				console.warn('Failed to locate previous tree element');
-				container.appendChild(this.element);
-			}
-		}
-
-		this.render();
-	}
-
-	public removeFromDOM(): void {
-		if (!this.row) {
-			return;
-		}
-
-		if (this.unbindDragStart) {
-			this.unbindDragStart.dispose();
-			this.unbindDragStart = null;
-		}
-
-		this.uri = null;
-
-		(<any>this.element)[TreeView.BINDING] = null;
-		this.context.cache.release(this.templateId, this.row);
-		this.row = null;
-	}
-
-	public dispose(): void {
-		this.row = null;
-		this.model = null;
-	}
-}
-
-// {{ SQL CARBON EDIT }}
-export class RootViewItem extends ViewItem {
-
-	constructor(context: IViewContext, model: Model.Item, wrapper: HTMLElement) {
-		super(context, model);
-
-		this.row = {
-			element: wrapper,
-			templateData: null,
-			templateId: null
-		};
-	}
-
-	public render(): void {
-		if (!this.model || !this.element) {
-			return;
-		}
-
-		var classes = ['monaco-tree-wrapper'];
-		classes.push.apply(classes, Object.keys(this._styles));
-
-		if (this.model.hasChildren()) {
-			classes.push('has-children');
-		}
-
-		this.element.className = classes.join(' ');
-	}
-
-	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
-		// noop
-	}
-
-	public removeFromDOM(): void {
-		// noop
-	}
-}
-
-// {{ SQL CARBON EDIT }}
-export interface IThrottledGestureEvent {
-	translationX: number;
-	translationY: number;
-}
-
-// {{ SQL CARBON EDIT }}
-export function reactionEquals(one: _.IDragOverReaction, other: _.IDragOverReaction): boolean {
-	if (!one && !other) {
-		return true;
-	} else if (!one || !other) {
-		return false;
-	} else if (one.accept !== other.accept) {
-		return false;
-	} else if (one.bubble !== other.bubble) {
-		return false;
-	} else if (one.effect !== other.effect) {
-		return false;
-	} else {
-		return true;
-	}
-}
-
-export class TreeView extends HeightMap {
+export class JobStepsTreeView extends HeightMap {
 
 	static BINDING = 'monaco-tree-row';
 	static LOADING_DECORATION_DELAY = 800;
@@ -401,42 +39,38 @@ export class TreeView extends HeightMap {
 
 	private static currentExternalDragAndDropData: _.IDragAndDropData = null;
 
-	private context: IViewContext;
+	private context: View.IViewContext;
 	private modelListeners: Lifecycle.IDisposable[];
 	private model: Model.TreeModel;
 
 	private viewListeners: Lifecycle.IDisposable[];
-	// {{ SQL CARBON EDIT }}
-	protected domNode: HTMLElement;
-	// {{ SQL CARBON EDIT }}
-	protected wrapper: HTMLElement;
+	private domNode: HTMLElement;
+
+	private wrapper: HTMLElement;
 	private styleElement: HTMLStyleElement;
 	private treeStyler: _.ITreeStyler;
-	// {{ SQL CARBON EDIT }}
-	protected rowsContainer: HTMLElement;
-	protected scrollableElement: ScrollableElement;
+	private rowsContainer: HTMLElement;
+	private scrollableElement: ScrollableElement;
 	private msGesture: MSGesture;
 	private lastPointerType: string;
 	private lastClickTimeStamp: number = 0;
-	// {{ SQL CARBON EDIT }}
-	protected horizontalScrolling: boolean;
+	private horizontalScrolling: boolean;
 	private contentWidthUpdateDelayer = new Delayer<void>(50);
 
-	// {{ SQL CARBON EDIT }}
-	protected lastRenderTop: number;
-	protected lastRenderHeight: number;
+	private lastRenderTop: number;
+	private lastRenderHeight: number;
 
-	private inputItem: ViewItem;
-	private items: { [id: string]: ViewItem; };
+	private inputItem: View.ViewItem;
+	private items: { [id: string]: View.ViewItem; };
 
 	private isRefreshing = false;
 	private refreshingPreviousChildrenIds: { [id: string]: string[] } = {};
 	private currentDragAndDropData: _.IDragAndDropData;
 	private currentDropElement: any;
 	private currentDropElementReaction: _.IDragOverReaction;
-	private currentDropTarget: ViewItem;
+	private currentDropTarget: View.ViewItem;
 	private shouldInvalidateDropReaction: boolean;
-	private currentDropTargets: ViewItem[];
+	private currentDropTargets: View.ViewItem[];
 	private currentDropPromise: WinJS.Promise;
 	private dragAndDropScrollInterval: number;
 	private dragAndDropScrollTimeout: number;
@@ -453,15 +87,14 @@ export class TreeView extends HeightMap {
 	private readonly _onDOMBlur: Emitter<void> = new Emitter<void>();
 	get onDOMBlur(): Event<void> { return this._onDOMBlur.event; }
 
-	// {{SQL CARBON EDIT}}
-	protected readonly _onDidScroll: Emitter<void> = new Emitter<void>();
+	private readonly _onDidScroll: Emitter<void> = new Emitter<void>();
 	get onDidScroll(): Event<void> { return this._onDidScroll.event; }
 
 	constructor(context: _.ITreeContext, container: HTMLElement) {
 		super();
 
-		TreeView.counter++;
-		this.instance = TreeView.counter;
+		JobStepsTreeView.counter++;
+		this.instance = JobStepsTreeView.counter;
 
 		const horizontalScrollMode = typeof context.options.horizontalScrollMode === 'undefined' ? ScrollbarVisibility.Hidden : context.options.horizontalScrollMode;
 		this.horizontalScrolling = horizontalScrollMode !== ScrollbarVisibility.Hidden;
@@ -476,7 +109,7 @@ export class TreeView extends HeightMap {
 			tree: context.tree,
 			accessibilityProvider: context.accessibilityProvider,
 			options: context.options,
-			cache: new RowCache(context),
+			cache: new View.RowCache(context),
 			horizontalScrolling: this.horizontalScrolling
 		};
 
@@ -521,7 +154,7 @@ export class TreeView extends HeightMap {
 			useShadows: context.options.useShadows
 		});
 		this.scrollableElement.onScroll((e) => {
-			this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth);
+			this.render(e.scrollTop, e.height, e.scrollLeft, e.width, e.scrollWidth, e.scrollHeight);
 			this._onDidScroll.fire();
 		});
 
@@ -558,7 +191,7 @@ export class TreeView extends HeightMap {
 			this.viewListeners.push(DOM.addDisposableListener(this.wrapper, 'MSGestureTap', (e) => this.onMsGestureTap(e)));
 
 			// these events come too fast, we throttle them
-			this.viewListeners.push(DOM.addDisposableThrottledListener<IThrottledGestureEvent>(this.wrapper, 'MSGestureChange', (e) => this.onThrottledMsGestureChange(e), (lastEvent: IThrottledGestureEvent, event: MSGestureEvent): IThrottledGestureEvent => {
+			this.viewListeners.push(DOM.addDisposableThrottledListener<View.IThrottledGestureEvent>(this.wrapper, 'MSGestureChange', (e) => this.onThrottledMsGestureChange(e), (lastEvent: View.IThrottledGestureEvent, event: MSGestureEvent): View.IThrottledGestureEvent => {
 				event.stopPropagation();
 				event.preventDefault();
 
@@ -609,7 +242,7 @@ export class TreeView extends HeightMap {
 	}
 
 	protected createViewItem(item: Model.Item): IViewItem {
-		return new ViewItem(this.context, item);
+		return new View.ViewItem(this.context, item);
 	}
 
 	public getHTMLElement(): HTMLElement {
@@ -667,33 +300,32 @@ export class TreeView extends HeightMap {
 		return item && item.model.getElement();
 	}
 
-	// {{ SQL CARBON EDIT }}
-	protected render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
+	private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number, scrollHeight: number): void {
 		var i: number;
 		var stop: number;
 
 		var renderTop = scrollTop;
-		var renderBottom = scrollTop + viewHeight;
+		var renderBottom = scrollHeight ? scrollTop + scrollHeight : scrollTop + viewHeight;
 		var thisRenderBottom = this.lastRenderTop + this.lastRenderHeight;
 
 		// when view scrolls down, start rendering from the renderBottom
 		for (i = this.indexAfter(renderBottom) - 1, stop = this.indexAt(Math.max(thisRenderBottom, renderTop)); i >= stop; i--) {
-			this.insertItemInDOM(<ViewItem>this.itemAtIndex(i));
+			this.insertItemInDOM(<View.ViewItem>this.itemAtIndex(i));
 		}
 
 		// when view scrolls up, start rendering from either this.renderTop or renderBottom
 		for (i = Math.min(this.indexAt(this.lastRenderTop), this.indexAfter(renderBottom)) - 1, stop = this.indexAt(renderTop); i >= stop; i--) {
-			this.insertItemInDOM(<ViewItem>this.itemAtIndex(i));
+			this.insertItemInDOM(<View.ViewItem>this.itemAtIndex(i));
 		}
 
 		// when view scrolls down, start unrendering from renderTop
 		for (i = this.indexAt(this.lastRenderTop), stop = Math.min(this.indexAt(renderTop), this.indexAfter(thisRenderBottom)); i < stop; i++) {
-			this.removeItemFromDOM(<ViewItem>this.itemAtIndex(i));
+			this.removeItemFromDOM(<View.ViewItem>this.itemAtIndex(i));
 		}
 
 		// when view scrolls up, start unrendering from either renderBottom this.renderTop
 		for (i = Math.max(this.indexAfter(renderBottom), this.indexAt(this.lastRenderTop)), stop = this.indexAfter(thisRenderBottom); i < stop; i++) {
-			this.removeItemFromDOM(<ViewItem>this.itemAtIndex(i));
+			this.removeItemFromDOM(<View.ViewItem>this.itemAtIndex(i));
 		}
 
 		var topItem = this.itemAtIndex(this.indexAt(renderTop));
@@ -879,7 +511,7 @@ export class TreeView extends HeightMap {
 
 	private onSetInput(e: Model.IInputEvent): void {
 		this.context.cache.garbageCollect();
-		this.inputItem = new RootViewItem(this.context, <Model.Item>e.item, this.wrapper);
+		this.inputItem = new View.RootViewItem(this.context, <Model.Item>e.item, this.wrapper);
 	}
 
 	private onItemChildrenRefreshing(e: Model.IItemChildrenRefreshEvent): void {
@@ -890,7 +522,7 @@ export class TreeView extends HeightMap {
 			viewItem.loadingTimer = setTimeout(() => {
 				viewItem.loadingTimer = 0;
 				viewItem.loading = true;
-			}, TreeView.LOADING_DECORATION_DELAY);
+			}, JobStepsTreeView.LOADING_DECORATION_DELAY);
 		}
 
 		if (!e.isNested) {
@@ -1138,19 +770,19 @@ export class TreeView extends HeightMap {
 
 	// HeightMap "events"
 
-	public onInsertItem(item: ViewItem): void {
+	public onInsertItem(item: View.ViewItem): void {
 		item.onDragStart = (e) => { this.onDragStart(item, e); };
 		item.needsRender = true;
 		this.refreshViewItem(item);
 		this.items[item.id] = item;
 	}
 
-	public onRefreshItem(item: ViewItem, needsRender = false): void {
+	public onRefreshItem(item: View.ViewItem, needsRender = false): void {
 		item.needsRender = item.needsRender || needsRender;
 		this.refreshViewItem(item);
 	}
 
-	public onRemoveItem(item: ViewItem): void {
+	public onRemoveItem(item: View.ViewItem): void {
 		this.removeItemFromDOM(item);
 		item.dispose();
 		delete this.items[item.id];
@@ -1158,7 +790,7 @@ export class TreeView extends HeightMap {
 
 	// ViewItem refresh
 
-	private refreshViewItem(item: ViewItem): void {
+	private refreshViewItem(item: View.ViewItem): void {
 		item.render();
 
 		if (this.shouldBeRendered(item)) {
@@ -1327,7 +959,7 @@ export class TreeView extends HeightMap {
 		this.context.controller.onKeyUp(this.context.tree, new Keyboard.StandardKeyboardEvent(e));
 	}
 
-	private onDragStart(item: ViewItem, e: any): void {
+	private onDragStart(item: View.ViewItem, e: any): void {
 		if (this.model.getHighlight()) {
 			return;
 		}
@@ -1362,7 +994,7 @@ export class TreeView extends HeightMap {
 		}
 
 		this.currentDragAndDropData = new dnd.ElementsDragAndDropData(elements);
-		TreeView.currentExternalDragAndDropData = new dnd.ExternalElementsDragAndDropData(elements);
+		JobStepsTreeView.currentExternalDragAndDropData = new dnd.ExternalElementsDragAndDropData(elements);
 
 		this.context.dnd.onDragStart(this.context.tree, this.currentDragAndDropData, new Mouse.DragMouseEvent(e));
 	}
@@ -1449,8 +1081,8 @@ export class TreeView extends HeightMap {
 		if (!this.currentDragAndDropData) {
 			// just started dragging
 
-			if (TreeView.currentExternalDragAndDropData) {
-				this.currentDragAndDropData = TreeView.currentExternalDragAndDropData;
+			if (JobStepsTreeView.currentExternalDragAndDropData) {
+				this.currentDragAndDropData = JobStepsTreeView.currentExternalDragAndDropData;
 			} else {
 				if (!event.dataTransfer.types) {
 					return false;
@@ -1498,7 +1130,7 @@ export class TreeView extends HeightMap {
 		// can be null
 		var currentDropTarget = item.id === this.inputItem.id ? this.inputItem : this.items[item.id];
 
-		if (this.shouldInvalidateDropReaction || this.currentDropTarget !== currentDropTarget || !reactionEquals(this.currentDropElementReaction, reaction)) {
+		if (this.shouldInvalidateDropReaction || this.currentDropTarget !== currentDropTarget || !View.reactionEquals(this.currentDropElementReaction, reaction)) {
 			this.shouldInvalidateDropReaction = false;
 
 			if (this.currentDropTarget) {
@@ -1575,7 +1207,7 @@ export class TreeView extends HeightMap {
 
 		this.cancelDragAndDropScrollInterval();
 		this.currentDragAndDropData = null;
-		TreeView.currentExternalDragAndDropData = null;
+		JobStepsTreeView.currentExternalDragAndDropData = null;
 		this.currentDropElement = null;
 		this.currentDropTarget = null;
 		this.dragAndDropMouseY = null;
@@ -1623,7 +1255,7 @@ export class TreeView extends HeightMap {
 		this.msGesture.addPointer(event.pointerId);
 	}
 
-	private onThrottledMsGestureChange(event: IThrottledGestureEvent): void {
+	private onThrottledMsGestureChange(event: View.IThrottledGestureEvent): void {
 		this.scrollTop -= event.translationY;
 	}
 
@@ -1633,10 +1265,9 @@ export class TreeView extends HeightMap {
 	}
 
 	// DOM changes
-	// {{ SQL CARBON EDIT }}
-	protected insertItemInDOM(item: ViewItem): void {
+	private insertItemInDOM(item: View.ViewItem): void {
 		var elementAfter: HTMLElement = null;
-		var itemAfter = <ViewItem>this.itemAfter(item);
+		var itemAfter = <View.ViewItem>this.itemAfter(item);
 
 		if (itemAfter && itemAfter.element) {
 			elementAfter = itemAfter.element;
@@ -1645,8 +1276,7 @@ export class TreeView extends HeightMap {
 		item.insertInDOM(this.rowsContainer, elementAfter);
 	}
 
-	// {{ SQL CARBON EDIT }}
-	protected removeItemFromDOM(item: ViewItem): void {
+	private removeItemFromDOM(item: View.ViewItem): void {
 		if (!item) {
 			return;
 		}
@@ -1656,15 +1286,15 @@ export class TreeView extends HeightMap {
 
 	// Helpers
 
-	private shouldBeRendered(item: ViewItem): boolean {
+	private shouldBeRendered(item: View.ViewItem): boolean {
 		return item.top < this.lastRenderTop + this.lastRenderHeight && item.top + item.height > this.lastRenderTop;
 	}
 
-	private getItemAround(element: HTMLElement): ViewItem {
-		var candidate: ViewItem = this.inputItem;
+	private getItemAround(element: HTMLElement): View.ViewItem {
+		var candidate: View.ViewItem = this.inputItem;
 		do {
-			if ((<any>element)[TreeView.BINDING]) {
-				candidate = (<any>element)[TreeView.BINDING];
+			if ((<any>element)[JobStepsTreeView.BINDING]) {
+				candidate = (<any>element)[JobStepsTreeView.BINDING];
 			}
 
 			if (element === this.wrapper || element === this.domNode) {

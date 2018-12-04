@@ -18,7 +18,7 @@ import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManage
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
-import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
+import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
@@ -303,13 +303,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 			if (this._tree) {
 				this._tree.layout(height);
-			}
-
-			if (this._jobStepsView) {
-				let element = this._jobStepsView.nativeElement as HTMLElement;
-				if (element) {
-					element.style.height = height + 'px';
-				}
 			}
 		}
 	}
