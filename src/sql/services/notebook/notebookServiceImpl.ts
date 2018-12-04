@@ -86,11 +86,17 @@ export class NotebookService implements INotebookService {
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Thenable<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider = this._providers.get(providerId);
+		let provider: INotebookProvider;
+		if (this._providers.has(providerId)) {
+			provider = this._providers.get(providerId);
+		}
+		else {
+			provider = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+		}
+
 		if (!provider) {
 			return Promise.reject(new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
 		}
-
 		return op(provider);
 	}
 

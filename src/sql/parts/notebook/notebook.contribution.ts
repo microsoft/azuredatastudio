@@ -18,7 +18,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { NotebookInput, NotebookInputModel, notebooksEnabledCondition } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
 
+const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
+const Extensions = {
+	NotebookProviderContribution: 'notebook.providers'
+};
 
 let counter = 0;
 
@@ -44,6 +49,11 @@ export class NewNotebookAction extends Action {
 		let title = `Untitled-${counter++}`;
 		let untitledUri = URI.from({ scheme: Schemas.untitled, path: title });
 		let model = new NotebookInputModel(untitledUri, undefined, false, undefined);
+		if(!model.providerId)
+		{
+			let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+			model.providerId = notebookRegistry.getProviderForFileType(DEFAULT_NOTEBOOK_FILETYPE);
+		}
 		let input = this._instantiationService.createInstance(NotebookInput, title, model);
 		return this._editorService.openEditor(input, { pinned: true }).then(() => undefined);
 	}
