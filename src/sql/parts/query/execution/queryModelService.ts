@@ -14,6 +14,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryStatusbarItem } from 'sql/parts/query/execution/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
 import { RowCountStatusBarItem } from 'sql/parts/query/common/rowCountStatus';
+import { TimeElapsedStatusBarItem } from 'sql/parts/query/common/timeElapsedStatus';
 
 import * as sqlops from 'sqlops';
 
@@ -85,6 +86,12 @@ export class QueryModelService implements IQueryModelService {
 		this._onEditSessionReady = new Emitter<sqlops.EditSessionReadyParams>();
 
 		// Register Statusbar items
+
+		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
+			TimeElapsedStatusBarItem,
+			statusbar.StatusbarAlignment.RIGHT,
+			100 /* Should appear to the right of the SQL editor status */
+		));
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			RowCountStatusBarItem,
@@ -202,32 +209,28 @@ export class QueryModelService implements IQueryModelService {
 	/**
 	 * Run a query for the given URI with the given text selection
 	 */
-	public runQuery(uri: string, selection: sqlops.ISelectionData,
-		title: string, queryInput: QueryInput, runOptions?: sqlops.ExecutionPlanOptions): void {
-		this.doRunQuery(uri, selection, title, queryInput, false, runOptions);
+	public runQuery(uri: string, selection: sqlops.ISelectionData, queryInput: QueryInput, runOptions?: sqlops.ExecutionPlanOptions): void {
+		this.doRunQuery(uri, selection, queryInput, false, runOptions);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryStatement(uri: string, selection: sqlops.ISelectionData,
-		title: string, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, title, queryInput, true);
+	public runQueryStatement(uri: string, selection: sqlops.ISelectionData, queryInput: QueryInput): void {
+		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run the current SQL statement for the given URI
 	 */
-	public runQueryString(uri: string, selection: string,
-		title: string, queryInput: QueryInput): void {
-		this.doRunQuery(uri, selection, title, queryInput, true);
+	public runQueryString(uri: string, selection: string, queryInput: QueryInput): void {
+		this.doRunQuery(uri, selection, queryInput, true);
 	}
 
 	/**
 	 * Run Query implementation
 	 */
-	private doRunQuery(uri: string, selection: sqlops.ISelectionData | string,
-		title: string, queryInput: QueryInput,
+	private doRunQuery(uri: string, selection: sqlops.ISelectionData | string, queryInput: QueryInput,
 		runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): void {
 		// Reuse existing query runner if it exists
 		let queryRunner: QueryRunner;
@@ -249,7 +252,7 @@ export class QueryModelService implements IQueryModelService {
 		} else {
 			// We do not have a query runner for this editor, so create a new one
 			// and map it to the results uri
-			info = this.initQueryRunner(uri, title);
+			info = this.initQueryRunner(uri);
 			queryRunner = info.queryRunner;
 		}
 
@@ -270,8 +273,8 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	private initQueryRunner(uri: string, title: string): QueryInfo {
-		let queryRunner = this._instantiationService.createInstance(QueryRunner, uri, title);
+	private initQueryRunner(uri: string): QueryInfo {
+		let queryRunner = this._instantiationService.createInstance(QueryRunner, uri);
 		let info = new QueryInfo();
 		queryRunner.addListener(QREvents.RESULT_SET, e => {
 			this._fireQueryEvent(uri, 'resultSet', e);
@@ -352,9 +355,13 @@ export class QueryModelService implements IQueryModelService {
 
 	public disposeQuery(ownerUri: string): void {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			queryRunner.disposeQuery();
+		}
+		// remove our info map
+		if (this._queryInfoMap.has(ownerUri)) {
+			this._queryInfoMap.delete(ownerUri);
 		}
 	}
 
@@ -379,7 +386,7 @@ export class QueryModelService implements IQueryModelService {
 
 			// We do not have a query runner for this editor, so create a new one
 			// and map it to the results uri
-			queryRunner = this._instantiationService.createInstance(QueryRunner, ownerUri, ownerUri);
+			queryRunner = this._instantiationService.createInstance(QueryRunner, ownerUri);
 			queryRunner.addListener(QREvents.RESULT_SET, resultSet => {
 				this._fireQueryEvent(ownerUri, 'resultSet', resultSet);
 			});
@@ -444,7 +451,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public disposeEdit(ownerUri: string): Thenable<void> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.disposeEdit(ownerUri);
 		}
@@ -453,7 +460,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<sqlops.EditUpdateCellResult> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.updateCell(ownerUri, rowId, columnId, newValue).then((result) => result, error => {
 				this._notificationService.notify({
@@ -468,7 +475,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public commitEdit(ownerUri): Thenable<void> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.commitEdit(ownerUri).then(() => { }, error => {
 				this._notificationService.notify({
@@ -483,7 +490,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public createRow(ownerUri: string): Thenable<sqlops.EditCreateRowResult> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.createRow(ownerUri);
 		}
@@ -492,7 +499,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public deleteRow(ownerUri: string, rowId: number): Thenable<void> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.deleteRow(ownerUri, rowId);
 		}
@@ -501,7 +508,7 @@ export class QueryModelService implements IQueryModelService {
 
 	public revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<sqlops.EditRevertCellResult> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.revertCell(ownerUri, rowId, columnId);
 		}
@@ -510,16 +517,25 @@ export class QueryModelService implements IQueryModelService {
 
 	public revertRow(ownerUri: string, rowId: number): Thenable<void> {
 		// Get existing query runner
-		let queryRunner = this.getQueryRunner(ownerUri);
+		let queryRunner = this.internalGetQueryRunner(ownerUri);
 		if (queryRunner) {
 			return queryRunner.revertRow(ownerUri, rowId);
 		}
 		return TPromise.as(null);
 	}
 
+	public getQueryRunner(ownerUri): QueryRunner {
+		let queryRunner: QueryRunner = undefined;
+		if (this._queryInfoMap.has(ownerUri)) {
+			queryRunner = this._getQueryInfo(ownerUri).queryRunner;
+		}
+		// return undefined if not found or is already executing
+		return queryRunner;
+	}
+
 	// PRIVATE METHODS //////////////////////////////////////////////////////
 
-	public getQueryRunner(ownerUri): QueryRunner {
+	private internalGetQueryRunner(ownerUri): QueryRunner {
 		let queryRunner: QueryRunner = undefined;
 		if (this._queryInfoMap.has(ownerUri)) {
 			let existingRunner = this._getQueryInfo(ownerUri).queryRunner;

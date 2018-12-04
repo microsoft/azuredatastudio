@@ -84,7 +84,7 @@ export class DashboardInput extends EditorInput {
 			return '';
 		}
 
-		let name = this.connectionProfile.serverName;
+		let name = this.connectionProfile.connectionName ? this.connectionProfile.connectionName : this.connectionProfile.serverName;
 		if (this.connectionProfile.databaseName
 			&& !this.isMasterMssql()) {
 			// Only add DB name if this is a non-default, non-master connection

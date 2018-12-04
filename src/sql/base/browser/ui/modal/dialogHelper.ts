@@ -12,9 +12,10 @@ import * as types from 'vs/base/common/types';
 
 import * as sqlops from 'sqlops';
 
-export function appendRow(container: Builder, label: string, labelClass: string, cellContainerClass: string): Builder {
+export function appendRow(container: Builder, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string): Builder {
 	let cellContainer: Builder;
-	container.element('tr', {}, (rowContainer) => {
+	let rowAttributes = rowContainerClass ? { class: rowContainerClass } : {};
+	container.element('tr', rowAttributes, (rowContainer) => {
 		rowContainer.element('td', { class: labelClass }, (labelCellContainer) => {
 			labelCellContainer.div({}, (labelContainer) => {
 				labelContainer.text(label);

@@ -12,6 +12,7 @@ import { AgentUtils } from '../agentUtils';
 import { AlertData } from '../data/alertData';
 import { OperatorDialog } from './operatorDialog';
 import { JobDialog } from './jobDialog';
+import { JobData } from '../data/jobData';
 
 const localize = nls.loadMessageBundle();
 
@@ -148,14 +149,23 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
-	private jobs: string[];
 	private databases: string[];
+	private jobModel: JobData;
+	public jobId: string;
+	public jobName: string;
 
-	constructor(ownerUri: string, alertInfo: sqlops.AgentAlertInfo = undefined, jobs: string[]) {
+	constructor(
+		ownerUri: string,
+		jobModel: JobData,
+		alertInfo: sqlops.AgentAlertInfo = undefined,
+		viaJobDialog: boolean = false
+	) {
 		super(ownerUri,
-			new AlertData(ownerUri, alertInfo),
+			new AlertData(ownerUri, alertInfo, jobModel, viaJobDialog),
 			alertInfo ? AlertDialog.EditDialogTitle : AlertDialog.CreateDialogTitle);
-			this.jobs = jobs;
+		this.jobModel = jobModel;
+		this.jobId = this.jobId ? this.jobId : this.jobModel.jobId;
+		this.jobName = this.jobName ? this.jobName : this.jobModel.name;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
@@ -512,7 +522,8 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	protected updateModel() {
 		this.model.name = this.nameTextBox.value;
 		this.model.isEnabled = this.enabledCheckBox.checked;
-
+		this.model.jobId = this.jobId;
+		this.model.jobName = this.jobName;
 		this.model.alertType = this.getDropdownValue(this.typeDropDown);
 		let databaseName = this.getDropdownValue(this.databaseDropDown);
 		this.model.databaseName = (databaseName !== AlertDialog.AllDatabases) ? databaseName : undefined;

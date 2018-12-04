@@ -95,6 +95,16 @@ export enum JobCompletionActionCondition {
 	Always = 3
 }
 
+export enum JobExecutionStatus {
+	Executing = 1,
+	WaitingForWorkerThread = 2,
+	BetweenRetries = 3,
+	Idle = 4,
+	Suspended = 5,
+	WaitingForStepToFinish = 6,
+	PerformingCompletionAction = 7
+}
+
 export enum AlertType {
 	sqlServerEvent = 1,
 	sqlServerPerformanceCondition = 2,
@@ -235,6 +245,7 @@ export enum MessageLevel {
 export interface DialogMessage {
 	text: string;
 	level?: MessageLevel;
+	description?: string;
 }
 
 /// Card-related APIs that need to be here to avoid early load issues
@@ -274,7 +285,8 @@ export enum DataProviderType {
 	QueryProvider = 'QueryProvider',
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
-	CapabilitiesProvider = 'CapabilitiesProvider'
+	CapabilitiesProvider = 'CapabilitiesProvider',
+	DacFxServicesProvider = 'DacFxServicesProvider',
 }
 
 export enum DeclarativeDataType {
@@ -300,6 +312,11 @@ export interface ToolbarLayout {
 
 export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
+}
+
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
 }
 
 export class SqlThemeIcon {
@@ -399,4 +416,45 @@ export class SqlThemeIcon {
 	private constructor(id: string) {
 		this.id = id;
 	}
+}
+
+export interface INotebookManagerDetails {
+	handle: number;
+	hasContentManager: boolean;
+	hasServerManager: boolean;
+}
+
+export interface INotebookSessionDetails {
+	readonly sessionId: number;
+	readonly canChangeKernels: boolean;
+	readonly id: string;
+	readonly path: string;
+	readonly name: string;
+	readonly type: string;
+	readonly status: string;
+	readonly kernelDetails: INotebookKernelDetails;
+}
+
+export interface INotebookKernelDetails {
+	readonly kernelId: number;
+	readonly id: string;
+	readonly name: string;
+	readonly supportsIntellisense: boolean;
+	readonly info?: any;
+}
+
+export interface INotebookFutureDetails {
+	readonly futureId: number;
+	readonly msg: any;
+}
+
+export enum FutureMessageType {
+	Reply = 0,
+	StdIn = 1,
+	IOPub = 2
+}
+
+export interface INotebookFutureDone {
+	succeeded: boolean;
+	rejectReason: string;
 }

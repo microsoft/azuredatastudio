@@ -6,15 +6,19 @@
 
 import * as sqlops from 'sqlops';
 
+export interface BaseDataModel {
+	server: sqlops.connection.Connection;
+	serverId: string;
+	database: string;
+}
+
 /**
  * The main data model that communicates between the pages.
  */
-export interface ImportDataModel {
+export interface ImportDataModel extends BaseDataModel {
 	ownerUri: string;
 	proseColumns: ColumnMetadata[];
 	proseDataPreview: string[][];
-	server: sqlops.connection.Connection;
-	serverId: string;
 	database: string;
 	table: string;
 	schema: string;
@@ -30,4 +34,15 @@ export interface ColumnMetadata {
 	dataType: string;
 	primaryKey: boolean;
 	nullable: boolean;
+}
+
+/**
+ * Data model to communicate between DacFx pages
+ */
+export interface DacFxDataModel extends BaseDataModel {
+	serverName: string;
+	serverId: string;
+	filePath: string;
+	version: string;
+	upgradeExisting: boolean;
 }

@@ -156,6 +156,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerDacFxServiceProvider(provider: sqlops.DacFxServicesProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.DacFxServicesProvider);
+		this._proxy.$registerDacFxServicesProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> {
 		return this._resolveProvider<sqlops.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -259,8 +265,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	$onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
-	$onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
-		this._proxy.$onResultSetComplete(handle, resultSetInfo);
+	$onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
+	}
+	$onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
 	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void {
 		this._proxy.$onQueryMessage(handle, message);
@@ -351,6 +360,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	public $onObjectExplorerSessionCreated(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionCreated(handle, response);
+	}
+
+	public $onObjectExplorerSessionDisconnected(handle: number, response: sqlops.ObjectExplorerSession): void {
+		this._proxy.$onObjectExplorerSessionDisconnected(handle, response);
 	}
 
 	public $onObjectExplorerNodeExpanded(handle: number, response: sqlops.ObjectExplorerExpandInfo): void {
@@ -578,8 +591,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	/**
 	 * Get a Agent Job's history
 	 */
-	public $getJobHistory(handle: number, ownerUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
-		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobHistory(ownerUri, jobID);
+	public $getJobHistory(handle: number, ownerUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> {
+		return this._resolveProvider<sqlops.AgentServicesProvider>(handle).getJobHistory(ownerUri, jobID, jobName);
 	}
 
 	/**

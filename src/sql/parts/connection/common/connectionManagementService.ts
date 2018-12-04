@@ -34,12 +34,13 @@ import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { values } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
 
 import * as sqlops from 'sqlops';
 
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
@@ -58,7 +59,6 @@ import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { EditorGroup } from 'vs/workbench/common/editor/editorGroup';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -77,7 +77,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<sqlops.DidChangeLanguageFlavorParams>();
-
 	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
 
 	private _configurationEditService: ConfigurationEditingService;
@@ -101,7 +100,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IViewletService private _viewletService: IViewletService,
-		@IAngularEventingService private _angularEventing: IAngularEventingService
+		@IAngularEventingService private _angularEventing: IAngularEventingService,
+		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super();
 		if (this._instantiationService) {
@@ -123,16 +123,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			statusbar.StatusbarAlignment.RIGHT,
 			100 /* High Priority */
 		));
-
-		if (_capabilitiesService && Object.keys(_capabilitiesService.providers).length > 0 && !this.hasRegisteredServers()) {
-			// prompt the user for a new connection on startup if no profiles are registered
-			this.showConnectionDialog();
-		} else if (_capabilitiesService && !this.hasRegisteredServers()) {
-			_capabilitiesService.onCapabilitiesRegistered(e => {
-				// prompt the user for a new connection on startup if no profiles are registered
-				this.showConnectionDialog();
-			});
-		}
 
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 
@@ -259,7 +249,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Load the password for the profile
 	 * @param connectionProfile Connection Profile
 	 */
-	public addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
+	public async addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
+		await this.fillInAzureTokenIfNeeded(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -282,29 +273,34 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to use after the connection is complete
 	 */
 	private tryConnect(connection: IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
+		let self = this;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			// Load the password if it's not already loaded
-			this._connectionStore.addSavedPassword(connection).then(result => {
+			self._connectionStore.addSavedPassword(connection).then(async result => {
 				let newConnection = result.profile;
 				let foundPassword = result.savedCred;
 
 				// If there is no password, try to load it from an existing connection
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
-					let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
+				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection)) {
+					let existingConnection = self._connectionStatusManager.findConnectionProfile(connection);
 					if (existingConnection && existingConnection.connectionProfile) {
 						newConnection.password = existingConnection.connectionProfile.password;
 						foundPassword = true;
 					}
 				}
+
+				// Fill in the Azure account token if needed and open the connection dialog if it fails
+				let tokenFillSuccess = await self.fillInAzureTokenIfNeeded(newConnection);
+
 				// If the password is required and still not loaded show the dialog
-				if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) {
-					resolve(this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
+				if ((!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
+					resolve(self.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
 				} else {
 					// Try to connect
-					this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
+					self.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
 						if (!connectionResult.connected && !connectionResult.errorHandled) {
 							// If connection fails show the dialog
-							resolve(this.showConnectionDialogOnError(connection, owner, connectionResult, options));
+							resolve(self.showConnectionDialogOnError(connection, owner, connectionResult, options));
 						} else {
 							//Resolve with the connection result
 							resolve(connectionResult);
@@ -384,13 +380,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): Promise<string> {
+	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			let ownerUri: string = Utils.generateUri(connection, purpose);
 			if (this._connectionStatusManager.isConnected(ownerUri)) {
 				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 			} else {
-				this.connect(connection, ownerUri).then(connectionResult => {
+				const options: IConnectionCompletionOptions = {
+					saveTheConnection: saveConnection,
+					showConnectionDialogOnError: true,
+					showDashboard: purpose === 'dashboard',
+					params: undefined,
+					showFirewallRuleOnError: true,
+				};
+				this.connect(connection, ownerUri, options).then(connectionResult => {
 					if (connectionResult && connectionResult.connected) {
 						resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 					} else {
@@ -452,9 +455,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				showFirewallRuleOnError: true
 			};
 		}
-		return new Promise<IConnectionResult>((resolve, reject) => {
+		return new Promise<IConnectionResult>(async (resolve, reject) => {
 			if (callbacks.onConnectStart) {
 				callbacks.onConnectStart();
+			}
+			let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(connection);
+			if (!tokenFillSuccess) {
+				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -746,8 +753,33 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 	}
 
+	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
+		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
+			return true;
+		}
+		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
+		if (accounts && accounts.length > 0) {
+			let account = accounts.find(account => account.key.accountId === connection.userName);
+			if (account) {
+				if (account.isStale) {
+					try {
+						account = await this._accountManagementService.refreshAccount(account);
+					} catch {
+						// refreshAccount throws an error if the user cancels the dialog
+						return false;
+					}
+				}
+				let tokens = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+				connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
+				connection.options['password'] = '';
+				return true;
+			}
+		}
+		return false;
+	}
+
 	// Request Senders
-	private sendConnectRequest(connection: IConnectionProfile, uri: string): Thenable<boolean> {
+	private async sendConnectRequest(connection: IConnectionProfile, uri: string): Promise<boolean> {
 		let connectionInfo = Object.assign({}, {
 			options: connection.options
 		});
@@ -1351,8 +1383,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * TODO this could be a map reduce operation
 	 */
 	public buildConnectionInfo(connectionString: string, provider: string): Thenable<sqlops.ConnectionInfo> {
-		return this._providers.get(provider).onReady.then(e => {
-			return e.buildConnectionInfo(connectionString);
-		});
+		let connectionProvider = this._providers.get(provider);
+		if (connectionProvider) {
+			return connectionProvider.onReady.then(e => {
+				return e.buildConnectionInfo(connectionString);
+			});
+		}
+		return Promise.resolve(undefined);
 	}
 }

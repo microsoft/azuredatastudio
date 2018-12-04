@@ -19,6 +19,7 @@
 .carbon-taskbar {
 	width: 100%;
 	position: relative;
+	margin: 2px 0px 2px 0px;
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
@@ -39,11 +40,6 @@
 	align-items: center;
 }
 
-.carbon-taskbar {
-	margin-top: 2px;
-	margin-bottom: 2px;
-}
-
 .carbon-taskbar .action-item {
 	margin-right: 5px;
 }
@@ -52,6 +48,11 @@
 	background-repeat: no-repeat;
 	background-position: 0% 50%;
 	padding-left: 15px;
+ }
+
+ .carbon-taskbar .action-item-label {
+	display: flex;
+	padding-right: 5px;
  }
 
 .listDatabasesSelectBox {

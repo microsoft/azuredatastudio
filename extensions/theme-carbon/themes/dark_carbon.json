@@ -4,67 +4,71 @@
 	"type": "dark",
 	"colors": {
 
-        // base
-        "foreground": "#fffffe",
-        "focusBorder": "#0E639C",
+		// base
+		"foreground": "#fffffe",
+		"focusBorder": "#0078d7",
 		"selection.background": "#3062d6",
 
-        //text colors
-        "textLinkForeground": "#30B4FF",
-        "textLinkActiveForeground": "#30B4FF",
+		//text colors
+		"textLinkForeground": "#30b4ff",
+		"textLinkActiveForeground": "#30b4ff",
 
-        //Button control
-        "button.background": "#00BCF2",
-        "button.foreground": "#212121",
-        "button.hoverBackground": "#0099BC",
+		//Button control
+		"button.background": "#0078d7cc",
+		"button.foreground": "#ffffff",
+		"button.hoverBackground": "#0078d7",
 
-        // TODO add support for these
-        // "button.secondaryBackground": "#c8c8c8",
-        // "button.secondaryHoverBackground": "#a6a6a6",
-        // "button.secondaryForeground": "#333333",
-        // "button.disabledBackground": "#444444" ,
-        // "button.disabledForeground": "#888888" ,
+		// TODO add support for these
+		// "button.secondaryBackground": "#c8c8c8",
+		// "button.secondaryHoverBackground": "#a6a6a6",
+		// "button.secondaryForeground": "#333333",
+		// "button.disabledBackground": "#444444" ,
+		// "button.disabledForeground": "#888888" ,
 
-        //Dropdown Control
-        "dropdown.background": "#212121",
-        "dropdown.foreground": "#fffffe",
-        "dropdown.border": "#888888",
+		//Checkbox
+		"checkbox.disabled.foreground": "#888888",
 
-        //Input Control
-        "input.background": "#212121",
+		//Dropdown Control
+		"dropdown.background": "#212121",
+		"dropdown.foreground": "#fffffe",
+		"dropdown.border": "#888888",
+
+		//Input Control
+		"input.background": "#212121",
 		"input.border": "#888888",
 		"input.disabled.background": "#444444",
 		"input.disabled.foreground": "#888888",
-        "inputOption.activeBorder": "#007ACC",
-        "input.placeholderForeground": "#888888",
-        "inputValidation.errorBackground": "#D02E00",
-        "inputValidation.errorBorder": "#D02E00",
+		"inputOption.activeBorder": "#0078d7",
+		"input.placeholderForeground": "#888888",
+		"inputValidation.errorBackground": "#b62e00",
+		"inputValidation.errorBorder": "#b62e00",
 
-        //List and trees
-        "list.activeSelectionBackground": "#3062d6",
-        "list.hoverBackground": "#444444",
-		"pickerGroup.border": "#00BCF2",
+		//List and trees
+		"list.activeSelectionBackground": "#3062d6",
+		"list.hoverBackground": "#444444",
+		"pickerGroup.border": "#0078d7",
 		"activityBar.background": "#444444",
 		"sideBar.background": "#333333",
-		"sideBarTitle.foreground": "#BBBBBB",
-		"input.placeholderForeground": "#A6A6A6",
-        "editorGroupHeader.tabsBackground": "#444444",
-        "editor.background": "#212121",
-        "editor.foreground": "#ffffff",
-        "editorWidget.background": "#444444",
-        "editorLink.activeForeground": "#30B4FF",
-        "editorGroup.border": "#333333",
-        "editorGroup.background": "#212121",
-        "editorIndentGuide.activeBackground": "#707070",
-        "tab.activeBackground": "#212121",
-        "tab.activeForeground": "#ffffff",
-        "tab.inactiveBackground": "#444444",
-        "tab.inactiveForeground": "#b6b6b6",
+		"sideBarTitle.foreground": "#bbbbbb",
+		"input.placeholderForeground": "#a6a6a6",
+		"editorGroupHeader.tabsBackground": "#444444",
+		"editor.background": "#212121",
+		"editor.foreground": "#ffffff",
+		"editorWidget.background": "#444444",
+		"editorLink.activeForeground": "#30b4ff",
+		"editorGroup.border": "#333333",
+		"editorGroup.background": "#212121",
+		"editorIndentGuide.activeBackground": "#707070",
+		"tab.activeBackground": "#212121",
+		"tab.activeForeground": "#ffffff",
+		"tab.inactiveBackground": "#444444",
+		"tab.inactiveForeground": "#b6b6b6",
 		"tab.border": "#3c3c3c",
-        "panel.background": "#212121",
-        "panel.border": "#515151",
-        "panelTitle.activeForeground": "#ffffff",
-		"panelTitle.inactiveForeground": "#888888"
+		"panel.background": "#212121",
+		"panel.border": "#515151",
+		"panelTitle.activeForeground": "#ffffff",
+		"panelTitle.inactiveForeground": "#888888",
+		"panelTitle.activeBorder": "#026dc8"
 	},
 	"tokenColors": [
 		{

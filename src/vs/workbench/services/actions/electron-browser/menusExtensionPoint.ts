@@ -43,6 +43,7 @@ namespace schema {
 			case 'view/item/context': return MenuId.ViewItemContext;
 			// {{SQL CARBON EDIT}}
 			case 'objectExplorer/item/context': return MenuId.ObjectExplorerItemContext;
+			case 'notebook/toolbar': return MenuId.NotebookToolbar;
 		}
 
 		return void 0;

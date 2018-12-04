@@ -611,7 +611,7 @@
   </body></file>
   <file original="src/sql/parts/connection/common/connectionActions" source-language="en" datatype="plaintext"><body>
     <trans-unit id="ClearRecentlyUsedLabel">
-      <source xml:lang="en">Clear Recent Connections List</source>
+      <source xml:lang="en">Clear List</source>
     </trans-unit>
     <trans-unit id="ClearedRecentConnections">
       <source xml:lang="en">Recent connections list cleared</source>
@@ -1039,10 +1039,10 @@
       <source xml:lang="en">Connection</source>
     </trans-unit>
     <trans-unit id="recentConnectionTitle">
-      <source xml:lang="en">Recent connections</source>
+      <source xml:lang="en">Recent Connections</source>
     </trans-unit>
     <trans-unit id="savedConnectionTitle">
-      <source xml:lang="en">Saved connections</source>
+      <source xml:lang="en">Saved Connections</source>
     </trans-unit>
     <trans-unit id="connectType">
       <source xml:lang="en">Connection type</source>
@@ -1520,9 +1520,6 @@
     </trans-unit>
   </body></file>
   <file original="src/sql/parts/profiler/contrib/profilerActions" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="profiler.connect">
-      <source xml:lang="en">Connect</source>
-    </trans-unit>
     <trans-unit id="profilerAction.disconnect">
       <source xml:lang="en">Disconnect</source>
     </trans-unit>
@@ -1533,25 +1530,19 @@
       <source xml:lang="en">Start</source>
     </trans-unit>
     <trans-unit id="create">
-      <source xml:lang="en">Create</source>
-    </trans-unit>
-    <trans-unit id="profiler.capture">
-      <source xml:lang="en">Pause Capture</source>
+      <source xml:lang="en">New Session</source>
     </trans-unit>
     <trans-unit id="profilerAction.resumeCapture">
-      <source xml:lang="en">Resume Capture</source>
+      <source xml:lang="en">Resume</source>
     </trans-unit>
     <trans-unit id="profilerAction.pauseCapture">
-      <source xml:lang="en">Pause Capture</source>
+      <source xml:lang="en">Pause</source>
     </trans-unit>
     <trans-unit id="profilerStop.stop">
       <source xml:lang="en">Stop</source>
     </trans-unit>
     <trans-unit id="profiler.clear">
       <source xml:lang="en">Clear Data</source>
-    </trans-unit>
-    <trans-unit id="profiler.autoscrollOn">
-      <source xml:lang="en">Auto Scroll: On</source>
     </trans-unit>
     <trans-unit id="profilerAction.autoscrollOn">
       <source xml:lang="en">Auto Scroll: On</source>
@@ -1572,7 +1563,7 @@
       <source xml:lang="en">Find Previous String</source>
     </trans-unit>
     <trans-unit id="profilerAction.newProfiler">
-      <source xml:lang="en">New Profiler</source>
+      <source xml:lang="en">Launch Profiler</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext"><body>
@@ -1644,7 +1635,7 @@
   </body></file>
   <file original="src/sql/parts/connection/connectionDialog/advancedPropertiesController" source-language="en" datatype="plaintext"><body>
     <trans-unit id="connectionAdvancedProperties">
-      <source xml:lang="en">Advanced properties</source>
+      <source xml:lang="en">Advanced Properties</source>
     </trans-unit>
     <trans-unit id="advancedProperties.discard">
       <source xml:lang="en">Discard</source>

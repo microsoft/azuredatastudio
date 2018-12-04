@@ -24,6 +24,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -32,6 +33,9 @@ export class WizardModal extends Modal {
 
 	// Wizard HTML elements
 	private _body: HTMLElement;
+
+	private _messageAndPageContainer: HTMLElement;
+	private _pageContainer: HTMLElement;
 
 	// Buttons
 	private _previousButton: Button;
@@ -45,12 +49,14 @@ export class WizardModal extends Modal {
 		name: string,
 		options: IModalOptions,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(_wizard.title, name, partService, telemetryService, contextKeyService, options);
+		super(_wizard.title, name, partService, telemetryService, clipboardService, themeService, contextKeyService, options);
+		this._useDefaultMessageBoxLocation = false;
 	}
 
 	public layout(): void {
@@ -58,7 +64,7 @@ export class WizardModal extends Modal {
 	}
 
 	public render() {
-		super.render(true);
+		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
 		if (this.backButton) {
@@ -83,7 +89,7 @@ export class WizardModal extends Modal {
 
 		let messageChangeHandler = (message: DialogMessage) => {
 			if (message && message.text) {
-				this.setError(message.text, message.level);
+				this.setError(message.text, message.level, message.description);
 			} else {
 				this.setError('');
 			}
@@ -124,11 +130,20 @@ export class WizardModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
+		let bodyBuilderObj;
 		new Builder(container).div({ class: 'dialogModal-body' }, (bodyBuilder) => {
+			bodyBuilderObj = bodyBuilder;
 			this._body = bodyBuilder.getHTMLElement();
 		});
 
 		this.initializeNavigation(this._body);
+
+		bodyBuilderObj.div({ class: 'dialog-message-and-page-container' }, (mpContainer) => {
+			this._messageAndPageContainer = mpContainer.getHTMLElement();
+			mpContainer.append(this._messageElement);
+			this._pageContainer = mpContainer.div({ class: 'dialogModal-page-container' }).getHTMLElement();
+		});
+
 
 		this._wizard.pages.forEach(page => {
 			this.registerPage(page);
@@ -157,7 +172,7 @@ export class WizardModal extends Modal {
 
 	private registerPage(page: WizardPage): void {
 		let dialogPane = new DialogPane(page.title, page.content, valid => page.notifyValidityChanged(valid), this._instantiationService, this._wizard.displayPageTitles, page.description);
-		dialogPane.createBody(this._body);
+		dialogPane.createBody(this._pageContainer);
 		this._dialogPanes.set(page, dialogPane);
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}

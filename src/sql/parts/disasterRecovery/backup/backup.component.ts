@@ -14,7 +14,7 @@ import { ModalFooterStyle } from 'sql/base/browser/ui/modal/modal';
 import { CategoryView } from 'sql/base/browser/ui/modal/optionsDialog';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
-import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/common/theme/styler';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/backup/common/backupService';
@@ -523,6 +523,11 @@ export class BackupComponent {
 		this._toDispose.push(attachInputBoxStyler(this.mediaNameBox, this.themeService));
 		this._toDispose.push(attachInputBoxStyler(this.mediaDescriptionBox, this.themeService));
 		this._toDispose.push(attachInputBoxStyler(this.backupRetainDaysBox, this.themeService));
+		this._toDispose.push(attachCheckboxStyler(this.copyOnlyCheckBox, this.themeService));
+		this._toDispose.push(attachCheckboxStyler(this.encryptCheckBox, this.themeService));
+		this._toDispose.push(attachCheckboxStyler(this.verifyCheckBox, this.themeService));
+		this._toDispose.push(attachCheckboxStyler(this.checksumCheckBox, this.themeService));
+		this._toDispose.push(attachCheckboxStyler(this.continueOnErrorCheckBox, this.themeService));
 
 		this._toDispose.push(this.backupTypeSelectBox.onDidSelect(selected => this.onBackupTypeChanged()));
 		this.addButtonClickHandler(this.addPathButton, () => this.onAddClick());

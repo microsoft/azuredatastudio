@@ -11,6 +11,7 @@ import { PickScheduleDialog } from './pickScheduleDialog';
 import { AlertDialog } from './alertDialog';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
+import { JobStepData } from '../data/jobStepData';
 
 const localize = nls.loadMessageBundle();
 
@@ -45,7 +46,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit');
 	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete');
 	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', 'Move Step Up');
-	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Up');
+	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Down');
 
 	// Notifications tab strings
 	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
@@ -108,12 +109,22 @@ export class JobDialog extends AgentDialog<JobData>  {
 	// Alert tab controls
 	private alertsTable: sqlops.TableComponent;
 	private newAlertButton: sqlops.ButtonComponent;
+	private isEdit: boolean = false;
+
+	// Job objects
+	private steps: sqlops.AgentJobStepInfo[];
+	private schedules: sqlops.AgentJobScheduleInfo[];
+	private alerts: sqlops.AgentAlertInfo[] = [];
 
 	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
 		super(
 			ownerUri,
 			new JobData(ownerUri, jobInfo),
 			jobInfo ? JobDialog.EditDialogTitle : JobDialog.CreateDialogTitle);
+		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
+		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
+		this.alerts = this.model.alerts ? this.model.alerts : [];
+		this.isEdit = jobInfo ? true : false;
 	}
 
 	protected async initializeDialog() {
@@ -196,12 +207,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private initializeStepsTab() {
 		this.stepsTab.registerContent(async view => {
-			let previewTag = view.modelBuilder.text()
-				.withProperties({
-					value: 'Feature Preview'
-				}).component();
-			let steps = this.model.jobSteps ? this.model.jobSteps : [];
-			let data = this.convertStepsToData(steps);
+			let data = this.steps ? this.convertStepsToData(this.steps) : [];
 			this.stepsTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -224,7 +230,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.moveStepDownButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepDownButtonString,
-					width: 80
+					width: 120
 				}).component();
 
 			this.moveStepUpButton.enabled = false;
@@ -235,13 +241,15 @@ export class JobDialog extends AgentDialog<JobData>  {
 				width: 80
 			}).component();
 
-			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , data.length + 1, this.model);
+			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
 			stepDialog.onSuccess((step) => {
-				this.model.jobSteps.push(step);
-				this.stepsTable.data = this.convertStepsToData(this.model.jobSteps);
+				let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
+				this.steps.push(stepInfo);
+				this.stepsTable.data = this.convertStepsToData(this.steps);
 			});
 			this.newStepButton.onDidClick((e)=>{
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					stepDialog.jobName = this.nameTextBox.value;
 					stepDialog.openDialog();
 				} else {
 					this.dialog.message = { text: this.BlankJobNameErrorText };
@@ -262,43 +270,92 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.editStepButton.enabled = false;
 			this.deleteStepButton.enabled = false;
 
-			this.stepsTable.onRowSelected(() => {
-				// only let edit or delete steps if there's
-				// one step selection
+			this.moveStepUpButton.onDidClick(() => {
+                if (this.stepsTable.selectedRows.length === 1) {
+                    let rowNumber = this.stepsTable.selectedRows[0];
+                    // if it's not the first step
+                    if (rowNumber !== 0) {
+                        let previousRow = rowNumber - 1;
+                        let previousStep = this.steps[previousRow];
+                        let previousStepId = this.steps[previousRow].id;
+                        let currentStep = this.steps[rowNumber];
+                        let currentStepId = this.steps[rowNumber].id;
+                        this.steps[previousRow] = currentStep;
+                        this.steps[rowNumber] = previousStep;
+                        this.stepsTable.data = this.convertStepsToData(this.steps);
+                        this.steps[previousRow].id = previousStepId;
+                        this.steps[rowNumber].id = currentStepId;
+                    }
+                }
+			});
+
+			this.moveStepDownButton.onDidClick(() => {
 				if (this.stepsTable.selectedRows.length === 1) {
 					let rowNumber = this.stepsTable.selectedRows[0];
-					let stepData = steps[rowNumber];
-					this.deleteStepButton.enabled = true;
-					this.editStepButton.enabled = true;
-					this.editStepButton.onDidClick((e) => {
-						// implement edit steps
+					// if it's not the last step
+					if (this.steps.length !== rowNumber + 1) {
+						let nextRow = rowNumber + 1;
+						let nextStep = this.steps[nextRow];
+						let nextStepId = this.steps[nextRow].id;
+						let currentStep = this.steps[rowNumber];
+						let currentStepId = this.steps[rowNumber].id;
+						this.steps[nextRow] = currentStep;
+						this.steps[rowNumber] = nextStep;
+						this.stepsTable.data = this.convertStepsToData(this.steps);
+						this.steps[nextRow].id = nextStepId;
+						this.steps[rowNumber].id = currentStepId;
+					}
+				}
+			});
 
-						// let stepDialog = new JobStepDialog(this.model.ownerUri, this.nameTextBox.value, '' , 1, this.model);
-						// stepDialog.openNewStepDialog();
+			this.editStepButton.onDidClick(() => {
+				if (this.stepsTable.selectedRows.length === 1) {
+					let rowNumber = this.stepsTable.selectedRows[0];
+					let stepData = this.model.jobSteps[rowNumber];
+					let editStepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, stepData, true);
+					editStepDialog.onSuccess((step) => {
+						let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
+						for (let i = 0; i < this.steps.length; i++) {
+							if (this.steps[i].id === stepInfo.id) {
+								this.steps[i] = stepInfo;
+							}
+						}
+						this.stepsTable.data = this.convertStepsToData(this.steps);
 					});
+					editStepDialog.openDialog();
+				}
+			});
 
-					this.deleteStepButton.onDidClick((e) => {
-						AgentUtils.getAgentService().then((agentService) => {
-							let steps = this.model.jobSteps ? this.model.jobSteps : [];
-							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
-								if (result && result.success) {
-									delete steps[rowNumber];
-									this.model.jobSteps = steps;
-									let data = this.convertStepsToData(steps);
-									this.stepsTable.data = data;
-								}
-							});
+			this.deleteStepButton.onDidClick(() => {
+				if (this.stepsTable.selectedRows.length === 1) {
+					let rowNumber = this.stepsTable.selectedRows[0];
+					AgentUtils.getAgentService().then((agentService) => {
+						let steps = this.model.jobSteps ? this.model.jobSteps : [];
+						let stepData = this.model.jobSteps[rowNumber];
+						agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
+							if (result && result.success) {
+								delete steps[rowNumber];
+								let data = this.convertStepsToData(steps);
+								this.stepsTable.data = data;
+							}
 						});
 					});
 				}
 			});
 
+			this.stepsTable.onRowSelected(() => {
+				// only let edit or delete steps if there's
+				// one step selection
+				if (this.stepsTable.selectedRows.length === 1) {
+					this.moveStepUpButton.enabled = true;
+					this.moveStepDownButton.enabled = true;
+					this.deleteStepButton.enabled = true;
+					this.editStepButton.enabled = true;
+				}
+			});
+
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: previewTag,
-					title: ''
-				},
-				{
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
 					actions: [this.moveStepUpButton, this.moveStepDownButton, this.newStepButton, this.editStepButton, this.deleteStepButton]
@@ -309,10 +366,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private initializeAlertsTab() {
 		this.alertsTab.registerContent(async view => {
-			let previewTag = view.modelBuilder.text()
-			.withProperties({
-				value: 'Feature Preview'
-			}).component();
 			let alerts = this.model.alerts ? this.model.alerts : [];
 			let data = this.convertAlertsToData(alerts);
 			this.alertsTable = view.modelBuilder.table()
@@ -323,7 +376,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.AlertTypeLabelString
 					],
 					data: data,
-					height: 430,
+					height: 750,
 					width: 400
 				}).component();
 
@@ -332,18 +385,24 @@ export class JobDialog extends AgentDialog<JobData>  {
 				width: 80
 			}).component();
 
-			this.newAlertButton.onDidClick((e)=>{
-				let alertDialog = new AlertDialog(this.model.ownerUri, null, []);
-				alertDialog.onSuccess((dialogModel) => {
-				});
-				alertDialog.openDialog();
+			let alertDialog = new AlertDialog(this.model.ownerUri, this.model, null, true);
+			alertDialog.onSuccess((alert) => {
+				let alertInfo = alert.toAgentAlertInfo();
+				this.alerts.push(alertInfo);
+				this.alertsTable.data = this.convertAlertsToData(this.alerts);
+			});
+			this.newAlertButton.onDidClick(()=>{
+				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					alertDialog.jobId = this.model.jobId;
+					alertDialog.jobName = this.model.name ? this.model.name : this.nameTextBox.value;
+					alertDialog.openDialog();
+				} else {
+					this.dialog.message = { text: this.BlankJobNameErrorText };
+				}
 			});
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
-					component: previewTag,
-					title: ''
-				}, {
 					component: this.alertsTable,
 					title: this.AlertsTopLabelString,
 					actions: [this.newAlertButton]
@@ -371,13 +430,16 @@ export class JobDialog extends AgentDialog<JobData>  {
 				label: this.PickScheduleButtonString,
 				width: 80
 			}).component();
-
 			this.pickScheduleButton.onDidClick((e)=>{
-				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri);
+				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);
 				pickScheduleDialog.onSuccess((dialogModel) => {
 					let selectedSchedule = dialogModel.selectedSchedule;
 					if (selectedSchedule) {
-						this.model.addJobSchedule(selectedSchedule);
+						let existingSchedule = this.schedules.find(item => item.name === selectedSchedule.name);
+						if (!existingSchedule) {
+							selectedSchedule.jobName = this.model.name ? this.model.name : this.nameTextBox.value;
+							this.schedules.push(selectedSchedule);
+						}
 						this.populateScheduleTable();
 					}
 				});
@@ -398,8 +460,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	}
 
 	private populateScheduleTable() {
-		let schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
-		let data = this.convertSchedulesToData(schedules);
+		let data = this.convertSchedulesToData(this.schedules);
 		if (data.length > 0) {
 			this.schedulesTable.data = data;
 			this.schedulesTable.height = 750;
@@ -562,5 +623,17 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
 		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
 		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
+		if (!this.model.jobSteps) {
+			this.model.jobSteps = [];
+		}
+		this.model.jobSteps = this.steps;
+		if (!this.model.jobSchedules) {
+			this.model.jobSchedules = [];
+		}
+		this.model.jobSchedules = this.schedules;
+		if (!this.model.alerts) {
+			this.model.alerts = [];
+		}
+		this.model.alerts = this.alerts;
 	}
 }

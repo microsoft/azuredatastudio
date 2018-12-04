@@ -164,7 +164,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 
 	protected createTreeItem(element: T, extensionTreeItem: sqlops.TreeComponentItem, parent?: vsTreeExt.TreeNode): ITreeComponentItem {
 		let item = super.createTreeItem(element, extensionTreeItem, parent);
-		item = Object.assign({}, item, { checked: extensionTreeItem.checked });
+		item = Object.assign({}, item, { checked: extensionTreeItem.checked, enabled: extensionTreeItem.enabled });
 		return item;
 	}
 }

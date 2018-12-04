@@ -152,6 +152,11 @@ export class ExtensionHostProcessManager extends Disposable {
 		});
 	}
 
+	// {{SQL CARBON EDIT}}
+	public getExtenstionHostProcessWorker(): ExtensionHostProcessWorker {
+		return this._extensionHostProcessWorker;
+	}
+
 	public dispose(): void {
 		if (this._extensionHostProcessWorker) {
 			this._extensionHostProcessWorker.dispose();
@@ -296,6 +301,14 @@ export class ExtensionService extends Disposable implements IExtensionService {
 		}
 	}
 
+	// {{SQL CARBON EDIT}}
+	public getExtenstionHostProcessId(): number {
+		if (this._extensionHostProcessManagers.length !== 1)
+		{
+			this._logOrShowMessage(Severity.Warning, 'Exactly one Extension Host Process Manager was expected');
+		}
+		return this._extensionHostProcessManagers[0].getExtenstionHostProcessWorker().getExtenstionHostProcess().pid;
+	}
 	private startDelayed(lifecycleService: ILifecycleService): void {
 		let started = false;
 		const startOnce = () => {
