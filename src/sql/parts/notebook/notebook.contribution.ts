@@ -18,15 +18,14 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { NotebookInput, NotebookInputModel, notebooksEnabledCondition } from 'sql/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { JUPYTER_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
-export const Extensions = {
+
+const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
+const Extensions = {
 	NotebookProviderContribution: 'notebook.providers'
 };
 
-
 let counter = 0;
-const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 /**
  * todo: Will remove this code.

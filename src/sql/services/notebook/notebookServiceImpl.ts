@@ -16,7 +16,6 @@ import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories'
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
 import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
-import { editorSelectionBackground } from 'vs/platform/theme/common/colorRegistry';
 
 const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
