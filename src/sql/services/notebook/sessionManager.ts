@@ -4,7 +4,7 @@ import { nb } from 'sqlops';
 import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 
-const noKernel: string = localize('noKernel', 'No Kernel');
+export const noKernel: string = localize('noKernel', 'No Kernel');
 const runNotebookDisabled = localize('runNotebookDisabled', 'Cannot run cells as no kernel has been configured');
 
 let noKernelSpec: nb.IKernelSpec = ({
@@ -24,9 +24,9 @@ export class SessionManager implements nb.SessionManager {
 
 	public get specs(): nb.IAllKernels {
 		let allKernels: nb.IAllKernels = {
-            defaultKernel: noKernel,
+			defaultKernel: noKernel,
 			kernels: [noKernelSpec]
-        };
+		};
 		return allKernels;
 	}
 
