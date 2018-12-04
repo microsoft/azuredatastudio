@@ -281,9 +281,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			notebookManager: this.notebookManager,
 			notificationService: this.notebookOptions.notificationService
 		});
-		let id: string = this.connectionProfile ? this.connectionProfile.id : undefined;
+		let profile = this.connectionProfile as IConnectionProfile;
 
-		this._hadoopConnection = this.connectionProfile ? new NotebookConnection(this.connectionProfile) : undefined;
+		if (this.isValidKnoxConnection(profile)) {
+            this._hadoopConnection = new NotebookConnection(this.connectionProfile);
+        } else {
+            this._hadoopConnection = undefined;
+		}
+
 		this._clientSession.initialize(this._hadoopConnection);
 		this._sessionLoadFinished = this._clientSession.ready.then(async () => {
 			if (this._clientSession.isInErrorState) {
