@@ -237,6 +237,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		let options: INotebookShowOptions = {};
 		if (showOptions) {
 			options.preserveFocus = showOptions.preserveFocus;
+			options.preview = showOptions.preview;
 			options.position = showOptions.viewColumn;
 			options.providerId = showOptions.providerId;
 			options.connectionId = showOptions.connectionId;
