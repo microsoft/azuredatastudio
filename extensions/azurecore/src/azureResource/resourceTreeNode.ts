@@ -15,6 +15,7 @@ import { AzureResourceService } from './resourceService';
 import { IAzureResourceNodeWithProviderId } from './interfaces';
 import { AzureResourceMessageTreeNode } from './messageTreeNode';
 import { AzureResourceErrorMessageUtil } from './utils';
+import { AzureResourceServicePool } from './servicePool';
 
 export class AzureResourceResourceTreeNode extends TreeNode {
 	public constructor(
@@ -37,7 +38,12 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 			if (children.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceResourceTreeNode.noResourcesLabel, this)];
 			} else {
-				return children.map((child) => new AzureResourceResourceTreeNode(child, this));
+				return children.map((child) => {
+					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
+					child.resourceNode.treeItem.id = `${this.resourceNodeWithProviderId.resourceNode.treeItem.id}.${child.resourceNode.treeItem.id}`;
+					AzureResourceServicePool.getInstance().logSerivce.logInfo(child.resourceNode.treeItem.id);
+					return new AzureResourceResourceTreeNode(child, this);
+				});
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
@@ -65,7 +71,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public get nodePathValue(): string {
-		return this.resourceNodeWithProviderId.resourceNode.id;
+		return this.resourceNodeWithProviderId.resourceNode.treeItem.id;
 	}
 
 	private _resourceService = AzureResourceService.getInstance();

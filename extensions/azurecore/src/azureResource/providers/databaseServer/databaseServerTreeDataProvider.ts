@@ -39,7 +39,6 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 		const databaseServers: AzureResourceDatabaseServer[] = (await this.databaseServerService.getDatabaseServers(element.subscription, credential)) || <AzureResourceDatabaseServer[]>[];
 
 		return databaseServers.map((databaseServer) => <IAzureResourceDatabaseServerNode>{
-			id: `databaseServer_${databaseServer.name}`,
 			account: element.account,
 			subscription: element.subscription,
 			tenantId: element.tenantId,
@@ -59,7 +58,6 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 
 	private createContainerNode(): azureResource.IAzureResourceNode {
 		return {
-			id: AzureResourceDatabaseServerTreeDataProvider.containerId,
 			account: undefined,
 			subscription: undefined,
 			tenantId: undefined,

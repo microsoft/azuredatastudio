@@ -42,7 +42,6 @@ export class AzureResourceService {
 		return children.map((child) => <IAzureResourceNodeWithProviderId>{
 			resourceProviderId: resourceProviderId,
 			resourceNode: <azureResource.IAzureResourceNode>{
-				id: child.id,
 				account: account,
 				subscription: subscription,
 				tenantId: tenatId,

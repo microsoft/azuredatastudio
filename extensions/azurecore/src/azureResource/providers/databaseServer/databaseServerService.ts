@@ -13,21 +13,19 @@ import { IAzureResourceDatabaseServerService } from './interfaces';
 import { AzureResourceDatabaseServer } from './models';
 
 export class AzureResourceDatabaseServerService implements IAzureResourceDatabaseServerService {
-	public getDatabaseServers(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabaseServer[]> {
-		return new Promise<AzureResourceDatabaseServer[]>((resolve, reject) => {
-			const sqlManagementClient = new SqlManagementClient(credential, subscription.id);
-			sqlManagementClient.servers.list().then((svrs) => {
-				const databaseServers: AzureResourceDatabaseServer[] = [];
+	public async getDatabaseServers(subscription: azureResource.AzureResourceSubscription, credential: ServiceClientCredentials): Promise<AzureResourceDatabaseServer[]> {
+		const databaseServers: AzureResourceDatabaseServer[] = [];
 
-				// svrs.forEach((svr) => databaseServers.push({
-				// 	name: svr.name,
-				// 	fullName: svr.fullyQualifiedDomainName,
-				// 	loginName: svr.administratorLogin,
-				// 	defaultDatabaseName: 'master'
-				// }));
+		const sqlManagementClient = new SqlManagementClient(credential, subscription.id);
+		const svrs = await sqlManagementClient.servers.list();
 
-				resolve(databaseServers);
-			});
-		});
+		svrs.forEach((svr) => databaseServers.push({
+			name: svr.name,
+			 fullName: svr.fullyQualifiedDomainName,
+			 loginName: svr.administratorLogin,
+			 defaultDatabaseName: 'master'
+		}));
+
+		return databaseServers;
 	}
 }

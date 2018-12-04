@@ -20,6 +20,7 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
+import { AzureResourceServicePool } from '../servicePool';
 
 export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
@@ -31,7 +32,8 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	) {
 		super(treeChangeHandler, parent);
 
-		this.setCacheKey(`account_${this.account.key.accountId}.subscription_${this.subscription.id}.resources`);
+		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}`;
+		this.setCacheKey(`${this._id}.resources`);
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
@@ -47,7 +49,12 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 			if (children.length === 0) {
 				return [AzureResourceMessageTreeNode.create(AzureResourceSubscriptionTreeNode.noResources, this)];
 			} else {
-				return children.map((child) => new AzureResourceResourceTreeNode(child, this));
+				return children.map((child) => {
+					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
+					child.resourceNode.treeItem.id = `${this._id}.${child.resourceNode.treeItem.id}`;
+					AzureResourceServicePool.getInstance().logSerivce.logInfo(child.resourceNode.treeItem.id);
+					return new AzureResourceResourceTreeNode(child, this);
+				});
 			}
 		} catch (error) {
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
@@ -79,8 +86,10 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	}
 
 	public get nodePathValue(): string {
-        return `subscription_${this.subscription.id}`;
-    }
+        return this._id;
+	}
+
+	private _id: string = undefined;
 
 	private static readonly noResources = localize(`${treeLocalizationIdPrefix}.subscriptionTreeNode.noResources`, 'No Resources found.');
 }

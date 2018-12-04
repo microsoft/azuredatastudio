@@ -39,13 +39,12 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 		const databases: AzureResourceDatabase[] = (await this.databaseService.getDatabases(element.subscription, credential)) || <AzureResourceDatabase[]>[];
 
 		return databases.map((database) => <IAzureResourceDatabaseNode>{
-			id: `database_${database.name}`,
 			account: element.account,
 			subscription: element.subscription,
 			tenantId: element.tenantId,
 			database: database,
 			treeItem: {
-				id: `database_${database.name}`,
+				id: `databaseServer_${database.serverFullName}.database_${database.name}`,
 				label: `${database.name} (${database.serverName})`,
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
@@ -59,7 +58,6 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 
 	private createContainerNode(): azureResource.IAzureResourceNode {
 		return {
-			id: AzureResourceDatabaseTreeDataProvider.containerId,
 			account: undefined,
 			subscription: undefined,
 			tenantId: undefined,

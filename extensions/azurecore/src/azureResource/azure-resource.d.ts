@@ -17,7 +17,6 @@ declare module 'sqlops' {
 		}
 
 		export interface IAzureResourceNode {
-			readonly id: string;
 			readonly account: sqlops.Account;
 			readonly subscription: AzureResourceSubscription;
 			readonly tenantId: string;
