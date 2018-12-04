@@ -955,7 +955,7 @@ declare module 'sqlops' {
 				 * Set the dialog name when opening
 				 * the dialog for telemetry
 				 */
-				dialogName: string;
+				dialogName?: string;
 
 				/**
 				 * Register a callback that will be called when the user tries to click done. Only
