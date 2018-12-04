@@ -40,7 +40,7 @@ export class SessionManager implements nb.SessionManager {
 	}
 }
 
-class EmptySession implements nb.ISession {
+export class EmptySession implements nb.ISession {
 	private _kernel: EmptyKernel;
 	private _defaultKernelLoaded = false;
 
@@ -146,7 +146,7 @@ class EmptyKernel implements nb.IKernel {
 	}
 }
 
-class EmptyFuture implements FutureInternal {
+export class EmptyFuture implements FutureInternal {
 
 
 	get inProgress(): boolean {
