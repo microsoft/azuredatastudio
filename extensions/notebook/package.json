@@ -13,12 +13,6 @@
 		"*"
 	],
 	"contributes": {
-		"notebook.providers": {
-			"provider": "sql",
-			"fileExtensions": [
-				"SQLNB"
-			]
-		},
 		"configuration": {
 			"type": "object",
 			"title": "%notebook.configuration.title%",

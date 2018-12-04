@@ -1400,6 +1400,9 @@ declare module 'sqlops' {
 		 */
 		export const onDidOpenNotebookDocument: vscode.Event<NotebookDocument>;
 
+		/**
+		 * An event that is emitted when a [notebook's](#NotebookDocument) cell contents are changed.
+		 */
 		export const onDidChangeNotebookCell: vscode.Event<NotebookCellChangeEvent>;
 
 		/**
