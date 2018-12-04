@@ -223,7 +223,7 @@ export class OptionsDialog extends Modal {
 		this._optionValues = optionValues;
 		let firstOption: string;
 		let containerGroup: Builder;
-		let optionsContentBuilder: Builder = $().div({ class: 'optionsDialog-options-groups' }, (container) => {
+		let optionsContentBuilder: Builder = $().div({ class: 'optionsDialog-options-groups monaco-panel-view' }, (container) => {
 			containerGroup = container;
 			this._optionGroups = container.getHTMLElement();
 		});

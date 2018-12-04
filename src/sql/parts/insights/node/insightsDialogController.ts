@@ -129,7 +129,7 @@ export class InsightsDialogController {
 			} catch (e) {
 				return Promise.reject(e);
 			}
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionUri, undefined);
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionUri);
 			this.addQueryEventListeners(this._queryRunner);
 		}
 
