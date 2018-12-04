@@ -807,7 +807,7 @@ export interface INotebookEditorAddData {
 export interface INotebookShowOptions {
 	position?: EditorViewColumn;
 	preserveFocus?: boolean;
-	pinned?: boolean;
+	preview?: boolean;
 	providerId?: string;
 	connectionId?: string;
 }

@@ -257,7 +257,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 		const editorOptions: ITextEditorOptions = {
 			preserveFocus: options.preserveFocus,
-			pinned: options.pinned
+			pinned: !options.preview
 		};
 		let model = new NotebookInputModel(uri, undefined, false, undefined);
 		let providerId = options.providerId;
