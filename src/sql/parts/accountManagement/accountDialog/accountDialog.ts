@@ -160,7 +160,6 @@ export class AccountDialog extends Modal {
 
 	// MODAL OVERRIDE METHODS //////////////////////////////////////////////
 	protected layout(height?: number): void {
-		// Ignore height as it's a subcomponent being laid out
 		this._splitView.layout(DOM.getContentHeight(this._container));
 	}
 
