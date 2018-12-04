@@ -233,16 +233,16 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			// Add view
 			const container = dom.$('.split-view-view');
 
-			if (index === this.viewItems.length) {
-				this.viewContainer.appendChild(container);
-			} else {
-				this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
-			}
+			// if (index === this.viewItems.length) {
+			// 	this.viewContainer.appendChild(container);
+			// } else {
+			// 	this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
+			// }
 
 			const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
 			const containerDisposable = toDisposable(() => {
 				if (container.parentElement) {
-					this.el.removeChild(container);
+					this.viewContainer.removeChild(container);
 				}
 				this.onRemoveItems(new ArrayIterator([item.view.id]));
 			});
@@ -331,16 +331,16 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		// Add view
 		const container = dom.$('.split-view-view');
 
-		if (index === this.viewItems.length) {
-			this.viewContainer.appendChild(container);
-		} else {
-			this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
-		}
+		// if (index === this.viewItems.length) {
+		// 	this.viewContainer.appendChild(container);
+		// } else {
+		// 	this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
+		// }
 
 		const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
 		const containerDisposable = toDisposable(() => {
 			if (container.parentElement) {
-				this.el.removeChild(container);
+				this.viewContainer.removeChild(container);
 			}
 			this.onRemoveItems(new ArrayIterator([item.view.id]));
 		});
