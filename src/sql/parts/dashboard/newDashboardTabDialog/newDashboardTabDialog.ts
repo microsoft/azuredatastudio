@@ -27,9 +27,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
-import { FixedListView } from 'sql/platform/views/fixedListView';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -121,7 +119,6 @@ export class NewDashboardTabDialog extends Modal {
 	constructor(
 		@IPartService partService: IPartService,
 		@IThemeService themeService: IThemeService,
-		@IListService private _listService: IListService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
@@ -210,9 +207,6 @@ export class NewDashboardTabDialog extends Modal {
 		this._extensionTabView.hideHeader();
 
 		this._register(attachListStyler(this._extensionList, this._themeService));
-
-		let listService = <ListService>this._listService;
-		this._register(listService.register(this._extensionList));
 	}
 
 	private registerListeners(): void {
