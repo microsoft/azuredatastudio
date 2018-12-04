@@ -127,12 +127,12 @@ export class QueryTextEditor extends BaseTextEditor {
 		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
-		for(let line = 1; line <= lineCount; line++) {
+		for (let line = 1; line <= lineCount; line++) {
 			if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn - 1) {
 				numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
 			}
 		}
-		let editorHeightUsingLines = this._config.editor.lineHeight * (editorWidgetModel.getLineCount() + numberWrappedLines);
+		let editorHeightUsingLines = this._config.editor.lineHeight * (lineCount + numberWrappedLines);
 		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
 		this.setHeight(editorHeightUsingMinHeight);
 	}
