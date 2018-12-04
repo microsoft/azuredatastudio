@@ -21,7 +21,6 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -89,8 +88,9 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 
 	public layout() {
 		if (this._tree) {
+			let treeWidth = dom.getContentWidth(this._tableContainer.nativeElement);
 			let treeheight = dom.getContentHeight(this._tableContainer.nativeElement);
-			this._tree.layout(treeheight);
+			this._tree.layout(treeheight, treeWidth);
 		}
 	}
 }

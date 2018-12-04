@@ -187,6 +187,7 @@ table.step-list tr.step-row td {
 	border-left: 3px solid #f4f4f4;
 	padding-left: 10px;
 	flex-direction: column;
+	width: 100%;
 }
 
 .vs-dark .history-details > .job-steps {
@@ -254,6 +255,10 @@ jobhistory-component {
 	flex-direction: column;
 }
 
+jobhistory-component > .jobhistory-heading-container {
+	display: flex;
+}
+
 jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
 	width: 20px;
 	height: 20px;
@@ -272,3 +277,5 @@ jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.action
 .hc-black jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #2b56f2;
 }
+
+jobstep
