@@ -39,7 +39,7 @@ describe('Cell Model', function (): void {
             text: 'Some output',
             name: 'stdout'
         };
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Markdown,
             source: 'some *markdown*',
             outputs: [output],
@@ -56,7 +56,7 @@ describe('Cell Model', function (): void {
 
 
     it('Should set cell language to python if defined as python in languageInfo', async function (): Promise<void> {
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
             metadata: { language: 'python'},
@@ -73,7 +73,7 @@ describe('Cell Model', function (): void {
     });
 
     it('Should set cell language to python if defined as pyspark in languageInfo', async function (): Promise<void> {
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
             metadata: { language: 'python'},
@@ -90,7 +90,7 @@ describe('Cell Model', function (): void {
     });
 
     it('Should set cell language to scala if defined as scala in languageInfo', async function (): Promise<void> {
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
             metadata: { language: 'python'},
@@ -107,7 +107,7 @@ describe('Cell Model', function (): void {
     });
 
     it('Should set cell language to python if no language defined', async function (): Promise<void> {
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
             metadata: { language: 'python'},
@@ -124,7 +124,7 @@ describe('Cell Model', function (): void {
     });
 
     it('Should match cell language to language specified if unknown language defined in languageInfo', async function (): Promise<void> {
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'std::cout << "hello world";',
             metadata: { language: 'python'},
@@ -141,7 +141,7 @@ describe('Cell Model', function (): void {
     });
 
     it('Should match cell language to mimetype name is not supplied in languageInfo', async function (): Promise<void> {
-        let cellData: nb.ICell = {
+        let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
             metadata: { language: 'python'},

@@ -16,7 +16,7 @@ import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import * as testUtils from '../../../utils/testUtils';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
 
-let expectedNotebookContent: nb.INotebook = {
+let expectedNotebookContent: nb.INotebookContents = {
     cells: [{
         cell_type: CellTypes.Code,
         source: 'insert into t1 values (c1, c2)',
@@ -34,7 +34,7 @@ let expectedNotebookContent: nb.INotebook = {
 };
 let notebookContentString = JSON.stringify(expectedNotebookContent);
 
-function verifyMatchesExpectedNotebook(notebook: nb.INotebook): void {
+function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
     should(notebook.cells).have.length(1, 'Expected 1 cell');
     should(notebook.cells[0].cell_type).equal(CellTypes.Code);
     should(notebook.cells[0].source).equal(expectedNotebookContent.cells[0].source);
