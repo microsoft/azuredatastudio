@@ -14,7 +14,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { ActionRunner, IAction } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -23,6 +23,7 @@ import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { values } from 'vs/base/common/map';
 
 import * as sqlops from 'sqlops';
 
@@ -35,7 +36,6 @@ import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManag
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { values } from 'vs/base/common/map';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
@@ -102,7 +102,6 @@ export class AccountDialog extends Modal {
 
 	private _closeButton: Button;
 	private _addAccountButton: Button;
-	private _actionRunner: ActionRunner;
 	private _splitView: SplitView;
 	private _container: HTMLElement;
 	private _splitViewContainer: HTMLElement;
@@ -136,8 +135,6 @@ export class AccountDialog extends Modal {
 			contextKeyService,
 			{ hasSpinner: true }
 		);
-
-		this._actionRunner = new ActionRunner();
 
 		// Setup the event emitters
 		this._onAddAccountErrorEmitter = new Emitter<string>();
