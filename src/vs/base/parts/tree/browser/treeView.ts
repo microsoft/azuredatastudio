@@ -406,25 +406,20 @@ export class TreeView extends HeightMap {
 	private model: Model.TreeModel;
 
 	private viewListeners: Lifecycle.IDisposable[];
-	// {{ SQL CARBON EDIT }}
-	protected domNode: HTMLElement;
-	// {{ SQL CARBON EDIT }}
-	protected wrapper: HTMLElement;
+	private domNode: HTMLElement;
+	private wrapper: HTMLElement;
 	private styleElement: HTMLStyleElement;
 	private treeStyler: _.ITreeStyler;
-	// {{ SQL CARBON EDIT }}
-	protected rowsContainer: HTMLElement;
-	protected scrollableElement: ScrollableElement;
+	private rowsContainer: HTMLElement;
+	private scrollableElement: ScrollableElement;
 	private msGesture: MSGesture;
 	private lastPointerType: string;
 	private lastClickTimeStamp: number = 0;
-	// {{ SQL CARBON EDIT }}
-	protected horizontalScrolling: boolean;
+	private horizontalScrolling: boolean;
 	private contentWidthUpdateDelayer = new Delayer<void>(50);
 
-	// {{ SQL CARBON EDIT }}
-	protected lastRenderTop: number;
-	protected lastRenderHeight: number;
+	private lastRenderTop: number;
+	private lastRenderHeight: number;
 
 	private inputItem: ViewItem;
 	private items: { [id: string]: ViewItem; };
@@ -453,8 +448,7 @@ export class TreeView extends HeightMap {
 	private readonly _onDOMBlur: Emitter<void> = new Emitter<void>();
 	get onDOMBlur(): Event<void> { return this._onDOMBlur.event; }
 
-	// {{SQL CARBON EDIT}}
-	protected readonly _onDidScroll: Emitter<void> = new Emitter<void>();
+	private readonly _onDidScroll: Emitter<void> = new Emitter<void>();
 	get onDidScroll(): Event<void> { return this._onDidScroll.event; }
 
 	constructor(context: _.ITreeContext, container: HTMLElement) {
@@ -667,8 +661,7 @@ export class TreeView extends HeightMap {
 		return item && item.model.getElement();
 	}
 
-	// {{ SQL CARBON EDIT }}
-	protected render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
+	private render(scrollTop: number, viewHeight: number, scrollLeft: number, viewWidth: number, scrollWidth: number): void {
 		var i: number;
 		var stop: number;
 
@@ -1633,8 +1626,7 @@ export class TreeView extends HeightMap {
 	}
 
 	// DOM changes
-	// {{ SQL CARBON EDIT }}
-	protected insertItemInDOM(item: ViewItem): void {
+	private insertItemInDOM(item: ViewItem): void {
 		var elementAfter: HTMLElement = null;
 		var itemAfter = <ViewItem>this.itemAfter(item);
 
@@ -1645,8 +1637,7 @@ export class TreeView extends HeightMap {
 		item.insertInDOM(this.rowsContainer, elementAfter);
 	}
 
-	// {{ SQL CARBON EDIT }}
-	protected removeItemFromDOM(item: ViewItem): void {
+	private removeItemFromDOM(item: ViewItem): void {
 		if (!item) {
 			return;
 		}

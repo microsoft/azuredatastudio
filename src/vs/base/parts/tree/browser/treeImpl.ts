@@ -65,11 +65,9 @@ export class Tree implements _.ITree {
 
 	private container: HTMLElement;
 
-	// {{ SQL CARBON EDIT }}
-	protected context: _.ITreeContext;
+	private context: _.ITreeContext;
 	private model: Model.TreeModel;
-	// {{ SQL CARBON EDIT }}
-	protected view: View.TreeView;
+	private view: View.TreeView;
 
 	private _onDidChangeFocus = new Relay<_.IFocusEvent>();
 	readonly onDidChangeFocus: Event<_.IFocusEvent> = this._onDidChangeFocus.event;

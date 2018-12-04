@@ -23,7 +23,6 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
