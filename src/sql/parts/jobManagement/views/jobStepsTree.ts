@@ -14,28 +14,16 @@ import * as Model from 'vs/base/parts/tree/browser/treeModel';
 import { Color } from 'vs/base/common/color';
 import { INavigator, MappedNavigator } from 'vs/base/common/iterator';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
-import { TreeContext } from 'vs/base/parts/tree/browser/treeImpl';
+import { TreeContext, defaultStyles } from 'vs/base/parts/tree/browser/treeImpl';
 import { mixin } from 'vs/base/common/objects';
 import { JobStepsTreeView } from 'sql/parts/jobManagement/views/jobStepsTreeView';
-
-const defaultStyles: tree.ITreeStyles = {
-	listFocusBackground: Color.fromHex('#073655'),
-	listActiveSelectionBackground: Color.fromHex('#0E639C'),
-	listActiveSelectionForeground: Color.fromHex('#FFFFFF'),
-	listFocusAndSelectionBackground: Color.fromHex('#094771'),
-	listFocusAndSelectionForeground: Color.fromHex('#FFFFFF'),
-	listInactiveSelectionBackground: Color.fromHex('#3F3F46'),
-	listHoverBackground: Color.fromHex('#2A2D2E'),
-	listDropBackground: Color.fromHex('#383B3D')
-};
 
 export class JobStepsTree implements tree.ITree {
 
 	private container: HTMLElement;
-
-	protected context: tree.ITreeContext;
+	private context: tree.ITreeContext;
 	private model: Model.TreeModel;
-	protected view: JobStepsTreeView;
+	private view: JobStepsTreeView;
 
 	private treeonDidChangeFocus = new Relay<tree.IFocusEvent>();
 	readonly onDidChangeFocus: Event<tree.IFocusEvent> = this.treeonDidChangeFocus.event;
@@ -359,7 +347,6 @@ export class JobStepsTree implements tree.ITree {
 		this.treeonDispose.dispose();
 	}
 }
-
 
 export class JobStepsViewRow {
 	public stepId: string;

@@ -50,7 +50,8 @@ export class TreeContext implements _.ITreeContext {
 	}
 }
 
-const defaultStyles: _.ITreeStyles = {
+// {{ SQL CARBON EDIT }}
+export const defaultStyles: _.ITreeStyles = {
 	listFocusBackground: Color.fromHex('#073655'),
 	listActiveSelectionBackground: Color.fromHex('#0E639C'),
 	listActiveSelectionForeground: Color.fromHex('#FFFFFF'),
