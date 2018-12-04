@@ -10,7 +10,10 @@ import { localize } from 'vs/nls';
 import URI from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-import { INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER, INotebookEditor } from 'sql/services/notebook/notebookService';
+import {
+	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor
+} from 'sql/services/notebook/notebookService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
@@ -18,7 +21,6 @@ import { SessionManager } from 'sql/services/notebook/sessionManager';
 import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 
-const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
@@ -115,11 +117,17 @@ export class NotebookService implements INotebookService {
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Thenable<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider = this._providers.get(providerId);
+		let provider: INotebookProvider;
+		if (this._providers.has(providerId)) {
+			provider = this._providers.get(providerId);
+		}
+		else {
+			provider = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+		}
+
 		if (!provider) {
 			return Promise.reject(new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
 		}
-
 		return op(provider);
 	}
 

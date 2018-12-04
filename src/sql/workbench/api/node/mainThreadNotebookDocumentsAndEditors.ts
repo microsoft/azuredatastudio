@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
-
+import { Registry } from 'vs/platform/registry/common/platform';
 import URI, { UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -21,8 +21,10 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { INotebookProviderRegistry, Extensions } from 'sql/services/notebook/notebookRegistry';
+import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
 
 class MainThreadNotebookEditor extends Disposable {
 
@@ -257,8 +259,15 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			preserveFocus: options.preserveFocus,
 			pinned: options.pinned
 		};
-
 		let model = new NotebookInputModel(uri, undefined, false, undefined);
+		let providerId = options.providerId;
+		if(!providerId)
+		{
+			// Ensure there is always a sensible provider ID for this file type
+			providerId = getProviderForFileName(uri.fsPath);
+		}
+
+		model.providerId = providerId;
 		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
