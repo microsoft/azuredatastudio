@@ -257,7 +257,8 @@ export class OptionsDialog extends Modal {
 
 	protected layout(height?: number): void {
 		this.height = height;
-		this.splitview.layout(this.height - 120);
+		// account for padding and the details view
+		this.splitview.layout(this.height - 120 - 20);
 	}
 
 	public dispose(): void {
