@@ -62,7 +62,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
 	private _activeCellId: string;
-	private _cellSelected: boolean;
 
 
 	constructor(
@@ -141,8 +140,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel) {
-		this._cellSelected = true;
+	public selectCell(cell: ICellModel, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
 		if (cell !== this._activeCell) {
 			if (this._activeCell) {
 				this._activeCell.active = false;
@@ -156,16 +157,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public unselectActiveCell() {
-		if (!this._cellSelected) {
-			if (this._activeCell) {
-				this._activeCell.active = false;
-			}
-			this._activeCell = null;
-			this._model.activeCell = null;
-			this._activeCellId = null;
-			this._changeRef.detectChanges();
+		if (this._activeCell) {
+			this._activeCell.active = false;
 		}
-		this._cellSelected = false;
+		this._activeCell = null;
+		this._model.activeCell = null;
+		this._activeCellId = null;
+		this._changeRef.detectChanges();
 	}
 
 	// Add cell based on cell type
