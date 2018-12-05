@@ -29,7 +29,7 @@ import * as sqlops from 'sqlops';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
+import { attachModalDialogStyler, attachButtonStyler, attachPanelStyler } from 'sql/common/theme/styler';
 import { AccountViewModel } from 'sql/parts/accountManagement/accountDialog/accountViewModel';
 import { AddAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
@@ -291,6 +291,8 @@ export class AccountDialog extends Modal {
 			this._instantiationService,
 			this._themeService
 		);
+
+		attachPanelStyler(providerView, this._themeService);
 
 		const insertIndex = this._splitView.length;
 		// Append the list view to the split view

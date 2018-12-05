@@ -10,7 +10,7 @@ import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/common/theme/styler';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
@@ -239,6 +239,7 @@ export class OptionsDialog extends Modal {
 			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer.getHTMLElement(), viewSize, { title: category, ariaHeaderLabel: category, id: category });
 			this.splitview.addView(categoryView, viewSize);
 			categoryView.render();
+			attachPanelStyler(categoryView, this._themeService);
 
 			if (!firstOption) {
 				firstOption = serviceOptions[0].name;
