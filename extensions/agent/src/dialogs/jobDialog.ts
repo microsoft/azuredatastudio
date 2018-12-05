@@ -67,6 +67,10 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly AlertEnabledLabelString: string = localize('jobDialog.alertEnabledLabel', 'Enabled');
 	private readonly AlertTypeLabelString: string = localize('jobDialog.alertTypeLabel', 'Type');
 
+	// Event Name strings
+	private readonly NewJobDialogEvent: string = 'NewJobDialogOpened';
+	private readonly EditJobDialogEvent: string  = 'EditJobDialogOpened';
+
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private stepsTab: sqlops.window.modelviewdialog.DialogTab;
@@ -125,6 +129,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
 		this.alerts = this.model.alerts ? this.model.alerts : [];
 		this.isEdit = jobInfo ? true : false;
+		this.dialogName = this.isEdit ? this.EditJobDialogEvent : this.NewJobDialogEvent;
 	}
 
 	protected async initializeDialog() {

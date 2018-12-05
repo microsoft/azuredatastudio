@@ -282,6 +282,7 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public dispose() {
+		dispose(this.runnerDisposables);
 		super.dispose();
 	}
 }

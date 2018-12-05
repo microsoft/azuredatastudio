@@ -43,6 +43,10 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly AlertEmailColumnLabel: string = localize('createOperator.AlertEmailColumnLabel', 'E-mail');
 	private static readonly AlertPagerColumnLabel: string = localize('createOperator.AlertPagerColumnLabel', 'Pager');
 
+	// Event strings
+	private readonly NewOperatorDialog = 'NewOperatorDialogOpened';
+	private readonly EditOperatorDialog = 'EditOperatorDialogOpened';
+
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private notificationsTab: sqlops.window.modelviewdialog.DialogTab;
@@ -68,12 +72,15 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 	// Notification tab controls
 	private alertsTable: sqlops.TableComponent;
+	private isEdit: boolean = false;
 
 	constructor(ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo = undefined) {
 		super(
 			ownerUri,
 			new OperatorData(ownerUri, operatorInfo),
 			operatorInfo ? OperatorDialog.EditDialogTitle : OperatorDialog.CreateDialogTitle);
+		this.isEdit = operatorInfo ? true : false;
+		this.dialogName = this.isEdit ? this.EditOperatorDialog : this.NewOperatorDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

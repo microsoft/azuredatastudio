@@ -82,9 +82,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
-				if (this._activeCellId) {
-					this.toggleEditMode(false);
-				}
+				this.toggleEditMode(false);
 				break;
 			}
 		}
@@ -117,7 +115,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		return content;
 	}
-	
+
 
 	// Todo: implement layout
 	public layout() {

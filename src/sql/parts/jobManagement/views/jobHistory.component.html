@@ -77,7 +77,7 @@
 <!-- Job History details -->
 <div class='history-details'>
 	<!-- Previous run list -->
-	<div class="prev-run-list-container" style="min-width: 275px; height: 75vh">
+	<div class="prev-run-list-container" style="min-width: 250px">
 		<table *ngIf="_showPreviousRuns === true">
 			<tr>
 				<td class="date-column">
@@ -89,7 +89,9 @@
 			</tr>
 		</table>
 		<h3 *ngIf="_showPreviousRuns === false" style="text-align: center">No Previous Runs Available</h3>
-		<div #table class="step-table prev-run-list" style="position: relative; height: 100%; width: 100%"></div>
+		<div class="step-table prev-run-list" style="position: relative; width: 100%">
+			<div #table style="position: absolute; width: 100%; height: 100%"></div>
+		</div>
 	</div>
 	<!-- Job Steps -->
 	<div class="job-steps" id="job-steps">
@@ -154,8 +156,8 @@
 				</td>
 			</tr>
 		</table>
-		<div #jobsteps style="height: 100%">
-			<jobstepsview-component *ngIf="showSteps === true"></jobstepsview-component>
+		<div #jobsteps style="flex: 1 1 auto; position: relative">
+			<jobstepsview-component *ngIf="showSteps === true" style="position: absolute; height: 100%; width: 100%"></jobstepsview-component>
 		</div>
 		<h3 *ngIf="showSteps === false">No Steps Available</h3>
 	</div>

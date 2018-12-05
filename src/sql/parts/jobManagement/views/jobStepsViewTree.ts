@@ -5,6 +5,7 @@
 
 
 import * as DOM from 'vs/base/browser/dom';
+import { $ } from 'vs/base/browser/builder';
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
@@ -86,7 +87,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
-		return 22 * Math.ceil(element.message.length/JobManagementUtilities.jobMessageLength);
+		return 40;
 	}
 
 	public getTemplateId(tree: tree.ITree, element: JobStepsViewRow | JobStepsViewModel): string {
@@ -118,6 +119,7 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 		let stepMessageCol: HTMLElement = DOM.$('div');
 		stepMessageCol.className = 'tree-message-col';
 		stepMessageCol.innerText = element.message;
+		$(templateData.label).empty();
 		templateData.label.appendChild(stepIdCol);
 		templateData.label.appendChild(stepNameCol);
 		templateData.label.appendChild(stepMessageCol);

@@ -146,7 +146,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel) {
+	public selectCell(cell: ICellModel, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
 		if (cell !== this._activeCell) {
 			if (this._activeCell) {
 				this._activeCell.active = false;
@@ -157,6 +160,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._activeCellId = cell.id;
 			this._changeRef.detectChanges();
 		}
+	}
+
+	public unselectActiveCell() {
+		if (this._activeCell) {
+			this._activeCell.active = false;
+		}
+		this._activeCell = null;
+		this._model.activeCell = null;
+		this._activeCellId = null;
+		this._changeRef.detectChanges();
 	}
 
 	// Add cell based on cell type
