@@ -214,7 +214,7 @@ declare module 'sqlops' {
 		providerName: string;
 		saveProfile: boolean;
 		id: string;
-		azureTenantId: string;
+		azureTenantId?: string;
 	}
 
 	/**

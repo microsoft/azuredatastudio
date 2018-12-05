@@ -441,7 +441,7 @@ export class ConnectionWidget {
 		accountDropdownOptions.push(this._addAzureAccountMessage);
 		this._azureAccountDropdown.setOptions(accountDropdownOptions);
 		this._azureAccountDropdown.selectWithOptionName(oldSelection);
-		this.updateRefreshCredentialsLink();
+		await this.onAzureAccountSelected();
 	}
 
 	private async updateRefreshCredentialsLink(): Promise<void> {
@@ -456,7 +456,6 @@ export class ConnectionWidget {
 	private async onAzureAccountSelected(): Promise<void> {
 		// Reset the dropdown's validation message if the old selection was not valid but the new one is
 		this.validateAzureAccountSelection(false);
-		// this._refreshCredentialsLinkBuilder.display('none');
 
 		// Open the add account dialog if needed, then select the added account
 		if (this._azureAccountDropdown.value === this._addAzureAccountMessage) {
@@ -503,8 +502,6 @@ export class ConnectionWidget {
 			let tenant = account.properties.tenants[tenantIndex];
 			if (tenant) {
 				this._azureTenantId = tenant.id;
-			} else {
-				this._azureTenantId = 'fakeId';
 			}
 		}
 	}
