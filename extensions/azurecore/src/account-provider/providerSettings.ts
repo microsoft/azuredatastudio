@@ -27,6 +27,10 @@ const publicAzureSettings: ProviderSettings = {
 				id: 'https://management.core.windows.net/',
 				endpoint: 'https://management.azure.com'
 			},
+			sqlResource: {
+				id: 'https://database.windows.net/',
+				endpoint: 'https://database.windows.net'
+			},
 			redirectUri: 'http://localhost/redirect'
 		}
 	}

@@ -1232,7 +1232,8 @@ declare module 'sqlops' {
 		QueryProvider = 'QueryProvider',
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
-		CapabilitiesProvider = 'CapabilitiesProvider'
+		CapabilitiesProvider = 'CapabilitiesProvider',
+		DacFxServicesProvider = 'DacFxServicesProvider',
 	}
 
 	export namespace dataprotocol {
@@ -1698,6 +1699,20 @@ declare module 'sqlops' {
 			 */
 			requestComplete(content: ICompleteRequest): Thenable<ICompleteReplyMsg>;
 
+			/**
+			 * Interrupt a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/master/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			interrupt(): Thenable<void>;
 		}
 
 		export interface IInfoReply {

@@ -123,6 +123,7 @@ export class JobStepData implements IAgentDialogData {
 		stepData.retryInterval = jobStepInfo.retryInterval,
 		stepData.proxyName = jobStepInfo.proxyName;
 		stepData.dialogMode = AgentDialogMode.EDIT;
+		stepData.viaJobDialog = true;
 		return stepData;
 	}
 

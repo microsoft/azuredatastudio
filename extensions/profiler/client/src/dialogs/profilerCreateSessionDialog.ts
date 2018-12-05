@@ -14,8 +14,8 @@ const localize = nls.loadMessageBundle();
 export class CreateSessionDialog {
 	// Top level
 	private readonly CancelButtonText: string = localize('createSessionDialog.cancel', 'Cancel');
-	private readonly CreateButtonText: string = localize('createSessionDialog.create', 'Create');
-	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Create New Profiler Session');
+	private readonly CreateButtonText: string = localize('createSessionDialog.create', 'Start');
+	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Start New Profiler Session');
 
 	// UI Components
 	private dialog: sqlops.window.modelviewdialog.Dialog;
@@ -68,6 +68,10 @@ export class CreateSessionDialog {
 					value: ''
 				}).component();
 
+			this.templatesBox.onValueChanged(() => {
+				this.updateSessionName();
+			});
+
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					components: [{
@@ -86,6 +90,7 @@ export class CreateSessionDialog {
 
 			if (this.model.templates) {
 				this.templatesBox.values = this.model.getTemplateNames();
+				this.updateSessionName();
 			}
 
 			this.sessionNameBox.onTextChanged(() => {
@@ -97,6 +102,12 @@ export class CreateSessionDialog {
 				}
 			});
 		});
+	}
+
+	private updateSessionName() {
+		if (this.templatesBox.value) {
+			this.sessionNameBox.value = `ADS_${this.templatesBox.value.toString()}`
+		}
 	}
 
 	private async execute(): Promise<void> {

@@ -34,6 +34,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -46,6 +47,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	let mssqlConnectionProvider: TypeMoq.Mock<ConnectionProviderStub>;
 	let workspaceConfigurationServiceMock: TypeMoq.Mock<WorkspaceConfigurationTestService>;
 	let resourceProviderStubMock: TypeMoq.Mock<ResourceProviderStub>;
+	let accountManagementService: TypeMoq.Mock<AccountManagementTestService>;
 
 	let none: void;
 
@@ -88,6 +90,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
 		let resourceProviderStub = new ResourceProviderStub();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
+		accountManagementService = TypeMoq.Mock.ofType(AccountManagementTestService);
 		let root = new ConnectionProfileGroup(ConnectionProfileGroup.RootGroupName, undefined, ConnectionProfileGroup.RootGroupName, undefined, undefined);
 		root.connections = [ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile)];
 
@@ -162,7 +165,8 @@ suite('SQL ConnectionManagementService tests', () => {
 			undefined,
 			resourceProviderStubMock.object,
 			undefined,
-			undefined
+			undefined,
+			accountManagementService.object
 		);
 		return connectionManagementService;
 	}
@@ -836,5 +840,45 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		// Then undefined is returned
 		assert.equal(foundUri, undefined);
+	});
+
+	test('addSavedPassword fills in Azure access tokens for Azure accounts', async () => {
+		// Set up a connection profile that uses Azure
+		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		azureConnectionProfile.authenticationType = 'AzureMFA';
+		let username = 'testuser@microsoft.com';
+		azureConnectionProfile.userName = username;
+		let servername = 'test-database.database.windows.net';
+		azureConnectionProfile.serverName = servername;
+
+		// Set up the account management service to return a token for the given user
+		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<sqlops.Account[]>([
+			{
+				key: {
+					accountId: username,
+					providerId: providerId
+				},
+				displayInfo: undefined,
+				isStale: false,
+				properties: undefined
+			}
+		]));
+		let testToken = 'testToken';
+		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+			azurePublicCloud: {
+				token: testToken
+			}
+		}));
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+			profile: profile,
+			savedCred: false
+		}));
+
+		// If I call addSavedPassword
+		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
+
+		// Then the returned profile has the account token set
+		assert.equal(profileWithCredentials.userName, username);
+		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
 	});
 });
