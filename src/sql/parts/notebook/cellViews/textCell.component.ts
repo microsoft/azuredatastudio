@@ -117,7 +117,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		return content;
 	}
-	
+
 
 	// Todo: implement layout
 	public layout() {
@@ -137,7 +137,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
-		this.updatePreviewCssClass();
+
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
