@@ -480,11 +480,11 @@ export class ConnectionWidget {
 		const hideTenantsClassName = 'hide-azure-tenants';
 		let selectedAccount = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 		if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length > 1) {
-				// There are multiple tenants available so let the user select one
-				let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
-				this._azureTenantDropdown.setOptions(options);
-				this._tableContainer.getContainer().classList.remove(hideTenantsClassName);
-				this.onAzureTenantSelected(0);
+			// There are multiple tenants available so let the user select one
+			let options = selectedAccount.properties.tenants.map(tenant => tenant.displayName);
+			this._azureTenantDropdown.setOptions(options);
+			this._tableContainer.getContainer().classList.remove(hideTenantsClassName);
+			this.onAzureTenantSelected(0);
 		} else {
 			if (selectedAccount && selectedAccount.properties.tenants && selectedAccount.properties.tenants.length === 1) {
 				this._azureTenantId = selectedAccount.properties.tenants[0].id;
