@@ -143,8 +143,10 @@ export class SparkMagicContexts {
 		let foundSavedKernelInSpecs;
 		let defaultKernel;
 		if (specs) {
-			foundSavedKernelInSpecs = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
 			defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+			if (savedKernelInfo) {
+				foundSavedKernelInSpecs = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+			}
 		}
 		let profile = connectionInfo as IConnectionProfile;
 		if (foundSavedKernelInSpecs && specs && connectionInfo && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
