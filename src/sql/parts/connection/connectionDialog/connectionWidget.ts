@@ -561,7 +561,7 @@ export class ConnectionWidget {
 			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
 			this._password = this.getModelValue(connectionInfo.password);
 			this._saveProfile = connectionInfo.saveProfile;
-			this._azureTenantId = connectionInfo.options['azureTenantId'];
+			this._azureTenantId = connectionInfo.azureTenantId;
 			let groupName: string;
 			if (this._saveProfile) {
 				if (!connectionInfo.groupFullName) {
