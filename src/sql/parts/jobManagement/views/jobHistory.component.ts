@@ -23,7 +23,6 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
@@ -144,7 +143,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.themeService));
-		this._tree.layout(JobHistoryComponent.INITIAL_TREE_HEIGHT);
+		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 		this.initActionBar();
 		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
 	}
@@ -296,6 +295,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		if (historyDetails && statusBar) {
 			let historyBottom = historyDetails.getBoundingClientRect().bottom;
 			let statusTop = statusBar.getBoundingClientRect().top;
+
 			let height: number = statusTop - historyBottom - JobHistoryComponent.HEADING_HEIGHT;
 
 			if (this._table) {
@@ -305,14 +305,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			}
 
 			if (this._tree) {
-				this._tree.layout(height);
-			}
-
-			if (this._jobStepsView) {
-				let element = this._jobStepsView.nativeElement as HTMLElement;
-				if (element) {
-					element.style.height = height + 'px';
-				}
+				this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 			}
 		}
 	}

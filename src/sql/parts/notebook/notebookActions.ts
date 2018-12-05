@@ -18,6 +18,7 @@ import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
+import { noKernel } from 'sql/services/notebook/sessionManager';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -26,6 +27,7 @@ const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
 const msgConnectionNotApplicable = localize('connectionNotSupported', 'n/a');
+const msgLocalHost = localize('localhost', 'Localhost');
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -45,6 +47,28 @@ export class AddCellAction extends Action {
 				reject(e);
 			}
 		});
+	}
+}
+
+export class SaveNotebookAction extends Action {
+	private static readonly notebookSavedMsg = localize('notebookSavedMsg', 'Notebook saved successfully.');
+	private static readonly notebookFailedSaveMsg = localize('notebookFailedSaveMsg', 'Failed to save Notebook.');
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotificationService private _notificationService: INotificationService
+	) {
+		super(id, label, cssClass);
+	}
+
+	public async run(context: NotebookComponent): TPromise<boolean> {
+		const actions: INotificationActions = { primary: [] };
+		let saved = await context.save();
+		if (saved) {
+			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
+		} else {
+			this._notificationService.error(SaveNotebookAction.notebookFailedSaveMsg);
+		}
+		return saved;
 	}
 }
 
@@ -215,9 +239,8 @@ export class AttachToDropdown extends SelectBox {
 
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
 	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
-		if (currentKernel === notebookConstants.python3) {
-			this.setOptions([msgConnectionNotApplicable]);
-			this.disable();
+		if (currentKernel === notebookConstants.python3 || currentKernel === noKernel) {
+			this.setOptions([msgLocalHost]);
 		}
 		else {
 			let hadoopConnections = this.getHadoopConnections(model);
@@ -292,6 +315,7 @@ export class AttachToDropdown extends SelectBox {
 				attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
 				let index = attachToConnections.findIndex((connection => connection === connectedServer));
+				this.setOptions([]);
 				this.setOptions(attachToConnections);
 				if (!index || index < 0 || index >= attachToConnections.length) {
 					index = 0;

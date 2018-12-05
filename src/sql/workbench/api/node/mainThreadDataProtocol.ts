@@ -444,8 +444,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
 		this._queryManagementService.onBatchComplete(batchInfo);
 	}
-	public $onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
-		this._queryManagementService.onResultSetComplete(resultSetInfo);
+	public $onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._queryManagementService.onResultSetAvailable(resultSetInfo);
+	}
+	public $onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._queryManagementService.onResultSetUpdated(resultSetInfo);
 	}
 	public $onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void {
 		this._queryManagementService.onMessage(message);
