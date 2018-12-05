@@ -40,6 +40,7 @@ import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/br
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -365,5 +366,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	isDirty(): boolean {
 		return this.notebookParams.input.isDirty();
+	}
+
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		if (!edits || edits.length === 0) {
+			return false;
+		}
+		this._model.pushEditOperations(edits);
+		return true;
 	}
 }

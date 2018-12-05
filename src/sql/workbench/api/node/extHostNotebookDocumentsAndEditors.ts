@@ -8,110 +8,20 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { readonly } from 'vs/base/common/errors';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { dispose } from 'vs/base/common/lifecycle';
 import URI from 'vs/base/common/uri';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
-import { Schemas } from 'vs/base/common/network';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
 
 import {
-	MainThreadNotebookShape, SqlMainContext, INotebookDocumentsAndEditorsDelta,
-	ExtHostNotebookDocumentsAndEditorsShape, MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions
+	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
+	MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { ExtHostNotebookDocumentData } from 'sql/workbench/api/node/extHostNotebookDocumentData';
+import { ExtHostNotebookEditor } from 'sql/workbench/api/node/extHostNotebookEditor';
 
-
-export class ExtHostNotebookDocumentData implements IDisposable {
-	private _document: sqlops.nb.NotebookDocument;
-	private _cells: sqlops.nb.NotebookCell[];
-	private _isDisposed: boolean = false;
-
-	constructor(private readonly _proxy: MainThreadNotebookDocumentsAndEditorsShape,
-		private readonly _uri: URI,
-		private readonly _providerId: string,
-		private _isDirty: boolean
-	) {
-		// TODO add cell mapping support
-		this._cells = [];
-	}
-
-	dispose(): void {
-		// we don't really dispose documents but let
-		// extensions still read from them. some
-		// operations, live saving, will now error tho
-		ok(!this._isDisposed);
-		this._isDisposed = true;
-		this._isDirty = false;
-	}
-
-
-	get document(): sqlops.nb.NotebookDocument {
-		if (!this._document) {
-			const data = this;
-			this._document = {
-				get uri() { return data._uri; },
-				get fileName() { return data._uri.fsPath; },
-				get isUntitled() { return data._uri.scheme === Schemas.untitled; },
-				get providerId() { return data._providerId; },
-				get isClosed() { return data._isDisposed; },
-				get isDirty() { return data._isDirty; },
-				get cells() { return data._cells; },
-				save() { return data._save(); },
-			};
-		}
-		return Object.freeze(this._document);
-	}
-
-	private _save(): Thenable<boolean> {
-		if (this._isDisposed) {
-			return TPromise.wrapError<boolean>(new Error('Document has been closed'));
-		}
-		return this._proxy.$trySaveDocument(this._uri);
-
-	}
-}
-
-export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposable {
-	private _disposed: boolean = false;
-
-	constructor(
-		private _proxy: MainThreadNotebookShape,
-		private _id: string,
-		private readonly _documentData: ExtHostNotebookDocumentData,
-		private _viewColumn: vscode.ViewColumn
-	) {
-
-	}
-
-	dispose() {
-		ok(!this._disposed);
-		this._disposed = true;
-	}
-
-	get document(): sqlops.nb.NotebookDocument {
-		return this._documentData.document;
-	}
-
-	set document(value) {
-		throw readonly('document');
-	}
-
-	get viewColumn(): vscode.ViewColumn {
-		return this._viewColumn;
-	}
-
-	set viewColumn(value) {
-		throw readonly('viewColumn');
-	}
-
-
-	get id(): string {
-		return this._id;
-	}
-}
 
 export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocumentsAndEditorsShape {
 
@@ -194,7 +104,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 				const documentData = this._documents.get(resource.toString());
 				const editor = new ExtHostNotebookEditor(
-					this._mainContext.getProxy(SqlMainContext.MainThreadNotebook),
+					this._mainContext.getProxy(SqlMainContext.MainThreadNotebookDocumentsAndEditors),
 					data.id,
 					documentData,
 					typeConverters.ViewColumn.to(data.editorPosition)

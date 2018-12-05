@@ -19,6 +19,7 @@ import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -328,6 +329,14 @@ export interface INotebookModel {
 	 * Notifies the notebook of a change in the cell
 	 */
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void;
+
+
+	/**
+	 * Push edit operations, basically editing the model. This is the preferred way of
+	 * editing the model. Long-term, this will ensure edit operations can be added to the undo stack
+	 * @param edits The edit operations to perform
+	 */
+	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 }
 
 export interface ICellModelOptions {
