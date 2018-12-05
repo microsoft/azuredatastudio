@@ -62,6 +62,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
 	private _activeCellId: string;
+	private _cellSelected: boolean;
 
 
 	constructor(
@@ -141,6 +142,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public selectCell(cell: ICellModel) {
+		this._cellSelected = true;
 		if (cell !== this._activeCell) {
 			if (this._activeCell) {
 				this._activeCell.active = false;
@@ -151,6 +153,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._activeCellId = cell.id;
 			this._changeRef.detectChanges();
 		}
+	}
+
+	public unselectActiveCell() {
+		if (!this._cellSelected) {
+			if (this._activeCell) {
+				this._activeCell.active = false;
+			}
+			this._activeCell = null;
+			this._model.activeCell = null;
+			this._activeCellId = null;
+			this._changeRef.detectChanges();
+		}
+		this._cellSelected = false;
 	}
 
 	// Add cell based on cell type
