@@ -24,6 +24,7 @@ import 'sql/workbench/api/node/mainThreadQueryEditor';
 import 'sql/workbench/api/node/mainThreadModelView';
 import 'sql/workbench/api/node/mainThreadModelViewDialog';
 import 'sql/workbench/api/node/mainThreadNotebook';
+import 'sql/workbench/api/node/mainThreadNotebookDocumentsAndEditors';
 import 'sql/workbench/api/node/mainThreadAccountManagement';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 

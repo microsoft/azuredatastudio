@@ -1368,6 +1368,201 @@ declare module 'sqlops' {
 	}
 
 	export namespace nb {
+		/**
+		 * All notebook documents currently known to the system.
+		 *
+		 * @readonly
+		 */
+		export let notebookDocuments: NotebookDocument[];
+
+		/**
+		 * The currently active Notebook editor or `undefined`. The active editor is the one
+		 * that currently has focus or, when none has focus, the one that has changed
+		 * input most recently.
+		 */
+		export let activeNotebookEditor: NotebookEditor | undefined;
+
+		/**
+		 * The currently visible editors or an empty array.
+		 */
+		export let visibleNotebookEditors: NotebookEditor[];
+
+		/**
+		 * An event that is emitted when a [notebook document](#NotebookDocument) is opened.
+		 *
+		 * To add an event listener when a visible text document is opened, use the [TextEditor](#TextEditor) events in the
+		 * [window](#window) namespace. Note that:
+		 *
+		 * - The event is emitted before the [document](#NotebookDocument) is updated in the
+		 * [active notebook editor](#nb.activeNotebookEditor)
+		 * - When a [notebook document](#NotebookDocument) is already open (e.g.: open in another visible notebook editor) this event is not emitted
+		 *
+		 */
+		export const onDidOpenNotebookDocument: vscode.Event<NotebookDocument>;
+
+		/**
+		 * An event that is emitted when a [notebook's](#NotebookDocument) cell contents are changed.
+		 */
+		export const onDidChangeNotebookCell: vscode.Event<NotebookCellChangeEvent>;
+
+		/**
+		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
+		 * to control where the editor is being shown. Might change the [active editor](#nb.activeNotebookEditor).
+		 *
+		 * The document is denoted by an [uri](#Uri). Depending on the [scheme](#Uri.scheme) the
+		 * following rules apply:
+		 * `file`-scheme: Open a file on disk, will be rejected if the file does not exist or cannot be loaded.
+		 * `untitled`-scheme: A new file that should be saved on disk, e.g. `untitled:c:\frodo\new.js`. The language
+		 * will be derived from the file name.
+		 * For all other schemes the registered notebook providers are consulted.
+		 *
+		 * @param document A document to be shown.
+		 * @param column A view column in which the [editor](#NotebookEditor) should be shown. The default is the [active](#ViewColumn.Active), other values
+		 * are adjusted to be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside)
+		 * to open the editor to the side of the currently active one.
+		 * @param preserveFocus When `true` the editor will not take focus.
+		 * @return A promise that resolves to a [notebook editor](#NotebookEditor).
+		 */
+		export function showNotebookDocument(uri: vscode.Uri, showOptions?: NotebookShowOptions): Thenable<NotebookEditor>;
+
+		export interface NotebookDocument {
+			/**
+			 * The associated uri for this notebook document.
+			 *
+			 * *Note* that most documents use the `file`-scheme, which means they are files on disk. However, **not** all documents are
+			 * saved on disk and therefore the `scheme` must be checked before trying to access the underlying file or siblings on disk.
+			 *
+			 */
+			readonly uri: vscode.Uri;
+
+			/**
+			 * The file system path of the associated resource. Shorthand
+			 * notation for [TextDocument.uri.fsPath](#TextDocument.uri). Independent of the uri scheme.
+			 */
+			readonly fileName: string;
+
+			/**
+			 * Is this document representing an untitled file which has never been saved yet. *Note* that
+			 * this does not mean the document will be saved to disk, use [`uri.scheme`](#Uri.scheme)
+			 * to figure out where a document will be [saved](#FileSystemProvider), e.g. `file`, `ftp` etc.
+			 */
+			readonly isUntitled: boolean;
+
+			/**
+			 * The identifier of the Notebook provider associated with this document.
+			 */
+			readonly providerId: string;
+
+			/**
+			 * `true` if there are unpersisted changes.
+			 */
+			readonly isDirty: boolean;
+			/**
+			 * `true` if the document have been closed. A closed document isn't synchronized anymore
+			 * and won't be re-used when the same resource is opened again.
+			 */
+			readonly isClosed: boolean;
+
+			/**
+			 * All cells.
+			 */
+			readonly cells: NotebookCell[];
+
+			/**
+			 * Save the underlying file.
+			 *
+			 * @return A promise that will resolve to true when the file
+			 * has been saved. If the file was not dirty or the save failed,
+			 * will return false.
+			 */
+			save(): Thenable<boolean>;
+		}
+
+		export interface NotebookEditor {
+			/**
+			 * The document associated with this editor. The document will be the same for the entire lifetime of this editor.
+			 */
+			readonly document: NotebookDocument;
+			/**
+			 * The column in which this editor shows. Will be `undefined` in case this
+			 * isn't one of the main editors, e.g an embedded editor, or when the editor
+			 * column is larger than three.
+			 */
+			viewColumn?: vscode.ViewColumn;
+		}
+
+		export interface NotebookCell {
+			contents: ICellContents;
+		}
+
+		export interface NotebookShowOptions {
+			/**
+			 * An optional view column in which the [editor](#NotebookEditor) should be shown.
+			 * The default is the [active](#ViewColumn.Active), other values are adjusted to
+			 * be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is
+			 * not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside) to open the
+			 * editor to the side of the currently active one.
+			 */
+			viewColumn?: vscode.ViewColumn;
+
+			/**
+			 * An optional flag that when `true` will stop the [editor](#NotebookEditor) from taking focus.
+			 */
+			preserveFocus?: boolean;
+
+			/**
+			 * An optional flag that controls if an [editor](#NotebookEditor)-tab will be replaced
+			 * with the next editor or if it will be kept.
+			 */
+			preview?: boolean;
+
+			/**
+			 * An optional string indicating which notebook provider to initially use
+			 */
+			providerId?: string;
+
+			/**
+			 * Optional ID indicating the initial connection to use for this editor
+			 */
+			connectionId?: string;
+		}
+
+		/**
+		 * Represents an event describing the change in a [notebook documents's cells](#NotebookDocument.cells).
+		 */
+		export interface NotebookCellChangeEvent {
+			/**
+			 * The [notebook document](#NotebookDocument) for which the selections have changed.
+			 */
+			notebook: NotebookDocument;
+			/**
+			 * The new value for the [notebook documents's cells](#NotebookDocument.cells).
+			 */
+			cell: NotebookCell[];
+			/**
+			 * The [change kind](#TextEditorSelectionChangeKind) which has triggered this
+			 * event. Can be `undefined`.
+			 */
+			kind?: vscode.TextEditorSelectionChangeKind;
+		}
+
+		/**
+		 * Register a notebook provider. The supported file types handled by this
+		 * provider are defined in the `package.json:
+		 * ```json
+		* {
+		* 	"contributes": {
+		* 		"notebook.providers": [{
+		* 			"provider": "providername",
+		* 			"fileExtensions": ["FILEEXT"]
+		* 		}]
+		* 	}
+		* }
+		* ```
+		 * @export
+		 * @param {NotebookProvider} provider
+		 * @returns {vscode.Disposable}
+		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
 		export interface NotebookProvider {
@@ -1431,7 +1626,7 @@ declare module 'sqlops' {
 			/* Reads contents from a Uri representing a local or remote notebook and returns a
 			 * JSON object containing the cells and metadata about the notebook
 			 */
-			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebook>;
+			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents>;
 
 			/**
 			 * Save a file.
@@ -1443,12 +1638,19 @@ declare module 'sqlops' {
 			 * @returns A thenable which resolves with the file content model when the
 			 *   file is saved.
 			 */
-			save(notebookUri: vscode.Uri, notebook: INotebook): Thenable<INotebook>;
+			save(notebookUri: vscode.Uri, notebook: INotebookContents): Thenable<INotebookContents>;
 		}
 
-		export interface INotebook {
 
-			readonly cells: ICell[];
+		/**
+		 * Interface defining the file format contents of a notebook, usually in a serializable
+		 * format. This interface does not have any methods for manipulating or interacting
+		 * with a notebook object.
+		 *
+		 */
+		export interface INotebookContents {
+
+			readonly cells: ICellContents[];
 			readonly metadata: INotebookMetadata;
 			readonly nbformat: number;
 			readonly nbformat_minor: number;
@@ -1477,7 +1679,13 @@ declare module 'sqlops' {
 			version: string;
 		}
 
-		export interface ICell {
+		/**
+		 * Interface defining the file format contents of a notebook cell, usually in a serializable
+		 * format. This interface does not have any methods for manipulating or interacting
+		 * with a cell object.
+		 *
+		 */
+		export interface ICellContents {
 			cell_type: CellType;
 			source: string | string[];
 			metadata: {

@@ -7,7 +7,7 @@ import './notebookStyles';
 
 import { nb } from 'sqlops';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -20,7 +20,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
@@ -32,6 +32,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
+import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { IAction, Action, IActionItem } from 'vs/base/common/actions';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -43,7 +48,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 	selector: NOTEBOOK_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
 })
-export class NotebookComponent extends AngularDisposable implements OnInit {
+export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
@@ -68,11 +73,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IEditorService) private editorService: IEditorService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
-		@Inject(IBootstrapParams) private notebookParams: INotebookParams,
+		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService
+		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
+		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
+		@Inject(IMenuService) private menuService: IMenuService,
+		@Inject(IKeybindingService) private keybindingService: IKeybindingService
 	) {
 		super();
 		this.updateProfile();
@@ -100,8 +108,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
+	}
+
+	ngOnDestroy() {
+		if (this.notebookService) {
+			this.notebookService.removeNotebookEditor(this);
+		}
 	}
 
 	public get model(): NotebookModel {
@@ -193,16 +208,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private async loadModel(): Promise<void> {
-		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this.notebookParams.providerId, this.notebookParams.notebookUri);
+		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
 		let model = new NotebookModel({
 			factory: this.modelFactory,
-			notebookUri: this.notebookParams.notebookUri,
+			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManager: this.notebookManager
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		await model.requestModelLoad(this.notebookParams.isTrusted);
+		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		this._model = model;
 		this.updateToolbarComponents(this._model.trustedMode);
@@ -223,10 +238,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private get modelFactory(): IModelFactory {
-		if (!this.notebookParams.modelFactory) {
-			this.notebookParams.modelFactory = new ModelFactory();
+		if (!this._notebookParams.modelFactory) {
+			this._notebookParams.modelFactory = new ModelFactory();
 		}
-		return this.notebookParams.modelFactory;
+		return this._notebookParams.modelFactory;
 	}
 	private handleModelError(notification: INotification): void {
 		this.notificationService.notify(notification);
@@ -273,8 +288,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 
 		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
 
+		// Get all of the menu contributions that use the ID 'notebook/toolbar'.
+		// Then, find all groups (currently we don't leverage the contributed
+		// groups functionality for the notebook toolbar), and fill in the 'primary'
+		// array with items that don't list a group. Finally, add any actions from
+		// the primary array to the end of the toolbar.
+		const notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
+		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
+		let primary: IAction[] = [];
+		let secondary: IAction[] = [];
+		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action)});
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },
@@ -284,11 +310,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			{ action: saveNotebookButton },
 			{ action: this._trustedAction }
 		]);
+
+		// Primary actions are categorized as those that are added to the 'horizontal' group.
+		// For the vertical toolbar, we can do the same thing and instead use the 'vertical' group.
+		for (let action of primary) {
+			this._actionBar.addAction(action);
+		}
 	}
 
 	public async save(): Promise<boolean> {
 		try {
 			let saved = await this._model.saveModel();
+			if (saved) {
+				this.setDirty(false);
+			}
 			return saved;
 		} catch (err) {
 			this.notificationService.error(localize('saveFailed', 'Failed to save notebook: {0}', notebookUtils.getErrorMessage(err)));
@@ -297,11 +332,38 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private setDirty(isDirty: boolean): void {
-		// TODO reenable handling of isDirty
-		// if (this.editor) {
-		//     this.editor.isDirty = isDirty;
-		// }
+		if(this._notebookParams.input){
+			this._notebookParams.input.setDirty(isDirty);
+		}
 	}
 
+	private actionItemProvider(action: Action): IActionItem {
+		// Check extensions to create ActionItem; otherwise, return undefined
+		// This is similar behavior that exists in MenuItemActionItem
+		if (action instanceof MenuItemAction) {
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService, 'notebook-button');
+		}
+		return undefined;
+	}
 
+	public get notebookParams(): INotebookParams {
+		return this._notebookParams;
+	}
+
+	public get id(): string {
+		return this._notebookParams.notebookUri.toString();
+	}
+
+	isActive(): boolean {
+		return this.editorService.activeEditor === this.notebookParams.input;
+	}
+
+	isVisible(): boolean {
+		let notebookEditor = this.notebookParams.input;
+		return this.editorService.visibleEditors.some(e => e === notebookEditor);
+	}
+
+	isDirty(): boolean {
+		return this.notebookParams.input.isDirty();
+	}
 }

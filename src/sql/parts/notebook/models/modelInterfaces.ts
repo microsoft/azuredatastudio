@@ -348,7 +348,7 @@ export interface ICellModel {
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
 	setFuture(future: FutureInternal): void;
 	equals(cellModel: ICellModel): boolean;
-	toJSON(): nb.ICell;
+	toJSON(): nb.ICellContents;
 }
 
 export interface FutureInternal extends nb.IFuture {
@@ -357,7 +357,7 @@ export interface FutureInternal extends nb.IFuture {
 
 export interface IModelFactory {
 
-	createCell(cell: nb.ICell, options: ICellModelOptions): ICellModel;
+	createCell(cell: nb.ICellContents, options: ICellModelOptions): ICellModel;
 	createClientSession(options: IClientSessionOptions): IClientSession;
 }
 

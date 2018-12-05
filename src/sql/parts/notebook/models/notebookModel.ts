@@ -237,7 +237,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private createCell(cellType: CellType): ICellModel {
-		let singleCell: nb.ICell = {
+		let singleCell: nb.ICellContents = {
 			cell_type: cellType,
 			source: '',
 			metadata: {},
@@ -281,9 +281,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			notebookManager: this.notebookManager,
 			notificationService: this.notebookOptions.notificationService
 		});
-		let id: string = this.connectionProfile ? this.connectionProfile.id : undefined;
+		let profile = this.connectionProfile as IConnectionProfile;
 
-		this._hadoopConnection = this.connectionProfile ? new NotebookConnection(this.connectionProfile) : undefined;
+		if (this.isValidKnoxConnection(profile)) {
+            this._hadoopConnection = new NotebookConnection(this.connectionProfile);
+        } else {
+            this._hadoopConnection = undefined;
+		}
+
 		this._clientSession.initialize(this._hadoopConnection);
 		this._sessionLoadFinished = this._clientSession.ready.then(async () => {
 			if (this._clientSession.isInErrorState) {
@@ -389,7 +394,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get default language if saved in notebook file
 	// Otherwise, default to python
-	private getDefaultLanguageInfo(notebook: nb.INotebook): nb.ILanguageInfo {
+	private getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
 		return notebook!.metadata!.language_info || {
 			name: 'python',
 			version: '',
@@ -398,7 +403,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	// Get default kernel info if saved in notebook file
-	private getSavedKernelInfo(notebook: nb.INotebook): nb.IKernelInfo {
+	private getSavedKernelInfo(notebook: nb.INotebookContents): nb.IKernelInfo {
 		return notebook!.metadata!.kernelspec;
 	}
 
@@ -490,8 +495,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	/**
 	 * Serialize the model to JSON.
 	 */
-	toJSON(): nb.INotebook {
-		let cells: nb.ICell[] = this.cells.map(c => c.toJSON());
+	toJSON(): nb.INotebookContents {
+		let cells: nb.ICellContents[] = this.cells.map(c => c.toJSON());
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
