@@ -58,11 +58,6 @@ export class SelectOperationPage extends BasePage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		let numPages = this.instance.wizard.pages.length;
-		for (let i = numPages - 1; i > 2; --i) {
-			await this.instance.wizard.removePage(i);
-		}
-
 		return true;
 	}
 
@@ -77,9 +72,12 @@ export class SelectOperationPage extends BasePage {
 			// remove the previous page
 			this.instance.wizard.removePage(1);
 
-			// add deploy page
-			let page = this.instance.pages.get('deployConfig');
-			this.instance.wizard.addPage(page.wizardPage, 1);
+			//add deploy pages
+			let configPage = this.instance.pages.get('deployConfig');
+			this.instance.wizard.addPage(configPage.wizardPage, 1);
+
+			let actionPage = this.instance.pages.get('deployAction');
+			this.instance.wizard.addPage(actionPage.wizardPage, 2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.deploy);
@@ -99,7 +97,10 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
-			// remove the previous pages
+			//remove the previous pages
+			if (this.instance.wizard.pages.length === 4) {
+				this.instance.wizard.removePage(2);
+			}
 			this.instance.wizard.removePage(1);
 
 			// add the extract page
@@ -124,7 +125,10 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.importRadioButton.onDidClick(() => {
-			// remove the  previous page
+			//remove the previous pages
+			if (this.instance.wizard.pages.length === 4) {
+				this.instance.wizard.removePage(2);
+			}
 			this.instance.wizard.removePage(1);
 
 			// add the import page
@@ -149,7 +153,10 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.exportRadioButton.onDidClick(() => {
-			// remove the 2 previous pages
+			//remove the previous pages
+			if (this.instance.wizard.pages.length === 4) {
+				this.instance.wizard.removePage(2);
+			}
 			this.instance.wizard.removePage(1);
 
 			// add the export pages

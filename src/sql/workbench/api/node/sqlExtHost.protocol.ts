@@ -440,6 +440,12 @@ export abstract class ExtHostDataProtocolShape {
 	 * DacFx deploy dacpac
 	 */
 	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx generate deploy script
+	 */
+	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
 }
 
 /**

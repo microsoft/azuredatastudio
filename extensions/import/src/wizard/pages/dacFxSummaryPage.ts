@@ -49,6 +49,14 @@ export class DacFxSummaryPage extends BasePage {
 	async onPageEnter(): Promise<boolean> {
 		this.populateTable();
 		this.loader.loading = false;
+		if (this.model.upgradeExisting && this.model.generateScriptAndDeploy) {
+			this.instance.wizard.generateScriptButton.hidden = false;
+		}
+		return true;
+	}
+
+	async onPageLeave(): Promise<boolean> {
+		this.instance.wizard.generateScriptButton.hidden = true;
 		return true;
 	}
 
@@ -68,6 +76,7 @@ export class DacFxSummaryPage extends BasePage {
 		let sourceServer = localize('dacfx.sourceServerName', 'Source Server');
 		let sourceDatabase = localize('dacfx.sourceDatabaseName', 'Source Database');
 		let fileLocation = localize('dacfx.fileLocation', 'File Location');
+		let scriptLocation = localize('dacfx.scriptLocation', 'Deployment Script Location');
 
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
@@ -75,6 +84,9 @@ export class DacFxSummaryPage extends BasePage {
 					[targetServer, this.model.serverName],
 					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
+				if (this.model.generateScriptAndDeploy) {
+					data[3] = [scriptLocation, this.model.scriptFilePath];
+				}
 				break;
 			}
 			case Operation.extract: {
@@ -99,12 +111,20 @@ export class DacFxSummaryPage extends BasePage {
 					[fileLocation, this.model.filePath]];
 				break;
 			}
+			case Operation.generateDeployScript: {
+				data = [
+					[targetServer, this.model.serverName],
+					[fileLocation, this.model.filePath],
+					[targetDatabase, this.model.database],
+					[scriptLocation, this.model.scriptFilePath]];
+				break;
+			}
 		}
 
 		this.table.updateProperties({
 			data: data,
 			columns: ['Setting', 'Value'],
-			width: 600,
+			width: 700,
 			height: 200
 		});
 	}
