@@ -339,14 +339,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	// We can keep this method in common utilities
 	private getFilePathFromRecentWorkspace(untitledResource: URI): string {
-		const untitledFileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE;
+		let untitledFileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE;
 
-		const lastActiveFile = this.historyService.getLastActiveFile();
+		let lastActiveFile = this.historyService.getLastActiveFile();
 		if (lastActiveFile) {
 			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), untitledFileName)).fsPath;
 		}
 
-		const lastActiveFolder = this.historyService.getLastActiveWorkspaceRoot('file');
+		let lastActiveFolder = this.historyService.getLastActiveWorkspaceRoot('file');
 		if (lastActiveFolder) {
 			return URI.file(paths.join(lastActiveFolder.fsPath, untitledFileName)).fsPath;
 		}
