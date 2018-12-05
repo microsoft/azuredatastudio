@@ -365,7 +365,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let dialogPath = this.getFilePathFromRecentWorkspace(notebookUri);
 			return this.promptForPath(dialogPath).then(path => {
 				if (path) {
-					self._model.notebookUri = URI.parse(path);
+					let newNotebookUri = URI.parse(path);
+					self._model.notebookUri = newNotebookUri;
+					self.notebookParams.notebookUri = newNotebookUri;
 					return this.save();
 				}
 				return false; // User clicks cancel
