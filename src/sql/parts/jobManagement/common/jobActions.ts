@@ -17,6 +17,9 @@ import { AlertsViewComponent } from 'sql/parts/jobManagement/views/alertsView.co
 import { OperatorsViewComponent } from 'sql/parts/jobManagement/views/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { telemetryURIDescriptor } from 'vs/platform/telemetry/common/telemetryUtils';
 
 export enum JobActions {
 	Run = 'run',
@@ -80,7 +83,8 @@ export class RunJobAction extends Action {
 	constructor(
 		@INotificationService private notificationService: INotificationService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
-		@IInstantiationService private instantationService: IInstantiationService
+		@IInstantiationService private instantationService: IInstantiationService,
+		@ITelemetryService private telemetryService: ITelemetryService
 	) {
 		super(RunJobAction.ID, RunJobAction.LABEL, 'runJobIcon');
 	}
@@ -89,6 +93,7 @@ export class RunJobAction extends Action {
 		let jobName = context.agentJobInfo.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
+		this.telemetryService.publicLog(TelemetryKeys.RunAgentJob);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
@@ -118,7 +123,8 @@ export class StopJobAction extends Action {
 	constructor(
 		@INotificationService private notificationService: INotificationService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
-		@IInstantiationService private instantationService: IInstantiationService
+		@IInstantiationService private instantationService: IInstantiationService,
+		@ITelemetryService private telemetryService: ITelemetryService
 	) {
 		super(StopJobAction.ID, StopJobAction.LABEL, 'stopJobIcon');
 	}
@@ -127,6 +133,7 @@ export class StopJobAction extends Action {
 		let jobName = context.agentJobInfo.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
+		this.telemetryService.publicLog(TelemetryKeys.StopAgentJob);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
@@ -174,7 +181,8 @@ export class DeleteJobAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
-		@IJobManagementService private _jobService: IJobManagementService
+		@IJobManagementService private _jobService: IJobManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		super(DeleteJobAction.ID, DeleteJobAction.LABEL);
 	}
@@ -188,6 +196,7 @@ export class DeleteJobAction extends Action {
 			[{
 				label: DeleteJobAction.LABEL,
 				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
 					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
@@ -234,7 +243,8 @@ export class DeleteStepAction extends Action {
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
 		@IJobManagementService private _jobService: IJobManagementService,
-		@IInstantiationService private instantationService: IInstantiationService
+		@IInstantiationService private instantationService: IInstantiationService,
+		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		super(DeleteStepAction.ID, DeleteStepAction.LABEL);
 	}
@@ -249,6 +259,7 @@ export class DeleteStepAction extends Action {
 			[{
 				label: DeleteStepAction.LABEL,
 				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJobStep);
 					self._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteStep", "Could not delete step '{0}'.\nError: {1}",
@@ -318,7 +329,8 @@ export class DeleteAlertAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
-		@IJobManagementService private _jobService: IJobManagementService
+		@IJobManagementService private _jobService: IJobManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		super(DeleteAlertAction.ID, DeleteAlertAction.LABEL);
 	}
@@ -332,6 +344,7 @@ export class DeleteAlertAction extends Action {
 			[{
 				label: DeleteAlertAction.LABEL,
 				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentAlert);
 					self._jobService.deleteAlert(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
@@ -397,7 +410,8 @@ export class DeleteOperatorAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
-		@IJobManagementService private _jobService: IJobManagementService
+		@IJobManagementService private _jobService: IJobManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		super(DeleteOperatorAction.ID, DeleteOperatorAction.LABEL);
 	}
@@ -411,6 +425,7 @@ export class DeleteOperatorAction extends Action {
 			[{
 				label: DeleteOperatorAction.LABEL,
 				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentOperator);
 					self._jobService.deleteOperator(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteOperator", "Could not delete operator '{0}'.\nError: {1}",
@@ -477,7 +492,8 @@ export class DeleteProxyAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
-		@IJobManagementService private _jobService: IJobManagementService
+		@IJobManagementService private _jobService: IJobManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		super(DeleteProxyAction.ID, DeleteProxyAction.LABEL);
 	}
@@ -491,6 +507,7 @@ export class DeleteProxyAction extends Action {
 			[{
 				label: DeleteProxyAction.LABEL,
 				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentProxy);
 					self._jobService.deleteProxy(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",

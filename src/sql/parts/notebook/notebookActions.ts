@@ -18,6 +18,7 @@ import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
+import { noKernel } from 'sql/services/notebook/sessionManager';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -238,7 +239,7 @@ export class AttachToDropdown extends SelectBox {
 
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
 	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
-		if (currentKernel === notebookConstants.python3) {
+		if (currentKernel === notebookConstants.python3 || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		}
 		else {
@@ -314,6 +315,7 @@ export class AttachToDropdown extends SelectBox {
 				attachToConnections = attachToConnections.filter(val => val !== msgSelectConnection);
 
 				let index = attachToConnections.findIndex((connection => connection === connectedServer));
+				this.setOptions([]);
 				this.setOptions(attachToConnections);
 				if (!index || index < 0 || index >= attachToConnections.length) {
 					index = 0;

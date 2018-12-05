@@ -66,7 +66,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 		let extHostContext = <IExtHostContext>{
 			getProxy: proxyType => mockExtHostModelViewDialog.object
 		};
-		mainThreadModelViewDialog = new MainThreadModelViewDialog(extHostContext, undefined, undefined);
+		mainThreadModelViewDialog = new MainThreadModelViewDialog(extHostContext, undefined, undefined, undefined);
 
 		// Set up the mock dialog service
 		mockDialogService = Mock.ofType(CustomDialogService, undefined, undefined);

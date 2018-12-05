@@ -119,7 +119,20 @@ export class QueryTextEditor extends BaseTextEditor {
 		if (!this._config) {
 			this._config = new Configuration(undefined, editorWidget.getDomNode());
 		}
-		let editorHeightUsingLines = this._config.editor.lineHeight * editorWidget.getModel().getLineCount();
+		let editorWidgetModel = editorWidget.getModel();
+		let lineCount = editorWidgetModel.getLineCount();
+		// Need to also keep track of lines that wrap; if we just keep into account line count, then the editor's height would not be
+		// tall enough and we would need to show a scrollbar. Unfortunately, it looks like there isn't any metadata saved in a ICodeEditor
+		// around max column length for an editor (which we could leverage to see if we need to loop through every line to determine
+		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
+		// that the viewportColumn will always be greater than any character's column in an editor.
+		let numberWrappedLines = 0;
+		for (let line = 1; line <= lineCount; line++) {
+			if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn - 1) {
+				numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
+			}
+		}
+		let editorHeightUsingLines = this._config.editor.lineHeight * (lineCount + numberWrappedLines);
 		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
 		this.setHeight(editorHeightUsingMinHeight);
 	}
