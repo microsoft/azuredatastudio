@@ -38,7 +38,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
-	private _previewCssApplied: boolean = false;
 	private _model: NotebookModel;
 	private _activeCellId: string;
 
@@ -129,9 +128,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public handleContentChanged(): void {
-		if (!this._previewCssApplied) {
-			this.updatePreviewCssClass();
-		}
 		this.updatePreview();
 	}
 
@@ -140,18 +136,5 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 		this.updatePreview();
 		this._changeRef.detectChanges();
-	}
-
-	// Updates the css class to preview 'div' based on edit mode
-	private updatePreviewCssClass() {
-		let outputElement = <HTMLElement>this.output.nativeElement;
-		if (this.isEditMode && this.cellModel.source) {
-			outputElement.className = 'notebook-preview';
-			this._previewCssApplied = true;
-		}
-		else {
-			outputElement.className = '';
-			this._previewCssApplied = false;
-		}
 	}
 }
