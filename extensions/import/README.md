@@ -17,8 +17,7 @@ Licensed under the [MICROSOFT SQL SERVER IMPORT EXTENSION EULA](https://raw.gith
  * This wizard only works on .txt and .csv files.
 
  ## How do I start the Flat File Import wizard?
- * The main entry point for the wizard is to right click a database in the Object Explorer, and click **Import wizard**.
- * If a user is connected to a SQL Server instance, the user can also press **Ctrl**+**I** to start the wizard.
+ * In Azure Data Studio, press **Ctrl**+**I** to start the wizard.
 
  ## Why would I use the Flat File Import wizard?
  This wizard was created to improve the current import experience leveraging an intelligent framework known as Program Synthesis using Examples ([PROSE](https://microsoft.github.io/prose/)). For a user without specialized domain knowledge, importing data can often be a complex, error prone, and tedious task. This wizard streamlines the import process as simple as selecting an input file and unique table name, and the PROSE framework handles the rest.
