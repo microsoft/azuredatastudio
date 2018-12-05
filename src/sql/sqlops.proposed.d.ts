@@ -839,7 +839,7 @@ declare module 'sqlops' {
 			 * Create a dialog with the given title
 			 * @param title The title of the dialog, displayed at the top
 			 */
-			export function createDialog(title: string): Dialog;
+			export function createDialog(title: string, dialogName?: string): Dialog;
 
 			/**
 			 * Create a dialog tab which can be included as part of the content of a dialog
@@ -950,6 +950,12 @@ declare module 'sqlops' {
 				 * undefined or the text is empty or undefined. The default level is error.
 				 */
 				message: DialogMessage;
+
+				/**
+				 * Set the dialog name when opening
+				 * the dialog for telemetry
+				 */
+				dialogName?: string;
 
 				/**
 				 * Register a callback that will be called when the user tries to click done. Only

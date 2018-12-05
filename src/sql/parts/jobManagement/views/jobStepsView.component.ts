@@ -21,6 +21,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export const JOBSTEPSVIEW_SELECTOR: string = 'jobstepsview-component';
 
@@ -48,7 +50,8 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IDashboardService) dashboardService: IDashboardService
+		@Inject(IDashboardService) dashboardService: IDashboardService,
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
 	}
@@ -72,6 +75,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 		}, {verticalScrollMode: ScrollbarVisibility.Visible, horizontalScrollMode: ScrollbarVisibility.Visible });
 		this.layout();
 		this._register(attachListStyler(this._tree, this.themeService));
+		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
 	}
 
 	public onFirstVisible() {

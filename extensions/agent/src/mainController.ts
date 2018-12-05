@@ -40,13 +40,13 @@ export class MainController {
     public activate(): void {
         vscode.commands.registerCommand('agent.openJobDialog', (ownerUri: string, jobInfo: sqlops.AgentJobInfo) => {
             let dialog = new JobDialog(ownerUri, jobInfo);
-            dialog.openDialog();
+            dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openNewStepDialog', (ownerUri: string, server: string, jobInfo: sqlops.AgentJobInfo, jobStepInfo: sqlops.AgentJobStepInfo) => {
             AgentUtils.getAgentService().then((agentService) => {
                 let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
                 let dialog = new JobStepDialog(ownerUri, server, jobData, jobStepInfo, false);
-                dialog.openDialog();
+                dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
             });
         });
         vscode.commands.registerCommand('agent.openPickScheduleDialog', (ownerUri: string, jobName: string) => {
@@ -57,17 +57,16 @@ export class MainController {
             AgentUtils.getAgentService().then((agentService) => {
                 let jobData: JobData = new JobData(ownerUri, jobInfo, agentService);
                 let dialog = new AlertDialog(ownerUri, jobData, alertInfo, false);
-                dialog.openDialog();
+                dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
             });
         });
         vscode.commands.registerCommand('agent.openOperatorDialog', (ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo) => {
             let dialog = new OperatorDialog(ownerUri, operatorInfo);
-            dialog.openDialog();
+            dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
         });
         vscode.commands.registerCommand('agent.openProxyDialog', (ownerUri: string, proxyInfo: sqlops.AgentProxyInfo, credentials: sqlops.CredentialInfo[]) => {
             let dialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
-            dialog.openDialog();
-            MainController.showNotYetImplemented();
+            dialog.dialogName ? dialog.openDialog(dialog.dialogName) : dialog.openDialog();
         });
     }
 
