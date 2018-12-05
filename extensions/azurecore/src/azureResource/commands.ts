@@ -7,11 +7,11 @@
 
 import { window, QuickPickItem } from 'vscode';
 import { azureResource, AzureResource } from 'sqlops';
-import { TreeNode } from './treeNode';
 import { TokenCredentials } from 'ms-rest';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
@@ -27,10 +27,8 @@ export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): 
 
 		const accountNode = node as AzureResourceAccountTreeNode;
 
-		let subscriptions = await accountNode.getCachedSubscriptions();
-		if (!subscriptions || subscriptions.length === 0) {
-			const credentials: TokenCredentials[] = [];
-
+		const subscriptions = (await accountNode.getCachedSubscriptions()) || <azureResource.AzureResourceSubscription[]>[];
+		if (subscriptions.length === 0) {
 			try {
 				const tokens = await this.servicePool.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
 
@@ -38,16 +36,14 @@ export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): 
 					const token = tokens[tenant.id].token;
 					const tokenType = tokens[tenant.id].tokenType;
 
-					credentials.push(new TokenCredentials(token, tokenType));
+					subscriptions.push(...await servicePool.subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
 				}
 			} catch (error) {
 				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
 			}
-
-			subscriptions = await servicePool.subscriptionService.getSubscriptions(accountNode.account, credentials);
 		}
 
-		const selectedSubscriptions = (await servicePool.subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
+		let selectedSubscriptions = (await servicePool.subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
 		const selectedSubscriptionIds: string[] = [];
 		if (selectedSubscriptions.length > 0) {
 			selectedSubscriptionIds.push(...selectedSubscriptions.map((subscription) => subscription.id));
@@ -56,11 +52,11 @@ export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): 
 			selectedSubscriptionIds.push(...subscriptions.map((subscription) => subscription.id));
 		}
 
-		interface SubscriptionQuickPickItem extends QuickPickItem {
+		interface AzureResourceSubscriptionQuickPickItem extends QuickPickItem {
 			subscription: azureResource.AzureResourceSubscription;
 		}
 
-		const subscriptionItems: SubscriptionQuickPickItem[] = subscriptions.map((subscription) => {
+		const subscriptionQuickPickItems: AzureResourceSubscriptionQuickPickItem[] = subscriptions.map((subscription) => {
 			return {
 				label: subscription.name,
 				picked: selectedSubscriptionIds.indexOf(subscription.id) !== -1,
@@ -68,12 +64,12 @@ export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): 
 			};
 		});
 
-		const pickedSubscriptionItems = (await window.showQuickPick(subscriptionItems, { canPickMany: true }));
-		if (pickedSubscriptionItems && pickedSubscriptionItems.length > 0) {
+		const selectedSubscriptionQuickPickItems = (await window.showQuickPick(subscriptionQuickPickItems, { canPickMany: true }));
+		if (selectedSubscriptionQuickPickItems && selectedSubscriptionQuickPickItems.length > 0) {
 			tree.refresh(node, false);
 
-			const pickedSubscriptions = pickedSubscriptionItems.map((subscriptionItem) => subscriptionItem.subscription);
-			await servicePool.subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, pickedSubscriptions);
+			selectedSubscriptions = selectedSubscriptionQuickPickItems.map((subscriptionItem) => subscriptionItem.subscription);
+			await servicePool.subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
 		}
 	});
 

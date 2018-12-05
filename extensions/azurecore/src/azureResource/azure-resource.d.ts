@@ -3,24 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as vscode from 'vscode';
-import * as sqlops from 'sqlops';
-import { ServiceClientCredentials } from 'ms-rest';
+import { TreeDataProvider, TreeItem } from 'vscode';
+import { DataProvider, Account } from 'sqlops';
 
 declare module 'sqlops' {
 	export namespace azureResource {
-		export interface IAzureResourceProvider extends sqlops.DataProvider {
+		export interface IAzureResourceProvider extends DataProvider {
 			getTreeDataProvider(): IAzureResourceTreeDataProvider;
 		}
 
-		export interface IAzureResourceTreeDataProvider extends vscode.TreeDataProvider<IAzureResourceNode> {
+		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
 		}
 
 		export interface IAzureResourceNode {
-			readonly account: sqlops.Account;
+			readonly account: Account;
 			readonly subscription: AzureResourceSubscription;
 			readonly tenantId: string;
-			readonly treeItem: vscode.TreeItem;
+			readonly treeItem: TreeItem;
 		}
 
 		export interface AzureResourceSubscription {

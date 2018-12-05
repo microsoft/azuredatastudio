@@ -7,11 +7,12 @@
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { NodeInfo } from 'sqlops';
-import { TreeNode } from '../treeNode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { TreeNode } from '../treeNode';
 import { AzureResourceItemType } from '../constants';
+import { treeLocalizationIdPrefix } from '../../../out/azureResource/tree/constants';
 
 export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
@@ -23,7 +24,7 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 		item.contextValue = AzureResourceItemType.message;
 		item.command = {
 			title: AzureResourceAccountNotSignedInTreeNode.signInLabel,
-			command: 'azureresource.signin',
+			command: 'azure.resource.signin',
 			arguments: [this]
 		};
 		return item;
@@ -47,5 +48,5 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 		return 'message_accountNotSignedIn';
 	}
 
-	private static readonly signInLabel = localize('azureResource.tree.accountNotSignedInTreeNode.signIn', 'Sign in to Azure ...');
+	private static readonly signInLabel = localize(`${treeLocalizationIdPrefix}.accountNotSignedInTreeNode.signInLabel`, 'Sign in to Azure ...');
 }

@@ -62,7 +62,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(accountProviderService);
 	accountProviderService.activate();
 
-	let azureResourceController = new AzureResourceController(appContext);
+	const azureResourceController = new AzureResourceController(appContext);
 	controllers.push(azureResourceController);
 	extensionContext.subscriptions.push(azureResourceController);
 	activations.push(azureResourceController.activate());

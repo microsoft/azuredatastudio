@@ -15,11 +15,10 @@ import { AzureResourceService } from './resourceService';
 import { IAzureResourceNodeWithProviderId } from './interfaces';
 import { AzureResourceMessageTreeNode } from './messageTreeNode';
 import { AzureResourceErrorMessageUtil } from './utils';
-import { AzureResourceServicePool } from './servicePool';
 
 export class AzureResourceResourceTreeNode extends TreeNode {
 	public constructor(
-		public resourceNodeWithProviderId: IAzureResourceNodeWithProviderId,
+		public readonly resourceNodeWithProviderId: IAzureResourceNodeWithProviderId,
 		parent: TreeNode
 	) {
 		super();
@@ -28,6 +27,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
+		// It is a leaf node.
 		if (this.resourceNodeWithProviderId.resourceNode.treeItem.collapsibleState === TreeItemCollapsibleState.None) {
 			return <TreeNode[]>[];
 		}

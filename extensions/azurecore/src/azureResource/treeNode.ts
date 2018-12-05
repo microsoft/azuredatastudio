@@ -63,15 +63,15 @@ export abstract class TreeNode {
 		this._parent = node;
 	}
 
+	public abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
+	public abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
+
+	public abstract getNodeInfo(): sqlops.NodeInfo;
+
 	/**
 	 * The value to use for this node in the node path
 	 */
 	public abstract get nodePathValue(): string;
-
-	abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
-	abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
-
-	abstract getNodeInfo(): sqlops.NodeInfo;
 
 	private _parent: TreeNode = undefined;
 }

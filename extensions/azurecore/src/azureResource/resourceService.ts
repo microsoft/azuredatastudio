@@ -28,7 +28,7 @@ export class AzureResourceService {
 		this.doRegisterResourceProvider(resourceProvider);
 	}
 
-	public async getRootChildren(resourceProviderId: string, account: Account, subscription: azureResource.AzureResourceSubscription, tenatId): Promise<IAzureResourceNodeWithProviderId[]> {
+	public async getRootChildren(resourceProviderId: string, account: Account, subscription: azureResource.AzureResourceSubscription, tenatId: string): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		const resourceProvider = this._resourceProviders[resourceProviderId];
@@ -59,7 +59,9 @@ export class AzureResourceService {
 		}
 
 		const treeDataProvider = this._treeDataProviders[resourceProviderId];
-		return (await treeDataProvider.getChildren(element)).map((child) => <IAzureResourceNodeWithProviderId>{
+		const children = await treeDataProvider.getChildren(element);
+
+		return children.map((child) => <IAzureResourceNodeWithProviderId>{
 			resourceProviderId: resourceProviderId,
 			resourceNode: child
 		});

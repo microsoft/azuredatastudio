@@ -16,7 +16,7 @@ export interface IAzureResourceAccountService {
 }
 
 export interface IAzureResourceSubscriptionService {
-	getSubscriptions(account: Account, credentials: ServiceClientCredentials[]): Promise<azureResource.AzureResourceSubscription[]>;
+	getSubscriptions(account: Account, credential: ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]>;
 }
 
 export interface IAzureResourceSubscriptionFilterService {

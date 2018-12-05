@@ -6,11 +6,11 @@
 'use strict';
 
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
-import { TreeNode } from '../treeNode';
 import { setInterval, clearInterval } from 'timers';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { TreeNode } from '../treeNode';
 import { AzureResourceServicePool } from '../servicePool';
 import { AzureResourceAccountTreeNode } from './accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
@@ -18,6 +18,7 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
+import { treeLocalizationIdPrefix } from './constants';
 
 export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -45,7 +46,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 				}
 			}, AzureResourceTreeProvider.loadingTimerInterval);
 
-			return [AzureResourceMessageTreeNode.create(AzureResourceTreeProvider.loading, undefined)];
+			return [AzureResourceMessageTreeNode.create(AzureResourceTreeProvider.loadingLabel, undefined)];
 		}
 
 		try {
@@ -88,6 +89,6 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 	private _loadingTimer: NodeJS.Timer = undefined;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
-	private static readonly loading = localize('azureResource.tree.treeProvider.loading', 'Loading ...');
+	private static readonly loadingLabel = localize(`${treeLocalizationIdPrefix}.treeProvider.loadingLabel`, 'Loading ...');
 	private static readonly loadingTimerInterval = 5000;
 }

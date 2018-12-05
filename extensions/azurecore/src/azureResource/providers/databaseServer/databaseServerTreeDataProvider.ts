@@ -18,10 +18,13 @@ import { ApiWrapper } from '../../../apiWrapper';
 
 export class AzureResourceDatabaseServerTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
 	public constructor(
-		public databaseServerService: IAzureResourceDatabaseServerService,
-		public apiWrapper: ApiWrapper,
-		public extensionContext: ExtensionContext
+		databaseServerService: IAzureResourceDatabaseServerService,
+		apiWrapper: ApiWrapper,
+		extensionContext: ExtensionContext
 	) {
+		this._databaseServerService = databaseServerService;
+		this._apiWrapper = apiWrapper;
+		this._extensionContext = extensionContext;
 	}
 
 	public getTreeItem(element: azureResource.IAzureResourceNode): TreeItem | Thenable<TreeItem> {
@@ -33,10 +36,10 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 			return [this.createContainerNode()];
 		}
 
-		const tokens = await this.apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
+		const tokens = await this._apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
 		const credential = new TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
-		const databaseServers: AzureResourceDatabaseServer[] = (await this.databaseServerService.getDatabaseServers(element.subscription, credential)) || <AzureResourceDatabaseServer[]>[];
+		const databaseServers: AzureResourceDatabaseServer[] = (await this._databaseServerService.getDatabaseServers(element.subscription, credential)) || <AzureResourceDatabaseServer[]>[];
 
 		return databaseServers.map((databaseServer) => <IAzureResourceDatabaseServerNode>{
 			account: element.account,
@@ -47,8 +50,8 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 				id: `databaseServer_${databaseServer.name}`,
 				label: databaseServer.name,
 				iconPath: {
-					dark: this.extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
-					light: this.extensionContext.asAbsolutePath('resources/light/sql_server.svg')
+					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_server_inverse.svg'),
+					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.None,
 				contextValue: AzureResourceItemType.databaseServer
@@ -65,14 +68,18 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 				id: AzureResourceDatabaseServerTreeDataProvider.containerId,
 				label: AzureResourceDatabaseServerTreeDataProvider.containerLabel,
 				iconPath: {
-					dark: this.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this.extensionContext.asAbsolutePath('resources/light/folder.svg')
+					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
 				contextValue: AzureResourceItemType.databaseServerContainer
 			}
-		}
+		};
 	}
+
+	private _databaseServerService: IAzureResourceDatabaseServerService = undefined;
+	private _apiWrapper: ApiWrapper = undefined;
+	private _extensionContext: ExtensionContext = undefined;
 
 	private static readonly idPrefix = 'azure.resource.providers.databaseServer.treeDataProvider';
 

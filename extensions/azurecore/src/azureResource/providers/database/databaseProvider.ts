@@ -14,17 +14,24 @@ import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvide
 
 export class AzureResourceDatabaseProvider implements azureResource.IAzureResourceProvider {
 	public constructor(
-		public databaseService: IAzureResourceDatabaseService,
-		public apiWrapper: ApiWrapper,
-		public extensionContext: ExtensionContext
+		databaseService: IAzureResourceDatabaseService,
+		apiWrapper: ApiWrapper,
+		extensionContext: ExtensionContext
 	) {
+		this._databaseService = databaseService;
+		this._apiWrapper = apiWrapper;
+		this._extensionContext = extensionContext;
 	}
 
 	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new AzureResourceDatabaseTreeDataProvider(this.databaseService, this.apiWrapper, this.extensionContext);
+		return new AzureResourceDatabaseTreeDataProvider(this._databaseService, this._apiWrapper, this._extensionContext);
 	}
 
 	public get providerId(): string {
 		return 'azure.resource.providers.database';
 	}
+
+	private _databaseService: IAzureResourceDatabaseService = undefined;
+	private _apiWrapper: ApiWrapper = undefined;
+	private _extensionContext: ExtensionContext = undefined;
 }

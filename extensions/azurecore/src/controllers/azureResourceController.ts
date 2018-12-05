@@ -38,7 +38,9 @@ export default class AzureResourceController extends ControllerBase {
 		servicePool.accountService.onDidChangeAccounts((e: DidChangeAccountsParams) => { azureResourceTree.notifyNodeChanged(undefined); });
 
 		registerAzureResourceCommands(azureResourceTree);
+
 		registerAzureResourceDatabaseServerCommands();
+
 		registerAzureResourceDatabaseCommands();
 
 		return Promise.resolve(true);

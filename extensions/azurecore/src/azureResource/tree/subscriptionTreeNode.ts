@@ -7,10 +7,10 @@
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Account, NodeInfo, azureResource } from 'sqlops';
-import { TreeNode } from '../treeNode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { TreeNode } from '../treeNode';
 import { IAzureResourceNodeWithProviderId } from '../interfaces';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType } from '../constants';
@@ -20,11 +20,10 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { AzureResourceService } from '../resourceService';
 import { AzureResourceResourceTreeNode } from '../resourceTreeNode';
-import { AzureResourceServicePool } from '../servicePool';
 
 export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
-		public account: Account,
+		public readonly account: Account,
 		public readonly subscription: azureResource.AzureResourceSubscription,
 		public readonly tenatId: string,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
@@ -32,7 +31,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 	) {
 		super(treeChangeHandler, parent);
 
-		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}`;
+		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}.tenant_${this.tenatId}`;
 		this.setCacheKey(`${this._id}.resources`);
 	}
 
@@ -47,7 +46,7 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 			}
 
 			if (children.length === 0) {
-				return [AzureResourceMessageTreeNode.create(AzureResourceSubscriptionTreeNode.noResources, this)];
+				return [AzureResourceMessageTreeNode.create(AzureResourceSubscriptionTreeNode.noResourcesLabel, this)];
 			} else {
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
@@ -90,5 +89,5 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 
 	private _id: string = undefined;
 
-	private static readonly noResources = localize(`${treeLocalizationIdPrefix}.subscriptionTreeNode.noResources`, 'No Resources found.');
+	private static readonly noResourcesLabel = localize(`${treeLocalizationIdPrefix}.subscriptionTreeNode.noResourcesLabel`, 'No Resources found.');
 }

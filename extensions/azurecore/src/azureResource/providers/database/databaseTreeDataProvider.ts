@@ -18,10 +18,13 @@ import { ApiWrapper } from '../../../apiWrapper';
 
 export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
 	public constructor(
-		public databaseService: IAzureResourceDatabaseService,
-		public apiWrapper: ApiWrapper,
-		public extensionContext: ExtensionContext
+		databaseService: IAzureResourceDatabaseService,
+		apiWrapper: ApiWrapper,
+		extensionContext: ExtensionContext
 	) {
+		this._databaseService = databaseService;
+		this._apiWrapper = apiWrapper;
+		this._extensionContext = extensionContext;
 	}
 
 	public getTreeItem(element: azureResource.IAzureResourceNode): TreeItem | Thenable<TreeItem> {
@@ -33,10 +36,10 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 			return [this.createContainerNode()];
 		}
 
-		const tokens = await this.apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
+		const tokens = await this._apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
 		const credential = new TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
 
-		const databases: AzureResourceDatabase[] = (await this.databaseService.getDatabases(element.subscription, credential)) || <AzureResourceDatabase[]>[];
+		const databases: AzureResourceDatabase[] = (await this._databaseService.getDatabases(element.subscription, credential)) || <AzureResourceDatabase[]>[];
 
 		return databases.map((database) => <IAzureResourceDatabaseNode>{
 			account: element.account,
@@ -47,8 +50,8 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 				id: `databaseServer_${database.serverFullName}.database_${database.name}`,
 				label: `${database.name} (${database.serverName})`,
 				iconPath: {
-					dark: this.extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
-					light: this.extensionContext.asAbsolutePath('resources/light/sql_database.svg')
+					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
+					light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.None,
 				contextValue: AzureResourceItemType.database
@@ -65,14 +68,18 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 				id: AzureResourceDatabaseTreeDataProvider.containerId,
 				label: AzureResourceDatabaseTreeDataProvider.containerLabel,
 				iconPath: {
-					dark: this.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-					light: this.extensionContext.asAbsolutePath('resources/light/folder.svg')
+					dark: this._extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
+					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
 				contextValue: AzureResourceItemType.databaseContainer
 			}
-		}
+		};
 	}
+
+	private _databaseService: IAzureResourceDatabaseService = undefined;
+	private _apiWrapper: ApiWrapper = undefined;
+	private _extensionContext: ExtensionContext = undefined;
 
 	private static readonly idPrefix = 'azure.resource.providers.database.treeDataProvider';
 

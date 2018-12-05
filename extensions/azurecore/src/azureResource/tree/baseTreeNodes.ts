@@ -6,7 +6,6 @@
 'use strict';
 
 import { TreeNode } from '../treeNode';
-
 import { AzureResourceServicePool } from '../servicePool';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 

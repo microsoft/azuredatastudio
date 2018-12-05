@@ -11,8 +11,9 @@ import { IAzureResourceCacheService } from '../interfaces';
 
 export class AzureResourceCacheService implements IAzureResourceCacheService {
 	public constructor(
-		public readonly context: ExtensionContext
+		context: ExtensionContext
 	) {
+		this._context = context;
 	}
 
 	public generateKey(id: string): string {
@@ -20,12 +21,14 @@ export class AzureResourceCacheService implements IAzureResourceCacheService {
     }
 
     public get<T>(key: string): T | undefined {
-		return this.context.workspaceState.get(key);
+		return this._context.workspaceState.get(key);
 	}
 
 	public update<T>(key: string, value: T): void {
-		this.context.workspaceState.update(key, value);
+		this._context.workspaceState.update(key, value);
 	}
+
+	private _context: ExtensionContext = undefined;
 
 	private static readonly cacheKeyPrefix = 'azure.resource.cache';
 }
