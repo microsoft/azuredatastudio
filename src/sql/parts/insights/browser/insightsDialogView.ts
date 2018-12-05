@@ -8,7 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/common/theme/styler';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -209,10 +209,12 @@ export class InsightsDialogView extends Modal {
 		this._bottomTableData = new TableDataView();
 		let topTableView = this._instantiationService.createInstance(InsightTableView, this._topColumns, this._topTableData, { forceFitColumns: true }, { id: 'insights.top', title: itemsHeaderTitle, ariaHeaderLabel: itemsHeaderTitle }) as InsightTableView<ListResource>;
 		topTableView.render();
+		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
 		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle, ariaHeaderLabel: itemsDetailHeaderTitle}) as InsightTableView<ListResource>;
 		bottomTableView.render();
+		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;
 		this._bottomTable.setSelectionModel(new RowSelectionModel<ListResource>());
 
