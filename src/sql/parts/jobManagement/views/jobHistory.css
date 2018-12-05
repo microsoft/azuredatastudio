@@ -177,17 +177,17 @@ table.step-list tr.step-row td {
 }
 
 .history-details {
-	height: 100%;
+	flex: 1 1 auto;
 	display: flex;
 }
 
 .history-details > .job-steps {
-	display: block;
+	flex: 1 1 auto;
+	display: flex;
 	border-left: 3px solid #f4f4f4;
 	padding-left: 10px;
-	height: 100%;
-	width: 90%;
-	overflow-y: scroll;
+	flex-direction: column;
+	width: 100%;
 }
 
 .vs-dark .history-details > .job-steps {
@@ -241,13 +241,22 @@ table.step-list tr.step-row td {
 	width: 140px;
 }
 
-.steps-tree .monaco-tree .monaco-tree-row {
-	white-space: normal;
-	min-height: 40px !important;
+.step-table {
+	flex: 1 1 auto;
 }
 
-jobhistory-component .jobhistory-heading-container {
-	display: -webkit-box;
+.prev-run-list-container {
+	display: flex;
+	flex-direction: column;
+}
+
+jobhistory-component {
+	display: flex;
+	flex-direction: column;
+}
+
+jobhistory-component > .jobhistory-heading-container {
+	display: flex;
 }
 
 jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
