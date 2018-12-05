@@ -56,15 +56,6 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	ngAfterContentChecked() {
 		if (this._jobHistoryComponent.stepRows.length > 0) {
 			this._treeDataSource.data = this._jobHistoryComponent.stepRows;
-			if (!this._tree) {
-				this._tree = new Tree(this._tableContainer.nativeElement, {
-					controller: this._treeController,
-					dataSource: this._treeDataSource,
-					filter: this._treeFilter,
-					renderer: this._treeRenderer
-				}, { verticalScrollMode: ScrollbarVisibility.Visible });
-				this._register(attachListStyler(this._tree, this.themeService));
-			}
 			this._tree.setInput(new JobStepsViewModel());
 			this.layout();
 			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
@@ -78,7 +69,7 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		}, {verticalScrollMode: ScrollbarVisibility.Visible});
+		}, {verticalScrollMode: ScrollbarVisibility.Visible, horizontalScrollMode: ScrollbarVisibility.Visible });
 		this.layout();
 		this._register(attachListStyler(this._tree, this.themeService));
 	}
@@ -88,9 +79,8 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 
 	public layout() {
 		if (this._tree) {
-			let treeWidth = dom.getContentWidth(this._tableContainer.nativeElement);
 			let treeheight = dom.getContentHeight(this._tableContainer.nativeElement);
-			this._tree.layout(treeheight, treeWidth);
+			this._tree.layout(treeheight);
 		}
 	}
 }
