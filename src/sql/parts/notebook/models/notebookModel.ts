@@ -22,6 +22,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
+import URI from 'vs/base/common/uri';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -94,6 +95,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get notebookManager(): INotebookManager {
 		return this.notebookOptions.notebookManager;
+	}
+
+	public get notebookUri() : URI {
+		return this.notebookOptions.notebookUri;
+	}
+	public set notebookUri(value : URI) {
+		this.notebookOptions.notebookUri = value;
 	}
 
 	public get hasServerManager(): boolean {

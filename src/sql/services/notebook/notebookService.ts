@@ -20,7 +20,7 @@ export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
-export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
+export const DEFAULT_NOTEBOOK_FILETYPE = 'ipynb';
 
 export interface INotebookService {
 	_serviceBrand: any;
