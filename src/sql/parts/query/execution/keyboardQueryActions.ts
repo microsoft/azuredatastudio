@@ -23,7 +23,7 @@ import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { RunQueryAction, CancelQueryAction } from 'sql/parts/query/execution/queryActions';
+import { CancelQueryAction } from 'sql/parts/query/execution/queryActions';
 
 const singleQuote = '\'';
 
@@ -157,34 +157,6 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 		if (editor instanceof QueryEditor) {
 			let selection = (<ICodeEditor>editor.getControl()).getSelection();
 			editor.input.runQuery(selection, { displayActualQueryPlan: true });
-		}
-		return TPromise.as(null);
-	}
-}
-
-/**
- * Locates the active editor and calls cancelQuery() on the editor if it is a QueryEditor.
- */
-export class CancelQueryKeyboardAction extends CancelQueryAction {
-
-	public static ID = 'cancelQueryKeyboardAction';
-	public static LABEL = nls.localize('cancelQueryKeyboardAction', 'Cancel Query');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private editorService: IEditorService
-	) {
-		super(id, label);
-	}
-
-	public run(): TPromise<void> {
-		let editor = this.editorService.activeControl;
-		if (editor instanceof QueryEditor) {
-			return super.run({ input: editor.input, editor: editor.getControl() as ICodeEditor });
-		}
-		if (editor instanceof EditDataEditor) {
-			editor.cancelQuery();
 		}
 		return TPromise.as(null);
 	}

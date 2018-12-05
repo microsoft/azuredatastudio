@@ -8,28 +8,15 @@ import 'vs/css!sql/media/overwriteVsIcons';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
-import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryResultsEditor } from 'sql/parts/query/editor/queryResultsEditor';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import * as queryContext from 'sql/parts/query/common/queryContext';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import {
-	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, CancelQueryKeyboardAction
-} from 'sql/parts/query/execution/keyboardQueryActions';
-import * as gridActions from 'sql/parts/grid/views/gridActions';
-import * as gridCommands from 'sql/parts/grid/views/gridCommands';
 import { QueryPlanEditor } from 'sql/parts/queryPlan/queryPlanEditor';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
