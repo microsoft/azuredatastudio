@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
 import { AzureResourceItemType } from '../constants';
-import { treeLocalizationIdPrefix } from '../../../out/azureResource/tree/constants';
+import { treeLocalizationIdPrefix } from './constants';
 
 export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {

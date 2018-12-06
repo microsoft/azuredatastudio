@@ -79,6 +79,14 @@ export class AzureResourceService {
 		return treeDataProvider.getTreeItem(element);
 	}
 
+	public get areResourceProvidersLoaded(): boolean {
+		return this._areResourceProvidersLoaded;
+	}
+
+	public set areResourceProvidersLoaded(value: boolean) {
+		this._areResourceProvidersLoaded = value;
+	}
+
 	private async ensureResourceProvidersRegistered(): Promise<void> {
 		if (this._areResourceProvidersLoaded) {
 			return;
