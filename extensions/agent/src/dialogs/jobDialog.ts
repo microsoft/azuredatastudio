@@ -47,7 +47,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete Step');
 	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', 'Move Step Up');
 	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Down');
-	private readonly StartStepDropdownString: string = localize('jobDialog.startStepAt', 'Start step at');
+	private readonly StartStepDropdownString: string = localize('jobDialog.startStepAt', 'Start step');
 
 	// Notifications tab strings
 	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
@@ -234,7 +234,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.moveStepUpButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepUpButtonString,
-					width: 100
+					width: 120
 				}).component();
 
 			this.moveStepDownButton = view.modelBuilder.button()
@@ -377,15 +377,19 @@ export class JobDialog extends AgentDialog<JobData>  {
 				}
 			});
 			let stepMoveContainer = this.createRowContainer(view).withItems([this.startStepDropdown, this.moveStepUpButton, this.moveStepDownButton]).component();
+			let stepsDialogContainer = this.createRowContainer(view).withItems([this.newStepButton, this.editStepButton, this.deleteStepButton]).component();
 			let formModel = view.modelBuilder.formContainer().withFormItems([
 				{
 					component: this.stepsTable,
-					title: this.JobStepsTopLabelString,
-					actions: [this.newStepButton, this.editStepButton, this.deleteStepButton]
+					title: this.JobStepsTopLabelString
 				},
 				{
 					component: stepMoveContainer,
-					title: 'Start Step'
+					title: this.StartStepDropdownString
+				},
+				{
+					component: stepsDialogContainer,
+					title: ''
 				}
 			]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
