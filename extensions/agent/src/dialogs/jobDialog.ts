@@ -248,7 +248,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.newStepButton = view.modelBuilder.button().withProperties({
 				label: this.NewStepButtonString,
-				width: 150
+				width: 140
 			}).component();
 
 			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
@@ -273,12 +273,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.editStepButton = view.modelBuilder.button().withProperties({
 				label: this.EditStepButtonString,
-				width: 150
+				width: 140
 			}).component();
 
 			this.deleteStepButton = view.modelBuilder.button().withProperties({
 				label: this.DeleteStepButtonString,
-				width: 150
+				width: 140
 			}).component();
 
 			this.stepsTable.enabled = false;
@@ -297,7 +297,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 				this.stepsTable.data = this.convertStepsToData(this.steps);
 				this.steps[previousRow].id = previousStepId;
 				this.steps[rowNumber].id = currentStepId;
-				this.startStepDropdownValues = [];
 			});
 
 			this.moveStepDownButton.onDidClick(() => {
