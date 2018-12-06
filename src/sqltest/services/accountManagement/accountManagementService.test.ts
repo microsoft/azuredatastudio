@@ -77,6 +77,7 @@ suite('Account Management Service Tests:', () => {
 			metadata: hasAccountProvider
 		};
 
+		console.log('account added');
 		// If: I update an account that doesn't exist
 		state.accountManagementService.accountUpdated(account)
 			.then(() => {
@@ -109,7 +110,7 @@ suite('Account Management Service Tests:', () => {
 			provider: mockProvider.object,
 			metadata: hasAccountProvider
 		};
-
+		console.log('account modified');
 		// If: I update an account that exists
 		state.accountManagementService.accountUpdated(account)
 			.then(() => {

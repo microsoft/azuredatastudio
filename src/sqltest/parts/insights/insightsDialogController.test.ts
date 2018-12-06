@@ -35,7 +35,7 @@ suite('Insights Dialog Controller Tests', () => {
 		let { runner, complete } = getPrimedQueryRunner(testData, testColumns);
 
 		let instMoq = Mock.ofType(InstantiationService, MockBehavior.Strict);
-		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny(), undefined))
+		instMoq.setup(x => x.createInstance(It.isValue(QueryRunner), It.isAny()))
 			.returns(() => runner);
 
 		let connMoq = Mock.ofType(ConnectionManagementService, MockBehavior.Strict, {}, {});
