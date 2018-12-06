@@ -99,10 +99,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				(<HTMLElement>this.output.nativeElement).innerHTML = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
+				let html;
 				// todo: pass in the notebook filename instead of undefined value
 				this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
+					html = htmlcontent;
 					let outputElement = <HTMLElement>this.output.nativeElement;
-					outputElement.innerHTML = htmlcontent;
+					if (htmlcontent && htmlcontent.includes('<a href')) {
+						html = htmlcontent.replace(/(a href=".*")(>)/g, function(a, b, c) {
+							let ret = '';
+							if (b !== '') {
+								ret = b + ' onclick="window.open(this.href)"';
+							}
+							if (c !== '') {
+								ret = ret + c;
+							}
+							return ret;
+						});
+					}
+					outputElement.innerHTML = html;
 				});
 			}
 		}
