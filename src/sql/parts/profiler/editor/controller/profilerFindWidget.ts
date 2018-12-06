@@ -308,8 +308,6 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	// ----- Public
 
 	public focusFindInput(): void {
-		this._findInput.select();
-		// Edge browser requires focus() in addition to select()
 		this._findInput.focus();
 	}
 

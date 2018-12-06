@@ -9,7 +9,7 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import * as nls from 'vs/nls';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { IConnectionManagementService, IConnectionDialogService} from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -55,10 +55,10 @@ CommandsRegistry.registerCommand({
 
 		let promise;
 		if (connectionProfile) {
-			promise = connectionService.connectIfNotConnected(connectionProfile);
+			promise = connectionService.connectIfNotConnected(connectionProfile, 'connection', true);
 		} else {
 			// if still no luck, we will open the Connection dialog and let user connect to a server
-			promise = connectionDialogService.openDialogAndWait(connectionService, { connectionType: 1, providers: [mssqlProviderName] }).then((profile) => {
+			promise = connectionDialogService.openDialogAndWait(connectionService, { connectionType: 0, showDashboard: false, providers: [mssqlProviderName] }).then((profile) => {
 				connectionProfile = profile as ConnectionProfile;
 			});
 		}
