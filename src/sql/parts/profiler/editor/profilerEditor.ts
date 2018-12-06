@@ -557,6 +557,7 @@ export class ProfilerEditor extends BaseEditor {
 	}
 
 	public focus() {
+		this._profilerEditorContextKey.set(true);
 		super.focus();
 		let savedViewState = this._savedTableViewStates.get(this.input);
 		if (savedViewState) {
