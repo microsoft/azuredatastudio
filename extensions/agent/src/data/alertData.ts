@@ -69,7 +69,7 @@ export class AlertData implements IAgentDialogData {
 			this.eventDescriptionKeyword = alertInfo.eventDescriptionKeyword;
 			this.eventSource = alertInfo.eventSource;
 			this.hasNotification = alertInfo.hasNotification;
-			this.includeEventDescription = alertInfo.includeEventDescription.toString();
+			this.includeEventDescription = alertInfo.includeEventDescription ? alertInfo.includeEventDescription.toString() : null;
 			this.isEnabled = alertInfo.isEnabled;
 			this.jobId = alertInfo.jobId;
 			this.lastOccurrenceDate = alertInfo.lastOccurrenceDate;
@@ -82,7 +82,7 @@ export class AlertData implements IAgentDialogData {
 			this.databaseName = alertInfo.databaseName;
 			this.countResetDate = alertInfo.countResetDate;
 			this.categoryName = alertInfo.categoryName;
-			this.alertType = alertInfo.alertType.toString();
+			this.alertType = alertInfo.alertType ? alertInfo.alertType.toString() : null;
 			this.wmiEventNamespace = alertInfo.wmiEventNamespace;
 			this.wmiEventQuery = alertInfo.wmiEventQuery;
 		}
