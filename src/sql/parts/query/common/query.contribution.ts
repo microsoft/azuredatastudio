@@ -81,14 +81,14 @@ const editDataResultsEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
-	/*
+/*
 actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		ParseSyntaxAction,
-		ParseSyntaxAction.ID,
-		ParseSyntaxAction.LABEL
-	),
+new SyncActionDescriptor(
+	ParseSyntaxAction,
+	ParseSyntaxAction.ID,
 	ParseSyntaxAction.LABEL
+),
+ParseSyntaxAction.LABEL
 );
 */
 
