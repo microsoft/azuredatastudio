@@ -1299,15 +1299,16 @@ declare module 'sqlops' {
 		lastRun: string;
 		nextRun: string;
 		jobId: string;
-		EmailLevel: JobCompletionActionCondition;
-		PageLevel: JobCompletionActionCondition;
-		EventLogLevel: JobCompletionActionCondition;
-		DeleteLevel: JobCompletionActionCondition;
-		OperatorToEmail: string;
-		OperatorToPage: string;
-		JobSteps: AgentJobStepInfo[];
-		JobSchedules: AgentJobScheduleInfo[];
-		Alerts: AgentAlertInfo[];
+		startStepId: number;
+		emailLevel: JobCompletionActionCondition;
+		pageLevel: JobCompletionActionCondition;
+		eventLogLevel: JobCompletionActionCondition;
+		deleteLevel: JobCompletionActionCondition;
+		operatorToEmail: string;
+		operatorToPage: string;
+		jobSteps: AgentJobStepInfo[];
+		jobSchedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface AgentJobScheduleInfo {

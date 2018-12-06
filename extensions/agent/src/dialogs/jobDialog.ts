@@ -42,11 +42,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly StepsTable_TypeColumnString: string = localize('jobDialog.type', 'Type');
 	private readonly StepsTable_SuccessColumnString: string = localize('jobDialog.onSuccess', 'On Success');
 	private readonly StepsTable_FailureColumnString: string = localize('jobDialog.onFailure', 'On Failure');
-	private readonly NewStepButtonString: string = localize('jobDialog.new', 'New...');
-	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit');
-	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete');
+	private readonly NewStepButtonString: string = localize('jobDialog.new', 'New Step');
+	private readonly EditStepButtonString: string = localize('jobDialog.edit', 'Edit Step');
+	private readonly DeleteStepButtonString: string = localize('jobDialog.delete', 'Delete Step');
 	private readonly MoveStepUpButtonString: string = localize('jobDialog.moveUp', 'Move Step Up');
 	private readonly MoveStepDownButtonString: string = localize('jobDialog.moveDown', 'Move Step Down');
+	private readonly StartStepDropdownString: string = localize('jobDialog.startStepAt', 'Start step at');
 
 	// Notifications tab strings
 	private readonly NotificationsTabTopLabelString: string = localize('jobDialog.notificationsTabTop', 'Actions to perform when the job completes');
@@ -101,6 +102,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private eventLogConditionDropdown: sqlops.DropDownComponent;
 	private deleteJobCheckBox: sqlops.CheckBoxComponent;
 	private deleteJobConditionDropdown: sqlops.DropDownComponent;
+	private startStepDropdown: sqlops.DropDownComponent;
 
 	// Schedule tab controls
 	private schedulesTable: sqlops.TableComponent;
@@ -115,6 +117,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private steps: sqlops.AgentJobStepInfo[];
 	private schedules: sqlops.AgentJobScheduleInfo[];
 	private alerts: sqlops.AgentAlertInfo[] = [];
+	private startStepDropdownValues: sqlops.CategoryValue[] = [];
 
 	constructor(ownerUri: string, jobInfo: sqlops.AgentJobInfo = undefined) {
 		super(
@@ -218,13 +221,20 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.StepsTable_FailureColumnString
 					],
 					data: data,
-					height: 750
+					height: 650
 				}).component();
+
+			this.startStepDropdown = view.modelBuilder.dropDown().withProperties({ width: 180 }).component();
+			this.startStepDropdown.enabled = this.steps.length > 1 ? true : false;
+			this.steps.forEach((step) => {
+				this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+			});
+			this.startStepDropdown.values = this.startStepDropdownValues;
 
 			this.moveStepUpButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepUpButtonString,
-					width: 80
+					width: 100
 				}).component();
 
 			this.moveStepDownButton = view.modelBuilder.button()
@@ -238,7 +248,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.newStepButton = view.modelBuilder.button().withProperties({
 				label: this.NewStepButtonString,
-				width: 80
+				width: 150
 			}).component();
 
 			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
@@ -246,6 +256,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 				let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
 				this.steps.push(stepInfo);
 				this.stepsTable.data = this.convertStepsToData(this.steps);
+				this.startStepDropdownValues = [];
+				this.steps.forEach((step) => {
+					this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+				});
+				this.startStepDropdown.values = this.startStepDropdownValues;
 			});
 			this.newStepButton.onDidClick((e)=>{
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
@@ -258,12 +273,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.editStepButton = view.modelBuilder.button().withProperties({
 				label: this.EditStepButtonString,
-				width: 80
+				width: 150
 			}).component();
 
 			this.deleteStepButton = view.modelBuilder.button().withProperties({
 				label: this.DeleteStepButtonString,
-				width: 80
+				width: 150
 			}).component();
 
 			this.stepsTable.enabled = false;
@@ -271,41 +286,32 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.deleteStepButton.enabled = false;
 
 			this.moveStepUpButton.onDidClick(() => {
-                if (this.stepsTable.selectedRows.length === 1) {
-                    let rowNumber = this.stepsTable.selectedRows[0];
-                    // if it's not the first step
-                    if (rowNumber !== 0) {
-                        let previousRow = rowNumber - 1;
-                        let previousStep = this.steps[previousRow];
-                        let previousStepId = this.steps[previousRow].id;
-                        let currentStep = this.steps[rowNumber];
-                        let currentStepId = this.steps[rowNumber].id;
-                        this.steps[previousRow] = currentStep;
-                        this.steps[rowNumber] = previousStep;
-                        this.stepsTable.data = this.convertStepsToData(this.steps);
-                        this.steps[previousRow].id = previousStepId;
-                        this.steps[rowNumber].id = currentStepId;
-                    }
-                }
+                let rowNumber = this.stepsTable.selectedRows[0];
+				let previousRow = rowNumber - 1;
+				let previousStep = this.steps[previousRow];
+				let previousStepId = this.steps[previousRow].id;
+				let currentStep = this.steps[rowNumber];
+				let currentStepId = this.steps[rowNumber].id;
+				this.steps[previousRow] = currentStep;
+				this.steps[rowNumber] = previousStep;
+				this.stepsTable.data = this.convertStepsToData(this.steps);
+				this.steps[previousRow].id = previousStepId;
+				this.steps[rowNumber].id = currentStepId;
+				this.startStepDropdownValues = [];
 			});
 
 			this.moveStepDownButton.onDidClick(() => {
-				if (this.stepsTable.selectedRows.length === 1) {
-					let rowNumber = this.stepsTable.selectedRows[0];
-					// if it's not the last step
-					if (this.steps.length !== rowNumber + 1) {
-						let nextRow = rowNumber + 1;
-						let nextStep = this.steps[nextRow];
-						let nextStepId = this.steps[nextRow].id;
-						let currentStep = this.steps[rowNumber];
-						let currentStepId = this.steps[rowNumber].id;
-						this.steps[nextRow] = currentStep;
-						this.steps[rowNumber] = nextStep;
-						this.stepsTable.data = this.convertStepsToData(this.steps);
-						this.steps[nextRow].id = nextStepId;
-						this.steps[rowNumber].id = currentStepId;
-					}
-				}
+				let rowNumber = this.stepsTable.selectedRows[0];
+				let nextRow = rowNumber + 1;
+				let nextStep = this.steps[nextRow];
+				let nextStepId = this.steps[nextRow].id;
+				let currentStep = this.steps[rowNumber];
+				let currentStepId = this.steps[rowNumber].id;
+				this.steps[nextRow] = currentStep;
+				this.steps[rowNumber] = nextStep;
+				this.stepsTable.data = this.convertStepsToData(this.steps);
+				this.steps[nextRow].id = nextStepId;
+				this.steps[rowNumber].id = currentStepId;
 			});
 
 			this.editStepButton.onDidClick(() => {
@@ -321,6 +327,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 							}
 						}
 						this.stepsTable.data = this.convertStepsToData(this.steps);
+						this.startStepDropdownValues = [];
+						this.steps.forEach((step) => {
+							this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+						});
+						this.startStepDropdown.values = this.startStepDropdownValues;
+
 					});
 					editStepDialog.openDialog();
 				}
@@ -337,30 +349,48 @@ export class JobDialog extends AgentDialog<JobData>  {
 								delete steps[rowNumber];
 								let data = this.convertStepsToData(steps);
 								this.stepsTable.data = data;
+								this.startStepDropdownValues = [];
+								this.steps.forEach((step) => {
+									this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+								});
+								this.startStepDropdown.values = this.startStepDropdownValues;
 							}
 						});
 					});
 				}
 			});
 
-			this.stepsTable.onRowSelected(() => {
+			this.stepsTable.onRowSelected((row) => {
 				// only let edit or delete steps if there's
 				// one step selection
 				if (this.stepsTable.selectedRows.length === 1) {
-					this.moveStepUpButton.enabled = true;
-					this.moveStepDownButton.enabled = true;
+					let rowNumber = this.stepsTable.selectedRows[0];
+					// if it's not the last step
+					if (this.steps.length !== rowNumber + 1) {
+						this.moveStepDownButton.enabled = true;
+					}
+					// if it's not the first step
+					if (rowNumber !== 0) {
+						this.moveStepUpButton.enabled = true;
+					}
 					this.deleteStepButton.enabled = true;
 					this.editStepButton.enabled = true;
 				}
 			});
-
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
+			let stepMoveContainer = this.createRowContainer(view).withItems([this.startStepDropdown, this.moveStepUpButton, this.moveStepDownButton]).component();
+			let formModel = view.modelBuilder.formContainer().withFormItems([
+				{
 					component: this.stepsTable,
 					title: this.JobStepsTopLabelString,
-					actions: [this.moveStepUpButton, this.moveStepDownButton, this.newStepButton, this.editStepButton, this.deleteStepButton]
-				}]).withLayout({ width: '100%' }).component();
+					actions: [this.newStepButton, this.editStepButton, this.deleteStepButton]
+				},
+				{
+					component: stepMoveContainer,
+					title: 'Start Step'
+				}
+			]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
+			this.setConditionDropdownSelectedValue(this.startStepDropdown, this.model.startStepId);
 		});
 	}
 
@@ -623,6 +653,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
 		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
 		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
+		this.model.startStepId = +this.getDropdownValue(this.startStepDropdown);
 		if (!this.model.jobSteps) {
 			this.model.jobSteps = [];
 		}
