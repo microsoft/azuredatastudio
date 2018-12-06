@@ -15,6 +15,7 @@ import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -87,4 +88,5 @@ export interface INotebookEditor {
 	isActive(): boolean;
 	isVisible(): boolean;
 	save(): Promise<boolean>;
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 }

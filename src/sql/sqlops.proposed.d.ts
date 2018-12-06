@@ -1482,6 +1482,42 @@ declare module 'sqlops' {
 			 * will return false.
 			 */
 			save(): Thenable<boolean>;
+
+			/**
+			 * Ensure a cell range is completely contained in this document.
+			 *
+			 * @param range A cell range.
+			 * @return The given range or a new, adjusted range.
+			 */
+			validateCellRange(range: CellRange): CellRange;
+		}
+
+		/**
+		 * A cell range represents an ordered pair of two positions in a list of cells.
+		 * It is guaranteed that [start](#CellRange.start).isBeforeOrEqual([end](#CellRange.end))
+		 *
+		 * CellRange objects are __immutable__.
+		 */
+		export class CellRange {
+
+			/**
+			 * The start index. It is before or equal to [end](#CellRange.end).
+			 */
+			readonly start: number;
+
+			/**
+			 * The end index. It is after or equal to [start](#CellRange.start).
+			 */
+			readonly end: number;
+
+			/**
+			 * Create a new range from two positions. If `start` is not
+			 * before or equal to `end`, the values will be swapped.
+			 *
+			 * @param start A number.
+			 * @param end A number.
+			 */
+			constructor(start: number, end: number);
 		}
 
 		export interface NotebookEditor {
@@ -1495,6 +1531,19 @@ declare module 'sqlops' {
 			 * column is larger than three.
 			 */
 			viewColumn?: vscode.ViewColumn;
+
+			/**
+			 * Perform an edit on the document associated with this notebook editor.
+			 *
+			 * The given callback-function is invoked with an [edit-builder](#NotebookEditorEdit) which must
+			 * be used to make edits. Note that the edit-builder is only valid while the
+			 * callback executes.
+			 *
+			 * @param callback A function which can create edits using an [edit-builder](#NotebookEditorEdit).
+			 * @param options The undo/redo behavior around this edit. By default, undo stops will be created before and after this edit.
+			 * @return A promise that resolves with a value indicating if the edits could be applied.
+			 */
+			edit(callback: (editBuilder: NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {
@@ -1550,6 +1599,38 @@ declare module 'sqlops' {
 			 * event. Can be `undefined`.
 			 */
 			kind?: vscode.TextEditorSelectionChangeKind;
+		}
+
+		/**
+		 * A complex edit that will be applied in one transaction on a TextEditor.
+		 * This holds a description of the edits and if the edits are valid (i.e. no overlapping regions, document was not changed in the meantime, etc.)
+		 * they can be applied on a [document](#TextDocument) associated with a [text editor](#TextEditor).
+		 *
+		 */
+		export interface NotebookEditorEdit {
+			/**
+			 * Replace a cell range with a new cell.
+			 *
+			 * @param location The range this operation should remove.
+			 * @param value The new cell this operation should insert after removing `location`.
+			 */
+			replace(location: number | CellRange, value: ICellContents): void;
+
+			/**
+			 * Insert a cell (optionally) at a specific index. Any index outside of the length of the cells
+			 * will result in the cell being added at the end.
+			 *
+			 * @param index The position where the new text should be inserted.
+			 * @param value The new text this operation should insert.
+			 */
+			insertCell(value: ICellContents, index?: number): void;
+
+			/**
+			 * Delete a certain cell.
+			 *
+			 * @param index The index of the cell to remove.
+			 */
+			deleteCell(index: number): void;
 		}
 
 		/**
