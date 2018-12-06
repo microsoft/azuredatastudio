@@ -277,3 +277,7 @@ jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.action
 .hc-black jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
 	border-top: 3px solid #2b56f2;
 }
+
+jobhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row {
+	width: 96%;
+}
