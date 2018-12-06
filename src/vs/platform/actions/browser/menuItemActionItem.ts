@@ -19,8 +19,9 @@ import { createCSSRule } from 'vs/base/browser/dom';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { isWindows, isLinux } from 'vs/base/common/platform';
 
+// {{SQL CARBON EDIT}}
 // The alternative key on all platforms is alt. On windows we also support shift as an alternative key #44136
-class AlternativeKeyEmitter extends Emitter<boolean> {
+export class AlternativeKeyEmitter extends Emitter<boolean> {
 
 	private _subscriptions: IDisposable[] = [];
 	private _isPressed: boolean;

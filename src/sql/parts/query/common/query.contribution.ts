@@ -5,11 +5,17 @@
 
 'use strict';
 import 'vs/css!sql/media/overwriteVsIcons';
+import 'sql/parts/query/execution/queryActions';
+
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { localize } from 'vs/nls';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryResultsEditor } from 'sql/parts/query/editor/queryResultsEditor';
@@ -22,8 +28,7 @@ import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import * as Constants from 'sql/parts/query/common/constants';
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
-
-import 'sql/parts/query/execution/queryActions';
+import { RunQueryShortcutAction } from 'sql/parts/query/execution/keyboardQueryActions';
 
 // Editor
 const queryResultsEditorDescriptor = new EditorDescriptor(
@@ -76,69 +81,7 @@ const editDataResultsEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
 
-/*
-let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
-
-// Query Actions
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		RunQueryKeyboardAction,
-		RunQueryKeyboardAction.ID,
-		RunQueryKeyboardAction.LABEL,
-		{ primary: KeyCode.F5 }
-	),
-	RunQueryKeyboardAction.LABEL
-);
-
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		RunCurrentQueryKeyboardAction,
-		RunCurrentQueryKeyboardAction.ID,
-		RunCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.F5 }
-	),
-	RunCurrentQueryKeyboardAction.LABEL
-);
-
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		RunCurrentQueryWithActualPlanKeyboardAction,
-		RunCurrentQueryWithActualPlanKeyboardAction.ID,
-		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
-	),
-	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
-);
-
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		CancelQueryKeyboardAction,
-		CancelQueryKeyboardAction.ID,
-		CancelQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.Alt | KeyCode.PauseBreak }
-	),
-	CancelQueryKeyboardAction.LABEL
-);
-
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		RefreshIntellisenseKeyboardAction,
-		RefreshIntellisenseKeyboardAction.ID,
-		RefreshIntellisenseKeyboardAction.LABEL
-	),
-	RefreshIntellisenseKeyboardAction.LABEL
-);
-
-actionRegistry.registerWorkbenchAction(
-	new SyncActionDescriptor(
-		FocusOnCurrentQueryKeyboardAction,
-		FocusOnCurrentQueryKeyboardAction.ID,
-		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
-	),
-	FocusOnCurrentQueryKeyboardAction.LABEL
-);
-
+	/*
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		ParseSyntaxAction,
@@ -147,7 +90,9 @@ actionRegistry.registerWorkbenchAction(
 	),
 	ParseSyntaxAction.LABEL
 );
+*/
 
+/*
 // Grid actions
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
@@ -351,7 +296,7 @@ let registryProperties = {
 		'description': localize('mssql.intelliSense.lowerCaseSuggestions', 'Should IntelliSense suggestions be lowercase')
 	}
 };
-/*DisconnectAction
+
 // Setup keybindings
 let initialShortcuts = [
 	{ name: 'sp_help', primary: KeyMod.Alt + KeyCode.F2 },
@@ -369,7 +314,7 @@ for (let i = 0; i < 9; i++) {
 	KeybindingsRegistry.registerCommandAndKeybindingRule({
 		id: `workbench.action.query.shortcut${queryIndex}`,
 		weight: KeybindingWeight.WorkbenchContrib,
-		when: QueryEditorVisibleCondition,
+		when: EditorContextKeys.languageId.isEqualTo('sql'),
 		primary: defaultPrimary,
 		handler: accessor => {
 			accessor.get(IInstantiationService).createInstance(RunQueryShortcutAction).run(queryIndex);
@@ -383,7 +328,7 @@ for (let i = 0; i < 9; i++) {
 			queryIndex)
 	};
 }
-*/
+
 
 // Register the query-related configuration options
 let configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);

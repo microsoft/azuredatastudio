@@ -38,6 +38,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryEditorAction } from 'sql/parts/query/editor/queryEditorExtensions';
 import { QueryEditorContextKeys } from 'sql/parts/query/editor/queryEditorContextKeys';
+import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 
 export interface IQueryActionContext {
 	input: QueryInput;
@@ -93,9 +94,7 @@ export class RunQueryAction extends QueryEditorAction {
 /**
  * Cancel a query if it is actively running
  */
-const cancelQueryKb = platform.isWeb
-	? KeyMod.CtrlCmd | KeyCode.F5
-	: KeyCode.F5;
+const cancelQueryKb = KeyMod.Alt | KeyCode.PauseBreak;
 
 export class CancelQueryAction extends QueryEditorAction {
 	public static ID = 'editor.action.cancelQuery';
@@ -106,6 +105,10 @@ export class CancelQueryAction extends QueryEditorAction {
 			label: nls.localize('cancelQuery', 'Cancel Query'),
 			alias: 'Cancel Query',
 			precondition: QueryEditorContextKeys.isExecuting,
+			kbOpts: {
+				primary: cancelQueryKb,
+				weight: KeybindingWeight.EditorContrib
+			},
 			menuOpts: {
 				group: 'query',
 				order: 1.1,
@@ -153,6 +156,8 @@ export class EstimatedQueryPlanAction extends QueryEditorAction {
 	}
 }
 
+const actualPlanQueryKb = KeyMod.CtrlCmd | KeyCode.KEY_M;
+
 export class ActualQueryPlanAction extends QueryEditorAction {
 	public static ID = 'editor.action.actualQueryPlan';
 
@@ -162,6 +167,10 @@ export class ActualQueryPlanAction extends QueryEditorAction {
 			label: nls.localize('actualQueryPlan', 'Actual Query Plan'),
 			alias: 'Actual Query Plan',
 			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
+			kbOpts: {
+				primary: actualPlanQueryKb,
+				weight: KeybindingWeight.EditorContrib
+			},
 			menuOpts: {
 				group: 'query',
 				order: 1.1,
@@ -269,6 +278,32 @@ export class ChangeConnectionAction extends QueryEditorAction {
 }
 
 /**
+ * Refresh the IntelliSense cache
+ */
+export class RefreshIntellisenseKeyboardAction extends QueryEditorAction {
+	public static ID = 'refreshIntellisenseKeyboardAction';
+
+	constructor() {
+		super({
+			id: RefreshIntellisenseKeyboardAction.ID,
+			label: nls.localize('refreshIntellisenseCache', 'Refresh IntelliSense Cache'),
+			alias: 'Refresh Intellisense Cache',
+			precondition: EditorContextKeys.languageId.isEqualTo('sql'),
+			menuOpts: {
+				group: 'query',
+				order: 1.1
+			}
+		});
+	}
+
+	public run(accessor: ServicesAccessor): TPromise<void> {
+		const cms = accessor.get(IConnectionManagementService);
+		const input = accessor.get(IEditorService).activeEditor as QueryInput;
+		return TPromise.wrap(cms.rebuildIntelliSenseCache(input.uri));
+	}
+}
+
+/**
  * Action class that is tied with ListDatabasesActionItem.
  */
 export class ListDatabasesAction extends QueryEditorAction {
@@ -277,7 +312,7 @@ export class ListDatabasesAction extends QueryEditorAction {
 
 	constructor() {
 		super({
-			id: ChangeConnectionAction.ID,
+			id: ListDatabasesAction.ID,
 			label: nls.localize('listDatabase', 'List Database'),
 			alias: 'List Database',
 			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
@@ -527,3 +562,4 @@ registerEditorAction(DisconnectAction);
 registerEditorAction(ConnectAction);
 registerEditorAction(ChangeConnectionAction);
 registerEditorAction(ListDatabasesAction);
+registerEditorAction(RefreshIntellisenseKeyboardAction);

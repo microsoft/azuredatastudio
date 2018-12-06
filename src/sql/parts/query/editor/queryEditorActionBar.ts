@@ -13,13 +13,14 @@ import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { fillInActionBarActions, createActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
+import { fillInActionBarActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IAction, Action, IActionItem } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { prepareActions } from 'vs/workbench/browser/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
+import { createActionItem } from 'sql/platform/actions/browser/menuItemActionItem';
 
 export class QueryEditorActionBar extends Disposable {
 
@@ -67,7 +68,7 @@ export class QueryEditorActionBar extends Disposable {
 
 		// Check extensions
 		if (!actionItem) {
-			actionItem = createActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService);
+			actionItem = createActionItem(action, { label: true }, this.keybindingService, this.notificationService, this.contextMenuService);
 		}
 
 		return actionItem;

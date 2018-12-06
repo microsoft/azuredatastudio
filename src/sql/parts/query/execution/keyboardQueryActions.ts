@@ -21,9 +21,7 @@ import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/parts/connection/common/constants';
-import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { CancelQueryAction } from 'sql/parts/query/execution/queryActions';
 
 const singleQuote = '\'';
 
@@ -54,137 +52,6 @@ function escapeSqlString(input: string, escapeChar: string) {
 		}
 	}
 	return output;
-}
-
-/**
- * Locates the active editor and call focus() on the editor if it is a QueryEditor.
- */
-export class FocusOnCurrentQueryKeyboardAction extends Action {
-
-	public static ID = 'focusOnCurrentQueryKeyboardAction';
-	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', 'Focus on Current Query');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
-	}
-
-	public run(): TPromise<void> {
-		let editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor) {
-			editor.focus();
-		}
-		return TPromise.as(null);
-	}
-}
-
-/**
- * Locates the active editor and calls runQuery() on the editor if it is a QueryEditor.
- */
-export class RunQueryKeyboardAction extends Action {
-
-	public static ID = 'runQueryKeyboardAction';
-	public static LABEL = nls.localize('runQueryKeyboardAction', 'Run Query');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
-	}
-
-	public run(): TPromise<void> {
-		let editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor) {
-			editor.input.runQuery();
-		}
-
-		if (editor instanceof EditDataEditor) {
-			editor.runQuery();
-		}
-
-		return TPromise.as(null);
-	}
-}
-
-/**
- * Locates the active editor and calls runCurrentQuery() on the editor if it is a QueryEditor.
- */
-export class RunCurrentQueryKeyboardAction extends Action {
-	public static ID = 'runCurrentQueryKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', 'Run Current Query');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
-	}
-
-	public run(): TPromise<void> {
-		let editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor) {
-			let selection = (<ICodeEditor>editor.getControl()).getSelection();
-			editor.input.runQuery(selection);
-		}
-		return TPromise.as(null);
-	}
-}
-
-export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
-	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', 'Run Current Query with Actual Plan');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
-	}
-
-	public run(): TPromise<void> {
-		let editor = this._editorService.activeControl;
-		if (editor instanceof QueryEditor) {
-			let selection = (<ICodeEditor>editor.getControl()).getSelection();
-			editor.input.runQuery(selection, { displayActualQueryPlan: true });
-		}
-		return TPromise.as(null);
-	}
-}
-
-/**
- * Refresh the IntelliSense cache
- */
-export class RefreshIntellisenseKeyboardAction extends Action {
-	public static ID = 'refreshIntellisenseKeyboardAction';
-	public static LABEL = nls.localize('refreshIntellisenseKeyboardAction', 'Refresh IntelliSense Cache');
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private _editorService: IEditorService
-	) {
-		super(id, label);
-		this.enabled = true;
-	}
-
-	public run(): TPromise<void> {
-		let editor = this._editorService.activeEditor;
-		if (editor instanceof QueryInput) {
-			editor.rebuildIntelliSenseCache();
-		}
-		return TPromise.as(null);
-	}
 }
 
 /**
