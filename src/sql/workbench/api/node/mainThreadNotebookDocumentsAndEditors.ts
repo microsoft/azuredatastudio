@@ -7,9 +7,8 @@
 import * as sqlops from 'sqlops';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { Registry } from 'vs/platform/registry/common/platform';
 import URI, { UriComponents } from 'vs/base/common/uri';
-import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -21,10 +20,11 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { INotebookProviderRegistry, Extensions } from 'sql/services/notebook/notebookRegistry';
 import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { disposed } from 'vs/base/common/errors';
 
 class MainThreadNotebookEditor extends Disposable {
 
@@ -57,6 +57,31 @@ class MainThreadNotebookEditor extends Disposable {
 			return false;
 		}
 		return input === this.editor.notebookParams.input;
+	}
+
+	public applyEdits(versionIdCheck: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): boolean {
+		// TODO Handle version tracking
+		// if (this._model.getVersionId() !== versionIdCheck) {
+		// 	// throw new Error('Model has changed in the meantime!');
+		// 	// model changed in the meantime
+		// 	return false;
+		// }
+
+		if (!this.editor) {
+			// console.warn('applyEdits on invisible editor');
+			return false;
+		}
+
+		// TODO handle undo tracking
+		// if (opts.undoStopBefore) {
+		// 	this._codeEditor.pushUndoStop();
+		// }
+
+		this.editor.executeEdits(edits);
+		// if (opts.undoStopAfter) {
+		// 	this._codeEditor.pushUndoStop();
+		// }
+		return true;
 	}
 }
 
@@ -218,6 +243,7 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebookDocumentsAndEditors)
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
+
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
 
@@ -249,6 +275,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string> {
 		return TPromise.wrap(this.doOpenEditor(resource, options));
+	}
+
+	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
+		}
+		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
 	}
 	//#endregion
 

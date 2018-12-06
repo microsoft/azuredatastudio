@@ -66,7 +66,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		let searchFn = (val: { [x: string]: string }, exp: string): Array<number> => {
 			let ret = new Array<number>();
 			for (let i = 0; i < this._columns.length; i++) {
-				if (val[this._columns[i]].includes(exp)) {
+				let colVal = val[this._columns[i]];
+				if (colVal && colVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
 					ret.push(i);
 				}
 			}

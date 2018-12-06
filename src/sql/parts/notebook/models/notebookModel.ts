@@ -23,6 +23,7 @@ import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import URI from 'vs/base/common/uri';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -268,6 +269,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			});
 		} else {
 			this.notifyError(localize('deleteCellFailed', 'Failed to delete cell.'));
+		}
+	}
+
+	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+		if (this.inErrorState || !this._cells) {
+			return;
+		}
+
+		for (let edit of edits) {
+			let newCells: ICellModel[] = [];
+			if (edit.cell) {
+				// TODO: should we validate and complete required missing parameters?
+				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
+				newCells.push(this.notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+			}
+			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+			this._contentChangedEmitter.fire({
+				changeType: NotebookChangeType.CellsAdded
+			});
 		}
 	}
 

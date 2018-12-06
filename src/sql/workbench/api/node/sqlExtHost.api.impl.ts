@@ -442,7 +442,8 @@ export function createApiFactory(
 				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
-				}
+				},
+				CellRange: sqlExtHostTypes.CellRange
 			};
 
 			return {

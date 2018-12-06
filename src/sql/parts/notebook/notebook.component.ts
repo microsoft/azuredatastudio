@@ -44,6 +44,7 @@ import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -425,5 +426,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	isDirty(): boolean {
 		return this.notebookParams.input.isDirty();
+	}
+
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		if (!edits || edits.length === 0) {
+			return false;
+		}
+		this._model.pushEditOperations(edits);
+		return true;
 	}
 }

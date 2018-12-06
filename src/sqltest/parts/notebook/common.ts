@@ -11,6 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class NotebookModelStub implements INotebookModel {
     constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -65,6 +66,9 @@ export class NotebookModelStub implements INotebookModel {
         throw new Error('Method not implemented.');
     }
     saveModel(): Promise<boolean> {
+        throw new Error('Method not implemented.');
+    }
+    pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
         throw new Error('Method not implemented.');
     }
 }
