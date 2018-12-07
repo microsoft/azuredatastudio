@@ -177,4 +177,20 @@ export class NotebookInput extends EditorInput {
 	setDirty(isDirty: boolean): void {
 		this._model.setDirty(isDirty);
 	}
+
+
+	public matches(otherInput: any): boolean {
+		if (super.matches(otherInput) === true) {
+			return true;
+		}
+
+		if (otherInput instanceof NotebookInput) {
+			const otherNotebookEditorInput = <NotebookInput>otherInput;
+
+			// Compare by resource
+			return otherNotebookEditorInput.notebookUri.toString() === this.notebookUri.toString();
+		}
+
+		return false;
+	}
 }
