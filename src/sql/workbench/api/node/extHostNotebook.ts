@@ -24,11 +24,6 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	private readonly _proxy: MainThreadNotebookShape;
 	private _adapters = new Map<number, Adapter>();
-	private _onDidOpenNotebook = new Emitter<sqlops.nb.NotebookDocument>();
-	private _onDidChangeNotebookCell = new Emitter<sqlops.nb.NotebookCellChangeEvent>();
-
-	public readonly onDidOpenNotebookDocument: Event<sqlops.nb.NotebookDocument> = this._onDidOpenNotebook.event;
-	public readonly onDidChangeNotebookCell: Event<sqlops.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
 
 	// Notebook URI to manager lookup.
 	constructor(_mainContext: IMainContext) {

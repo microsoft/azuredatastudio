@@ -33,15 +33,16 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 	private readonly _editors = new Map<string, ExtHostNotebookEditor>();
 	private readonly _documents = new Map<string, ExtHostNotebookDocumentData>();
 
-	private readonly _onDidAddDocuments = new Emitter<ExtHostNotebookDocumentData[]>();
-	private readonly _onDidRemoveDocuments = new Emitter<ExtHostNotebookDocumentData[]>();
 	private readonly _onDidChangeVisibleNotebookEditors = new Emitter<ExtHostNotebookEditor[]>();
 	private readonly _onDidChangeActiveNotebookEditor = new Emitter<ExtHostNotebookEditor>();
+	private _onDidOpenNotebook = new Emitter<sqlops.nb.NotebookDocument>();
+	private _onDidChangeNotebookCell = new Emitter<sqlops.nb.NotebookCellChangeEvent>();
 
-	readonly onDidAddDocuments: Event<ExtHostNotebookDocumentData[]> = this._onDidAddDocuments.event;
-	readonly onDidRemoveDocuments: Event<ExtHostNotebookDocumentData[]> = this._onDidRemoveDocuments.event;
 	readonly onDidChangeVisibleNotebookEditors: Event<ExtHostNotebookEditor[]> = this._onDidChangeVisibleNotebookEditors.event;
 	readonly onDidChangeActiveNotebookEditor: Event<ExtHostNotebookEditor> = this._onDidChangeActiveNotebookEditor.event;
+	readonly onDidOpenNotebookDocument: Event<sqlops.nb.NotebookDocument> = this._onDidOpenNotebook.event;
+	readonly onDidChangeNotebookCell: Event<sqlops.nb.NotebookCellChangeEvent> = this._onDidChangeNotebookCell.event;
+
 
 	constructor(
 		private readonly _mainContext: IMainContext,
@@ -123,11 +124,11 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		dispose(removedEditors);
 
 		// now that the internal state is complete, fire events
-		if (delta.removedDocuments) {
-			this._onDidRemoveDocuments.fire(removedDocuments);
+		if (removedDocuments) {
+			// TODO add doc close event
 		}
-		if (delta.addedDocuments) {
-			this._onDidAddDocuments.fire(addedDocuments);
+		if (addedDocuments) {
+			addedDocuments.forEach(d => this._onDidOpenNotebook.fire(d.document));
 		}
 
 		if (delta.removedEditors || delta.addedEditors) {
@@ -142,19 +143,14 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		const uri = URI.revive(uriComponents);
 		const strURL = uri.toString();
 		let data = this._documents.get(strURL);
-		/*data.document.uri = e.uri;
-		data.onEvents(e);
-		this._onDidChangeDocument.fire({
-			document: data.document,
-			contentChanges: e.cells.map((cell) => {
-				return {
-					range: TypeConverters.Range.to(cell.range),
-					rangeOffset: cell.rangeOffset,
-					rangeLength: cell.rangeLength,
-					text: cell.text
-				};
-			})
-		});*/
+		if (data) {
+			data.onModelChanged(e);
+		}
+		this._onDidChangeNotebookCell.fire({
+			cells: data.document.cells,
+			notebook: data.document,
+			kind: undefined
+		});
 	}
 
 	//#endregion

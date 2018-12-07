@@ -438,7 +438,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
 			this._modelToDisposeMap.set(editor.uri.toString(), editor.contentChanged((e) => {
-				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e));
+				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
 			}));
 		});
 	}
@@ -462,12 +462,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return addData;
 	}
 
-	private _toNotebookChangeData(e: NotebookContentChange): INotebookModelChangedData {
+	private _toNotebookChangeData(e: NotebookContentChange, editor: MainThreadNotebookEditor): INotebookModelChangedData {
 		let changeData: INotebookModelChangedData = {
-			cells: this.convertCellModelToNotebookCell(e.cells),
+			// Note: we just send all cells for now, not a diff
+			cells: this.convertCellModelToNotebookCell(editor.cells),
 			isDirty: e.isDirty,
-			providerId: undefined,
-			uri: undefined
+			providerId: editor.providerId,
+			uri: editor.uri
 		};
 		return changeData;
 	}

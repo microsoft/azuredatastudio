@@ -12,7 +12,7 @@ import { ok } from 'vs/base/common/assert';
 import { Schemas } from 'vs/base/common/network';
 import { TPromise } from 'vs/base/common/winjs.base';
 
-import { MainThreadNotebookDocumentsAndEditorsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { MainThreadNotebookDocumentsAndEditorsShape, INotebookModelChangedData } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { CellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 
@@ -22,7 +22,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 
 	constructor(private readonly _proxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private readonly _uri: URI,
-		private readonly _providerId: string,
+		private _providerId: string,
 		private _isDirty: boolean,
 		private _cells: sqlops.nb.NotebookCell[]
 	) {
@@ -62,6 +62,14 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 		}
 		return this._proxy.$trySaveDocument(this._uri);
 
+	}
+
+	public onModelChanged(data: INotebookModelChangedData) {
+		if (data) {
+			this._isDirty = data.isDirty;
+			this._cells = data.cells;
+			this._providerId = data.providerId;
+		}
 	}
 
 	// ---- range math

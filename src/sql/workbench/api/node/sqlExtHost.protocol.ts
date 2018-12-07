@@ -788,7 +788,6 @@ export interface MainThreadNotebookShape extends IDisposable {
 export interface INotebookDocumentsAndEditorsDelta {
 	removedDocuments?: UriComponents[];
 	addedDocuments?: INotebookModelAddedData[];
-	changedDocuments? :INotebookModelChangedData[];
 	removedEditors?: string[];
 	addedEditors?: INotebookEditorAddData[];
 	newActiveEditor?: string;
