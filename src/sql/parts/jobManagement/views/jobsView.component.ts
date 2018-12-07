@@ -591,7 +591,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		jobs.forEach(async (job) => {
+		await Promise.all(jobs.map(async (job) => {
 			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
 				if (result) {
 					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
@@ -622,32 +622,23 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 					}
 				}
 			});
-		});
+		}));
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
-		for (let i = 0; i < jobHistories.length; i++) {
+		for (let i = 0; i < chartHeights.length; i++) {
 			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
-			if (jobHistories && jobHistories.length > 0) {
-				runGraph.css('height', chartHeights[i]);
-				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
-				runGraph.css('background', bgColor);
-				runGraph.hover((e) => {
-					let currentTarget = e.currentTarget;
-					currentTarget.title = jobHistories[i].runDuration;
-				});
-				if (runGraph.get(0)) {
-					runCharts.push(runGraph.get(0).outerHTML);
-				}
-			} else {
-				runGraph.css('height', '5px');
-				runGraph.css('background', 'red');
-				runGraph.hover((e) => {
-					let currentTarget = e.currentTarget;
-					currentTarget.title = 'Job not run.';
-				});
+			runGraph.css('height', chartHeights[i]);
+			let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
+			runGraph.css('background', bgColor);
+			runGraph.hover((e) => {
+				let currentTarget = e.currentTarget;
+				currentTarget.title = jobHistories[i].runDuration;
+			});
+			if (runGraph.get(0)) {
+				runCharts.push(runGraph.get(0).outerHTML);
 			}
 		}
 		if (runCharts.length > 0) {
@@ -658,7 +649,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	// chart height normalization logic
 	private getChartHeights(jobHistories: sqlops.AgentJobHistoryInfo[]): string[] {
 		if (!jobHistories || jobHistories.length === 0) {
-			return ['5px', '5px', '5px', '5px', '5px'];
+			return [];
 		}
 		let maxDuration: number = 0;
 		jobHistories.forEach(history => {
