@@ -50,7 +50,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		return this.resourceNodeWithProviderId.resourceNode.treeItem;
+		return this._resourceService.getTreeItem(this.resourceNodeWithProviderId.resourceProviderId, this.resourceNodeWithProviderId.resourceNode);
 	}
 
 	public getNodeInfo(): NodeInfo {
