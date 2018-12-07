@@ -17,7 +17,7 @@
 
 .model-card.unselected {
 	border-color: rgb(214, 214, 214);
-	box-shadow: rgba(120, 120, 120, 0.75) 0px 0px 6px;
+	box-shadow: none;
 }
 
 
