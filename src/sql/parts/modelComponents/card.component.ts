@@ -164,6 +164,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	private updateTheme(theme: IColorTheme) {
 		this.backgroundColor = theme.getColor(colors.editorBackground, true).toString();
+		this._changeRef.detectChanges();
 	}
 
 	private onDidActionClick(action: ActionDescriptor): void {
