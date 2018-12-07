@@ -9,6 +9,6 @@
 		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId" [hideVerticalToolbar]=true>
 		</code-component>
 	</div>
-	<div #preview style="flex: 0 0 auto;" (dblclick)="toggleEditMode()">
+	<div #preview class ="notebook-preview" style="flex: 0 0 auto;" (dblclick)="toggleEditMode()">
 	</div>
 </div>
