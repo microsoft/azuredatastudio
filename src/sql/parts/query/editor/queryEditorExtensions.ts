@@ -32,8 +32,7 @@ export abstract class QueryEditorAction extends EditorAction {
 	}
 
 	public register(): void {
-
-		if (this.opts.menuOpts) {
+		if (this.opts.menuOpts && (this.opts.menuOpts.iconDark || this.opts.menuOpts.iconLight)) {
 			MenuRegistry.appendMenuItem(MenuId.EditorActionBar, {
 				command: {
 					id: this.id,

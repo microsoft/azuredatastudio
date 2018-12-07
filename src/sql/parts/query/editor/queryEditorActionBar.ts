@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as actions from 'sql/parts/query/execution/queryActions';
+import * as queryActions from 'sql/parts/query/execution/queryActions';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -24,13 +24,13 @@ import { createActionItem } from 'sql/platform/actions/browser/menuItemActionIte
 
 export class QueryEditorActionBar extends Disposable {
 
-	private listDatabaseActionItem: actions.ListDatabasesActionItem;
+	private listDatabaseActionItem: queryActions.ListDatabasesActionItem;
 
 	private editorToolBarMenuDisposables: IDisposable[] = [];
 
 	private toolbar: ToolBar;
 
-	private _context: actions.IQueryActionContext = {
+	private _context: queryActions.IQueryActionContext = {
 		input: undefined,
 		editor: undefined
 	};
@@ -46,7 +46,7 @@ export class QueryEditorActionBar extends Disposable {
 		super();
 		this.toolbar = this._register(new ToolBar(container, contextMenuService, {
 			actionItemProvider: action => {
-				if (action.id === actions.ListDatabasesAction.ID) {
+				if (action.id === queryActions.ListDatabasesAction.ID) {
 					return this.listDatabaseActionItem;
 				}
 				return this.actionItemProvider(action as Action);
@@ -54,7 +54,7 @@ export class QueryEditorActionBar extends Disposable {
 			orientation: ActionsOrientation.HORIZONTAL_REVERSE
 		}));
 
-		this.listDatabaseActionItem = instantiationService.createInstance(actions.ListDatabasesActionItem);
+		this.listDatabaseActionItem = instantiationService.createInstance(queryActions.ListDatabasesActionItem);
 	}
 
 	private actionItemProvider(action: Action): IActionItem {
@@ -74,7 +74,6 @@ export class QueryEditorActionBar extends Disposable {
 		return actionItem;
 	}
 
-
 	private updateMenuBar() {
 		// Dispose previous listeners
 		this.editorToolBarMenuDisposables = dispose(this.editorToolBarMenuDisposables);
@@ -86,6 +85,7 @@ export class QueryEditorActionBar extends Disposable {
 		})));
 		const actions = new Array<IAction>();
 		fillInActionBarActions(menuBar, {}, actions);
+		actions.push(new queryActions.ListDatabasesAction());
 		this.toolbar.setActions(prepareActions(actions))();
 	}
 

@@ -15,7 +15,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import Severity from 'vs/base/common/severity';
-import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
+import { IActionItem, IActionRunner } from 'vs/base/common/actions';
 import { IRange } from 'vs/editor/common/core/range';
 import * as platform from 'vs/base/common/platform';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
@@ -173,9 +173,7 @@ export class ActualQueryPlanAction extends QueryEditorAction {
 			},
 			menuOpts: {
 				group: 'query',
-				order: 1.1,
-				iconDark: 'query-plan-inverse.svg',
-				iconLight: 'query-plan.svg'
+				order: 1.1
 			}
 		});
 	}
@@ -318,7 +316,7 @@ export class ListDatabasesAction extends QueryEditorAction {
 			precondition: ContextKeyExpr.and(QueryEditorContextKeys.isExecuting.toNegated(), QueryEditorContextKeys.isConnected),
 			menuOpts: {
 				group: 'query',
-				order: 1.1
+				order: 1.1,
 			}
 		});
 	}
@@ -561,5 +559,4 @@ registerEditorAction(ActualQueryPlanAction);
 registerEditorAction(DisconnectAction);
 registerEditorAction(ConnectAction);
 registerEditorAction(ChangeConnectionAction);
-registerEditorAction(ListDatabasesAction);
 registerEditorAction(RefreshIntellisenseKeyboardAction);

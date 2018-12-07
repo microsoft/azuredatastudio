@@ -32,10 +32,14 @@
 	margin-left: 10px;
 	padding-left: 20px;
 	display: block;
-	height: 35px;
-	line-height: 35px;
+	height: 27px;
+	line-height: 27px;
 	min-width: 28px;
-	background-size: 16px;
+	background-size: 11px;
 	background-position: 0 center;
 	background-repeat: no-repeat;
+}
+
+.monaco-workbench > .part.editor .query-editor-taskbar {
+	margin: 2px 0px;
 }
