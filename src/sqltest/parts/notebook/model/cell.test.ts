@@ -93,7 +93,7 @@ describe('Cell Model', function (): void {
         let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
-            metadata: { language: 'python'},
+            metadata: {  },
             execution_count: 1
         };
 
@@ -104,6 +104,22 @@ describe('Cell Model', function (): void {
         });
         let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
         should(cell.language).equal('scala');
+    });
+    it('Should keep cell language as python if cell has language override', async function (): Promise<void> {
+        let cellData: nb.ICellContents = {
+            cell_type: CellTypes.Code,
+            source: 'print(\'1\')',
+            metadata: { language: 'python'},
+            execution_count: 1
+        };
+
+        let notebookModel = new NotebookModelStub({
+            name: 'scala',
+            version: '',
+            mimetype: ''
+        });
+        let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+        should(cell.language).equal('python');
     });
 
     it('Should set cell language to python if no language defined', async function (): Promise<void> {
@@ -127,7 +143,7 @@ describe('Cell Model', function (): void {
         let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'std::cout << "hello world";',
-            metadata: { language: 'python'},
+            metadata: { },
             execution_count: 1
         };
 
@@ -144,7 +160,7 @@ describe('Cell Model', function (): void {
         let cellData: nb.ICellContents = {
             cell_type: CellTypes.Code,
             source: 'print(\'1\')',
-            metadata: { language: 'python'},
+            metadata: { },
             execution_count: 1
         };
 

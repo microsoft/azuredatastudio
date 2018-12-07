@@ -38,15 +38,15 @@ export class CellModel implements ICellModel {
 	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
 		CellModel.CreateLanguageMappings();
-		// Do nothing for now
 		if (cellData) {
+			// Read in contents if available
 			this.fromJSON(cellData);
 		} else {
 			this._cellType = CellTypes.Code;
 			this._source = '';
 		}
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
-		this.setDefaultLanguage();
+		this.ensureDefaultLanguage();
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
 		} else {
@@ -284,13 +284,22 @@ export class CellModel implements ICellModel {
 		}
 		this._cellType = cell.cell_type;
 		this._source = Array.isArray(cell.source) ? cell.source.join('') : cell.source;
-		this._language = (cell.metadata && cell.metadata.language) ? cell.metadata.language : 'python';
+		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification
 				this.addOutput(output);
 			}
 		}
+	}
+
+	private setLanguageFromContents(cell: nb.ICellContents): void {
+		if (cell.cell_type === CellTypes.Markdown) {
+			this._language = 'markdown';
+		} else if (cell.metadata && cell.metadata.language) {
+			this._language = cell.metadata.language;
+		}
+		// else skip, we set default language anyhow
 	}
 
 	private addOutput(output: nb.ICellOutput) {
@@ -327,8 +336,32 @@ export class CellModel implements ICellModel {
 		return undefined;
 	}
 
-	private setDefaultLanguage(): void {
-		this._language = 'python';
+	/**
+	 * Ensures there is a default language set, if none was already defined.
+	 * Will read information from the overall Notebook (passed as options to the model), or
+	 * if all else fails default back to python.
+	 *
+	 */
+	private ensureDefaultLanguage(): void {
+		// See if language is already set / is known based on cell type
+		if (this.hasLanguage()) {
+			return;
+		}
+		if (this._cellType === CellTypes.Markdown) {
+			this._language = 'markdown';
+			return;
+		}
+
+		// try set it based on overall Notebook language
+		this.trySetLanguageFromLangInfo();
+
+		// fallback to python
+		if (!this._language) {
+			this._language = 'python';
+		}
+	}
+
+	private trySetLanguageFromLangInfo() {
 		// In languageInfo, set the language to the "name" property
 		// If the "name" property isn't defined, check the "mimeType" property
 		// Otherwise, default to python as the language
@@ -338,16 +371,25 @@ export class CellModel implements ICellModel {
 				// check the LanguageMapping to determine if a mapping is necessary (example 'pyspark' -> 'python')
 				if (CellModel.LanguageMapping[languageInfo.name]) {
 					this._language = CellModel.LanguageMapping[languageInfo.name];
-				} else {
+				}
+				else {
 					this._language = languageInfo.name;
 				}
-			} else if (languageInfo.mimetype) {
+			}
+			else if (languageInfo.mimetype) {
 				this._language = languageInfo.mimetype;
 			}
 		}
-		let mimeTypePrefix = 'x-';
-		if (this._language.includes(mimeTypePrefix)) {
-			this._language = this._language.replace(mimeTypePrefix, '');
+
+		if (this._language) {
+			let mimeTypePrefix = 'x-';
+			if (this._language.includes(mimeTypePrefix)) {
+				this._language = this._language.replace(mimeTypePrefix, '');
+			}
 		}
+	}
+
+	private hasLanguage(): boolean {
+		return !!this._language;
 	}
 }
