@@ -8,9 +8,15 @@
 import ControllerBase from './controllerBase';
 import { DidChangeAccountsParams } from 'sqlops';
 
+import {
+	IAzureResourceCacheService,
+	IAzureResourceAccountService,
+	IAzureResourceSubscriptionService,
+	IAzureResourceSubscriptionFilterService,
+	IAzureResourceTenantService } from '../azureResource/interfaces';
+import { AzureResourceServiceNames } from '../azureResource/constants';
 import { AzureResourceTreeProvider } from '../azureResource/tree/treeProvider';
 import { registerAzureResourceCommands } from '../azureResource/commands';
-import { AzureResourceServicePool } from '../azureResource/servicePool';
 import { AzureResourceAccountService } from '../azureResource/services/accountService';
 import { AzureResourceSubscriptionService } from '../azureResource/services/subscriptionService';
 import { AzureResourceSubscriptionFilterService } from '../azureResource/services/subscriptionFilterService';
@@ -22,26 +28,22 @@ import { registerAzureResourceDatabaseCommands } from '../azureResource/provider
 
 export default class AzureResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {
-		const servicePool = AzureResourceServicePool.getInstance();
+		this.appContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, new AzureResourceCacheService(this.extensionContext));
+		this.appContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, new AzureResourceAccountService(this.apiWrapper));
+		this.appContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, new AzureResourceSubscriptionService());
+		this.appContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(this.extensionContext)));
+		this.appContext.registerService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService, new AzureResourceTenantService());
 
-		servicePool.extensionContext = this.extensionContext;
-		servicePool.apiWrapper = this.apiWrapper;
-		servicePool.cacheService = new AzureResourceCacheService(this.extensionContext);
-		servicePool.accountService = new AzureResourceAccountService(this.apiWrapper);
-		servicePool.subscriptionService = new AzureResourceSubscriptionService();
-		servicePool.subscriptionFilterService = new AzureResourceSubscriptionFilterService(new AzureResourceCacheService(this.extensionContext));
-		servicePool.tenantServicxe = new AzureResourceTenantService();
-
-		const azureResourceTree = new AzureResourceTreeProvider();
+		const azureResourceTree = new AzureResourceTreeProvider(this.appContext);
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 
-		servicePool.accountService.onDidChangeAccounts((e: DidChangeAccountsParams) => { azureResourceTree.notifyNodeChanged(undefined); });
+		this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).onDidChangeAccounts((e: DidChangeAccountsParams) => { azureResourceTree.notifyNodeChanged(undefined); });
 
-		registerAzureResourceCommands(azureResourceTree);
+		registerAzureResourceCommands(this.appContext, azureResourceTree);
 
-		registerAzureResourceDatabaseServerCommands();
+		registerAzureResourceDatabaseServerCommands(this.appContext);
 
-		registerAzureResourceDatabaseCommands();
+		registerAzureResourceDatabaseCommands(this.appContext);
 
 		return Promise.resolve(true);
 	}

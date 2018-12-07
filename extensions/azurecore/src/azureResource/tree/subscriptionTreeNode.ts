@@ -7,6 +7,7 @@
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { Account, NodeInfo, azureResource } from 'sqlops';
+import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -26,10 +27,11 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 		public readonly account: Account,
 		public readonly subscription: azureResource.AzureResourceSubscription,
 		public readonly tenatId: string,
+		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
-		super(treeChangeHandler, parent);
+		super(appContext, treeChangeHandler, parent);
 
 		this._id = `account_${this.account.key.accountId}.subscription_${this.subscription.id}.tenant_${this.tenatId}`;
 		this.setCacheKey(`${this._id}.resources`);
@@ -63,8 +65,8 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 		const item = new TreeItem(this.subscription.name, TreeItemCollapsibleState.Collapsed);
 		item.contextValue = AzureResourceItemType.subscription;
 		item.iconPath = {
-			dark: this.servicePool.extensionContext.asAbsolutePath('resources/dark/subscription_inverse.svg'),
-			light: this.servicePool.extensionContext.asAbsolutePath('resources/light/subscription.svg')
+			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/subscription_inverse.svg'),
+			light: this.appContext.extensionContext.asAbsolutePath('resources/light/subscription.svg')
 		};
 		return item;
 	}

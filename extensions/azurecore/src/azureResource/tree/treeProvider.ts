@@ -7,11 +7,11 @@
 
 import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
 import { setInterval, clearInterval } from 'timers';
+import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
-import { AzureResourceServicePool } from '../servicePool';
 import { AzureResourceAccountTreeNode } from './accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
@@ -19,8 +19,15 @@ import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { treeLocalizationIdPrefix } from './constants';
+import { IAzureResourceAccountService } from '../../azureResource/interfaces';
+import { AzureResourceServiceNames } from '../constants';
 
 export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
+	public constructor(
+		public readonly appContext: AppContext
+	) {
+	}
+
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
 			return element.getChildren(true);
@@ -30,7 +37,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 			this._loadingTimer = setInterval(async () => {
 				try {
 					// Call sqlops.accounts.getAllAccounts() to determine whether the system has been initialized.
-					await AzureResourceServicePool.getInstance().accountService.getAccounts();
+					await this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).getAccounts();
 
 					// System has been initialized
 					this.isSystemInitialized = true;
@@ -50,10 +57,10 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 		}
 
 		try {
-			const accounts = await AzureResourceServicePool.getInstance().accountService.getAccounts();
+			const accounts = await this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).getAccounts();
 
 			if (accounts && accounts.length > 0) {
-				return accounts.map((account) => new AzureResourceAccountTreeNode(account, this));
+				return accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
 			} else {
 				return [new AzureResourceAccountNotSignedInTreeNode()];
 			}

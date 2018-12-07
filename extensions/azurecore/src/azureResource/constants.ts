@@ -14,3 +14,11 @@ export enum AzureResourceItemType {
 	databaseServer = 'azure.resource.itemType.databaseServer',
 	message = 'azure.resource.itemType.message'
 }
+
+export enum AzureResourceServiceNames {
+	cacheService = 'AzureResourceCacheService',
+	accountService = 'AzureResourceAccountService',
+	subscriptionService = 'AzureResourceSubscriptionService',
+	subscriptionFilterService = 'AzureResourceSubscriptionFilterService',
+	tenantService = 'AzureResourceTenantService'
+}

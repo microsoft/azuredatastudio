@@ -11,8 +11,8 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 import { ServiceClientCredentials } from 'ms-rest';
+import { AppContext } from '../../../appContext';
 
-import { AzureResourceServicePool } from '../../../azureResource/servicePool';
 import {
 	IAzureResourceCacheService,
 	IAzureResourceSubscriptionService,
@@ -21,18 +21,17 @@ import {
 import { IAzureResourceTreeChangeHandler } from '../../../azureResource/tree/treeChangeHandler';
 import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accountTreeNode';
 import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/subscriptionTreeNode';
-import { AzureResourceItemType } from '../../../azureResource/constants';
+import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
 import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
 import { ApiWrapper } from '../../../apiWrapper';
 
 // Mock services
-const mockServicePool = AzureResourceServicePool.getInstance();
-
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockSubscriptionService: TypeMoq.IMock<IAzureResourceSubscriptionService>;
 let mockSubscriptionFilterService: TypeMoq.IMock<IAzureResourceSubscriptionFilterService>;
+let mockAppContext: AppContext;
 
 let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
 
@@ -78,11 +77,10 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 
 		mockSubscriptionCache = { subscriptions: {} };
 
-		mockServicePool.extensionContext = mockExtensionContext.object;
-		mockServicePool.apiWrapper = mockApiWrapper.object;
-		mockServicePool.cacheService = mockCacheService.object;
-		mockServicePool.subscriptionService = mockSubscriptionService.object;
-		mockServicePool.subscriptionFilterService = mockSubscriptionFilterService.object;
+		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
+		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
+		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 
 		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockCredential));
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
@@ -90,7 +88,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 	});
 
 	it('Should be correct when created.', async function(): Promise<void> {
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const accountTreeNodeId = `account_${mockAccount.key.accountId}`;
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockAccount.key.accountId})`;
@@ -116,7 +114,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockAccount.key.accountId}) (${mockSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		await accountTreeNode.getChildren();
 
@@ -133,7 +131,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockAccount.key.accountId}) (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		await accountTreeNode.getChildren();
 
@@ -147,6 +145,7 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 
 describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 	beforeEach(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 		mockSubscriptionService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionService>();
@@ -156,10 +155,10 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		mockSubscriptionCache = { subscriptions: {} };
 
-		mockServicePool.apiWrapper = mockApiWrapper.object;
-		mockServicePool.cacheService = mockCacheService.object;
-		mockServicePool.subscriptionService = mockSubscriptionService.object;
-		mockServicePool.subscriptionFilterService = mockSubscriptionFilterService.object;
+		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
+		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
+		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 
 		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockCredential));
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
@@ -170,7 +169,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const children = await accountTreeNode.getChildren();
 
@@ -205,7 +204,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		await accountTreeNode.getChildren();
 		const children = await accountTreeNode.getChildren();
@@ -225,7 +224,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 	it('Should handle when there is no subscriptions.', async function(): Promise<void> {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(undefined));
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const children = await accountTreeNode.getChildren();
 
@@ -242,7 +241,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const children = await accountTreeNode.getChildren();
 
@@ -260,7 +259,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 		const mockError = 'Test error';
 		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential)).returns(() => { throw new Error(mockError); });
 
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const children = await accountTreeNode.getChildren();
 
@@ -280,11 +279,16 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 describe('AzureResourceAccountTreeNode.clearCache', function() : void {
 	beforeEach(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+
+		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
+
 		mockTreeChangeHandler = TypeMoq.Mock.ofType<IAzureResourceTreeChangeHandler>();
 	});
 
 	it('Should clear cache.', async function(): Promise<void> {
-		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockTreeChangeHandler.object);
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 		accountTreeNode.clearCache();
 		should(accountTreeNode.isClearingCache).true();
 	});

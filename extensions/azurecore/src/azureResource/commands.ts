@@ -8,6 +8,7 @@
 import { window, QuickPickItem } from 'vscode';
 import { azureResource, AzureResource } from 'sqlops';
 import { TokenCredentials } from 'ms-rest';
+import { AppContext } from '../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -15,15 +16,17 @@ import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
-import { AzureResourceServicePool } from './servicePool';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService } from '../azureResource/interfaces';
+import { AzureResourceServiceNames } from './constants';
 
-export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): void {
-	const servicePool = AzureResourceServicePool.getInstance();
-
-	servicePool.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
+export function registerAzureResourceCommands(appContext: AppContext, tree: AzureResourceTreeProvider): void {
+	appContext.apiWrapper.registerCommand('azure.resource.selectsubscriptions', async (node?: TreeNode) => {
 		if (!(node instanceof AzureResourceAccountTreeNode)) {
 			return;
 		}
+
+		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
+		const subscriptionFilterService = appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
 
 		const accountNode = node as AzureResourceAccountTreeNode;
 
@@ -36,14 +39,14 @@ export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): 
 					const token = tokens[tenant.id].token;
 					const tokenType = tokens[tenant.id].tokenType;
 
-					subscriptions.push(...await servicePool.subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
+					subscriptions.push(...await subscriptionService.getSubscriptions(accountNode.account, new TokenCredentials(token, tokenType)));
 				}
 			} catch (error) {
 				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
 			}
 		}
 
-		let selectedSubscriptions = (await servicePool.subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
+		let selectedSubscriptions = (await subscriptionFilterService.getSelectedSubscriptions(accountNode.account)) || <azureResource.AzureResourceSubscription[]>[];
 		const selectedSubscriptionIds: string[] = [];
 		if (selectedSubscriptions.length > 0) {
 			selectedSubscriptionIds.push(...selectedSubscriptions.map((subscription) => subscription.id));
@@ -69,17 +72,17 @@ export function registerAzureResourceCommands(tree: AzureResourceTreeProvider): 
 			tree.refresh(node, false);
 
 			selectedSubscriptions = selectedSubscriptionQuickPickItems.map((subscriptionItem) => subscriptionItem.subscription);
-			await servicePool.subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
+			await subscriptionFilterService.saveSelectedSubscriptions(accountNode.account, selectedSubscriptions);
 		}
 	});
 
-	servicePool.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
+	appContext.apiWrapper.registerCommand('azure.resource.refreshall', () => tree.notifyNodeChanged(undefined));
 
-	servicePool.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('azure.resource.refresh', async (node?: TreeNode) => {
 		tree.refresh(node, true);
 	});
 
-	servicePool.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
-		servicePool.apiWrapper.executeCommand('sql.action.accounts.manageLinkedAccount');
+	appContext.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
+		appContext.apiWrapper.executeCommand('sql.action.accounts.manageLinkedAccount');
 	});
 }

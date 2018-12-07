@@ -11,14 +11,8 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { AzureResourceServicePool } from '../../azureResource/servicePool';
-import { IAzureResourceTreeChangeHandler } from '../../azureResource/tree/treeChangeHandler';
-import { AzureResourceSubscriptionTreeNode } from '../../azureResource/tree/subscriptionTreeNode';
-import { AzureResourceItemType } from '../../azureResource/constants';
-import { ApiWrapper } from '../../apiWrapper';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeNode';
-import { IAzureResourceNodeWithProviderId } from '../../azureResource/interfaces';
 
 const resourceService = AzureResourceService.getInstance();
 

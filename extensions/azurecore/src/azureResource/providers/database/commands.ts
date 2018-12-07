@@ -6,18 +6,16 @@
 'use strict';
 
 import { IConnectionProfile } from 'sqlops';
+import { AppContext } from '../../../appContext';
 
 import { TreeNode } from '../../treeNode';
-import { AzureResourceServicePool } from '../../servicePool';
 import { generateGuid } from '../../utils';
 import { AzureResourceItemType } from '../../constants';
 import { IAzureResourceDatabaseNode } from './interfaces';
 import { AzureResourceResourceTreeNode } from '../../resourceTreeNode';
 
-export function registerAzureResourceDatabaseCommands(): void {
-	const servicePool = AzureResourceServicePool.getInstance();
-
-	servicePool.apiWrapper.registerCommand('azure.resource.connectsqldb', async (node?: TreeNode) => {
+export function registerAzureResourceDatabaseCommands(appContext: AppContext): void {
+	appContext.apiWrapper.registerCommand('azure.resource.connectsqldb', async (node?: TreeNode) => {
 		if (!node)
 		{
 			return;
@@ -48,9 +46,9 @@ export function registerAzureResourceDatabaseCommands(): void {
 			}
 		};
 
-		const conn = await servicePool.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
+		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });
 		if (conn) {
-			servicePool.apiWrapper.executeCommand('workbench.view.connections');
+			appContext.apiWrapper.executeCommand('workbench.view.connections');
 		}
 	});
 }
