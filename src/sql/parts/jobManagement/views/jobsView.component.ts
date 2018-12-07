@@ -937,19 +937,19 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// add steps
 		if (this.jobSteps && this.jobSteps[jobId]) {
 			let steps = this.jobSteps[jobId];
-			job[0].JobSteps = steps;
+			job[0].jobSteps = steps;
 		}
 
 		// add schedules
 		if (this.jobSchedules && this.jobSchedules[jobId]) {
 			let schedules = this.jobSchedules[jobId];
-			job[0].JobSchedules = schedules;
+			job[0].jobSchedules = schedules;
 		}
 
 		// add alerts
 		if (this.jobAlerts && this.jobAlerts[jobId]) {
 			let alerts = this.jobAlerts[jobId];
-			job[0].Alerts = alerts;
+			job[0].alerts = alerts;
 		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}
