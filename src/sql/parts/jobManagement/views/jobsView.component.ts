@@ -37,6 +37,8 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -106,7 +108,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IDashboardService) _dashboardService: IDashboardService
+		@Inject(IDashboardService) _dashboardService: IDashboardService,
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._didTabChange = false;
@@ -127,6 +130,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this._telemetryService.publicLog(TelemetryKeys.JobsView);
 	}
 
 	ngOnDestroy() {
@@ -933,19 +937,19 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		// add steps
 		if (this.jobSteps && this.jobSteps[jobId]) {
 			let steps = this.jobSteps[jobId];
-			job[0].JobSteps = steps;
+			job[0].jobSteps = steps;
 		}
 
 		// add schedules
 		if (this.jobSchedules && this.jobSchedules[jobId]) {
 			let schedules = this.jobSchedules[jobId];
-			job[0].JobSchedules = schedules;
+			job[0].jobSchedules = schedules;
 		}
 
 		// add alerts
 		if (this.jobAlerts && this.jobAlerts[jobId]) {
 			let alerts = this.jobAlerts[jobId];
-			job[0].Alerts = alerts;
+			job[0].alerts = alerts;
 		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}

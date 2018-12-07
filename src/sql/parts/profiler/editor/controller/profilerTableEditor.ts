@@ -218,6 +218,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 						if (p) {
 							this._profilerTable.setActiveCell(p.row, p.col);
 							this._updateFinderMatchState();
+							this._finder.focusFindInput();
 						}
 					});
 				} else {

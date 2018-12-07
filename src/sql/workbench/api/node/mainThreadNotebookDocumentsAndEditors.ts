@@ -16,6 +16,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
+import { Schemas } from 'vs/base/common/network';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -27,7 +28,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -318,7 +319,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			preserveFocus: options.preserveFocus,
 			pinned: !options.preview
 		};
-		let model = new NotebookInputModel(uri, undefined, false, undefined);
+		let trusted = uri.scheme === Schemas.untitled;
+		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
 		let providerId = options.providerId;
 		if(!providerId)
 		{

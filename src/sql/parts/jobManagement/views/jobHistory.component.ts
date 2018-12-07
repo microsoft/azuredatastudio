@@ -23,13 +23,14 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -77,7 +78,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IDashboardService) dashboardService: IDashboardService
+		@Inject(IDashboardService) dashboardService: IDashboardService,
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._treeController = new JobHistoryController();
@@ -141,9 +143,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.themeService));
-		this._tree.layout(JobHistoryComponent.INITIAL_TREE_HEIGHT);
+		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 		this.initActionBar();
-
+		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
 	}
 
 	private loadHistory() {
@@ -293,6 +295,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		if (historyDetails && statusBar) {
 			let historyBottom = historyDetails.getBoundingClientRect().bottom;
 			let statusTop = statusBar.getBoundingClientRect().top;
+
 			let height: number = statusTop - historyBottom - JobHistoryComponent.HEADING_HEIGHT;
 
 			if (this._table) {
@@ -302,14 +305,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			}
 
 			if (this._tree) {
-				this._tree.layout(height);
-			}
-
-			if (this._jobStepsView) {
-				let element = this._jobStepsView.nativeElement as HTMLElement;
-				if (element) {
-					element.style.height = height + 'px';
-				}
+				this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 			}
 		}
 	}

@@ -116,6 +116,10 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private static readonly DelayMinutesTextBoxLabel: string =  localize('alertDialog.DelayMinutes', 'Delay Minutes');
 	private static readonly DelaySecondsTextBoxLabel: string =  localize('alertDialog.DelaySeconds', 'Delay Seconds');
 
+	// Event Name strings
+	private readonly NewAlertDialog = 'NewAlertDialogOpen';
+	private readonly EditAlertDialog = 'EditAlertDialogOpened';
+
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private responseTab: sqlops.window.modelviewdialog.DialogTab;
@@ -149,6 +153,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private delayMinutesTextBox: sqlops.InputBoxComponent;
 	private delaySecondsTextBox: sqlops.InputBoxComponent;
 
+	private isEdit: boolean = false;
 	private databases: string[];
 	private jobModel: JobData;
 	public jobId: string;
@@ -166,6 +171,8 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.jobModel = jobModel;
 		this.jobId = this.jobId ? this.jobId : this.jobModel.jobId;
 		this.jobName = this.jobName ? this.jobName : this.jobModel.name;
+		this.isEdit = alertInfo ? true : false;
+		this.dialogName = this.isEdit ? this.EditAlertDialog : this.NewAlertDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

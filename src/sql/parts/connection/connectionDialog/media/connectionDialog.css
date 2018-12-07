@@ -128,3 +128,7 @@
 .hide-refresh-link .azure-account-row.refresh-credentials-link {
 	display: none;
 }
+
+.hide-azure-tenants .azure-tenant-row {
+	display: none;
+}
