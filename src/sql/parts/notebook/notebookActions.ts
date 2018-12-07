@@ -62,7 +62,7 @@ export class SaveNotebookAction extends Action {
 
 	public async run(context: NotebookComponent): TPromise<boolean> {
 		const actions: INotificationActions = { primary: [] };
-		let saved = await context.saveNotebook();
+		let saved = await context.save();
 		if (saved) {
 			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
 		}

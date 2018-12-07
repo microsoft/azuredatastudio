@@ -45,6 +45,9 @@ import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -87,7 +90,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IMenuService) private menuService: IMenuService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IHistoryService) private historyService: IHistoryService,
-		@Inject(IWindowService) private windowService: IWindowService
+		@Inject(IWindowService) private windowService: IWindowService,
+		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
+		@Inject(IUntitledEditorService) private untitledEditorService: IUntitledEditorService,
+		@Inject(IEditorGroupsService) private editorGroupsService: IEditorGroupsService
 	) {
 		super();
 		this.updateProfile();
@@ -338,20 +344,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	// We can keep this method in common utilities
-	private getFilePathFromRecentWorkspace(untitledResource: URI): string {
-		let untitledFileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE;
+	// Gets file path from recent workspace in local
+	private getLastActiveFilePath(untitledResource: URI): string {
+		let fileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE.toLocaleLowerCase();
 
 		let lastActiveFile = this.historyService.getLastActiveFile();
 		if (lastActiveFile) {
-			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), untitledFileName)).fsPath;
+			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), fileName)).fsPath;
 		}
 
 		let lastActiveFolder = this.historyService.getLastActiveWorkspaceRoot('file');
 		if (lastActiveFolder) {
-			return URI.file(paths.join(lastActiveFolder.fsPath, untitledFileName)).fsPath;
+			return URI.file(paths.join(lastActiveFolder.fsPath, fileName)).fsPath;
 		}
-		return untitledFileName;
+		return fileName;
 	}
 
 	promptForPath(defaultPath: string): TPromise<string> {
@@ -359,27 +365,35 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	// Entry point to save notebook
-	public async saveNotebook(): Promise<boolean> {
+	public async save(): Promise<boolean> {
 		let self = this;
 		let notebookUri = this.notebookParams.notebookUri;
 		if (notebookUri.scheme === Schemas.untitled) {
-			let dialogPath = this.getFilePathFromRecentWorkspace(notebookUri);
+			let dialogPath = this.getLastActiveFilePath(notebookUri);
+			let encodingOfSource = this.untitledEditorService.getEncoding(notebookUri);
+			let viewStateOfSource: IEditorViewState;
 			return this.promptForPath(dialogPath).then(path => {
 				if (path) {
-					let newNotebookUri = URI.parse(path);
-					self._model.notebookUri = newNotebookUri;
-					self.notebookParams.notebookUri = newNotebookUri;
-					return this.save();
+					let target = URI.parse(path);
+					let resource = self._model.notebookUri;
+					self._model.notebookUri = target;
+					 this.saveNotebook().then(result => {
+						 if(result)
+						 {
+							this.notebookService.renameNotebookEditor(resource, target, this);
+						 }
+						return result;
+					 });
 				}
 				return false; // User clicks cancel
 			});
 		}
 		else {
-			return await this.save();
+			return await this.saveNotebook();
 		}
 	}
 
-	public async save(): Promise<boolean> {
+	private async saveNotebook(): Promise<boolean> {
 		try {
 			let saved = await this._model.saveModel();
 			if (saved) {

@@ -21,13 +21,14 @@ export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
-export const DEFAULT_NOTEBOOK_FILETYPE = 'ipynb';
+export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 export interface INotebookService {
 	_serviceBrand: any;
 
 	onNotebookEditorAdd: Event<INotebookEditor>;
 	onNotebookEditorRemove: Event<INotebookEditor>;
+	onNotebookEditorRename: Event<INotebookEditor>;
 
 	/**
 	 * Register a metadata provider
@@ -57,6 +58,8 @@ export interface INotebookService {
 	shutdown(): void;
 
 	getMimeRegistry(): RenderMimeRegistry;
+
+	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
 }
 
 export interface INotebookProvider {

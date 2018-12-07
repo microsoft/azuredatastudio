@@ -205,6 +205,7 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 		this._register(this._editorService.onDidVisibleEditorsChange(this._updateState, this));
 		this._register(this._notebookService.onNotebookEditorAdd(this._onDidAddEditor, this));
 		this._register(this._notebookService.onNotebookEditorRemove(this._onDidRemoveEditor, this));
+		this._register(this._notebookService.onNotebookEditorRename(this._onDidRenameEditor, this));
 
 		this._updateState();
 	}
@@ -217,6 +218,11 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 	private _onDidRemoveEditor(e: INotebookEditor): void {
 		// TODO remove event listeners
 		this._updateState();
+	}
+
+	private _onDidRenameEditor(e: INotebookEditor): void {
+		this._updateState();
+		//TODO: Close editor and open it
 	}
 
 	private _updateState(): void {
