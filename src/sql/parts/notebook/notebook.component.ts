@@ -370,8 +370,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let notebookUri = this.notebookParams.notebookUri;
 		if (notebookUri.scheme === Schemas.untitled) {
 			let dialogPath = this.getLastActiveFilePath(notebookUri);
-			let encodingOfSource = this.untitledEditorService.getEncoding(notebookUri);
-			let viewStateOfSource: IEditorViewState;
 			return this.promptForPath(dialogPath).then(path => {
 				if (path) {
 					let target = URI.parse(path);
