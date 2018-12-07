@@ -29,7 +29,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	private backgroundColor: string;
 
-	constructor( @Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
@@ -128,6 +128,14 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	public get isVerticalButton(): boolean {
 		return this.cardType === 'VerticalButton';
+	}
+
+	public get showRadioButton():boolean{
+		return this.selectable && (this.selected || this._hasFocus)
+	}
+
+	public get showAsSelected(): boolean {
+		return this.selectable && this.selected;
 	}
 
 
