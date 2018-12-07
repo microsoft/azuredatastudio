@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { dispose } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
+import URI, { UriComponents } from 'vs/base/common/uri';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import * as typeConverters from 'vs/workbench/api/node/extHostTypeConverters';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
@@ -17,7 +17,7 @@ import { ok } from 'vs/base/common/assert';
 
 import {
 	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
-	MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions
+	MainThreadNotebookDocumentsAndEditorsShape, INotebookShowOptions, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/node/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/node/extHostNotebookEditor';
@@ -81,7 +81,8 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 					this._proxy,
 					resource,
 					data.providerId,
-					data.isDirty
+					data.isDirty,
+					data.cells
 				);
 				this._documents.set(resource.toString(), documentData);
 				addedDocuments.push(documentData);
@@ -136,6 +137,26 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			this._onDidChangeActiveNotebookEditor.fire(this.getActiveEditor());
 		}
 	}
+
+	$acceptModelChanged(uriComponents: UriComponents, e: INotebookModelChangedData): void {
+		const uri = URI.revive(uriComponents);
+		const strURL = uri.toString();
+		let data = this._documents.get(strURL);
+		/*data.document.uri = e.uri;
+		data.onEvents(e);
+		this._onDidChangeDocument.fire({
+			document: data.document,
+			contentChanges: e.cells.map((cell) => {
+				return {
+					range: TypeConverters.Range.to(cell.range),
+					rangeOffset: cell.rangeOffset,
+					rangeLength: cell.rangeLength,
+					text: cell.text
+				};
+			})
+		});*/
+	}
+
 	//#endregion
 
 	//#region Extension accessible methods

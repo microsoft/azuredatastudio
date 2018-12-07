@@ -1542,6 +1542,7 @@ declare module 'sqlops' {
 
 		export interface NotebookCell {
 			contents: ICellContents;
+			uri?: vscode.Uri;
 		}
 
 		export interface NotebookShowOptions {

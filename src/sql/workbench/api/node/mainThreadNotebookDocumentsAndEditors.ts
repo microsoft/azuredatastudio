@@ -5,9 +5,11 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+import * as util from 'util';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import URI, { UriComponents } from 'vs/base/common/uri';
+import { Event, Emitter } from 'vs/base/common/event';
 import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
@@ -17,7 +19,7 @@ import { viewColumnToEditorGroup } from 'vs/workbench/api/shared/editor';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
-	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData
+	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
@@ -25,11 +27,17 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
+import { ICellModel, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 
 class MainThreadNotebookEditor extends Disposable {
+	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
+	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
+		editor.modelReady.then(model => {
+			this._register(model.contentChanged((e) => this._contentChangedEmitter.fire(e)));
+		});
 	}
 
 	public get uri(): URI {
@@ -46,6 +54,10 @@ class MainThreadNotebookEditor extends Disposable {
 
 	public get providerId(): string {
 		return this.editor.notebookParams.providerId;
+	}
+
+	public get cells(): ICellModel[] {
+		return this.editor.cells;
 	}
 
 	public save(): Thenable<boolean> {
@@ -125,9 +137,10 @@ namespace delta {
 		return { removed, added };
 	}
 
-	export function ofMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[], added: V[] } {
+	export function ofMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[], added: V[], changed: V[] } {
 		const removed: V[] = [];
 		const added: V[] = [];
+		const changed: V[] = [];
 		before.forEach((value, index) => {
 			if (!after.has(index)) {
 				removed.push(value);
@@ -138,7 +151,12 @@ namespace delta {
 				added.push(value);
 			}
 		});
-		return { removed, added };
+		after.forEach((value, index) => {
+			if (!before.has(index)) {
+				changed.push(value);
+			}
+		});
+		return { removed, added, changed };
 	}
 }
 
@@ -149,12 +167,14 @@ class NotebookEditorStateDelta {
 	constructor(
 		readonly removedEditors: INotebookEditor[],
 		readonly addedEditors: INotebookEditor[],
+		readonly changedEditors: INotebookEditor[],
 		readonly oldActiveEditor: string,
 		readonly newActiveEditor: string,
 	) {
 		this.isEmpty =
 			this.removedEditors.length === 0
 			&& this.addedEditors.length === 0
+			&& this.changedEditors.length === 0
 			&& oldActiveEditor === newActiveEditor;
 	}
 
@@ -162,6 +182,7 @@ class NotebookEditorStateDelta {
 		let ret = 'NotebookEditorStateDelta\n';
 		ret += `\tRemoved Editors: [${this.removedEditors.map(e => e.id).join(', ')}]\n`;
 		ret += `\tAdded Editors: [${this.addedEditors.map(e => e.id).join(', ')}]\n`;
+		ret += `\tChanged Editors: [${this.changedEditors.map(e => e.id).join(', ')}]\n`;
 		ret += `\tNew Active Editor: ${this.newActiveEditor}\n`;
 		return ret;
 	}
@@ -172,7 +193,7 @@ class NotebookEditorState {
 	static compute(before: NotebookEditorState, after: NotebookEditorState): NotebookEditorStateDelta {
 		if (!before) {
 			return new NotebookEditorStateDelta(
-				[], mapset.mapValues(after.textEditors),
+				[], mapset.mapValues(after.textEditors), mapset.mapValues(after.textEditors),
 				undefined, after.activeEditor
 			);
 		}
@@ -181,7 +202,7 @@ class NotebookEditorState {
 		const newActiveEditor = before.activeEditor !== after.activeEditor ? after.activeEditor : undefined;
 
 		return new NotebookEditorStateDelta(
-			editorDelta.removed, editorDelta.added,
+			editorDelta.removed, editorDelta.added, editorDelta.changed,
 			oldActiveEditor, newActiveEditor
 		);
 	}
@@ -219,6 +240,10 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 		this._updateState();
 	}
 
+	private _onDidChangeEditor(e: INotebookEditor): void {
+		this._updateState();
+	}
+
 	private _updateState(): void {
 		// editor
 		const editors = new Map<string, INotebookEditor>();
@@ -246,7 +271,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
-
+	private _modelToDisposeMap = new Map<string, IDisposable>();
 	constructor(
 		extHostContext: IExtHostContext,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -389,7 +414,33 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 
 		if (!empty) {
 			this._proxy.$acceptDocumentsAndEditorsDelta(extHostDelta);
+			this.processRemovedDocs(removedDocuments);
+			this.processAddedDocs(addedEditors);
 		}
+	}
+	processRemovedDocs(removedDocuments: URI[]): void {
+		if (!removedDocuments) {
+			return;
+		}
+		removedDocuments.forEach(removedDoc => {
+			let listener = this._modelToDisposeMap.get(removedDoc.toString());
+			if (listener) {
+				listener.dispose();
+				this._modelToDisposeMap.delete(removedDoc.toString());
+			}
+		});
+	}
+
+	processAddedDocs(addedEditors: MainThreadNotebookEditor[]): any {
+		if (!addedEditors) {
+			return;
+		}
+		addedEditors.forEach(editor => {
+			let modelUrl = editor.uri;
+			this._modelToDisposeMap.set(editor.uri.toString(), editor.contentChanged((e) => {
+				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e));
+			}));
+		});
 	}
 
 	private _toNotebookEditorAddData(editor: MainThreadNotebookEditor): INotebookEditorAddData {
@@ -405,8 +456,53 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let addData: INotebookModelAddedData = {
 			uri: editor.uri,
 			isDirty: editor.isDirty,
-			providerId: editor.providerId
+			providerId: editor.providerId,
+			cells: this.convertCellModelToNotebookCell(editor.cells)
 		};
 		return addData;
+	}
+
+	private _toNotebookChangeData(e: NotebookContentChange): INotebookModelChangedData {
+		let changeData: INotebookModelChangedData = {
+			cells: this.convertCellModelToNotebookCell(e.cells),
+			isDirty: e.isDirty,
+			providerId: undefined,
+			uri: undefined
+		};
+		return changeData;
+	}
+
+	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): sqlops.nb.NotebookCell[] {
+		let notebookCells: sqlops.nb.NotebookCell[] = [];
+		if (Array.isArray(cells)) {
+			for (let cell of cells) {
+				notebookCells.push({
+					uri: cell.cellUri,
+					contents: {
+						cell_type: cell.cellType,
+						execution_count: undefined,
+						metadata: {
+							language: cell.language
+						},
+						source: undefined
+
+					}
+				});
+			}
+		}
+		else {
+			notebookCells.push({
+				uri: cells.cellUri,
+				contents: {
+					cell_type: cells.cellType,
+					execution_count: undefined,
+					metadata: {
+						language: cells.language
+					},
+					source: undefined
+				}
+			});
+		}
+		return notebookCells;
 	}
 }

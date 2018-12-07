@@ -18,16 +18,14 @@ import { CellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class ExtHostNotebookDocumentData implements IDisposable {
 	private _document: sqlops.nb.NotebookDocument;
-	private _cells: sqlops.nb.NotebookCell[];
 	private _isDisposed: boolean = false;
 
 	constructor(private readonly _proxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private readonly _uri: URI,
 		private readonly _providerId: string,
-		private _isDirty: boolean
+		private _isDirty: boolean,
+		private _cells: sqlops.nb.NotebookCell[]
 	) {
-		// TODO add cell mapping support
-		this._cells = [];
 	}
 
 	dispose(): void {

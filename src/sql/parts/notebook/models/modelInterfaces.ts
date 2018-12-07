@@ -289,6 +289,12 @@ export interface INotebookModel {
 	readonly contexts: IDefaultConnection | undefined;
 
 	/**
+	 * Event fired on first initialization of the cells and
+	 * on subsequent change events
+	 */
+	readonly contentChanged: Event<NotebookContentChange>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
@@ -337,6 +343,29 @@ export interface INotebookModel {
 	 * @param edits The edit operations to perform
 	 */
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
+}
+
+export interface NotebookContentChange {
+	/**
+	 * The type of change that occurred
+	 */
+	changeType: NotebookChangeType;
+	/**
+	 * Optional cells that were changed
+	 */
+	cells?: ICellModel | ICellModel[];
+	/**
+	 * Optional index of the change, indicating the cell at which an insert or
+	 * delete occurred
+	 */
+	cellIndex?: number;
+	/**
+	 * Optional value indicating if the notebook is in a dirty or clean state after this change
+	 *
+	 * @type {boolean}
+	 * @memberof NotebookContentChange
+	 */
+	isDirty?: boolean;
 }
 
 export interface ICellModelOptions {

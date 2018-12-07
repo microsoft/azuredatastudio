@@ -18,11 +18,11 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import * as notebookUtils from './notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
@@ -109,7 +109,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.notebookService.addNotebookEditor(this);
+		// this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
 	}
@@ -132,7 +132,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._modelRegisteredDeferred.promise;
 	}
 
-	protected get cells(): ReadonlyArray<ICellModel> {
+	public get cells(): ICellModel[] {
 		return this._model ? this._model.cells : [];
 	}
 
@@ -194,7 +194,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async doLoad(): Promise<void> {
 		try {
 			await this.loadModel();
+			// this.notebookService.addNotebookEditor(this);
 			this.setLoading(false);
+			this._model.kernelChanged(e => {
+				this.notebookService.addNotebookEditor(this);
+			});
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
@@ -353,6 +357,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public get id(): string {
 		return this._notebookParams.notebookUri.toString();
+	}
+
+	public get modelReady(): Promise<INotebookModel> {
+		return this._modelReadyDeferred.promise;
 	}
 
 	isActive(): boolean {

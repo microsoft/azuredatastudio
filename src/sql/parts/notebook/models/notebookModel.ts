@@ -12,7 +12,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants } from './modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants, NotebookContentChange } from './modelInterfaces';
 import { NotebookChangeType, CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
@@ -37,28 +37,6 @@ export enum MessageLevel {
 export class ErrorInfo {
 	constructor(public readonly message: string, public readonly severity: MessageLevel) {
 	}
-}
-export interface NotebookContentChange {
-	/**
-	 * What was the change that occurred?
-	 */
-	changeType: NotebookChangeType;
-	/**
-	 * Optional cells that were changed
-	 */
-	cells?: ICellModel | ICellModel[];
-	/**
-	 * Optional index of the change, indicating the cell at which an insert or
-	 * delete occurred
-	 */
-	cellIndex?: number;
-	/**
-	 * Optional value indicating if the notebook is in a dirty or clean state after this change
-	 *
-	 * @type {boolean}
-	 * @memberof NotebookContentChange
-	 */
-	isDirty?: boolean;
 }
 
 export class NotebookModel extends Disposable implements INotebookModel {
