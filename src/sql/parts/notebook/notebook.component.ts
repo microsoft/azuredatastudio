@@ -45,9 +45,6 @@ import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
-import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -91,9 +88,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IHistoryService) private historyService: IHistoryService,
 		@Inject(IWindowService) private windowService: IWindowService,
-		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
-		@Inject(IUntitledEditorService) private untitledEditorService: IUntitledEditorService,
-		@Inject(IEditorGroupsService) private editorGroupsService: IEditorGroupsService
 	) {
 		super();
 		this.updateProfile();
