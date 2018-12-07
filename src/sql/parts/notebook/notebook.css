@@ -37,7 +37,7 @@
 }
 
 .notebookEditor .monaco-select-box {
-	min-width: 150px;
+	min-width: 100px;
 }
 
 .notebookEditor .notebook-button.icon-add{
