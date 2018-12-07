@@ -1,8 +1,8 @@
 # Microsoft SQL Server Import for Azure Data Studio
 
 Microsoft SQL Server Import for Azure Data Studio includes two wizards: 
-- [Import Flat File Wizard](#import-flat-file-wizard)
-- [Data-tier Application Wizard.](#data-tier-application-wizard)
+- [Import Flat File Wizard](#import-flat-file-wizard-preview)
+- [Data-tier Application Wizard.](#data-tier-application-wizard-preview)
 
 ## Import Flat File Wizard *(preview)*
 **The Import Flat File Wizard** is a simple way to copy data from a flat file (.csv, .txt, .json) to a SQL Server table. Checkout below the reasons for using the Import Flat File wizard, how to find this wizard, and a simple example.
