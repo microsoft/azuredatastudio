@@ -88,12 +88,16 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._register(notebookRegistry.onNewProvider(this.updateRegisteredProviders, this));
 		this.registerDefaultProvider();
 
-		extensionService.whenInstalledExtensionsRegistered().then(() => {
-			this.cleanupProviders();
-			this._isRegistrationComplete = true;
-			this._registrationComplete.resolve();
-		});
-		this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
+		if (extensionService) {
+				extensionService.whenInstalledExtensionsRegistered().then(() => {
+				this.cleanupProviders();
+				this._isRegistrationComplete = true;
+				this._registrationComplete.resolve();
+			});
+		}
+		if (extensionManagementService) {
+			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
+		}
 	}
 
 	private updateRegisteredProviders(p: { id: string; properties: NotebookProviderDescription; }) {
