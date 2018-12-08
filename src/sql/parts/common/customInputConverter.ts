@@ -74,8 +74,6 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 				return notebookInput;
 			});
-		} else {
-			console.log('warning: notebook not found');
 		}
 	}
 	return input;
