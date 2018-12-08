@@ -78,7 +78,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._onRowCountChange.fire();
 	}
 
-	find(exp: string, maxMatches: number = -1): Thenable<IFindPosition> {
+	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
 		if (!this._findFn) {
 			return TPromise.wrapError(new Error('no find function provided'));
 		}
