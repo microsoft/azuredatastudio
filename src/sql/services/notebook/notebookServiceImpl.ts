@@ -18,7 +18,7 @@ import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
-import { Extensions, INotebookProviderRegistry, NotebookProviderDescription } from 'sql/services/notebook/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/services/notebook/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -75,7 +75,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
-	private _fileToProviders = new Map<string, NotebookProviderDescription>();
+	private _fileToProviders = new Map<string, NotebookProviderRegistration>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 
@@ -85,7 +85,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService
 	) {
 		super();
-		this._register(notebookRegistry.onNewProvider(this.updateRegisteredProviders, this));
+		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerDefaultProvider();
 
 		if (extensionService) {
@@ -100,20 +100,20 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	private updateRegisteredProviders(p: { id: string; properties: NotebookProviderDescription; }) {
-		let provider = p.properties;
+	private updateRegisteredProviders(p: { id: string; registration: NotebookProviderRegistration; }) {
+		let registration = p.registration;
 
 		if (!this._providers.has(p.id)) {
 			this._providers.set(p.id, new ProviderDescriptor(p.id));
 		}
-		if (provider.fileExtensions) {
-			if (Array.isArray<string>(provider.fileExtensions)) {
-				for (let fileType of provider.fileExtensions) {
-					this.addFileProvider(fileType, provider);
+		if (registration.fileExtensions) {
+			if (Array.isArray<string>(registration.fileExtensions)) {
+				for (let fileType of registration.fileExtensions) {
+					this.addFileProvider(fileType, registration);
 				}
 			}
 			else {
-				this.addFileProvider(provider.fileExtensions, provider);
+				this.addFileProvider(registration.fileExtensions, registration);
 			}
 		}
 	}
@@ -140,7 +140,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		return this._registrationComplete.promise;
 	}
 
-	private addFileProvider(fileType: string, provider: NotebookProviderDescription) {
+	private addFileProvider(fileType: string, provider: NotebookProviderRegistration) {
 		this._fileToProviders.set(fileType.toUpperCase(), provider);
 	}
 
@@ -289,7 +289,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private cleanupProviders(): void {
-		let knownProviders = Object.keys(notebookRegistry.providers);
+		let knownProviders = Object.keys(notebookRegistry.registrations);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
 			if (!knownProviders.includes(key)) {

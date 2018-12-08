@@ -60,8 +60,6 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		uri = getNotebookEditorUri(input, instantiationService);
 		if(uri && notebookValidator.isNotebookEnabled()){
 			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
-
-				//TODO: We need to pass in notebook data either through notebook input or notebook service
 				let fileName: string = 'untitled';
 				let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
 				if (input) {
@@ -70,7 +68,6 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 				}
 				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
 				notebookInputModel.providerId = providerId;
-				//TO DO: Second parameter has to be the content.
 				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 				return notebookInput;
 			});
