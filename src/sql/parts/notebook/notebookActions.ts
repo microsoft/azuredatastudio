@@ -26,7 +26,6 @@ const attachToLabel: string = localize('AttachTo', 'Attach to: ');
 const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
-const msgConnectionNotApplicable = localize('connectionNotSupported', 'n/a');
 const msgLocalHost = localize('localhost', 'Localhost');
 
 // Action to add a cell to notebook based on cell type(code/markdown).
