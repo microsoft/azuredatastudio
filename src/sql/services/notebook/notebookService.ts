@@ -29,6 +29,7 @@ export interface INotebookService {
 
 	onNotebookEditorAdd: Event<INotebookEditor>;
 	onNotebookEditorRemove: Event<INotebookEditor>;
+	onNotebookEditorRename: Event<INotebookEditor>;
 
 	/**
 	 * Register a metadata provider
@@ -58,6 +59,8 @@ export interface INotebookService {
 	shutdown(): void;
 
 	getMimeRegistry(): RenderMimeRegistry;
+
+	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
 }
 
 export interface INotebookProvider {

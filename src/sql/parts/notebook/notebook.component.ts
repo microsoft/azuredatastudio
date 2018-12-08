@@ -5,8 +5,6 @@
 
 import './notebookStyles';
 
-import { nb } from 'sqlops';
-
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -20,7 +18,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
@@ -40,6 +38,12 @@ import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/br
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { Schemas } from 'vs/base/common/network';
+import URI from 'vs/base/common/uri';
+import { IHistoryService } from 'vs/workbench/services/history/common/history';
+import * as paths from 'vs/base/common/paths';
+import { IWindowService } from 'vs/platform/windows/common/windows';
+import { TPromise } from 'vs/base/common/winjs.base';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -81,7 +85,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
-		@Inject(IKeybindingService) private keybindingService: IKeybindingService
+		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
+		@Inject(IHistoryService) private historyService: IHistoryService,
+		@Inject(IWindowService) private windowService: IWindowService,
 	) {
 		super();
 		this.updateProfile();
@@ -332,7 +338,54 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	// Gets file path from recent workspace in local
+	private getLastActiveFilePath(untitledResource: URI): string {
+		let fileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE.toLocaleLowerCase();
+
+		let lastActiveFile = this.historyService.getLastActiveFile();
+		if (lastActiveFile) {
+			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), fileName)).fsPath;
+		}
+
+		let lastActiveFolder = this.historyService.getLastActiveWorkspaceRoot('file');
+		if (lastActiveFolder) {
+			return URI.file(paths.join(lastActiveFolder.fsPath, fileName)).fsPath;
+		}
+		return fileName;
+	}
+
+	promptForPath(defaultPath: string): TPromise<string> {
+		return this.windowService.showSaveDialog({ defaultPath });
+	}
+
+	// Entry point to save notebook
 	public async save(): Promise<boolean> {
+		let self = this;
+		let notebookUri = this.notebookParams.notebookUri;
+		if (notebookUri.scheme === Schemas.untitled) {
+			let dialogPath = this.getLastActiveFilePath(notebookUri);
+			return this.promptForPath(dialogPath).then(path => {
+				if (path) {
+					let target = URI.parse(path);
+					let resource = self._model.notebookUri;
+					self._model.notebookUri = target;
+					 this.saveNotebook().then(result => {
+						 if(result)
+						 {
+							this.notebookService.renameNotebookEditor(resource, target, this);
+						 }
+						return result;
+					 });
+				}
+				return false; // User clicks cancel
+			});
+		}
+		else {
+			return await this.saveNotebook();
+		}
+	}
+
+	private async saveNotebook(): Promise<boolean> {
 		try {
 			let saved = await this._model.saveModel();
 			if (saved) {
