@@ -265,7 +265,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		timeout = timeout || 10000;
 		let promises: Promise<INotebookProvider>[] = [
 			providerDescriptor.instanceReady,
-			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), 100))
+			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), timeout))
 		];
 		return Promise.race(promises);
 	}
