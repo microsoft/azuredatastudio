@@ -145,12 +145,12 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		let data = this._documents.get(strURL);
 		if (data) {
 			data.onModelChanged(e);
+			this._onDidChangeNotebookCell.fire({
+				cells: data.document.cells,
+				notebook: data.document,
+				kind: undefined
+			});
 		}
-		this._onDidChangeNotebookCell.fire({
-			cells: data.document.cells,
-			notebook: data.document,
-			kind: undefined
-		});
 	}
 
 	//#endregion
