@@ -258,7 +258,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		extHostContext: IExtHostContext,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@INotebookService private readonly _notebookService: INotebookService
 	) {
 		super();
 		if (extHostContext) {
@@ -306,7 +307,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		if(!providerId)
 		{
 			// Ensure there is always a sensible provider ID for this file type
-			providerId = getProviderForFileName(uri.fsPath);
+			providerId = getProviderForFileName(uri.fsPath, this._notebookService);
 		}
 
 		model.providerId = providerId;

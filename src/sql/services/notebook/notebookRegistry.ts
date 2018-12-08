@@ -9,6 +9,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export const Extensions = {
 	NotebookProviderContribution: 'notebook.providers'
@@ -54,42 +55,28 @@ let notebookContrib: IJSONSchema = {
 };
 
 export interface INotebookProviderRegistry {
+	readonly providers: NotebookProviderDescription[];
+	readonly onNewProvider: Event<{ id: string, properties: NotebookProviderDescription }>;
+
 	registerNotebookProvider(provider: NotebookProviderDescription): void;
-	getSupportedFileExtensions(): string[];
-	getProviderForFileType(fileType: string): string;
 }
 
 class NotebookProviderRegistry implements INotebookProviderRegistry {
 	private providerIdToProviders = new Map<string, NotebookProviderDescription>();
-	private fileToProviders = new Map<string, NotebookProviderDescription>();
+	private _onNewProvider = new Emitter<{ id: string, properties: NotebookProviderDescription }>();
+	public readonly onNewProvider: Event<{ id: string, properties: NotebookProviderDescription }> = this._onNewProvider.event;
 
 	registerNotebookProvider(provider: NotebookProviderDescription): void {
 		// Note: this method intentionally overrides default provider for a file type.
 		// This means that any built-in provider will be overridden by registered extensions
 		this.providerIdToProviders.set(provider.provider, provider);
-		if (provider.fileExtensions) {
-			if (Array.isArray<string>(provider.fileExtensions)) {
-				for (let fileType of provider.fileExtensions) {
-					this.addFileProvider(fileType, provider);
-				}
-			} else {
-				this.addFileProvider(provider.fileExtensions, provider);
-			}
-		}
+		this._onNewProvider.fire( { id: provider.provider, properties: provider });
 	}
 
-	private addFileProvider(fileType: string, provider: NotebookProviderDescription) {
-		this.fileToProviders.set(fileType.toUpperCase(), provider);
-	}
-
-	getSupportedFileExtensions(): string[] {
-		return Array.from(this.fileToProviders.keys());
-	}
-
-	getProviderForFileType(fileType: string): string {
-		fileType = fileType.toUpperCase();
-		let provider = this.fileToProviders.get(fileType);
-		return provider ? provider.provider : undefined;
+	public get providers(): NotebookProviderDescription[] {
+		let providerArray: NotebookProviderDescription[] = [];
+		this.providerIdToProviders.forEach(p => providerArray.push(p));
+		return providerArray;
 	}
 }
 

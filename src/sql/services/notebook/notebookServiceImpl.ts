@@ -18,40 +18,136 @@ import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
-import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
+import { Extensions, INotebookProviderRegistry, NotebookProviderDescription } from 'sql/services/notebook/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
+import { Memento } from 'vs/workbench/common/memento';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { Deferred } from 'sql/base/common/promise';
 
+export interface NotebookProviderProperties {
+	provider: string;
+	fileExtensions: string[];
+}
 
-export class NotebookService implements INotebookService {
+interface NotebookProviderCache {
+	[id: string]: NotebookProviderProperties;
+}
+
+interface NotebookProvidersMemento {
+	notebookProviderCache: NotebookProviderCache;
+}
+
+const notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
+
+class ProviderDescriptor {
+	private _instanceReady = new Deferred<INotebookProvider>();
+	constructor(private providerId: string, private _instance?: INotebookProvider) {
+		if (_instance) {
+			this._instanceReady.resolve(_instance);
+		}
+	}
+
+	public get instanceReady(): Promise<INotebookProvider> {
+		return this._instanceReady.promise;
+	}
+
+	public get instance(): INotebookProvider {
+		return this._instance;
+	}
+	public set instance(value: INotebookProvider) {
+		this._instance = value;
+		this._instanceReady.resolve(value);
+	}
+}
+
+export class NotebookService extends Disposable implements INotebookService {
 	_serviceBrand: any;
+
+	private _memento = new Memento('notebookProviders');
 	private _mimeRegistry: RenderMimeRegistry;
-	private _providers: Map<string, INotebookProvider> = new Map();
+	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _managers: Map<string, INotebookManager> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
+	private _fileToProviders = new Map<string, NotebookProviderDescription>();
+	private _registrationComplete = new Deferred<void>();
+	private _isRegistrationComplete = false;
 
-	constructor() {
+	constructor(
+		@IStorageService private _storageService: IStorageService,
+		@IExtensionService extensionService: IExtensionService,
+		@IExtensionManagementService extensionManagementService: IExtensionManagementService
+	) {
+		super();
+		this._register(notebookRegistry.onNewProvider(this.updateRegisteredProviders, this));
 		this.registerDefaultProvider();
-	}
 
-	private registerDefaultProvider() {
-		let defaultProvider = new BuiltinProvider();
-		this.registerProvider(defaultProvider.providerId, defaultProvider);
-		let registry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
-		registry.registerNotebookProvider({
-			provider: defaultProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
+		extensionService.whenInstalledExtensionsRegistered().then(() => {
+			this.cleanupProviders();
+			this._isRegistrationComplete = true;
+			this._registrationComplete.resolve();
 		});
+		this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
 	}
 
-	registerProvider(providerId: string, provider: INotebookProvider): void {
-		this._providers.set(providerId, provider);
+	private updateRegisteredProviders(p: { id: string; properties: NotebookProviderDescription; }) {
+		let provider = p.properties;
+
+		if (!this._providers.has(p.id)) {
+			this._providers.set(p.id, new ProviderDescriptor(p.id));
+		}
+		if (provider.fileExtensions) {
+			if (Array.isArray<string>(provider.fileExtensions)) {
+				for (let fileType of provider.fileExtensions) {
+					this.addFileProvider(fileType, provider);
+				}
+			}
+			else {
+				this.addFileProvider(provider.fileExtensions, provider);
+			}
+		}
+	}
+
+	registerProvider(providerId: string, instance: INotebookProvider): void {
+		let providerDescriptor = this._providers.get(providerId);
+		if (providerDescriptor) {
+			// Update, which will resolve the promise for anyone waiting on the instance to be registered
+			providerDescriptor.instance = instance;
+		} else {
+			this._providers.set(providerId, new ProviderDescriptor(providerId, instance));
+		}
 	}
 
 	unregisterProvider(providerId: string): void {
 		this._providers.delete(providerId);
+	}
+
+	get isRegistrationComplete(): boolean {
+		return this._isRegistrationComplete;
+	}
+
+	get registrationComplete(): Promise<void> {
+		return this._registrationComplete.promise;
+	}
+
+	private addFileProvider(fileType: string, provider: NotebookProviderDescription) {
+		this._fileToProviders.set(fileType.toUpperCase(), provider);
+	}
+
+	getSupportedFileExtensions(): string[] {
+		return Array.from(this._fileToProviders.keys());
+	}
+
+	getProviderForFileType(fileType: string): string {
+		fileType = fileType.toUpperCase();
+		let provider = this._fileToProviders.get(fileType);
+		return provider ? provider.provider : undefined;
 	}
 
 	public shutdown(): void {
@@ -119,32 +215,59 @@ export class NotebookService implements INotebookService {
 		}
 	}
 
-	private sendNotebookCloseToProvider(editor: INotebookEditor) {
+	private sendNotebookCloseToProvider(editor: INotebookEditor): void {
 		let notebookUri = editor.notebookParams.notebookUri;
 		let uriString = notebookUri.toString();
 		let manager = this._managers.get(uriString);
 		if (manager) {
+			// As we have a manager, we can assume provider is ready
 			this._managers.delete(uriString);
 			let provider = this._providers.get(manager.providerId);
-			provider.handleNotebookClosed(notebookUri);
+			provider.instance.handleNotebookClosed(notebookUri);
 		}
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
-	private doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Thenable<T> {
+	private async doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider: INotebookProvider;
-		if (this._providers.has(providerId)) {
-			provider = this._providers.get(providerId);
-		}
-		else {
-			provider = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+		let provider: INotebookProvider = await this.getProviderInstance(providerId);
+		return op(provider);
+	}
+
+	private async getProviderInstance(providerId: string, timeout?: number): Promise<INotebookProvider> {
+		let providerDescriptor = this._providers.get(providerId);
+		let instance: INotebookProvider;
+
+		// Try get from actual provider, waiting on its registration
+		if (providerDescriptor) {
+			if (!providerDescriptor.instance) {
+				instance = await this.waitOnProviderAvailability(providerDescriptor);
+			} else {
+				instance = providerDescriptor.instance;
+			}
 		}
 
-		if (!provider) {
-			return Promise.reject(new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
+		// Fall back to default if this failed
+		if (!instance) {
+			providerDescriptor = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+			instance = providerDescriptor ? providerDescriptor.instance : undefined;
 		}
-		return op(provider);
+
+		// Should never happen, but if default wasn't registered we should throw
+		if (!instance) {
+			throw new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'));
+		}
+		return instance;
+	}
+
+	private waitOnProviderAvailability(providerDescriptor: ProviderDescriptor, timeout?: number): Promise<INotebookProvider> {
+		// Wait up to 10 seconds for the provider to be registered
+		timeout = timeout || 10000;
+		let promises: Promise<INotebookProvider>[] = [
+			providerDescriptor.instanceReady,
+			new Promise<INotebookProvider>((resolve, reject) => setTimeout(() => resolve(), 100))
+		];
+		return Promise.race(promises);
 	}
 
 	//Returns an instantiation of RenderMimeRegistry class
@@ -155,6 +278,41 @@ export class NotebookService implements INotebookService {
 			});
 		}
 		return this._mimeRegistry;
+	}
+
+	private get providersMemento(): NotebookProvidersMemento {
+		return this._memento.getMemento(this._storageService) as NotebookProvidersMemento;
+	}
+
+	private cleanupProviders(): void {
+		let knownProviders = Object.keys(notebookRegistry.providers);
+		let cache = this.providersMemento.notebookProviderCache;
+		for (let key in cache) {
+			if (!knownProviders.includes(key)) {
+				this._providers.delete(key);
+				delete cache[key];
+			}
+		}
+	}
+
+	private registerDefaultProvider() {
+		let defaultProvider = new BuiltinProvider();
+		this.registerProvider(defaultProvider.providerId, defaultProvider);
+		notebookRegistry.registerNotebookProvider({
+			provider: defaultProvider.providerId,
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
+		});
+	}
+
+	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
+		let extensionid = getIdFromLocalExtensionId(identifier.id);
+		extensionService.getExtensions().then(i => {
+			let extension = i.find(c => c.id === extensionid);
+			if (extension && extension.contributes['notebookProvider']) {
+				let id = extension.contributes['notebookProvider'].providerId;
+				delete this.providersMemento.notebookProviderCache[id];
+			}
+		});
 	}
 }
 
