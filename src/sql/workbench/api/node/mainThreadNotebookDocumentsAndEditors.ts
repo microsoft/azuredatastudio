@@ -138,10 +138,9 @@ namespace delta {
 		return { removed, added };
 	}
 
-	export function ofMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[], added: V[], changed: V[] } {
+	export function ofMaps<K, V>(before: Map<K, V>, after: Map<K, V>): { removed: V[], added: V[] } {
 		const removed: V[] = [];
 		const added: V[] = [];
-		const changed: V[] = [];
 		before.forEach((value, index) => {
 			if (!after.has(index)) {
 				removed.push(value);
@@ -152,12 +151,7 @@ namespace delta {
 				added.push(value);
 			}
 		});
-		after.forEach((value, index) => {
-			if (!before.has(index)) {
-				changed.push(value);
-			}
-		});
-		return { removed, added, changed };
+		return { removed, added };
 	}
 }
 
@@ -168,14 +162,12 @@ class NotebookEditorStateDelta {
 	constructor(
 		readonly removedEditors: INotebookEditor[],
 		readonly addedEditors: INotebookEditor[],
-		readonly changedEditors: INotebookEditor[],
 		readonly oldActiveEditor: string,
 		readonly newActiveEditor: string,
 	) {
 		this.isEmpty =
 			this.removedEditors.length === 0
 			&& this.addedEditors.length === 0
-			&& this.changedEditors.length === 0
 			&& oldActiveEditor === newActiveEditor;
 	}
 
@@ -183,7 +175,6 @@ class NotebookEditorStateDelta {
 		let ret = 'NotebookEditorStateDelta\n';
 		ret += `\tRemoved Editors: [${this.removedEditors.map(e => e.id).join(', ')}]\n`;
 		ret += `\tAdded Editors: [${this.addedEditors.map(e => e.id).join(', ')}]\n`;
-		ret += `\tChanged Editors: [${this.changedEditors.map(e => e.id).join(', ')}]\n`;
 		ret += `\tNew Active Editor: ${this.newActiveEditor}\n`;
 		return ret;
 	}
@@ -194,7 +185,7 @@ class NotebookEditorState {
 	static compute(before: NotebookEditorState, after: NotebookEditorState): NotebookEditorStateDelta {
 		if (!before) {
 			return new NotebookEditorStateDelta(
-				[], mapset.mapValues(after.textEditors), mapset.mapValues(after.textEditors),
+				[], mapset.mapValues(after.textEditors),
 				undefined, after.activeEditor
 			);
 		}
@@ -203,7 +194,7 @@ class NotebookEditorState {
 		const newActiveEditor = before.activeEditor !== after.activeEditor ? after.activeEditor : undefined;
 
 		return new NotebookEditorStateDelta(
-			editorDelta.removed, editorDelta.added, editorDelta.changed,
+			editorDelta.removed, editorDelta.added,
 			oldActiveEditor, newActiveEditor
 		);
 	}
@@ -238,10 +229,6 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 
 	private _onDidRemoveEditor(e: INotebookEditor): void {
 		// TODO remove event listeners
-		this._updateState();
-	}
-
-	private _onDidChangeEditor(e: INotebookEditor): void {
 		this._updateState();
 	}
 

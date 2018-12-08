@@ -109,7 +109,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		// this.notebookService.addNotebookEditor(this);
+		this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
 	}
@@ -207,11 +207,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async doLoad(): Promise<void> {
 		try {
 			await this.loadModel();
-			// this.notebookService.addNotebookEditor(this);
 			this.setLoading(false);
-			this._model.kernelChanged(e => {
-				this.notebookService.addNotebookEditor(this);
-			});
 			this._modelReadyDeferred.resolve(this._model);
 		} catch (error) {
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));

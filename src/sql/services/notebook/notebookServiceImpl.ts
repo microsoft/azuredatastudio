@@ -54,14 +54,6 @@ export class NotebookService implements INotebookService {
 		this._providers.delete(providerId);
 	}
 
-	getProviders(): INotebookProvider[] {
-		let notebookProviders: INotebookProvider[] = [];
-		this._providers.forEach((value: INotebookProvider, key: string) => {
-			notebookProviders.push(value);
-		});
-		return notebookProviders;
-	}
-
 	public shutdown(): void {
 		this._managers.forEach(manager => {
 			if (manager.serverManager) {
@@ -99,10 +91,6 @@ export class NotebookService implements INotebookService {
 	addNotebookEditor(editor: INotebookEditor): void {
 		this._editors.set(editor.id, editor);
 		this._onNotebookEditorAdd.fire(editor);
-	}
-
-	signalCellsChanged(editor: INotebookEditor): void {
-		this._onCellChanged.fire(editor);
 	}
 
 	removeNotebookEditor(editor: INotebookEditor): void {
