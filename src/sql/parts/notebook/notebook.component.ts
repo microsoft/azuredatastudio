@@ -271,7 +271,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async openExtensionGallery(): Promise<void> {
 		try {
 			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as IExtensionsViewlet;
-			viewlet.search('sql-vnext ');
+			viewlet.search('sql-vnext');
 			viewlet.focus();
 		} catch (error) {
 			this.notificationService.error(error.message);
