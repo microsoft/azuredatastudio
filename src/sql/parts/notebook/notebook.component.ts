@@ -32,11 +32,11 @@ import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/co
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
@@ -140,7 +140,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._modelRegisteredDeferred.promise;
 	}
 
-	protected get cells(): ReadonlyArray<ICellModel> {
+	public get cells(): ICellModel[] {
 		return this._model ? this._model.cells : [];
 	}
 
@@ -450,6 +450,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	public get id(): string {
 		return this._notebookParams.notebookUri.toString();
+	}
+
+	public get modelReady(): Promise<INotebookModel> {
+		return this._modelReadyDeferred.promise;
 	}
 
 	isActive(): boolean {

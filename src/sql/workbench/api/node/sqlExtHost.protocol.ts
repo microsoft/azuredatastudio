@@ -797,6 +797,14 @@ export interface INotebookModelAddedData {
 	uri: UriComponents;
 	providerId: string;
 	isDirty: boolean;
+	cells: sqlops.nb.NotebookCell[];
+}
+
+export interface INotebookModelChangedData {
+	uri: UriComponents;
+	providerId: string;
+	isDirty: boolean;
+	cells: sqlops.nb.NotebookCell[];
 }
 
 export interface INotebookEditorAddData {
@@ -815,6 +823,7 @@ export interface INotebookShowOptions {
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {
 	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void;
+	$acceptModelChanged(strURL: UriComponents, e: INotebookModelChangedData);
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {

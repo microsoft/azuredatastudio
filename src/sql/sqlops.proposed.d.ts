@@ -1548,6 +1548,7 @@ declare module 'sqlops' {
 
 		export interface NotebookCell {
 			contents: ICellContents;
+			uri?: vscode.Uri;
 		}
 
 		export interface NotebookShowOptions {
@@ -1593,7 +1594,7 @@ declare module 'sqlops' {
 			/**
 			 * The new value for the [notebook documents's cells](#NotebookDocument.cells).
 			 */
-			cell: NotebookCell[];
+			cells: NotebookCell[];
 			/**
 			 * The [change kind](#TextEditorSelectionChangeKind) which has triggered this
 			 * event. Can be `undefined`.

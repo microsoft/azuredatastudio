@@ -73,6 +73,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _managers: Map<string, INotebookManager> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
+	private _onCellChanged = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviders = new Map<string, NotebookProviderRegistration>();
@@ -183,6 +184,9 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 	get onNotebookEditorRemove(): Event<INotebookEditor> {
 		return this._onNotebookEditorRemove.event;
+	}
+	get onCellChanged(): Event<INotebookEditor> {
+		return this._onCellChanged.event;
 	}
 
 	get onNotebookEditorRename(): Event<INotebookEditor> {

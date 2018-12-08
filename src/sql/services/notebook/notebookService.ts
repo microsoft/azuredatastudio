@@ -16,6 +16,7 @@ import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ICellModel, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -93,6 +94,8 @@ export interface INotebookParams extends IBootstrapParams {
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
+	readonly cells?: ICellModel[];
+	readonly modelReady: Promise<INotebookModel>;
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;

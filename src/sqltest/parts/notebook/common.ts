@@ -8,7 +8,7 @@
 import { nb, IConnectionProfile } from 'sqlops';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -44,6 +44,9 @@ export class NotebookModelStub implements INotebookModel {
     get contextsChanged(): Event<void> {
         throw new Error('method not implemented.');
     }
+    get contentChanged(): Event<NotebookContentChange> {
+		throw new Error('method not implemented.');
+	}
     get specs(): nb.IAllKernels {
         throw new Error('method not implemented.');
     }
