@@ -65,8 +65,6 @@ export class SaveNotebookAction extends Action {
 		let saved = await context.save();
 		if (saved) {
 			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-		} else {
-			this._notificationService.error(SaveNotebookAction.notebookFailedSaveMsg);
 		}
 		return saved;
 	}

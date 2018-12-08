@@ -29,6 +29,7 @@ export class NotebookService implements INotebookService {
 	private _managers: Map<string, INotebookManager> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
+	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 
 	constructor() {
@@ -84,6 +85,10 @@ export class NotebookService implements INotebookService {
 		return this._onNotebookEditorRemove.event;
 	}
 
+	get onNotebookEditorRename(): Event<INotebookEditor> {
+		return this._onNotebookEditorRename.event;
+	}
+
 	addNotebookEditor(editor: INotebookEditor): void {
 		this._editors.set(editor.id, editor);
 		this._onNotebookEditorAdd.fire(editor);
@@ -101,6 +106,17 @@ export class NotebookService implements INotebookService {
 		let editors = [];
 		this._editors.forEach(e => editors.push(e));
 		return editors;
+	}
+
+	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void {
+		let oldUriKey = oldUri.toString();
+		if(this._editors.has(oldUriKey))
+		{
+			this._editors.delete(oldUriKey);
+			currentEditor.notebookParams.notebookUri = newUri;
+			this._editors.set(newUri.toString(), currentEditor);
+			this._onNotebookEditorRename.fire(currentEditor);
+		}
 	}
 
 	private sendNotebookCloseToProvider(editor: INotebookEditor) {
