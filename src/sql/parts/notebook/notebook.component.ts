@@ -9,41 +9,42 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, V
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
-
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
-
-import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE } from 'sql/services/notebook/notebookService';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
-import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
-import * as notebookUtils from './notebookUtils';
-import { Deferred } from 'sql/base/common/promise';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, IActionItem } from 'vs/base/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Schemas } from 'vs/base/common/network';
 import URI from 'vs/base/common/uri';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/common/extensions';
+
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
+import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
+import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { Deferred } from 'sql/base/common/promise';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -88,6 +89,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IHistoryService) private historyService: IHistoryService,
 		@Inject(IWindowService) private windowService: IWindowService,
+		@Inject(IViewletService) private viewletService: IViewletService
 	) {
 		super();
 		this.updateProfile();
@@ -228,6 +230,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private async loadModel(): Promise<void> {
+		await this.awaitNonDefaultProvider();
 		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
 		let model = new NotebookModel({
 			factory: this.modelFactory,
@@ -245,6 +248,34 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
 		this._changeRef.detectChanges();
+	}
+
+	private async awaitNonDefaultProvider(): Promise<void> {
+		// Wait on registration for now. Long-term would be good to cache and refresh
+		await this.notebookService.registrationComplete;
+		// Refresh the provider if we had been using default
+		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
+			this._notebookParams.providerId = notebookUtils.getProviderForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+		}
+		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
+			// If it's still the default, warn them they should install an extension
+			this.notificationService.prompt(Severity.Warning,
+				localize('noKernelInstalled', 'Please install the SQL Server 2019 extension to run cells'),
+				[{
+					label: localize('installSql2019Extension', 'Install Extension'),
+					run: () => this.openExtensionGallery()
+				}]);
+		}
+	}
+
+	private async openExtensionGallery(): Promise<void> {
+		try {
+			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as IExtensionsViewlet;
+			viewlet.search('sql-vnext');
+			viewlet.focus();
+		} catch (error) {
+			this.notificationService.error(error.message);
+		}
 	}
 
 	// Updates toolbar components

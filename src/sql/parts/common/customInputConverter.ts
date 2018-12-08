@@ -5,9 +5,8 @@
 
 import * as path from 'path';
 
-import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorInput, IEditorInput } from 'vs/workbench/common/editor';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import URI from 'vs/base/common/uri';
@@ -17,8 +16,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput, NotebookInputModel, NotebookInputValidator } from 'sql/parts/notebook/notebookInput';
-import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
-import { DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/services/notebook/notebookService';
 import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
 
 const fs = require('fs');
@@ -59,20 +57,20 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 
 		//Notebook
 		let notebookValidator = instantiationService.createInstance(NotebookInputValidator);
-		uri = getNotebookEditorUri(input);
+		uri = getNotebookEditorUri(input, instantiationService);
 		if(uri && notebookValidator.isNotebookEnabled()){
-			//TODO: We need to pass in notebook data either through notebook input or notebook service
-			let fileName: string = 'untitled';
-			let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
-			if (input) {
-				fileName = input.getName();
-				providerId = getProviderForFileName(fileName);
-			}
-			let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
-			notebookInputModel.providerId = providerId;
-			//TO DO: Second parameter has to be the content.
-			let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
-			return notebookInput;
+			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
+				let fileName: string = 'untitled';
+				let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
+				if (input) {
+					fileName = input.getName();
+					providerId = getProviderForFileName(fileName, notebookService);
+				}
+				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
+				notebookInputModel.providerId = providerId;
+				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
+				return notebookInput;
+			});
 		}
 	}
 	return input;
@@ -159,7 +157,7 @@ function getQueryPlanEditorUri(input: EditorInput): URI {
  * If input is a supported notebook editor file (.ipynb), return it's URI. Otherwise return undefined.
  * @param input The EditorInput to get the URI of.
  */
-function getNotebookEditorUri(input: EditorInput): URI {
+function getNotebookEditorUri(input: EditorInput, instantiationService: IInstantiationService): URI {
 	if (!input || !input.getName()) {
 		return undefined;
 	}
@@ -170,7 +168,7 @@ function getNotebookEditorUri(input: EditorInput): URI {
 	if (!(input instanceof NotebookInput)) {
 		let uri: URI = getSupportedInputResource(input);
 		if (uri) {
-			if (hasFileExtension(getNotebookFileExtensions(), input, false)) {
+			if (hasFileExtension(getNotebookFileExtensions(instantiationService), input, false)) {
 				return uri;
 			}
 		}
@@ -179,9 +177,17 @@ function getNotebookEditorUri(input: EditorInput): URI {
 	return undefined;
 }
 
-function getNotebookFileExtensions() {
-	let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
-	return notebookRegistry.getSupportedFileExtensions();
+function getNotebookFileExtensions(instantiationService: IInstantiationService): string[] {
+	return withService<INotebookService, string[]>(instantiationService, INotebookService, notebookService => {
+		return notebookService.getSupportedFileExtensions();
+	});
+}
+
+function withService<TService, TResult>(instantiationService: IInstantiationService, serviceId: ServiceIdentifier<TService>, action: (service: TService) => TResult, ): TResult {
+	return instantiationService.invokeFunction(accessor => {
+		let service = accessor.get(serviceId);
+		return action(service);
+	});
 }
 
 /**

@@ -26,10 +26,12 @@ export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 export interface INotebookService {
 	_serviceBrand: any;
 
-	onNotebookEditorAdd: Event<INotebookEditor>;
-	onNotebookEditorRemove: Event<INotebookEditor>;
+	readonly onNotebookEditorAdd: Event<INotebookEditor>;
+	readonly onNotebookEditorRemove: Event<INotebookEditor>;
 	onNotebookEditorRename: Event<INotebookEditor>;
 
+	readonly isRegistrationComplete: boolean;
+	readonly registrationComplete: Promise<void>;
 	/**
 	 * Register a metadata provider
 	 */
@@ -39,6 +41,10 @@ export interface INotebookService {
 	 * Register a metadata provider
 	 */
 	unregisterProvider(providerId: string): void;
+
+	getSupportedFileExtensions(): string[];
+
+	getProviderForFileType(fileType: string): string;
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
