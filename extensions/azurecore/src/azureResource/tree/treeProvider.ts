@@ -18,7 +18,6 @@ import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { treeLocalizationIdPrefix } from './constants';
 import { IAzureResourceAccountService } from '../../azureResource/interfaces';
 import { AzureResourceServiceNames } from '../constants';
 
@@ -96,6 +95,6 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 	private _loadingTimer: NodeJS.Timer = undefined;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
-	private static readonly loadingLabel = localize(`${treeLocalizationIdPrefix}.treeProvider.loadingLabel`, 'Loading ...');
+	private static readonly loadingLabel = localize('azure.resource.tree.treeProvider.loadingLabel', 'Loading ...');
 	private static readonly loadingTimerInterval = 5000;
 }

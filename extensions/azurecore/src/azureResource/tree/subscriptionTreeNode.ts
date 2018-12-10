@@ -16,7 +16,6 @@ import { IAzureResourceNodeWithProviderId } from '../interfaces';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType } from '../constants';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { treeLocalizationIdPrefix } from './constants';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { AzureResourceService } from '../resourceService';
@@ -91,5 +90,5 @@ export class AzureResourceSubscriptionTreeNode extends AzureResourceContainerTre
 
 	private _id: string = undefined;
 
-	private static readonly noResourcesLabel = localize(`${treeLocalizationIdPrefix}.subscriptionTreeNode.noResourcesLabel`, 'No Resources found.');
+	private static readonly noResourcesLabel = localize('azure.resource.tree.subscriptionTreeNode.noResourcesLabel', 'No Resources found.');
 }

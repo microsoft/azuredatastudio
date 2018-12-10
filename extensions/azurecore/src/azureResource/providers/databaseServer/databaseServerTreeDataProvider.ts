@@ -81,8 +81,6 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 
-	private static readonly idPrefix = 'azure.resource.providers.databaseServer.treeDataProvider';
-
-	private static readonly containerId = `${AzureResourceDatabaseServerTreeDataProvider.idPrefix}.databaseServerContainer`;
-	private static readonly containerLabel = localize(`${AzureResourceDatabaseServerTreeDataProvider.idPrefix}.databaseServerContainerLabel`, 'SQL Servers');
+	private static readonly containerId = 'azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainer';
+	private static readonly containerLabel = localize('azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel', 'SQL Servers');
 }

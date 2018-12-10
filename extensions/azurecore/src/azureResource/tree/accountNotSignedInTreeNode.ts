@@ -12,7 +12,6 @@ const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
 import { AzureResourceItemType } from '../constants';
-import { treeLocalizationIdPrefix } from './constants';
 
 export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
@@ -48,5 +47,5 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 		return 'message_accountNotSignedIn';
 	}
 
-	private static readonly signInLabel = localize(`${treeLocalizationIdPrefix}.accountNotSignedInTreeNode.signInLabel`, 'Sign in to Azure ...');
+	private static readonly signInLabel = localize('azure.resource.tree.accountNotSignedInTreeNode.signInLabel', 'Sign in to Azure ...');
 }

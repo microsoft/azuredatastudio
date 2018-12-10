@@ -20,7 +20,6 @@ import { AzureResourceSubscriptionTreeNode } from './subscriptionTreeNode';
 import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { treeLocalizationIdPrefix } from './constants';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService } from '../../azureResource/interfaces';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
@@ -55,7 +54,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 						subscriptions.push(...await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)));
 					}
 				} catch (error) {
-					throw new AzureResourceCredentialError(localize(`${AzureResourceAccountTreeNode.localizationIdPrefix}.credentialError`, 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
+					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
 				}
 
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
@@ -167,7 +166,5 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 	private _totalSubscriptionCount = 0;
 	private _selectedSubscriptionCount = 0;
 
-	private static readonly localizationIdPrefix = `${treeLocalizationIdPrefix}.accountTreeNode`;
-
-	private static readonly noSubscriptionsLabel = localize(`${AzureResourceAccountTreeNode.localizationIdPrefix}.noSubscriptionsLabel`, 'No Subscriptions found.');
+	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', 'No Subscriptions found.');
 }
