@@ -9,6 +9,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import URI from 'vs/base/common/uri';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class UpgradeToAzureDataStudio implements IWorkbenchContribution {
 	private static AzureDataStudioDownloadLink = 'https://go.microsoft.com/fwlink/?linkid=2049035';
@@ -19,12 +20,18 @@ export class UpgradeToAzureDataStudio implements IWorkbenchContribution {
 		@INotificationService notificationService: INotificationService,
 		@IWindowService windowService: IWindowService,
 		@IWindowsService windowsService: IWindowsService,
+		@IConfigurationService configurationService: IConfigurationService,
 	) {
 		Promise.all([
 			windowService.isFocused(),
 			windowsService.getWindowCount()
 		]).then(([focused, count]) => {
 			if (!focused && count > 1) {
+				return null;
+			}
+
+			const disablePrompt = configurationService.getValue<boolean>('upgrade.disablePrompt');
+			if (disablePrompt) {
 				return null;
 			}
 

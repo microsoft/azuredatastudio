@@ -12,6 +12,8 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 // {{SQL CARBON EDIT}} - Add preview feature switch
 import { EnablePreviewFeatures } from 'sql/workbench/electron-browser/enablePreviewFeatures';
+import * as nls from 'vs/nls';
+import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 
 // {{SQL CARBON EDIT}}
 // Registry
@@ -34,3 +36,22 @@ Registry
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(UpgradeToAzureDataStudio, LifecyclePhase.Eventually);
+
+
+const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
+configurationRegistry.registerConfiguration({
+	'id': 'upgradeToAzureDataStudio',
+	'order': 25,
+	'title': nls.localize('updateToAzureDataStudio', "Upgrade"),
+	'type': 'object',
+	'properties': {
+		'upgrade.disablePrompt': {
+			'type': 'boolean',
+			'default': false,
+			'scope': ConfigurationScope.APPLICATION,
+			'description': nls.localize('updateToAzureDataStudio.disablePrompt', "Disables the Upgrade to Azure Data Studio prompt"),
+			'tags': ['upgrade']
+		},
+	}
+});
+
