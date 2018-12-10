@@ -4,11 +4,16 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RunCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -19,20 +24,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import URI from 'vs/base/common/uri';
-import { localize } from 'vs/nls';
-import { Action } from 'vs/base/common/actions';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunCellAction, DeleteCellAction, AddCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
-import { CellTypes } from 'sql/parts/notebook/models/contracts';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const CODE_SELECTOR: string = 'code-component';
@@ -59,15 +55,14 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	protected _actionBar: Taskbar;
-	protected _moreActions: ActionBar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _uri: string;
 	private _model: NotebookModel;
-	private _actions: Action[] = [];
 	private _activeCellId: string;
+	private _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -81,13 +76,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(INotificationService) private notificationService: INotificationService,
 	) {
 		super();
-		this._actions.push(
-			this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
-			this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
-			this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
-			this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
-			this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'))
-		);
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 	}
 
 	ngOnInit() {
@@ -105,10 +94,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				if (this.cellModel.id === changedProp.currentValue) {
-					this.toggleMoreActions(true);
+					this._cellToggleMoreActions.toggle(true, this.moreActionsElementRef, this.model, this.cellModel);
 				}
 				else {
-					this.toggleMoreActions(false);
+					this._cellToggleMoreActions.toggle(false, this.moreActionsElementRef, this.model, this.cellModel);
 				}
 				break;
 			}
@@ -173,21 +162,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		]);
 	}
 
-	private toggleMoreActions(showIcon: boolean) {
-		let context = new CellContext(this.model, this.cellModel);
-		let moreActionsElement = <HTMLElement>this.moreActionsElementRef.nativeElement;
-		if (showIcon) {
-			if (moreActionsElement.childNodes.length > 0) {
-				moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
-			}
-			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
-			this._moreActions.context = { target: moreActionsElement };
-			this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
-		}
-		else if (moreActionsElement.childNodes.length > 0) {
-			moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
-		}
-	}
 
 	private createUri(): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
