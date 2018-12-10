@@ -29,7 +29,7 @@ export const untitledFilePrefix = 'SQLQuery';
 
 // mode identifier for SQL mode
 export const sqlModeId = 'sql';
-export const notebookModeId = 'ipynb';
+export const notebookModeId = 'notebook';
 
 /**
  * Checks if the specified input is supported by one our custom input types, and if so convert it
@@ -242,3 +242,17 @@ function hasFileExtension(extensions: string[], input: EditorInput, checkUntitle
 	return false;
 }
 
+// Returns file mode - notebookModeId or sqlModeId
+export function getFileMode(instantiationService: IInstantiationService, resource: URI): string {
+	if (!resource) {
+		return sqlModeId;
+	}
+	return withService<INotebookService, string>(instantiationService, INotebookService, notebookService => {
+		for (const editor of notebookService.listNotebookEditors()) {
+			if (editor.notebookParams.notebookUri === resource) {
+				return notebookModeId;
+			}
+		}
+		return sqlModeId;
+	});
+}

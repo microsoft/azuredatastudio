@@ -408,7 +408,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					this.saveNotebook().then(result => {
 						if(result)
 						{
-							this.notebookService.renameNotebookEditor(resource, target, this);
 							return this.replaceUntitledNotebookEditor(resource, target);
 						}
 						return result;
@@ -438,6 +437,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				editor: { resource },
 				replacement
 			}], g))).then(() => {
+				this.notebookService.renameNotebookEditor(resource, target, this);
 				return true;
 			});
 	}
