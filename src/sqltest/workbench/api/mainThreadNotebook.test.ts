@@ -131,10 +131,10 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$doStopServer(managerHandle: number): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook> {
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebookContents> {
 		throw new Error('Method not implemented.');
 	}
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook> {
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
 		throw new Error('Method not implemented.');
 	}
 	$refreshSpecs(managerHandle: number): Thenable<sqlops.nb.IAllKernels> {

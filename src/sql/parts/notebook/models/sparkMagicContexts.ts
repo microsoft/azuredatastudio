@@ -140,9 +140,16 @@ export class SparkMagicContexts {
 	 * @param savedKernelInfo kernel info loaded from
 	 */
 	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo, notificationService: INotificationService): nb.IKernelSpec {
-		let defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+		let foundSavedKernelInSpecs;
+		let defaultKernel;
+		if (specs) {
+			defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+			if (savedKernelInfo) {
+				foundSavedKernelInSpecs = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+			}
+		}
 		let profile = connectionInfo as IConnectionProfile;
-		if (specs && connectionInfo && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
+		if (foundSavedKernelInSpecs && specs && connectionInfo && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
 			// set default kernel to default spark kernel if profile exists
 			// otherwise, set default to kernel info loaded from existing file
 			defaultKernel = !savedKernelInfo ? specs.kernels.find((spec) => spec.name === notebookConstants.defaultSparkKernel) : savedKernelInfo;

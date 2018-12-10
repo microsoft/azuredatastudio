@@ -38,6 +38,7 @@ import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelVi
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -75,6 +76,7 @@ export function createApiFactory(
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
+	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 
 
 	return {
@@ -346,8 +348,8 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title, extension.extensionLocation);
+				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
@@ -420,9 +422,28 @@ export function createApiFactory(
 			};
 
 			const nb = {
+				get notebookDocuments() {
+					return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => doc.document);
+				},
+				get activeNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.getActiveEditor();
+				},
+				get visibleNotebookEditors() {
+					return extHostNotebookDocumentsAndEditors.getAllEditors();
+				},
+				get onDidOpenNotebookDocument() {
+					return extHostNotebook.onDidOpenNotebookDocument;
+				},
+				get onDidChangeNotebookCell() {
+					return extHostNotebook.onDidChangeNotebookCell;
+				},
+				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
+					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
+				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
-				}
+				},
+				CellRange: sqlExtHostTypes.CellRange
 			};
 
 			return {

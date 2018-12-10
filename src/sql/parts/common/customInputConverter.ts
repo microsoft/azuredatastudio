@@ -19,6 +19,7 @@ import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput, NotebookInputModel, NotebookInputValidator } from 'sql/parts/notebook/notebookInput';
 import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
 import { DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
 
 const fs = require('fs');
 
@@ -182,17 +183,6 @@ function getNotebookFileExtensions() {
 	let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
 	return notebookRegistry.getSupportedFileExtensions();
 }
-
-function getProviderForFileName(fileName: string) {
-	let fileExt = path.extname(fileName);
-	if (fileExt && fileExt.startsWith('.')) {
-		fileExt = fileExt.slice(1,fileExt.length);
-		let notebookRegistry = Registry.as<INotebookProviderRegistry>(Extensions.NotebookProviderContribution);
-		return notebookRegistry.getProviderForFileType(fileExt);
-	}
-	return DEFAULT_NOTEBOOK_PROVIDER;
-}
-
 
 /**
  * Checks whether the given EditorInput is set to either undefined or sql mode

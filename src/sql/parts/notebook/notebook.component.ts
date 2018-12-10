@@ -7,7 +7,7 @@ import './notebookStyles';
 
 import { nb } from 'sqlops';
 
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -20,7 +20,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
@@ -40,6 +40,7 @@ import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/br
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -48,7 +49,7 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 	selector: NOTEBOOK_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebook.component.html'))
 })
-export class NotebookComponent extends AngularDisposable implements OnInit {
+export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
@@ -73,7 +74,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		@Inject(IEditorService) private editorService: IEditorService,
 		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
-		@Inject(IBootstrapParams) private notebookParams: INotebookParams,
+		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
@@ -108,8 +109,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
+	}
+
+	ngOnDestroy() {
+		if (this.notebookService) {
+			this.notebookService.removeNotebookEditor(this);
+		}
 	}
 
 	public get model(): NotebookModel {
@@ -133,7 +141,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel) {
+	public selectCell(cell: ICellModel, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
 		if (cell !== this._activeCell) {
 			if (this._activeCell) {
 				this._activeCell.active = false;
@@ -144,6 +155,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 			this._activeCellId = cell.id;
 			this._changeRef.detectChanges();
 		}
+	}
+
+	public unselectActiveCell() {
+		if (this._activeCell) {
+			this._activeCell.active = false;
+		}
+		this._activeCell = null;
+		this._model.activeCell = null;
+		this._activeCellId = null;
+		this._changeRef.detectChanges();
 	}
 
 	// Add cell based on cell type
@@ -201,16 +222,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private async loadModel(): Promise<void> {
-		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this.notebookParams.providerId, this.notebookParams.notebookUri);
+		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
 		let model = new NotebookModel({
 			factory: this.modelFactory,
-			notebookUri: this.notebookParams.notebookUri,
+			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManager: this.notebookManager
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		await model.requestModelLoad(this.notebookParams.isTrusted);
+		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		this._model = model;
 		this.updateToolbarComponents(this._model.trustedMode);
@@ -231,10 +252,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private get modelFactory(): IModelFactory {
-		if (!this.notebookParams.modelFactory) {
-			this.notebookParams.modelFactory = new ModelFactory();
+		if (!this._notebookParams.modelFactory) {
+			this._notebookParams.modelFactory = new ModelFactory();
 		}
-		return this.notebookParams.modelFactory;
+		return this._notebookParams.modelFactory;
 	}
 	private handleModelError(notification: INotification): void {
 		this.notificationService.notify(notification);
@@ -314,6 +335,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	public async save(): Promise<boolean> {
 		try {
 			let saved = await this._model.saveModel();
+			if (saved) {
+				this.setDirty(false);
+			}
 			return saved;
 		} catch (err) {
 			this.notificationService.error(localize('saveFailed', 'Failed to save notebook: {0}', notebookUtils.getErrorMessage(err)));
@@ -322,10 +346,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 	}
 
 	private setDirty(isDirty: boolean): void {
-		// TODO reenable handling of isDirty
-		// if (this.editor) {
-		//     this.editor.isDirty = isDirty;
-		// }
+		if(this._notebookParams.input){
+			this._notebookParams.input.setDirty(isDirty);
+		}
 	}
 
 	private actionItemProvider(action: Action): IActionItem {
@@ -337,4 +360,32 @@ export class NotebookComponent extends AngularDisposable implements OnInit {
 		return undefined;
 	}
 
+	public get notebookParams(): INotebookParams {
+		return this._notebookParams;
+	}
+
+	public get id(): string {
+		return this._notebookParams.notebookUri.toString();
+	}
+
+	isActive(): boolean {
+		return this.editorService.activeEditor === this.notebookParams.input;
+	}
+
+	isVisible(): boolean {
+		let notebookEditor = this.notebookParams.input;
+		return this.editorService.visibleEditors.some(e => e === notebookEditor);
+	}
+
+	isDirty(): boolean {
+		return this.notebookParams.input.isDirty();
+	}
+
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		if (!edits || edits.length === 0) {
+			return false;
+		}
+		this._model.pushEditOperations(edits);
+		return true;
+	}
 }

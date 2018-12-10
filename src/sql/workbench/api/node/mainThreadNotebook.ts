@@ -153,11 +153,11 @@ class ContentManagerWrapper implements sqlops.nb.ContentManager {
 
 	constructor(private handle: number, private _proxy: Proxies) {
 	}
-	getNotebookContents(notebookUri: URI): Thenable<sqlops.nb.INotebook> {
+	getNotebookContents(notebookUri: URI): Thenable<sqlops.nb.INotebookContents> {
 		return this._proxy.ext.$getNotebookContents(this.handle, notebookUri);
 	}
 
-	save(path: URI, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook> {
+	save(path: URI, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
 		return this._proxy.ext.$save(this.handle, path, notebook);
 	}
 }

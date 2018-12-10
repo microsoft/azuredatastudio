@@ -16,7 +16,8 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 		collector.addRule(`
 			.notebookEditor .notebook-cell.active {
 				border-color: ${activeBorder};
-				border-width: 2px;
+				border-width: 1px;
+				box-shadow: 0px 4px 6px 0px rgba(0,0,0,0.14);
 			}
 		`);
 	}

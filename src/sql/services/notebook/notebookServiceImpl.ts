@@ -10,20 +10,26 @@ import { localize } from 'vs/nls';
 import URI from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-import { INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import {
+	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor
+} from 'sql/services/notebook/notebookService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import { SessionManager } from 'sql/services/notebook/sessionManager';
 import { Extensions, INotebookProviderRegistry } from 'sql/services/notebook/notebookRegistry';
+import { Emitter, Event } from 'vs/base/common/event';
 
-const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 export class NotebookService implements INotebookService {
 	_serviceBrand: any;
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, INotebookProvider> = new Map();
 	private _managers: Map<string, INotebookManager> = new Map();
+	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
+	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
+	private _editors = new Map<string, INotebookEditor>();
 
 	constructor() {
 		this.registerDefaultProvider();
@@ -71,8 +77,34 @@ export class NotebookService implements INotebookService {
 		return manager;
 	}
 
-	handleNotebookClosed(notebookUri: URI): void {
+	get onNotebookEditorAdd(): Event<INotebookEditor> {
+		return this._onNotebookEditorAdd.event;
+	}
+	get onNotebookEditorRemove(): Event<INotebookEditor> {
+		return this._onNotebookEditorRemove.event;
+	}
+
+	addNotebookEditor(editor: INotebookEditor): void {
+		this._editors.set(editor.id, editor);
+		this._onNotebookEditorAdd.fire(editor);
+	}
+
+	removeNotebookEditor(editor: INotebookEditor): void {
+		if (this._editors.delete(editor.id)) {
+			this._onNotebookEditorRemove.fire(editor);
+		}
 		// Remove the manager from the tracked list, and let the notebook provider know that it should update its mappings
+		this.sendNotebookCloseToProvider(editor);
+	}
+
+	listNotebookEditors(): INotebookEditor[] {
+		let editors = [];
+		this._editors.forEach(e => editors.push(e));
+		return editors;
+	}
+
+	private sendNotebookCloseToProvider(editor: INotebookEditor) {
+		let notebookUri = editor.notebookParams.notebookUri;
 		let uriString = notebookUri.toString();
 		let manager = this._managers.get(uriString);
 		if (manager) {
@@ -82,15 +114,20 @@ export class NotebookService implements INotebookService {
 		}
 	}
 
-
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Thenable<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
-		let provider = this._providers.get(providerId);
+		let provider: INotebookProvider;
+		if (this._providers.has(providerId)) {
+			provider = this._providers.get(providerId);
+		}
+		else {
+			provider = this._providers.get(DEFAULT_NOTEBOOK_PROVIDER);
+		}
+
 		if (!provider) {
 			return Promise.reject(new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'))).then();
 		}
-
 		return op(provider);
 	}
 
@@ -103,8 +140,6 @@ export class NotebookService implements INotebookService {
 		}
 		return this._mimeRegistry;
 	}
-
-
 }
 
 export class BuiltinProvider implements INotebookProvider {

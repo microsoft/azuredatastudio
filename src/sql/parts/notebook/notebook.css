@@ -36,6 +36,10 @@
 	font-size: 13px;
 }
 
+.notebookEditor .monaco-select-box {
+	min-width: 150px;
+}
+
 .notebookEditor .notebook-button.icon-add{
 	background-image: url("./media/light/add.svg");
 }
