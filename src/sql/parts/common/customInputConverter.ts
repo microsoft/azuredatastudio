@@ -18,6 +18,7 @@ import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput, NotebookInputModel, NotebookInputValidator } from 'sql/parts/notebook/notebookInput';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/services/notebook/notebookService';
 import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
+import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 
 const fs = require('fs');
 
@@ -28,6 +29,7 @@ export const untitledFilePrefix = 'SQLQuery';
 
 // mode identifier for SQL mode
 export const sqlModeId = 'sql';
+export const notebookModeId = 'notebook';
 
 /**
  * Checks if the specified input is supported by one our custom input types, and if so convert it
@@ -58,7 +60,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		//Notebook
 		let notebookValidator = instantiationService.createInstance(NotebookInputValidator);
 		uri = getNotebookEditorUri(input, instantiationService);
-		if(uri && notebookValidator.isNotebookEnabled()){
+		if (uri && notebookValidator.isNotebookEnabled()) {
 			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
 				let fileName: string = 'untitled';
 				let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
@@ -92,6 +94,13 @@ export function getSupportedInputResource(input: IEditorInput): URI {
 		let fileCast: FileEditorInput = <FileEditorInput>input;
 		if (fileCast) {
 			return fileCast.getResource();
+		}
+	}
+
+	if (input instanceof ResourceEditorInput) {
+		let resourceCast: ResourceEditorInput = <ResourceEditorInput>input;
+		if (resourceCast) {
+			return resourceCast.getResource();
 		}
 	}
 
@@ -152,7 +161,6 @@ function getQueryPlanEditorUri(input: EditorInput): URI {
 	return undefined;
 }
 
-
 /**
  * If input is a supported notebook editor file (.ipynb), return it's URI. Otherwise return undefined.
  * @param input The EditorInput to get the URI of.
@@ -162,18 +170,15 @@ function getNotebookEditorUri(input: EditorInput, instantiationService: IInstant
 		return undefined;
 	}
 
-
-
 	// If this editor is not already of type notebook input
 	if (!(input instanceof NotebookInput)) {
 		let uri: URI = getSupportedInputResource(input);
 		if (uri) {
-			if (hasFileExtension(getNotebookFileExtensions(instantiationService), input, false)) {
+			if (hasFileExtension(getNotebookFileExtensions(instantiationService), input, false) || hasNotebookFileMode(input)) {
 				return uri;
 			}
 		}
 	}
-
 	return undefined;
 }
 
@@ -181,6 +186,18 @@ function getNotebookFileExtensions(instantiationService: IInstantiationService):
 	return withService<INotebookService, string[]>(instantiationService, INotebookService, notebookService => {
 		return notebookService.getSupportedFileExtensions();
 	});
+}
+
+/**
+ * Checks whether the given EditorInput is set to either undefined or notebook mode
+ * @param input The EditorInput to check the mode of
+ */
+function hasNotebookFileMode(input: EditorInput): boolean {
+	if (input instanceof UntitledEditorInput) {
+		let untitledCast: UntitledEditorInput = <UntitledEditorInput>input;
+		return (untitledCast && untitledCast.getModeId() === notebookModeId);
+	}
+	return false;
 }
 
 function withService<TService, TResult>(instantiationService: IInstantiationService, serviceId: ServiceIdentifier<TService>, action: (service: TService) => TResult, ): TResult {
@@ -225,3 +242,17 @@ function hasFileExtension(extensions: string[], input: EditorInput, checkUntitle
 	return false;
 }
 
+// Returns file mode - notebookModeId or sqlModeId
+export function getFileMode(instantiationService: IInstantiationService, resource: URI): string {
+	if (!resource) {
+		return sqlModeId;
+	}
+	return withService<INotebookService, string>(instantiationService, INotebookService, notebookService => {
+		for (const editor of notebookService.listNotebookEditors()) {
+			if (editor.notebookParams.notebookUri === resource) {
+				return notebookModeId;
+			}
+		}
+		return sqlModeId;
+	});
+}

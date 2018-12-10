@@ -46,6 +46,9 @@ import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNo
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IResourceInput } from 'vs/platform/editor/common/editor';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -89,7 +92,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IHistoryService) private historyService: IHistoryService,
 		@Inject(IWindowService) private windowService: IWindowService,
-		@Inject(IViewletService) private viewletService: IViewletService
+		@Inject(IViewletService) private viewletService: IViewletService,
+		@Inject(IUntitledEditorService) private untitledEditorService: IUntitledEditorService,
+		@Inject(IEditorGroupsService) private editorGroupService: IEditorGroupsService
 	) {
 		super();
 		this.updateProfile();
@@ -400,11 +405,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let target = URI.parse(path);
 					let resource = self._model.notebookUri;
 					self._model.notebookUri = target;
-					 this.saveNotebook().then(result => {
-						 if(result)
-						 {
-							this.notebookService.renameNotebookEditor(resource, target, this);
-						 }
+					this.saveNotebook().then(result => {
+						if(result)
+						{
+							return this.replaceUntitledNotebookEditor(resource, target);
+						}
 						return result;
 					 });
 				}
@@ -414,6 +419,27 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		else {
 			return await this.saveNotebook();
 		}
+	}
+
+	// Replaces untitled notebook editor with the saved file name
+	private async replaceUntitledNotebookEditor(resource: URI, target: URI): Promise<boolean> {
+		let encodingOfSource = this.untitledEditorService.getEncoding(resource);
+		const replacement: IResourceInput = {
+			resource: target,
+			encoding: encodingOfSource,
+			options: {
+				pinned: true
+			}
+		};
+
+		return TPromise.join(this.editorGroupService.groups.map(g =>
+			this.editorService.replaceEditors([{
+				editor: { resource },
+				replacement
+			}], g))).then(() => {
+				this.notebookService.renameNotebookEditor(resource, target, this);
+				return true;
+			});
 	}
 
 	private async saveNotebook(): Promise<boolean> {

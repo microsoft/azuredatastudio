@@ -29,7 +29,8 @@ import { coalesce } from 'vs/base/common/arrays';
 import { isCodeEditor, isDiffEditor, ICodeEditor, IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupView, IEditorOpeningEvent, EditorGroupsServiceImpl, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IUriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
-import { convertEditorInput } from 'sql/parts/common/customInputConverter';
+//{{ SQL CARBON EDIT }}
+import { convertEditorInput, getFileMode } from 'sql/parts/common/customInputConverter';
 
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 
@@ -67,7 +68,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IUriDisplayService private uriDisplayService: IUriDisplayService,
 		@IFileService private fileService: IFileService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IConfigurationService private configurationService: IConfigurationService,
 	) {
 		super();
 
@@ -495,9 +496,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		const untitledInput = <IUntitledResourceInput>input;
 		if (!untitledInput.resource || typeof untitledInput.filePath === 'string' || (untitledInput.resource instanceof URI && untitledInput.resource.scheme === Schemas.untitled)) {
 			// {{SQL CARBON EDIT}}
+
+			let mode: string = getFileMode( this.instantiationService, untitledInput.resource);
 			return convertEditorInput(this.untitledEditorService.createOrGet(
 				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
-				'sql',
+				mode,
 				untitledInput.contents,
 				untitledInput.encoding
 			), undefined, this.instantiationService);
