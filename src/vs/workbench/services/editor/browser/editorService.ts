@@ -29,7 +29,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { isCodeEditor, isDiffEditor, ICodeEditor, IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IEditorGroupView, IEditorOpeningEvent, EditorGroupsServiceImpl, EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IUriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
-import { convertEditorInput } from 'sql/parts/common/customInputConverter';
+import { convertEditorInput, notebookModeId } from 'sql/parts/common/customInputConverter';
 
 type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 
@@ -497,7 +497,8 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 			// {{SQL CARBON EDIT}}
 			return convertEditorInput(this.untitledEditorService.createOrGet(
 				untitledInput.filePath ? URI.file(untitledInput.filePath) : untitledInput.resource,
-				'sql',
+				(untitledInput.resource &&
+				(untitledInput.resource.path.includes('Notebook') || untitledInput.resource.path.includes('Untitled'))) ? notebookModeId: 'sql',
 				untitledInput.contents,
 				untitledInput.encoding
 			), undefined, this.instantiationService);
