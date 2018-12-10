@@ -76,7 +76,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(INotificationService) private notificationService: INotificationService,
 	) {
 		super();
-		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions, this._instantiationService);
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 	}
 
 	ngOnInit() {

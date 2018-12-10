@@ -62,7 +62,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		super();
 		this.isEditMode = false;
 		this.isLoading = true;
-		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions, this._instantiationService);
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -143,6 +143,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateTheme(theme: IColorTheme): void {
 		let outputElement = <HTMLElement>this.output.nativeElement;
 		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
 	public handleContentChanged(): void {

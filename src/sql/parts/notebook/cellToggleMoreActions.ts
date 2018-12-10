@@ -4,6 +4,9 @@
 *--------------------------------------------------------------------------------------------*/
 
 import { ElementRef } from '@angular/core';
+
+import { nb } from 'sqlops';
+
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -16,6 +19,7 @@ import { CellContext, CellActionBase } from 'sql/parts/notebook/cellViews/codeAc
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { CellModel } from 'sql/parts/notebook/models/cell';
 
 export class CellToggleMoreActions {
 	private _actions: Action[] = [];
@@ -23,11 +27,12 @@ export class CellToggleMoreActions {
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService) {
 		this._actions.push(
-			instantiationService.createInstance(AddCellActionFromContext,'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
-			instantiationService.createInstance(AddCellActionFromContext, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
-			instantiationService.createInstance(AddCellActionFromContext, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
-			instantiationService.createInstance(AddCellActionFromContext, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
-			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete'))
+			instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete')),
+			instantiationService.createInstance(AddCellFromContextAction,'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false),
+			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true),
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear output'))
 		);
 	}
 
@@ -48,7 +53,7 @@ export class CellToggleMoreActions {
 	}
 }
 
-export class AddCellActionFromContext extends CellActionBase {
+export class AddCellFromContextAction extends CellActionBase {
 	constructor(
 		id: string, label: string, private cellType: CellType, private isAfter: boolean,
 		@INotificationService notificationService: INotificationService
@@ -96,4 +101,27 @@ export class DeleteCellAction extends CellActionBase {
 		}
 		return Promise.resolve();
 	}
+}
+
+export class ClearCellOutputAction extends CellActionBase {
+	constructor(id: string, label: string,
+		@INotificationService notificationService: INotificationService
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	runCellAction(context: CellContext): Promise<void> {
+		try {
+			(context.model.activeCell as CellModel).clearOutputs();
+		} catch (error) {
+			let message = getErrorMessage(error);
+
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
+
 }
