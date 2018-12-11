@@ -22,7 +22,7 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { Sash, IHorizontalSashLayoutProvider, ISashEvent, Orientation } from 'vs/base/browser/ui/sash/sash';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
-import { FIND_IDS, MATCHES_LIMIT, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
+import { FIND_IDS, CONTEXT_FIND_INPUT_FOCUSED } from 'vs/editor/contrib/find/findModel';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ITheme, registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
@@ -36,7 +36,7 @@ const NLS_FIND_INPUT_PLACEHOLDER = nls.localize('placeholder.find', "Find");
 const NLS_PREVIOUS_MATCH_BTN_LABEL = nls.localize('label.previousMatchButton', "Previous match");
 const NLS_NEXT_MATCH_BTN_LABEL = nls.localize('label.nextMatchButton', "Next match");
 const NLS_CLOSE_BTN_LABEL = nls.localize('label.closeButton', "Close");
-const NLS_MATCHES_COUNT_LIMIT_TITLE = nls.localize('title.matchesCountLimit', "Only the first 999 results are highlighted, but all find operations work on the entire text.");
+const NLS_MATCHES_COUNT_LIMIT_TITLE = nls.localize('title.matchesCountLimit', "Your search returned a large number of results, only the first 999 matches will be highlighted.");
 const NLS_MATCHES_LOCATION = nls.localize('label.matchesLocation', "{0} of {1}");
 const NLS_NO_RESULTS = nls.localize('label.noResults', "No Results");
 
@@ -45,6 +45,8 @@ const PART_WIDTH = 275;
 const FIND_INPUT_AREA_WIDTH = PART_WIDTH - 54;
 
 let MAX_MATCHES_COUNT_WIDTH = 69;
+
+export const PROFILER_MAX_MATCHES = 999;
 
 export const ACTION_IDS = {
 	FIND_NEXT: 'findNext',
@@ -85,6 +87,8 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	private _findInputFocussed: IContextKey<boolean>;
 
 	private _resizeSash: Sash;
+
+	private searchTimeoutHandle: number;
 
 	constructor(
 		tableController: ITableController,
@@ -213,7 +217,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _updateMatchesCount(): void {
 		this._matchesCount.style.minWidth = MAX_MATCHES_COUNT_WIDTH + 'px';
-		if (this._state.matchesCount >= MATCHES_LIMIT) {
+		if (this._state.matchesCount >= PROFILER_MAX_MATCHES) {
 			this._matchesCount.title = NLS_MATCHES_COUNT_LIMIT_TITLE;
 		} else {
 			this._matchesCount.title = '';
@@ -227,8 +231,8 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		let label: string;
 		if (this._state.matchesCount > 0) {
 			let matchesCount: string = String(this._state.matchesCount);
-			if (this._state.matchesCount >= MATCHES_LIMIT) {
-				matchesCount += '+';
+			if (this._state.matchesCount >= PROFILER_MAX_MATCHES) {
+				matchesCount = PROFILER_MAX_MATCHES + '+';
 			}
 			let matchesPosition: string = String(this._state.matchesPosition);
 			if (matchesPosition === '0') {
@@ -401,7 +405,14 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		this._findInput.setWholeWords(!!this._state.wholeWord);
 		this._register(this._findInput.onKeyDown((e) => this._onFindInputKeyDown(e)));
 		this._register(this._findInput.onInput(() => {
-			this._state.change({ searchString: this._findInput.getValue() }, true);
+			let self = this;
+			if (self.searchTimeoutHandle) {
+				clearTimeout(self.searchTimeoutHandle);
+			}
+
+			this.searchTimeoutHandle = setTimeout(function () {
+				self._state.change({ searchString: self._findInput.getValue() }, true);
+			}, 300);
 		}));
 		this._register(this._findInput.onDidOptionChange(() => {
 			this._state.change({
