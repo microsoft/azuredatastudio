@@ -235,7 +235,7 @@ export class GridPanel extends ViewletPanel {
 
 			for (let set of resultsToUpdate) {
 				if (set.complete) {
-					this.addResultSet(resultSet);
+					this.addResultSet(set);
 					change = true;
 				}
 			}
