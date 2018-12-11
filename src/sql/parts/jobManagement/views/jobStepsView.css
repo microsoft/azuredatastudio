@@ -80,4 +80,11 @@
 jobstepsview-component {
 	display: flex;
 	flex-direction: column;
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row {
+	width: 99.2%;
 }

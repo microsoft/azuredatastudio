@@ -7,7 +7,6 @@
 .all-jobs {
 	display: inline;
 	font-size: 15px;
-	padding-bottom: 15px;
 }
 
 .overview-container .overview-tab .resultsViewCollapsible {
@@ -266,14 +265,22 @@ jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
 	padding-left: 20px;
 }
 
-jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
+jobhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #f4f4f4;
 }
 
-.vs-dark jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
+.vs-dark jobhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #444444;
 }
 
-.hc-black jobhistory-component > .agent-actionbar-container .monaco-action-bar > ul.actions-container {
+.hc-black jobhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #2b56f2;
+}
+
+jobhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row {
+	width: 96%;
+}
+
+jobhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar {
+	margin: 10px 0px 5px 0px;
 }
