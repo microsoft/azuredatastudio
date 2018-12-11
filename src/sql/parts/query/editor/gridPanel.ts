@@ -235,7 +235,7 @@ export class GridPanel extends ViewletPanel {
 
 			for (let set of resultsToUpdate) {
 				if (set.complete) {
-					this.addResultSet(resultSet);
+					this.addResultSet(set);
 					change = true;
 				}
 			}
@@ -623,6 +623,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.table.updateRowCount();
 		}
 		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
+		this._onDidChange.fire();
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {
