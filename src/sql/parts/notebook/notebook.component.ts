@@ -391,7 +391,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	promptForPath(defaultPath: string): TPromise<string> {
-		return this.windowService.showSaveDialog({ defaultPath });
+		return this.windowService.showSaveDialog({
+			defaultPath: defaultPath,
+			filters: [{ name: localize('notebookFile', 'Notebook'), extensions: ['ipynb']}]
+		 });
 	}
 
 	// Entry point to save notebook
