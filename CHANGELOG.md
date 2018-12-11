@@ -9,7 +9,9 @@
 * #1040 Stream initial query results as they become available
 * #3298 Сan't add an azure account.
 * #2387 Support Per-User Installer
-* SQL Server Import updates fro DACPAC\BACPAC
+* SQL Server Import updates for DACPAC\BACPAC
+* SQL Server Profiler UI and UX improvements
+* Updates to [SQL Server 2019 extension](https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension?view=sql-server-ver15)
 * **sp_executesql to SQL** and **New Database** extensions
 
 ## Contributions and "thank you"
