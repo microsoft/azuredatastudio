@@ -316,8 +316,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let trusted = uri.scheme === Schemas.untitled;
 		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
 		let providerId = options.providerId;
-		if(!providerId)
-		{
+		if (!providerId) {
 			// Ensure there is always a sensible provider ID for this file type
 			providerId = getProviderForFileName(uri.fsPath, this._notebookService);
 		}
