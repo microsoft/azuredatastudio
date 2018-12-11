@@ -149,10 +149,10 @@ export class SparkMagicContexts {
 			}
 		}
 		let profile = connectionInfo as IConnectionProfile;
-		if (foundSavedKernelInSpecs && specs && connectionInfo && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
+		if (specs && connectionInfo && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
 			// set default kernel to default spark kernel if profile exists
 			// otherwise, set default to kernel info loaded from existing file
-			defaultKernel = !savedKernelInfo ? specs.kernels.find((spec) => spec.name === notebookConstants.defaultSparkKernel) : savedKernelInfo;
+			defaultKernel = !foundSavedKernelInSpecs ? specs.kernels.find((spec) => spec.name === notebookConstants.defaultSparkKernel) : foundSavedKernelInSpecs;
 		} else {
 			// Handle kernels
 			if (savedKernelInfo && savedKernelInfo.name.toLowerCase().indexOf('spark') > -1) {
