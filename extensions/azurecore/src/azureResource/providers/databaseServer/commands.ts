@@ -31,7 +31,7 @@ export function registerAzureResourceDatabaseServerCommands(appContext: AppConte
 
 		let connectionProfile: IConnectionProfile = {
 			id: generateGuid(),
-			connectionName: `connection to '${databaseServer.defaultDatabaseName}' on '${databaseServer.fullName}'`,
+			connectionName: undefined,
 			serverName: databaseServer.fullName,
 			databaseName: databaseServer.defaultDatabaseName,
 			userName: databaseServer.loginName,
@@ -42,8 +42,7 @@ export function registerAzureResourceDatabaseServerCommands(appContext: AppConte
 			groupId: '',
 			providerName: 'MSSQL',
 			saveProfile: true,
-			options: {
-			}
+			options: {}
 		};
 
 		const conn = await appContext.apiWrapper.openConnectionDialog(undefined, connectionProfile, { saveConnection: true, showDashboard: true });

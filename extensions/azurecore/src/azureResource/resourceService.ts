@@ -93,14 +93,14 @@ export class AzureResourceService {
 		}
 
 		for (const extension of extensions.all) {
-			await extension.activate();
-
 			const contributes = extension.packageJSON && extension.packageJSON.contributes;
 			if (!contributes) {
 				continue;
 			}
 
 			if (contributes['hasAzureResourceProviders']) {
+				await extension.activate();
+
 				if (extension.exports && extension.exports.provideResources) {
 					for (const resourceProvider of <azureResource.IAzureResourceProvider[]>extension.exports.provideResources()) {
 						this.doRegisterResourceProvider(resourceProvider);
