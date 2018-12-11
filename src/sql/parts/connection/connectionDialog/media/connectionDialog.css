@@ -105,10 +105,12 @@
 	background: url('clear-search-results.svg');
 }
 
+/*
 .vs-dark .search-action.clear-search-results,
 .hc-black .search-action.clear-search-results {
 	background: url('clear-search-results-dark.svg');
 }
+*/
 
 .connection-details-title {
 	font-size: 14px;
