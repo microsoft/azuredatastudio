@@ -99,7 +99,7 @@ class MainThreadNotebookEditor extends Disposable {
 }
 
 function wait(timeMs: number): Promise<void> {
-	return new Promise(resolve => setTimeout(resolve, timeMs));
+	return new Promise((resolve: Function) => setTimeout(resolve, timeMs));
 }
 
 
