@@ -623,6 +623,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.table.updateRowCount();
 		}
 		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
+		this._onDidChange.fire();
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {
