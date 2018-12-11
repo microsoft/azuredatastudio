@@ -188,23 +188,24 @@ export class GridPanel extends ViewletPanel {
 	}
 
 	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
-		this.addResultSet(resultSet);
+		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+			this.addResultSet(resultSet);
 
-		this.tables.map(t => {
-			t.state.canBeMaximized = this.tables.length > 1;
-		});
+			this.tables.map(t => {
+				t.state.canBeMaximized = this.tables.length > 1;
+			});
 
-		this.maximumBodySize = this.tables.reduce((p, c) => {
-			return p + c.maximumSize;
-		}, 0);
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
 
-		if (this.state && this.state.scrollPosition) {
-			this.splitView.setScrollPosition(this.state.scrollPosition);
+			if (this.state && this.state.scrollPosition) {
+				this.splitView.setScrollPosition(this.state.scrollPosition);
+			}
 		}
 	}
 
 	private updateResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
-
 		let resultsToUpdate: sqlops.ResultSetSummary[];
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
@@ -212,21 +213,42 @@ export class GridPanel extends ViewletPanel {
 			resultsToUpdate = resultSet;
 		}
 
-		for (let set of resultsToUpdate) {
-			let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
-			if (table) {
-				table.updateResult(set);
-			} else {
-				warn('Got result set update request for non-existant table');
+		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+			for (let set of resultsToUpdate) {
+				let table = this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id);
+				if (table) {
+					table.updateResult(set);
+				} else {
+					warn('Got result set update request for non-existant table');
+				}
 			}
-		}
 
-		this.maximumBodySize = this.tables.reduce((p, c) => {
-			return p + c.maximumSize;
-		}, 0);
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
 
-		if (this.state && this.state.scrollPosition) {
-			this.splitView.setScrollPosition(this.state.scrollPosition);
+			if (this.state && this.state.scrollPosition) {
+				this.splitView.setScrollPosition(this.state.scrollPosition);
+			}
+		} else {
+			let change = false;
+
+			for (let set of resultsToUpdate) {
+				if (set.complete) {
+					this.addResultSet(resultSet);
+					change = true;
+				}
+			}
+
+			if (change) {
+				this.maximumBodySize = this.tables.reduce((p, c) => {
+					return p + c.maximumSize;
+				}, 0);
+
+				if (this.state && this.state.scrollPosition) {
+					this.splitView.setScrollPosition(this.state.scrollPosition);
+				}
+			}
 		}
 	}
 

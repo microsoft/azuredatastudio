@@ -78,7 +78,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._onRowCountChange.fire();
 	}
 
-	find(exp: string): Thenable<IFindPosition> {
+	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
 		if (!this._findFn) {
 			return TPromise.wrapError(new Error('no find function provided'));
 		}
@@ -87,7 +87,8 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			this._findObs = Observable.create((observer: Observer<IFindPosition>) => {
-				this._data.forEach((item, i) => {
+				for (let i = 0; i < this._data.length; i++) {
+					let item = this._data[i];
 					let result = this._findFn(item, exp);
 					if (result) {
 						result.forEach(pos => {
@@ -96,8 +97,11 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 							observer.next(index);
 							this._onFindCountChange.fire(this._findArray.length);
 						});
+						if (maxMatches > 0 && this._findArray.length > maxMatches) {
+							break;
+						}
 					}
-				});
+				}
 			});
 			return this._findObs.take(1).toPromise().then(() => {
 				return this._findArray[this._findIndex];
