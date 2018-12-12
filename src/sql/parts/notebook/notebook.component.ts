@@ -34,7 +34,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, TSQL_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
@@ -260,7 +260,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.notebookService.registrationComplete;
 		// Refresh the provider if we had been using default
 		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
-			this._notebookParams.providerId = notebookUtils.getProviderForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+			let providers= notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+			let tsqlProvider = providers.find(provider => provider === TSQL_NOTEBOOK_PROVIDER);
+			this._notebookParams.providerId = tsqlProvider ? TSQL_NOTEBOOK_PROVIDER : providers[0];
 		}
 		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
 			// If it's still the default, warn them they should install an extension

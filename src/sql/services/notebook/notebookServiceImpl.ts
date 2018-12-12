@@ -12,7 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, TSQL_NOTEBOOK_PROVIDER
 } from 'sql/services/notebook/notebookService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
@@ -27,6 +27,9 @@ import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/e
 import { Disposable } from 'vs/base/common/lifecycle';
 import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Deferred } from 'sql/base/common/promise';
+import { TSQLSessionManager } from 'sql/services/notebook/tsqlSessionManager';
+import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -76,18 +79,19 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onCellChanged = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
-	private _fileToProviders = new Map<string, NotebookProviderRegistration>();
+	private _fileToProviders = new Map<string, NotebookProviderRegistration[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 
 	constructor(
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
-		@IExtensionManagementService extensionManagementService: IExtensionManagementService
+		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
-		this.registerDefaultProvider();
+		this.registerBuiltInProviders();
 
 		if (extensionService) {
 				extensionService.whenInstalledExtensionsRegistered().then(() => {
@@ -142,17 +146,24 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private addFileProvider(fileType: string, provider: NotebookProviderRegistration) {
-		this._fileToProviders.set(fileType.toUpperCase(), provider);
+		let providers = this._fileToProviders.get(fileType.toUpperCase());
+		if (providers) {
+			providers.push(provider);
+		} else {
+			providers = [provider];
+		}
+		this._fileToProviders.set(fileType.toUpperCase(), providers);
 	}
 
 	getSupportedFileExtensions(): string[] {
 		return Array.from(this._fileToProviders.keys());
 	}
 
-	getProviderForFileType(fileType: string): string {
+	getProvidersForFileType(fileType: string): string[] {
 		fileType = fileType.toUpperCase();
-		let provider = this._fileToProviders.get(fileType);
-		return provider ? provider.provider : undefined;
+		let providers = this._fileToProviders.get(fileType);
+
+		return providers ? providers.map(provider => provider.provider) : undefined;
 	}
 
 	public shutdown(): void {
@@ -303,11 +314,18 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	private registerDefaultProvider() {
+	private registerBuiltInProviders() {
 		let defaultProvider = new BuiltinProvider();
 		this.registerProvider(defaultProvider.providerId, defaultProvider);
 		notebookRegistry.registerNotebookProvider({
 			provider: defaultProvider.providerId,
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
+		});
+
+		let tsqlProvider = new TSQLProvider(this._instantiationService);
+		this.registerProvider(tsqlProvider.providerId, tsqlProvider);
+		notebookRegistry.registerNotebookProvider({
+			provider: tsqlProvider.providerId,
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
 		});
 	}
@@ -352,6 +370,50 @@ export class BuiltInNotebookManager implements INotebookManager {
 	}
 	public get providerId(): string {
 		return DEFAULT_NOTEBOOK_PROVIDER;
+	}
+
+	public get contentManager(): nb.ContentManager {
+		return this._contentManager;
+	}
+
+	public get serverManager(): nb.ServerManager {
+		return undefined;
+	}
+
+	public get sessionManager(): nb.SessionManager {
+		return this._sessionManager;
+	}
+
+}
+
+export class TSQLProvider implements INotebookProvider {
+	private manager: TSQLNotebookManager;
+
+	constructor(private _instantiationService: IInstantiationService) {
+		this.manager = new TSQLNotebookManager(this._instantiationService);
+	}
+	public get providerId(): string {
+		return TSQL_NOTEBOOK_PROVIDER;
+	}
+
+	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
+		return Promise.resolve(this.manager);
+	}
+	handleNotebookClosed(notebookUri: URI): void {
+		// No-op
+	}
+}
+
+export class TSQLNotebookManager implements INotebookManager {
+	private _contentManager: nb.ContentManager;
+	private _sessionManager: nb.SessionManager;
+
+	constructor(private _instantiationService: IInstantiationService) {
+		this._contentManager = new LocalContentManager();
+		this._sessionManager = new TSQLSessionManager(this._instantiationService);
+	}
+	public get providerId(): string {
+		return TSQL_NOTEBOOK_PROVIDER;
 	}
 
 	public get contentManager(): nb.ContentManager {

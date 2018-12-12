@@ -25,7 +25,7 @@ import {
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
+import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
@@ -319,7 +319,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		if(!providerId)
 		{
 			// Ensure there is always a sensible provider ID for this file type
-			providerId = getProviderForFileName(uri.fsPath, this._notebookService);
+			providerId = getProvidersForFileName(uri.fsPath, this._notebookService)[0];
 		}
 
 		model.providerId = providerId;

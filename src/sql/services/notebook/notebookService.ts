@@ -23,6 +23,7 @@ export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
+export const TSQL_NOTEBOOK_PROVIDER = 'tsql';
 
 export interface INotebookService {
 	_serviceBrand: any;
@@ -45,7 +46,7 @@ export interface INotebookService {
 
 	getSupportedFileExtensions(): string[];
 
-	getProviderForFileType(fileType: string): string;
+	getProvidersForFileType(fileType: string): string[];
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
