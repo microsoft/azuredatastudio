@@ -5,10 +5,10 @@
 
 'use strict';
 
-import { azureResource } from 'sqlops';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SqlManagementClient } from 'azure-arm-sql';
 
+import { azureResource } from '../../azure-resource';
 import { IAzureResourceDatabaseService } from './interfaces';
 import { AzureResourceDatabase } from './models';
 

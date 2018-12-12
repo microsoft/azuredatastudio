@@ -5,10 +5,10 @@
 
 'use strict';
 
-import { azureResource } from 'sqlops';
 import { ExtensionContext } from 'vscode';
 import { ApiWrapper } from '../../../apiWrapper';
 
+import { azureResource } from '../../azure-resource';
 import { IAzureResourceDatabaseService } from './interfaces';
 import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
 

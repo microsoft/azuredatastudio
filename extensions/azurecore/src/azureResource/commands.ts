@@ -6,12 +6,13 @@
 'use strict';
 
 import { window, QuickPickItem } from 'vscode';
-import { azureResource, AzureResource } from 'sqlops';
+import { AzureResource } from 'sqlops';
 import { TokenCredentials } from 'ms-rest';
 import { AppContext } from '../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { azureResource } from './azure-resource';
 import { TreeNode } from './treeNode';
 import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';

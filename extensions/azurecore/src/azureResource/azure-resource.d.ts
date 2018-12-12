@@ -6,25 +6,23 @@
 import { TreeDataProvider, TreeItem } from 'vscode';
 import { DataProvider, Account } from 'sqlops';
 
-declare module 'sqlops' {
-	export namespace azureResource {
-		export interface IAzureResourceProvider extends DataProvider {
-			getTreeDataProvider(): IAzureResourceTreeDataProvider;
-		}
+export namespace azureResource {
+	export interface IAzureResourceProvider extends DataProvider {
+		getTreeDataProvider(): IAzureResourceTreeDataProvider;
+	}
 
-		export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
-		}
+	export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+	}
 
-		export interface IAzureResourceNode {
-			readonly account: Account;
-			readonly subscription: AzureResourceSubscription;
-			readonly tenantId: string;
-			readonly treeItem: TreeItem;
-		}
+	export interface IAzureResourceNode {
+		readonly account: Account;
+		readonly subscription: AzureResourceSubscription;
+		readonly tenantId: string;
+		readonly treeItem: TreeItem;
+	}
 
-		export interface AzureResourceSubscription {
-			id: string;
-			name: string;
-		}
+	export interface AzureResourceSubscription {
+		id: string;
+		name: string;
 	}
 }

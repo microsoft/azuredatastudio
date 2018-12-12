@@ -11,6 +11,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
+import { azureResource } from '../../../../azureResource/azure-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
 import { IAzureResourceDatabaseService } from '../../../../azureResource/providers/database/interfaces';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
@@ -37,14 +38,14 @@ const mockAccount: sqlops.Account = {
 	isStale: false
 };
 
-const mockSubscription: sqlops.azureResource.AzureResourceSubscription = {
+const mockSubscription: azureResource.AzureResourceSubscription = {
 	id: 'mock_subscription',
 	name: 'mock subscription'
 };
 
 const mockTenantId: string = 'mock_tenant';
 
-const mockResourceRootNode: sqlops.azureResource.IAzureResourceNode = {
+const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	account: mockAccount,
 	subscription: mockSubscription,
 	tenantId: mockTenantId,

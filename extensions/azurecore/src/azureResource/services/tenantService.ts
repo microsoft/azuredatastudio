@@ -5,9 +5,9 @@
 
 'use strict';
 
-import { azureResource } from 'sqlops';
 import * as request from 'request';
 
+import { azureResource } from '../azure-resource';
 import { IAzureResourceTenantService } from '../interfaces';
 
 export class AzureResourceTenantService implements IAzureResourceTenantService {

@@ -6,8 +6,9 @@
 'use strict';
 
 import { WorkspaceConfiguration, ConfigurationTarget } from 'vscode';
-import { Account, azureResource } from 'sqlops';
+import { Account } from 'sqlops';
 
+import { azureResource } from '../azure-resource';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
 
 interface AzureResourceSelectedSubscriptionsCache {

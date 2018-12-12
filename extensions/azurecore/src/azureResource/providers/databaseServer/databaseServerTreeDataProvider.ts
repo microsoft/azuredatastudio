@@ -5,12 +5,13 @@
 
 'use strict';
 
-import { azureResource, AzureResource } from 'sqlops';
+import { AzureResource } from 'sqlops';
 import { TreeItem, TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import { TokenCredentials } from 'ms-rest';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { azureResource } from '../../azure-resource';
 import { IAzureResourceDatabaseServerService, IAzureResourceDatabaseServerNode } from './interfaces';
 import { AzureResourceDatabaseServer } from './models';
 import { AzureResourceItemType } from '../../../azureResource/constants';

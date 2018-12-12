@@ -6,8 +6,10 @@
 'use strict';
 
 import { ServiceClientCredentials } from 'ms-rest';
-import { Account, DidChangeAccountsParams, azureResource } from 'sqlops';
+import { Account, DidChangeAccountsParams } from 'sqlops';
 import { Event } from 'vscode';
+
+import { azureResource } from './azure-resource';
 
 export interface IAzureResourceAccountService {
 	getAccounts(): Promise<Account[]>;

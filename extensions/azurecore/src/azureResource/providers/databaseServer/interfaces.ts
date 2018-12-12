@@ -5,9 +5,9 @@
 
 'use strict';
 
-import { azureResource } from 'sqlops';
 import { ServiceClientCredentials }  from 'ms-rest';
 
+import { azureResource } from '../../azure-resource';
 import { AzureResourceDatabaseServer } from './models';
 
 export interface IAzureResourceDatabaseServerService {

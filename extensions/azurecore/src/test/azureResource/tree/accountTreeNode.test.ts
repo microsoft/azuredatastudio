@@ -13,6 +13,7 @@ import 'mocha';
 import { TokenCredentials } from 'ms-rest';
 import { AppContext } from '../../../appContext';
 
+import { azureResource } from '../../../azureResource/azure-resource';
 import {
 	IAzureResourceCacheService,
 	IAzureResourceSubscriptionService,
@@ -61,12 +62,12 @@ const mockAccount: sqlops.Account = {
 	isStale: false
 };
 
-const mockSubscription1: sqlops.azureResource.AzureResourceSubscription = {
+const mockSubscription1: azureResource.AzureResourceSubscription = {
 	id: 'mock_subscription_1',
 	name: 'mock subscription 1'
 };
 
-const mockSubscription2: sqlops.azureResource.AzureResourceSubscription = {
+const mockSubscription2: azureResource.AzureResourceSubscription = {
 	id: 'mock_subscription_2',
 	name: 'mock subscription 2'
 };
@@ -83,7 +84,7 @@ mockTokens[mockTenantId] = {
 
 const mockCredential = new TokenCredentials(mockTokens[mockTenantId].token, mockTokens[mockTenantId].tokenType);
 
-let mockSubscriptionCache: sqlops.azureResource.AzureResourceSubscription[] = [];
+let mockSubscriptionCache: azureResource.AzureResourceSubscription[] = [];
 
 describe('AzureResourceAccountTreeNode.info', function(): void {
 	beforeEach(() => {

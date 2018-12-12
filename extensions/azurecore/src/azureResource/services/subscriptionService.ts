@@ -5,10 +5,11 @@
 
 'use strict';
 
-import { Account, azureResource } from 'sqlops';
+import { Account } from 'sqlops';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionClient } from 'azure-arm-resource';
 
+import { azureResource } from '../azure-resource';
 import { IAzureResourceSubscriptionService } from '../interfaces';
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {

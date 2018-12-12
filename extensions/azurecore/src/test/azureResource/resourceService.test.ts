@@ -9,9 +9,10 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as sqlops from 'sqlops';
 import 'mocha';
-
-import { AzureResourceService } from '../../azureResource/resourceService';
 import { fail } from 'assert';
+
+import { azureResource } from '../../azureResource/azure-resource';
+import { AzureResourceService } from '../../azureResource/resourceService';
 
 // Mock test data
 const mockAccount: sqlops.Account = {
@@ -28,34 +29,34 @@ const mockAccount: sqlops.Account = {
 	isStale: false
 };
 
-const mockSubscription: sqlops.azureResource.AzureResourceSubscription = {
+const mockSubscription: azureResource.AzureResourceSubscription = {
 	id: 'mock_subscription',
 	name: 'mock subscription'
 };
 
 const mockTenantId: string = 'mock_tenant';
 
-let mockResourceTreeDataProvider1: TypeMoq.IMock<sqlops.azureResource.IAzureResourceTreeDataProvider>;
-let mockResourceProvider1: TypeMoq.IMock<sqlops.azureResource.IAzureResourceProvider>;
+let mockResourceTreeDataProvider1: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
+let mockResourceProvider1: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
 
-let mockResourceTreeDataProvider2: TypeMoq.IMock<sqlops.azureResource.IAzureResourceTreeDataProvider>;
-let mockResourceProvider2: TypeMoq.IMock<sqlops.azureResource.IAzureResourceProvider>;
+let mockResourceTreeDataProvider2: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
+let mockResourceProvider2: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
 
 const resourceService: AzureResourceService = AzureResourceService.getInstance();
 
 describe('AzureResourceService.listResourceProviderIds', function(): void {
 	beforeEach(() => {
-		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
 		mockResourceTreeDataProvider1.setup((o) => o.getTreeItem(TypeMoq.It.isAny())).returns(() => Promise.resolve(TypeMoq.It.isAny()));
-		mockResourceProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceProvider>();
+		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
-		mockResourceTreeDataProvider2 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider2.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider2 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider2.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
 		mockResourceTreeDataProvider2.setup((o) => o.getTreeItem(TypeMoq.It.isAny())).returns(() => Promise.resolve(TypeMoq.It.isAny()));
-		mockResourceProvider2 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceProvider>();
+		mockResourceProvider2 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider2.setup((o) => o.providerId).returns(() => 'mockResourceProvider2');
 		mockResourceProvider2.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider2.object);
 
@@ -81,10 +82,10 @@ describe('AzureResourceService.listResourceProviderIds', function(): void {
 
 describe('AzureResourceService.getRootChildren', function(): void {
 	beforeEach(() => {
-		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
 		mockResourceTreeDataProvider1.setup((o) => o.getTreeItem(TypeMoq.It.isAny())).returns(() => Promise.resolve(TypeMoq.It.isAny()));
-		mockResourceProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceProvider>();
+		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
@@ -114,11 +115,11 @@ describe('AzureResourceService.getRootChildren', function(): void {
 
 describe('AzureResourceService.getChildren', function(): void {
 	beforeEach(() => {
-		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
 		mockResourceTreeDataProvider1.setup((o) => o.getTreeItem(TypeMoq.It.isAny())).returns(() => Promise.resolve(TypeMoq.It.isAny()));
-		mockResourceProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceProvider>();
+		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
@@ -147,11 +148,11 @@ describe('AzureResourceService.getChildren', function(): void {
 
 describe('AzureResourceService.getTreeItem', function(): void {
 	beforeEach(() => {
-		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
-		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren()).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
+		mockResourceTreeDataProvider1.setup((o) => o.getChildren(TypeMoq.It.isAny())).returns(() => Promise.resolve([TypeMoq.Mock.ofType<azureResource.IAzureResourceNode>().object]));
 		mockResourceTreeDataProvider1.setup((o) => o.getTreeItem(TypeMoq.It.isAny())).returns(() => Promise.resolve(TypeMoq.It.isAny()));
-		mockResourceProvider1 = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceProvider>();
+		mockResourceProvider1 = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
