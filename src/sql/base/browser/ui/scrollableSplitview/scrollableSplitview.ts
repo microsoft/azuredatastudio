@@ -233,11 +233,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			// Add view
 			const container = dom.$('.split-view-view');
 
-			// if (index === this.viewItems.length) {
-			// 	this.viewContainer.appendChild(container);
-			// } else {
-			// 	this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
-			// }
+			// removed default adding of the view directly to the container
 
 			const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
 			const containerDisposable = toDisposable(() => {
@@ -331,11 +327,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		// Add view
 		const container = dom.$('.split-view-view');
 
-		// if (index === this.viewItems.length) {
-		// 	this.viewContainer.appendChild(container);
-		// } else {
-		// 	this.viewContainer.insertBefore(container, this.viewContainer.children.item(index));
-		// }
+		// removed default adding of the view directly to the container
 
 		const onChangeDisposable = view.onDidChange(size => this.onViewChange(item, size));
 		const containerDisposable = toDisposable(() => {
