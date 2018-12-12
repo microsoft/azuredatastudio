@@ -183,11 +183,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = undefined;
-			// default to T-SQLs
+			// default to SQL
 			this._defaultLanguageInfo = {
-				name: 'tsql',
+				name: 'sql',
 				version: ''
-			}
+			};
 			if (contents) {
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);

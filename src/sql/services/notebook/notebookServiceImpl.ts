@@ -12,7 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, TSQL_NOTEBOOK_PROVIDER
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER
 } from 'sql/services/notebook/notebookService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
@@ -27,7 +27,7 @@ import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/e
 import { Disposable } from 'vs/base/common/lifecycle';
 import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Deferred } from 'sql/base/common/promise';
-import { TSQLSessionManager } from 'sql/services/notebook/tsqlSessionManager';
+import { SQLSessionManager } from 'sql/services/notebook/tsqlSessionManager';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -393,7 +393,7 @@ export class TSQLProvider implements INotebookProvider {
 		this.manager = new TSQLNotebookManager(this._instantiationService);
 	}
 	public get providerId(): string {
-		return TSQL_NOTEBOOK_PROVIDER;
+		return SQL_NOTEBOOK_PROVIDER;
 	}
 
 	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
@@ -410,10 +410,10 @@ export class TSQLNotebookManager implements INotebookManager {
 
 	constructor(private _instantiationService: IInstantiationService) {
 		this._contentManager = new LocalContentManager();
-		this._sessionManager = new TSQLSessionManager(this._instantiationService);
+		this._sessionManager = new SQLSessionManager(this._instantiationService);
 	}
 	public get providerId(): string {
-		return TSQL_NOTEBOOK_PROVIDER;
+		return SQL_NOTEBOOK_PROVIDER;
 	}
 
 	public get contentManager(): nb.ContentManager {

@@ -23,7 +23,7 @@ export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
-export const TSQL_NOTEBOOK_PROVIDER = 'tsql';
+export const SQL_NOTEBOOK_PROVIDER = 'sql';
 
 export interface INotebookService {
 	_serviceBrand: any;

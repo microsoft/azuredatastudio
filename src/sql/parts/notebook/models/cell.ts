@@ -147,7 +147,6 @@ export class CellModel implements ICellModel {
 		// See https://jupyter-notebook.readthedocs.io/en/stable/security.html
 
 		this._isTrusted = true;
-
 		if (this._future) {
 			this._future.dispose();
 		}
@@ -226,6 +225,7 @@ export class CellModel implements ICellModel {
 			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
 		}
+		this._future.dispose();
 	}
 
 	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {

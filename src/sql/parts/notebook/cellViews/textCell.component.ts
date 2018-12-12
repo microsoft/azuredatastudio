@@ -91,9 +91,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.setLoading(false);
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.cellModel.onOutputsChanged(e => {
+		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
-		});
+		}));
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
