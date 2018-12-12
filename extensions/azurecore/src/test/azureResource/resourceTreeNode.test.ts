@@ -86,6 +86,18 @@ let mockResourceProvider: TypeMoq.IMock<sqlops.azureResource.IAzureResourceProvi
 
 describe('AzureResourceResourceTreeNode.info', function(): void {
 	beforeEach(() => {
+		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider.setup((o) => o.getTreeItem(mockResourceRootNode)).returns(() => mockResourceRootNode.treeItem);
+		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
+
+		mockResourceProvider = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceProvider>();
+		mockResourceProvider.setup((o) => o.providerId).returns(() => mockResourceProviderId);
+		mockResourceProvider.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider.object);
+
+		resourceService.clearResourceProviders();
+		resourceService.registerResourceProvider(mockResourceProvider.object);
+
+		resourceService.areResourceProvidersLoaded = true;
 	});
 
 	it('Should be correct when created.', async function(): Promise<void> {
@@ -110,7 +122,7 @@ describe('AzureResourceResourceTreeNode.info', function(): void {
 	});
 });
 
-describe('AzureResourceSubscriptionTreeNode.getChildren', function(): void {
+describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 	beforeEach(() => {
 		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<sqlops.azureResource.IAzureResourceTreeDataProvider>();
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
@@ -119,6 +131,7 @@ describe('AzureResourceSubscriptionTreeNode.getChildren', function(): void {
 		mockResourceProvider.setup((o) => o.providerId).returns(() => mockResourceProviderId);
 		mockResourceProvider.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider.object);
 
+		resourceService.clearResourceProviders();
 		resourceService.registerResourceProvider(mockResourceProvider.object);
 
 		resourceService.areResourceProvidersLoaded = true;
@@ -132,7 +145,7 @@ describe('AzureResourceSubscriptionTreeNode.getChildren', function(): void {
 
 		const children = await resourceTreeNode.getChildren();
 
-		mockResourceTreeDataProvider.verify((o) => o.getChildren(), TypeMoq.Times.once());
+		mockResourceTreeDataProvider.verify((o) => o.getChildren(mockResourceRootNode), TypeMoq.Times.once());
 
 		should(children).Array();
 		should(children.length).equal(mockResourceNodes.length);

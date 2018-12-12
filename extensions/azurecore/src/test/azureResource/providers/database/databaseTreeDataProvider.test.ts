@@ -14,12 +14,13 @@ import 'mocha';
 import { ApiWrapper } from '../../../../apiWrapper';
 import { IAzureResourceDatabaseService } from '../../../../azureResource/providers/database/interfaces';
 import { AzureResourceDatabaseTreeDataProvider } from '../../../../azureResource/providers/database/databaseTreeDataProvider';
+import { AzureResourceDatabase } from '../../../../azureResource/providers/database/models';
+import { AzureResourceItemType } from '../../../../azureResource/constants';
 
 // Mock services
 let mockDatabaseService: TypeMoq.IMock<IAzureResourceDatabaseService>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-
 
 // Mock test data
 const mockAccount: sqlops.Account = {
@@ -56,33 +57,26 @@ const mockResourceRootNode: sqlops.azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockResourceNode1: sqlops.azureResource.IAzureResourceNode = {
-	account: mockAccount,
-	subscription: mockSubscription,
-	tenantId: mockTenantId,
-	treeItem: {
-		id: 'mock_resource_node_1',
-		label: 'mock resource node 1',
-		iconPath: undefined,
-		collapsibleState: vscode.TreeItemCollapsibleState.None,
-		contextValue: 'mock_resource_node'
-	}
+const mockTokens = {};
+mockTokens[mockTenantId] = {
+	token: 'mock_token',
+	tokenType: 'Bearer'
 };
 
-const mockResourceNode2: sqlops.azureResource.IAzureResourceNode = {
-	account: mockAccount,
-	subscription: mockSubscription,
-	tenantId: mockTenantId,
-	treeItem: {
-		id: 'mock_resource_node_2',
-		label: 'mock resource node 2',
-		iconPath: undefined,
-		collapsibleState: vscode.TreeItemCollapsibleState.None,
-		contextValue: 'mock_resource_node'
+const mockDatabases: AzureResourceDatabase[] = [
+	{
+		name: 'mock database 1',
+		serverName: 'mock database server 1',
+		serverFullName: 'mock database server full name 1',
+		loginName: 'mock login'
+	},
+	{
+		name: 'mock database 2',
+		serverName: 'mock database server 2',
+		serverFullName: 'mock database server full name 2',
+		loginName: 'mock login'
 	}
-};
-
-const mockResourceNodes: sqlops.azureResource.IAzureResourceNode[] = [mockResourceNode1, mockResourceNode2];
+];
 
 describe('AzureResourceDatabaseTreeDataProvider.info', function(): void {
 	beforeEach(() => {
@@ -107,6 +101,10 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function(): void {
 		mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceDatabaseService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+
+		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
+		mockDatabaseService.setup((o) => o.getDatabases(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
+		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
 	it('Should return container node when element is undefined.', async function(): Promise<void> {
@@ -118,9 +116,9 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function(): void {
 		should(children.length).equal(1);
 
 		const child = children[0];
-		should(child.account).null();
-		should(child.subscription).null();
-		should(child.tenantId).null();
+		should(child.account).undefined();
+		should(child.subscription).undefined();
+		should(child.tenantId).undefined();
 		should(child.treeItem.id).equal('azure.resource.providers.database.treeDataProvider.databaseContainer');
 		should(child.treeItem.label).equal('SQL Databases');
 		should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
@@ -133,17 +131,19 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function(): void {
 		const children = await treeDataProvider.getChildren(mockResourceRootNode);
 
 		should(children).Array();
-		should(children.length).equal(mockResourceNodes.length);
+		should(children.length).equal(mockDatabases.length);
 
 		for (let ix = 0; ix < children.length; ix++) {
 			const child = children[ix];
+			const database = mockDatabases[ix];
+
 			should(child.account).equal(mockAccount);
 			should(child.subscription).equal(mockSubscription);
 			should(child.tenantId).equal(mockTenantId);
-			should(child.treeItem.id).equal(mockResourceNodes[ix].treeItem.id);
-			should(child.treeItem.label).equal(mockResourceNodes[ix].treeItem.label);
-			should(child.treeItem.collapsibleState).equal(mockResourceNodes[ix].treeItem.collapsibleState);
-			should(child.treeItem.contextValue).equal(mockResourceNodes[ix].treeItem.contextValue);
+			should(child.treeItem.id).equal(`databaseServer_${database.serverFullName}.database_${database.name}`);
+			should(child.treeItem.label).equal(`${database.name} (${database.serverName})`);
+			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.None);
+			should(child.treeItem.contextValue).equal(AzureResourceItemType.database);
 		}
 	});
 });

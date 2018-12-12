@@ -8,12 +8,10 @@
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
 import 'mocha';
-import { AppContext } from '../../appContext';
-import { ApiWrapper } from '../../apiWrapper';
 
 import { AzureResourceService } from '../../azureResource/resourceService';
+import { fail } from 'assert';
 
 // Mock test data
 const mockAccount: sqlops.Account = {
@@ -61,6 +59,7 @@ describe('AzureResourceService.listResourceProviderIds', function(): void {
 		mockResourceProvider2.setup((o) => o.providerId).returns(() => 'mockResourceProvider2');
 		mockResourceProvider2.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider2.object);
 
+		resourceService.clearResourceProviders();
 		resourceService.areResourceProvidersLoaded = true;
 	});
 
@@ -89,8 +88,8 @@ describe('AzureResourceService.getRootChildren', function(): void {
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
+		resourceService.clearResourceProviders();
 		resourceService.registerResourceProvider(mockResourceProvider1.object);
-
 		resourceService.areResourceProvidersLoaded = true;
 	});
 
@@ -102,7 +101,14 @@ describe('AzureResourceService.getRootChildren', function(): void {
 
 	it('Should throw exceptions when provider id is incorrect.', async function(): Promise<void> {
 		const providerId = 'non_existent_provider_id';
-		should(await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId)).throwError(`Azure resource provider doesn't exist. Id: ${providerId}`);
+		try {
+			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId);
+		} catch (error) {
+			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
+			return;
+		}
+
+		fail();
 	});
 });
 
@@ -116,8 +122,8 @@ describe('AzureResourceService.getChildren', function(): void {
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
+		resourceService.clearResourceProviders();
 		resourceService.registerResourceProvider(mockResourceProvider1.object);
-
 		resourceService.areResourceProvidersLoaded = true;
 	});
 
@@ -128,7 +134,14 @@ describe('AzureResourceService.getChildren', function(): void {
 
 	it('Should throw exceptions when provider id is incorrect.', async function(): Promise<void> {
 		const providerId = 'non_existent_provider_id';
-		should(await resourceService.getChildren(providerId, TypeMoq.It.isAny())).throwError(`Azure resource provider doesn't exist. Id: ${providerId}`);
+		try {
+			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId);
+		} catch (error) {
+			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
+			return;
+		}
+
+		fail();
 	});
 });
 
@@ -142,8 +155,8 @@ describe('AzureResourceService.getTreeItem', function(): void {
 		mockResourceProvider1.setup((o) => o.providerId).returns(() => 'mockResourceProvider1');
 		mockResourceProvider1.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider1.object);
 
+		resourceService.clearResourceProviders();
 		resourceService.registerResourceProvider(mockResourceProvider1.object);
-
 		resourceService.areResourceProvidersLoaded = true;
 	});
 
@@ -154,6 +167,13 @@ describe('AzureResourceService.getTreeItem', function(): void {
 
 	it('Should throw exceptions when provider id is incorrect.', async function(): Promise<void> {
 		const providerId = 'non_existent_provider_id';
-		should(await resourceService.getTreeItem(providerId, TypeMoq.It.isAny())).throwError(`Azure resource provider doesn't exist. Id: ${providerId}`);
+		try {
+			await resourceService.getRootChildren(providerId, mockAccount, mockSubscription, mockTenantId);
+		} catch (error) {
+			should(error.message).equal(`Azure resource provider doesn't exist. Id: ${providerId}`);
+			return;
+		}
+
+		fail();
 	});
 });

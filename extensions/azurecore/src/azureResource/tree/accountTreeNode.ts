@@ -51,7 +51,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 						const token = tokens[tenant.id].token;
 						const tokenType = tokens[tenant.id].tokenType;
 
-						subscriptions.push(...await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)));
+						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)) || <azureResource.AzureResourceSubscription[]>[]));
 					}
 				} catch (error) {
 					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);

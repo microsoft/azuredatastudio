@@ -28,11 +28,16 @@ export class AzureResourceService {
 		this.doRegisterResourceProvider(resourceProvider);
 	}
 
+	public clearResourceProviders(): void {
+		this._resourceProviders = {};
+		this._treeDataProviders = {};
+		this._areResourceProvidersLoaded = false;
+	}
+
 	public async getRootChildren(resourceProviderId: string, account: Account, subscription: azureResource.AzureResourceSubscription, tenatId: string): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
-		const resourceProvider = this._resourceProviders[resourceProviderId];
-		if (!resourceProvider) {
+		if (!(resourceProviderId in this._resourceProviders)) {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
@@ -53,8 +58,7 @@ export class AzureResourceService {
 	public async getChildren(resourceProviderId: string, element: azureResource.IAzureResourceNode): Promise<IAzureResourceNodeWithProviderId[]> {
 		await this.ensureResourceProvidersRegistered();
 
-		const resourceProvider = this._resourceProviders[resourceProviderId];
-		if (!resourceProvider) {
+		if (!(resourceProviderId in this._resourceProviders)) {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 
@@ -70,8 +74,7 @@ export class AzureResourceService {
 	public async getTreeItem(resourceProviderId: string, element?: azureResource.IAzureResourceNode): Promise<TreeItem> {
 		await this.ensureResourceProvidersRegistered();
 
-		const resourceProvider = this._resourceProviders[resourceProviderId];
-		if (!resourceProvider) {
+		if (!(resourceProviderId in this._resourceProviders)) {
 			throw new Error(`Azure resource provider doesn't exist. Id: ${resourceProviderId}`);
 		}
 

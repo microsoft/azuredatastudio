@@ -156,9 +156,9 @@
 		"hasAzureResourceProviders": true
 	},
 	"dependencies": {
-		"request": "2.88.0",
 		"azure-arm-resource": "^7.0.0",
 		"azure-arm-sql": "^5.0.1",
+		"request": "2.88.0",
 		"vscode-nls": "^4.0.0"
 	},
 	"devDependencies": {
@@ -166,6 +166,7 @@
 		"@types/node": "^8.0.24",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
+		"vscode": "^1.1.26",
 		"typemoq": "^2.1.0"
 	}
 }

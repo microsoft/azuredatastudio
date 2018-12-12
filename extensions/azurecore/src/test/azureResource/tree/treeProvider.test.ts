@@ -13,18 +13,20 @@ import 'mocha';
 import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
-import { IAzureResourceAccountService } from '../../../azureResource/interfaces';
+import { IAzureResourceCacheService, IAzureResourceAccountService } from '../../../azureResource/interfaces';
 import { AzureResourceTreeProvider } from '../../../azureResource/tree/treeProvider';
 import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
 import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
 import { AzureResourceServiceNames } from '../../../azureResource/constants';
+import { generateGuid } from '../../../azureResource/utils';
 
 // Mock services
 let mockAppContext: AppContext;
 
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
+let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockAccountService: TypeMoq.IMock<IAzureResourceAccountService>;
 
 // Mock test data
@@ -60,11 +62,15 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 		mockAccountService = TypeMoq.Mock.ofType<IAzureResourceAccountService>();
 
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
 
+		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContext.registerService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService, mockAccountService.object);
+
+		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 	});
 
 	it('Should load accounts.', async function(): Promise<void> {
