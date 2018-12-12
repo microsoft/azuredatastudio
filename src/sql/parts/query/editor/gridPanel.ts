@@ -133,6 +133,7 @@ export class GridPanel extends ViewletPanel {
 
 	private maximizedGrid: GridTable<any>;
 	private _state: GridPanelState;
+	private _addedResultSets = new Set<string>();
 
 	constructor(
 		options: IViewletPanelOptions,
@@ -202,6 +203,20 @@ export class GridPanel extends ViewletPanel {
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
 			}
+		} else {
+			// clear added resultsets if they are requeried
+			let resultsToUpdate: sqlops.ResultSetSummary[];
+			if (!Array.isArray(resultSet)) {
+				resultsToUpdate = [resultSet];
+			} else {
+				resultsToUpdate = resultSet;
+			}
+			for (let set of resultsToUpdate) {
+				let setId = set.batchId + '-' + set.id;
+				if (this._addedResultSets.has(setId)) {
+					this._addedResultSets.delete(setId);
+				}
+			}
 		}
 	}
 
@@ -234,8 +249,10 @@ export class GridPanel extends ViewletPanel {
 			let change = false;
 
 			for (let set of resultsToUpdate) {
-				if (set.complete) {
+				let setId = set.batchId + '-' + set.id;
+				if (set.complete && !this._addedResultSets.has(setId)) {
 					this.addResultSet(set);
+					this._addedResultSets.add(setId);
 					change = true;
 				}
 			}
