@@ -237,8 +237,8 @@ export class TSQLFuture implements FutureInternal {
 			this._queryRunner.onResultSet(e => {
 				let msg: nb.IShellMessage = {
 					channel: 'shell',
-					type: 'shell',
-					content: e,
+					type: 'execute_reply',
+					content: { status: 'ok' },
 					header: undefined,
 					metadata: undefined,
 					parent_header: undefined
@@ -284,7 +284,7 @@ export class TSQLFuture implements FutureInternal {
 				content: <nb.IExecuteResult> {
 					output_type: 'execute_result',
 					metadata: {},
-					data: {},
+					data: { 'text/plain' : '2'},
 					executionCount: 0
 				},
 				metadata: undefined,

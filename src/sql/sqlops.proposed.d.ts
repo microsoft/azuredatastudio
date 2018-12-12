@@ -2231,7 +2231,7 @@ declare module 'sqlops' {
 		/**
 		 * The valid channel names.
 		 */
-		export type Channel = 'shell' | 'iopub' | 'stdin';
+		export type Channel = 'shell' | 'iopub' | 'stdin' | 'execute_reply';
 
 		/**
 		 * Kernel message header content.
