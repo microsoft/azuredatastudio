@@ -434,10 +434,10 @@ export default class QueryRunner extends Disposable {
 		};
 
 		return this._queryManagementService.getQueryRows(rowData).then(r => r, error => {
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
-			});
+			// this._notificationService.notify({
+			// 	severity: Severity.Error,
+			// 	message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
+			// });
 			return error;
 		});
 	}
@@ -492,11 +492,11 @@ export default class QueryRunner extends Disposable {
 				}
 				resolve(result);
 			}, error => {
-				let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
-				self._notificationService.notify({
-					severity: Severity.Error,
-					message: `${errorMessage} ${error}`
-				});
+				// let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
+				// self._notificationService.notify({
+				// 	severity: Severity.Error,
+				// 	message: `${errorMessage} ${error}`
+				// });
 				reject(error);
 			});
 		});
