@@ -212,7 +212,7 @@ export class InsightsDialogView extends Modal {
 		attachPanelStyler(topTableView, this._themeService);
 		this._topTable = topTableView.table;
 		this._topTable.setSelectionModel(new RowSelectionModel<ListResource>());
-		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle, ariaHeaderLabel: itemsDetailHeaderTitle}) as InsightTableView<ListResource>;
+		let bottomTableView = this._instantiationService.createInstance(InsightTableView, this._bottomColumns, this._bottomTableData, { forceFitColumns: true }, { id: 'insights.bottom', title: itemsDetailHeaderTitle, ariaHeaderLabel: itemsDetailHeaderTitle }) as InsightTableView<ListResource>;
 		bottomTableView.render();
 		attachPanelStyler(bottomTableView, this._themeService);
 		this._bottomTable = bottomTableView.table;
