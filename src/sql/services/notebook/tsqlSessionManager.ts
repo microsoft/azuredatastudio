@@ -9,6 +9,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
+import { ResultSetSummary } from 'sqlops';
+import { GridPanelState } from 'sql/parts/query/editor/gridPanel';
 
 export const tsqlKernel: string = localize('sqlKernel', 'T-SQL');
 const tsqlKernelConfigIssue = localize('tsqlKernelConfigIssue', 'Cannot run cells as T-SQL kernel is not configured correctly');
@@ -18,6 +20,11 @@ let tsqlKernelSpec: nb.IKernelSpec = ({
 	language: 'sql',
 	display_name: tsqlKernel
 });
+
+export interface TSQLData {
+	columns: Array<string>;
+	rows: Array<Array<string>>;
+}
 
 export class TSQLSessionManager implements nb.SessionManager {
 	constructor(private _instantiationService: IInstantiationService) {}
@@ -151,25 +158,18 @@ class TSQLKernel implements nb.IKernel {
 
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
 		if (this._queryRunner) {
-			// if (!this._queryRunner.hasCompleted) {
-			// 	await this._queryRunner.cancelQuery();
-			// }
-			// try {
-			// 	await this.createNewConnection(this._connectionService.getActiveConnections());
-			// } catch (e) {
-			// 	return Promise.reject(e);
-			// }
-			// this._queryRunner.uri = this._connectionUri;
+			this._queryRunner.runQuery(content.code);
 		} else {
 			let connectionProfile = this._connectionManagementService.getActiveConnections()[0];
 			let connectionUri = Utils.generateUri(connectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri, undefined);
-			this._connectionManagementService.connect(connectionProfile, connectionUri).then(result => undefined);
-
-			this.addQueryEventListeners(this._queryRunner);
+			this._connectionManagementService.connect(connectionProfile, connectionUri).then((result) =>
+			{
+				this.addQueryEventListeners(this._queryRunner);
+				this._queryRunner.runQuery(content.code);
+			});
 		}
 
-		this._queryRunner.runQuery(content.code);
 		return new TSQLFuture(this._queryRunner);
 	}
 
@@ -219,7 +219,8 @@ class TSQLKernel implements nb.IKernel {
 }
 
 export class TSQLFuture implements FutureInternal {
-	private _msg: nb.IMessage;
+	private _msg: nb.IMessage = undefined;
+	private _state: GridPanelState;
 
 	constructor(private _queryRunner: QueryRunner) {
 	}
@@ -232,15 +233,21 @@ export class TSQLFuture implements FutureInternal {
 	}
 
 	get done(): Thenable<nb.IShellMessage> {
+
+		/*this.futureImpl.onIOPub = (msg) => {
+            let shellMsg = toIOPubMessage(msg);
+            return handler.handle(shellMsg);
+		};*/
+
 		let deferred = new Deferred<nb.IShellMessage> ();
 		try {
-			this._queryRunner.onResultSet(e => {
+			this._queryRunner.onBatchEnd(e => {
 				let msg: nb.IShellMessage = {
 					channel: 'shell',
 					type: 'execute_reply',
 					content: { status: 'ok' },
 					header: undefined,
-					metadata: undefined,
+					metadata: {language: 'sql'},
 					parent_header: undefined
 				};
 				this._msg = msg;
@@ -266,32 +273,80 @@ export class TSQLFuture implements FutureInternal {
 		// no-op
 	}
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
-		/*let shellMsg = this.toIOPubMessage(this._msg);
-		handler.handle(shellMsg);
+		this._queryRunner.onBatchEnd(batch => {
+			let i = batch;
+			this._queryRunner.getQueryRows(0, batch.resultSetSummaries[0].rowCount, 0, 0).then(d => {
+				let data:TSQLData = {
+					columns: batch.resultSetSummaries[0].columnInfo.map(c => c.columnName),
+					rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
+				};
+				let table: HTMLTableElement = document.createElement('table');
+				let thead = table.createTHead();
+				let tbody = table.createTBody();
+				let hrow = <HTMLTableRowElement>table.insertRow();
+				// headers
+				for (let column of data.columns) {
+					var cell = hrow.insertCell();
+					cell.innerHTML = column;
+				}
 
-		/*this.futureImpl.onIOPub = (msg) => {
-            let shellMsg = this.toIOPubMessage(msg);
-            return handler.handle(shellMsg);
-        };*/
-		setTimeout(() => {
-			let msg: nb.IIOPubMessage = {
-				channel: 'iopub',
-				type: 'iopub',
-				header: <nb.IHeader> {
-					msg_id: '0',
-					msg_type: 'execute_result'
-				},
-				content: <nb.IExecuteResult> {
-					output_type: 'execute_result',
-					metadata: {},
-					data: { 'text/plain' : '2'},
-					executionCount: 0
-				},
-				metadata: undefined,
-				parent_header: undefined
-			};
-			handler.handle(msg);
-		}, 10);
+				for (let row in data.rows) {
+					let hrow = <HTMLTableRowElement>table.insertRow();
+					for (let column in data.columns) {
+						var cell = hrow.insertCell();
+						cell.innerHTML = data.rows[row][column];
+					}
+				}
+				let tableHtml = '<table>' + table.innerHTML + '</table>';
+				let msg: nb.IIOPubMessage = {
+					channel: 'iopub',
+					type: 'iopub',
+					header: <nb.IHeader> {
+						msg_id: '0',
+						msg_type: 'execute_result'
+					},
+					content: <nb.IExecuteResult> {
+						output_type: 'execute_result',
+						metadata: {},
+						executionCount: 0,
+						data: { 'text/html' : tableHtml},
+					},
+					metadata: undefined,
+					parent_header: undefined
+				};
+				handler.handle(msg);
+			});
+		});
+
+		// this._queryRunner.onResultSetUpdate(update => {
+		// 	let u = update;
+		// });
+		// this._queryRunner.onResultSet(rs => {
+
+		// let resultsToAdd: ResultSetSummary[];
+		// if (!Array.isArray(rs)) {
+		// 	resultsToAdd = [rs];
+		// } else {
+		// 	resultsToAdd = rs;
+		// }
+
+		// let tables: GridTable<any>[] = [];
+
+		// for (let set of resultsToAdd) {
+		// 	let tableState: GridTableState;
+		// 	if (this._state) {
+		// 		tableState = this._state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
+		// 	}
+		// 	if (!tableState) {
+		// 		tableState = new GridTableState(set.id, set.batchId);
+		// 		if (this._state) {
+		// 			this._state.tableStates.push(tableState);
+		// 		}
+		// 	}
+		// }
+
+
+
 	}
 	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		// no-op
