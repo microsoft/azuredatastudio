@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/import/out/wizard/pages/summaryPage" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="flatFileImport.importInformation">
+      <source xml:lang="en">Import information</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.importStatus">
+      <source xml:lang="en">Import status</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serverName">
+      <source xml:lang="en">Server name</source>
+      <target state="translated">Имя сервера</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.databaseName">
+      <source xml:lang="en">Database name</source>
+      <target state="translated">Имя базы данных</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.tableName">
+      <source xml:lang="en">Table name</source>
+      <target state="translated">Имя таблицы</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.tableSchema">
+      <source xml:lang="en">Table schema</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.fileImport">
+      <source xml:lang="en">File to be imported</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.success.norows">
+      <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/wizard/pages/prosePreviewPage" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="flatFileImport.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">Обновить</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.prosePreviewMessage">
+      <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/wizard/pages/modifyColumnsPage" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="flatFileImport.importData">
+      <source xml:lang="en">Import Data</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.next">
+      <source xml:lang="en">Next</source>
+      <target state="translated">Далее</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.columnName">
+      <source xml:lang="en">Column Name</source>
+      <target state="translated">Имя столбца</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.dataType">
+      <source xml:lang="en">Data Type</source>
+      <target state="translated">Тип данных</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.primaryKey">
+      <source xml:lang="en">Primary Key</source>
+      <target state="translated">Первичный ключ</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.allowNulls">
+      <source xml:lang="en">Allow Nulls</source>
+      <target state="translated">Разрешить значения NULL</target>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/wizard/pages/fileConfigPage" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="flatFileImport.serverDropdownTitle">
+      <source xml:lang="en">Server the database is in</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.databaseDropdownTitle">
+      <source xml:lang="en">Database the table is created in</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.browseFiles">
+      <source xml:lang="en">Browse</source>
+      <target state="translated">Обзор</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.openFile">
+      <source xml:lang="en">Open</source>
+      <target state="translated">Открыто</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.fileTextboxTitle">
+      <source xml:lang="en">Location of the file to be imported</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.tableTextboxTitle">
+      <source xml:lang="en">New table name</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.schemaTextboxTitle">
+      <source xml:lang="en">Table schema</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/services/telemetry" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="import.serviceCrashButton">
+      <source xml:lang="en">Give Feedback</source>
+    </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">service component could not start</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/services/serviceClient" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">Service Started</source>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting service</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serviceStartFailed">
+      <source xml:lang="en">Failed to start Import service{0}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} service to {1}</source>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing Service</source>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed</source>
+      <target state="translated">УСТАНОВЛЕН</target>
+    </trans-unit>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+      <target state="translated">Загрузка {0}</target>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading Service</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done!</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" target-language="ru" datatype="plaintext"><body>
+    <trans-unit id="import.needConnection">
+      <source xml:lang="en">Please connect to a server before using this wizard.</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.wizardName">
+      <source xml:lang="en">Import flat file wizard</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page1Name">
+      <source xml:lang="en">Specify Input File</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page2Name">
+      <source xml:lang="en">Preview Data</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page3Name">
+      <source xml:lang="en">Modify Columns</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.page4Name">
+      <source xml:lang="en">Summary</source>
+      <target state="translated">Сводка</target>
+    </trans-unit>
+    <trans-unit id="flatFileImport.importNewFile">
+      <source xml:lang="en">Import new file</source>
+    </trans-unit>
+  </body></file>
+</xliff>
