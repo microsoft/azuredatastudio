@@ -42,6 +42,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
+export const ACTIONBAR_PADDING: number = 10;
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
@@ -141,7 +142,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		let jobsViewToolbar = $('jobsview-component .agent-actionbar-container').get(0);
 		let statusBar = $('.part.statusbar').get(0);
 		if (jobsViewToolbar && statusBar) {
-			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
+			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom + ACTIONBAR_PADDING;
 			let statusTop = statusBar.getBoundingClientRect().top;
 			this._table.layout(new dom.Dimension(
 				dom.getContentWidth(this._gridEl.nativeElement),
