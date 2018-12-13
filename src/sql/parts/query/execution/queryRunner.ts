@@ -127,8 +127,18 @@ export default class QueryRunner extends Disposable {
 		return this._hasCompleted;
 	}
 
-	get batchSets(): sqlops.BatchSummary[] {
-		return this._batchSets;
+	/**
+	 * For public use only, for private use, directly access the member
+	 */
+	public get batchSets(): sqlops.BatchSummary[] {
+		return this._batchSets.splice(0);
+	}
+
+	/**
+	 * For public use only, for private use, directly access the member
+	 */
+	public get messages(): sqlops.IResultMessage[] {
+		return this._messages.splice(0);
 	}
 
 	// PUBLIC METHODS ======================================================
@@ -244,7 +254,7 @@ export default class QueryRunner extends Disposable {
 		this._hasCompleted = true;
 		this._batchSets = result.batchSummaries ? result.batchSummaries : [];
 
-		this.batchSets.map(batch => {
+		this._batchSets.map(batch => {
 			if (batch.selection) {
 				batch.selection.startLine = batch.selection.startLine + this._resultLineOffset;
 				batch.selection.endLine = batch.selection.endLine + this._resultLineOffset;
@@ -283,7 +293,7 @@ export default class QueryRunner extends Disposable {
 		batch.resultSetSummaries = [];
 
 		// Store the batch
-		this.batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = batch;
 
 		let message = {
 			// account for index by 1
@@ -305,7 +315,7 @@ export default class QueryRunner extends Disposable {
 		let batch: sqlops.BatchSummary = result.batchSummary;
 
 		// Store the batch again to get the rest of the data
-		this.batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = batch;
 		let executionTime = <number>(Utils.parseTimeString(batch.executionElapsed) || 0);
 		this._totalElapsedMilliseconds += executionTime;
 		if (executionTime > 0) {
@@ -327,8 +337,8 @@ export default class QueryRunner extends Disposable {
 			if (!resultSet.batchId) {
 				// Missing the batchId. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
-				if (this.batchSets.length > 0) {
-					batchSet = this.batchSets[0];
+				if (this._batchSets.length > 0) {
+					batchSet = this._batchSets[0];
 				} else {
 					batchSet = <sqlops.BatchSummary>{
 						id: 0,
@@ -336,10 +346,10 @@ export default class QueryRunner extends Disposable {
 						hasError: false,
 						resultSetSummaries: []
 					};
-					this.batchSets[0] = batchSet;
+					this._batchSets[0] = batchSet;
 				}
 			} else {
-				batchSet = this.batchSets[resultSet.batchId];
+				batchSet = this._batchSets[resultSet.batchId];
 			}
 			// handle getting queryPlanxml if we need too
 			if (this.isQueryPlan) {
@@ -364,7 +374,7 @@ export default class QueryRunner extends Disposable {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: sqlops.BatchSummary;
-			batchSet = this.batchSets[resultSet.batchId];
+			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
 			if (this.isQueryPlan) {
 				// check if this result has show plan, this needs work, it won't work for any other provider
@@ -609,7 +619,7 @@ export default class QueryRunner extends Disposable {
 
 	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
-		let batchSummary: sqlops.BatchSummary = this.batchSets[batchId];
+		let batchSummary: sqlops.BatchSummary = this._batchSets[batchId];
 		if (batchSummary !== undefined) {
 			let resultSetSummary = batchSummary.resultSetSummaries[resultId];
 			headers = resultSetSummary.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
