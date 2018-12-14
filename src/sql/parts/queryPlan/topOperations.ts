@@ -4,30 +4,34 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
-
 import { Dimension } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { dispose } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+
 import { Table } from 'sql/base/browser/ui/table/table';
 import { PlanXmlParser } from 'sql/parts/queryPlan/planXmlParser';
+import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { attachTableStyler } from 'sql/common/theme/styler';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
-	{ name: localize('topOperations.operation', 'Operation'), field: 'operation' },
-	{ name: localize('topOperations.object', 'Object'), field: 'object' },
-	{ name: localize('topOperations.estCost', 'Est Cost'), field: 'estCost' },
-	{ name: localize('topOperations.estSubtreeCost', 'Est Subtree Cost'), field: 'estSubtreeCost' },
-	{ name: localize('topOperations.actualRows', 'Actual Rows'), field: 'actualRows' },
-	{ name: localize('topOperations.estRows', 'Est Rows'), field: 'estRows' },
-	{ name: localize('topOperations.actualExecutions', 'Actual Executions'), field: 'actualExecutions' },
-	{ name: localize('topOperations.estCPUCost', 'Est CPU Cost'), field: 'estCPUCost' },
-	{ name: localize('topOperations.estIOCost', 'Est IO Cost'), field: 'estIOCost' },
-	{ name: localize('topOperations.parallel', 'Parallel'), field: 'parallel' },
-	{ name: localize('topOperations.actualRebinds', 'Actual Rebinds'), field: 'actualRebinds' },
-	{ name: localize('topOperations.estRebinds', 'Est Rebinds'), field: 'estRebinds' },
-	{ name: localize('topOperations.actualRewinds', 'Actual Rewinds'), field: 'actualRewinds' },
-	{ name: localize('topOperations.estRewinds', 'Est Rewinds'), field: 'estRewinds' },
-	{ name: localize('topOperations.partitioned', 'Partitioned'), field: 'partitioned' }
+	{ name: localize('topOperations.operation', 'Operation'), field: 'operation', sortable: true },
+	{ name: localize('topOperations.object', 'Object'), field: 'object', sortable: true },
+	{ name: localize('topOperations.estCost', 'Est Cost'), field: 'estCost', sortable: true },
+	{ name: localize('topOperations.estSubtreeCost', 'Est Subtree Cost'), field: 'estSubtreeCost', sortable: true },
+	{ name: localize('topOperations.actualRows', 'Actual Rows'), field: 'actualRows', sortable: true },
+	{ name: localize('topOperations.estRows', 'Est Rows'), field: 'estRows', sortable: true },
+	{ name: localize('topOperations.actualExecutions', 'Actual Executions'), field: 'actualExecutions', sortable: true },
+	{ name: localize('topOperations.estCPUCost', 'Est CPU Cost'), field: 'estCPUCost', sortable: true },
+	{ name: localize('topOperations.estIOCost', 'Est IO Cost'), field: 'estIOCost', sortable: true },
+	{ name: localize('topOperations.parallel', 'Parallel'), field: 'parallel', sortable: true },
+	{ name: localize('topOperations.actualRebinds', 'Actual Rebinds'), field: 'actualRebinds', sortable: true },
+	{ name: localize('topOperations.estRebinds', 'Est Rebinds'), field: 'estRebinds', sortable: true },
+	{ name: localize('topOperations.actualRewinds', 'Actual Rewinds'), field: 'actualRewinds', sortable: true },
+	{ name: localize('topOperations.estRewinds', 'Est Rewinds'), field: 'estRewinds', sortable: true },
+	{ name: localize('topOperations.partitioned', 'Partitioned'), field: 'partitioned', sortable: true }
 ];
 
 export class TopOperationsState {
@@ -42,8 +46,8 @@ export class TopOperationsTab implements IPanelTab {
 	public readonly identifier = 'TopOperationsTab';
 	public readonly view: TopOperationsView;
 
-	constructor() {
-		this.view = new TopOperationsView();
+	constructor(@IInstantiationService instantiationService: IInstantiationService) {
+		this.view = instantiationService.createInstance(TopOperationsView);
 	}
 
 	public dispose() {
@@ -56,16 +60,32 @@ export class TopOperationsTab implements IPanelTab {
 }
 
 export class TopOperationsView implements IPanelView {
-	private xml: string;
 	private _state: TopOperationsState;
 	private table: Table<any>;
+	private disposables: IDisposable[] = [];
+	private container = document.createElement('div');
+	private dataView = new TableDataView();
+
+	constructor(@IThemeService private themeService: IThemeService) {
+		this.table = new Table(this.container, {
+			columns: topOperationColumns,
+			dataProvider: this.dataView,
+			sorter: {
+				sort: (args) => {
+					this.dataView.sort(args);
+				}
+			}
+		});
+		this.disposables.push(this.table);
+		this.disposables.push(attachTableStyler(this.table, this.themeService));
+	}
 
 	public render(container: HTMLElement): void {
-		this.table = new Table(container, { columns: topOperationColumns });
+		container.appendChild(this.container);
 	}
 
 	dispose() {
-		this.table.dispose();
+		dispose(this.disposables);
 	}
 
 	public layout(dimension: Dimension): void {
@@ -73,10 +93,12 @@ export class TopOperationsView implements IPanelView {
 	}
 
 	public clear() {
+		this.dataView.clear();
 	}
 
 	public showPlan(xml: string) {
-		this.xml = xml;
+		this.state.xml = xml;
+		this.dataView.clear();
 		let parser = new PlanXmlParser(xml);
 		let operations = parser.topOperations;
 		let data = operations.map(i => {
@@ -98,6 +120,7 @@ export class TopOperationsView implements IPanelView {
 				partitioned: i.partitioned
 			};
 		});
+		this.dataView.push(data);
 	}
 
 	public set state(val: TopOperationsState) {
