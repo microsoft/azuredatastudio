@@ -130,7 +130,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		this.el = document.createElement('div');
 		this.scrollable = new ScrollableElement(this.el, { vertical: options.verticalScrollbarVisibility });
-		debounceEvent(this.scrollable.onScroll, (l, e) => e, 0)(e => {
+		debounceEvent(this.scrollable.onScroll, (l, e) => e, 25)(e => {
 			this.render(e.scrollTop, e.height);
 			this.relayout();
 			this._onScroll.fire(e.scrollTop);
