@@ -133,7 +133,7 @@ declare module 'sqlops' {
 		 * @param index index to insert the component to
 		 * @param itemLayout Item Layout
 		 */
-		insertFormItem(formComponent: FormComponent | FormComponentGroup, index?: number, itemLayout?: FormItemLayout);
+		insertFormItem(formComponent: FormComponent | FormComponentGroup, index?: number, itemLayout?: FormItemLayout): void;
 
 		/**
 		 * Removes a from item from the from
@@ -1209,7 +1209,7 @@ declare module 'sqlops' {
 			 * Registers a save handler for this editor. This will be called if [supportsSave](#ModelViewEditorOptions.supportsSave)
 			 * is set to true and the editor is marked as dirty
 			 */
-			registerSaveHandler(handler: () => Thenable<boolean>);
+			registerSaveHandler(handler: () => Thenable<boolean>): void;
 		}
 	}
 
