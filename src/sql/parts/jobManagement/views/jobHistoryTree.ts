@@ -96,6 +96,10 @@ export class JobHistoryDataSource implements tree.IDataSource {
 	public set data(data: JobHistoryRow[]) {
 		this._data = data;
 	}
+
+	public getFirstElement() {
+		return this._data[0];
+	}
 }
 
 export interface IListTemplate {

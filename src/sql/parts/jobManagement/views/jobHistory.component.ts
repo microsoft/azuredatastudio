@@ -216,6 +216,13 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
 		}
+		const payload = { origin: 'origin' };
+		let element = this._treeDataSource.getFirstElement();
+		this._tree.setFocus(element, payload);
+		this._tree.setSelection([element], payload);
+		if (element.rowID) {
+			self.setStepsTree(element);
+		}
 	}
 
 	private toggleCollapse(): void {
