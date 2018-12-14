@@ -86,7 +86,7 @@ export class RunJobAction extends Action {
 		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private telemetryService: ITelemetryService
 	) {
-		super(RunJobAction.ID, RunJobAction.LABEL, 'runJobIcon');
+		super(RunJobAction.ID, RunJobAction.LABEL, 'start');
 	}
 
 	public run(context: JobHistoryComponent): TPromise<boolean> {
@@ -126,7 +126,7 @@ export class StopJobAction extends Action {
 		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private telemetryService: ITelemetryService
 	) {
-		super(StopJobAction.ID, StopJobAction.LABEL, 'stopJobIcon');
+		super(StopJobAction.ID, StopJobAction.LABEL, 'stop');
 	}
 
 	public run(context: JobHistoryComponent): TPromise<boolean> {
@@ -163,7 +163,7 @@ export class EditJobAction extends Action {
 	constructor(
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(EditJobAction.ID, EditJobAction.LABEL);
+		super(EditJobAction.ID, EditJobAction.LABEL, 'edit');
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
