@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { INextIterator } from 'vs/base/common/iterator';
+import { entries } from 'sql/base/common/objects';
 
 export interface IView {
 	id: string;
