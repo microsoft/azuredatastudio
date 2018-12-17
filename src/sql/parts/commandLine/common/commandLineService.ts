@@ -15,6 +15,7 @@ import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions a
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
 export class CommandLineService implements ICommandLineProcessing {
 	private _connectionProfile: ConnectionProfile;
@@ -27,6 +28,7 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
+		@IWorkspaceConfigurationService private _configurationService: IWorkspaceConfigurationService
 	) {
 		let profile = null;
 		if (this._environmentService && this._environmentService.args.server) {
@@ -59,7 +61,8 @@ export class CommandLineService implements ICommandLineProcessing {
 	}
 	public _serviceBrand: any;
 	public processCommandLine(): void {
-		if (!this._connectionProfile && !this._connectionManagementService.hasRegisteredServers()) {
+		let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
+		if (showConnectDialogOnStartup && !this._connectionProfile && !this._connectionManagementService.hasRegisteredServers()) {
 			// prompt the user for a new connection on startup if no profiles are registered
 			this._connectionManagementService.showConnectionDialog();
 		} else if (this._connectionProfile) {

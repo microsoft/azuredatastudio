@@ -37,3 +37,16 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 		}
 	}
 });
+
+Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
+	'id': 'showConnectDialogOnStartup',
+	'title': nls.localize('showConnectDialogOnStartup', 'Show connect dialog on startup'),
+	'type': 'object',
+	'properties': {
+		'workbench.showConnectDialogOnStartup': {
+			'type': 'boolean',
+			'default': true,
+			'description': nls.localize('showConnectDialogOnStartup', 'Show connect dialog on startup')
+		}
+	}
+});

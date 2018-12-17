@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 
+import { context } from './testContext';
+
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');
 
@@ -26,9 +28,13 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-testRunner.configure(options);
+if (!vscode.workspace.getConfiguration('adstest')['testSetupCompleted']) {
+	context.RunTest = false;
+	vscode.workspace.getConfiguration().update('workbench.enablePreviewFeatures', true, true);
+	vscode.workspace.getConfiguration().update('workbench.showConnectDialogOnStartup', false, true);
+	vscode.workspace.getConfiguration().update('adstest.testSetupCompleted', true, true);
+}
 
-//Enable preview features
-vscode.workspace.getConfiguration().update('workbench.enablePreviewFeatures', true, true);
+testRunner.configure(options);
 
 export = testRunner;

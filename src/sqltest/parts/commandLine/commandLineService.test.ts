@@ -30,14 +30,16 @@ import {
 } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/parts/connection/common/connectionStore';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
+import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
 
-class TestParsedArgs implements ParsedArgs{
+class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
 	_: string[];
 	aad?: boolean;
 	add?: boolean;
-	database?:string;
+	database?: string;
 	debugBrkPluginHost?: string;
 	debugBrkSearch?: string;
 	debugId?: string;
@@ -97,11 +99,11 @@ class TestParsedArgs implements ParsedArgs{
 suite('commandLineService tests', () => {
 
 	let capabilitiesService: CapabilitiesTestService;
-	let commandLineService : CommandLineService;
-	let environmentService : TypeMoq.Mock<EnvironmentService>;
-	let queryEditorService : TypeMoq.Mock<QueryEditorService>;
-	let editorService:TypeMoq.Mock<IEditorService>;
-	let objectExplorerService : TypeMoq.Mock<ObjectExplorerService>;
+	let commandLineService: CommandLineService;
+	let environmentService: TypeMoq.Mock<EnvironmentService>;
+	let queryEditorService: TypeMoq.Mock<QueryEditorService>;
+	let editorService: TypeMoq.Mock<IEditorService>;
+	let objectExplorerService: TypeMoq.Mock<ObjectExplorerService>;
 	let connectionStore: TypeMoq.Mock<ConnectionStore>;
 
 	setup(() => {
@@ -109,65 +111,91 @@ suite('commandLineService tests', () => {
 		connectionStore = TypeMoq.Mock.ofType(ConnectionStore);
 	});
 
-	function getCommandLineService(connectionManagementService : IConnectionManagementService,
-		environmentService? : IEnvironmentService,
-		capabilitiesService? : ICapabilitiesService
-		) : CommandLineService
-	{
-		let service= new CommandLineService(
+	function getCommandLineService(connectionManagementService: IConnectionManagementService,
+		configurationService: IWorkspaceConfigurationService,
+		environmentService?: IEnvironmentService,
+		capabilitiesService?: ICapabilitiesService
+	): CommandLineService {
+		let service = new CommandLineService(
 			connectionManagementService,
 			capabilitiesService,
 			environmentService,
 			undefined,
 			undefined,
-			undefined
+			undefined,
+			configurationService
 		);
 		return service;
 	}
 
 	test('processCommandLine shows connection dialog by default', done => {
-		const connectionManagementService : TypeMoq.Mock<IConnectionManagementService>
-		= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable();
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => false);
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.verifiable(TypeMoq.Times.never());
-		let service = getCommandLineService(connectionManagementService.object);
+			.verifiable(TypeMoq.Times.never());
+		const configurationService = TypeMoq.Mock.ofType<IWorkspaceConfigurationService>(WorkspaceConfigurationTestService);
+		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => true);
+		let service = getCommandLineService(connectionManagementService.object, configurationService.object);
 		service.processCommandLine();
 		connectionManagementService.verifyAll();
 		done();
 	});
 
+	test('processCommandLine does nothing if no server name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', done => {
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+
+		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
+		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => false);
+		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
+			.verifiable(TypeMoq.Times.never());
+		const configurationService = TypeMoq.Mock.ofType<IWorkspaceConfigurationService>(WorkspaceConfigurationTestService);
+		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => false);
+		let service = getCommandLineService(connectionManagementService.object, configurationService.object);
+
+		service.processCommandLine();
+		connectionManagementService.verifyAll();
+
+		done();
+	});
+
 	test('processCommandLine does nothing if registered servers exist and no server name is provided', done => {
-		const connectionManagementService : TypeMoq.Mock<IConnectionManagementService>
-		= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true);
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.verifiable(TypeMoq.Times.never());
-		let service = getCommandLineService(connectionManagementService.object);
+			.verifiable(TypeMoq.Times.never());
+
+		const configurationService = TypeMoq.Mock.ofType<IWorkspaceConfigurationService>(WorkspaceConfigurationTestService);
+		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => true);
+		let service = getCommandLineService(connectionManagementService.object, configurationService.object);
 		service.processCommandLine();
 		connectionManagementService.verifyAll();
 		done();
 	});
 
 	test('processCommandLine opens a new connection if a server name is passed', done => {
-		const connectionManagementService : TypeMoq.Mock<IConnectionManagementService>
-		= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
+		const connectionManagementService: TypeMoq.Mock<IConnectionManagementService>
+			= TypeMoq.Mock.ofType<IConnectionManagementService>(TestConnectionManagementService, TypeMoq.MockBehavior.Strict);
 
-		const environmentService : TypeMoq.Mock<IEnvironmentService> = TypeMoq.Mock.ofType<IEnvironmentService>(EnvironmentService);
-		const args : TestParsedArgs = new TestParsedArgs();
+		const environmentService: TypeMoq.Mock<IEnvironmentService> = TypeMoq.Mock.ofType<IEnvironmentService>(EnvironmentService);
+		const args: TestParsedArgs = new TestParsedArgs();
 		args.server = 'myserver';
 		args.database = 'mydatabase';
 		environmentService.setup(e => e.args).returns(() => args).verifiable(TypeMoq.Times.atLeastOnce());
 		connectionManagementService.setup((c) => c.showConnectionDialog()).verifiable(TypeMoq.Times.never());
 		connectionManagementService.setup(c => c.hasRegisteredServers()).returns(() => true).verifiable(TypeMoq.Times.atMostOnce());
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.isAny(), 'connection', true))
-		.returns(() =>  new Promise<string>((resolve, reject) => { reject('unused');}))
-		.verifiable(TypeMoq.Times.once());
-		let service = getCommandLineService(connectionManagementService.object, environmentService.object, capabilitiesService);
+			.returns(() => new Promise<string>((resolve, reject) => { reject('unused'); }))
+			.verifiable(TypeMoq.Times.once());
+		const configurationService = TypeMoq.Mock.ofType<IWorkspaceConfigurationService>(WorkspaceConfigurationTestService);
+		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => true);
+		let service = getCommandLineService(connectionManagementService.object, configurationService.object, environmentService.object, capabilitiesService);
 		service.processCommandLine();
 		environmentService.verifyAll();
 		connectionManagementService.verifyAll();
