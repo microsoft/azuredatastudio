@@ -6,7 +6,7 @@
 import 'vs/css!./jobStepsView';
 
 import * as dom from 'vs/base/browser/dom';
-import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Injectable, AfterContentChecked } from '@angular/core';
+import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
@@ -57,23 +57,24 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	}
 
 	ngAfterContentChecked() {
-		if (this._jobHistoryComponent.stepRows.length > 0) {
-			this._treeDataSource.data = this._jobHistoryComponent.stepRows;
-			this._tree.setInput(new JobStepsViewModel());
-			this.layout();
-			$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
-			$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
-		}
+		$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
+		$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
+		$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+		this.layout();
+		this._tree.setInput(new JobStepsViewModel());
+		this._tree.onDidScroll(() => {
+			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+		});
 	}
 
 	ngOnInit() {
+		this._treeDataSource.data = this._jobHistoryComponent.stepRows;
 		this._tree = new Tree(this._tableContainer.nativeElement, {
 			controller: this._treeController,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible, horizontalScrollMode: ScrollbarVisibility.Visible });
-		this.layout();
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
 	}

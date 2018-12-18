@@ -189,9 +189,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 					stepViewRow.stepId = step.stepDetails.id.toString();
 					return stepViewRow;
 				});
-				this._showSteps = self._stepRows.length > 0;
+				self._stepRows.unshift(new JobStepsViewRow());
+				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
+				self._stepRows[0].stepId = 'Step ID';
+				self._stepRows[0].stepName = 'Step Name';
+				self._stepRows[0].message = 'Message';
+				this._showSteps = self._stepRows.length > 1;
 			} else {
-				this._showSteps = false;
+				self._showSteps = false;
 			}
 			self._cd.detectChanges();
 		}
@@ -324,7 +329,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = { targetObject: this._agentViewComponent.agentJobInfo, ownerUri: this.ownerUri };
+		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },

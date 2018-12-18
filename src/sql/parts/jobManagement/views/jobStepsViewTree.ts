@@ -11,7 +11,6 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
-import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 
 export class JobStepsViewRow {
 	public stepId: string;
@@ -35,7 +34,6 @@ export class JobStepsViewController extends TreeDefaults.DefaultController {
 	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
 		return true;
 	}
-
 }
 
 export class JobStepsViewDataSource implements tree.IDataSource {
@@ -84,7 +82,6 @@ export interface IListTemplate {
 }
 
 export class JobStepsViewRenderer implements tree.IRenderer {
-	private _statusIcon: HTMLElement;
 
 	public getHeight(tree: tree.ITree, element: JobStepsViewRow): number {
 		return 40;
@@ -101,11 +98,10 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 	public renderTemplate(tree: tree.ITree, templateId: string, container: HTMLElement): IListTemplate {
 		let row = DOM.$('.list-row');
 		let label = DOM.$('.label');
-		this._statusIcon = this.createStatusIcon();
-		row.appendChild(this._statusIcon);
+		let statusIcon = this.createStatusIcon();
+		row.appendChild(statusIcon);
 		row.appendChild(label);
 		container.appendChild(row);
-		let statusIcon = this._statusIcon;
 		return { statusIcon, label };
 	}
 
@@ -119,19 +115,26 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 		let stepMessageCol: HTMLElement = DOM.$('div');
 		stepMessageCol.className = 'tree-message-col';
 		stepMessageCol.innerText = element.message;
+		if (element.rowID.includes('stepsColumn')) {
+			stepNameCol.className += ' step-column-heading';
+			stepIdCol.className += ' step-column-heading';
+			stepMessageCol.className += ' step-column-heading';
+		}
 		$(templateData.label).empty();
 		templateData.label.appendChild(stepIdCol);
 		templateData.label.appendChild(stepNameCol);
 		templateData.label.appendChild(stepMessageCol);
-		let statusClass: string;
-		if (element.runStatus === 'Succeeded') {
-			statusClass = ' step-passed';
-		} else if (element.runStatus === 'Failed') {
-			statusClass = ' step-failed';
+		if (element.runStatus) {
+			if (element.runStatus === 'Succeeded') {
+				templateData.statusIcon.className = 'status-icon step-passed';
+			} else if (element.runStatus === 'Failed') {
+				templateData.statusIcon.className = 'status-icon step-failed';
+			} else {
+				templateData.statusIcon.className = 'status-icon step-unknown';
+			}
 		} else {
-			statusClass = ' step-unknown';
+			templateData.statusIcon.className = '';
 		}
-		this._statusIcon.className += statusClass;
 	}
 
 	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: IListTemplate): void {
@@ -140,7 +143,6 @@ export class JobStepsViewRenderer implements tree.IRenderer {
 
 	private createStatusIcon(): HTMLElement {
 		let statusIcon: HTMLElement = DOM.$('div');
-		statusIcon.className += 'status-icon';
 		return statusIcon;
 	}
 }
