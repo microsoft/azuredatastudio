@@ -42,14 +42,14 @@
 	padding-right: 10px;
 	white-space: normal;
 	text-align: left;
-	width: 350px;
+	width: 300px;
 }
 
 .steps-tree .tree-message-col {
 	padding-right: 10px;
 	white-space: normal;
 	text-align: left;
-	width: 680px;
+	width: 700px;
 }
 
 .steps-tree .step-column-heading {
@@ -86,7 +86,16 @@ jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row {
 	width: 99.2%;
 }
 
-jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
 	background: #444444;
+}
+
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
+	background: none;
+}
+
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
+	background: #dcdcdc;
 	padding-left: 0px;
 }
+
