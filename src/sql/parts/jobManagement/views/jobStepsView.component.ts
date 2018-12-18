@@ -57,8 +57,6 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 	}
 
 	ngAfterContentChecked() {
-		$('jobstepsview-component .steps-tree .monaco-tree').attr('tabIndex', '-1');
-		$('jobstepsview-component .steps-tree .monaco-tree-row').attr('tabIndex', '0');
 		$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
 		this._tree.setInput(new JobStepsViewModel());
@@ -89,6 +87,11 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 			return true;
 		};
+		this._tree.onDidFocus(() => {
+			this._tree.focusNth(1);
+			let element = this._tree.getFocus();
+			this._tree.select(element);
+		});
 	}
 
 	ngOnInit() {

@@ -282,8 +282,6 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				this._agentViewComponent.agentJobInfo.alerts = this._jobCacheObject.getJobAlerts(this._agentJobInfo.jobId);
 				this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 				this.buildHistoryTree(self, jobHistories);
-				$('jobhistory-component .history-details .prev-run-list .monaco-tree').attr('tabIndex', '-1');
-				$('jobhistory-component .history-details .prev-run-list .monaco-tree-row').attr('tabIndex', '0');
 				this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri };
 				this._cd.detectChanges();
 			}
