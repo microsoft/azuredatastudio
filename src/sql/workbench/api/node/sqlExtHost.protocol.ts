@@ -575,8 +575,8 @@ export const SqlMainContext = {
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
-	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors')
-
+	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
 };
 
 export const SqlExtHostContext = {
@@ -597,7 +597,8 @@ export const SqlExtHostContext = {
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
-	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors')
+	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -830,4 +831,12 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
+}
+
+export interface ExtHostExtensionManagementShape {
+	$install(vsixPath: string): Thenable<string>;
+}
+
+export interface MainThreadExtensionManagementShape extends IDisposable {
+	$install(vsixPath: string): Thenable<string>;
 }

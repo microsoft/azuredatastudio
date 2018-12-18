@@ -8,10 +8,12 @@ echo %VSCODEUSERDATADIR%
 echo %VSCODEEXTENSIONSDIR%
 @echo OFF
 
-:: Tests in the extension host
+:: Test Setup
 call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
 
+:: Run the tests
 call .\scripts\code.bat --extensionDevelopmentPath=%~dp0\..\extensions\integration-tests --extensionTestsPath=%~dp0\..\extensions\integration-tests\out --user-data-dir=%VSCODEUSERDATADIR% --extensions-dir=%VSCODEEXTENSIONSDIR%
+
 if %errorlevel% neq 0 exit /b %errorlevel%
 
 rmdir /s /q %VSCODEUSERDATADIR%

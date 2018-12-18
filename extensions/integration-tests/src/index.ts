@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
-
 import { context } from './testContext';
 
 const path = require('path');
@@ -30,9 +29,6 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 
 if (!vscode.workspace.getConfiguration('adstest')['testSetupCompleted']) {
 	context.RunTest = false;
-	vscode.workspace.getConfiguration().update('workbench.enablePreviewFeatures', true, true);
-	vscode.workspace.getConfiguration().update('workbench.showConnectDialogOnStartup', false, true);
-	vscode.workspace.getConfiguration().update('adstest.testSetupCompleted', true, true);
 }
 
 testRunner.configure(options);
