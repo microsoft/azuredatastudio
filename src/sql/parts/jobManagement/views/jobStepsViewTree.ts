@@ -11,6 +11,7 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 export class JobStepsViewRow {
 	public stepId: string;
@@ -33,6 +34,20 @@ export class JobStepsViewController extends TreeDefaults.DefaultController {
 
 	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
 		return true;
+	}
+
+	public onKeyDownWrapper(tree: tree.ITree, event: IKeyboardEvent): boolean {
+		if (event.code === 'ArrowDown' || event.keyCode === 40) {
+			super.onDown(tree, event);
+			return super.onEnter(tree, event);
+		} else if (event.code === 'ArrowUp' || event.keyCode === 38) {
+			super.onUp(tree, event);
+			return super.onEnter(tree, event);
+		} else {
+			event.preventDefault();
+			event.stopPropagation();
+			return true;
+		}
 	}
 }
 

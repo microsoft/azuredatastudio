@@ -86,16 +86,25 @@ jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row {
 	width: 99.2%;
 }
 
-.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
-	background: #444444;
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #444444 !important;
 }
 
-.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
-	background: none;
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: none !important;
 }
 
-jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row {
-	background: #dcdcdc;
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #dcdcdc !important;
+	cursor: none;
 	padding-left: 0px;
 }
-

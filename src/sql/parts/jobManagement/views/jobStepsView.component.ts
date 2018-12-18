@@ -65,6 +65,30 @@ export class JobStepsViewComponent extends JobManagementView  implements OnInit,
 		this._tree.onDidScroll(() => {
 			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		});
+		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
+			const payload = { origin: origin };
+			const isDoubleClick = (origin === 'mouse' && event.detail === 2);
+			// Cancel Event
+			const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
+			if (!isMouseDown) {
+				event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
+			}
+			event.stopPropagation();
+			tree.setFocus(element, payload);
+			if (element && isDoubleClick) {
+				event.preventDefault(); // focus moves to editor, we need to prevent default
+			} else {
+				tree.setFocus(element, payload);
+				tree.setSelection([element], payload);
+			}
+			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			return true;
+		};
+		this._treeController.onKeyDown = (tree, event) => {
+			this._treeController.onKeyDownWrapper(tree, event);
+			$('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
+			return true;
+		};
 	}
 
 	ngOnInit() {
