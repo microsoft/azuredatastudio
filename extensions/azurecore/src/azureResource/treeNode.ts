@@ -11,16 +11,6 @@ import * as vscode from 'vscode';
 type TreeNodePredicate = (node: TreeNode) => boolean;
 
 export abstract class TreeNode {
-	private _parent: TreeNode = undefined;
-
-	public get parent(): TreeNode {
-		return this._parent;
-	}
-
-	public set parent(node: TreeNode) {
-		this._parent = node;
-	}
-
 	public generateNodePath(): string {
 		let path = undefined;
 		if (this.parent) {
@@ -65,13 +55,23 @@ export abstract class TreeNode {
 		return undefined;
 	}
 
+	public get parent(): TreeNode {
+		return this._parent;
+	}
+
+	public set parent(node: TreeNode) {
+		this._parent = node;
+	}
+
+	public abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
+	public abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
+
+	public abstract getNodeInfo(): sqlops.NodeInfo;
+
 	/**
 	 * The value to use for this node in the node path
 	 */
 	public abstract get nodePathValue(): string;
 
-	abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
-	abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;
-
-	abstract getNodeInfo(): sqlops.NodeInfo;
+	private _parent: TreeNode = undefined;
 }

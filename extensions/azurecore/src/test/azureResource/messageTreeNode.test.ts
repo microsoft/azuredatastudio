@@ -9,8 +9,8 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { AzureResourceItemType } from '../../../azureResource/constants';
-import { AzureResourceMessageTreeNode } from '../../../azureResource/tree/messageTreeNode';
+import { AzureResourceItemType } from '../../azureResource/constants';
+import { AzureResourceMessageTreeNode } from '../../azureResource/messageTreeNode';
 
 describe('AzureResourceMessageTreeNode.info', function(): void {
 	it('Should be correct when created.', async function(): Promise<void> {

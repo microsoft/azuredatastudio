@@ -5,18 +5,6 @@
 
 'use strict';
 
-export interface AzureResourceSubscription {
-	id: string;
-	name: string;
-}
-
-export interface AzureResourceDatabaseServer {
-	name: string;
-	fullName: string;
-	loginName: string;
-	defaultDatabaseName: string;
-}
-
 export interface AzureResourceDatabase {
 	name: string;
 	serverName: string;

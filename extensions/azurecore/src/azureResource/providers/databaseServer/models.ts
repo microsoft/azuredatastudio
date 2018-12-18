@@ -5,11 +5,9 @@
 
 'use strict';
 
-export class AzureResourceCredentialError extends Error {
-	constructor(
-		message: string,
-		public readonly innerError: Error
-	) {
-		super(message);
-	}
+export interface AzureResourceDatabaseServer {
+	name: string;
+	fullName: string;
+	loginName: string;
+	defaultDatabaseName: string;
 }
