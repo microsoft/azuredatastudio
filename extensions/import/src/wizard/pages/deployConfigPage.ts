@@ -131,7 +131,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = this.databaseTextBox.value;
 		});
 
-		// Initialize with upgrade existing true
+		//Initialize with upgrade existing true
 		upgradeRadioButton.checked = true;
 		this.model.upgradeExisting = true;
 
@@ -152,7 +152,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
-		// Handle database changes
+		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
 			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 		});
@@ -172,7 +172,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		}
 		let values = await this.getDatabaseValues();
 
-		// set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
+		//set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
 		if (this.model.upgradeExisting) {
 			this.model.database = values[0].name;
 		}
