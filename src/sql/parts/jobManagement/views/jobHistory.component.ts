@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, EditJobAction } from 'sql/parts/jobManagement/common/jobActions';
+import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -325,12 +325,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		let editJobAction = this.instantiationService.createInstance(EditJobAction);
+		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
 		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },
+			{ action: refreshAction },
 			{ action: editJobAction }
 		]);
 	}
