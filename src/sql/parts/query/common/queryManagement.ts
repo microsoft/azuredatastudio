@@ -254,6 +254,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public onResultSetUpdated(resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
 		this._notify(resultSetInfo.ownerUri, (runner: QueryRunner) => {
 			runner.handleResultSetUpdated(resultSetInfo);
+			setTimeout('console.log(\'hello world\')', 100);
 		});
 	}
 

@@ -394,7 +394,7 @@ export class QueryModelService implements IQueryModelService {
 			queryRunner.onResultSetUpdate(resultSetSummaries => {
 				resultSetSummaries.forEach(resultSet => {
 					this._fireQueryEvent(ownerUri, resultSetEventType, resultSet);
-				})
+				});
 			});
 			queryRunner.addListener(QREvents.BATCH_START, batch => {
 				let link = undefined;

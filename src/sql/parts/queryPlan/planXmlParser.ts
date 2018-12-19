@@ -143,7 +143,7 @@ export class PlanNode {
 export class PlanXmlParser {
 	parser: DOMParser = new DOMParser();
 	doc: Document;
-	planXml: string
+	planXml: string;
 	root: PlanNode;
 
 	constructor(planXml: string) {

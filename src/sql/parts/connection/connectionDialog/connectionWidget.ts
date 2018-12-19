@@ -17,7 +17,6 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/parts/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { attachButtonStyler, attachCheckboxStyler, attachEditableDropdownStyler, attachInputBoxStyler } from 'sql/common/theme/styler';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
@@ -290,14 +289,14 @@ export class ConnectionWidget {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._toDispose.push(attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._toDispose.push(attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
-		this._toDispose.push(attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._toDispose.push(attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._toDispose.push(attachInputBoxStyler(this._passwordInputBox, this._themeService));
+		this._toDispose.push(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
+		this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+		this._toDispose.push(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
+		this._toDispose.push(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
+		this._toDispose.push(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
-		this._toDispose.push(attachButtonStyler(this._advancedButton, this._themeService));
-		this._toDispose.push(attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
+		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
 		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 
 		if (this._authTypeSelectBox) {
