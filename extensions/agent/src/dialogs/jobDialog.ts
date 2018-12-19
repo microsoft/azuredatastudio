@@ -302,6 +302,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 				this.stepsTable.data = this.convertStepsToData(this.steps);
 				this.steps[previousRow].id = previousStepId;
 				this.steps[rowNumber].id = currentStepId;
+				this.stepsTable.selectedRows = [previousRow];
 			});
 
 			this.moveStepDownButton.onDidClick(() => {
@@ -316,6 +317,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 				this.stepsTable.data = this.convertStepsToData(this.steps);
 				this.steps[nextRow].id = nextStepId;
 				this.steps[rowNumber].id = currentStepId;
+				this.stepsTable.selectedRows = [nextRow];
 			});
 
 			this.editStepButton.onDidClick(() => {
