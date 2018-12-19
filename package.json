@@ -154,6 +154,7 @@
     "source-map": "^0.4.4",
     "temp-write": "^3.4.0",
     "tslint": "^5.9.1",
+    "tslint-microsoft-contrib": "^6.0.0",
     "typemoq": "^0.3.2",
     "typescript": "2.9.2",
     "typescript-formatter": "7.1.0",

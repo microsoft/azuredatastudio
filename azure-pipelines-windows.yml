@@ -24,3 +24,7 @@ steps:
   inputs:
     testResultsFiles: 'test-results.xml'
   condition: succeededOrFailed()
+
+- script: |
+    .\node_modules\tslint\bin\tslint -c tslint-gci.json -p src\tsconfig.json
+  displayName: 'Run TSLint'
