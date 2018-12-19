@@ -26,5 +26,5 @@ steps:
   condition: succeededOrFailed()
 
 - script: |
-    node .\node_modules\tslint\bin\tslint -c .\tslint-gci.json -p .\src\tsconfig.json
+    yarn run tslint
   displayName: 'Run TSLint'

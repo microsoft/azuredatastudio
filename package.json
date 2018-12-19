@@ -23,7 +23,8 @@
     "smoketest": "cd test/smoke && node test/index.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "download-builtin-extensions": "node build/lib/builtInExtensions.js",
-    "check-monaco-editor-compilation": "tsc -p src/tsconfig.monaco.json --noEmit"
+    "check-monaco-editor-compilation": "tsc -p src/tsconfig.monaco.json --noEmit",
+    "tslint": "node node_modules/tslint/bin/tslint -c tslint-gci.json -p src/tsconfig.json"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
