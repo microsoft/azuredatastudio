@@ -32,7 +32,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-				let serverComponent = await this.createServerDropdown(true);
+		let serverComponent = await this.createServerDropdown(true);
 		let fileBrowserComponent = await this.createFileBrowser();
 		this.databaseComponent = await this.createDatabaseTextBox();
 		this.databaseComponent.title = localize('dacFx.databaseNameTextBox', 'Database Name');
@@ -149,7 +149,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<sqlops.FormComponent> {
-			this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
 			required: true
 		}).component();
 		// Handle database changes
@@ -172,7 +172,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 		}
 		let values = await this.getDatabaseValues();
 
-		if (this.model.database === undefined) {
+		// set the database to the first dropdown value if upgrading, otherwise it should get set to the textbox value
+		if (this.model.upgradeExisting) {
 			this.model.database = values[0].name;
 		}
 
