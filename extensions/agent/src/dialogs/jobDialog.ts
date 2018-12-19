@@ -94,6 +94,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private editStepButton: sqlops.ButtonComponent;
 	private deleteStepButton: sqlops.ButtonComponent;
 
+	// Schedule tab controls
+	private removeScheduleButton: sqlops.ButtonComponent;
+
 	// Notifications tab controls
 	private notificationsTabTopLabel: sqlops.TextComponent;
 	private emailCheckBox: sqlops.CheckBoxComponent;
@@ -470,7 +473,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 				label: this.PickScheduleButtonString,
 				width: 80
 			}).component();
-			this.pickScheduleButton.onDidClick((e)=>{
+			this.removeScheduleButton = view.modelBuilder.button().withProperties({
+				label: 'Remove schedule',
+				width: 100
+			}).component();
+			this.pickScheduleButton.onDidClick(()=>{
 				let pickScheduleDialog = new PickScheduleDialog(this.model.ownerUri, this.model.name);
 				pickScheduleDialog.onSuccess((dialogModel) => {
 					let selectedSchedule = dialogModel.selectedSchedule;
@@ -485,12 +492,23 @@ export class JobDialog extends AgentDialog<JobData>  {
 				});
 				pickScheduleDialog.showDialog();
 			});
-
+			this.removeScheduleButton.onDidClick(() => {
+                if (this.schedulesTable.selectedRows.length === 1) {
+                    let selectedRow = this.schedulesTable.selectedRows[0];
+					let selectedScheduleName = this.schedulesTable.data[selectedRow][1];
+					for (let i = 0; i < this.schedules.length; i++) {
+						if (this.schedules[i].name === selectedScheduleName) {
+							delete this.schedules[i];
+						}
+					}
+					this.populateScheduleTable();
+				}
+			});
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
 					component: this.schedulesTable,
 					title: this.SchedulesTopLabelString,
-					actions: [this.pickScheduleButton]
+					actions: [this.pickScheduleButton, this.removeScheduleButton]
 				}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
@@ -501,10 +519,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 	private populateScheduleTable() {
 		let data = this.convertSchedulesToData(this.schedules);
-		if (data.length > 0) {
-			this.schedulesTable.data = data;
-			this.schedulesTable.height = 750;
-		}
+		this.schedulesTable.data = data;
+		this.schedulesTable.height = 750;
+
 	}
 
 	private initializeNotificationsTab() {

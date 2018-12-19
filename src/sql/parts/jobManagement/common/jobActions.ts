@@ -30,6 +30,7 @@ export interface IJobActionInfo {
 	ownerUri: string;
 	targetObject: any;
 	jobHistoryComponent?: JobHistoryComponent;
+	jobViewComponent?: JobsViewComponent;
 }
 
 // Job actions
@@ -89,20 +90,20 @@ export class RunJobAction extends Action {
 		super(RunJobAction.ID, RunJobAction.LABEL, 'start');
 	}
 
-	public run(context: JobHistoryComponent): TPromise<boolean> {
-		let jobName = context.agentJobInfo.name;
+	public run(context: IJobActionInfo): TPromise<boolean> {
+		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.RunAgentJob);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
-					refreshAction.run(context);
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.notify({
 						severity: Severity.Info,
 						message: jobName+ startMsg
 					});
+					refreshAction.run(context.jobHistoryComponent);
 					resolve(true);
 				} else {
 					this.notificationService.notify({
@@ -129,15 +130,15 @@ export class StopJobAction extends Action {
 		super(StopJobAction.ID, StopJobAction.LABEL, 'stop');
 	}
 
-	public run(context: JobHistoryComponent): TPromise<boolean> {
-		let jobName = context.agentJobInfo.name;
+	public run(context: IJobActionInfo): TPromise<boolean> {
+		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.StopAgentJob);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
-					refreshAction.run(context);
+					refreshAction.run(context.jobHistoryComponent);
 					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 					this.notificationService.notify({
 						severity: Severity.Info,

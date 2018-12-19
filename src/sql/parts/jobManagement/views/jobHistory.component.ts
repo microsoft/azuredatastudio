@@ -328,7 +328,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri };
+		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },
