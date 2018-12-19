@@ -271,7 +271,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					} else {
 						return ConfirmResult.CANCEL;
 					}
-				});;
+				});
 		} else {
 			return TPromise.wrap(ConfirmResult.DONT_SAVE);
 		}
