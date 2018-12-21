@@ -26,6 +26,7 @@ export class JobData implements IAgentDialogData {
 	private _operators: string[];
 	private _defaultOwner: string;
 	private _jobCompletionActionConditions: sqlops.CategoryValue[];
+	private _jobCategoryIdsMap: sqlops.AgentJobCategory[];
 
 	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;
 	public name: string;
@@ -46,6 +47,7 @@ export class JobData implements IAgentDialogData {
 	public alerts: sqlops.AgentAlertInfo[];
 	public jobId: string;
 	public startStepId: number;
+	public categoryType: number;
 
 	constructor(
 		ownerUri: string,
@@ -66,11 +68,17 @@ export class JobData implements IAgentDialogData {
 			this.alerts = jobInfo.alerts;
 			this.jobId = jobInfo.jobId;
 			this.startStepId = jobInfo.startStepId;
+			this.categoryId = jobInfo.categoryId;
+			this.categoryType = jobInfo.categoryType;
 		}
 	}
 
 	public get jobCategories(): string[] {
 		return this._jobCategories;
+	}
+
+	public get jobCategoryIdsMap(): sqlops.AgentJobCategory[] {
+		return this._jobCategoryIdsMap;
 	}
 
 	public get operators(): string[] {
@@ -96,7 +104,7 @@ export class JobData implements IAgentDialogData {
 			this._jobCategories = jobDefaults.categories.map((cat) => {
 				return cat.name;
 			});
-
+			this._jobCategoryIdsMap = jobDefaults.categories;
 			this._defaultOwner = jobDefaults.owner;
 
 			this._operators = ['', this._defaultOwner];
@@ -164,8 +172,8 @@ export class JobData implements IAgentDialogData {
 			hasSchedule: false,
 			hasStep: false,
 			runnable: true,
-			categoryId: 0,
-			categoryType: 1, // LocalJob, hard-coding the value, corresponds to the target tab in SSMS
+			categoryId: this.categoryId,
+			categoryType: this.categoryType,
 			lastRun: '',
 			nextRun: '',
 			jobId: this.jobId,

@@ -351,20 +351,30 @@ export class JobDialog extends AgentDialog<JobData>  {
 				if (this.stepsTable.selectedRows.length === 1) {
 					let rowNumber = this.stepsTable.selectedRows[0];
 					AgentUtils.getAgentService().then((agentService) => {
-						let steps = this.model.jobSteps ? this.model.jobSteps : [];
-						let stepData = this.model.jobSteps[rowNumber];
-						agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
-							if (result && result.success) {
-								delete steps[rowNumber];
-								let data = this.convertStepsToData(steps);
-								this.stepsTable.data = data;
-								this.startStepDropdownValues = [];
-								this.steps.forEach((step) => {
-									this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
-								});
-								this.startStepDropdown.values = this.startStepDropdownValues;
-							}
-						});
+						let stepData = this.steps[rowNumber];
+						if (stepData.jobId) {
+							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
+								if (result && result.success) {
+									this.steps.splice(rowNumber, 1)
+									let data = this.convertStepsToData(this.steps);
+									this.stepsTable.data = data;
+									this.startStepDropdownValues = [];
+									this.steps.forEach((step) => {
+										this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+									});
+									this.startStepDropdown.values = this.startStepDropdownValues;
+								}
+							});
+						} else {
+							this.steps.splice(rowNumber, 1)
+							let data = this.convertStepsToData(this.steps);
+							this.stepsTable.data = data;
+							this.startStepDropdownValues = [];
+							this.steps.forEach((step) => {
+								this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+							});
+							this.startStepDropdown.values = this.startStepDropdownValues;
+						}
 					});
 				}
 			});
@@ -498,7 +508,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 					let selectedScheduleName = this.schedulesTable.data[selectedRow][1];
 					for (let i = 0; i < this.schedules.length; i++) {
 						if (this.schedules[i].name === selectedScheduleName) {
-							delete this.schedules[i];
+							this.schedules.splice(i, 1);
 						}
 					}
 					this.populateScheduleTable();
@@ -693,5 +703,6 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.model.alerts = [];
 		}
 		this.model.alerts = this.alerts;
+		this.model.categoryId = +this.model.jobCategoryIdsMap.find(cat => cat.name === this.model.category).id;
 	}
 }

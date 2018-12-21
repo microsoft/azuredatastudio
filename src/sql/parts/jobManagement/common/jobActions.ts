@@ -19,14 +19,14 @@ import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { telemetryURIDescriptor } from 'vs/platform/telemetry/common/telemetryUtils';
+import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 
 export enum JobActions {
 	Run = 'run',
 	Stop = 'stop'
 }
 
-export interface IJobActionInfo {
+export class IJobActionInfo {
 	ownerUri: string;
 	targetObject: any;
 	jobHistoryComponent?: JobHistoryComponent;
@@ -44,10 +44,10 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public run(context: JobsViewComponent | JobHistoryComponent): TPromise<boolean> {
+	public run(context: IJobActionInfo): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			if (context) {
-				context.refreshJobs();
+				context.jobHistoryComponent.refreshJobs();
 				resolve(true);
 			} else {
 				reject(false);
@@ -103,13 +103,10 @@ export class RunJobAction extends Action {
 						severity: Severity.Info,
 						message: jobName+ startMsg
 					});
-					refreshAction.run(context.jobHistoryComponent);
+					refreshAction.run(context);
 					resolve(true);
 				} else {
-					this.notificationService.notify({
-						severity: Severity.Error,
-						message: result.errorMessage
-					});
+					this.notificationService.error(result.errorMessage);
 					resolve(false);
 				}
 			});
@@ -122,7 +119,7 @@ export class StopJobAction extends Action {
 	public static LABEL = nls.localize('jobaction.stop', "Stop");
 
 	constructor(
-		@INotificationService private notificationService: INotificationService,
+		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private telemetryService: ITelemetryService
@@ -138,18 +135,12 @@ export class StopJobAction extends Action {
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(result => {
 				if (result.success) {
-					refreshAction.run(context.jobHistoryComponent);
+					refreshAction.run(context);
 					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
-					this.notificationService.notify({
-						severity: Severity.Info,
-						message: jobName+ stopMsg
-					});
+					this.errorMessageService.showDialog(Severity.Info, '', jobName+stopMsg);
 					resolve(true);
 				} else {
-					this.notificationService.notify({
-						severity: Severity.Error,
-						message: result.errorMessage
-					});
+					this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
 					resolve(false);
 				}
 			});
@@ -267,7 +258,7 @@ export class DeleteStepAction extends Action {
 								step.stepName, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._notificationService.error(errorMessage);
 						} else {
-							refreshAction.run(actionInfo.jobHistoryComponent);
+							refreshAction.run(actionInfo);
 						}
 					});
 				}

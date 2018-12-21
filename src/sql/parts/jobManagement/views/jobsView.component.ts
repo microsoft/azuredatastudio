@@ -601,6 +601,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 					self.jobHistories[job.jobId] = result.histories ? result.histories : [];
 					self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
 					self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
+					self._jobCacheObject.setJobAlerts(job.jobId, self.jobAlerts[job.jobId]);
+					self._jobCacheObject.setJobSchedules(job.jobId, self.jobSchedules[job.jobId]);
 					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
 					let previousRuns: sqlops.AgentJobHistoryInfo[];
 					if (jobHistories.length >= 5) {
@@ -631,14 +633,14 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
 			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
-			runGraph.css('height', chartHeights[i]);
-			let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
-			runGraph.css('background', bgColor);
-			runGraph.hover((e) => {
-				let currentTarget = e.currentTarget;
-				currentTarget.title = jobHistories[i].runDuration;
-			});
-			if (runGraph.get(0)) {
+			if (runGraph.length > 0) {
+				runGraph.css('height', chartHeights[i]);
+				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
+				runGraph.css('background', bgColor);
+				runGraph.hover((e) => {
+					let currentTarget = e.currentTarget;
+					currentTarget.title = jobHistories[i].runDuration;
+				});
 				runCharts.push(runGraph.get(0).outerHTML);
 			}
 		}
