@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/profiler/client\out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="createSessionDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.create">
+      <source xml:lang="en">Create</source>
+      <target state="translated">创建</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.title">
+      <source xml:lang="en">Create New Profiler Session</source>
+      <target state="translated">创建新的跟踪器会话</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.templatesInvalid">
+      <source xml:lang="en">Invalid templates list, cannot open dialog</source>
+      <target state="translated">无效的模板列表, 无法打开对话框</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.dialogOwnerInvalid">
+      <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
+      <target state="translated">无效的对话框所有者，无法打开对话框</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.selectTemplates">
+      <source xml:lang="en">Select session template:</source>
+      <target state="translated">选择会话模板:</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.enterSessionName">
+      <source xml:lang="en">Enter session name:</source>
+      <target state="translated">输入会话名称:</target>
+    </trans-unit>
+  </body></file>
+</xliff>

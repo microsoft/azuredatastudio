@@ -9,24 +9,19 @@ import { Account } from 'sqlops';
 import { ServiceClientCredentials } from 'ms-rest';
 import { SubscriptionClient } from 'azure-arm-resource';
 
+import { azureResource } from '../azure-resource';
 import { IAzureResourceSubscriptionService } from '../interfaces';
-import { AzureResourceSubscription } from '../models';
 
 export class AzureResourceSubscriptionService implements IAzureResourceSubscriptionService {
-	public async getSubscriptions(account: Account, credentials: ServiceClientCredentials[]): Promise<AzureResourceSubscription[]> {
-		let subscriptions: AzureResourceSubscription[] = [];
-		for (let cred of credentials) {
-			let subClient = new SubscriptionClient.SubscriptionClient(cred);
-			try {
-				let subs = await subClient.subscriptions.list();
-				subs.forEach((sub) => subscriptions.push({
-					id: sub.subscriptionId,
-					name: sub.displayName
-				}));
-			} catch (error) {
-				// Swallow the exception here.
-			}
-		}
+	public async getSubscriptions(account: Account, credential: ServiceClientCredentials): Promise<azureResource.AzureResourceSubscription[]> {
+		const subscriptions: azureResource.AzureResourceSubscription[] = [];
+
+		const subClient = new SubscriptionClient.SubscriptionClient(credential);
+		const subs = await subClient.subscriptions.list();
+		subs.forEach((sub) => subscriptions.push({
+			id: sub.subscriptionId,
+			name: sub.displayName
+		}));
 
 		return subscriptions;
 	}

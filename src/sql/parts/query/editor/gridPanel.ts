@@ -185,12 +185,31 @@ export class GridPanel extends ViewletPanel {
 			}
 			this.reset();
 		}));
+		this.addResultSet(this.runner.batchSets.reduce<sqlops.ResultSetSummary[]>((p, e) => {
+			if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+				p = p.concat(e.resultSetSummaries);
+			} else {
+				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
+			}
+			return p;
+		}, []));
+		this.maximumBodySize = this.tables.reduce((p, c) => {
+			return p + c.maximumSize;
+		}, 0);
+
+		if (this.state && this.state.scrollPosition) {
+			this.splitView.setScrollPosition(this.state.scrollPosition);
+		}
 	}
 
 	private onResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
-		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
-			this.addResultSet(resultSet);
-
+		let resultsToAdd: sqlops.ResultSetSummary[];
+		if (!Array.isArray(resultSet)) {
+			resultsToAdd = [resultSet];
+		} else {
+			resultsToAdd = resultSet.splice(0);
+		}
+		const sizeChanges = () => {
 			this.tables.map(t => {
 				t.state.canBeMaximized = this.tables.length > 1;
 			});
@@ -202,6 +221,17 @@ export class GridPanel extends ViewletPanel {
 			if (this.state && this.state.scrollPosition) {
 				this.splitView.setScrollPosition(this.state.scrollPosition);
 			}
+		};
+
+		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
+			this.addResultSet(resultsToAdd);
+			sizeChanges();
+		} else {
+			resultsToAdd = resultsToAdd.filter(e => e.complete);
+			if (resultsToAdd.length > 0) {
+				this.addResultSet(resultsToAdd);
+			}
+			sizeChanges();
 		}
 	}
 
@@ -210,8 +240,18 @@ export class GridPanel extends ViewletPanel {
 		if (!Array.isArray(resultSet)) {
 			resultsToUpdate = [resultSet];
 		} else {
-			resultsToUpdate = resultSet;
+			resultsToUpdate = resultSet.splice(0);
 		}
+
+		const sizeChanges = () => {
+			this.maximumBodySize = this.tables.reduce((p, c) => {
+				return p + c.maximumSize;
+			}, 0);
+
+			if (this.state && this.state.scrollPosition) {
+				this.splitView.setScrollPosition(this.state.scrollPosition);
+			}
+		};
 
 		if (this.configurationService.getValue<boolean>('sql.results.streaming')) {
 			for (let set of resultsToUpdate) {
@@ -222,47 +262,20 @@ export class GridPanel extends ViewletPanel {
 					warn('Got result set update request for non-existant table');
 				}
 			}
-
-			this.maximumBodySize = this.tables.reduce((p, c) => {
-				return p + c.maximumSize;
-			}, 0);
-
-			if (this.state && this.state.scrollPosition) {
-				this.splitView.setScrollPosition(this.state.scrollPosition);
-			}
+			sizeChanges();
 		} else {
-			let change = false;
-
-			for (let set of resultsToUpdate) {
-				if (set.complete) {
-					this.addResultSet(resultSet);
-					change = true;
-				}
+			resultsToUpdate = resultsToUpdate.filter(e => e.complete);
+			if (resultsToUpdate.length > 0) {
+				this.addResultSet(resultsToUpdate);
 			}
-
-			if (change) {
-				this.maximumBodySize = this.tables.reduce((p, c) => {
-					return p + c.maximumSize;
-				}, 0);
-
-				if (this.state && this.state.scrollPosition) {
-					this.splitView.setScrollPosition(this.state.scrollPosition);
-				}
-			}
+			sizeChanges();
 		}
 	}
 
-	private addResultSet(resultSet: sqlops.ResultSetSummary | sqlops.ResultSetSummary[]) {
-		let resultsToAdd: sqlops.ResultSetSummary[];
-		if (!Array.isArray(resultSet)) {
-			resultsToAdd = [resultSet];
-		} else {
-			resultsToAdd = resultSet;
-		}
-
+	private addResultSet(resultSet: sqlops.ResultSetSummary[]) {
 		let tables: GridTable<any>[] = [];
 
-		for (let set of resultsToAdd) {
+		for (let set of resultSet) {
 			let tableState: GridTableState;
 			if (this._state) {
 				tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
@@ -623,6 +636,7 @@ class GridTable<T> extends Disposable implements IView {
 			this.table.updateRowCount();
 		}
 		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
+		this._onDidChange.fire();
 	}
 
 	private generateContext(cell?: Slick.Cell): IGridActionContext {

@@ -308,7 +308,7 @@ let registryProperties = {
 	'sql.results.streaming': {
 		'type': 'boolean',
 		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
-		'default': true
+		'default': false
 	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',

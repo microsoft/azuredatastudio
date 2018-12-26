@@ -113,7 +113,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	}
 
 	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	public get providers(): { [id: string]: ProviderFeatures } {
