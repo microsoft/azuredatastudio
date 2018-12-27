@@ -57,6 +57,10 @@ class MainThreadNotebookEditor extends Disposable {
 		return this.editor.notebookParams.providerId;
 	}
 
+	public get providers(): string[] {
+		return this.editor.notebookParams.providers;
+	}
+
 	public get cells(): ICellModel[] {
 		return this.editor.cells;
 	}
@@ -316,11 +320,18 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let trusted = uri.scheme === Schemas.untitled;
 		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
 		let providerId = options.providerId;
-		if (!providerId) {
+		let providers = undefined;
+		if(!providerId)
+		{
 			// Ensure there is always a sensible provider ID for this file type
-			providerId = getProvidersForFileName(uri.fsPath, this._notebookService)[0];
+			providers = getProvidersForFileName(uri.fsPath, this._notebookService);
+			if (model.providers && model.providers[0]) {
+				providerId = model.providers[0];
+			} else {
+				providerId = model.providerId;
+			}
 		}
-
+		model.providers = providers;
 		model.providerId = providerId;
 		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
 

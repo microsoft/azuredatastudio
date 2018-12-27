@@ -27,8 +27,7 @@ import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/e
 import { Disposable } from 'vs/base/common/lifecycle';
 import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Deferred } from 'sql/base/common/promise';
-import { SQLSessionManager } from 'sql/services/notebook/tsqlSessionManager';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { SQLSessionManager } from 'sql/services/notebook/sqlSessionManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export interface NotebookProviderProperties {

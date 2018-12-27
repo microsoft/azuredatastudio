@@ -327,7 +327,7 @@ export class CellModel implements ICellModel {
 		CellModel.LanguageMapping['pyspark3'] = 'python';
 		CellModel.LanguageMapping['python'] = 'python';
 		CellModel.LanguageMapping['scala'] = 'scala';
-		CellModel.LanguageMapping['tsql'] = 'sql';
+		CellModel.LanguageMapping['sql'] = 'sql';
 	}
 
 	private get languageInfo(): nb.ILanguageInfo {

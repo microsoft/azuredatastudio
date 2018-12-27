@@ -70,7 +70,8 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 				}
 				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
 				// notebookInputModel.providerId = providerIds;
-				notebookInputModel.providerId = 'tsql';
+				notebookInputModel.providerId = 'sql';
+				notebookInputModel.providers = providerIds;
 				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 				return notebookInput;
 			});

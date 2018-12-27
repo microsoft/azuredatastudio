@@ -87,6 +87,7 @@ export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
 	input: NotebookInput;
 	providerId: string;
+	providers: string[];
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;

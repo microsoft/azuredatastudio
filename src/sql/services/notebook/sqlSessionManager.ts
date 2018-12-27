@@ -1,6 +1,6 @@
 'use strict';
 
-import { nb, QueryExecuteSubsetResult, IDbColumn, DbCellValue, ResultSetSummary } from 'sqlops';
+import { nb, QueryExecuteSubsetResult, IDbColumn, DbCellValue } from 'sqlops';
 import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
@@ -10,9 +10,9 @@ import Severity from 'vs/base/common/severity';
 import * as Utils from 'sql/parts/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { mssqlProviderName } from 'sql/parts/connection/common/constants';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
-const sqlKernelConfigIssue = localize('sqlKernelConfigIssue', 'Cannot run cells as SQL kernel is not configured correctly');
 
 let sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
@@ -127,6 +127,7 @@ class SQLKernel extends Disposable implements nb.IKernel {
 	}
 
 	public get isReady(): boolean {
+		// should we be checking on the tools service status here?
 		return true;
 	}
 
@@ -160,7 +161,8 @@ class SQLKernel extends Disposable implements nb.IKernel {
 		if (this._queryRunner) {
 			this._queryRunner.runQuery(content.code);
 		} else {
-			let connectionProfile = this._connectionManagementService.getActiveConnections().find(connection => connection.providerName === 'MSSQL');
+			let connections = this._connectionManagementService.getActiveConnections();
+			let connectionProfile = connections.find(connection => connection.providerName === mssqlProviderName);
 			let connectionUri = Utils.generateUri(connectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri, undefined);
 			this._connectionManagementService.connect(connectionProfile, connectionUri).then((result) =>
