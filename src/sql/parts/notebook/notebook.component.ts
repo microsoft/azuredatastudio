@@ -183,7 +183,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	// Add cell based on cell type
 	public addCell(cellType: CellType)
 	{
-		this._model.addCell(cellType);
+		let newCell = this._model.addCell(cellType);
+		this.selectCell(newCell);
 	}
 
 	// Updates Notebook model's trust details
@@ -252,6 +253,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(model);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
+		// Set first cell as default active cell
+		if (this._model && this._model.cells && this._model.cells[0]) {
+			this.selectCell(model.cells[0]);
+		}
 		this._changeRef.detectChanges();
 	}
 

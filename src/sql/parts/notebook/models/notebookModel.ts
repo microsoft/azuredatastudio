@@ -203,9 +203,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex((cell) => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): void {
+	public addCell(cellType: CellType, index?: number): ICellModel {
 		if (this.inErrorState || !this._cells) {
-			return;
+			return null;
 		}
 		let cell = this.createCell(cellType);
 
@@ -221,6 +221,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			cells: [cell],
 			cellIndex: index
 		});
+
+		return cell;
 	}
 
 	private createCell(cellType: CellType): ICellModel {
