@@ -215,6 +215,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
+		// Set newly created cell as active cell
+		this._activeCell.active = false;
+		this._activeCell = cell;
+		this._activeCell.active = true;
 
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsAdded,
