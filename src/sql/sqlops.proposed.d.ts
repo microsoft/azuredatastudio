@@ -1371,6 +1371,13 @@ declare module 'sqlops' {
 		 * @param callback
 		 */
 		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
+
+		/**
+		 * Opens the connection and add it to object explorer and opens the dashboard. If connection was successful
+		 * returns the connection id otherwise returns undefined
+		 * @param connectionProfile connection profile
+		 */
+		export function connect(connectionProfile: IConnectionProfile): Thenable<ConnectionResult>;
 	}
 
 	export namespace nb {

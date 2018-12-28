@@ -19,6 +19,8 @@ import { KeybindingsEditor } from '../preferences/keybindings';
 import { Editors } from '../editor/editors';
 import { Code } from '../../vscode/code';
 import { Terminal } from '../terminal/terminal';
+import { ConnectionDialog } from '../../sql/connectionDialog/connectionDialog';
+import { Profiler } from '../../sql/profiler/profiler';
 
 export interface Commands {
 	runCommand(command: string): Promise<any>;
@@ -42,6 +44,9 @@ export class Workbench {
 	readonly keybindingsEditor: KeybindingsEditor;
 	readonly terminal: Terminal;
 
+	readonly connectionDialog: ConnectionDialog;
+	readonly profiler: Profiler;
+
 	constructor(code: Code, userDataPath: string) {
 		this.editors = new Editors(code);
 		this.quickopen = new QuickOpen(code, this.editors);
@@ -58,6 +63,9 @@ export class Workbench {
 		this.settingsEditor = new SettingsEditor(code, userDataPath, this.editors, this.editor, this.quickopen);
 		this.keybindingsEditor = new KeybindingsEditor(code);
 		this.terminal = new Terminal(code);
+
+		this.connectionDialog = new ConnectionDialog(code);
+		this.profiler = new Profiler(code, this.quickopen);
 	}
 }
 

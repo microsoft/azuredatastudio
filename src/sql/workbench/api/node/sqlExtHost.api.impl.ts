@@ -131,6 +131,9 @@ export function createApiFactory(
 				},
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
+				},
+				connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile);
 				}
 			};
 
@@ -154,6 +157,9 @@ export function createApiFactory(
 				},
 				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
+				},
+				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
+					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
 				}
 			};
 

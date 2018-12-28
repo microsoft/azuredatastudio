@@ -151,6 +151,7 @@ export class Button extends Disposable {
 			this.$el.addClass('monaco-text-button');
 		}
 		this.$el.text(value);
+		this.$el.attr('aria-label', value);
 		if (this.options.title) {
 			this.$el.title(value);
 		}

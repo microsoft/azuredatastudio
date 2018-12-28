@@ -27,7 +27,7 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-if (!vscode.workspace.getConfiguration('adstest')['testSetupCompleted']) {
+if (!vscode.workspace.getConfiguration('test')['testSetupCompleted']) {
 	context.RunTest = false;
 }
 

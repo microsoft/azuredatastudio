@@ -30,6 +30,10 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 	public $findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
 		return this._proxy.$findNodes(connectionId, type, schema, name, database, parentObjectNames).then(results => results.map(result => new ExtHostObjectExplorerNode(result, connectionId, this._proxy)));
 	}
+
+	public $getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
+		return this._proxy.$getNodeActions(connectionId, nodePath);
+	}
 }
 
 class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerNode {
