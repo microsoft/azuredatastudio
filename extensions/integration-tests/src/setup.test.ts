@@ -8,11 +8,11 @@
 import 'mocha';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-
-suite('test setup', () => {
-	test('test setup', async function () {
-		if (!context.RunTest) {
-			vscode.commands.executeCommand('test.setupIntegrationTest');
-		}
+import { waitForCompletion } from './utils';
+if (!context.RunTest) {
+	suite('test setup', () => {
+		test('test setup', async function () {
+			await waitForCompletion(vscode.commands.executeCommand('test.setupIntegrationTest'));
+		});
 	});
-});
+}
