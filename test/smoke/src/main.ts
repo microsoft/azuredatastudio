@@ -314,6 +314,7 @@ describe('Test', () => {
 	runProfilerTests();
 	//Original
 	/*
+	setupDataLossTests();
 	setupDataExplorerTests();
 	setupDataPreferencesTests();
 	setupDataSearchTests();
