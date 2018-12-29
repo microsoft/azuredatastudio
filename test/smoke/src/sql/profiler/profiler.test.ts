@@ -13,7 +13,6 @@ export function setup() {
 			await app.workbench.connectionDialog.waitForConnectionDialog();
 			await app.workbench.connectionDialog.connect({ ServerName: 'sqltools2017-3' });
 			await app.workbench.profiler.waitForNewSessionDialogAndStart();
-			await new Promise(c => setTimeout(c, 10000));
 		});
 	});
 }

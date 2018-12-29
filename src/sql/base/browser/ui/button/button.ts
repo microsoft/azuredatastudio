@@ -7,7 +7,6 @@
 import { Button as vsButton, IButtonOptions, IButtonStyles as vsIButtonStyles } from 'vs/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
-import { clone } from 'sql/base/common/objects';
 
 export interface IButtonStyles extends vsIButtonStyles {
 	buttonFocusOutline?: Color;
@@ -17,10 +16,6 @@ export class Button extends vsButton {
 	private buttonFocusOutline: Color;
 
 	constructor(container: any, options?: IButtonOptions) {
-		let buttonOptions: IButtonOptions = options ? clone(options) : {};
-		if (buttonOptions.title !== false) {
-			buttonOptions.title = true;
-		}
 		super(container, options);
 		this.buttonFocusOutline = null;
 

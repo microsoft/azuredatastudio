@@ -79,8 +79,8 @@ export class ContextMenuHandler {
 						getKeyBinding: delegate.getKeyBinding
 					});
 
-					//menu.onDidCancel(() => this.contextViewService.hideContextView(true), null, menuDisposables);
-					//menu.onDidBlur(() => this.contextViewService.hideContextView(true), null, menuDisposables);
+					menu.onDidCancel(() => this.contextViewService.hideContextView(true), null, menuDisposables);
+					menu.onDidBlur(() => this.contextViewService.hideContextView(true), null, menuDisposables);
 
 					menu.focus(!!delegate.autoSelectFirstItem);
 
@@ -109,7 +109,7 @@ export class ContextMenuHandler {
 			this.telemetryService.publicLog('workbenchActionExecuted', { id: e.action.id, from: 'contextMenu' });
 		}
 
-		//this.contextViewService.hideContextView(false);
+		this.contextViewService.hideContextView(false);
 	}
 
 	private onDidActionRun(e: IRunEvent): void {
@@ -134,7 +134,7 @@ export class ContextMenuHandler {
 			element = element.parentElement;
 		}
 
-		//this.contextViewService.hideContextView();
+		this.contextViewService.hideContextView();
 	}
 
 	public dispose(): void {

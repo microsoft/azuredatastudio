@@ -8,7 +8,7 @@ import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -21,7 +21,6 @@ import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as Utils from 'sql/parts/connection/common/utils';
-//import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -118,22 +117,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _onSelectionOrFocusChange: Emitter<void>;
 
-	//private _actionProvider: ServerTreeActionProvider
-
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		this._onUpdateObjectExplorerNodes = new Emitter<ObjectExplorerNodeEventArgs>();
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
 		this._onSelectionOrFocusChange = new Emitter<void>();
-		// if (this._instantiationService) {
-		// 	this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
-		// }
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {

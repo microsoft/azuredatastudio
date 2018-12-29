@@ -12,8 +12,26 @@ import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
 import { Application, Quality } from './application';
-
+//{{SQL CARBON EDIT}}
 import { setup as runProfilerTests } from './sql/profiler/profiler.test';
+//Original
+/*
+import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
+import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
+import { setup as setupDataExplorerTests } from './areas/explorer/explorer.test';
+import { setup as setupDataPreferencesTests } from './areas/preferences/preferences.test';
+import { setup as setupDataSearchTests } from './areas/search/search.test';
+import { setup as setupDataCSSTests } from './areas/css/css.test';
+import { setup as setupDataEditorTests } from './areas/editor/editor.test';
+import { setup as setupDataDebugTests } from './areas/debug/debug.test';
+import { setup as setupDataGitTests } from './areas/git/git.test';
+import { setup as setupDataStatusbarTests } from './areas/statusbar/statusbar.test';
+import { setup as setupDataExtensionTests } from './areas/extensions/extensions.test';
+import { setup as setupTerminalTests } from './areas/terminal/terminal.test';
+import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
+import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
+*/
+//{{END}}
 import { MultiLogger, Logger, ConsoleLogger, FileLogger } from './logger';
 
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
@@ -237,15 +255,24 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
 });
 
+//{{SQL CARBON EDIT}}
+/*
+describe('Data Migration', () => {
+	setupDataMigrationTests(userDataDir, createApp);
+});
+*/
+//{{END}}
+
 describe('Test', () => {
 	before(async function () {
 		const app = createApp(quality);
 		await app!.start();
+		//{{SQL CARBON EDIT}}
 		await app.workbench.quickopen.runCommand('Test: Setup Integration Test');
 		const testSetupCompletedText = 'Test Setup Completed';
 		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);
-		await new Promise(c => setTimeout(c, 5000)); // wait for shutdown
 		await app!.reload();
+		//{{END}}
 		this.app = app;
 	});
 
@@ -283,5 +310,22 @@ describe('Test', () => {
 		});
 	}
 
+	//{{SQL CARBON EDIT}}
 	runProfilerTests();
+	//Original
+	/*
+	setupDataExplorerTests();
+	setupDataPreferencesTests();
+	setupDataSearchTests();
+	setupDataCSSTests();
+	setupDataEditorTests();
+	setupDataDebugTests();
+	setupDataGitTests();
+	setupDataStatusbarTests();
+	setupDataExtensionTests();
+	setupTerminalTests();
+	setupDataMultirootTests();
+	setupDataLocalizationTests();
+	*/
+	//{{END}}
 });
