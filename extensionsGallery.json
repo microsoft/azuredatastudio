@@ -1069,7 +1069,7 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
-									"value": *"
+									"value": "*"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
