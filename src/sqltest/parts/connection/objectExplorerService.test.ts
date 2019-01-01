@@ -270,7 +270,7 @@ suite('SQL Object Explorer Service tests', () => {
 			}
 		};
 
-		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService, undefined);
+		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService);
 		objectExplorerService.registerProvider('MSSQL', sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<sqlops.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {
 			resolve(response);
