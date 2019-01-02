@@ -347,6 +347,7 @@ export class BuiltinProvider implements INotebookProvider {
 	constructor() {
 		this.manager = new BuiltInNotebookManager();
 	}
+
 	public get providerId(): string {
 		return DEFAULT_NOTEBOOK_PROVIDER;
 	}
@@ -367,6 +368,7 @@ export class BuiltInNotebookManager implements INotebookManager {
 		this._contentManager = new LocalContentManager();
 		this._sessionManager = new SessionManager();
 	}
+
 	public get providerId(): string {
 		return DEFAULT_NOTEBOOK_PROVIDER;
 	}
@@ -411,6 +413,7 @@ export class TSQLNotebookManager implements INotebookManager {
 		this._contentManager = new LocalContentManager();
 		this._sessionManager = new SQLSessionManager(this._instantiationService);
 	}
+
 	public get providerId(): string {
 		return SQL_NOTEBOOK_PROVIDER;
 	}

@@ -49,7 +49,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 			main: this,
 			ext: this._proxy
 		};
-		let notebookProvider = new NotebookProviderWrapper(proxy, providerId, handle);
+		let notebookProvider = new NotebookProviderWrapper(proxy, providerId, this._providers, handle);
 		this._providers.set(handle, notebookProvider);
 		this.notebookService.registerProvider(providerId, notebookProvider);
 	}
@@ -88,7 +88,7 @@ interface Proxies {
 class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
 
-	constructor(private _proxy: Proxies, public readonly providerId, public readonly providerHandle: number) {
+	constructor(private _proxy: Proxies, public readonly providerId, private _providers, public readonly providerHandle: number) {
 		super();
 	}
 
@@ -101,7 +101,7 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 		let uriString = notebookUri.toString();
 		let manager = this._notebookUriToManagerMap.get(uriString);
 		if (!manager) {
-			manager = new NotebookManagerWrapper(this._proxy, this.providerId, notebookUri);
+			manager = new NotebookManagerWrapper(this._proxy, this.providerId, this._providers, notebookUri);
 			await manager.initialize(this.providerHandle);
 			this._notebookUriToManagerMap.set(uriString, manager);
 		}
@@ -122,6 +122,7 @@ class NotebookManagerWrapper implements INotebookManager {
 
 	constructor(private _proxy: Proxies,
 		public readonly providerId,
+		public readonly providers,
 		private notebookUri: URI
 	) { }
 

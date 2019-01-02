@@ -325,9 +325,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		{
 			// Ensure there is always a sensible provider ID for this file type
 			providers = getProvidersForFileName(uri.fsPath, this._notebookService);
-			if (model.providers && model.providers[0]) {
-				providerId = model.providers[0];
-			} else {
+			// builtin is always the first in the list; check if another provider exists first
+			if (providers && providers[1]) {
+				providerId = providers[1];
+			} else if (providers && providers[0]) {
 				providerId = model.providerId;
 			}
 		}
@@ -463,6 +464,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			uri: editor.uri,
 			isDirty: editor.isDirty,
 			providerId: editor.providerId,
+			providers: editor.providers,
 			cells: this.convertCellModelToNotebookCell(editor.cells)
 		};
 		return addData;
@@ -474,6 +476,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			cells: this.convertCellModelToNotebookCell(editor.cells),
 			isDirty: e.isDirty,
 			providerId: editor.providerId,
+			providers: editor.providers,
 			uri: editor.uri
 		};
 		return changeData;
