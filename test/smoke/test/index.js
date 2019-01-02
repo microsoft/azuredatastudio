@@ -19,22 +19,21 @@ const opts = minimist(args, {
 const options = {
 	useColors: true,
 	//{{SQL CARBON EDIT}}
-	timeout: 60000 * 2,
+	timeout: 60000 * 3,
 	//{{END}}
 	slow: 30000,
 	grep: opts['f']
 };
-
-if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
-	options.reporter = 'mocha-multi-reporters';
-	options.reporterOptions = {
-		reporterEnabled: 'spec, mocha-junit-reporter',
-		mochaJunitReporterReporterOptions: {
-			testsuitesTitle: `${suite} ${process.platform}`,
-			mochaFile: path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
-		}
-	};
-}
+//{{SQL CARBON EDIT}}
+options.reporter = 'mocha-multi-reporters';
+options.reporterOptions = {
+	reporterEnabled: 'spec, mocha-junit-reporter',
+	mochaJunitReporterReporterOptions: {
+		testsuitesTitle: `${suite} ${process.platform}`,
+		mochaFile: path.join(__dirname,'../../../', `smoke-test-results.xml`)
+	}
+};
+//{{END}}
 
 const mocha = new Mocha(options);
 mocha.addFile('out/main.js');

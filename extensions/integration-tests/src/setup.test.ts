@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import { context } from './testContext';
 import { waitForCompletion } from './utils';
 if (!context.RunTest) {
-	suite('test setup', () => {
+	suite('integration test setup', () => {
 		test('test setup', async function () {
 			await waitForCompletion(vscode.commands.executeCommand('test.setupIntegrationTest'));
 		});

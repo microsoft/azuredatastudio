@@ -12,7 +12,7 @@ import { waitForCompletion, connectToServer } from './utils';
 import assert = require('assert');
 
 if (context.RunTest) {
-	suite('Object Explorer test suite', () => {
+	suite('Object Explorer integration test suite', () => {
 		test('context menu test', async function () {
 			await connectToServer();
 			let nodes = <sqlops.objectexplorer.ObjectExplorerNode[]>await waitForCompletion(sqlops.objectexplorer.getActiveConnectionNodes());

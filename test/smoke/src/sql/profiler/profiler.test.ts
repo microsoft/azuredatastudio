@@ -6,8 +6,8 @@
 import { Application } from '../../application';
 
 export function setup() {
-	describe('Profiler', () => {
-		it('Launch profiler', async function () {
+	describe('profiler smoke test suite', () => {
+		it('Launch profiler test', async function () {
 			const app = this.app as Application;
 			await app.workbench.profiler.launchProfiler();
 			await app.workbench.connectionDialog.waitForConnectionDialog();
