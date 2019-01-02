@@ -16,16 +16,15 @@ const options: any = {
 	timeout: 600000
 };
 
-if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
-	options.reporter = 'mocha-multi-reporters';
-	options.reporterOptions = {
-		reporterEnabled: 'spec, mocha-junit-reporter',
-		mochaJunitReporterReporterOptions: {
-			testsuitesTitle: `${suite} ${process.platform}`,
-			mochaFile: path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
-		}
-	};
-}
+
+options.reporter = 'mocha-multi-reporters';
+options.reporterOptions = {
+	reporterEnabled: 'spec, mocha-junit-reporter',
+	mochaJunitReporterReporterOptions: {
+		testsuitesTitle: `${suite} ${process.platform}`,
+		mochaFile: path.join(__dirname, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
+	}
+};
 
 if (!vscode.workspace.getConfiguration('test')['testSetupCompleted']) {
 	context.RunTest = false;
