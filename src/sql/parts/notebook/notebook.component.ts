@@ -63,14 +63,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
 	protected _actionBar: Taskbar;
-	private _activeCell: ICellModel;
 	protected isLoading: boolean;
 	private notebookManager: INotebookManager;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
-	private _activeCellId: string;
 
 
 	constructor(
@@ -138,7 +136,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public get activeCellId(): string {
-		return this._activeCellId;
+		return this._model && this._model.activeCell ? this._model.activeCell.id :  '';
 	}
 
 	public get modelRegistered(): Promise<NotebookModel> {
@@ -158,32 +156,29 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		if (cell !== this._activeCell) {
-			if (this._activeCell) {
-				this._activeCell.active = false;
+		if (cell !== this.model.activeCell) {
+			if (this.model.activeCell) {
+				this.model.activeCell.active = false;
 			}
-			this._activeCell = cell;
-			this._activeCell.active = true;
-			this._model.activeCell = this._activeCell;
-			this._activeCellId = cell.id;
+			this._model.activeCell = cell;
+			this._model.activeCell.active = true;
 			this._changeRef.detectChanges();
 		}
 	}
 
 	public unselectActiveCell() {
-		if (this._activeCell) {
-			this._activeCell.active = false;
+		if (this.model.activeCell) {
+			this.model.activeCell.active = false;
 		}
-		this._activeCell = null;
-		this._model.activeCell = null;
-		this._activeCellId = null;
+		this.model.activeCell = null;
 		this._changeRef.detectChanges();
 	}
 
 	// Add cell based on cell type
 	public addCell(cellType: CellType)
 	{
-		this._model.addCell(cellType);
+		let newCell = this._model.addCell(cellType);
+		this.selectCell(newCell);
 	}
 
 	// Updates Notebook model's trust details
@@ -201,12 +196,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		switch (event.key) {
 			case 'ArrowDown':
 			case 'ArrowRight':
-				let nextIndex = (this.findCellIndex(this._activeCell) + 1) % this.cells.length;
+				let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
 				this.selectCell(this.cells[nextIndex]);
 				break;
 			case 'ArrowUp':
 			case 'ArrowLeft':
-				let index = this.findCellIndex(this._activeCell);
+				let index = this.findCellIndex(this.model.activeCell);
 				if (index === 0) {
 					index = this.cells.length;
 				}
@@ -252,6 +247,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(model);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
+		// Set first cell as default active cell
+		if (this._model && this._model.cells && this._model.cells[0]) {
+			this.selectCell(model.cells[0]);
+		}
 		this._changeRef.detectChanges();
 	}
 
