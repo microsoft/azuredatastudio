@@ -22,7 +22,7 @@ options.reporterOptions = {
 	reporterEnabled: 'spec, mocha-junit-reporter',
 	mochaJunitReporterReporterOptions: {
 		testsuitesTitle: `${suite} ${process.platform}`,
-		mochaFile: path.join(__dirname, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
+		mochaFile: path.join(__dirname, `test-results/test-results.xml`)
 	}
 };
 
