@@ -19,7 +19,7 @@ const opts = minimist(args, {
 const options = {
 	useColors: true,
 	//{{SQL CARBON EDIT}}
-	timeout: 60000 * 3,
+	timeout: 60000 * 2,
 	//{{END}}
 	slow: 30000,
 	grep: opts['f']

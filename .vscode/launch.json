@@ -4,6 +4,13 @@
 		{
 			"type": "node",
 			"request": "launch",
+			"name": "Launch ADS Smoke Test",
+			"program": "${workspaceFolder}/test/smoke/test/index.js",
+			"cwd": "${workspaceFolder}/test/smoke"
+		},
+		{
+			"type": "node",
+			"request": "launch",
 			"name": "Gulp Build",
 			"program": "${workspaceFolder}/node_modules/gulp/bin/gulp.js",
 			"stopOnEntry": true,

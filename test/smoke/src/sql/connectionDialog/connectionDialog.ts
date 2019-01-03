@@ -4,9 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Code } from '../../vscode/code';
-import { waitForNewDialog, clickDialogButton } from '../Utils'
+import { waitForNewDialog, clickDialogButton } from '../sqlutils';
 export interface ConnectionProfile {
 	ServerName: string;
+	UserName: string;
+	Password: string;
+	AuthenticationType: AuthenticationType;
+}
+
+export enum AuthenticationType {
+	Windows,
+	SQL
 }
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
@@ -14,7 +22,10 @@ const CONNECTION_DIALOG_SELECTOR: string = '.modal-dialog .modal-content .modal-
 const CONNECTION_DETAIL_CONTROL_SELECTOR: string = '.connection-type .connection-table .connection-input';
 
 const SERVER_INPUT_ARIA_LABEL = 'Server';
-//const AUTH_TYPE_ARIA_LABEL = 'Authentication type';
+const USERNAME_INPUT_ARIA_LABEL = 'User name';
+const PASSWORD_INPUT_ARIA_LABEL = 'Password';
+const AUTH_TYPE_ARIA_LABEL = 'Authentication type';
+const AUTH_TYPE_SQL_Login = 'SQL Login';
 
 const CONNECT_BUTTON_ARIA_LABEL = 'Connect';
 
@@ -28,7 +39,12 @@ export class ConnectionDialog {
 
 	async connect(profile: ConnectionProfile): Promise<void> {
 		await this.code.waitForSetValue(this.getInputCssSelector(SERVER_INPUT_ARIA_LABEL), profile.ServerName);
-		//await this.code.waitAndClick(this.getSelectSelector(AUTH_TYPE_ARIA_LABEL));
+		if (profile.AuthenticationType === AuthenticationType.SQL) {
+			await this.code.waitAndClick(this.getSelectCssSelector(AUTH_TYPE_ARIA_LABEL));
+			await this.selectAuthType(AUTH_TYPE_SQL_Login);
+			await this.code.waitForSetValue(this.getInputCssSelector(USERNAME_INPUT_ARIA_LABEL), profile.UserName);
+			await this.code.waitForSetValue(this.getInputCssSelector(PASSWORD_INPUT_ARIA_LABEL), profile.Password);
+		}
 		await clickDialogButton(this.code, CONNECT_BUTTON_ARIA_LABEL);
 	}
 
@@ -36,7 +52,11 @@ export class ConnectionDialog {
 		return `${CONNECTION_DIALOG_SELECTOR} ${CONNECTION_DETAIL_CONTROL_SELECTOR} .monaco-inputbox input[aria-label="${ariaLabel}"]`;
 	}
 
-	// private getSelectCssSelector(ariaLabel: string): string {
-	// 	return `${CONNECTION_DIALOG_SELECTOR} ${CONNECTION_DETAIL_CONTROL_SELECTOR} select[aria-label="${ariaLabel}"]`;
-	// }
+	private getSelectCssSelector(ariaLabel: string): string {
+		return `${CONNECTION_DIALOG_SELECTOR} ${CONNECTION_DETAIL_CONTROL_SELECTOR} select[aria-label="${ariaLabel}"]`;
+	}
+
+	private async selectAuthType(authType: string) {
+		await this.code.waitAndClick(`.context-view.bottom.left .monaco-select-box-dropdown-container .select-box-dropdown-list-container .monaco-list .monaco-scrollable-element .monaco-list-rows div[aria-label="${authType}"][class*="monaco-list-row"]`);
+	}
 }

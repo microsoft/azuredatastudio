@@ -263,11 +263,13 @@ describe('Data Migration', () => {
 */
 //{{END}}
 
-describe('Test', () => {
+describe('Smoke Test', () => {
 	before(async function () {
 		const app = createApp(quality);
 		await app!.start();
 		//{{SQL CARBON EDIT}}
+		const testExtLoadedText = 'Test Extension Loaded';
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
 		await app.workbench.quickopen.runCommand('Test: Setup Integration Test');
 		const testSetupCompletedText = 'Test Setup Completed';
 		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);

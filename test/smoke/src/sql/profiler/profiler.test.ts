@@ -4,14 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../application';
+import { AuthenticationType } from '../connectionDialog/connectionDialog';
 
 export function setup() {
-	describe('profiler smoke test suite', () => {
+	describe('profiler test suite', () => {
 		it('Launch profiler test', async function () {
 			const app = this.app as Application;
 			await app.workbench.profiler.launchProfiler();
 			await app.workbench.connectionDialog.waitForConnectionDialog();
-			await app.workbench.connectionDialog.connect({ ServerName: 'sqltools2017-3' });
+			await app.workbench.connectionDialog.connect({
+				ServerName: 'sqltools2017-3',
+				UserName: '',
+				Password: '',
+				AuthenticationType: AuthenticationType.Windows
+			});
 			await app.workbench.profiler.waitForNewSessionDialogAndStart();
 		});
 	});

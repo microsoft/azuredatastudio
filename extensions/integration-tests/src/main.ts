@@ -10,8 +10,11 @@ import * as fs from 'fs';
 import { waitForCompletion } from './utils';
 
 const TEST_SETUP_COMPLETED_TEXT: string = 'Test Setup Completed';
+const EXTENSION_LOADED_TEXT: string = 'Test Extension Loaded';
+var statusBarItemTimer: NodeJS.Timer;
 
 export function activate(context: vscode.ExtensionContext) {
+	var statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	vscode.commands.registerCommand('test.setupIntegrationTest', async (ownerUri: string, providerType: string, templates: Array<sqlops.ProfilerSessionTemplate>) => {
 		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
 		let installers = fs.readdirSync(extensionInstallersFolder);
@@ -22,11 +25,19 @@ export function activate(context: vscode.ExtensionContext) {
 		await setConfiguration('workbench.enablePreviewFeatures', true);
 		await setConfiguration('workbench.showConnectDialogOnStartup', false);
 		await setConfiguration('test.testSetupCompleted', true);
-		let statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left)
-		statusBarItem.text = TEST_SETUP_COMPLETED_TEXT;
-		statusBarItem.tooltip = TEST_SETUP_COMPLETED_TEXT;
-		statusBarItem.show();
+		showStatusBarItem(statusBarItem, TEST_SETUP_COMPLETED_TEXT);
 	});
+	showStatusBarItem(statusBarItem, EXTENSION_LOADED_TEXT);
+}
+
+function showStatusBarItem(statusBarItem: vscode.StatusBarItem, text: string) {
+	statusBarItem.text = text;
+	statusBarItem.tooltip = text;
+	statusBarItem.show();
+	clearTimeout(statusBarItemTimer);
+	statusBarItemTimer = setTimeout(function () {
+		statusBarItem.hide();
+	}, 2000);
 }
 
 // this method is called when your extension is deactivated

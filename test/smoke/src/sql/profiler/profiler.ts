@@ -5,7 +5,7 @@
 
 import { Code } from '../../vscode/code';
 import { QuickOpen } from '../../areas/quickopen/quickopen';
-import { waitForNewDialog, clickDialogButton } from '../Utils';
+import { waitForNewDialog, clickDialogButton } from '../sqlutils';
 
 const NEW_SESSION_DIALOG_TITLE: string = 'Start New Profiler Session';
 
@@ -18,7 +18,7 @@ export class Profiler {
 	}
 
 	async waitForNewSessionDialog() {
-		await waitForNewDialog(this.code, NEW_SESSION_DIALOG_TITLE)
+		await waitForNewDialog(this.code, NEW_SESSION_DIALOG_TITLE);
 	}
 
 	async waitForNewSessionDialogAndStart() {
