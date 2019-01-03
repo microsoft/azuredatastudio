@@ -126,6 +126,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
+		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
 		}
@@ -242,9 +243,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
-		this._model = model;
+		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
-		this._register(model);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
 		// Set first cell as default active cell
