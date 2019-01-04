@@ -5,17 +5,7 @@
 
 import { Code } from '../../vscode/code';
 import { waitForNewDialog, clickDialogButton } from '../sqlutils';
-export interface ConnectionProfile {
-	ServerName: string;
-	UserName: string;
-	Password: string;
-	AuthenticationType: AuthenticationType;
-}
-
-export enum AuthenticationType {
-	Windows,
-	SQL
-}
+import { TestServerProfile, AuthenticationType } from '../../../../../extensions/integration-tests/src/testConfig';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 const CONNECTION_DIALOG_SELECTOR: string = '.modal-dialog .modal-content .modal-body .connection-dialog';
@@ -37,9 +27,9 @@ export class ConnectionDialog {
 		await waitForNewDialog(this.code, CONNECTION_DIALOG_TITLE);
 	}
 
-	async connect(profile: ConnectionProfile): Promise<void> {
+	async connect(profile: TestServerProfile): Promise<void> {
 		await this.code.waitForSetValue(this.getInputCssSelector(SERVER_INPUT_ARIA_LABEL), profile.ServerName);
-		if (profile.AuthenticationType === AuthenticationType.SQL) {
+		if (profile.AuthenticationType === AuthenticationType.SqlLogin) {
 			await this.code.waitAndClick(this.getSelectCssSelector(AUTH_TYPE_ARIA_LABEL));
 			await this.selectAuthType(AUTH_TYPE_SQL_Login);
 			await this.code.waitForSetValue(this.getInputCssSelector(USERNAME_INPUT_ARIA_LABEL), profile.UserName);

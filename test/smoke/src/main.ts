@@ -269,11 +269,17 @@ describe('Smoke Test', () => {
 		await app!.start();
 		//{{SQL CARBON EDIT}}
 		const testExtLoadedText = 'Test Extension Loaded';
-		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
-		await app.workbench.quickopen.runCommand('Test: Setup Integration Test');
 		const testSetupCompletedText = 'Test Setup Completed';
+		const allExtensionsLoadedText = 'All Extensions Loaded';
+		const setupTestCommand = 'Test: Setup Integration Test';
+		const waitForExtensionsCommand = 'Test: Wait For Extensions To Load';
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
+		await app.workbench.quickopen.runCommand(setupTestCommand);
 		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);
 		await app!.reload();
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
+		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
+		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
 		//{{END}}
 		this.app = app;
 	});

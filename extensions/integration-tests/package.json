@@ -13,11 +13,11 @@
   ],
   "main": "./out/main",
   "extensionDependencies": [
-	"Microsoft.agent",
-	"Microsoft.import",
-	"Microsoft.profiler",
-	"Microsoft.mssql",
-	"Microsoft.notebook"
+    "Microsoft.agent",
+    "Microsoft.import",
+    "Microsoft.profiler",
+    "Microsoft.mssql",
+    "Microsoft.notebook"
   ],
   "contributes": {
     "configuration": {
@@ -32,10 +32,16 @@
       }
     },
     "commands": [{
-      "command": "test.setupIntegrationTest",
-      "title": "Setup Integration Test",
-      "category": "Test"
-    }]
+        "command": "test.setupIntegrationTest",
+        "title": "Setup Integration Test",
+        "category": "Test"
+      },
+      {
+        "command": "test.waitForExtensionsToLoad",
+        "title": "Wait For Extensions To Load",
+        "category": "Test"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "node ../../node_modules/gulp/bin/gulp.js --gulpfile ../../build/gulpfile.extensions.js compile-extension:vscode-colorize-tests ./tsconfig.json",

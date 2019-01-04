@@ -11,11 +11,13 @@ import { waitForCompletion } from './utils';
 
 const TEST_SETUP_COMPLETED_TEXT: string = 'Test Setup Completed';
 const EXTENSION_LOADED_TEXT: string = 'Test Extension Loaded';
+const ALL_EXTENSION_LOADED_TEXT: string = 'All Extensions Loaded';
+
 var statusBarItemTimer: NodeJS.Timer;
 
 export function activate(context: vscode.ExtensionContext) {
 	var statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-	vscode.commands.registerCommand('test.setupIntegrationTest', async (ownerUri: string, providerType: string, templates: Array<sqlops.ProfilerSessionTemplate>) => {
+	vscode.commands.registerCommand('test.setupIntegrationTest', async () => {
 		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
 		let installers = fs.readdirSync(extensionInstallersFolder);
 		for (let i = 0; i < installers.length; i++) {
@@ -27,6 +29,30 @@ export function activate(context: vscode.ExtensionContext) {
 		await setConfiguration('test.testSetupCompleted', true);
 		showStatusBarItem(statusBarItem, TEST_SETUP_COMPLETED_TEXT);
 	});
+
+	vscode.commands.registerCommand('test.waitForExtensionsToLoad', async () => {
+		let expectedExtensions = ['Microsoft.agent', 'Microsoft.import', 'Microsoft.mssql', 'Microsoft.profiler'];
+		do {
+			let extensions = vscode.extensions.all.filter(ext => { return expectedExtensions.indexOf(ext.id) !== -1; });
+
+			let isReady = true;
+			for (let i = 0; i < extensions.length; i++) {
+				let extension = extensions[i];
+				isReady = isReady && extension.isActive;
+				if (!isReady) {
+					break;
+				}
+			}
+
+			if (isReady) {
+				showStatusBarItem(statusBarItem, ALL_EXTENSION_LOADED_TEXT);
+				break;
+			} else {
+				await new Promise(resolve => { setTimeout(resolve, 1000); });
+			}
+		}
+		while (true);
+	});
 	showStatusBarItem(statusBarItem, EXTENSION_LOADED_TEXT);
 }
 
@@ -37,7 +63,7 @@ function showStatusBarItem(statusBarItem: vscode.StatusBarItem, text: string) {
 	clearTimeout(statusBarItemTimer);
 	statusBarItemTimer = setTimeout(function () {
 		statusBarItem.hide();
-	}, 2000);
+	}, 5000);
 }
 
 // this method is called when your extension is deactivated

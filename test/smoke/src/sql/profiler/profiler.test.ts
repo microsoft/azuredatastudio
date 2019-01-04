@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../application';
-import { AuthenticationType } from '../connectionDialog/connectionDialog';
+import { getDefaultTestingServer } from '../../../../../extensions/integration-tests/src/testConfig';
 
 export function setup() {
 	describe('profiler test suite', () => {
@@ -12,12 +12,7 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.profiler.launchProfiler();
 			await app.workbench.connectionDialog.waitForConnectionDialog();
-			await app.workbench.connectionDialog.connect({
-				ServerName: 'sqltools2017-3',
-				UserName: '',
-				Password: '',
-				AuthenticationType: AuthenticationType.Windows
-			});
+			await app.workbench.connectionDialog.connect(await getDefaultTestingServer());
 			await app.workbench.profiler.waitForNewSessionDialogAndStart();
 		});
 	});
