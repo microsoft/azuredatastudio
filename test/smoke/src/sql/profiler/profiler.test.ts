@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Application } from '../../application';
-import { getDefaultTestingServer } from '../../../../../extensions/integration-tests/src/testConfig';
+import { getDefaultTestingServer } from '../testConfig';
 
 export function setup() {
 	describe('profiler test suite', () => {

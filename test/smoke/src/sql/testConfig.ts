@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
- /*
+/*
 	TODO: Due to a runtime error, I duplicated this file at these 2 locations:
 	$/extensions/integration-test/src/testConfig.ts
 	$/test/smoke/src/sql/testConfig.ts

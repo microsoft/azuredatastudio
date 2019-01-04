@@ -5,7 +5,7 @@
 
 import { Code } from '../../vscode/code';
 import { waitForNewDialog, clickDialogButton } from '../sqlutils';
-import { TestServerProfile, AuthenticationType } from '../../../../../extensions/integration-tests/src/testConfig';
+import { TestServerProfile, AuthenticationType } from '../testConfig';
 
 const CONNECTION_DIALOG_TITLE = 'Connection';
 const CONNECTION_DIALOG_SELECTOR: string = '.modal-dialog .modal-content .modal-body .connection-dialog';
