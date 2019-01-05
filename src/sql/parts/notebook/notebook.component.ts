@@ -64,7 +64,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _errorMessage: string;
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
-	private notebookManager: INotebookManager;
+	private notebookManagers: INotebookManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
@@ -232,13 +232,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
-		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
+		for (let providerId of this._notebookParams.providers) {
+			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			this.notebookManagers.push(notebookManager);
+		}
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
-			notebookManager: this.notebookManager
+			notebookManagers: this.notebookManagers,
+			providerId: 'sql'
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);

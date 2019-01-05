@@ -225,7 +225,9 @@ export class CellModel implements ICellModel {
 			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
 		}
-		this._future.dispose();
+		if (!this._future.inProgress) {
+			this._future.dispose();
+		}
 	}
 
 	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {

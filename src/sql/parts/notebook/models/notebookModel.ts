@@ -45,6 +45,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _inErrorState: boolean = false;
+	private _clientSessions: IClientSession[] = [];
 	private _clientSession: IClientSession;
 	private _sessionLoadFinished: Promise<void>;
 	private _onClientSessionReady = new Emitter<IClientSession>();
@@ -60,20 +61,28 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _hadoopConnection: NotebookConnection;
 	private _defaultKernel: nb.IKernelSpec;
 	private _activeCell: ICellModel;
+	private _providerId: string;
+	// not totally necessary. just trying not to loop through every manager to find one that corresponds to a given kernel
+	private _kernelProviderMap: Map<string, string> = new Map<string, string>();
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
-		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManager) {
+		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
 		}
 		if (startSessionImmediately) {
 			this.backgroundStartSession();
 		}
 		this._trustedMode = false;
+		this._providerId = notebookOptions.providerId;
+	}
+
+	public get notebookManagers(): INotebookManager[] {
+		return this.notebookOptions.notebookManagers;
 	}
 
 	public get notebookManager(): INotebookManager {
-		return this.notebookOptions.notebookManager;
+		return this.notebookOptions.notebookManagers.find(manager => manager.providerId === this._providerId);
 	}
 
 	public get notebookUri() : URI {
@@ -106,7 +115,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
-		return this.clientSession.kernelChanged;
+		return this._clientSession.kernelChanged;
 	}
 
 	public get kernelsChanged(): Event<nb.IKernelSpec> {
@@ -130,7 +139,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get specs(): nb.IAllKernels | undefined {
-		return this.notebookManager.sessionManager.specs;
+		let specs: nb.IAllKernels;
+		this.notebookManagers.forEach(manager => {
+			if (!specs && manager.sessionManager && manager.sessionManager.specs) {
+				specs = manager.sessionManager.specs;
+			} else if (manager.sessionManager && manager.sessionManager.specs && manager.sessionManager.specs.kernels) {
+				for (let kernel of manager.sessionManager!.specs!.kernels) {
+					specs.kernels.push(kernel);
+				}
+			}
+		});
+		return specs;
 	}
 
 	public get inErrorState(): boolean {
@@ -143,6 +162,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get trustedMode(): boolean {
 		return this._trustedMode;
+	}
+
+	public get providerId(): string {
+		return this._providerId;
 	}
 
 	public set trustedMode(isTrusted: boolean) {
@@ -178,7 +201,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._trustedMode = isTrusted;
 			let contents = null;
 			if (this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
-				contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
+				contents = await this.notebookManagers[0].contentManager.getNotebookContents(this.notebookOptions.notebookUri);
 			}
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
@@ -293,29 +316,35 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public backgroundStartSession(): void {
-		this._clientSession = this.notebookOptions.factory.createClientSession({
-			notebookUri: this.notebookOptions.notebookUri,
-			notebookManager: this.notebookManager,
-			notificationService: this.notebookOptions.notificationService
-		});
-		let profile = this.connectionProfile as IConnectionProfile;
-
-		if (this.isValidKnoxConnection(profile)) {
-            this._hadoopConnection = new NotebookConnection(this.connectionProfile);
-        } else {
-            this._hadoopConnection = undefined;
-		}
-
-		this._clientSession.initialize(this._hadoopConnection);
-		this._sessionLoadFinished = this._clientSession.ready.then(async () => {
-			if (this._clientSession.isInErrorState) {
-				this.setErrorState(this._clientSession.errorMessage);
-			} else {
-				this._onClientSessionReady.fire(this._clientSession);
-				// Once session is loaded, can use the session manager to retrieve useful info
-				this.loadKernelInfo();
-				await this.loadActiveContexts(undefined);
+		this.notebookManagers.forEach(manager => {
+			let clientSession = this.notebookOptions.factory.createClientSession({
+				notebookUri: this.notebookOptions.notebookUri,
+				notebookManager: manager,
+				notificationService: this.notebookOptions.notificationService
+			});
+			this._clientSessions.push(clientSession);
+			if (!this._clientSession) {
+				this._clientSession = clientSession;
 			}
+			let profile = this.connectionProfile as IConnectionProfile;
+
+			if (this.isValidKnoxConnection(profile)) {
+				this._hadoopConnection = new NotebookConnection(this.connectionProfile);
+			} else {
+				this._hadoopConnection = undefined;
+			}
+
+			clientSession.initialize(this._hadoopConnection);
+			this._sessionLoadFinished = clientSession.ready.then(async () => {
+				if (clientSession.isInErrorState) {
+					this.setErrorState(clientSession.errorMessage);
+				} else {
+					this._onClientSessionReady.fire(clientSession);
+					// Once session is loaded, can use the session manager to retrieve useful info
+					this.loadKernelInfo();
+					await this.loadActiveContexts(undefined);
+				}
+			});
 		});
 	}
 
@@ -339,6 +368,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
+		// HAVE TO USE MEMENTOS HERE
+		for (let i = 0; i < this.notebookManagers.length; i++) {
+			if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
+				let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
+				if (index >= 0) {
+					this._clientSession = this._clientSessions[i];
+					this._providerId = this.notebookManagers[i].providerId;
+					break;
+				}
+			}
+		}
 		return this._clientSession.changeKernel(kernelSpec)
 			.then((kernel) => {
 				kernel.ready.then(() => {
@@ -364,7 +404,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			SparkMagicContexts.configureContext(this.notebookOptions);
 			this._hadoopConnection = new NotebookConnection(newConnection);
 			this.refreshConnections(newConnection);
-			this._clientSession.updateConnection(this._hadoopConnection);
+			this.clientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
@@ -386,20 +426,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private loadKernelInfo(): void {
-		this.clientSession.kernelChanged(async (e) => {
-			await this.loadActiveContexts(e);
+		this._clientSessions.forEach(clientSession => {
+			clientSession.kernelChanged(async (e) => {
+				await this.loadActiveContexts(e);
+			});
 		});
 		try {
 			let sessionManager = this.notebookManager.sessionManager;
 			if (sessionManager) {
 				let defaultKernel = SparkMagicContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
 				this._defaultKernel = defaultKernel;
-				this._clientSession.statusChanged(async (session) => {
-					if (session && session.defaultKernelLoaded === true) {
-						this._kernelsChangedEmitter.fire(defaultKernel);
-					} else if (session && !session.defaultKernelLoaded) {
-						this._kernelsChangedEmitter.fire({ name: notebookConstants.python3, display_name: notebookConstants.python3DisplayName });
-					}
+				this._clientSessions.forEach(clientSession => {
+					clientSession.statusChanged(async (session) => {
+						if (session && session.defaultKernelLoaded === true) {
+							this._kernelsChangedEmitter.fire(defaultKernel);
+						} else if (session && !session.defaultKernelLoaded) {
+							this._kernelsChangedEmitter.fire({ name: notebookConstants.python3, display_name: notebookConstants.python3DisplayName });
+						}
+					});
 				});
 				this.doChangeKernel(defaultKernel);
 			}
@@ -451,6 +495,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			if (this._clientSession) {
 				await this._clientSession.shutdown();
+				this._clientSessions = undefined;
 				this._clientSession = undefined;
 			}
 		} catch (err) {
@@ -487,7 +532,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!notebook) {
 			return false;
 		}
-		await this.notebookManager.contentManager.save(this.notebookOptions.notebookUri, notebook);
+		await this.notebookManagers[0].contentManager.save(this.notebookOptions.notebookUri, notebook);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.DirtyStateChanged,
 			isDirty: false

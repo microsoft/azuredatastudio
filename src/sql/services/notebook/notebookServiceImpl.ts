@@ -72,7 +72,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _memento = new Memento('notebookProviders');
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
-	private _managers: Map<string, INotebookManager> = new Map();
+	private _managers: Map<string, INotebookManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onCellChanged = new Emitter<INotebookEditor>();
@@ -90,7 +90,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	) {
 		super();
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
-		this.registerBuiltInProviders();
+		this.registerBuiltInProvider();
 
 		if (extensionService) {
 				extensionService.whenInstalledExtensionsRegistered().then(() => {
@@ -167,10 +167,12 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	public shutdown(): void {
 		this._managers.forEach(manager => {
-			if (manager.serverManager) {
-				// TODO should this thenable be awaited?
-				manager.serverManager.stopServer();
-			}
+			manager.forEach(m => {
+				if (m.serverManager) {
+					// TODO should this thenable be awaited?
+					m.serverManager.stopServer();
+				}
+			});
 		});
 	}
 
@@ -179,14 +181,25 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(localize('notebookUriNotDefined', 'No URI was passed when creating a notebook manager'));
 		}
 		let uriString = uri.toString();
-		let manager = this._managers.get(uriString);
-		if (!manager) {
-			manager = await this.doWithProvider(providerId, (provider) => provider.getNotebookManager(uri));
-			if (manager) {
-				this._managers.set(uriString, manager);
+		let manager: INotebookManager[] = this._managers.get(uriString);
+		// If manager already exists for a given notebook, return it
+		if (manager) {
+			let index = manager.findIndex(m => m.providerId === providerId);
+			if (index && index >= 0) {
+				return manager[index];
 			}
 		}
-		return manager;
+		let newManager = await this.doWithProvider(providerId, (provider) => provider.getNotebookManager(uri));
+
+		// If no managers exist for a notebook, add this manager
+		// Otherwise, add manager to array
+		if (!manager) {
+			this._managers.set(uriString, [newManager]);
+		} else if (!manager.find(m => m.providerId === providerId)) {
+			manager.push(newManager);
+			this._managers.set(uriString, manager);
+		}
+		return newManager;
 	}
 
 	get onNotebookEditorAdd(): Event<INotebookEditor> {
@@ -240,8 +253,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (manager) {
 			// As we have a manager, we can assume provider is ready
 			this._managers.delete(uriString);
-			let provider = this._providers.get(manager.providerId);
-			provider.instance.handleNotebookClosed(notebookUri);
+			manager.forEach(m => {
+				let provider = this._providers.get(m.providerId);
+				provider.instance.handleNotebookClosed(notebookUri);
+			});
 		}
 	}
 
@@ -313,19 +328,13 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	private registerBuiltInProviders() {
-		let defaultProvider = new BuiltinProvider();
-		this.registerProvider(defaultProvider.providerId, defaultProvider);
-		notebookRegistry.registerNotebookProvider({
-			provider: defaultProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
-		});
-
+	private registerBuiltInProvider() {
 		let tsqlProvider = new TSQLProvider(this._instantiationService);
 		this.registerProvider(tsqlProvider.providerId, tsqlProvider);
 		notebookRegistry.registerNotebookProvider({
 			provider: tsqlProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
+			expectedKernels: ['SQL']
 		});
 	}
 
@@ -393,6 +402,7 @@ export class TSQLProvider implements INotebookProvider {
 	constructor(private _instantiationService: IInstantiationService) {
 		this.manager = new TSQLNotebookManager(this._instantiationService);
 	}
+
 	public get providerId(): string {
 		return SQL_NOTEBOOK_PROVIDER;
 	}
@@ -400,6 +410,7 @@ export class TSQLProvider implements INotebookProvider {
 	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
 		return Promise.resolve(this.manager);
 	}
+
 	handleNotebookClosed(notebookUri: URI): void {
 		// No-op
 	}

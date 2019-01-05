@@ -101,7 +101,7 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 		let uriString = notebookUri.toString();
 		let manager = this._notebookUriToManagerMap.get(uriString);
 		if (!manager) {
-			manager = new NotebookManagerWrapper(this._proxy, this.providerId, this._providers, notebookUri);
+			manager = new NotebookManagerWrapper(this._proxy, this.providerId, notebookUri);
 			await manager.initialize(this.providerHandle);
 			this._notebookUriToManagerMap.set(uriString, manager);
 		}
@@ -122,7 +122,6 @@ class NotebookManagerWrapper implements INotebookManager {
 
 	constructor(private _proxy: Proxies,
 		public readonly providerId,
-		public readonly providers,
 		private notebookUri: URI
 	) { }
 
