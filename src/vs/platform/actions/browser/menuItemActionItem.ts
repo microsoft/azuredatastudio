@@ -288,3 +288,63 @@ export class ContextAwareMenuItemActionItem extends MenuItemActionItem {
 			.done(undefined, err => this._notificationService.error(err));
 	}
 }
+
+// Always show label for action items, instead of whether they don't have
+// an icon/CSS class. Useful for some toolbar scenarios in particular with
+// contributed actions from other extensions
+export class LabeledMenuItemActionItem extends MenuItemActionItem {
+	private _labeledItemClassDispose: IDisposable;
+
+	constructor(
+		public _action: MenuItemAction,
+		@IKeybindingService private readonly _labeledkeybindingService: IKeybindingService,
+		@INotificationService protected _notificationService: INotificationService,
+		@IContextMenuService private readonly _labeledcontextMenuService: IContextMenuService,
+		private readonly _defaultCSSClassToAdd: string = ''
+	) {
+		super(_action, _labeledkeybindingService, _notificationService, _labeledcontextMenuService);
+	}
+	_updateLabel(): void {
+		this.$e.text(this._commandAction.label);
+	}
+
+	// Overwrite item class to ensure that we can pass in a CSS class that other items use
+	// Leverages the _defaultCSSClassToAdd property that's passed into the constructor
+	_updateItemClass(item: ICommandAction): void {
+		dispose(this._labeledItemClassDispose);
+		this._labeledItemClassDispose = undefined;
+
+		if (item.iconLocation) {
+			let iconClass: string;
+
+			const iconPathMapKey = item.iconLocation.dark.toString();
+
+			if (MenuItemActionItem.ICON_PATH_TO_CSS_RULES.has(iconPathMapKey)) {
+				iconClass = MenuItemActionItem.ICON_PATH_TO_CSS_RULES.get(iconPathMapKey);
+			} else {
+				iconClass = ids.nextId();
+				createCSSRule(`.icon.${iconClass}`, `background-image: url("${(item.iconLocation.light || item.iconLocation.dark).toString()}")`);
+				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${item.iconLocation.dark.toString()}")`);
+				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
+			}
+
+			this.$e.getHTMLElement().classList.add('icon', iconClass);
+			this.$e.getHTMLElement().classList.add(this._defaultCSSClassToAdd);
+			this._labeledItemClassDispose = {
+				dispose: () => {
+					this.$e.getHTMLElement().classList.remove('icon', iconClass);
+					this.$e.getHTMLElement().classList.remove(this._defaultCSSClassToAdd);
+				}
+			};
+		}
+	}
+
+	dispose(): void {
+		if (this._labeledItemClassDispose) {
+			dispose(this._labeledItemClassDispose);
+			this._labeledItemClassDispose = undefined;
+		}
+
+		super.dispose();
+	}
+}

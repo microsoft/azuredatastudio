@@ -16,6 +16,8 @@ import * as sqlops from 'sqlops';
 
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { Inject } from '@angular/core';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', 'Cancel');
@@ -125,6 +127,7 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	private _message: sqlops.window.modelviewdialog.DialogMessage;
 	private _closeValidator: () => boolean | Thenable<boolean>;
 	private _operationHandler: BackgroundOperationHandler;
+	private _dialogName: string;
 
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
@@ -155,6 +158,14 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.modelviewdi
 	public set message(value: sqlops.window.modelviewdialog.DialogMessage) {
 		this._message = value;
 		this._extHostModelViewDialog.updateDialogContent(this);
+	}
+
+	public get dialogName(): string {
+		return this._dialogName;
+	}
+
+	public set dialogName(value: string) {
+		this._dialogName = value;
 	}
 
 	public registerCloseValidator(validator: () => boolean | Thenable<boolean>): void {
@@ -503,7 +514,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
 		let handle = this.getHandle(dialog);
 		this.updateDialogContent(dialog);
-		this._proxy.$openDialog(handle);
+		dialog.dialogName ? this._proxy.$openDialog(handle, dialog.dialogName) :
+						   this._proxy.$openDialog(handle);
 	}
 
 	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
@@ -560,8 +572,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, extensionLocation?: URI): sqlops.window.modelviewdialog.Dialog {
+	public createDialog(title: string, dialogName?: string, extensionLocation?: URI): sqlops.window.modelviewdialog.Dialog {
 		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extensionLocation);
+		if (dialogName) {
+			dialog.dialogName = dialogName;
+		}
 		dialog.title = title;
 		dialog.handle = this.getHandle(dialog);
 		return dialog;

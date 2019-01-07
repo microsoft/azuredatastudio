@@ -124,7 +124,7 @@ export class QueryEditorService implements IQueryEditorService {
 			try {
 				// Create file path and file URI
 				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
-				let filePath = this.createEditDataFileName(objectName);
+				let filePath = this.createPrefixedSqlFilePath(objectName);
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
@@ -150,12 +150,6 @@ export class QueryEditorService implements IQueryEditorService {
 				reject(error);
 			}
 		});
-	}
-
-	/**
-	 * Clears any QueryEditor data for the given URI held by this service
-	 */
-	public onQueryInputClosed(uri: string): void {
 	}
 
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
@@ -255,9 +249,9 @@ export class QueryEditorService implements IQueryEditorService {
 				QueryEditorService.editorService.openEditor(newEditorInput, options, group).then((editor) => {
 					resolve(QueryEditorService._onEditorOpened(editor, uri.toString(), undefined, options.pinned));
 				},
-				(error) => {
-					reject(error);
-				});
+					(error) => {
+						reject(error);
+					});
 			});
 		});
 	}
@@ -265,45 +259,26 @@ export class QueryEditorService implements IQueryEditorService {
 	////// Private functions
 
 	private createUntitledSqlFilePath(): string {
-		let sqlFileName = (counter: number): string => {
-			return `${untitledFilePrefix}${counter}`;
-		};
-
-		let counter = 1;
-		// Get document name and check if it exists
-		let filePath = sqlFileName(counter);
-		while (fs.existsSync(filePath)) {
-			counter++;
-			filePath = sqlFileName(counter);
-		}
-
-		// check if this document name already exists in any open documents
-		let untitledEditors = this._untitledEditorService.getAll();
-		while (untitledEditors.find(x => x.getName().toUpperCase() === filePath.toUpperCase())) {
-			counter++;
-			filePath = sqlFileName(counter);
-		}
-
-		return filePath;
+		return this.createPrefixedSqlFilePath(untitledFilePrefix);
 	}
 
-	private createEditDataFileName(tableName: string): string {
-		let editDataFileName = (counter: number): string => {
-			return encodeURIComponent(`${tableName}_${counter}`);
+	private createPrefixedSqlFilePath(prefix: string): string {
+		let prefixFileName = (counter: number): string => {
+			return `${prefix}_${counter}`;
 		};
 
 		let counter = 1;
 		// Get document name and check if it exists
-		let filePath = editDataFileName(counter);
+		let filePath = prefixFileName(counter);
 		while (fs.existsSync(filePath)) {
 			counter++;
-			filePath = editDataFileName(counter);
+			filePath = prefixFileName(counter);
 		}
 
 		let untitledEditors = this._untitledEditorService.getAll();
 		while (untitledEditors.find(x => x.getName().toUpperCase() === filePath.toUpperCase())) {
 			counter++;
-			filePath = editDataFileName(counter);
+			filePath = prefixFileName(counter);
 		}
 
 		return filePath;

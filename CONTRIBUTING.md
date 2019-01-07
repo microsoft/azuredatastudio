@@ -5,9 +5,9 @@ First, please do a search in [open issues](https://github.com/Microsoft/azuredat
 
 If you find your issue already exists, make relevant comments and add your [reaction](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments). Use a reaction in place of a "+1" comment.
 
-� - upvote
+:+1: - upvote
 
-� - downvote
+:-1: - downvote
 
 If you cannot find an existing issue that describes your bug or feature, submit an issue using the guidelines below.
 
@@ -22,7 +22,7 @@ The more information you can provide, the more likely someone will be successful
 
 Please include the following with each issue.
 
-* Version of SQL Ops Studio
+* Version of Azure Data Studio (formerly SQL Operations Studio).
 
 > **Tip:** You can easily create an issue using `Report Issues` from Azure Data Studio Help menu.
 

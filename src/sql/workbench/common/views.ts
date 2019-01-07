@@ -7,6 +7,7 @@ import { ITreeViewDataProvider, ITreeItem } from 'vs/workbench/common/views';
 
 export interface ITreeComponentItem extends ITreeItem {
 	checked?: boolean;
+	enabled?: boolean;
 	onCheckedChanged?: (checked: boolean) => void;
 	children?: ITreeComponentItem[];
 }

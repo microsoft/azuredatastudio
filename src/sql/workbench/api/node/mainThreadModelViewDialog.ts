@@ -19,6 +19,7 @@ import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/pa
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
 export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
@@ -35,7 +36,8 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 	constructor(
 		context: IExtHostContext,
 		@IInstantiationService private _instatiationService: IInstantiationService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService private _editorService: IEditorService,
+		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(_instatiationService);
@@ -68,9 +70,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		return this._proxy.$handleSave(handle);
 	}
 
-	public $openDialog(handle: number): Thenable<void> {
+	public $openDialog(handle: number, dialogName?: string): Thenable<void> {
 		let dialog = this.getDialog(handle);
-		this._dialogService.showDialog(dialog);
+		dialogName ? this._dialogService.showDialog(dialog, dialogName) : this._dialogService.showDialog(dialog);
 		return Promise.resolve();
 	}
 

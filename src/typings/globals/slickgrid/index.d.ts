@@ -830,7 +830,7 @@ declare namespace Slick {
 		* @param newData New databinding source using a regular JavaScript array..
 		* @param scrollToTop If true, the grid will reset the vertical scroll position to the top of the grid.
 		**/
-		public setData(newData: T[], scrollToTop: boolean): void;
+		public setData(newData: T[], scrollToTop?: boolean): void;
 
 		/**
 		* Sets a new source for databinding and removes all rendered rows. Note that this doesn't render the new rows - you can follow it with a call to render() to do that.
@@ -1208,10 +1208,7 @@ declare namespace Slick {
 		public onSelectedRowsChanged: Slick.Event<OnSelectedRowsChangedEventArgs<T>>;
 		public onCellCssStylesChanged: Slick.Event<OnCellCssStylesChangedEventArgs<T>>;
 		public onViewportChanged: Slick.Event<OnViewportChangedEventArgs<T>>;
-
-		/* Experimental */
-		public onPostRender: Slick.Event<void>;
-
+		public onRendered: Slick.Event<OnRenderedEventArgs<T>>;
 		// #endregion Events
 
 		// #region Plugins
@@ -1418,6 +1415,11 @@ declare namespace Slick {
 
 	export interface OnViewportChangedEventArgs<T extends SlickData> extends GridEventArgs<T> {
 
+	}
+
+	export interface OnRenderedEventArgs<T extends SlickData> extends GridEventArgs<T>{
+		startRow: number;
+		endRow: number;
 	}
 
 	export interface SortColumn<T extends SlickData> {

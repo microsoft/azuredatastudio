@@ -7,6 +7,7 @@
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { IResultMessage, ISelectionData } from 'sqlops';
 
@@ -28,8 +29,7 @@ import { $ } from 'vs/base/browser/builder';
 import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditor } from 'vs/editor/common/editorCommon';
-import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -70,11 +70,16 @@ export class MessagePanelState {
 			this.collapsed = !messagesOpenedSettings;
 		}
 	}
+
+	dispose() {
+
+	}
 }
 
 export class MessagePanel extends ViewletPanel {
+	private messageLineCountMap = new Map<IResultMessage, number>();
 	private ds = new MessageDataSource();
-	private renderer = new MessageRenderer();
+	private renderer = new MessageRenderer(this.messageLineCountMap);
 	private model = new Model();
 	private controller: MessageController;
 	private container = $('div message-tree').getHTMLElement();
@@ -99,7 +104,8 @@ export class MessagePanel extends ViewletPanel {
 			dataSource: this.ds,
 			renderer: this.renderer,
 			controller: this.controller
-		}, { keyboardSupport: false });
+		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto });
+		this.disposables.push(this.tree);
 		this.tree.onDidScroll(e => {
 			if (this.state) {
 				this.state.scrollPosition = this.tree.getScrollPosition();
@@ -115,7 +121,7 @@ export class MessagePanel extends ViewletPanel {
 	protected renderBody(container: HTMLElement): void {
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		attachListStyler(this.tree, this.themeService);
+		this.disposables.push(attachListStyler(this.tree, this.themeService));
 		container.appendChild(this.container);
 		this.tree.setInput(this.model);
 	}
@@ -142,29 +148,40 @@ export class MessagePanel extends ViewletPanel {
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
 		let hasError = false;
+		let lines: number;
 		if (isArray(message)) {
 			hasError = message.find(e => e.isError) ? true : false;
+			lines = message.reduce((currentTotal, resultMessage) => currentTotal + this.countMessageLines(resultMessage), 0);
 			this.model.messages.push(...message);
 		} else {
 			hasError = message.isError;
+			lines = this.countMessageLines(message);
 			this.model.messages.push(message);
 		}
+		this.maximumBodySize += lines * 22;
 		if (hasError) {
 			this.setExpanded(true);
 		}
 		if (this.state.scrollPosition) {
 			this.tree.refresh(this.model).then(() => {
-				this.tree.setScrollPosition(1);
+				// Restore the previous scroll position when switching between tabs
+				this.tree.setScrollPosition(this.state.scrollPosition);
 			});
 		} else {
 			const previousScrollPosition = this.tree.getScrollPosition();
 			this.tree.refresh(this.model).then(() => {
+				// Scroll to the end if the user was already at the end otherwise leave the current scroll position
 				if (previousScrollPosition === 1) {
 					this.tree.setScrollPosition(1);
 				}
 			});
 		}
-		this.maximumBodySize = this.model.messages.length * 22;
+	}
+
+	private countMessageLines(resultMessage: IResultMessage): number {
+		let lines = resultMessage.message.split('\n').length;
+		this.messageLineCountMap.set(resultMessage, lines);
+		return lines;
 	}
 
 	private reset() {
@@ -180,8 +197,18 @@ export class MessagePanel extends ViewletPanel {
 		}
 		this.setExpanded(!this.state.collapsed);
 	}
+
 	public get state(): MessagePanelState {
 		return this._state;
+	}
+
+	public clear() {
+		this.reset();
+	}
+
+	public dispose() {
+		dispose(this.queryRunnerDisposables);
+		super.dispose();
 	}
 }
 
@@ -219,8 +246,15 @@ class MessageDataSource implements IDataSource {
 }
 
 class MessageRenderer implements IRenderer {
+	constructor(private messageLineCountMap: Map<IResultMessage, number>) {
+	}
+
 	getHeight(tree: ITree, element: any): number {
-		return 22;
+		const lineHeight = 22;
+		if (this.messageLineCountMap.has(element)) {
+			return lineHeight * this.messageLineCountMap.get(element);
+		}
+		return lineHeight;
 	}
 
 	getTemplateId(tree: ITree, element: any): string {
@@ -257,7 +291,7 @@ class MessageRenderer implements IRenderer {
 	renderElement(tree: ITree, element: IResultMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
 		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
 			let data: IMessageTemplate = templateData;
-			data.message.innerText = element.message.replace(/(\r\n|\n|\r)/g, ' ');
+			data.message.innerText = element.message;
 		} else if (templateId === TemplateIds.BATCH) {
 			let data = templateData as IBatchTemplate;
 			data.timeStamp.innerText = element.time;

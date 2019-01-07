@@ -5,18 +5,18 @@
 	"colors": {
 		// base
 		"foreground": "#4a4a4a",
-		"focusBorder": "#00BCF2",
-		"selection.background": "#C9D0D9",
+		"focusBorder": "#0078d7",
+		"selection.background": "#c9d0d9",
 		"widget.shadow": "#666666",
 
 		// text colors
-		"textLinkForeground": "#3062D6",
-		"textLinkActiveForeground": "#3062D6",
+		"textLinkForeground": "#3062d6",
+		"textLinkActiveForeground": "#3062d6",
 
 		//Button control
-		"button.background": "#00BCF2",
-		"button.foreground": "#212121",
-		"button.hoverBackground": "#0099BC",
+		"button.background": "#0078d7cc",
+		"button.foreground": "#ffffff",
+		"button.hoverBackground": "#0078d7",
 
 		// TODO add support for these
 		// "button.secondaryBackground": "#c8c8c8",
@@ -25,35 +25,38 @@
 		// "button.disabledBackground": "#eaeaea",
 		// "button.disabledForeground": "#888888",
 
+		//Checkbox
+		"checkbox.disabled.foreground": "#888888",
+
 		//Dropdown Control
-		"dropdown.background": "#fffffe",
+		"dropdown.background": "#ffffff",
 		"dropdown.foreground": "#4a4a4a",
-		"dropdown.border": "#C8C8C8",
+		"dropdown.border": "#c8c8c8",
 
 		//badge
 		"badge.background": "#777777",
 		"badge.foreground": "#ffffff",
 
 		//Input Control
-		"input.background": "#fffffe",
+		"input.background": "#ffffff",
 		"input.border": "#c8c8c8",
 		"input.disabled.background": "#dcdcdc",
 		"input.disabled.foreground": "#888888",
 		"inputOption.activeBorder": "#666666",
 		"input.placeholderForeground": "#767676",
 		"inputValidation.errorBackground": "#ffeaea",
-		"inputValidation.errorBorder": "#f1897f",
+		"inputValidation.errorBorder": "#b62e00",
 
 		//List and tree
 		"list.activeSelectionBackground": "#3062d6",
 		"list.hoverBackground": "#dcdcdc",
-		"pickerGroup.border": "#00BCF2",
+		"pickerGroup.border": "#0078d7",
 
 		// Workbench: Activity Bar
 		"activityBar.background": "#212121",
 
 		// Workbench: Side Bar
-		"sideBar.background": "#EAEAEA",
+		"sideBar.background": "#eaeaea",
 		"editorGroupHeader.tabsBackground": "#f4f4f4",
 		"editor.background": "#fffffe",
 		"editor.foreground": "#212121",
@@ -64,17 +67,18 @@
 		"editorIndentGuide.activeBackground": "#939393",
 
 		// Workbench: Tabs
-		"tab.activeBackground": "#FFFFFE",
-		"tab.activeForeground": "#4A4A4A",
+		"tab.activeBackground": "#ffffff",
+		"tab.activeForeground": "#4a4a4a",
 		"tab.inactiveBackground": "#f4f4f4",
 		"tab.inactiveForeground": "#707070",
-		"tab.border": "#EAEAEA",
+		"tab.border": "#eaeaea",
 		"tab.unfocusedInactiveForeground": "#888888",
 		"tab.unfocusedActiveForeground": "#212121",
-		"panel.background": "#FFFFFE",
-		"panel.border": "#C8C8C8",
+		"panel.background": "#ffffff",
+		"panel.border": "#c8c8c8",
 		"panelTitle.activeForeground": "#212121",
-		"panelTitle.inactiveForeground": "#757575"
+		"panelTitle.inactiveForeground": "#757575",
+		"panelTitle.activeBorder": "#026dc8"
 	},
 	"tokenColors": [
 		{

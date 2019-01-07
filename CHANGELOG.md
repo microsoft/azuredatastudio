@@ -1,5 +1,44 @@
 # Change Log
 
+## Version 1.2.4
+* Release date: November 6, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Update to the SQL Server 2019 Preview extension
+* Introducing Paste the Plan extension
+* Introducing High Color queries extension, including SSMS editor theme
+* Fixes in SQL Server Agent, Profiler, and Import extensions
+* Fix .Net Core Socket KeepAlive issue causing dropped inactive connections on macOS
+* Upgrade SQL Tools Service to .Net Core 2.2 Preview 3 (for eventual AAD support)
+* Fix customer reported GitHub issues
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* rdaniels6813  for `Add query plan theme support #3031`
+* Ruturaj123 for `Fixed some typos and grammatical errors #3027`
+* PromoFaux for `Use emoji shortcodes in CONTRIBUTING.md instead of � #3009`
+* ckaczor for `Fix: DATETIMEOFFSET data types should be ISO formatted #714`
+* hi-im-T0dd for `Fixed sync issue with my forked master so this commit is correct #2948`
+* hi-im-T0dd for `Fixed when right clicking and selecting Manage-correct name displays #2794`
+
+## Version 1.1.3
+* Release date: October 18, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Introducing the Azure Resource Explorer to browse Azure SQL Databases
+* Improve Object Explorer and Query Editor connectivity robustness
+* SQL Server 2019 and SQL Agent extension improvements
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* philoushka  for `center the icon #2760`
+* anthonypants for `Typo #2775`
+* kstolte for `Fix Invalid Configuration in Launch.json #2789`
+* kstolte for `Fixing a reference to SQL Ops Studio #2788`
 
 ## Version 1.0.0
 * Release date: September 24, 2018

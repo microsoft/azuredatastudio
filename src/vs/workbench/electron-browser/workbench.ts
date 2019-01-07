@@ -137,6 +137,7 @@ import { IScriptingService, ScriptingService } from 'sql/services/scripting/scri
 import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';
+import { IDacFxService, DacFxService } from 'sql/services/dacfx/dacFxService';
 import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
 import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
@@ -165,6 +166,8 @@ import { DashboardViewService } from 'sql/services/dashboard/common/dashboardVie
 import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
+import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
+import { INotebookService } from 'sql/services/notebook/notebookService';
 
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -172,6 +175,10 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+// {{SQL CARBON EDIT}}
+import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
+// {{SQL CARBON EDIT}}
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -551,6 +558,8 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IServerGroupController, this.instantiationService.createInstance(ServerGroupController));
 		serviceCollection.set(ICredentialsService, this.instantiationService.createInstance(CredentialsService));
 		serviceCollection.set(IResourceProviderService, this.instantiationService.createInstance(ResourceProviderService));
+		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
+		serviceCollection.set(IAccountManagementService, accountManagementService);
 		let connectionManagementService = this.instantiationService.createInstance(ConnectionManagementService, undefined, undefined);
 		serviceCollection.set(IConnectionManagementService, connectionManagementService);
 		serviceCollection.set(ISerializationService, this.instantiationService.createInstance(SerializationService));
@@ -571,13 +580,18 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IFileBrowserService, this.instantiationService.createInstance(FileBrowserService));
 		serviceCollection.set(IFileBrowserDialogController, this.instantiationService.createInstance(FileBrowserDialogController));
 		serviceCollection.set(IInsightsDialogService, this.instantiationService.createInstance(InsightsDialogService));
-		let accountManagementService = this.instantiationService.createInstance(AccountManagementService, undefined);
-		serviceCollection.set(IAccountManagementService, accountManagementService);
+		let notebookService = this.instantiationService.createInstance(NotebookService);
+		serviceCollection.set(INotebookService, notebookService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
+		// {{SQL CARBON EDIT}}
+		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
+		// {{SQL CARBON EDIT}}
+		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
+		this._register(toDisposable(() => notebookService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));
 	}
 

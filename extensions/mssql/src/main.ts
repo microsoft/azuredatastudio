@@ -16,7 +16,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature, AgentServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -55,7 +55,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			// we only want to add new features
 			...SqlOpsDataClient.defaultFeatures,
 			TelemetryFeature,
-			AgentServicesFeature
+			AgentServicesFeature,
+			DacFxServicesFeature,
 		],
 		outputChannel: new CustomOutputChannel()
 	};
@@ -97,18 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {
-	let launchArgs = [];
-	launchArgs.push('--log-dir');
-	let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
-	launchArgs.push(logFileLocation);
-	let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
-	if (config) {
-		let logDebugInfo = config[Constants.configLogDebugInfo];
-		if (logDebugInfo) {
-			launchArgs.push('--enable-logging');
-		}
-	}
-
+	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

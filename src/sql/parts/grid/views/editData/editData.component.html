@@ -21,8 +21,10 @@
 						(onActiveCellChanged)="onActiveCellChanged($event)"
 						(onCellChange)="onCellEditEnd($event)"
 						(onContextMenu)="openContextMenu($event, dataSet.batchId, dataSet.resultId, i)"
+						(onRendered)="onGridRendered($event)"
 						[isCellEditValid]="onIsCellEditValid"
 						[overrideCellFn]="overrideCellFn"
+						[onBeforeAppendCell]="onBeforeAppendCell"
 						[enableEditing]="true"
 						class="boxCol content vertBox slickgrid">
 			</slick-grid>

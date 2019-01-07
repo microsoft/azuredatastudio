@@ -18,9 +18,9 @@ import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { once, anyEvent } from 'vs/base/common/event';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 
-class ResultsView implements IPanelView {
+class ResultsView extends Disposable implements IPanelView {
 	private panelViewlet: PanelViewlet;
 	private gridPanel: GridPanel;
 	private messagePanel: MessagePanel;
@@ -30,10 +30,10 @@ class ResultsView implements IPanelView {
 	private _state: ResultsViewState;
 
 	constructor(private instantiationService: IInstantiationService) {
-
-		this.panelViewlet = this.instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false });
-		this.gridPanel = this.instantiationService.createInstance(GridPanel, { title: nls.localize('gridPanel', 'Results'), id: 'gridPanel' });
-		this.messagePanel = this.instantiationService.createInstance(MessagePanel, { title: nls.localize('messagePanel', 'Messages'), minimumBodySize: 0, id: 'messagePanel' });
+		super();
+		this.panelViewlet = this._register(this.instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false }));
+		this.gridPanel = this._register(this.instantiationService.createInstance(GridPanel, { title: nls.localize('gridPanel', 'Results'), id: 'gridPanel' }));
+		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel, { title: nls.localize('messagePanel', 'Messages'), minimumBodySize: 0, id: 'messagePanel' }));
 		this.gridPanel.render();
 		this.messagePanel.render();
 		this.panelViewlet.create(this.container).then(() => {
@@ -76,7 +76,7 @@ class ResultsView implements IPanelView {
 				this.panelViewlet.resizePanel(this.gridPanel, this.state.messagePanelSize);
 			}
 			this.panelViewlet.resizePanel(this.gridPanel, panelSize);
-		})
+		});
 		// once the user changes the sash we should stop trying to resize the grid
 		once(this.panelViewlet.onDidSashChange)(e => {
 			this.needsGridResize = false;
@@ -109,6 +109,15 @@ class ResultsView implements IPanelView {
 		if (this.needsGridResize) {
 			this.panelViewlet.resizePanel(this.gridPanel, this.state.gridPanelSize || Math.round(this.currentDimension.height * .7));
 		}
+	}
+
+	dispose() {
+		super.dispose();
+	}
+
+	public clear() {
+		this.gridPanel.clear();
+		this.messagePanel.clear();
 	}
 
 	remove(): void {
@@ -147,9 +156,17 @@ class ResultsTab implements IPanelTab {
 	public set queryRunner(runner: QueryRunner) {
 		this.view.queryRunner = runner;
 	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
 }
 
-export class QueryResultsView {
+export class QueryResultsView extends Disposable {
 	private _panelView: TabbedPanel;
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
@@ -163,16 +180,17 @@ export class QueryResultsView {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IQueryModelService private queryModelService: IQueryModelService
 	) {
-		this.resultsTab = new ResultsTab(instantiationService);
-		this.chartTab = new ChartTab(instantiationService);
-		this._panelView = new TabbedPanel(container, { showHeaderWhenSingleView: false });
-		this.qpTab = new QueryPlanTab();
+		super();
+		this.resultsTab = this._register(new ResultsTab(instantiationService));
+		this.chartTab = this._register(new ChartTab(instantiationService));
+		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
+		this.qpTab = this._register(new QueryPlanTab());
 		this._panelView.pushTab(this.resultsTab);
-		this._panelView.onTabChange(e => {
+		this._register(this._panelView.onTabChange(e => {
 			if (this.input) {
 				this.input.state.activeTab = e;
 			}
-		});
+		}));
 	}
 
 	public style() {
@@ -204,13 +222,23 @@ export class QueryResultsView {
 				this._panelView.pushTab(this.qpTab);
 			}
 		}
+		this.runnerDisposables.push(queryRunner.onQueryEnd(() => {
+			if (queryRunner.isQueryPlan) {
+				queryRunner.planXml.then(e => {
+					this.showPlan(e);
+				});
+			}
+		}));
 		if (this.input.state.activeTab) {
 			this._panelView.showTab(this.input.state.activeTab);
 		}
 	}
 
-	public dispose() {
-		this._panelView.dispose();
+	clearInput() {
+		this._input = undefined;
+		this.resultsTab.clear();
+		this.qpTab.clear();
+		this.chartTab.clear();
 	}
 
 	public get input(): QueryResultsInput {
@@ -251,5 +279,10 @@ export class QueryResultsView {
 		if (this._panelView.contains(this.qpTab)) {
 			this._panelView.removeTab(this.qpTab.identifier);
 		}
+	}
+
+	public dispose() {
+		dispose(this.runnerDisposables);
+		super.dispose();
 	}
 }

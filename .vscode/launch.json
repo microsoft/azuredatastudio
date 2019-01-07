@@ -90,7 +90,7 @@
 				"**/winjs*.js"
 			],
 			"webRoot": "${workspaceFolder}",
-			"timeout": 15000
+			"timeout": 45000
 		},
 		{
 			"type": "node",
@@ -148,7 +148,7 @@
 		{
 			"name": "Renderer and Extension Host processes",
 			"configurations": [
-				"Launch SQL Ops",
+				"Launch azuredatastudio",
 				"Attach to Extension Host"
 			]
 		}

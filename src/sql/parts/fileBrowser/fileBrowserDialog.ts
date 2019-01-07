@@ -34,6 +34,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 export class FileBrowserDialog extends Modal {
 	private _viewModel: FileBrowserViewModel;
@@ -52,13 +53,14 @@ export class FileBrowserDialog extends Modal {
 
 	constructor(title: string,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService private _workbenchthemeService: IWorkbenchThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(title, TelemetryKeys.Backup, partService, telemetryService, contextKeyService, { isFlyout: true, hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
+		super(title, TelemetryKeys.Backup, partService, telemetryService, clipboardService, _workbenchthemeService, contextKeyService, { isFlyout: true, hasTitleIcon: false, hasBackButton: true, hasSpinner: true });
 		this._viewModel = this._instantiationService.createInstance(FileBrowserViewModel);
 		this._viewModel.onAddFileTree(args => this.handleOnAddFileTree(args.rootNode, args.selectedNode, args.expandedNodes));
 		this._viewModel.onPathValidate(args => this.handleOnValidate(args.succeeded, args.message));
@@ -236,7 +238,7 @@ export class FileBrowserDialog extends Modal {
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
 
-		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme()));
+		this._register(this._workbenchthemeService.onDidColorThemeChange(e => this.updateTheme()));
 	}
 
 	// Update theming that is specific to file browser

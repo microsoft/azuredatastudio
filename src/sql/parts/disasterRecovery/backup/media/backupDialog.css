@@ -17,7 +17,7 @@
 }
 
 .backup-dialog {
-	height: calc(100% - 15px)
+	height: 100%
 }
 
 .backup-dialog .advanced-main-header {

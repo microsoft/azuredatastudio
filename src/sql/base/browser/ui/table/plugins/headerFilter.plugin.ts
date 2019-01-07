@@ -39,16 +39,26 @@ export class HeaderFilter {
 		this.handler.subscribe(this.grid.onHeaderCellRendered, (e, args) => this.handleHeaderCellRendered(e , args))
 				.subscribe(this.grid.onBeforeHeaderCellDestroy, (e, args) => this.handleBeforeHeaderCellDestroy(e, args))
 				.subscribe(this.grid.onClick, (e) => this.handleBodyMouseDown)
-				.subscribe(this.grid.onColumnsResized, () => this.columnsResized());
-
+				.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
+				.subscribe(this.grid.onKeyDown, (e) => this.handleKeyDown);
 		this.grid.setColumns(this.grid.getColumns());
 
 		$(document.body).bind('mousedown', this.handleBodyMouseDown);
+		$(document.body).bind('keydown', this.handleKeyDown);
 	}
 
 	public destroy() {
 		this.handler.unsubscribeAll();
 		$(document.body).unbind('mousedown', this.handleBodyMouseDown);
+		$(document.body).unbind('keydown', this.handleKeyDown);
+	}
+
+	private handleKeyDown = (e) => {
+		if (this.$menu && (e.key === 'Escape' || e.keyCode === 27)) {
+			this.hideMenu();
+			e.preventDefault();
+			e.stopPropagation();
+		}
 	}
 
 	private handleBodyMouseDown = (e) => {

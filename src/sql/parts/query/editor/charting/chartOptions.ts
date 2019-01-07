@@ -18,7 +18,8 @@ export enum ControlType {
 	combo,
 	numberInput,
 	input,
-	checkbox
+	checkbox,
+	dateInput
 }
 
 export interface IChartOption {
@@ -115,6 +116,20 @@ const xAxisMaxInput: IChartOption = {
 	default: undefined
 };
 
+const xAxisMinDateInput: IChartOption = {
+	label: localize('xAxisMinDate', 'X Axis Minimum Date'),
+	type: ControlType.dateInput,
+	configEntry: 'xAxisMin',
+	default: undefined
+};
+
+const xAxisMaxDateInput: IChartOption = {
+	label: localize('xAxisMaxDate', 'X Axis Maximum Date'),
+	type: ControlType.dateInput,
+	configEntry: 'xAxisMax',
+	default: undefined
+};
+
 const dataTypeInput: IChartOption = {
 	label: localize('dataTypeLabel', 'Data Type'),
 	type: ControlType.combo,
@@ -150,7 +165,11 @@ export const ChartOptions: IChartOptions = {
 	[ChartType.TimeSeries]: [
 		legendInput,
 		yAxisLabelInput,
-		xAxisLabelInput
+		yAxisMinInput,
+		yAxisMaxInput,
+		xAxisLabelInput,
+		xAxisMinDateInput,
+		xAxisMaxDateInput,
 	],
 	[ChartType.Bar]: [
 		dataDirectionOption,

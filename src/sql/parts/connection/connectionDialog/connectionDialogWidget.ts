@@ -36,6 +36,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as styler from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export interface OnShowUIResponse {
 	selectedProviderType: string;
@@ -48,7 +50,7 @@ export class ConnectionDialogWidget extends Modal {
 	private _noRecentConnectionBuilder: Builder;
 	private _savedConnectionBuilder: Builder;
 	private _noSavedConnectionBuilder: Builder;
-	private _dividerBuilder: Builder;
+	private _connectionDetailTitle: Builder;
 	private _connectButton: Button;
 	private _closeButton: Button;
 	private _providerTypeSelectBox: SelectBox;
@@ -81,20 +83,23 @@ export class ConnectionDialogWidget extends Modal {
 	private _onResetConnection = new Emitter<void>();
 	public onResetConnection: Event<void> = this._onResetConnection.event;
 
+	private _connecting = false;
+
 	constructor(
 		private providerTypeOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IPartService _partService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', 'Connection'), TelemetryKeys.Connection, _partService, telemetryService, clipboardService, _workbenchThemeService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	public refresh(): void {
@@ -141,7 +146,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._panel = new TabbedPanel(connectionContainer.getHTMLElement());
 		this._recentConnectionTabId = this._panel.pushTab({
 			identifier: 'recent_connection',
-			title: localize('recentConnectionTitle', 'Recent connections'),
+			title: localize('recentConnectionTitle', 'Recent Connections'),
 			view: {
 				render: c => {
 					recentConnectionTab.appendTo(c);
@@ -152,7 +157,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		let savedConnectionTabId = this._panel.pushTab({
 			identifier: 'saved_connection',
-			title: localize('savedConnectionTitle', 'Saved connections'),
+			title: localize('savedConnectionTitle', 'Saved Connections'),
 			view: {
 				layout: () => { },
 				render: c => {
@@ -177,8 +182,9 @@ export class ConnectionDialogWidget extends Modal {
 			}
 		});
 
-		this._bodyBuilder.div({ class: 'Connection-divider' }, (dividerContainer) => {
-			this._dividerBuilder = dividerContainer;
+		this._bodyBuilder.div({ class: 'connection-details-title' }, (dividerContainer) => {
+			this._connectionDetailTitle = dividerContainer;
+			this._connectionDetailTitle.text(localize('connectionDetailsTitle', 'Connection Details'));
 		});
 
 		this._bodyBuilder.div({ class: 'connection-type' }, (modelTableContent) => {
@@ -192,8 +198,8 @@ export class ConnectionDialogWidget extends Modal {
 		this.$connectionUIContainer.appendTo(this._bodyBuilder);
 
 		let self = this;
-		this._register(self._themeService.onDidColorThemeChange(e => self.updateTheme(e)));
-		self.updateTheme(self._themeService.getColorTheme());
+		this._register(self._workbenchThemeService.onDidColorThemeChange(e => self.updateTheme(e)));
+		self.updateTheme(self._workbenchThemeService.getColorTheme());
 	}
 
 	/**
@@ -215,10 +221,12 @@ export class ConnectionDialogWidget extends Modal {
 	private updateTheme(theme: IColorTheme): void {
 		let borderColor = theme.getColor(contrastBorder);
 		let border = borderColor ? borderColor.toString() : null;
-		if (this._dividerBuilder) {
-			this._dividerBuilder.style('border-top-width', border ? '1px' : null);
-			this._dividerBuilder.style('border-top-style', border ? 'solid' : null);
-			this._dividerBuilder.style('border-top-color', border);
+		let backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
+		if (this._connectionDetailTitle) {
+			this._connectionDetailTitle.style('border-width', border ? '1px 0px' : null);
+			this._connectionDetailTitle.style('border-style', border ? 'solid none' : null);
+			this._connectionDetailTitle.style('border-color', border);
+			this._connectionDetailTitle.style('background-color', backgroundColor ? backgroundColor.toString() : null);
 		}
 	}
 
@@ -242,6 +250,7 @@ export class ConnectionDialogWidget extends Modal {
 
 	private connect(element?: IConnectionProfile): void {
 		if (this._connectButton.enabled) {
+			this._connecting = true;
 			this._connectButton.enabled = false;
 			this._providerTypeSelectBox.disable();
 			this.showSpinner();
@@ -262,8 +271,9 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	private cancel() {
+		let wasConnecting = this._connecting;
 		this._onCancel.fire();
-		if (!this._databaseDropdownExpanded) {
+		if (!this._databaseDropdownExpanded && !wasConnecting) {
 			this.close();
 		}
 	}
@@ -275,17 +285,13 @@ export class ConnectionDialogWidget extends Modal {
 
 	private createRecentConnectionList(): void {
 		this._recentConnectionBuilder.div({ class: 'connection-recent-content' }, (recentConnectionContainer) => {
-			let recentHistoryLabel = localize('recentHistory', 'Recent history');
 			recentConnectionContainer.div({ class: 'recent-titles-container' }, (container) => {
-				container.div({ class: 'connection-history-label' }, (recentTitle) => {
-					recentTitle.text(recentHistoryLabel);
-				});
 				container.div({ class: 'connection-history-actions' }, (actionsContainer) => {
 					this._actionbar = this._register(new ActionBar(actionsContainer.getHTMLElement(), { animated: false }));
 					let clearAction = this._instantiationService.createInstance(ClearRecentConnectionsAction, ClearRecentConnectionsAction.ID, ClearRecentConnectionsAction.LABEL);
 					clearAction.useConfirmationMessage = true;
 					clearAction.onRecentConnectionsRemoved(() => this.open(false));
-					this._actionbar.push(clearAction, { icon: true, label: false });
+					this._actionbar.push(clearAction, { icon: true, label: true });
 				});
 			});
 			recentConnectionContainer.div({ class: 'server-explorer-viewlet' }, (divContainer: Builder) => {
@@ -424,6 +430,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._connectButton.enabled = true;
 		this._providerTypeSelectBox.enable();
 		this._onResetConnection.fire();
+		this._connecting = false;
 	}
 
 	public get newConnectionParams(): INewConnectionParams {

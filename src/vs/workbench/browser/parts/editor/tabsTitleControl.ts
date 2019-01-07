@@ -868,6 +868,9 @@ export class TabsTitleControl extends TitleControl {
 
 		// Dirty State
 		this.redrawEditorDirty(editor, tabContainer);
+
+		// {{SQL CARBON EDIT}} -- Display the editor's tab color
+		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor));
 	}
 
 	private redrawLabel(editor: IEditorInput, tabContainer: HTMLElement, tabLabelWidget: ResourceLabel, tabLabel: IEditorInputLabel): void {
@@ -880,7 +883,8 @@ export class TabsTitleControl extends TitleControl {
 		tabContainer.title = title;
 
 		// Label
-		tabLabelWidget.setLabel({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { extraClasses: ['tab-label'], italic: !this.group.isPinned(editor) });
+		// {{SQL CARBON EDIT}} -- add title in options passed
+		tabLabelWidget.setLabel({ name, description, resource: toResource(editor, { supportSideBySide: true }) }, { extraClasses: ['tab-label'], italic: !this.group.isPinned(editor), title });
 
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		const isTabActive = this.group.isActive(editor);
@@ -1105,10 +1109,12 @@ export class TabsTitleControl extends TitleControl {
 			|| this.themeService.getTheme().type === HIGH_CONTRAST || !sqlEditor.tabColor) {
 			tabContainer.style.borderTopColor = '';
 			tabContainer.style.borderTopWidth = '';
+			tabContainer.style.borderTopStyle = '';
 			return;
 		}
 		tabContainer.style.borderTopColor = sqlEditor.tabColor;
 		tabContainer.style.borderTopWidth = isTabActive ? '3px' : '2px';
+		tabContainer.style.borderTopStyle = 'solid';
 		if (tabColorMode === QueryConstants.tabColorModeFill) {
 			let backgroundColor = Color.Format.CSS.parseHex(sqlEditor.tabColor);
 			if (backgroundColor) {

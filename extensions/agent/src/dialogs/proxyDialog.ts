@@ -36,6 +36,9 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private static readonly PowerShellLabel: string = localize('createProxy.PowerShell', 'PowerShell');
 	private static readonly SubSystemHeadingLabel: string = localize('createProxy.subSystemHeading', 'Active to the following subsytems');
 
+	private readonly NewProxyDialog = 'NewProxyDialogOpened';
+	private readonly EditProxyDialog = 'EditProxyDialogOpened';
+
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 
@@ -56,6 +59,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 	private powershellCheckBox: sqlops.CheckBoxComponent;
 
 	private credentials: sqlops.CredentialInfo[];
+	private isEdit: boolean = false;
 
 	constructor(ownerUri: string, proxyInfo: sqlops.AgentProxyInfo = undefined, credentials: sqlops.CredentialInfo[]) {
 		super(
@@ -63,6 +67,8 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 			new ProxyData(ownerUri, proxyInfo),
 			proxyInfo ? ProxyDialog.EditDialogTitle : ProxyDialog.CreateDialogTitle);
 		this.credentials = credentials;
+		this.isEdit = proxyInfo ? true : false;
+		this.dialogName = this.isEdit ? this.EditProxyDialog : this.NewProxyDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

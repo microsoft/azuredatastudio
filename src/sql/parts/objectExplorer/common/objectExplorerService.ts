@@ -20,6 +20,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import * as Utils from 'sql/parts/connection/common/utils';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -42,6 +43,8 @@ export interface IObjectExplorerService {
 
 	onSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
 
+	onSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
+
 	onNodeExpanded(handle: number, sessionResponse: sqlops.ObjectExplorerExpandInfo);
 
 	/**
@@ -53,7 +56,7 @@ export interface IObjectExplorerService {
 
 	updateObjectExplorerNodes(connectionProfile: IConnectionProfile): Promise<void>;
 
-	deleteObjectExplorerNode(connection: IConnectionProfile): void;
+	deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void>;
 
 	onUpdateObjectExplorerNodes: Event<ObjectExplorerNodeEventArgs>;
 
@@ -142,16 +145,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public deleteObjectExplorerNode(connection: IConnectionProfile): void {
+	public deleteObjectExplorerNode(connection: IConnectionProfile): Thenable<void> {
 		let self = this;
 		var connectionUri = connection.id;
 		var nodeTree = this._activeObjectExplorerNodes[connectionUri];
 		if (nodeTree) {
-			self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
+			return self.closeSession(connection.providerName, nodeTree.getSession()).then(() => {
 				delete self._activeObjectExplorerNodes[connectionUri];
 				delete self._sessions[nodeTree.getSession().sessionId];
 			});
 		}
+		return Promise.resolve();
 	}
 
 	/**
@@ -204,6 +208,29 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this.sendUpdateNodeEvent(connection, errorMessage);
 	}
 
+	/**
+	 * Gets called when session is disconnected
+	 */
+	public onSessionDisconnected(handle: number, session: sqlops.ObjectExplorerSession) {
+		if (this._sessions[session.sessionId]) {
+			let connection: ConnectionProfile = this._sessions[session.sessionId].connection;
+			if (connection && this._connectionManagementService.isProfileConnected(connection)) {
+				let uri: string = Utils.generateUri(connection);
+				if (this._serverTreeView.isObjectExplorerConnectionUri(uri)) {
+					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
+						this.sendUpdateNodeEvent(connection, session.errorMessage);
+						connection.isDisconnecting = true;
+						this._connectionManagementService.disconnect(connection).then((value) => {
+							connection.isDisconnecting = false;
+						});
+					});
+				}
+			}
+		} else {
+			warn(`Cannot find session ${session.sessionId}`);
+		}
+	}
+
 	private sendUpdateNodeEvent(connection: ConnectionProfile, errorMessage: string = undefined) {
 		let eventArgs: ObjectExplorerNodeEventArgs = {
 			connection: <IConnectionProfile>connection,
@@ -234,7 +261,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this._activeObjectExplorerNodes[connection.id];
 	}
 
-	public createNewSession(providerId: string, connection: ConnectionProfile): Thenable<sqlops.ObjectExplorerSessionResponse> {
+	public async createNewSession(providerId: string, connection: ConnectionProfile): Promise<sqlops.ObjectExplorerSessionResponse> {
 		let self = this;
 		return new Promise<sqlops.ObjectExplorerSessionResponse>((resolve, reject) => {
 			let provider = this._providers[providerId];
@@ -328,6 +355,21 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public closeSession(providerId: string, session: sqlops.ObjectExplorerSession): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+		// Complete any requests that are still open for the session
+		let sessionStatus = this._sessions[session.sessionId];
+		if (sessionStatus && sessionStatus.nodes) {
+			Object.entries(sessionStatus.nodes).forEach(([nodePath, nodeStatus]: [string, NodeStatus]) => {
+				if (nodeStatus.expandEmitter) {
+					nodeStatus.expandEmitter.fire({
+						sessionId: session.sessionId,
+						nodes: [],
+						nodePath: nodePath,
+						errorMessage: undefined
+					});
+				}
+			});
+		}
+
 		let provider = this._providers[providerId];
 		if (provider) {
 			return provider.closeSession({
@@ -350,7 +392,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public resolveTreeNodeChildren(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
-		return this.expandOrRefreshTreeNode(session, parentTree);
+		// Always refresh the node if it has an error, otherwise expand it normally
+		let needsRefresh = !!parentTree.errorStateMessage;
+		return this.expandOrRefreshTreeNode(session, parentTree, needsRefresh);
 	}
 
 	public refreshTreeNode(session: sqlops.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {

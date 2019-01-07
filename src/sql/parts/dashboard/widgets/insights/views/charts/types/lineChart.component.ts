@@ -5,11 +5,10 @@
 
 import { mixin } from 'vs/base/common/objects';
 
-import { defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 import BarChart, { IBarChartConfig } from './barChart.component';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { clone } from 'sql/base/common/objects';
-import { ChartType, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { ChartType, DataType, defaultChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;

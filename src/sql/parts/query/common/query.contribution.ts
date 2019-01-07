@@ -120,7 +120,8 @@ actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
-		RunCurrentQueryWithActualPlanKeyboardAction.LABEL
+		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
 	),
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
@@ -304,6 +305,11 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
 		'default': 'utf-8'
 	},
+	'sql.results.streaming': {
+		'type': 'boolean',
+		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
+		'default': false
+	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
@@ -338,7 +344,7 @@ let registryProperties = {
 	'sql.showConnectionInfoInTitle': {
 		'type': 'boolean',
 		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
-		'default': false
+		'default': true
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',

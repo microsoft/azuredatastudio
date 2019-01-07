@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import { nb } from 'sqlops';
 import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types
@@ -93,6 +94,16 @@ export enum JobCompletionActionCondition {
 	OnSuccess = 1,
 	OnFailure = 2,
 	Always = 3
+}
+
+export enum JobExecutionStatus {
+	Executing = 1,
+	WaitingForWorkerThread = 2,
+	BetweenRetries = 3,
+	Idle = 4,
+	Suspended = 5,
+	WaitingForStepToFinish = 6,
+	PerformingCompletionAction = 7
 }
 
 export enum AlertType {
@@ -235,6 +246,7 @@ export enum MessageLevel {
 export interface DialogMessage {
 	text: string;
 	level?: MessageLevel;
+	description?: string;
 }
 
 /// Card-related APIs that need to be here to avoid early load issues
@@ -274,7 +286,8 @@ export enum DataProviderType {
 	QueryProvider = 'QueryProvider',
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
-	CapabilitiesProvider = 'CapabilitiesProvider'
+	CapabilitiesProvider = 'CapabilitiesProvider',
+	DacFxServicesProvider = 'DacFxServicesProvider',
 }
 
 export enum DeclarativeDataType {
@@ -300,6 +313,11 @@ export interface ToolbarLayout {
 
 export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
+}
+
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
 }
 
 export class SqlThemeIcon {
@@ -399,4 +417,85 @@ export class SqlThemeIcon {
 	private constructor(id: string) {
 		this.id = id;
 	}
+}
+
+export interface INotebookManagerDetails {
+	handle: number;
+	hasContentManager: boolean;
+	hasServerManager: boolean;
+}
+
+export interface INotebookSessionDetails {
+	readonly sessionId: number;
+	readonly canChangeKernels: boolean;
+	readonly id: string;
+	readonly path: string;
+	readonly name: string;
+	readonly type: string;
+	readonly status: string;
+	readonly kernelDetails: INotebookKernelDetails;
+}
+
+export interface INotebookKernelDetails {
+	readonly kernelId: number;
+	readonly id: string;
+	readonly name: string;
+	readonly supportsIntellisense: boolean;
+	readonly info?: any;
+}
+
+export interface INotebookFutureDetails {
+	readonly futureId: number;
+	readonly msg: any;
+}
+
+export enum FutureMessageType {
+	Reply = 0,
+	StdIn = 1,
+	IOPub = 2
+}
+
+export interface INotebookFutureDone {
+	succeeded: boolean;
+	rejectReason: string;
+}
+
+export interface ICellRange {
+	readonly start: number;
+	readonly end: number;
+}
+
+export class CellRange {
+
+	protected _start: number;
+	protected _end: number;
+
+	get start(): number {
+		return this._start;
+	}
+
+	get end(): number {
+		return this._end;
+	}
+
+	constructor(start: number, end: number) {
+		if (typeof(start) !== 'number' || typeof(start) !== 'number' || start < 0 || end < 0) {
+			throw new Error('Invalid arguments');
+		}
+
+		// Logic taken from range handling.
+		if (start <= end) {
+			this._start = start;
+			this._end = end;
+		} else {
+			this._start = end;
+			this._end = start;
+		}
+	}
+}
+
+export interface ISingleNotebookEditOperation {
+	range: ICellRange;
+	cell: Partial<nb.ICellContents>;
+	forceMoveMarkers: boolean;
 }

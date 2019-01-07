@@ -42,6 +42,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this.savePassword = model.savePassword;
 			this.saveProfile = model.saveProfile;
 			this._id = model.id;
+			this.azureTenantId = model.azureTenantId;
 		} else {
 			//Default for a new connection
 			this.savePassword = false;
@@ -82,6 +83,14 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public set id(value: string) {
 		this._id = value;
+	}
+
+	public get azureTenantId(): string {
+		return this.options['azureTenantId'];
+	}
+
+	public set azureTenantId(value: string) {
+		this.options['azureTenantId'] = value;
 	}
 
 	public get groupFullName(): string {
@@ -159,7 +168,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			userName: this.userName,
 			options: this.options,
 			saveProfile: this.saveProfile,
-			id: this.id
+			id: this.id,
+			azureTenantId: this.azureTenantId
 		};
 
 		return result;

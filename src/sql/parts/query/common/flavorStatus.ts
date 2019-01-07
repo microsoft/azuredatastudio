@@ -148,7 +148,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 
 	// Show/hide query status for active editor
 	private _showStatus(uri: string): void {
-		let activeEditor = this._editorService.activeControl
+		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (uri === currentUri) {

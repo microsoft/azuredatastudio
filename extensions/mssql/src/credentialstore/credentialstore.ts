@@ -10,7 +10,6 @@ import { IConfig, ServerProvider } from 'service-downloader';
 import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
-
 import * as sqlops from 'sqlops';
 
 import * as Contracts from './contracts';
@@ -100,11 +99,7 @@ export class CredentialStore {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = [];
-		launchArgs.push('--log-dir');
-		let logFileLocation = path.join(Utils.getDefaultLogLocation(), 'mssql');
-		launchArgs.push(logFileLocation);
-
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('credentialstore', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }
