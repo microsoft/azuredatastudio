@@ -5,11 +5,13 @@
 
 'use strict';
 
+import * as path from 'path';
 import { nb } from 'sqlops';
 import * as os from 'os';
 import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { IOutputChannel } from 'vs/workbench/parts/output/common/output';
+import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/services/notebook/notebookService';
 
 
 /**
@@ -35,4 +37,23 @@ export async function mkDir(dirPath: string, outputChannel?: IOutputChannel): Pr
 		}
 		await pfs.mkdirp(dirPath);
 	}
+}
+
+export function getProviderForFileName(fileName: string, notebookService: INotebookService): string {
+	let fileExt = path.extname(fileName);
+	let provider: string;
+	// First try to get provider for actual file type
+	if (fileExt && fileExt.startsWith('.')) {
+		fileExt = fileExt.slice(1,fileExt.length);
+		provider = notebookService.getProviderForFileType(fileExt);
+	}
+	// Fallback to provider for default file type (assume this is a global handler)
+	if (!provider) {
+		provider = notebookService.getProviderForFileType(DEFAULT_NOTEBOOK_FILETYPE);
+	}
+	// Finally if all else fails, use the built-in handler
+	if (!provider) {
+		provider = DEFAULT_NOTEBOOK_PROVIDER;
+	}
+	return provider;
 }

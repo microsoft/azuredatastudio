@@ -6,21 +6,33 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+
+import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import URI from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { NotebookInput } from 'sql/parts/notebook/notebookInput';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ICellModel, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
+export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 
 export interface INotebookService {
 	_serviceBrand: any;
 
+	readonly onNotebookEditorAdd: Event<INotebookEditor>;
+	readonly onNotebookEditorRemove: Event<INotebookEditor>;
+	onNotebookEditorRename: Event<INotebookEditor>;
+
+	readonly isRegistrationComplete: boolean;
+	readonly registrationComplete: Promise<void>;
 	/**
 	 * Register a metadata provider
 	 */
@@ -31,6 +43,10 @@ export interface INotebookService {
 	 */
 	unregisterProvider(providerId: string): void;
 
+	getSupportedFileExtensions(): string[];
+
+	getProviderForFileType(fileType: string): string;
+
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
 	 * run cells in a notebook.
@@ -40,11 +56,17 @@ export interface INotebookService {
 	 */
 	getOrCreateNotebookManager(providerId: string, uri: URI): Thenable<INotebookManager>;
 
-	handleNotebookClosed(uri: URI): void;
+	addNotebookEditor(editor: INotebookEditor): void;
+
+	removeNotebookEditor(editor: INotebookEditor): void;
+
+	listNotebookEditors(): INotebookEditor[];
 
 	shutdown(): void;
 
 	getMimeRegistry(): RenderMimeRegistry;
+
+	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
 }
 
 export interface INotebookProvider {
@@ -62,8 +84,21 @@ export interface INotebookManager {
 
 export interface INotebookParams extends IBootstrapParams {
 	notebookUri: URI;
+	input: NotebookInput;
 	providerId: string;
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
+}
+
+export interface INotebookEditor {
+	readonly notebookParams: INotebookParams;
+	readonly id: string;
+	readonly cells?: ICellModel[];
+	readonly modelReady: Promise<INotebookModel>;
+	isDirty(): boolean;
+	isActive(): boolean;
+	isVisible(): boolean;
+	save(): Promise<boolean>;
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 }

@@ -102,6 +102,7 @@ export class MenuId {
 	static readonly MenubarHelpMenu = new MenuId();
 	// {{SQL CARBON EDIT}}
 	static readonly ObjectExplorerItemContext = new MenuId();
+	static readonly NotebookToolbar = new MenuId();
 
 
 	readonly id: string = String(MenuId.ID++);

@@ -97,8 +97,8 @@ export default class QueryRunner extends Disposable {
 			return l.concat(e);
 		}
 	});
-	private _echoedResultSet = echo(this._debouncedResultSet.event);
-	public readonly onResultSet = this._echoedResultSet.event;
+	// private _echoedResultSet = echo(this._debouncedResultSet.event);
+	public readonly onResultSet = this._debouncedResultSet.event;
 
 	private _onResultSetUpdate = this._register(new Emitter<sqlops.ResultSetSummary>());
 	private _debouncedResultSetUpdate = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSetUpdate.event, (l, e) => {
@@ -109,8 +109,8 @@ export default class QueryRunner extends Disposable {
 			return l.concat(e);
 		}
 	});
-	private _echoedResultSetUpdate = echo(this._debouncedResultSetUpdate.event);
-	public readonly onResultSetUpdate = this._echoedResultSetUpdate.event;
+	// private _echoedResultSetUpdate = echo(this._debouncedResultSetUpdate.event);
+	public readonly onResultSetUpdate = this._debouncedResultSetUpdate.event;
 
 	private _onQueryStart = this._register(new Emitter<void>());
 	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
@@ -203,9 +203,9 @@ export default class QueryRunner extends Disposable {
 			return TPromise.as(undefined);
 		}
 		this._echoedMessages.clear();
-		this._echoedResultSet.clear();
+		// this._echoedResultSet.clear();
 		this._debouncedMessage.clear();
-		this._debouncedResultSet.clear();
+		// this._debouncedResultSet.clear();
 		this._planXml = new Deferred<string>();
 		this._batchSets = [];
 		this._hasCompleted = false;

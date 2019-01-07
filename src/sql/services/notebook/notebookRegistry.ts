@@ -9,12 +9,13 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export const Extensions = {
 	NotebookProviderContribution: 'notebook.providers'
 };
 
-export interface NotebookProviderDescription {
+export interface NotebookProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
 }
@@ -54,42 +55,28 @@ let notebookContrib: IJSONSchema = {
 };
 
 export interface INotebookProviderRegistry {
-	registerNotebookProvider(provider: NotebookProviderDescription): void;
-	getSupportedFileExtensions(): string[];
-	getProviderForFileType(fileType: string): string;
+	readonly registrations: NotebookProviderRegistration[];
+	readonly onNewRegistration: Event<{ id: string, registration: NotebookProviderRegistration }>;
+
+	registerNotebookProvider(registration: NotebookProviderRegistration): void;
 }
 
 class NotebookProviderRegistry implements INotebookProviderRegistry {
-	private providerIdToProviders = new Map<string, NotebookProviderDescription>();
-	private fileToProviders = new Map<string, NotebookProviderDescription>();
+	private providerIdToRegistration = new Map<string, NotebookProviderRegistration>();
+	private _onNewRegistration = new Emitter<{ id: string, registration: NotebookProviderRegistration }>();
+	public readonly onNewRegistration: Event<{ id: string, registration: NotebookProviderRegistration }> = this._onNewRegistration.event;
 
-	registerNotebookProvider(provider: NotebookProviderDescription): void {
+	registerNotebookProvider(registration: NotebookProviderRegistration): void {
 		// Note: this method intentionally overrides default provider for a file type.
 		// This means that any built-in provider will be overridden by registered extensions
-		this.providerIdToProviders.set(provider.provider, provider);
-		if (provider.fileExtensions) {
-			if (Array.isArray<string>(provider.fileExtensions)) {
-				for (let fileType of provider.fileExtensions) {
-					this.addFileProvider(fileType, provider);
-				}
-			} else {
-				this.addFileProvider(provider.fileExtensions, provider);
-			}
-		}
+		this.providerIdToRegistration.set(registration.provider, registration);
+		this._onNewRegistration.fire( { id: registration.provider, registration: registration });
 	}
 
-	private addFileProvider(fileType: string, provider: NotebookProviderDescription) {
-		this.fileToProviders.set(fileType.toUpperCase(), provider);
-	}
-
-	getSupportedFileExtensions(): string[] {
-		return Array.from(this.fileToProviders.keys());
-	}
-
-	getProviderForFileType(fileType: string): string {
-		fileType = fileType.toUpperCase();
-		let provider = this.fileToProviders.get(fileType);
-		return provider ? provider.provider : undefined;
+	public get registrations(): NotebookProviderRegistration[] {
+		let registrationArray: NotebookProviderRegistration[] = [];
+		this.providerIdToRegistration.forEach(p => registrationArray.push(p));
+		return registrationArray;
 	}
 }
 
@@ -97,15 +84,15 @@ const notebookProviderRegistry = new NotebookProviderRegistry();
 platform.Registry.add(Extensions.NotebookProviderContribution, notebookProviderRegistry);
 
 
-ExtensionsRegistry.registerExtensionPoint<NotebookProviderDescription | NotebookProviderDescription[]>(Extensions.NotebookProviderContribution, [], notebookContrib).setHandler(extensions => {
+ExtensionsRegistry.registerExtensionPoint<NotebookProviderRegistration | NotebookProviderRegistration[]>(Extensions.NotebookProviderContribution, [], notebookContrib).setHandler(extensions => {
 
-	function handleExtension(contrib: NotebookProviderDescription, extension: IExtensionPointUser<any>) {
+	function handleExtension(contrib: NotebookProviderRegistration, extension: IExtensionPointUser<any>) {
 		notebookProviderRegistry.registerNotebookProvider(contrib);
 	}
 
 	for (let extension of extensions) {
 		const { value } = extension;
-		if (Array.isArray<NotebookProviderDescription>(value)) {
+		if (Array.isArray<NotebookProviderRegistration>(value)) {
 			for (let command of value) {
 				handleExtension(command, extension);
 			}

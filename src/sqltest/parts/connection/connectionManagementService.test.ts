@@ -881,4 +881,45 @@ suite('SQL ConnectionManagementService tests', () => {
 		assert.equal(profileWithCredentials.userName, username);
 		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
 	});
+
+	test('addSavedPassword fills in Azure access token for selected tenant', async () => {
+		// Set up a connection profile that uses Azure
+		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		azureConnectionProfile.authenticationType = 'AzureMFA';
+		let username = 'testuser@microsoft.com';
+		azureConnectionProfile.userName = username;
+		let servername = 'test-database.database.windows.net';
+		azureConnectionProfile.serverName = servername;
+		let azureTenantId = 'testTenant';
+		azureConnectionProfile.azureTenantId = azureTenantId;
+
+		// Set up the account management service to return a token for the given user
+		accountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny())).returns(providerId => Promise.resolve<sqlops.Account[]>([
+			{
+				key: {
+					accountId: username,
+					providerId: providerId
+				},
+				displayInfo: undefined,
+				isStale: false,
+				properties: undefined
+			}
+		]));
+		let testToken = 'testToken';
+		let returnedTokens = {};
+		returnedTokens['azurePublicCloud'] = { token: 'badToken' };
+		returnedTokens[azureTenantId] = { token: testToken };
+		accountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedTokens));
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+			profile: profile,
+			savedCred: false
+		}));
+
+		// If I call addSavedPassword
+		let profileWithCredentials = await connectionManagementService.addSavedPassword(azureConnectionProfile);
+
+		// Then the returned profile has the account token set corresponding to the requested tenant
+		assert.equal(profileWithCredentials.userName, username);
+		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
+	});
 });

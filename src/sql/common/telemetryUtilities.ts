@@ -4,30 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as crypto from 'crypto';
-import * as os from 'os';
 import { ITelemetryService, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { warn } from 'sql/base/common/log';
-
-import { generateUuid } from 'vs/base/common/uuid';
-
-// Generate a unique, deterministic ID for the current user of the extension
-export function generateUserId(): Promise<string> {
-	return new Promise<string>(resolve => {
-		try {
-			getmac.getMac((error, macAddress) => {
-				if (!error) {
-					resolve(crypto.createHash('sha256').update(macAddress + os.homedir(), 'utf8').digest('hex'));
-				} else {
-					resolve(generateUuid()); // fallback
-				}
-			});
-		} catch (err) {
-			resolve(generateUuid()); // fallback
-		}
-	});
-}
 
 export interface IConnectionTelemetryData extends ITelemetryData {
 	provider?: string;

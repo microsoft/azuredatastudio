@@ -19,7 +19,7 @@ suite('Firewall rule view model tests', () => {
 		viewModel.updateDefaultValues(IPAddress);
 		assert.equal(IPAddress, viewModel.defaultIPAddress);
 		assert.equal('250.222.155.0', viewModel.defaultFromSubnetIPRange);
-		assert.equal('250.222.155.255', viewModel.defaultToSubnetIPRange);;
+		assert.equal('250.222.155.255', viewModel.defaultToSubnetIPRange);
 	});
 
 	test('update default values to 250.222.155.0 should calculate the correct default subnet IP range', () => {

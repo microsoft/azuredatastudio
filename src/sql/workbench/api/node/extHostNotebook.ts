@@ -15,6 +15,7 @@ import URI, { UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Event, Emitter } from 'vs/base/common/event';
 
 type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
 
@@ -23,6 +24,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	private readonly _proxy: MainThreadNotebookShape;
 	private _adapters = new Map<number, Adapter>();
+
 	// Notebook URI to manager lookup.
 	constructor(_mainContext: IMainContext) {
 		this._proxy = _mainContext.getProxy(SqlMainContext.MainThreadNotebook);
@@ -63,11 +65,11 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withServerManager(managerHandle, (serverManager) => serverManager.stopServer());
 	}
 
-	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebook> {
+	$getNotebookContents(managerHandle: number, notebookUri: UriComponents): Thenable<sqlops.nb.INotebookContents> {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.getNotebookContents(URI.revive(notebookUri)));
 	}
 
-	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebook): Thenable<sqlops.nb.INotebook> {
+	$save(managerHandle: number, notebookUri: UriComponents, notebook: sqlops.nb.INotebookContents): Thenable<sqlops.nb.INotebookContents> {
 		return this._withContentManager(managerHandle, (contentManager) => contentManager.save(URI.revive(notebookUri), notebook));
 	}
 

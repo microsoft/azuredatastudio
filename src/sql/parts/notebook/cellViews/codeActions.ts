@@ -40,7 +40,7 @@ export class CellContext {
 	}
 }
 
-abstract class CellActionBase extends Action {
+export abstract class CellActionBase extends Action {
 
 	constructor(id: string, label: string, icon: string, protected notificationService: INotificationService) {
 		super(id, label, icon);
@@ -134,54 +134,4 @@ export class RunCellAction extends ToggleableAction {
         }
         return clientSession.kernel;
     }
-}
-
-export class AddCellAction extends CellActionBase {
-	constructor(
-		id: string, label: string, private cellType: CellType, private isAfter: boolean,
-		@INotificationService notificationService: INotificationService
-	) {
-		super(id, label, undefined, notificationService);
-	}
-
-	runCellAction(context: CellContext): Promise<void> {
-		try {
-			let model = context.model;
-			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
-			if (index !== undefined && this.isAfter) {
-				index += 1;
-			}
-			model.addCell(this.cellType, index);
-		} catch (error) {
-			let message = getErrorMessage(error);
-
-			this.notificationService.notify({
-				severity: Severity.Error,
-				message: message
-			});
-		}
-		return Promise.resolve();
-	}
-}
-
-export class DeleteCellAction extends CellActionBase {
-	constructor(id: string, label: string,
-		@INotificationService notificationService: INotificationService
-	) {
-		super(id, label, undefined, notificationService);
-	}
-
-	runCellAction(context: CellContext): Promise<void> {
-		try {
-			context.model.deleteCell(context.cell);
-		} catch (error) {
-			let message = getErrorMessage(error);
-
-			this.notificationService.notify({
-				severity: Severity.Error,
-				message: message
-			});
-		}
-		return Promise.resolve();
-	}
 }

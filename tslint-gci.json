@@ -1,0 +1,26 @@
+{
+	"extends": "./tslint.json",
+	"rules": {
+		"no-banned-terms": true,
+		"no-delete-expression": true,
+		"no-document-domain": true,
+		"no-disable-auto-sanitization": true,
+		"no-duplicate-parameter-names": true,
+		"no-exec-script": true,
+		"no-function-constructor-with-string-args": true,
+		"no-octal-literal": true,
+		"no-reserved-keywords": false,
+		"variable-name": {
+			"options": ["ban-keywords"]
+		},
+		"no-string-based-set-immediate": true,
+		"no-string-based-set-interval": true,
+		"no-string-based-set-timeout": true,
+		"no-eval": true
+	},
+	"defaultSeverity": "error",
+	"rulesDirectory": "./node_modules/tslint-microsoft-contrib/",
+	"linterOptions": {
+		"exclude": ["src/vs/**/*.ts"]
+	}
+}

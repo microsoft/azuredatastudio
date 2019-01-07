@@ -380,14 +380,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * otherwise tries to make a connection and returns the owner uri when connection is complete
 	 * The purpose is connection by default
 	 */
-	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): Promise<string> {
+	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection', saveConnection: boolean = false): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			let ownerUri: string = Utils.generateUri(connection, purpose);
 			if (this._connectionStatusManager.isConnected(ownerUri)) {
 				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
 			} else {
 				const options: IConnectionCompletionOptions = {
-					saveTheConnection: false,
+					saveTheConnection: saveConnection,
 					showConnectionDialogOnError: true,
 					showDashboard: purpose === 'dashboard',
 					params: undefined,
@@ -769,8 +769,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 						return false;
 					}
 				}
-				let tokens = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
-				connection.options['azureAccountToken'] = Object.values(tokens)[0].token;
+				let tokensByTenant = await this._accountManagementService.getSecurityToken(account, AzureResource.Sql);
+				let token: string;
+				let tenantId = connection.azureTenantId;
+				if (tenantId && tokensByTenant[tenantId]) {
+					token = tokensByTenant[tenantId].token;
+				} else {
+					let tokens = Object.values(tokensByTenant);
+					if (tokens.length === 0) {
+						return false;
+					}
+					token = Object.values(tokensByTenant)[0].token;
+				}
+				connection.options['azureAccountToken'] = token;
 				connection.options['password'] = '';
 				return true;
 			}

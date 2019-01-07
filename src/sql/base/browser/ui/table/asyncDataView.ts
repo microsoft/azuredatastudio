@@ -4,18 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
+import { CancellationTokenSource } from 'vs/base/common/cancellation';
 
 export interface IObservableCollection<T> {
 	getLength(): number;
 	at(index: number): T;
 	getRange(start: number, end: number): T[];
 	setCollectionChangedCallback(callback: (startIndex: number, count: number) => void): void;
-	setLength(number): void;
+	setLength(length: number): void;
 	dispose(): void;
-}
-
-class LoadCancellationToken {
-	isCancelled: boolean;
 }
 
 class DataWindow<T> {
@@ -23,7 +20,7 @@ class DataWindow<T> {
 	private _length: number = 0;
 	private _offsetFromDataSource: number = -1;
 
-	private lastLoadCancellationToken: LoadCancellationToken;
+	private cancellationToken = new CancellationTokenSource();
 
 	constructor(
 		private loadFunction: (offset: number, count: number) => Thenable<T[]>,
@@ -36,9 +33,7 @@ class DataWindow<T> {
 		this.loadFunction = undefined;
 		this.placeholderItemGenerator = undefined;
 		this.loadCompleteCallback = undefined;
-		if (this.lastLoadCancellationToken) {
-			this.lastLoadCancellationToken.isCancelled = true;
-		}
+		this.cancellationToken.cancel();
 	}
 
 	public getStartIndex(): number {
@@ -65,17 +60,16 @@ class DataWindow<T> {
 		this._length = length;
 		this._data = undefined;
 
-		if (this.lastLoadCancellationToken) {
-			this.lastLoadCancellationToken.isCancelled = true;
-		}
+		this.cancellationToken.cancel();
+		this.cancellationToken = new CancellationTokenSource();
+		const currentCancellation = this.cancellationToken;
 
 		if (length === 0) {
 			return;
 		}
 
-		this.lastLoadCancellationToken = new LoadCancellationToken();
 		this.loadFunction(offset, length).then(data => {
-			if (!this.lastLoadCancellationToken.isCancelled) {
+			if (!currentCancellation.token.isCancellationRequested) {
 				this._data = data;
 				this.loadCompleteCallback(this._offsetFromDataSource, this._offsetFromDataSource + this._length);
 			}
@@ -121,8 +115,8 @@ export class VirtualizedCollection<T extends Slick.SlickData> implements IObserv
 		return this.length;
 	}
 
-	setLength(number: any): void {
-		this.length = number;
+	setLength(length: number): void {
+		this.length = length;
 	}
 
 	public at(index: number): T {
