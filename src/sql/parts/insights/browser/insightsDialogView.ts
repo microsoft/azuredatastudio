@@ -199,6 +199,7 @@ export class InsightsDialogView extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		this._container = container;
+		container.classList.add('monaco-panel-view');
 
 		this._splitView = new SplitView(container);
 
@@ -372,7 +373,6 @@ export class InsightsDialogView extends Modal {
 		this.hide();
 		dispose(this._taskButtonDisposables);
 		this._taskButtonDisposables = [];
-		this.dispose();
 	}
 
 	protected onClose(e: StandardKeyboardEvent) {
