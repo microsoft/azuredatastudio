@@ -28,7 +28,7 @@ export class AutoColumnSize<T> implements Slick.Plugin<T> {
 		this._grid = grid;
 
 		if (this._options.autoSizeOnRender) {
-			this.onPostEventHandler.subscribe(this._grid.onPostRender, () => this.onPostRender());
+			this.onPostEventHandler.subscribe(this._grid.onRendered, () => this.onPostRender());
 		}
 
 		this._$container = $(this._grid.getContainerNode());
