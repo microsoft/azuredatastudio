@@ -15,7 +15,6 @@ const SERVER_INPUT_ARIA_LABEL = 'Server';
 const USERNAME_INPUT_ARIA_LABEL = 'User name';
 const PASSWORD_INPUT_ARIA_LABEL = 'Password';
 const AUTH_TYPE_ARIA_LABEL = 'Authentication type';
-const AUTH_TYPE_SQL_Login = 'SQL Login';
 
 const CONNECT_BUTTON_ARIA_LABEL = 'Connect';
 
@@ -28,12 +27,12 @@ export class ConnectionDialog {
 	}
 
 	async connect(profile: TestServerProfile): Promise<void> {
-		await this.code.waitForSetValue(this.getInputCssSelector(SERVER_INPUT_ARIA_LABEL), profile.ServerName);
-		if (profile.AuthenticationType === AuthenticationType.SqlLogin) {
+		await this.code.waitForSetValue(this.getInputCssSelector(SERVER_INPUT_ARIA_LABEL), profile.serverName);
+		if (profile.authenticationType === AuthenticationType.SqlLogin) {
 			await this.code.waitAndClick(this.getSelectCssSelector(AUTH_TYPE_ARIA_LABEL));
-			await this.selectAuthType(AUTH_TYPE_SQL_Login);
-			await this.code.waitForSetValue(this.getInputCssSelector(USERNAME_INPUT_ARIA_LABEL), profile.UserName);
-			await this.code.waitForSetValue(this.getInputCssSelector(PASSWORD_INPUT_ARIA_LABEL), profile.Password);
+			await this.selectAuthType(profile.authenticationTypeDisplayName);
+			await this.code.waitForSetValue(this.getInputCssSelector(USERNAME_INPUT_ARIA_LABEL), profile.userName);
+			await this.code.waitForSetValue(this.getInputCssSelector(PASSWORD_INPUT_ARIA_LABEL), profile.password);
 		}
 		await clickDialogButton(this.code, CONNECT_BUTTON_ARIA_LABEL);
 	}

@@ -1,7 +1,7 @@
 import assert = require('assert');
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { TestServerProfile, AuthenticationType } from './testConfig';
+import { TestServerProfile } from './testConfig';
 
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
@@ -20,13 +20,13 @@ export async function waitForCompletion(thenable: Thenable<any>): Promise<any> {
 
 export async function connectToServer(server: TestServerProfile) {
 	let connectionProfile: sqlops.IConnectionProfile = {
-		serverName: server.ServerName,
-		databaseName: server.Database,
-		authenticationType: server.AuthenticationType === AuthenticationType.Windows ? 'Integrated' : 'SqlLogin',
-		providerName: server.Provider,
+		serverName: server.serverName,
+		databaseName: server.database,
+		authenticationType: server.authenticationTypeName,
+		providerName: server.providerName,
 		connectionName: '',
-		userName: server.UserName,
-		password: server.Password,
+		userName: server.userName,
+		password: server.password,
 		savePassword: false,
 		groupFullName: undefined,
 		saveProfile: true,

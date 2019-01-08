@@ -12,7 +12,10 @@ import { waitForCompletion } from './utils';
 if (!context.RunTest) {
 	suite('integration test setup', () => {
 		test('test setup', async function () {
+			//Prepare the environment and make it ready for testing
 			await waitForCompletion(vscode.commands.executeCommand('test.setupIntegrationTest'));
+			//Reload the window, this is required for some changes made by the 'test.setupIntegrationTest' to work
+			await waitForCompletion(vscode.commands.executeCommand('workbench.action.reloadWindow'));
 		});
 	});
 }

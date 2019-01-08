@@ -16,10 +16,6 @@ cd $ROOT
 echo $VSCODEUSERDATADIR
 echo $VSCODEEXTDIR
 
-# Test Setup
-./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
-
-# Running Test
 ./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
 
 
