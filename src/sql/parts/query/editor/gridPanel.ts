@@ -550,6 +550,8 @@ class GridTable<T> extends Disposable implements IView {
 
 		this.table.grid.onScroll.subscribe((e, data) => {
 			if (!this.visible) {
+				// If the grid is not set up yet it can get scroll events resetting the top to 0px,
+				// so ignore those events
 				return;
 			}
 			if (!this.scrolled && this.state.scrollPosition && isInDOM(this.container)) {
@@ -581,6 +583,7 @@ class GridTable<T> extends Disposable implements IView {
 			// doesn't work with it offDOM.
 		}
 
+		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
 
 		if (this.state.activeCell) {
