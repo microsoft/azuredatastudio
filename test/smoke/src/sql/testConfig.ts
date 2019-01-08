@@ -16,13 +16,17 @@ export interface TestServerProfile {
 	Password: string;
 	AuthenticationType: AuthenticationType;
 	Database: string;
-	Provider: string;
+	Provider: ConnectionProvider;
 	Version: string;
 }
 
 export enum AuthenticationType {
 	Windows,
 	SqlLogin
+}
+
+export enum ConnectionProvider {
+	SQLServer
 }
 
 var TestingServers: TestServerProfile[] = [
@@ -32,7 +36,7 @@ var TestingServers: TestServerProfile[] = [
 		Password: '',
 		AuthenticationType: AuthenticationType.Windows,
 		Database: 'master',
-		Provider: 'MSSQL',
+		Provider: ConnectionProvider.SQLServer,
 		Version: '2017'
 	}
 ];
