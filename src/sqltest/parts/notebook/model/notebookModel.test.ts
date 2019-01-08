@@ -90,7 +90,7 @@ describe('notebook model', function(): void {
             notebookManagers,
             notificationService: notificationService.object,
             connectionService: queryConnectionService.object,
-            providerId: 'sql' };
+            providerId: 'jupyter' };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
         mockClientSession.setup(c => c.initialize(TypeMoq.It.isAny())).returns(() => {
             return Promise.resolve();

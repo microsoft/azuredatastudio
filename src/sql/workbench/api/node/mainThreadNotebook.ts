@@ -49,7 +49,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 			main: this,
 			ext: this._proxy
 		};
-		let notebookProvider = new NotebookProviderWrapper(proxy, providerId, this._providers, handle);
+		let notebookProvider = new NotebookProviderWrapper(proxy, providerId, handle);
 		this._providers.set(handle, notebookProvider);
 		this.notebookService.registerProvider(providerId, notebookProvider);
 	}
@@ -88,7 +88,7 @@ interface Proxies {
 class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
 
-	constructor(private _proxy: Proxies, public readonly providerId, private _providers, public readonly providerHandle: number) {
+	constructor(private _proxy: Proxies, public readonly providerId, public readonly providerHandle: number) {
 		super();
 	}
 

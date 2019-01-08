@@ -69,8 +69,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 					providerIds = getProvidersForFileName(fileName, notebookService);
 				}
 				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
-				// notebookInputModel.providerId = providerIds;
-				notebookInputModel.providerId = 'sql';
+				notebookInputModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 				notebookInputModel.providers = providerIds;
 				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 				return notebookInput;

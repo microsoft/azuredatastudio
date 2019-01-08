@@ -23,7 +23,7 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -320,16 +320,17 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let trusted = uri.scheme === Schemas.untitled;
 		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
 		let providerId = options.providerId;
-		let providers = undefined;
-		if(!providerId)
+		let providers: string[] = undefined;
+		if (!providerId)
 		{
 			// Ensure there is always a sensible provider ID for this file type
 			providers = getProvidersForFileName(uri.fsPath, this._notebookService);
-			// builtin is always the first in the list; check if another provider exists first
-			if (providers && providers[1]) {
-				providerId = providers[1];
-			} else if (providers && providers[0]) {
-				providerId = model.providerId;
+			// Try to use a non-builtin provider first
+			if (providers) {
+				providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
+				if (!providerId) {
+					providerId = model.providerId;
+				}
 			}
 		}
 		model.providers = providers;

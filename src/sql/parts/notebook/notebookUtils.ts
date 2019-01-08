@@ -57,3 +57,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	}
 	return providers;
 }
+
+export function sqlNotebooksEnabled() {
+	return process.env['SQLOPS_SQL_NOTEBOOK'] !== undefined;
+}

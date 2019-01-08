@@ -29,6 +29,7 @@ import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/commo
 import { Deferred } from 'sql/base/common/promise';
 import { SQLSessionManager } from 'sql/services/notebook/sqlSessionManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { sqlNotebooksEnabled } from 'sql/parts/notebook/notebookUtils';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -329,13 +330,23 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private registerBuiltInProvider() {
-		let tsqlProvider = new TSQLProvider(this._instantiationService);
-		this.registerProvider(tsqlProvider.providerId, tsqlProvider);
-		notebookRegistry.registerNotebookProvider({
-			provider: tsqlProvider.providerId,
-			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-			expectedKernels: ['SQL']
-		});
+		if (!sqlNotebooksEnabled()) {
+			let defaultProvider = new BuiltinProvider();
+			this.registerProvider(defaultProvider.providerId, defaultProvider);
+			notebookRegistry.registerNotebookProvider({
+				provider: defaultProvider.providerId,
+				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
+				expectedKernels: []
+			});
+		} else {
+			let tsqlProvider = new TSQLProvider(this._instantiationService);
+			this.registerProvider(tsqlProvider.providerId, tsqlProvider);
+			notebookRegistry.registerNotebookProvider({
+				provider: tsqlProvider.providerId,
+				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
+				expectedKernels: ['SQL']
+			});
+		}
 	}
 
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {

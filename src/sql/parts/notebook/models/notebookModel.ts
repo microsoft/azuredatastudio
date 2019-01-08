@@ -16,7 +16,7 @@ import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptio
 import { NotebookChangeType, CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
@@ -62,8 +62,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _defaultKernel: nb.IKernelSpec;
 	private _activeCell: ICellModel;
 	private _providerId: string;
-	// not totally necessary. just trying not to loop through every manager to find one that corresponds to a given kernel
-	private _kernelProviderMap: Map<string, string> = new Map<string, string>();
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -78,11 +76,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get notebookManagers(): INotebookManager[] {
-		return this.notebookOptions.notebookManagers;
+		return this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 	}
 
 	public get notebookManager(): INotebookManager {
-		return this.notebookOptions.notebookManagers.find(manager => manager.providerId === this._providerId);
+		return this.notebookManagers.find(manager => manager.providerId === this._providerId);
 	}
 
 	public get notebookUri() : URI {
@@ -141,12 +139,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public get specs(): nb.IAllKernels | undefined {
 		let specs: nb.IAllKernels;
 		this.notebookManagers.forEach(manager => {
+			// If no specs exist, take first session manager's specs list as specs
 			if (!specs && manager.sessionManager && manager.sessionManager.specs) {
 				specs = manager.sessionManager.specs;
+			// Otherwise, add to existing specs list
 			} else if (manager.sessionManager && manager.sessionManager.specs && manager.sessionManager.specs.kernels) {
-				for (let kernel of manager.sessionManager!.specs!.kernels) {
+				manager.sessionManager.specs.kernels.forEach(kernel => {
 					specs.kernels.push(kernel);
-				}
+				});
 			}
 		});
 		return specs;
@@ -206,9 +206,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = undefined;
-			// default to SQL
 			this._defaultLanguageInfo = {
-				name: 'sql',
+				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 				version: ''
 			};
 			if (contents) {
@@ -368,7 +367,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
-		// HAVE TO USE MEMENTOS HERE
 		for (let i = 0; i < this.notebookManagers.length; i++) {
 			if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
 				let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
@@ -457,9 +455,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// Otherwise, default to python
 	private getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
 		return notebook!.metadata!.language_info || {
-			name: 'sql',
+			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 			version: '',
-			mimetype: 'x-sql'
+			mimetype: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'x-sql' : 'x-python'
 		};
 	}
 

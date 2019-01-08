@@ -147,6 +147,7 @@ export class CellModel implements ICellModel {
 		// See https://jupyter-notebook.readthedocs.io/en/stable/security.html
 
 		this._isTrusted = true;
+
 		if (this._future) {
 			this._future.dispose();
 		}
