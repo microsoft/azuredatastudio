@@ -145,7 +145,7 @@ export class GridPanel extends ViewletPanel {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
-			if (this.state) {
+			if (this.state && this.splitView.length !== 0) {
 				this.state.scrollPosition = e;
 			}
 		});
