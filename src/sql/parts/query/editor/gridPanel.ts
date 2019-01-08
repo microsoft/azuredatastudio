@@ -89,6 +89,7 @@ export class GridTableState extends Disposable {
 
 	/* The top row of the current scroll */
 	public scrollPosition = 0;
+	public columnSizes: number[] = undefined;
 	public selection: Slick.Range[];
 	public activeCell: Slick.Cell;
 
@@ -286,8 +287,7 @@ export class GridPanel extends ViewletPanel {
 					this._state.tableStates.push(tableState);
 				}
 			}
-			let table = this.instantiationService.createInstance(GridTable, this.runner, set);
-			table.state = tableState;
+			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
 			this.tableDisposable.push(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -417,12 +417,14 @@ class GridTable<T> extends Disposable implements IView {
 	constructor(
 		private runner: QueryRunner,
 		private _resultSet: sqlops.ResultSetSummary,
+		state: GridTableState,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
 		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
 	) {
 		super();
+		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		// this.container.style.marginBottom = BOTTOM_PADDING + 'px';
@@ -437,7 +439,8 @@ class GridTable<T> extends Disposable implements IView {
 					? 'XML Showplan'
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: isLinked ? hyperLinkFormatter : textFormatter
+				formatter: isLinked ? hyperLinkFormatter : textFormatter,
+				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
 	}
@@ -555,6 +558,12 @@ class GridTable<T> extends Disposable implements IView {
 			if (this.state && isInDOM(this.container)) {
 				this.state.scrollPosition = data.scrollTop;
 			}
+		});
+
+		// we need to remove the first column since this is the row number
+		this.table.onColumnResize(() => {
+			let columnSizes = this.table.grid.getColumns().slice(1).map(v => v.width);
+			this.state.columnSizes = columnSizes;
 		});
 
 		this.table.grid.onActiveCellChanged.subscribe(e => {
