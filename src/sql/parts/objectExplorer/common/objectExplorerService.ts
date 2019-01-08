@@ -528,8 +528,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return this.getTreeNode(connectionId, nodePath).then(node => {
 			return this._serverTreeView.TreeActionProvider.getActions(this._serverTreeView.Tree, this.getTreeItem(node)).then((actions) => {
 				return actions.filter(action => action.label).map(action => action.label);
-			})
-		})
+			});
+		});
 	}
 
 	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> {

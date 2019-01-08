@@ -433,7 +433,7 @@ export function createApiFactory(
 				install(vsixPath: string): Thenable<string> {
 					return extHostExtensionManagement.$install(vsixPath);
 				}
-			}
+			};
 
 			const nb = {
 				get notebookDocuments() {
