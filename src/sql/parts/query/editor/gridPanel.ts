@@ -548,7 +548,6 @@ class GridTable<T> extends Disposable implements IView {
 			}
 		});
 
-		// TODO: just save horizontal scroll and should be good
 		this.table.grid.onScroll.subscribe((e, data) => {
 			if (!this.visible) {
 				return;
@@ -567,8 +566,6 @@ class GridTable<T> extends Disposable implements IView {
 				this.state.activeCell = this.table.grid.getActiveCell();
 			}
 		});
-
-		// this.setupState();
 	}
 
 	private setupState() {
