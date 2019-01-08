@@ -44,8 +44,8 @@ let expectedNotebookContent: nb.INotebookContents = {
             language: 'sql'
         }
     },
-    nbformat: 5,
-    nbformat_minor: 0
+    nbformat: 4,
+    nbformat_minor: 5
 };
 
 let expectedNotebookContentOneCell: nb.INotebookContents = {
@@ -61,8 +61,8 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
             language: 'sql'
         }
     },
-    nbformat: 5,
-    nbformat_minor: 0
+    nbformat: 4,
+    nbformat_minor: 5
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -112,8 +112,8 @@ describe('notebook model', function(): void {
                     language: 'sql'
                 }
             },
-            nbformat: 5,
-            nbformat_minor: 0
+            nbformat: 4,
+            nbformat_minor: 5
         };
 
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
