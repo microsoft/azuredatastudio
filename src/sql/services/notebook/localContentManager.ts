@@ -96,8 +96,12 @@ namespace v4 {
 			source: demultiline(cell.source),
 			metadata: cell.metadata,
 			execution_count: cell.execution_count,
-			outputs: cell.outputs.map(output => createOutput(output as nb.Output))
+			outputs: createOutputs(cell)
 		};
+	}
+
+	function createOutputs(cell: nb.ICellContents): nb.ICellOutput[] {
+		return cell.outputs && cell.outputs.length > 0 ? cell.outputs.map(output => createOutput(output as nb.Output)) : [];
 	}
 
 	function createOutput(output: nb.Output): nb.ICellOutput {
