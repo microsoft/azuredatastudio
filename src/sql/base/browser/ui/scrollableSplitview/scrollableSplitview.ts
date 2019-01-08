@@ -440,6 +440,13 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		size = typeof size === 'number' ? size : item.size;
 		size = clamp(size, item.view.minimumSize, item.view.maximumSize);
 		item.size = size;
+		this.updateSize(item.view.id, size);
+		let top = item.top + item.size;
+		for (let i = index + 1; i < this.viewItems.length; i++) {
+			let currentItem = this.viewItems[i];
+			this.updateTop(currentItem.view.id, top);
+			top += currentItem.size;
+		}
 		this.relayout(index);
 	}
 

@@ -530,7 +530,7 @@ export class ProfilerEditor extends BaseEditor {
 				}
 
 				this._sessionSelector.selectWithOptionName(this.input.sessionName);
-			};
+			}
 		});
 
 	}
