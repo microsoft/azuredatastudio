@@ -455,6 +455,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
+		this.setupState();
 	}
 
 	public onRemove() {
@@ -547,7 +548,11 @@ class GridTable<T> extends Disposable implements IView {
 			}
 		});
 
+		// TODO: just save horizontal scroll and should be good
 		this.table.grid.onScroll.subscribe((e, data) => {
+			if (!this.visible) {
+				return;
+			}
 			if (!this.scrolled && this.state.scrollPosition && isInDOM(this.container)) {
 				this.scrolled = true;
 				this.table.grid.scrollTo(this.state.scrollPosition);
@@ -563,7 +568,7 @@ class GridTable<T> extends Disposable implements IView {
 			}
 		});
 
-		this.setupState();
+		// this.setupState();
 	}
 
 	private setupState() {
@@ -579,12 +584,14 @@ class GridTable<T> extends Disposable implements IView {
 			// doesn't work with it offDOM.
 		}
 
-		if (this.state.selection) {
-			this.selectionModel.setSelectedRanges(this.state.selection);
-		}
+		let savedSelection = this.state.selection;
 
 		if (this.state.activeCell) {
 			this.table.setActiveCell(this.state.activeCell.row, this.state.activeCell.cell);
+		}
+
+		if (savedSelection) {
+			this.selectionModel.setSelectedRanges(savedSelection);
 		}
 	}
 
