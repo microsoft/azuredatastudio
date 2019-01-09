@@ -18,12 +18,12 @@ export const Extensions = {
 export interface NotebookProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
-	expectedKernels: string | string[];
+	standardKernels: string | string[];
 }
 
 let notebookProviderType: IJSONSchema = {
 	type: 'object',
-	default: { provider: '', fileExtensions: [], expectedKernels: [] },
+	default: { provider: '', fileExtensions: [], standardKernels: [] },
 	properties: {
 		provider: {
 			description: localize('carbon.extension.contributes.notebook.provider', 'Identifier of the notebook provider.'),
@@ -41,8 +41,8 @@ let notebookProviderType: IJSONSchema = {
 				}
 			]
 		},
-		expectedKernels: {
-			description: localize('carbon.extension.contributes.notebook.expectedKernels', 'What kernels should be expected with this notebook provider'),
+		standardKernels: {
+			description: localize('carbon.extension.contributes.notebook.standardKernels', 'What kernels should be standard with this notebook provider'),
 			oneOf: [
 				{ type: 'string' },
 				{

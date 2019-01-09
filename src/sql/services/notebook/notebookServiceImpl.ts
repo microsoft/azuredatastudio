@@ -27,7 +27,7 @@ import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/e
 import { Disposable } from 'vs/base/common/lifecycle';
 import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { Deferred } from 'sql/base/common/promise';
-import { SQLSessionManager } from 'sql/services/notebook/sqlSessionManager';
+import { SqlSessionManager } from 'sql/services/notebook/sqlSessionManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { sqlNotebooksEnabled } from 'sql/parts/notebook/notebookUtils';
 
@@ -147,11 +147,10 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	private addFileProvider(fileType: string, provider: NotebookProviderRegistration) {
 		let providers = this._fileToProviders.get(fileType.toUpperCase());
-		if (providers) {
-			providers.push(provider);
-		} else {
-			providers = [provider];
+		if (!providers) {
+			providers = [];
 		}
+		providers.push(provider);
 		this._fileToProviders.set(fileType.toUpperCase(), providers);
 	}
 
@@ -336,15 +335,15 @@ export class NotebookService extends Disposable implements INotebookService {
 			notebookRegistry.registerNotebookProvider({
 				provider: defaultProvider.providerId,
 				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				expectedKernels: []
+				standardKernels: []
 			});
 		} else {
-			let tsqlProvider = new TSQLProvider(this._instantiationService);
-			this.registerProvider(tsqlProvider.providerId, tsqlProvider);
+			let sqlProvider = new SqlNotebookProvider(this._instantiationService);
+			this.registerProvider(sqlProvider.providerId, sqlProvider);
 			notebookRegistry.registerNotebookProvider({
-				provider: tsqlProvider.providerId,
+				provider: sqlProvider.providerId,
 				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				expectedKernels: ['SQL']
+				standardKernels: ['SQL']
 			});
 		}
 	}
@@ -407,11 +406,11 @@ export class BuiltInNotebookManager implements INotebookManager {
 
 }
 
-export class TSQLProvider implements INotebookProvider {
-	private manager: TSQLNotebookManager;
+export class SqlNotebookProvider implements INotebookProvider {
+	private manager: SqlNotebookManager;
 
 	constructor(private _instantiationService: IInstantiationService) {
-		this.manager = new TSQLNotebookManager(this._instantiationService);
+		this.manager = new SqlNotebookManager(this._instantiationService);
 	}
 
 	public get providerId(): string {
@@ -427,13 +426,13 @@ export class TSQLProvider implements INotebookProvider {
 	}
 }
 
-export class TSQLNotebookManager implements INotebookManager {
+export class SqlNotebookManager implements INotebookManager {
 	private _contentManager: nb.ContentManager;
 	private _sessionManager: nb.SessionManager;
 
 	constructor(private _instantiationService: IInstantiationService) {
 		this._contentManager = new LocalContentManager();
-		this._sessionManager = new SQLSessionManager(this._instantiationService);
+		this._sessionManager = new SqlSessionManager(this._instantiationService);
 	}
 
 	public get providerId(): string {

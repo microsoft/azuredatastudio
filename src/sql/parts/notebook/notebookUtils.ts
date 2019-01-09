@@ -58,6 +58,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
+// Private feature flag to enable Sql Notebook experience
 export function sqlNotebooksEnabled() {
 	return process.env['SQLOPS_SQL_NOTEBOOK'] !== undefined;
 }

@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import { nb, QueryExecuteSubsetResult, IDbColumn, DbCellValue } from 'sqlops';
@@ -13,6 +17,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { mssqlProviderName } from 'sql/parts/connection/common/constants';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
+export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 
 let sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
@@ -25,7 +30,7 @@ export interface SQLData {
 	rows: Array<Array<string>>;
 }
 
-export class SQLSessionManager implements nb.SessionManager {
+export class SqlSessionManager implements nb.SessionManager {
 	constructor(private _instantiationService: IInstantiationService) {}
 
 	public get isReady(): boolean {
@@ -45,7 +50,7 @@ export class SQLSessionManager implements nb.SessionManager {
 	}
 
 	startNew(options: nb.ISessionOptions): Thenable<nb.ISession> {
-		let session = new SQLSession(options, this._instantiationService);
+		let session = new SqlSession(options, this._instantiationService);
 		return Promise.resolve(session);
 	}
 
@@ -54,8 +59,8 @@ export class SQLSessionManager implements nb.SessionManager {
 	}
 }
 
-export class SQLSession implements nb.ISession {
-	private _kernel: SQLKernel;
+export class SqlSession implements nb.ISession {
+	private _kernel: SqlKernel;
 	private _defaultKernelLoaded = false;
 
 	public set defaultKernelLoaded(value) {
@@ -67,7 +72,7 @@ export class SQLSession implements nb.ISession {
 	}
 
 	constructor(private options: nb.ISessionOptions, private _instantiationService: IInstantiationService) {
-		this._kernel = this._instantiationService.createInstance(SQLKernel);
+		this._kernel = this._instantiationService.createInstance(SqlKernel);
 	}
 
 	public get canChangeKernels(): boolean {
@@ -103,7 +108,7 @@ export class SQLSession implements nb.ISession {
 	}
 }
 
-class SQLKernel extends Disposable implements nb.IKernel {
+class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _columns: IDbColumn[];
 	private _rows: DbCellValue[][];
@@ -187,12 +192,12 @@ class SQLKernel extends Disposable implements nb.IKernel {
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
 		this._register(queryRunner.addListener(EventType.COMPLETE, () => {
 			this.queryComplete().catch(error => {
-				this._errorMessageService.showDialog(Severity.Error, localize("sqlKernelError", "SQL kernel error"), error);
+				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, error);
 			});
 		}));
 		this._register(queryRunner.addListener(EventType.MESSAGE, message => {
 			if (message.isError) {
-				this._errorMessageService.showDialog(Severity.Error, localize("sqlKernelError", "SQL kernel error"), message.message);
+				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, message.message);
 			}
 		}));
 	}

@@ -1655,7 +1655,7 @@ declare module 'sqlops' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
-			readonly expectedKernels: string[];
+			readonly standardKernels: string[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}

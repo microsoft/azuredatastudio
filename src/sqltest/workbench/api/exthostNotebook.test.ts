@@ -122,7 +122,7 @@ suite('ExtHostNotebook Tests', () => {
 
 class NotebookProviderStub implements sqlops.nb.NotebookProvider {
 	providerId: string = 'TestProvider';
-	expectedKernels: string[] = ['fakeKernel'];
+	standardKernels: string[] = ['fakeKernel'];
 
 	getNotebookManager(notebookUri: vscode.Uri): Thenable<sqlops.nb.NotebookManager> {
 		throw new Error('Method not implemented.');
