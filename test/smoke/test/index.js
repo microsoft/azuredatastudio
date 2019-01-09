@@ -24,6 +24,7 @@ const options = {
 	slow: 30000,
 	grep: opts['f']
 };
+console.warn('process.env.BUILD_ARTIFACTSTAGINGDIRECTORY:' + process.env.BUILD_ARTIFACTSTAGINGDIRECTORY);
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	options.reporter = 'mocha-multi-reporters';
 	options.reporterOptions = {

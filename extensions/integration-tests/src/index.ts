@@ -16,7 +16,7 @@ const options: any = {
 	timeout: 600000
 };
 
-
+console.warn('process.env.BUILD_ARTIFACTSTAGINGDIRECTORY:' + process.env.BUILD_ARTIFACTSTAGINGDIRECTORY);
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	options.reporter = 'mocha-multi-reporters';
 	options.reporterOptions = {
