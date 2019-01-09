@@ -1655,6 +1655,7 @@ declare module 'sqlops' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
+			readonly standardKernels: string[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
@@ -2259,7 +2260,7 @@ declare module 'sqlops' {
 		/**
 		 * The valid channel names.
 		 */
-		export type Channel = 'shell' | 'iopub' | 'stdin';
+		export type Channel = 'shell' | 'iopub' | 'stdin' | 'execute_reply';
 
 		/**
 		 * Kernel message header content.
