@@ -131,14 +131,14 @@ export default class QueryRunner extends Disposable {
 	 * For public use only, for private use, directly access the member
 	 */
 	public get batchSets(): sqlops.BatchSummary[] {
-		return this._batchSets.splice(0);
+		return this._batchSets.slice(0);
 	}
 
 	/**
 	 * For public use only, for private use, directly access the member
 	 */
 	public get messages(): sqlops.IResultMessage[] {
-		return this._messages.splice(0);
+		return this._messages.slice(0);
 	}
 
 	// PUBLIC METHODS ======================================================
