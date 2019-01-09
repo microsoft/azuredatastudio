@@ -9,12 +9,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2038320
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2038323
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2038327
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2038332
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2038401
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2038405
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2049972
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2049975
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2050146
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2049981
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2049986
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2049989
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2050157
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -62,6 +63,10 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* Tarig0  for `Add Routine_Type to CreateStoredProc fixes #3257 (#3286)`
+* oltruong  for `typo fix #3025'`
+* Thomas-S-B for `Removed unnecessary IErrorDetectionStrategy #749`
+* Thomas-S-B for `Simplified code #750`
 * rdaniels6813  for `Add query plan theme support #3031`
 * Ruturaj123 for `Fixed some typos and grammatical errors #3027`
 * PromoFaux for `Use emoji shortcodes in CONTRIBUTING.md instead of � #3009`
