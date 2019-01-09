@@ -15,7 +15,7 @@ export declare type JSONValue = JSONPrimitive | JSONObject | JSONArray;
  * A type definition for a JSON object.
  */
 export interface JSONObject {
-    [key: string]: JSONValue;
+	[key: string]: JSONValue;
 }
 /**
  * A type definition for a JSON array.
@@ -26,7 +26,7 @@ export interface JSONArray extends Array<JSONValue> {
  * A type definition for a readonly JSON object.
  */
 export interface ReadonlyJSONObject {
-    readonly [key: string]: ReadonlyJSONValue;
+	readonly [key: string]: ReadonlyJSONValue;
 }
 /**
  * A type definition for a readonly JSON array.
@@ -45,10 +45,10 @@ export declare type ReadonlyJSONValue = JSONPrimitive | ReadonlyJSONObject | Rea
  * @returns `true` if the value is a primitive,`false` otherwise.
  */
 export function isPrimitive(value: any): boolean {
-    return (
-        value === null ||
-        typeof value === 'boolean' ||
-        typeof value === 'number' ||
-        typeof value === 'string'
-    );
+	return (
+		value === null ||
+		typeof value === 'boolean' ||
+		typeof value === 'number' ||
+		typeof value === 'string'
+	);
 }
