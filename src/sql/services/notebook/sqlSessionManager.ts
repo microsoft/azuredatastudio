@@ -306,7 +306,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 					content: <nb.IExecuteResult> {
 						output_type: 'execute_result',
 						metadata: {},
-						executionCount: 0,
+						execution_count: 0,
 						data: { 'text/html' : tableHtml},
 					},
 					metadata: undefined,
