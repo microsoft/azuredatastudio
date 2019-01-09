@@ -73,7 +73,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _memento = new Memento('notebookProviders');
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
-	private _managers: Map<string, INotebookManager[]> = new Map();
+	private _managersMap: Map<string, INotebookManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
 	private _onCellChanged = new Emitter<INotebookEditor>();
@@ -166,7 +166,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	public shutdown(): void {
-		this._managers.forEach(manager => {
+		this._managersMap.forEach(manager => {
 			manager.forEach(m => {
 				if (m.serverManager) {
 					// TODO should this thenable be awaited?
@@ -181,24 +181,19 @@ export class NotebookService extends Disposable implements INotebookService {
 			throw new Error(localize('notebookUriNotDefined', 'No URI was passed when creating a notebook manager'));
 		}
 		let uriString = uri.toString();
-		let manager: INotebookManager[] = this._managers.get(uriString);
+		let managers: INotebookManager[] = this._managersMap.get(uriString);
 		// If manager already exists for a given notebook, return it
-		if (manager) {
-			let index = manager.findIndex(m => m.providerId === providerId);
+		if (managers) {
+			let index = managers.findIndex(m => m.providerId === providerId);
 			if (index && index >= 0) {
-				return manager[index];
+				return managers[index];
 			}
 		}
 		let newManager = await this.doWithProvider(providerId, (provider) => provider.getNotebookManager(uri));
 
-		// If no managers exist for a notebook, add this manager
-		// Otherwise, add manager to array
-		if (!manager) {
-			this._managers.set(uriString, [newManager]);
-		} else if (!manager.find(m => m.providerId === providerId)) {
-			manager.push(newManager);
-			this._managers.set(uriString, manager);
-		}
+		managers = managers || [];
+		managers.push(newManager);
+		this._managersMap.set(uriString, managers);
 		return newManager;
 	}
 
@@ -249,10 +244,10 @@ export class NotebookService extends Disposable implements INotebookService {
 	private sendNotebookCloseToProvider(editor: INotebookEditor): void {
 		let notebookUri = editor.notebookParams.notebookUri;
 		let uriString = notebookUri.toString();
-		let manager = this._managers.get(uriString);
+		let manager = this._managersMap.get(uriString);
 		if (manager) {
 			// As we have a manager, we can assume provider is ready
-			this._managers.delete(uriString);
+			this._managersMap.delete(uriString);
 			manager.forEach(m => {
 				let provider = this._providers.get(m.providerId);
 				provider.instance.handleNotebookClosed(notebookUri);
