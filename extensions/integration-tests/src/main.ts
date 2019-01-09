@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import { normalize, join } from 'path';
 import * as fs from 'fs';
-import { waitForCompletion } from './utils';
 
 const TEST_SETUP_COMPLETED_TEXT: string = 'Test Setup Completed';
 const EXTENSION_LOADED_TEXT: string = 'Test Extension Loaded';
@@ -22,7 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 		let installers = fs.readdirSync(extensionInstallersFolder);
 		for (let i = 0; i < installers.length; i++) {
 			let installerFullPath = join(extensionInstallersFolder, installers[i]);
-			await waitForCompletion(sqlops.extensionManagement.install(installerFullPath));
+			await sqlops.extensionManagement.install(installerFullPath);
 		}
 		await setConfiguration('workbench.enablePreviewFeatures', true);
 		await setConfiguration('workbench.showConnectDialogOnStartup', false);
@@ -72,5 +71,5 @@ export function deactivate(): void {
 }
 
 async function setConfiguration(name: string, value: any) {
-	await waitForCompletion(vscode.workspace.getConfiguration().update(name, value, true));
+	await vscode.workspace.getConfiguration().update(name, value, true);
 }

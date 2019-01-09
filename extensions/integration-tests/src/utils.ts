@@ -1,22 +1,12 @@
-import assert = require('assert');
-import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
-import { TestServerProfile } from './testConfig';
-
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export async function waitForCompletion(thenable: Thenable<any>): Promise<any> {
-	return new Promise((resolve, reject) => {
-		thenable.then((val) => {
-			resolve(val);
-		}, (reason) => {
-			reject(reason);
-		});
-	});
-}
+import assert = require('assert');
+import * as sqlops from 'sqlops';
+import * as vscode from 'vscode';
+import { TestServerProfile } from './testConfig';
 
 export async function connectToServer(server: TestServerProfile) {
 	let connectionProfile: sqlops.IConnectionProfile = {
@@ -35,7 +25,7 @@ export async function connectToServer(server: TestServerProfile) {
 		options: {}
 	};
 	await ensureConnectionViewOpened();
-	let result = <sqlops.ConnectionResult>await waitForCompletion(sqlops.connection.connect(connectionProfile));
+	let result = <sqlops.ConnectionResult>await sqlops.connection.connect(connectionProfile);
 	assert(result.connected, `Failed to connect to "${connectionProfile.serverName}", error code: ${result.errorCode}, error message: ${result.errorMessage}`);
 
 	//workaround
@@ -44,5 +34,5 @@ export async function connectToServer(server: TestServerProfile) {
 }
 
 export async function ensureConnectionViewOpened() {
-	await waitForCompletion(vscode.commands.executeCommand('workbench.view.connections'));
+	await vscode.commands.executeCommand('workbench.view.connections');
 }

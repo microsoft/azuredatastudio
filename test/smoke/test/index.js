@@ -24,16 +24,16 @@ const options = {
 	slow: 30000,
 	grep: opts['f']
 };
-//{{SQL CARBON EDIT}}
-options.reporter = 'mocha-multi-reporters';
-options.reporterOptions = {
-	reporterEnabled: 'spec, mocha-junit-reporter',
-	mochaJunitReporterReporterOptions: {
-		testsuitesTitle: `${suite} ${process.platform}`,
-		mochaFile: path.join(__dirname,'../../../', `smoke-test-results.xml`)
-	}
-};
-//{{END}}
+if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
+	options.reporter = 'mocha-multi-reporters';
+	options.reporterOptions = {
+		reporterEnabled: 'spec, mocha-junit-reporter',
+		mochaJunitReporterReporterOptions: {
+			testsuitesTitle: `${suite} ${process.platform}`,
+			mochaFile: path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
+		}
+	};
+}
 
 const mocha = new Mocha(options);
 mocha.addFile('out/main.js');

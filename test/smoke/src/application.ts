@@ -67,7 +67,7 @@ export class Application {
 
 		//Original
 		/*
-		await this.code.waitForElement('.explorer-folders-view');	 		await this.code.waitForElement('.object-explorer-view');
+		await this.code.waitForElement('.explorer-folders-view');
 		await this.code.waitForActiveElement(`.editor-instance[id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
 		 */
 		//{{END}}

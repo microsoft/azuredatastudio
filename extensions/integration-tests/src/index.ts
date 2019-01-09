@@ -8,7 +8,7 @@ import { context } from './testContext';
 const path = require('path');
 const testRunner = require('vscode/lib/testrunner');
 
-const suite = 'ADS Integration Tests';
+const suite = 'Integration Tests';
 
 const options: any = {
 	ui: 'tdd',
@@ -17,14 +17,16 @@ const options: any = {
 };
 
 
-options.reporter = 'mocha-multi-reporters';
-options.reporterOptions = {
-	reporterEnabled: 'spec, mocha-junit-reporter',
-	mochaJunitReporterReporterOptions: {
-		testsuitesTitle: `${suite} ${process.platform}`,
-		mochaFile: path.join(__dirname, '../../../', `/extension-test-results.xml`)
-	}
-};
+if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
+	options.reporter = 'mocha-multi-reporters';
+	options.reporterOptions = {
+		reporterEnabled: 'spec, mocha-junit-reporter',
+		mochaJunitReporterReporterOptions: {
+			testsuitesTitle: `${suite} ${process.platform}`,
+			mochaFile: path.join(process.env.BUILD_ARTIFACTSTAGINGDIRECTORY, `test-results/${process.platform}-${suite.toLowerCase().replace(/[^\w]/g, '-')}-results.xml`)
+		}
+	};
+}
 
 if (!vscode.workspace.getConfiguration('test')['testSetupCompleted']) {
 	context.RunTest = false;

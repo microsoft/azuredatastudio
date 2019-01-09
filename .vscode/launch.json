@@ -134,7 +134,10 @@
 			"request": "launch",
 			"name": "Launch Smoke Test",
 			"program": "${workspaceFolder}/test/smoke/test/index.js",
-			"cwd": "${workspaceFolder}/test/smoke"
+			"cwd": "${workspaceFolder}/test/smoke",
+			"env": {
+				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
+			}
 		}
 	],
 	"compounds": [

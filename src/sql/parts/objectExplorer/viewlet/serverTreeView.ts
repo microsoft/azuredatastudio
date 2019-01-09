@@ -81,11 +81,11 @@ export class ServerTreeView {
 		return this._onSelectionOrFocusChange.event;
 	}
 
-	public get TreeActionProvider(): ServerTreeActionProvider {
+	public get treeActionProvider(): ServerTreeActionProvider {
 		return this._actionProvider;
 	}
 
-	public get Tree(): ITree {
+	public get tree(): ITree {
 		return this._tree;
 	}
 
