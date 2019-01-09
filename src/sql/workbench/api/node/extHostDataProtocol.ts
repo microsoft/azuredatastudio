@@ -132,6 +132,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerObjectExplorerExpander(provider: sqlops.ObjectExplorerExpander): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerExpander);
+		this._proxy.$registerObjectExplorerExpander(provider.supportedProviderId, provider.handle);
+		return rt;
+	}
+
 	$registerProfilerProvider(provider: sqlops.ProfilerProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ProfilerProvider);
 		this._proxy.$registerProfilerProvider(provider.providerId, provider.handle);
@@ -346,6 +352,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).expandNode(nodeInfo);
 	}
 
+	public $expandObjectExplorerNodeFromExpander(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ObjectExplorerExpander>(handle).expandNodeFromExpander(nodeInfo);
+	}
+
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).refreshNode(nodeInfo);
 	}
@@ -359,6 +369,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	public $onObjectExplorerSessionCreated(handle: number, response: sqlops.ObjectExplorerSession): void {
+		this._proxy.$onObjectExplorerSessionCreated(handle, response);
+	}
+
+	public $onObjectExplorerSessionCreatedFromExpander(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionCreated(handle, response);
 	}
 

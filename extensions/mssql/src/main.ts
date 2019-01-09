@@ -5,6 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
@@ -17,6 +18,10 @@ import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
+import { HadoopConnectionProvider } from './objectExplorerExpander/connectionProvider';
+import { HadoopObjectExplorerExpander } from './objectExplorerExpander/objectExplorerExpander';
+import { AppContext } from './objectExplorerExpander/appContext';
+import { ApiWrapper } from './objectExplorerExpander/apiWrapper';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -85,6 +90,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		languageClient.start();
 		credentialsStore.start();
 		resourceProvider.start();
+		let connectionProvider = new HadoopConnectionProvider();
+		let expander = new HadoopObjectExplorerExpander(connectionProvider, new AppContext(context, new ApiWrapper()));
+		sqlops.dataprotocol.registerObjectExplorerExpander(expander);
+		sqlops.dataprotocol.registerConnectionProvider(connectionProvider);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 		vscode.window.showErrorMessage('Failed to start Sql tools service');

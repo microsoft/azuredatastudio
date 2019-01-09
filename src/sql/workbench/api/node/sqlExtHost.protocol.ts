@@ -122,6 +122,8 @@ export abstract class ExtHostDataProtocolShape {
 
 	$expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
+	$expandObjectExplorerNodeFromExpander(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
+
 	$refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
 	$closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> { throw ni(); }
@@ -496,6 +498,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerQueryProvider(providerId: string, handle: number): TPromise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): TPromise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any>;
+	$registerObjectExplorerExpander(providerId: string, handle: number): TPromise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): TPromise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;

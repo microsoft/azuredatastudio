@@ -251,6 +251,33 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
+	public $registerObjectExplorerExpander(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		let expander: sqlops.ObjectExplorerExpander = {
+			supportedProviderId: providerId,
+			providerId: undefined,
+			expandNodeFromExpander(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+				return self._proxy.$expandObjectExplorerNodeFromExpander(handle, nodeInfo);
+			},
+			refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+				return self._proxy.$refreshObjectExplorerNode(handle, nodeInfo);
+			},
+			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+				return self._proxy.$findNodes(handle, findNodesInfo);
+			},
+			registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
+				// TODO implement in exthostdataprotocol
+				// return self._proxy.$regis(handle, findNodesInfo);
+			},
+			registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
+				// TODO implement in exthostdataprotocol
+			}
+		};
+		this._objectExplorerService.registerExpander(expander);
+
+		return undefined;
+	}
+
 	public $registerTaskServicesProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._taskService.registerProvider(providerId, <sqlops.TaskServicesProvider>{

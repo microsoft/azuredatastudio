@@ -1240,6 +1240,7 @@ declare module 'sqlops' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
+		ObjectExplorerExpander = 'ObjectExplorerExpander',
 	}
 
 	export namespace dataprotocol {
@@ -1257,31 +1258,31 @@ declare module 'sqlops' {
 		export function getProvidersByType<T extends DataProvider>(providerType: DataProviderType): T[];
 	}
 
-	/**
-	 * Context object passed as an argument to command callbacks.
-	 * Defines the key properties required to identify a node in the object
-	 * explorer tree and take action against it.
-	 */
-	export interface ObjectExplorerContext {
+	// /**
+	//  * Context object passed as an argument to command callbacks.
+	//  * Defines the key properties required to identify a node in the object
+	//  * explorer tree and take action against it.
+	//  */
+	// export interface ObjectExplorerContext {
 
-		/**
-		 * The connection information for the selected object.
-		 * Note that the connection is not guaranteed to be in a connected
-		 * state on click.
-		 */
-		connectionProfile: IConnectionProfile;
-		/**
-		 * Defines whether this is a Connection-level object.
-		 * If not, the object is expected to be a child object underneath
-		 * one of the connections.
-		 */
-		isConnectionNode: boolean;
-		/**
-		 * Node info for objects below a specific connection. This
-		 * may be null for a Connection-level object
-		 */
-		nodeInfo: NodeInfo;
-	}
+	// 	/**
+	// 	 * The connection information for the selected object.
+	// 	 * Note that the connection is not guaranteed to be in a connected
+	// 	 * state on click.
+	// 	 */
+	// 	connectionProfile: IConnectionProfile;
+	// 	/**
+	// 	 * Defines whether this is a Connection-level object.
+	// 	 * If not, the object is expected to be a child object underneath
+	// 	 * one of the connections.
+	// 	 */
+	// 	isConnectionNode: boolean;
+	// 	/**
+	// 	 * Node info for objects below a specific connection. This
+	// 	 * may be null for a Connection-level object
+	// 	 */
+	// 	nodeInfo: NodeInfo;
+	// }
 
 	/**
 	 * Background Operation

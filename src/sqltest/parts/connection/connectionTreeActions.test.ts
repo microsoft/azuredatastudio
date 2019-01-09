@@ -389,7 +389,8 @@ suite('SQL Connection Tree Action tests', () => {
 				nodeStatus: '',
 				errorMessage: ''
 			},
-			errorMessage: ''
+			errorMessage: '',
+			bigDataClusterEndpoints: null,
 		};
 
 		var tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null, undefined, undefined);
@@ -476,7 +477,8 @@ suite('SQL Connection Tree Action tests', () => {
 				nodeStatus: '',
 				errorMessage: ''
 			},
-			errorMessage: ''
+			errorMessage: '',
+			bigDataClusterEndpoints: null,
 		};
 
 		var tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\Db1\tables', '', '', null, null, undefined, undefined);

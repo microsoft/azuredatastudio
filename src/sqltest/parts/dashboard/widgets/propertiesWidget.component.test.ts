@@ -47,6 +47,7 @@ suite('Dashboard Properties Widget Tests', () => {
 		};
 
 		let serverInfo = {
+			bigDataClusterEndpoints: undefined,
 			isCloud: false,
 			testProperty: 'Test Property',
 			serverMajorVersion: undefined,
