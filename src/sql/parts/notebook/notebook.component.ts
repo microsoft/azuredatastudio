@@ -171,7 +171,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this.model.activeCell) {
 			this.model.activeCell.active = false;
 		}
-		this.model.activeCell = null;
 		this._changeRef.detectChanges();
 	}
 
