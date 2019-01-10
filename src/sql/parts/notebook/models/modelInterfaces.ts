@@ -249,9 +249,9 @@ export interface INotebookModel {
 	readonly languageInfo: nb.ILanguageInfo;
 
 	/**
-	 * The notebook service used to call backend APIs
+	 * All notebook managers applicable for a given notebook
 	 */
-	readonly notebookManager: INotebookManager;
+	readonly notebookManagers: INotebookManager[];
 
 	/**
 	 * Event fired on first initialization of the kernel and
@@ -298,6 +298,11 @@ export interface INotebookModel {
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
+
+	/**
+	 * Current notebook provider id
+	 */
+	providerId: string;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
@@ -411,7 +416,8 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
-	notebookManager: INotebookManager;
+	notebookManagers: INotebookManager[];
+	providerId: string;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
