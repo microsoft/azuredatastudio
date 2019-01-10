@@ -40,4 +40,4 @@ export class FileTelemetryService implements ITelemetryService {
 			machineId: 'someValue.machineId'
 		});
 	}
-};
+}

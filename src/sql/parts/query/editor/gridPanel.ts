@@ -88,7 +88,8 @@ export class GridTableState extends Disposable {
 	private _canBeMaximized: boolean;
 
 	/* The top row of the current scroll */
-	public scrollPosition = 0;
+	public scrollPositionY = 0;
+	public scrollPositionX = 0;
 	public selection: Slick.Range[];
 	public activeCell: Slick.Cell;
 
@@ -145,7 +146,7 @@ export class GridPanel extends ViewletPanel {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
-			if (this.state) {
+			if (this.state && this.splitView.length !== 0) {
 				this.state.scrollPosition = e;
 			}
 		});
@@ -420,12 +421,12 @@ class GridTable<T> extends Disposable implements IView {
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService
+		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
-		// this.container.style.marginBottom = BOTTOM_PADDING + 'px';
 		this.container.className = 'grid-panel';
 
 		this.columns = this.resultSet.columnInfo.map((c, i) => {
@@ -455,6 +456,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
+		this.setupState();
 	}
 
 	public onRemove() {
@@ -507,7 +509,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize());
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -548,12 +550,18 @@ class GridTable<T> extends Disposable implements IView {
 		});
 
 		this.table.grid.onScroll.subscribe((e, data) => {
-			if (!this.scrolled && this.state.scrollPosition && isInDOM(this.container)) {
+			if (!this.visible) {
+				// If the grid is not set up yet it can get scroll events resetting the top to 0px,
+				// so ignore those events
+				return;
+			}
+			if (!this.scrolled && (this.state.scrollPositionY || this.state.scrollPositionX) && isInDOM(this.container)) {
 				this.scrolled = true;
-				this.table.grid.scrollTo(this.state.scrollPosition);
+				this.restoreScrollState();
 			}
 			if (this.state && isInDOM(this.container)) {
-				this.state.scrollPosition = data.scrollTop;
+				this.state.scrollPositionY = data.scrollTop;
+				this.state.scrollPositionX = data.scrollLeft;
 			}
 		});
 
@@ -562,8 +570,13 @@ class GridTable<T> extends Disposable implements IView {
 				this.state.activeCell = this.table.grid.getActiveCell();
 			}
 		});
+	}
 
-		this.setupState();
+	private restoreScrollState() {
+		if (this.state.scrollPositionX || this.state.scrollPositionY) {
+			this.table.grid.scrollTo(this.state.scrollPositionY);
+			this.table.grid.getContainerNode().children[3].scrollLeft = this.state.scrollPositionX;
+		}
 	}
 
 	private setupState() {
@@ -572,19 +585,17 @@ class GridTable<T> extends Disposable implements IView {
 
 		this._register(this.state.onCanBeMaximizedChange(this.rebuildActionBar, this));
 
-		if (this.state.scrollPosition) {
-			// most of the time this won't do anything
-			this.table.grid.scrollTo(this.state.scrollPosition);
-			// the problem here is that the scrolling state slickgrid uses
-			// doesn't work with it offDOM.
-		}
+		this.restoreScrollState();
 
-		if (this.state.selection) {
-			this.selectionModel.setSelectedRanges(this.state.selection);
-		}
+		// Setting the active cell resets the selection so save it here
+		let savedSelection = this.state.selection;
 
 		if (this.state.activeCell) {
 			this.table.setActiveCell(this.state.activeCell.row, this.state.activeCell.cell);
+		}
+
+		if (savedSelection) {
+			this.selectionModel.setSelectedRanges(savedSelection);
 		}
 	}
 

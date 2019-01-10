@@ -175,7 +175,7 @@ export class TaskService implements ITaskService {
 								clearTimeout(timeoutId);
 								if (!isTimeout) {
 									resolve(false);
-								};
+								}
 							});
 							timeoutId = setTimeout(function () {
 								isTimeout = true;
