@@ -428,23 +428,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this.loadActiveContexts(e);
 			});
 		});
+		if (!this.notebookManager) {
+			return;
+		}
 		try {
-			if (this.notebookManager) {
-				let sessionManager = this.notebookManager.sessionManager;
-				if (sessionManager) {
-					let defaultKernel = SparkMagicContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
-					this._defaultKernel = defaultKernel;
-					this._clientSessions.forEach(clientSession => {
-						clientSession.statusChanged(async (session) => {
-							if (session && session.defaultKernelLoaded === true) {
-								this._kernelsChangedEmitter.fire(defaultKernel);
-							} else if (session && !session.defaultKernelLoaded) {
-								this._kernelsChangedEmitter.fire({ name: notebookConstants.python3, display_name: notebookConstants.python3DisplayName });
-							}
-						});
+			let sessionManager = this.notebookManager.sessionManager;
+			if (sessionManager) {
+				let defaultKernel = SparkMagicContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
+				this._defaultKernel = defaultKernel;
+				this._clientSessions.forEach(clientSession => {
+					clientSession.statusChanged(async (session) => {
+						if (session && session.defaultKernelLoaded === true) {
+							this._kernelsChangedEmitter.fire(defaultKernel);
+						} else if (session && !session.defaultKernelLoaded) {
+							this._kernelsChangedEmitter.fire({ name: notebookConstants.python3, display_name: notebookConstants.python3DisplayName });
+						}
 					});
-					this.doChangeKernel(defaultKernel);
-				}
+				});
+				this.doChangeKernel(defaultKernel);
 			}
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
