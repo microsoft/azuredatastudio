@@ -17,7 +17,7 @@ import { IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput, NotebookInputModel, NotebookInputValidator } from 'sql/parts/notebook/notebookInput';
 import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/services/notebook/notebookService';
-import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
+import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 
 const fs = require('fs');
@@ -63,13 +63,14 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 		if (uri && notebookValidator.isNotebookEnabled()) {
 			return withService<INotebookService, NotebookInput>(instantiationService, INotebookService, notebookService => {
 				let fileName: string = 'untitled';
-				let providerId: string = DEFAULT_NOTEBOOK_PROVIDER;
+				let providerIds: string[] = [DEFAULT_NOTEBOOK_PROVIDER];
 				if (input) {
 					fileName = input.getName();
-					providerId = getProviderForFileName(fileName, notebookService);
+					providerIds = getProvidersForFileName(fileName, notebookService);
 				}
 				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
-				notebookInputModel.providerId = providerId;
+				notebookInputModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
+				notebookInputModel.providers = providerIds;
 				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 				return notebookInput;
 			});
