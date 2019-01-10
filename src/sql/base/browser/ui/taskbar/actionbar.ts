@@ -267,6 +267,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		return this._items.length === 0;
 	}
 
+	public items(): IActionItem[] {
+		return this._items;
+	}
+
 	public focus(selectFirst?: boolean): void {
 		if (selectFirst && typeof this._focusedItem === 'undefined') {
 			this._focusedItem = 0;

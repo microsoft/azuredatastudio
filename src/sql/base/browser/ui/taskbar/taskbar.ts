@@ -13,7 +13,7 @@ import { ActionBar } from './actionbar';
 
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Action, IActionRunner, IAction } from 'vs/base/common/actions';
-import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionsOrientation, ActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextMenuProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IToolBarOptions } from 'vs/base/browser/ui/toolbar/toolbar';
 
@@ -112,6 +112,10 @@ export class Taskbar {
 
 	public pull(index: number) {
 		this.actionBar.pull(index);
+	}
+
+	public items(): IAction[] {
+		return this.actionBar.items().map(item => (item as ActionItem).getAction());
 	}
 
 	/**
