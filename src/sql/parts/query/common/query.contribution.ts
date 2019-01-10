@@ -418,8 +418,3 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
-
-
-
-
-
