@@ -263,7 +263,7 @@ namespace v3 {
 					traceback: output.traceback
 				};
 			default:
-				throw new TypeError(localize('unrecogniedOutputType', 'Output type {0} not recognized', output.output_type));
+				throw new TypeError(localize('unrecognizedOutputType', 'Output type {0} not recognized', output.output_type));
 		}
 	};
 
