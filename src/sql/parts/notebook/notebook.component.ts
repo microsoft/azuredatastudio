@@ -322,13 +322,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// If there are any actions that were related to the previous provider,
 		// disable them in the actionBar
 		this._providerRelatedActions.forEach(action => {
-			let foundIndex = this._actionBar.items().findIndex(act => act.id === action.id);
-			if (foundIndex > -1) {
-				this._actionBar.items()[foundIndex].enabled = false;
-			}
+			action.enabled = false;
 		});
 		this.setContextKeyServiceWithProviderId(providerId);
-		this._providerRelatedActions = [];
 		this.fillInActionsForCurrentContext();
 	}
 
@@ -499,12 +495,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private addPrimaryContributedActions(primary: IAction[]) {
 		for (let action of primary) {
 			// Need to ensure that we don't add the same action multiple times
-			let foundIndex = this._actionBar.items().findIndex(act => act.id === action.id);
+			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
 			if (foundIndex < 0) {
 				this._actionBar.addAction(action);
 				this._providerRelatedActions.push(action);
 			} else {
-				this._actionBar.items()[foundIndex].enabled = true;
+				this._providerRelatedActions[foundIndex].enabled = true;
 			}
 		}
 	}
