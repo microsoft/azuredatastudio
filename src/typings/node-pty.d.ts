@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017, Daniel Imms (MIT License).
+ * Copyright (c) 2017, Daniel Imms (Source EULA).
  */
 
 declare module 'node-pty' {

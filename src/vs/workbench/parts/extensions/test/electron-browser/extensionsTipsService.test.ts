@@ -5,13 +5,7 @@
 
 'use strict';
 
-import * as assert from 'assert';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as os from 'os';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as uuid from 'vs/base/common/uuid';
-import { mkdirp } from 'vs/base/node/pfs';
 import {
 	IExtensionGalleryService, IGalleryExtensionAssets, IGalleryExtension, IExtensionManagementService, LocalExtensionType,
 	IExtensionEnablementService, DidInstallExtensionEvent, DidUninstallExtensionEvent, InstallExtensionEvent, IExtensionIdentifier
@@ -36,7 +30,7 @@ import { IPager } from 'vs/base/common/paging';
 import { assign } from 'vs/base/common/objects';
 import { getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope  } from 'vs/platform/storage/common/storage';
 import { IExtensionsWorkbenchService, ConfigurationKey } from 'vs/workbench/parts/extensions/common/extensions';
 import { ExtensionManagementService } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import { ExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/node/extensionsWorkbenchService';
@@ -48,6 +42,8 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { INotificationService, Severity, IPromptChoice } from 'vs/platform/notification/common/notification';
 import { URLService } from 'vs/platform/url/common/urlService';
+import { IExperimentService } from 'vs/workbench/parts/experiments/node/experimentService';
+import { TestExperimentService } from 'vs/workbench/parts/experiments/test/node/experimentService.test';
 
 const mockExtensionGallery: IGalleryExtension[] = [
 	aGalleryExtension('MockExtension1', {
@@ -70,6 +66,7 @@ const mockExtensionGallery: IGalleryExtension[] = [
 			icon: { uri: 'uri:icon', fallbackUri: 'fallback:icon' },
 			license: { uri: 'uri:license', fallbackUri: 'fallback:license' },
 			repository: { uri: 'uri:repository', fallbackUri: 'fallback:repository' },
+			coreTranslations: {}
 		}),
 	aGalleryExtension('MockExtension2', {
 		displayName: 'Mock Extension 2',
@@ -91,6 +88,7 @@ const mockExtensionGallery: IGalleryExtension[] = [
 			icon: { uri: 'uri:icon', fallbackUri: 'fallback:icon' },
 			license: { uri: 'uri:license', fallbackUri: 'fallback:license' },
 			repository: { uri: 'uri:repository', fallbackUri: 'fallback:repository' },
+			coreTranslations: {}
 		})
 ];
 
@@ -148,7 +146,8 @@ const noAssets: IGalleryExtensionAssets = {
 	license: null,
 	manifest: null,
 	readme: null,
-	repository: null
+	repository: null,
+	coreTranslations: null
 };
 
 function aGalleryExtension(name: string, properties: any = {}, galleryExtensionProperties: any = {}, assets: IGalleryExtensionAssets = noAssets): IGalleryExtension {
@@ -160,6 +159,7 @@ function aGalleryExtension(name: string, properties: any = {}, galleryExtensionP
 	return <IGalleryExtension>galleryExtension;
 }
 
+// {{SQ|L CARBON EDIT}} disable broken tests
 suite('ExtensionsTipsService Test', () => {
 	test('ExtensionTipsService: No Prompt for valid workspace recommendations when galleryService is absent', () => {
 	});

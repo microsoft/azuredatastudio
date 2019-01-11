@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { EditorDescriptor } from 'vs/workbench/browser/editor';
-import { IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
+import { IEditorRegistry, Extensions as EditorExtensions, EditorDescriptor } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { TaskDialogEditor } from 'sql/parts/tasks/dialog/taskDialogEditor';

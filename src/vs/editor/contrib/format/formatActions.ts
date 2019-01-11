@@ -14,7 +14,7 @@ import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { registerEditorAction, ServicesAccessor, EditorAction, registerEditorContribution, IActionOptions } from 'vs/editor/browser/editorExtensions';
 import { OnTypeFormattingEditProviderRegistry, DocumentRangeFormattingEditProviderRegistry } from 'vs/editor/common/modes';
 import { getOnTypeFormattingEdits, getDocumentFormattingEdits, getDocumentRangeFormattingEdits, NoProviderError } from 'vs/editor/contrib/format/format';
-import { EditOperationsCommand } from 'vs/editor/contrib/format/formatCommand';
+import { FormattingEdit } from 'vs/editor/contrib/format/formattingEdit';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { IEditorWorkerService } from 'vs/editor/common/services/editorWorkerService';
@@ -26,6 +26,7 @@ import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { ISingleEditOperation } from 'vs/editor/common/model';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 
 
 function alertFormattingEdits(edits: ISingleEditOperation[]): void {
@@ -91,10 +92,10 @@ class FormatOnType implements editorCommon.IEditorContribution {
 			return;
 		}
 
-		var model = this.editor.getModel();
+		const model = this.editor.getModel();
 
 		// no support
-		var [support] = OnTypeFormattingEditProviderRegistry.ordered(model);
+		const [support] = OnTypeFormattingEditProviderRegistry.ordered(model);
 		if (!support || !support.autoFormatTriggerCharacters) {
 			return;
 		}
@@ -118,14 +119,14 @@ class FormatOnType implements editorCommon.IEditorContribution {
 			return;
 		}
 
-		var model = this.editor.getModel(),
-			position = this.editor.getPosition(),
-			canceled = false;
+		const model = this.editor.getModel();
+		const position = this.editor.getPosition();
+		let canceled = false;
 
 		// install a listener that checks if edits happens before the
 		// position on which we format right now. If so, we won't
 		// apply the format edits
-		var unbind = this.editor.onDidChangeModelContent((e) => {
+		const unbind = this.editor.onDidChangeModelContent((e) => {
 			if (e.isFlush) {
 				// a model.setValue() was called
 				// cancel only once
@@ -161,7 +162,7 @@ class FormatOnType implements editorCommon.IEditorContribution {
 				return;
 			}
 
-			EditOperationsCommand.executeAsCommand(this.editor, edits);
+			FormattingEdit.execute(this.editor, edits);
 			alertFormattingEdits(edits);
 
 		}, (err) => {
@@ -244,7 +245,7 @@ class FormatOnPaste implements editorCommon.IEditorContribution {
 			if (!state.validate(this.editor) || isFalsyOrEmpty(edits)) {
 				return;
 			}
-			EditOperationsCommand.execute(this.editor, edits);
+			FormattingEdit.execute(this.editor, edits);
 			alertFormattingEdits(edits);
 		});
 	}
@@ -280,7 +281,7 @@ export abstract class AbstractFormatAction extends EditorAction {
 				return;
 			}
 
-			EditOperationsCommand.execute(editor, edits);
+			FormattingEdit.execute(editor, edits);
 			alertFormattingEdits(edits);
 			editor.focus();
 		}, err => {
@@ -310,7 +311,8 @@ export class FormatDocumentAction extends AbstractFormatAction {
 				kbExpr: EditorContextKeys.editorTextFocus,
 				primary: KeyMod.Shift | KeyMod.Alt | KeyCode.KEY_F,
 				// secondary: [KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_D)],
-				linux: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_I }
+				linux: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_I },
+				weight: KeybindingWeight.EditorContrib
 			},
 			menuOpts: {
 				when: EditorContextKeys.hasDocumentFormattingProvider,
@@ -341,7 +343,8 @@ export class FormatSelectionAction extends AbstractFormatAction {
 			precondition: ContextKeyExpr.and(EditorContextKeys.writable, EditorContextKeys.hasNonEmptySelection),
 			kbOpts: {
 				kbExpr: EditorContextKeys.editorTextFocus,
-				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_F)
+				primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_K, KeyMod.CtrlCmd | KeyCode.KEY_F),
+				weight: KeybindingWeight.EditorContrib
 			},
 			menuOpts: {
 				when: ContextKeyExpr.and(EditorContextKeys.hasDocumentSelectionFormattingProvider, EditorContextKeys.hasNonEmptySelection),

@@ -18,6 +18,7 @@ import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -43,9 +44,10 @@ export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(INotificationService) notificationService: INotificationService,
-		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService
+		@Inject(IAngularEventingService) angularEventingService: IAngularEventingService,
+		@Inject(IConfigurationService) configurationService: IConfigurationService
 	) {
-		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService);
+		super(dashboardService, el, _cd, instantiationService, notificationService, angularEventingService, configurationService);
 		this._register(dashboardService.onUpdatePage(() => {
 			this.refresh(true);
 			this._cd.detectChanges();

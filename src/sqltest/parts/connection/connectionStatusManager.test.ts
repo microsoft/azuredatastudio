@@ -17,6 +17,7 @@ let connections: ConnectionStatusManager;
 let capabilitiesService: CapabilitiesTestService;
 let connectionProfileObject: ConnectionProfile;
 let connectionProfile: IConnectionProfile = {
+	connectionName: 'new name',
 	serverName: 'new server',
 	databaseName: 'database',
 	userName: 'user',
@@ -33,6 +34,7 @@ let connectionProfile: IConnectionProfile = {
 	id: undefined
 };
 let editorConnectionProfile: IConnectionProfile = {
+	connectionName: 'new name',
 	serverName: 'new server',
 	databaseName: 'database',
 	userName: 'user',
@@ -49,6 +51,7 @@ let editorConnectionProfile: IConnectionProfile = {
 	id: undefined
 };
 let connectionProfileWithoutDbName: IConnectionProfile = {
+	connectionName: 'new name',
 	serverName: 'new server',
 	databaseName: '',
 	userName: 'user',

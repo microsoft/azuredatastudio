@@ -5,8 +5,6 @@
 
 'use strict';
 
-import { range } from 'vs/base/common/arrays';
-
 export interface IRowNumberColumnOptions {
 	numberOfRows: number;
 	cssClass?: string;
@@ -17,7 +15,7 @@ const sizePerDigit = 15;
 export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handler = new Slick.EventHandler();
 	private grid: Slick.Grid<T>;
-
+	private currentColumnWidth: number;
 
 	constructor(private options: IRowNumberColumnOptions) {
 	}
@@ -36,23 +34,38 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	private handleClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>): void {
 		if (this.grid.getColumns()[args.cell].id === 'rowNumber') {
 			this.grid.setActiveCell(args.row, 1);
-			this.grid.setSelectedRows([args.row]);
+			if (this.grid.getSelectionModel()) {
+				this.grid.setSelectedRows([args.row]);
+			}
 		}
 	}
 
 	private handleHeaderClick(e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>): void {
 		if (args.column.id === 'rowNumber') {
 			this.grid.setActiveCell(0, 1);
-			this.grid.setSelectedRows(range(this.grid.getDataLength()));
+			let selectionModel = this.grid.getSelectionModel();
+			if (selectionModel) {
+				selectionModel.setSelectedRanges([new Slick.Range(0, 0, this.grid.getDataLength() - 1, this.grid.getColumns().length - 1)]);
+			}
+		}
+	}
+
+	public updateRowCount(rowNum: number) {
+		this.options.numberOfRows = rowNum;
+		let columnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
+		if (columnWidth !== this.currentColumnWidth) {
+			this.grid.setColumnWidths([this.getColumnDefinition()]);
 		}
 	}
 
 	public getColumnDefinition(): Slick.Column<T> {
+		// that smallest we can make it is 22 due to padding and margins in the cells
+		this.currentColumnWidth = Math.max(this.options.numberOfRows.toString().length * sizePerDigit, 22);
 		return {
 			id: 'rowNumber',
 			name: '',
 			field: 'rowNumber',
-			width: this.options.numberOfRows.toString().length * sizePerDigit,
+			width: this.currentColumnWidth,
 			resizable: false,
 			cssClass: this.options.cssClass,
 			focusable: false,

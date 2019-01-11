@@ -11,7 +11,7 @@ import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/part
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { InsightActionContext } from 'sql/workbench/common/actions';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RunInsightQueryAction extends Action {
 	public static ID = 'runQuery';
@@ -22,7 +22,7 @@ export class RunInsightQueryAction extends Action {
 		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
 		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService protected _workbenchEditorService: IWorkbenchEditorService
+		@IEditorService protected _workbenchEditorService: IEditorService
 	) {
 		super(id, label);
 	}

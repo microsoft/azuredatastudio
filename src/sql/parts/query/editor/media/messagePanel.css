@@ -1,0 +1,42 @@
+
+/* Disable repl hover highlight in tree. */
+.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows > .monaco-tree-row:hover:not(.highlighted):not(.selected):not(.focused)  {
+	background-color: inherit;
+}
+
+/* Disable repl hover highlight in tree. */
+.monaco-workbench .message-tree .monaco-tree .monaco-tree-row > .content {
+	line-height: 18px;
+    user-select: text;
+    word-wrap: break-word;
+    /* white-space: pre-wrap; */
+    word-break: break-all;
+}
+
+.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows>.monaco-tree-row {
+	cursor: default;
+}
+
+.message-tree .time-stamp {
+	width: 100px;
+	display: inline-block;
+}
+
+.message-tree .message,
+.message-tree .batch-start,
+.message-tree .error-message {
+	display: inline-block;
+}
+
+.message-tree .batch-start {
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.message-tree .error-message {
+	color: red;
+}
+
+.message-tree .batch-start:hover {
+	color: red;
+}

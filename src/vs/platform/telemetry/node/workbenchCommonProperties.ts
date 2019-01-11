@@ -41,6 +41,8 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 		// result['common.instanceId'] = getOrCreateInstanceId(storageService);
 		result['common.instanceId'] = '';
 
+		// {{SQL CARBON EDIT}}
+		setUsageDates(storageService);
 		return result;
 	});
 }
@@ -51,3 +53,20 @@ export function resolveWorkbenchCommonProperties(storageService: IStorageService
 // 	storageService.store('telemetry.instanceId', result);
 // 	return result;
 // }
+
+// {{SQL CARBON EDIT}}
+function setUsageDates(storageService: IStorageService): void {
+	// daily last usage date
+	const appStartDate = new Date('January 1, 2000');
+	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate') || appStartDate;
+	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate);
+
+	// weekly last usage date
+	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate') || appStartDate;
+	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate);
+
+	// monthly last usage date
+	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate') || appStartDate;
+	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate);
+
+}

@@ -9,6 +9,36 @@ import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+
+import { GridPanelState } from 'sql/parts/query/editor/gridPanel';
+import { MessagePanelState } from 'sql/parts/query/editor/messagePanel';
+import { QueryPlanState } from 'sql/parts/queryPlan/queryPlan';
+import { ChartState } from 'sql/parts/query/editor/charting/chartView';
+import { TopOperationsState } from 'sql/parts/queryPlan/topOperations';
+
+export class ResultsViewState {
+	public gridPanelState: GridPanelState = new GridPanelState();
+	public messagePanelState: MessagePanelState = new MessagePanelState(this.configurationService);
+	public chartState: ChartState = new ChartState();
+	public queryPlanState: QueryPlanState = new QueryPlanState();
+	public topOperationsState = new TopOperationsState();
+	public gridPanelSize: number;
+	public messagePanelSize: number;
+	public activeTab: string;
+	public visibleTabs: Set<string> = new Set<string>();
+
+	constructor(@IConfigurationService private configurationService: IConfigurationService) {
+
+	}
+
+	dispose() {
+		this.gridPanelState.dispose();
+		this.messagePanelState.dispose();
+		this.chartState.dispose();
+		this.queryPlanState.dispose();
+	}
+}
 
 /**
  * Input for the QueryResultsEditor. This input helps with logic for the viewing and editing of
@@ -29,10 +59,24 @@ export class QueryResultsInput extends EditorInput {
 	public readonly onRestoreViewStateEmitter = new Emitter<void>();
 	public readonly onSaveViewStateEmitter = new Emitter<void>();
 
-	constructor(private _uri: string) {
+	private _state = new ResultsViewState(this.configurationService);
+
+	public get state(): ResultsViewState {
+		return this._state;
+	}
+
+	constructor(private _uri: string,
+		@IConfigurationService private configurationService: IConfigurationService
+	) {
 		super();
 		this._visible = false;
 		this._hasBootstrapped = false;
+	}
+
+	close() {
+		this.state.dispose();
+		this._state = undefined;
+		super.close();
 	}
 
 	getTypeId(): string {

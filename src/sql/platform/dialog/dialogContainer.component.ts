@@ -13,10 +13,14 @@ import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 
+export interface LayoutRequestParams {
+	modelViewId?: string;
+	alwaysRefresh?: boolean;
+}
 export interface DialogComponentParams extends IBootstrapParams {
 	modelViewId: string;
 	validityChangedCallback: (valid: boolean) => void;
-	onLayoutRequested: Event<string>;
+	onLayoutRequested: Event<LayoutRequestParams>;
 	dialogPane: DialogPane;
 }
 
@@ -30,10 +34,12 @@ export interface DialogComponentParams extends IBootstrapParams {
 				<h1 class="wizardPageTitle">{{_dialogPane.title}}</h1>
 				<div *ngIf="_dialogPane.description">{{_dialogPane.description}}</div>
 			</div>
-			<modelview-content [modelViewId]="modelViewId" style="flex: 1 1 auto; position: relative;">
-			</modelview-content>
+			<div style="flex: 1 1 auto; position: relative;">
+				<modelview-content [modelViewId]="modelViewId" style="width: 100%; height: 100%; position: absolute;">
+				</modelview-content>
+			</div>
 		</div>
-		<modelview-content [modelViewId]="modelViewId" *ngIf="!_dialogPane || !_dialogPane.displayPageTitle" style="flex: 1 1 auto; position: relative;">
+		<modelview-content [modelViewId]="modelViewId" *ngIf="!_dialogPane || !_dialogPane.displayPageTitle">
 		</modelview-content>
 	`
 })
@@ -48,8 +54,8 @@ export class DialogContainer implements AfterViewInit {
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IBootstrapParams) private _params: DialogComponentParams) {
 		this.modelViewId = this._params.modelViewId;
-		this._params.onLayoutRequested(e => {
-			if (this.modelViewId === e) {
+		this._params.onLayoutRequested(layoutParams => {
+			if (layoutParams && (layoutParams.alwaysRefresh || layoutParams.modelViewId === this.modelViewId)) {
 				this.layout();
 			}
 		});

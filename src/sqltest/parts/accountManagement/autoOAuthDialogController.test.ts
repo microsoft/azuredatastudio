@@ -38,7 +38,7 @@ suite('auto OAuth dialog controller tests', () => {
 		mockOnCloseEvent = new Emitter<void>();
 
 		// Create a mock auto OAuth dialog
-		let autoOAuthDialog = new AutoOAuthDialog(null, null, null, null, new ContextKeyServiceStub());
+		let autoOAuthDialog = new AutoOAuthDialog(null, null, null, null, new ContextKeyServiceStub(), null);
 		mockAutoOAuthDialog = TypeMoq.Mock.ofInstance(autoOAuthDialog);
 
 		mockAutoOAuthDialog.setup(x => x.onCancel).returns(() => mockOnCancelEvent.event);
@@ -71,7 +71,7 @@ suite('auto OAuth dialog controller tests', () => {
 
 	});
 
-	test('Open auto OAuth when the flyout is already open, return an error', () => {
+	test('Open auto OAuth when the flyout is already open, return an error', (done) => {
 
 		// If: Open auto OAuth dialog first time
 		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri);
@@ -81,7 +81,8 @@ suite('auto OAuth dialog controller tests', () => {
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
 
 		// If: a oauth flyout is already open
-		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri);
+		autoOAuthDialogController.openAutoOAuthDialog(providerId, title, message, userCode, uri)
+		.then(success => done('Failure: Expected error on 2nd dialog open'), error => done());
 
 		// Then: An error dialog should have been opened
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());

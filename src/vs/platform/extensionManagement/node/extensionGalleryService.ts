@@ -9,7 +9,7 @@ import * as path from 'path';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { distinct } from 'vs/base/common/arrays';
 import { getErrorMessage, isPromiseCanceledError } from 'vs/base/common/errors';
-import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionManifest, IExtensionIdentifier, IReportedExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionManifest, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { assign, getOrDefault } from 'vs/base/common/objects';
 import { IRequestService } from 'vs/platform/request/node/request';
@@ -24,6 +24,9 @@ import { readFile } from 'vs/base/node/pfs';
 import { writeFileAndFlushSync } from 'vs/base/node/extfs';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
+// {{SQL CARBON EDIT}}
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/parts/extensions/common/extensions';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -117,6 +120,7 @@ const AssetType = {
 
 const PropertyType = {
 	Dependency: 'Microsoft.VisualStudio.Code.ExtensionDependencies',
+	ExtensionPack: 'Microsoft.VisualStudio.Code.ExtensionPack',
 	Engine: 'Microsoft.VisualStudio.Code.Engine'
 };
 
@@ -205,6 +209,15 @@ function getStatistic(statistics: IRawGalleryExtensionStatistics[], name: string
 	return result ? result.value : 0;
 }
 
+function getCoreTranslationAssets(version: IRawGalleryExtensionVersion): { [languageId: string]: IGalleryExtensionAsset } {
+	const coreTranslationAssetPrefix = 'Microsoft.VisualStudio.Code.Translation.';
+	const result = version.files.filter(f => f.assetType.indexOf(coreTranslationAssetPrefix) === 0);
+	return result.reduce((result, file) => {
+		result[file.assetType.substring(coreTranslationAssetPrefix.length)] = getVersionAsset(version, file.assetType);
+		return result;
+	}, {});
+}
+
 function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IGalleryExtensionAsset {
 	const result = version.files.filter(f => f.assetType === type)[0];
 
@@ -253,8 +266,8 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 	if (type === AssetType.VSIX) {
 		return {
 			// {{SQL CARBON EDIT}}
-			uri: uriFromSource || `${version.fallbackAssetUri}/${type}?redirect=true&install=true`,
-			fallbackUri: `${version.fallbackAssetUri}/${type}?install=true`
+			uri: uriFromSource || `${version.fallbackAssetUri}/${type}?redirect=true`,
+			fallbackUri: `${version.fallbackAssetUri}/${type}`
 		};
 	}
 
@@ -272,8 +285,8 @@ function getVersionAsset(version: IRawGalleryExtensionVersion, type: string): IG
 	}
 }
 
-function getDependencies(version: IRawGalleryExtensionVersion): string[] {
-	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.Dependency) : [];
+function getExtensions(version: IRawGalleryExtensionVersion, property: string): string[] {
+	const values = version.properties ? version.properties.filter(p => p.key === property) : [];
 	const value = values.length > 0 && values[0].value;
 	return value ? value.split(',').map(v => adoptToGalleryExtensionId(v)) : [];
 }
@@ -299,6 +312,7 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 		icon: getVersionAsset(version, AssetType.Icon),
 		license: getVersionAsset(version, AssetType.License),
 		repository: getVersionAsset(version, AssetType.Repository),
+		coreTranslations: getCoreTranslationAssets(version)
 	};
 
 	return {
@@ -314,18 +328,19 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 		publisher: galleryExtension.publisher.publisherName,
 		publisherDisplayName: galleryExtension.publisher.displayName,
 		description: galleryExtension.shortDescription || '',
-		installCount: getStatistic(galleryExtension.statistics, 'install'),
+		installCount: getStatistic(galleryExtension.statistics, 'install') + getStatistic(galleryExtension.statistics, 'updateCount'),
 		rating: getStatistic(galleryExtension.statistics, 'averagerating'),
 		ratingCount: getStatistic(galleryExtension.statistics, 'ratingcount'),
 		assets,
 		properties: {
-			dependencies: getDependencies(version),
+			dependencies: getExtensions(version, PropertyType.Dependency),
+			extensionPack: getExtensions(version, PropertyType.ExtensionPack),
 			engine: getEngine(version)
 		},
 		/* __GDPR__FRAGMENT__
 			"GalleryExtensionTelemetryData2" : {
 				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-				"searchText": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+				"searchText": { "classification": "CustomerContent", "purpose": "FeatureInsight" },
 				"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
 		*/
@@ -355,7 +370,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	constructor(
 		@IRequestService private requestService: IRequestService,
 		@IEnvironmentService private environmentService: IEnvironmentService,
-		@ITelemetryService private telemetryService: ITelemetryService
+		@ITelemetryService private telemetryService: ITelemetryService,
+		// {{SQL CARBON EDIT}}
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		const config = product.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
@@ -384,7 +401,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		/* __GDPR__
 			"galleryService:query" : {
 				"type" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-				"text": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+				"text": { "classification": "CustomerContent", "purpose": "FeatureInsight" }
 			}
 		*/
 		this.telemetryService.publicLog('galleryService:query', { type, text });
@@ -393,8 +410,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withFlags(Flags.IncludeLatestVersionOnly, Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
 			.withPage(1, pageSize)
 			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
-			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished))
-			.withAssetTypes(AssetType.Icon, AssetType.License, AssetType.Details, AssetType.Manifest, AssetType.VSIX, AssetType.Changelog);
+			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
 
 		if (text) {
 			// Use category filter instead of "category:themes"
@@ -497,6 +513,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		}
 
 		let actualTotal = filteredExtensions.length;
+
+		// {{SQL CARBON EDIT}}
+		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (extensionPolicy === ExtensionsPolicy.allowMicrosoft) {
+			filteredExtensions = filteredExtensions.filter(ext => ext.publisher && ext.publisher.displayName === 'Microsoft');
+		}
 		return { galleryExtensions: filteredExtensions, total: actualTotal };
 	}
 
@@ -540,7 +562,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				headers
 			}).then(context => {
 
-				if (context.res.statusCode >= 400 && context.res.statusCode < 500) {
+				// {{SQL CARBON EDIT}}
+				let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+				if (context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
 					return { galleryExtensions: [], total: 0 };
 				}
 
@@ -575,7 +599,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	download(extension: IGalleryExtension): TPromise<string> {
+	download(extension: IGalleryExtension, operation: InstallOperation): TPromise<string> {
 		return this.loadCompatibleVersion(extension)
 			.then(extension => {
 				if (!extension) {
@@ -594,7 +618,15 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				*/
 				const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
 
-				return this.getAsset(extension.assets.download)
+				// {{SQL Carbon Edit}} - Don't append install or update on to the URL
+				// const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
+				const operationParam = undefined;
+				const downloadAsset = operationParam ? {
+					uri: `${extension.assets.download.uri}&${operationParam}=true`,
+					fallbackUri: `${extension.assets.download.fallbackUri}?${operationParam}=true`
+				} : extension.assets.download;
+
+				return this.getAsset(downloadAsset)
 					.then(context => download(zipPath, context))
 					.then(() => log(new Date().getTime() - startTime))
 					.then(() => zipPath);
@@ -610,6 +642,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getAsset(extension.assets.manifest)
 			.then(asText)
 			.then(JSON.parse);
+	}
+
+	getCoreTranslation(extension: IGalleryExtension, languageId: string): TPromise<ITranslation> {
+		const asset = extension.assets.coreTranslations[languageId.toUpperCase()];
+		if (asset) {
+			return this.getAsset(asset)
+				.then(asText)
+				.then(JSON.parse);
+		}
+		return TPromise.as(null);
 	}
 
 	getChangelog(extension: IGalleryExtension): TPromise<string> {
@@ -645,7 +687,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				return this.getLastValidExtensionVersion(rawExtension, rawExtension.versions)
 					.then(rawVersion => {
 						if (rawVersion) {
-							extension.properties.dependencies = getDependencies(rawVersion);
+							extension.properties.dependencies = getExtensions(rawVersion, PropertyType.Dependency);
 							extension.properties.engine = getEngine(rawVersion);
 							// {{SQL CARBON EDIT}}
 							extension.assets.download = getVersionAsset(rawVersion, AssetType.VSIX);

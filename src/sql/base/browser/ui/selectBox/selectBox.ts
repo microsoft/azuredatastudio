@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
+import 'vs/css!./media/selectBox';
+
 import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISelectBoxOptions } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
@@ -30,6 +32,7 @@ export class SelectBox extends vsSelectBox {
 	private _optionsDictionary;
 	private _dialogOptions: string[];
 	private _selectedOption: string;
+	private _selectBoxOptions: ISelectBoxOptions;
 	private enabledSelectBackground: Color;
 	private enabledSelectForeground: Color;
 	private enabledSelectBorder: Color;
@@ -69,6 +72,15 @@ export class SelectBox extends vsSelectBox {
 		if (container) {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
 		}
+
+		// explicitly set the accessible role so that the screen readers can read the control type properly
+		this.selectElement.setAttribute('role', 'combobox');
+
+		this._selectBoxOptions = selectBoxOptions;
+		var focusTracker = dom.trackFocus(this.selectElement);
+		this._register(focusTracker);
+		this._register(focusTracker.onDidBlur(() => this._hideMessage()));
+		this._register(focusTracker.onDidFocus(() => this._showMessage()));
 	}
 
 	public style(styles: ISelectBoxStyles): void {
@@ -115,6 +127,10 @@ export class SelectBox extends vsSelectBox {
 		return this._selectedOption;
 	}
 
+	public get values(): string[] {
+		return this._dialogOptions;
+	}
+
 	public enable(): void {
 		this.selectElement.disabled = false;
 		this.selectBackground = this.enabledSelectBackground;
@@ -129,6 +145,10 @@ export class SelectBox extends vsSelectBox {
 		this.selectForeground = this.disabledSelectForeground;
 		this.selectBorder = this.disabledSelectBorder;
 		this.applyStyles();
+	}
+
+	public hasFocus(): boolean {
+		return document.activeElement === this.selectElement;
 	}
 
 	public showMessage(message: IMessage): void {
@@ -152,7 +172,9 @@ export class SelectBox extends vsSelectBox {
 
 		aria.alert(alertText);
 
-		this._showMessage();
+		if (this.hasFocus()) {
+			this._showMessage();
+		}
 	}
 
 	public _showMessage(): void {
@@ -223,4 +245,34 @@ export class SelectBox extends vsSelectBox {
 			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground };
 		}
 	}
+
+	public render(container: HTMLElement): void {
+		let selectOptions: ISelectBoxOptionsWithLabel = this._selectBoxOptions as ISelectBoxOptionsWithLabel;
+
+		if (selectOptions && selectOptions.labelText && selectOptions.labelText !== undefined) {
+			let outerContainer = document.createElement('div');
+			let selectContainer = document.createElement('div');
+
+			outerContainer.className = selectOptions.labelOnTop ? 'labelOnTopContainer' : 'labelOnLeftContainer';
+
+			let labelText = document.createElement('div');
+			labelText.className = 'action-item-label';
+			labelText.innerHTML = selectOptions.labelText;
+
+			container.appendChild(outerContainer);
+			outerContainer.appendChild(labelText);
+			outerContainer.appendChild(selectContainer);
+
+			super.render(selectContainer);
+			this.selectElement.classList.add('action-item-label');
+		}
+		else {
+			super.render(container);
+		}
+	}
+}
+
+export interface ISelectBoxOptionsWithLabel extends ISelectBoxOptions {
+	labelText?: string;
+	labelOnTop?: boolean;
 }

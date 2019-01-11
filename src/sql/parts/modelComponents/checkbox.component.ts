@@ -14,6 +14,8 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { attachCheckboxStyler } from 'sql/common/theme/styler';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 @Component({
 	selector: 'modelview-checkbox',
@@ -29,8 +31,10 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -49,11 +53,12 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 			this._register(this._input);
 			this._register(this._input.onChange(e => {
 				this.checked = this._input.checked;
-				this._onEventEmitter.fire({
+				this.fireEvent({
 					eventType: ComponentEventType.onDidChange,
 					args: e
 				});
 			}));
+			this._register(attachCheckboxStyler(this._input, this.themeService));
 		}
 	}
 
@@ -62,10 +67,6 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel

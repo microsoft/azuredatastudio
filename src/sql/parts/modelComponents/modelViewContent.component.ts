@@ -25,7 +25,7 @@ import * as sqlops from 'sqlops';
 @Component({
 	selector: 'modelview-content',
 	template: `
-		<div *ngIf="rootDescriptor" style="width: 100%; height: 100%; position: absolute;">
+	<div *ngIf="rootDescriptor" style="width: 100%; height: 100%;">
 			<model-component-wrapper style="display: block; height: 100%" [descriptor]="rootDescriptor" [modelStore]="modelStore">
 			</model-component-wrapper>
 		</div>

@@ -5,20 +5,18 @@
 
 import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
+import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
 
 import { IThemable } from 'vs/platform/theme/common/styler';
-import { IListStyles } from 'vs/base/browser/ui/list/listWidget';
 import * as DOM from 'vs/base/browser/dom';
-import { Color } from 'vs/base/common/color';
 import { mixin } from 'vs/base/common/objects';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Widget } from 'vs/base/browser/ui/widget';
-
-export interface ITableStyles extends IListStyles {
-	tableHeaderBackground?: Color;
-	tableHeaderForeground?: Color;
-}
+import { isArray, isBoolean } from 'vs/base/common/types';
+import { Event, Emitter } from 'vs/base/common/event';
+import { range } from 'vs/base/common/arrays';
+import { $ } from 'vs/base/browser/builder';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -27,30 +25,39 @@ function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	};
 }
 
-export class Table<T extends Slick.SlickData> extends Widget implements IThemable {
+export class Table<T extends Slick.SlickData> extends Widget implements IThemable, IDisposable {
 	private styleElement: HTMLStyleElement;
 	private idPrefix: string;
 
 	private _grid: Slick.Grid<T>;
 	private _columns: Slick.Column<T>[];
-	private _data: TableDataView<T>;
+	private _data: IDisposableDataProvider<T>;
+	private _sorter: ITableSorter<T>;
+
 	private _autoscroll: boolean;
-	private _onRowCountChangeListener: IDisposable;
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
 	private _classChangeTimeout: number;
 
-	constructor(parent: HTMLElement, data?: Array<T> | TableDataView<T>, columns?: Slick.Column<T>[], options?: Slick.GridOptions<T>) {
+	private _onContextMenu = new Emitter<ITableMouseEvent>();
+	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;
+
+	private _onClick = new Emitter<ITableMouseEvent>();
+	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
+
+	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
-		if (data instanceof TableDataView) {
-			this._data = data;
+		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
+			this._data = new TableDataView<T>(configuration && configuration.dataProvider as Array<T>);
 		} else {
-			this._data = new TableDataView<T>(data);
+			this._data = configuration.dataProvider;
 		}
 
-		if (columns) {
-			this._columns = columns;
+		this._register(this._data);
+
+		if (configuration && configuration.columns) {
+			this._columns = configuration.columns;
 		} else {
 			this._columns = new Array<Slick.Column<T>>();
 		}
@@ -81,15 +88,45 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		this._grid = new Slick.Grid<T>(this._tableContainer, this._data, this._columns, newOptions);
 		this.idPrefix = this._tableContainer.classList[0];
 		DOM.addClass(this._container, this.idPrefix);
-		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
-		this._grid.onSort.subscribe((e, args) => {
-			this._data.sort(args);
-			this._grid.invalidate();
-			this._grid.render();
+		if (configuration && configuration.sorter) {
+			this._sorter = configuration.sorter;
+			this._grid.onSort.subscribe((e, args) => {
+				this._sorter.sort(args);
+				this._grid.invalidate();
+				this._grid.render();
+			});
+		}
+
+		this._register({
+			dispose: () => {
+				this._grid.destroy();
+			}
+		});
+
+		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
+		this.mapMouseEvent(this._grid.onClick, this._onClick);
+	}
+
+	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {
+		slickEvent.subscribe((e: JQuery.Event) => {
+			const originalEvent = e.originalEvent;
+			const cell = this._grid.getCellFromEvent(originalEvent);
+			const anchor = originalEvent instanceof MouseEvent ? { x: originalEvent.x, y: originalEvent.y } : originalEvent.srcElement as HTMLElement;
+			emitter.fire({ anchor, cell });
 		});
 	}
 
-	private _handleRowCountChange() {
+	public dispose() {
+		$(this._container).dispose();
+		super.dispose();
+	}
+
+	public invalidateRows(rows: number[], keepEditor: boolean) {
+		this._grid.invalidateRows(rows, keepEditor);
+		this._grid.render();
+	}
+
+	public updateRowCount() {
 		this._grid.updateRowCount();
 		this._grid.render();
 		if (this._autoscroll) {
@@ -113,20 +150,26 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 		} else {
 			this._data = new TableDataView<T>(data);
 		}
-		this._onRowCountChangeListener.dispose();
 		this._grid.setData(this._data, true);
-		this._onRowCountChangeListener = this._data.onRowCountChange(() => this._handleRowCountChange());
+	}
+
+	getData(): IDisposableDataProvider<T> {
+		return this._data;
 	}
 
 	get columns(): Slick.Column<T>[] {
 		return this._grid.getColumns();
 	}
 
-	setSelectedRows(rows: number[]) {
-		this._grid.setSelectedRows(rows);
+	public setSelectedRows(rows: number[] | boolean) {
+		if (isBoolean(rows)) {
+			this._grid.setSelectedRows(range(this._grid.getDataLength()));
+		} else {
+			this._grid.setSelectedRows(rows);
+		}
 	}
 
-	getSelectedRows(): number[] {
+	public getSelectedRows(): number[] {
 		return this._grid.getSelectedRows();
 	}
 
@@ -141,21 +184,6 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 				}
 			}
 		};
-	}
-
-	onContextMenu(fn: (e: Slick.EventData, data: Slick.OnContextMenuEventArgs<T>) => any): IDisposable;
-	onContextMenu(fn: (e: DOMEvent, data: Slick.OnContextMenuEventArgs<T>) => any): IDisposable;
-	onContextMenu(fn: any): IDisposable {
-		this._grid.onContextMenu.subscribe(fn);
-		return {
-			dispose: () => {
-				this._grid.onContextMenu.unsubscribe(fn);
-			}
-		};
-	}
-
-	getCellFromEvent(e: DOMEvent): Slick.Cell {
-		return this._grid.getCellFromEvent(e);
 	}
 
 	setSelectionModel(model: Slick.SelectionModel<T, Array<Slick.Range>>) {
@@ -194,7 +222,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 			this._tableContainer.style.width = sizing.width + 'px';
 			this._tableContainer.style.height = sizing.height + 'px';
 		} else {
-			if (orientation === Orientation.HORIZONTAL) {
+			if (orientation === Orientation.VERTICAL) {
 				this._container.style.width = '100%';
 				this._container.style.height = sizing + 'px';
 				this._tableContainer.style.width = '100%';
@@ -270,10 +298,15 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 		if (styles.listHoverBackground) {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { background-color:  ${styles.listHoverBackground}; }`);
+			// handle no coloring during drag
+			content.push(`.monaco-table.${this.idPrefix} .drag .slick-row:hover { background-color: inherit; }`);
+
 		}
 
 		if (styles.listHoverForeground) {
 			content.push(`.monaco-table.${this.idPrefix} .slick-row:hover { color:  ${styles.listHoverForeground}; }`);
+			// handle no coloring during drag
+			content.push(`.monaco-table.${this.idPrefix} .drag .slick-row:hover { color: inherit; }`);
 		}
 
 		if (styles.listSelectionOutline) {

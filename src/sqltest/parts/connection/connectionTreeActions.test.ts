@@ -85,6 +85,7 @@ suite('SQL Connection Tree Action tests', () => {
 	test('ManageConnectionAction - test if connect is called for manage action if not already connected', (done) => {
 		let isConnectedReturnValue: boolean = false;
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -93,8 +94,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
@@ -122,6 +121,7 @@ suite('SQL Connection Tree Action tests', () => {
 	test('ManageConnectionAction - test if connect is called for manage action on database node if not already connected', (done) => {
 		let isConnectedReturnValue: boolean = false;
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -130,8 +130,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
@@ -162,6 +160,7 @@ suite('SQL Connection Tree Action tests', () => {
 	test('DisconnectConnectionAction - test if disconnect is called when profile is connected', (done) => {
 		let isConnectedReturnValue: boolean = true;
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -170,8 +169,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
@@ -274,6 +271,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionManagementService = createConnectionManagementService(true, undefined);
 
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -282,8 +280,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
@@ -320,6 +316,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, undefined);
 
 		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -328,8 +325,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
@@ -356,6 +351,7 @@ suite('SQL Connection Tree Action tests', () => {
 		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		var connection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -364,8 +360,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,
@@ -444,6 +438,7 @@ suite('SQL Connection Tree Action tests', () => {
 		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 		var connection = new ConnectionProfile(capabilitiesService, {
+			connectionName: 'Test',
 			savePassword: false,
 			groupFullName: 'testGroup',
 			serverName: 'testServerName',
@@ -452,8 +447,6 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			getOptionsKey: undefined,
-			matches: undefined,
 			providerName: 'MSSQL',
 			options: {},
 			saveProfile: true,

@@ -27,7 +27,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
-import { IEditorInput } from 'vs/platform/editor/common/editor';
+import { PROFILER_MAX_MATCHES } from 'sql/parts/profiler/editor/controller/profilerFindWidget';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -72,7 +72,16 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		this._overlay.style.zIndex = '4';
 		parent.appendChild(this._overlay);
 
-		this._profilerTable = new Table(parent);
+		this._profilerTable = new Table(parent, {
+			sorter: {
+				sort: (args) => {
+					let input = this.input as ProfilerInput;
+					if (input && input.data) {
+						input.data.sort(args);
+					}
+				}
+			}
+		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		attachTableStyler(this._profilerTable, this._themeService);
 
@@ -105,6 +114,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 			this._stateListener.dispose();
 		}
 		this._stateListener = input.state.addChangeListener(e => this._onStateChange(e));
+		input.data.onRowCountChange(() => { this._profilerTable.updateRowCount(); });
 
 		if (this._findCountChangeListener) {
 			this._findCountChangeListener.dispose();
@@ -205,10 +215,11 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		if (e.searchString) {
 			if (this._input && this._input.data) {
 				if (this._findState.searchString) {
-					this._input.data.find(this._findState.searchString).then(p => {
+					this._input.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
 						if (p) {
 							this._profilerTable.setActiveCell(p.row, p.col);
 							this._updateFinderMatchState();
+							this._finder.focusFindInput();
 						}
 					});
 				} else {

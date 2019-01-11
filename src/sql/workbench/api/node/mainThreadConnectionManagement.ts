@@ -10,10 +10,11 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -25,7 +26,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IWorkbenchEditorService private _workbenchEditorService: IWorkbenchEditorService,
+		@IEditorService private _workbenchEditorService: IEditorService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 	) {
 		if (extHostContext) {
@@ -51,13 +52,27 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 
-	public async $openConnectionDialog(providers: string[]): Promise<sqlops.connection.Connection> {
-		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers });
-		return connectionProfile ? {
+	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Promise<sqlops.connection.Connection> {
+		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: providers }, initialConnectionProfile);
+	    const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
 			providerName: connectionProfile.providerName
 		} : undefined;
+
+		if (connectionCompletionOptions) {
+			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
+			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
+			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+				saveTheConnection: isUndefinedOrNull(connectionCompletionOptions.saveConnection) ? true : connectionCompletionOptions.saveConnection,
+				showDashboard: isUndefinedOrNull(connectionCompletionOptions.showDashboard) ? false : connectionCompletionOptions.showDashboard,
+				params: undefined,
+				showConnectionDialogOnError: isUndefinedOrNull(connectionCompletionOptions.showConnectionDialogOnError) ? true : connectionCompletionOptions.showConnectionDialogOnError,
+				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
+			});
+		}
+
+		return connection;
 	}
 
 	public async $listDatabases(connectionId: string): Promise<string[]> {

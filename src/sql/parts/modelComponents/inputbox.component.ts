@@ -42,9 +42,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService
+		@Inject(IContextViewService) private contextViewService: IContextViewService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -121,7 +122,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 					if (input.hideErrors) {
 						input.hideErrors = false;
 					}
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidChange,
 						args: e
 					});
@@ -152,7 +153,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	/// IComponent implementation
 
 	public layout(): void {
-		this._changeRef.detectChanges();
+		super.layout();
 		this.layoutInputBox();
 	}
 

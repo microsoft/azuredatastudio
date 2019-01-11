@@ -1,15 +1,15 @@
 {
   "name": "import",
   "displayName": "SQL Server Import",
-  "description": "Imports data from a flat file.",
-  "version": "0.0.1",
+  "description": "SQL Server Import for Azure Data Studio supports importing CSV or JSON files into SQL Server.",
+  "version": "0.5.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.25.0",
     "sqlops": "*"
   },
-  "license": "https://raw.githubusercontent.com/Microsoft/sqlopsstudio/master/LICENSE.txt",
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/import/Microsoft_SQL_Server_Import_Extension_and_Tools_Import_Flat_File_Preview.docx",
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "activationEvents": [
@@ -18,7 +18,7 @@
   "main": "./out/main",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Microsoft/sqlopsstudio.git"
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "extensionDependencies": [
     "Microsoft.mssql"
@@ -33,6 +33,15 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "dacFx.start",
+        "title": "Data-tier Application Wizard",
+        "category": "Data-tier Application",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
       }
     ],
     "keybindings": [
@@ -42,50 +51,27 @@
         "mac": "ctrl+i"
       }
     ],
-    "dashboard.tabs": [
-      {
-        "id": "flat-file-import",
-        "title": "Flat File Import",
-        "description": "The flat file importer.",
-        "container": {
-          "flat-file-import-container": {}
-        }
-      }
-    ],
-    "dashboard.containers": [
-      {
-        "id": "flat-file-import-container",
-        "container": {
-          "widgets-container": [
-            {
-              "name": "Tasks",
-              "widget": {
-                "tasks-widget": [
-                  "flatFileImport.start"
-                ]
-              }
-            }
-          ]
-        }
-      }
-    ],
     "menus": {
       "objectExplorer/item/context": [
         {
           "command": "flatFileImport.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "import"
+        },
+        {
+          "command": "dacFx.start",
+          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "group": "export"
         }
       ]
     }
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.5",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.10",
     "opener": "^1.4.3",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
-    "vscode-extension-telemetry": "^0.0.5",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+    "vscode-extension-telemetry": "0.0.18",
     "vscode-nls": "^3.2.1"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }

@@ -14,13 +14,14 @@ import { IDisposable } from 'vs/base/common/lifecycle';
  * @export
  * @interface IComponent
  */
-export interface IComponent {
+export interface IComponent extends IDisposable {
 	descriptor: IComponentDescriptor;
 	modelStore: IModelStore;
 	layout();
 	registerEventHandler(handler: (event: IComponentEventArgs) => void): IDisposable;
 	clearContainer?: () => void;
-	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any) => void;
+	addToContainer?: (componentDescriptor: IComponentDescriptor, config: any, index?: number) => void;
+	removeFromContainer?: (componentDescriptor: IComponentDescriptor) => void;
 	setLayout?: (layout: any) => void;
 	setProperties?: (properties: { [key: string]: any; }) => void;
 	enabled: boolean;
@@ -68,7 +69,8 @@ export enum ComponentEventType {
 	onDidClick,
 	validityChanged,
 	onMessage,
-	onSelectedRowChanged
+	onSelectedRowChanged,
+	onComponentCreated
 }
 
 export interface IModelStore {

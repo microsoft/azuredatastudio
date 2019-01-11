@@ -32,7 +32,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	private _refreshButtonEnabled: boolean;
 	private _stopButtonEnabled: boolean;
 	private _setup: boolean;
-	private _toDispose: IDisposable[];
 	private _rowLimit: number;
 	private _objectType: string;
 	private _css: HTMLStyleElement;
@@ -176,6 +175,9 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		}
 	}
 
+	public onConnectCanceled(): void {
+	}
+
 	public onConnectSuccess(params?: INewConnectionParams): void {
 		let rowLimit: number = undefined;
 		let queryString: string = undefined;
@@ -187,6 +189,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 		this._queryModelService.initializeEdit(this.uri, this.schemaName, this.tableName, this._objectType, rowLimit, queryString);
 		this.showResultsEditor();
+		this._onDidChangeLabel.fire();
 	}
 
 	public onDisconnect(): void {

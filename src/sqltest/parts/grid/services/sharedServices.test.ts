@@ -17,6 +17,7 @@ suite('Grid shared services tests', () => {
 		cellValue.displayValue = testText;
 		cellValue.isNull = false;
 		let formattedHtml = SharedServices.textFormatter(undefined, undefined, cellValue, undefined, undefined);
+		let hyperlink = SharedServices.hyperLinkFormatter(undefined, undefined, cellValue, undefined, undefined);
 
 		// Then the result is HTML for a span element containing the cell value's display value as plain text
 		verifyFormattedHtml(formattedHtml, testText);

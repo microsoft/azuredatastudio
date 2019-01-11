@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -30,23 +30,31 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { AlertsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const VIEW_SELECTOR: string = 'jobalertsview-component';
-export const ROW_HEIGHT: number = 30;
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./alertsView.component.html')),
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => AlertsViewComponent) }],
 })
-export class AlertsViewComponent extends JobManagementView implements OnInit {
+export class AlertsViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobAlertColumns.name', 'Name'), field: 'name', width: 200, id: 'name' },
-		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', 'Last Occurrence'), field: 'lastOccurrenceDate', width: 200, id: 'lastOccurrenceDate' },
-		{ name: nls.localize('jobAlertColumns.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
-		{ name: nls.localize('jobAlertColumns.databaseName', 'Database Name'), field: 'databaseName', width: 200, id: 'databaseName' },
-		{ name: nls.localize('jobAlertColumns.categoryName', 'Category Name'), field: 'categoryName', width: 200, id: 'categoryName' },
+		{
+			name: nls.localize('jobAlertColumns.name', 'Name'),
+			field: 'name',
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
+			width: 500,
+			id: 'name'
+		},
+		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', 'Last Occurrence'), field: 'lastOccurrenceDate', width: 150, id: 'lastOccurrenceDate' },
+		{ name: nls.localize('jobAlertColumns.enabled', 'Enabled'), field: 'enabled', width: 80, id: 'enabled' },
+		{ name: nls.localize('jobAlertColumns.delayBetweenResponses', 'Delay Between Responses (in secs)'), field: 'delayBetweenResponses', width: 200, id: 'delayBetweenResponses' },
+		{ name: nls.localize('jobAlertColumns.categoryName', 'Category Name'), field: 'categoryName', width: 250, id: 'categoryName' },
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -59,7 +67,9 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 
 	private dataView: any;
 	private _isCloud: boolean;
+	private _alertsCacheObject: AlertsCacheObject;
 
+	private _didTabChange: boolean;
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
 	public alerts: sqlops.AgentAlertInfo[];
@@ -77,14 +87,28 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		this._didTabChange = false;
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		let alertsCacheObjectMap = this._jobManagementService.alertsCacheObjectMap;
+		let alertsCache = alertsCacheObjectMap[this._serverName];
+		if (alertsCache) {
+			this._alertsCacheObject = alertsCache;
+		} else {
+			this._alertsCacheObject = new AlertsCacheObject();
+			this._alertsCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._alertsCacheObject);
+		}
 	}
 
 	ngOnInit(){
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
-	 }
+	}
+
+	ngOnDestroy() {
+		this._didTabChange = true;
+	}
 
 	public layout() {
 		let height = dom.getContentHeight(this._gridEl.nativeElement) - 10;
@@ -92,44 +116,69 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 			height = 0;
 		}
 
-		this._table.layout(new dom.Dimension(
-			dom.getContentWidth(this._gridEl.nativeElement),
-			height));
+		if (this._table) {
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._gridEl.nativeElement),
+				height));
+		}
 	}
 
 	onFirstVisible() {
 		let self = this;
+		let cached: boolean = false;
+		if (this._alertsCacheObject.serverName === this._serverName) {
+			if (this._alertsCacheObject.alerts && this._alertsCacheObject.alerts.length > 0) {
+				cached = true;
+				this.alerts = this._alertsCacheObject.alerts;
+			}
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		this.dataView = new Slick.Data.DataView();
-
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		let rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			useRowClick: false,
+			panelRows: 1
+		});
+		columns.unshift(rowDetail.getColumnDefinition());
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
 		this._table.grid.setData(this.dataView, true);
-
-		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getAlerts(ownerUri).then((result) => {
-			if (result && result.alerts) {
-				self.alerts = result.alerts;
-				self.onAlertsAvailable(result.alerts);
-			} else {
-				// TODO: handle error
-			}
-
+		// check for cached state
+		if (cached && this._agentViewComponent.refresh !== true) {
+			self.onAlertsAvailable(this.alerts);
 			this._showProgressWheel = false;
 			if (this.isVisible) {
 				this._cd.detectChanges();
 			}
-		});
+		} else {
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			this._jobManagementService.getAlerts(ownerUri).then((result) => {
+				if (result && result.alerts) {
+					self.alerts = result.alerts;
+					self._alertsCacheObject.alerts = result.alerts;
+					self.onAlertsAvailable(result.alerts);
+				} else {
+					// TODO: handle error
+				}
+				this._showProgressWheel = false;
+				if (this.isVisible && !this._didTabChange) {
+					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
+				}
+			});
+		}
 	}
 
 	private onAlertsAvailable(alerts: sqlops.AgentAlertInfo[]) {
@@ -139,7 +188,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 				name: item.name,
 				lastOccurrenceDate: item.lastOccurrenceDate,
 				enabled: item.isEnabled,
-				databaseName: item.databaseName,
+				delayBetweenResponses: item.delayBetweenResponses,
 				categoryName: item.categoryName
 			};
 		});
@@ -147,6 +196,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		this.dataView.beginUpdate();
 		this.dataView.setItems(items);
 		this.dataView.endUpdate();
+		this._alertsCacheObject.dataview = this.dataView;
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 	}
@@ -162,6 +212,17 @@ export class AlertsViewComponent extends JobManagementView implements OnInit {
 		return (this.alerts && this.alerts.length >= rowIndex)
 			? this.alerts[rowIndex]
 			: undefined;
+	}
+
+
+	private renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass = dataContext.enabled ? 'alertview-alertnameindicatorenabled' :
+			'alertview-alertnameindicatordisabled';
+
+		return '<table class="alertview-alertnametable"><tr class="alertview-alertnamerow">' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
+			'<td nowrap class="alertview-alertnametext">' + dataContext.name + '</td>' +
+			'</tr></table>';
 	}
 
 	public openCreateAlertDialog() {

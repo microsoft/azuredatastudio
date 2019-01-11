@@ -15,7 +15,7 @@ import { CreateLoginInput } from 'sql/parts/admin/security/createLoginInput';
 import { TaskDialogInput } from 'sql/parts/tasks/dialog/taskDialogInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
@@ -45,7 +45,7 @@ export class AdminService implements IAdminService {
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
+		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
@@ -69,7 +69,7 @@ export class AdminService implements IAdminService {
 		const self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			let input: TaskDialogInput = self._instantiationService ? self._instantiationService.createInstance(TaskDialogInput, uri, connection) : undefined;
-			self._editorService.openEditor(input, { pinned: true }, false);
+			self._editorService.openEditor(input, { pinned: true }, ACTIVE_GROUP);
 			resolve(true);
 		});
 	}
@@ -92,7 +92,7 @@ export class AdminService implements IAdminService {
 
 		return new Promise<boolean>((resolve, reject) => {
 			let loginInput: CreateLoginInput = self._instantiationService ? self._instantiationService.createInstance(CreateLoginInput, uri, connection) : undefined;
-			self._editorService.openEditor(loginInput, { pinned: true }, false);
+			self._editorService.openEditor(loginInput, { pinned: true }, ACTIVE_GROUP);
 			resolve(true);
 		});
 	}

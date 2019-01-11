@@ -13,7 +13,7 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
-import { IGridDataRow, ISlickRange, SlickGrid, FieldType } from 'angular2-slickgrid';
+import { SlickGrid } from 'angular2-slickgrid';
 import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
@@ -37,6 +37,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -100,7 +101,8 @@ export abstract class GridParentComponent {
 		protected contextKeyService: IContextKeyService,
 		protected configurationService: IConfigurationService,
 		protected clipboardService: IClipboardService,
-		protected queryEditorService: IQueryEditorService
+		protected queryEditorService: IQueryEditorService,
+		protected notificationService: INotificationService
 	) {
 		this.toDispose = [];
 	}
@@ -226,11 +228,11 @@ export abstract class GridParentComponent {
 		this.messagesFocussedContextKey.set(false);
 	}
 
-	protected getSelection(index?: number): ISlickRange[] {
+	protected getSelection(index?: number): Slick.Range[] {
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
-			selection = selection.map(c => { return <ISlickRange>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
-			return selection;
+			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
+		return selection;
 		} else {
 			return undefined;
 		}
@@ -332,7 +334,7 @@ export abstract class GridParentComponent {
 	/**
 	 * Send save result set request to service
 	 */
-	handleContextClick(event: { type: string, batchId: number, resultId: number, index: number, selection: ISlickRange[] }): void {
+	handleContextClick(event: { type: string, batchId: number, resultId: number, index: number, selection: Slick.Range[] }): void {
 		switch (event.type) {
 			case 'savecsv':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.CSV, selection: event.selection });

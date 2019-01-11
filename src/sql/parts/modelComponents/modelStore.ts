@@ -51,6 +51,7 @@ export class ModelStore implements IModelStore {
 		let id = component.descriptor.id;
 		this._componentMappings[id] = undefined;
 		this._componentActions[id] = undefined;
+		this._descriptorMappings[id] = undefined;
 		// TODO notify model for cleanup
 	}
 

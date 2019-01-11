@@ -35,13 +35,17 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private static readonly PagerSundayCheckBoxLabel: string = localize('createOperator.PagerSundayCheckBox', 'Sunday');
 	private static readonly WorkdayBeginLabel: string = localize('createOperator.workdayBegin', 'Workday begin');
 	private static readonly WorkdayEndLabel: string = localize('createOperator.workdayEnd', 'Workday end');
-	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', 'Pager on duty schdule');
+	private static readonly PagerDutyScheduleLabel: string = localize('createOperator.PagerDutySchedule', 'Pager on duty schedule');
 
 	// Notifications tab strings
 	private static readonly AlertsTableLabel: string = localize('createOperator.AlertListHeading', 'Alert list');
 	private static readonly AlertNameColumnLabel: string = localize('createOperator.AlertNameColumnLabel', 'Alert name');
 	private static readonly AlertEmailColumnLabel: string = localize('createOperator.AlertEmailColumnLabel', 'E-mail');
 	private static readonly AlertPagerColumnLabel: string = localize('createOperator.AlertPagerColumnLabel', 'Pager');
+
+	// Event strings
+	private readonly NewOperatorDialog = 'NewOperatorDialogOpened';
+	private readonly EditOperatorDialog = 'EditOperatorDialogOpened';
 
 	// UI Components
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
@@ -68,12 +72,15 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 
 	// Notification tab controls
 	private alertsTable: sqlops.TableComponent;
+	private isEdit: boolean = false;
 
 	constructor(ownerUri: string, operatorInfo: sqlops.AgentOperatorInfo = undefined) {
 		super(
 			ownerUri,
 			new OperatorData(ownerUri, operatorInfo),
 			operatorInfo ? OperatorDialog.EditDialogTitle : OperatorDialog.CreateDialogTitle);
+		this.isEdit = operatorInfo ? true : false;
+		this.dialogName = this.isEdit ? this.EditOperatorDialog : this.NewOperatorDialog;
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {

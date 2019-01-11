@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
@@ -36,7 +36,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { tableBackground, cellBackground, tableHoverBackground, jobsHeadingBackground, cellBorderColor } from 'sql/common/theme/colors';
+import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
@@ -47,7 +49,7 @@ export const ROW_HEIGHT: number = 45;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => JobsViewComponent) }],
 })
 
-export class JobsViewComponent extends JobManagementView implements OnInit  {
+export class JobsViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private columns: Array<Slick.Column<any>> = [
 		{
@@ -78,7 +80,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private rowDetail: RowDetailView;
 	private filterPlugin: any;
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
 	private filterStylingMap: { [columnName: string]: [any]; } = {};
 	private filterStack = ['start'];
@@ -86,8 +87,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	private sortingStylingMap: { [columnName: string]: any; } = {};
 
 	public jobs: sqlops.AgentJobInfo[];
-	public jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobHistories: { [jobId: string]: sqlops.AgentJobHistoryInfo[]; } = Object.create(null);
+	private jobSteps: { [jobId: string]: sqlops.AgentJobStepInfo[]; } = Object.create(null);
+	private jobAlerts: { [jobId: string]: sqlops.AgentAlertInfo[]; } = Object.create(null);
+	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
+
+	private _didTabChange: boolean;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -102,11 +108,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IDashboardService) _dashboardService: IDashboardService
+		@Inject(IDashboardService) _dashboardService: IDashboardService,
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
+		this._didTabChange = false;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
-		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
 			this._jobCacheObject = jobCache;
@@ -123,10 +130,15 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
 		this._register(this._themeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this._telemetryService.publicLog(TelemetryKeys.JobsView);
+	}
+
+	ngOnDestroy() {
+		this._didTabChange = true;
 	}
 
 	public layout() {
-		let jobsViewToolbar = $('jobsview-component .actionbar-container').get(0);
+		let jobsViewToolbar = $('jobsview-component .agent-actionbar-container').get(0);
 		let statusBar = $('.part.statusbar').get(0);
 		if (jobsViewToolbar && statusBar) {
 			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom;
@@ -171,13 +183,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-
 		let filterPlugin = new HeaderFilter({}, this._themeService);
 		this.filterPlugin = filterPlugin;
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -186,7 +197,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			self._agentViewComponent.showHistory = true;
 		});
 
-		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 
@@ -208,8 +219,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 				}
 
 				this._showProgressWheel = false;
-				if (this.isVisible) {
+				if (this.isVisible && !this._didTabChange) {
 					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
 				}
 			});
 		}
@@ -399,7 +412,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					};
 					sibling.onmouseleave = (e) => {
 						targetChildren.removeClass('hovered');
-					}
+					};
 					break;
 				}
 			}
@@ -475,7 +488,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 			case ('Failed'):
 				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
 				break;
-			case ('Canceled'):
+			case ('Cancelled'):
 				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
 				break;
 			case ('Status Unknown'):
@@ -523,17 +536,15 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
-	private loadJobHistories(): void {
+	private async loadJobHistories() {
 		if (this.jobs) {
-			let erroredJobs = 0;
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 			let separatedJobs = this.separateFailingJobs();
 			// grab histories of the failing jobs first
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
-			this.curateJobHistory(failing, ownerUri);
 			let passing = separatedJobs[1];
-			this.curateJobHistory(passing, ownerUri);
+			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 
@@ -578,19 +589,30 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return job;
 	}
 
-	private curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
+	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		for (let i = 0; i < jobs.length; i++) {
-			let job = jobs[i];
-			this._jobManagementService.getJobHistory(ownerUri, job.jobId).then((result) => {
-				if (result && result.jobs) {
-					self.jobHistories[job.jobId] = result.jobs;
-					self._jobCacheObject.setJobHistory(job.jobId, result.jobs);
+		await Promise.all(jobs.map(async (job) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
+				if (result) {
+					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
+					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
+					self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
+					self.jobHistories[job.jobId] = result.histories ? result.histories : [];
+					self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
+					self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
 					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
-					self.createJobChart(job.jobId, previousRuns);
+					let previousRuns: sqlops.AgentJobHistoryInfo[];
+					if (jobHistories.length >= 5) {
+						previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+					} else {
+						previousRuns = jobHistories;
+					}
+					// dont create the charts if the tab changed
+					if (!self._didTabChange) {
+						self.createJobChart(job.jobId, previousRuns);
+					}
 					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let lastJobHistory = jobHistories[result.jobs.length - 1];
+						let lastJobHistory = jobHistories[jobHistories.length - 1];
 						let item = self.dataView.getItemById(job.jobId + '.error');
 						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
 						let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
@@ -600,32 +622,23 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 					}
 				}
 			});
-		}
+		}));
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
-		for (let i = 0; i < jobHistories.length; i++) {
+		for (let i = 0; i < chartHeights.length; i++) {
 			let runGraph = $(`table#${jobId}.jobprevruns > tbody > tr > td > div.bar${i}`);
-			if (jobHistories && jobHistories.length > 0) {
-				runGraph.css('height', chartHeights[i]);
-				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
-				runGraph.css('background', bgColor);
-				runGraph.hover((e) => {
-					let currentTarget = e.currentTarget;
-					currentTarget.title = jobHistories[i].runDuration;
-				});
-				if (runGraph.get(0)) {
-					runCharts.push(runGraph.get(0).outerHTML);
-				}
-			} else {
-				runGraph.css('height', '5px');
-				runGraph.css('background', 'red');
-				runGraph.hover((e) => {
-					let currentTarget = e.currentTarget;
-					currentTarget.title = 'Job not run.';
-				});
+			runGraph.css('height', chartHeights[i]);
+			let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
+			runGraph.css('background', bgColor);
+			runGraph.hover((e) => {
+				let currentTarget = e.currentTarget;
+				currentTarget.title = jobHistories[i].runDuration;
+			});
+			if (runGraph.get(0)) {
+				runCharts.push(runGraph.get(0).outerHTML);
 			}
 		}
 		if (runCharts.length > 0) {
@@ -636,7 +649,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 	// chart height normalization logic
 	private getChartHeights(jobHistories: sqlops.AgentJobHistoryInfo[]): string[] {
 		if (!jobHistories || jobHistories.length === 0) {
-			return ['5px', '5px', '5px', '5px', '5px'];
+			return [];
 		}
 		let maxDuration: number = 0;
 		jobHistories.forEach(history => {
@@ -648,12 +661,22 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		maxDuration = maxDuration === 0 ? 1 : maxDuration;
 		let maxBarHeight: number = 24;
 		let chartHeights = [];
+		let zeroDurationJobCount = 0;
 		for (let i = 0; i < jobHistories.length; i++) {
 			let duration = jobHistories[i].runDuration;
 			let chartHeight = (maxBarHeight * JobManagementUtilities.convertDurationToSeconds(duration)) / maxDuration;
 			chartHeights.push(`${chartHeight}px`);
+			if (chartHeight === 0) {
+				zeroDurationJobCount++;
+			}
 		}
-		return chartHeights;
+		// if the durations are all 0 secs, show minimal chart
+		// instead of nothing
+		if (zeroDurationJobCount === jobHistories.length) {
+			return ['5px', '5px', '5px', '5px', '5px'];
+		} else {
+			return chartHeights;
+		}
 	}
 
 	private expandJobs(start: boolean): void {
@@ -848,6 +871,40 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		return TPromise.as(actions);
 	}
 
+	protected convertStepsToStepInfos(steps: sqlops.AgentJobStep[], job: sqlops.AgentJobInfo): sqlops.AgentJobStepInfo[] {
+		let result = [];
+		steps.forEach(step => {
+			let stepInfo: sqlops.AgentJobStepInfo = {
+				jobId: job.jobId,
+				jobName: job.name,
+				script: null,
+				scriptName: null,
+				stepName: step.stepName,
+				subSystem: null,
+				id: +step.stepId,
+				failureAction: null,
+				successAction: null,
+				failStepId: null,
+				successStepId: null,
+				command: null,
+				commandExecutionSuccessCode: null,
+				databaseName: null,
+				databaseUserName: null,
+				server: null,
+				outputFileName: null,
+				appendToLogFile: null,
+				appendToStepHist: null,
+				writeLogToTable: null,
+				appendLogToTable: null,
+				retryAttempts: null,
+				retryInterval: null,
+				proxyName: null
+			};
+			result.push(stepInfo);
+		});
+		return result;
+	}
+
 	protected getCurrentTableObject(rowIndex: number): any {
 		let data = this._table.grid.getData();
 		if (!data || rowIndex >= data.getLength()) {
@@ -855,10 +912,36 @@ export class JobsViewComponent extends JobManagementView implements OnInit  {
 		}
 
 		let jobId =  data.getItem(rowIndex).jobId;
-		let job = this.jobs.filter(job => {
+		if (!jobId) {
+			// if we couldn't find the ID, check if it's an
+			// error row
+			let isErrorRow: boolean = data.getItem(rowIndex).id.indexOf('error') >= 0;
+			if (isErrorRow) {
+				jobId = data.getItem(rowIndex - 1).jobId;
+			}
+		}
+
+		let job: sqlops.AgentJobInfo[] = this.jobs.filter(job => {
 			return job.jobId === jobId;
 		});
 
+		// add steps
+		if (this.jobSteps && this.jobSteps[jobId]) {
+			let steps = this.jobSteps[jobId];
+			job[0].jobSteps = steps;
+		}
+
+		// add schedules
+		if (this.jobSchedules && this.jobSchedules[jobId]) {
+			let schedules = this.jobSchedules[jobId];
+			job[0].jobSchedules = schedules;
+		}
+
+		// add alerts
+		if (this.jobAlerts && this.jobAlerts[jobId]) {
+			let alerts = this.jobAlerts[jobId];
+			job[0].alerts = alerts;
+		}
 		return job && job.length > 0 ? job[0] : undefined;
 	}
 

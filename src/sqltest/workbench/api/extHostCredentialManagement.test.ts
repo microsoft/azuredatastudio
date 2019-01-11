@@ -34,7 +34,7 @@ suite('ExtHostCredentialManagement', () => {
 		instantiationService.stub(IRPCProtocol, threadService);
 		instantiationService.stub(ICredentialsService, credentialServiceStub);
 
-		const credentialService = instantiationService.createInstance(MainThreadCredentialManagement);
+		const credentialService = instantiationService.createInstance(MainThreadCredentialManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadCredentialManagement, credentialService);
 	});
 

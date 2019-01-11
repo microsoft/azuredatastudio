@@ -18,7 +18,6 @@ const assign = require('object-assign');
 // {{SQL CARBON EDIT}}
 const jeditor = require('gulp-json-editor');
 
-// @ts-ignore Microsoft/TypeScript#21262 complains about a require of a JSON file
 const pkg = require('../package.json');
 
 gulp.task('mixin', function () {

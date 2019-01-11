@@ -25,9 +25,10 @@ import nls = require('vs/nls');
 import os = require('os');
 import path = require('path');
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
+import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -265,7 +266,7 @@ export function newQuery(
 	connectionService: IConnectionManagementService,
 	queryEditorService: IQueryEditorService,
 	objectExplorerService: IObjectExplorerService,
-	workbenchEditorService: IWorkbenchEditorService,
+	workbenchEditorService: IEditorService,
 	sqlContent?: string,
 	executeOnOpen: RunQueryOnConnectionMode = RunQueryOnConnectionMode.none
 ): Promise<void> {
@@ -381,7 +382,7 @@ export function openInsight(query: IInsightsConfig, profile: IConnectionProfile,
  * @param workbenchEditorService
  * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
 */
-export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IWorkbenchEditorService, topLevelOnly: boolean = false): IConnectionProfile {
+export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile {
 	let connection: IConnectionProfile;
 
 	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
@@ -399,10 +400,13 @@ export function getCurrentGlobalConnection(objectExplorerService: IObjectExplore
 		}
 	}
 
-	let activeInput = workbenchEditorService.getActiveEditorInput();
+	let activeInput = workbenchEditorService.activeEditor;
 	if (activeInput) {
 		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
 			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
+		}
+		else if (activeInput instanceof ProfilerInput) {
+			connection = activeInput.connection;
 		}
 	}
 

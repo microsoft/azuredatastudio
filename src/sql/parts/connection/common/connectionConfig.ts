@@ -84,12 +84,13 @@ export class ConnectionConfig implements IConnectionConfig {
 						return providerConnectionProfile.matches(connectionProfile);
 					});
 					if (sameProfileInList) {
-						profiles = profiles.filter(value => value !== sameProfileInList);
+						let profileIndex = profiles.findIndex(value => value === sameProfileInList);
 						newProfile.id = sameProfileInList.id;
 						connectionProfile.id = sameProfileInList.id;
+						profiles[profileIndex] = newProfile;
+					} else {
+						profiles.push(newProfile);
 					}
-
-					profiles.push(newProfile);
 
 					this.writeConfiguration(Constants.connectionsArrayName, profiles).then(() => {
 						resolve(connectionProfile);

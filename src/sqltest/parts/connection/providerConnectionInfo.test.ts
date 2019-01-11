@@ -19,6 +19,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	let capabilitiesService: CapabilitiesTestService;
 
 	let connectionProfile: IConnectionProfile = {
+		connectionName: 'name',
 		serverName: 'new server',
 		databaseName: 'database',
 		userName: 'user',
@@ -38,6 +39,18 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	setup(() => {
 		let capabilities: sqlops.DataProtocolServerCapabilities[] = [];
 		let connectionProvider: sqlops.ConnectionOption[] = [
+			{
+				name: 'connectionName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.connectionName,
+				valueType: ServiceOptionType.string
+			},
 			{
 				name: 'serverName',
 				displayName: undefined,
@@ -129,11 +142,13 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	test('set properties should set the values correctly', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, 'MSSQL');
 		assert.equal(conn.serverName, undefined);
+		conn.connectionName = connectionProfile.connectionName;
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName;
 		conn.authenticationType = connectionProfile.authenticationType;
 		conn.password = connectionProfile.password;
 		conn.userName = connectionProfile.userName;
+		assert.equal(conn.connectionName, connectionProfile.connectionName);
 		assert.equal(conn.serverName, connectionProfile.serverName);
 		assert.equal(conn.databaseName, connectionProfile.databaseName);
 		assert.equal(conn.authenticationType, connectionProfile.authenticationType);
@@ -159,6 +174,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	test('constructor should initialize the options given a valid model', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 
+		assert.equal(conn.connectionName, connectionProfile.connectionName);
 		assert.equal(conn.serverName, connectionProfile.serverName);
 		assert.equal(conn.databaseName, connectionProfile.databaseName);
 		assert.equal(conn.authenticationType, connectionProfile.authenticationType);
@@ -170,6 +186,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 
 		let conn2 = conn.clone();
+		assert.equal(conn.connectionName, conn2.connectionName);
 		assert.equal(conn.serverName, conn2.serverName);
 		assert.equal(conn.databaseName, conn2.databaseName);
 		assert.equal(conn.authenticationType, conn2.authenticationType);
@@ -191,6 +208,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn2 = Object.assign({}, connectionProfile, { options: options });
 		let conn = new ProviderConnectionInfo(capabilitiesService, conn2);
 
+		assert.equal(conn.connectionName, conn2.connectionName);
 		assert.equal(conn.serverName, conn2.serverName);
 		assert.equal(conn.databaseName, conn2.databaseName);
 		assert.equal(conn.authenticationType, conn2.authenticationType);

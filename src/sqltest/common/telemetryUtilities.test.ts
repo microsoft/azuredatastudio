@@ -18,6 +18,7 @@ suite('SQL Telemetry Utilities tests', () => {
 	let telemetryKey: string = 'tel key';
 
 	let connectionProfile = {
+		connectionName: '',
 		databaseName: '',
 		serverName: '',
 		authenticationType: '',

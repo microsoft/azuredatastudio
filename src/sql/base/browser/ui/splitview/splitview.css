@@ -89,10 +89,6 @@
 	-moz-transition-property: width;
 }
 
-.hc-black .split-view-view .action-label {
-	background: none;
-}
-
 .hc-black .split-view-view > .header .action-label:before {
 	top: 4px !important;
 }

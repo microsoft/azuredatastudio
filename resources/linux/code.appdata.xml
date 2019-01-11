@@ -4,9 +4,9 @@
 	<metadata_license>@@LICENSE@@</metadata_license>
 	<project_license>@@LICENSE@@</project_license>
 	<name>@@NAME_LONG@@</name>
-	<url type="homepage">https://github.com/microsoft/sqlopsstudio</url>
-	<summary>SQL Operations Studio</summary>
+	<url type="homepage">https://github.com/microsoft/azuredatastudio</url>
+	<summary>Azure Data Studio</summary>
 	<description>
-		<p>SQL Operations Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB, and SQL DW from Linux. See https://docs.microsoft.com/en-us/sql/sql-operations-studio/what-is for documentation.</p>
+		<p>Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB, and SQL DW from Linux. See https://docs.microsoft.com/en-us/sql/sql-operations-studio/what-is for documentation.</p>
 	</description>
 </component>

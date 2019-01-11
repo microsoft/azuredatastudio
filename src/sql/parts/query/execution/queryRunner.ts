@@ -10,8 +10,10 @@ import * as sqlops from 'sqlops';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import { ISlickRange } from 'angular2-slickgrid';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { SaveFormat } from 'sql/parts/grid/common/interfaces';
+import { echo, debounceEvent } from 'sql/base/common/event';
+import { Deferred } from 'sql/base/common/promise';
 
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -19,8 +21,12 @@ import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { Emitter, Event } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ResultSerializer } from 'sql/parts/query/common/resultSerializer';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -48,28 +54,70 @@ export interface IEventType {
 	editSessionReady: IEditSessionReadyEvent;
 }
 
+export interface IGridMessage extends sqlops.IResultMessage {
+	selection: sqlops.ISelectionData;
+}
+
 /*
 * Query Runner class which handles running a query, reports the results to the content manager,
 * and handles getting more rows from the service layer and disposing when the content is closed.
 */
-export default class QueryRunner {
+export default class QueryRunner extends Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _resultLineOffset: number;
 	private _totalElapsedMilliseconds: number = 0;
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
 	private _batchSets: sqlops.BatchSummary[] = [];
+	private _messages: sqlops.IResultMessage[] = [];
 	private _eventEmitter = new EventEmitter();
+
+	private _isQueryPlan: boolean;
+	public get isQueryPlan(): boolean { return this._isQueryPlan; }
+	private _planXml = new Deferred<string>();
+	public get planXml(): Thenable<string> { return this._planXml.promise; }
+
+	private _onMessage = this._register(new Emitter<sqlops.IResultMessage>());
+	public readonly onMessage = this._onMessage.event;
+
+	private _onResultSet = this._register(new Emitter<sqlops.ResultSetSummary>());
+	public readonly onResultSet = this._onResultSet.event;
+
+	private _onResultSetUpdate = this._register(new Emitter<sqlops.ResultSetSummary>());
+	public readonly onResultSetUpdate = this._onResultSetUpdate.event;
+
+	private _onQueryStart = this._register(new Emitter<void>());
+	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
+
+	private _onQueryEnd = this._register(new Emitter<string>());
+	public readonly onQueryEnd: Event<string> = this._onQueryEnd.event;
+
+	private _onBatchStart = this._register(new Emitter<sqlops.BatchSummary>());
+	public readonly onBatchStart: Event<sqlops.BatchSummary> = this._onBatchStart.event;
+
+	private _onBatchEnd = this._register(new Emitter<sqlops.BatchSummary>());
+	public readonly onBatchEnd: Event<sqlops.BatchSummary> = this._onBatchEnd.event;
+
+	private _queryStartTime: Date;
+	public get queryStartTime(): Date {
+		return this._queryStartTime;
+	}
+	private _queryEndTime: Date;
+	public get queryEndTime(): Date {
+		return this._queryEndTime;
+	}
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		public uri: string,
-		public title: string,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
-		@IClipboardService private _clipboardService: IClipboardService
-	) { }
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IInstantiationService private instantiationService: IInstantiationService
+	) {
+		super();
+	}
 
 	get isExecuting(): boolean {
 		return this._isExecuting;
@@ -79,8 +127,18 @@ export default class QueryRunner {
 		return this._hasCompleted;
 	}
 
-	get batchSets(): sqlops.BatchSummary[] {
-		return this._batchSets;
+	/**
+	 * For public use only, for private use, directly access the member
+	 */
+	public get batchSets(): sqlops.BatchSummary[] {
+		return this._batchSets.slice(0);
+	}
+
+	/**
+	 * For public use only, for private use, directly access the member
+	 */
+	public get messages(): sqlops.IResultMessage[] {
+		return this._messages.slice(0);
 	}
 
 	// PUBLIC METHODS ======================================================
@@ -125,9 +183,14 @@ export default class QueryRunner {
 	private doRunQuery(input: string, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input: sqlops.ISelectionData, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void>;
 	private doRunQuery(input, runCurrentStatement: boolean, runOptions?: sqlops.ExecutionPlanOptions): Thenable<void> {
-		let ownerUri = this.uri;
+		if (this.isExecuting) {
+			return TPromise.as(undefined);
+		}
+		this._planXml = new Deferred<string>();
 		this._batchSets = [];
 		this._hasCompleted = false;
+		this._queryStartTime = undefined;
+		this._queryEndTime = undefined;
 		if (types.isObject(input) || types.isUndefinedOrNull(input)) {
 			// Update internal state to show that we're executing the query
 			this._resultLineOffset = input ? input.startLine : 0;
@@ -135,23 +198,32 @@ export default class QueryRunner {
 			this._totalElapsedMilliseconds = 0;
 			// TODO issue #228 add statusview callbacks here
 
+			if (runOptions && (runOptions.displayActualQueryPlan || runOptions.displayEstimatedQueryPlan)) {
+				this._isQueryPlan = true;
+			} else {
+				this._isQueryPlan = false;
+			}
+
 			// Send the request to execute the query
 			return runCurrentStatement
-				? this._queryManagementService.runQueryStatement(ownerUri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
-				: this._queryManagementService.runQuery(ownerUri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
+				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
+				: this._queryManagementService.runQuery(this.uri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else if (types.isString(input)) {
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 
-			return this._queryManagementService.runQueryString(ownerUri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
+			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
 			return Promise.reject('Unknown input');
 		}
 	}
 
 	private handleSuccessRunQueryResult() {
+		// this isn't exact, but its the best we can do
+		this._queryStartTime = new Date();
 		// The query has started, so lets fire up the result pane
+		this._onQueryStart.fire();
 		this._eventEmitter.emit(EventType.START);
 		this._queryManagementService.registerRunner(this, this.uri);
 	}
@@ -174,21 +246,35 @@ export default class QueryRunner {
 	 * Handle a QueryComplete from the service layer
 	 */
 	public handleQueryComplete(result: sqlops.QueryExecuteCompleteNotificationResult): void {
+		// this also isn't exact but its the best we can do
+		this._queryEndTime = new Date();
 
 		// Store the batch sets we got back as a source of "truth"
 		this._isExecuting = false;
 		this._hasCompleted = true;
 		this._batchSets = result.batchSummaries ? result.batchSummaries : [];
 
-		this.batchSets.map(batch => {
+		this._batchSets.map(batch => {
 			if (batch.selection) {
 				batch.selection.startLine = batch.selection.startLine + this._resultLineOffset;
 				batch.selection.endLine = batch.selection.endLine + this._resultLineOffset;
 			}
 		});
 
+		let timeStamp = Utils.parseNumAsTimeString(this._totalElapsedMilliseconds);
+
+		this._eventEmitter.emit(EventType.COMPLETE, timeStamp);
 		// We're done with this query so shut down any waiting mechanisms
-		this._eventEmitter.emit(EventType.COMPLETE, Utils.parseNumAsTimeString(this._totalElapsedMilliseconds));
+
+		let message = {
+			message: nls.localize('query.message.executionTime', 'Total execution time: {0}', timeStamp),
+			isError: false,
+			time: undefined
+		};
+		this._messages.push(message);
+
+		this._onQueryEnd.fire(timeStamp);
+		this._onMessage.fire(message);
 	}
 
 	/**
@@ -207,8 +293,19 @@ export default class QueryRunner {
 		batch.resultSetSummaries = [];
 
 		// Store the batch
-		this.batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = batch;
+
+		let message = {
+			// account for index by 1
+			message: nls.localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine + 1),
+			time: new Date(batch.executionStart).toLocaleTimeString(),
+			selection: batch.selection,
+			isError: false
+		};
+		this._messages.push(message);
 		this._eventEmitter.emit(EventType.BATCH_START, batch);
+		this._onMessage.fire(message);
+		this._onBatchStart.fire(batch);
 	}
 
 	/**
@@ -218,28 +315,30 @@ export default class QueryRunner {
 		let batch: sqlops.BatchSummary = result.batchSummary;
 
 		// Store the batch again to get the rest of the data
-		this.batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = batch;
 		let executionTime = <number>(Utils.parseTimeString(batch.executionElapsed) || 0);
 		this._totalElapsedMilliseconds += executionTime;
 		if (executionTime > 0) {
 			// send a time message in the format used for query complete
 			this.sendBatchTimeMessage(batch.id, Utils.parseNumAsTimeString(executionTime));
 		}
+
 		this._eventEmitter.emit(EventType.BATCH_COMPLETE, batch);
+		this._onBatchEnd.fire(batch);
 	}
 
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetAvailable(result: sqlops.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: sqlops.BatchSummary;
 			if (!resultSet.batchId) {
 				// Missing the batchId. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
-				if (this.batchSets.length > 0) {
-					batchSet = this.batchSets[0];
+				if (this._batchSets.length > 0) {
+					batchSet = this._batchSets[0];
 				} else {
 					batchSet = <sqlops.BatchSummary>{
 						id: 0,
@@ -247,15 +346,47 @@ export default class QueryRunner {
 						hasError: false,
 						resultSetSummaries: []
 					};
-					this.batchSets[0] = batchSet;
+					this._batchSets[0] = batchSet;
 				}
 			} else {
-				batchSet = this.batchSets[resultSet.batchId];
+				batchSet = this._batchSets[resultSet.batchId];
+			}
+			// handle getting queryPlanxml if we need too
+			if (this.isQueryPlan) {
+				// check if this result has show plan, this needs work, it won't work for any other provider
+				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+				if (hasShowPlan) {
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				}
+			}
+			// we will just ignore the set if we already have it
+			// ideally this should never happen
+			if (batchSet && !batchSet.resultSetSummaries[resultSet.id]) {
+				// Store the result set in the batch and emit that a result set has completed
+				batchSet.resultSetSummaries[resultSet.id] = resultSet;
+				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
+				this._onResultSet.fire(resultSet);
+			}
+		}
+	}
+
+	public handleResultSetUpdated(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+		if (result && result.resultSetSummary) {
+			let resultSet = result.resultSetSummary;
+			let batchSet: sqlops.BatchSummary;
+			batchSet = this._batchSets[resultSet.batchId];
+			// handle getting queryPlanxml if we need too
+			if (this.isQueryPlan) {
+				// check if this result has show plan, this needs work, it won't work for any other provider
+				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+				if (hasShowPlan) {
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				}
 			}
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
-				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
+				this._onResultSetUpdate.fire(resultSet);
 			}
 		}
 	}
@@ -266,16 +397,17 @@ export default class QueryRunner {
 	public handleMessage(obj: sqlops.QueryExecuteMessageParams): void {
 		let message = obj.message;
 		message.time = new Date(message.time).toLocaleTimeString();
+		this._messages.push(message);
 
 		// Send the message to the results pane
 		this._eventEmitter.emit(EventType.MESSAGE, message);
+		this._onMessage.fire(message);
 	}
 
 	/**
 	 * Get more data rows from the current resultSets from the service layer
 	 */
 	public getQueryRows(rowStart: number, numberOfRows: number, batchIndex: number, resultSetIndex: number): Thenable<sqlops.QueryExecuteSubsetResult> {
-		const self = this;
 		let rowData: sqlops.QueryExecuteSubsetParams = <sqlops.QueryExecuteSubsetParams>{
 			ownerUri: this.uri,
 			resultSetIndex: resultSetIndex,
@@ -284,16 +416,12 @@ export default class QueryRunner {
 			batchIndex: batchIndex
 		};
 
-		return new Promise<sqlops.QueryExecuteSubsetResult>((resolve, reject) => {
-			self._queryManagementService.getQueryRows(rowData).then(result => {
-				resolve(result);
-			}, error => {
-				self._notificationService.notify({
-					severity: Severity.Error,
-					message:  nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
-				});
-				reject(error);
+		return this._queryManagementService.getQueryRows(rowData).then(r => r, error => {
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: nls.localize('query.gettingRowsFailedError', 'Something went wrong getting more rows: {0}', error)
 			});
+			return error;
 		});
 	}
 
@@ -317,7 +445,7 @@ export default class QueryRunner {
 			this._isExecuting = false;
 			this._notificationService.notify({
 				severity: Severity.Error,
-				message:  nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
+				message: nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
 			});
 		});
 	}
@@ -341,7 +469,7 @@ export default class QueryRunner {
 					let error = `Nothing returned from subset query`;
 					self._notificationService.notify({
 						severity: Severity.Error,
-						message:  error
+						message: error
 					});
 					reject(error);
 				}
@@ -350,7 +478,7 @@ export default class QueryRunner {
 				let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
 				self._notificationService.notify({
 					severity: Severity.Error,
-					message:  `${errorMessage} ${error}`
+					message: `${errorMessage} ${error}`
 				});
 				reject(error);
 			});
@@ -395,10 +523,16 @@ export default class QueryRunner {
 
 	/**
 	 * Disposes the Query from the service client
-	 * @returns A promise that will be rejected if a problem occured
 	 */
 	public disposeQuery(): void {
-		this._queryManagementService.disposeQuery(this.uri);
+		this._queryManagementService.disposeQuery(this.uri).then(() => {
+			this.dispose();
+		});
+	}
+
+	public dispose() {
+		this._batchSets = undefined;
+		super.dispose();
 	}
 
 	get totalElapsedMilliseconds(): number {
@@ -412,7 +546,7 @@ export default class QueryRunner {
 	 * @param resultId The result id of the result to copy from
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
-	copyResults(selection: ISlickRange[], batchId: number, resultId: number, includeHeaders?: boolean): void {
+	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
 		const self = this;
 		let copyString = '';
 		const eol = this.getEolString();
@@ -421,6 +555,12 @@ export default class QueryRunner {
 		let tasks = selection.map((range, i) => {
 			return () => {
 				return self.getQueryRows(range.fromRow, range.toRow - range.fromRow + 1, batchId, resultId).then((result) => {
+					// If there was a previous selection separate it with a line break. Currently
+					// when there are multiple selections they are never on the same line
+					if (i > 0) {
+						copyString += eol;
+					}
+
 					if (self.shouldIncludeHeaders(includeHeaders)) {
 						let columnHeaders = self.getColumnHeaders(batchId, resultId, range);
 						if (columnHeaders !== undefined) {
@@ -477,9 +617,9 @@ export default class QueryRunner {
 		return !!removeNewLines;
 	}
 
-	private getColumnHeaders(batchId: number, resultId: number, range: ISlickRange): string[] {
+	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
-		let batchSummary: sqlops.BatchSummary = this.batchSets[batchId];
+		let batchSummary: sqlops.BatchSummary = this._batchSets[batchId];
 		if (batchSummary !== undefined) {
 			let resultSetSummary = batchSummary.resultSetSummaries[resultId];
 			headers = resultSetSummary.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
@@ -512,8 +652,13 @@ export default class QueryRunner {
 				time: undefined,
 				isError: false
 			};
+			this._messages.push(message);
 			// Send the message to the results pane
-			this._eventEmitter.emit(EventType.MESSAGE, message);
+			this._onMessage.fire(message);
 		}
+	}
+
+	public serializeResults(batchId: number, resultSetId: number, format: SaveFormat, selection: Slick.Range[]) {
+		return this.instantiationService.createInstance(ResultSerializer).saveResults(this.uri, { selection, format, batchIndex: batchId, resultSetNumber: resultSetId });
 	}
 }

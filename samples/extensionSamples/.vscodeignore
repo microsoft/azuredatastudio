@@ -17,7 +17,7 @@ tsconfig.json
 .vscode/**
 .vscode-test/**
 .idea/**
-.sqlops/**
+.azuredatastudio/**
 
 # Reference files
 **/*.ts

@@ -27,15 +27,16 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	@Input() modelStore: IModelStore;
 	private _treeView: FileBrowserTreeView;
 	private _viewModel: FileBrowserViewModel;
-	private _fileFilters: [{label: string, filters: string[]}] = [
+	private _fileFilters: [{ label: string, filters: string[] }] = [
 		{ label: 'All Files', filters: ['*'] }
 	];
 
 	@ViewChild('fileBrowserTree', { read: ElementRef }) private _treeContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService) {
-		super(changeRef);
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -60,7 +61,7 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	private onClicked(selectedNode: FileNode) {
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.onDidChange,
 			args: { fullPath: selectedNode.fullPath, isFile: selectedNode.isFile }
 		});
@@ -103,10 +104,6 @@ export default class FileBrowserTreeComponent extends ComponentBase implements I
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(): void {
 		// TODO allow configuring the look and feel

@@ -50,23 +50,23 @@ export class ClipboardService implements IClipboardService {
 	}
 
 	/**
-	 * Writes files to the system clipboard.
+	 * Writes resources to the system clipboard.
 	 */
-	writeFiles(files: URI[]): void {
-		this._vsClipboardService.writeFiles(files);
-	}
-
-		/**
-	 * Reads files from the system clipboard.
-	 */
-	readFiles(): URI[] {
-		return this._vsClipboardService.readFiles();
+	writeResources(resources: URI[]): void {
+		this._vsClipboardService.writeResources(resources);
 	}
 
 	/**
-	 * Find out if files are copied to the clipboard.
+	 * Reads resources from the system clipboard.
 	 */
-	hasFiles(): boolean {
-		return this._vsClipboardService.hasFiles();
+	readResources(): URI[] {
+		return this._vsClipboardService.readResources();
+	}
+
+	/**
+	 * Find out if resources are copied to the clipboard.
+	 */
+	hasResources(): boolean {
+		return this._vsClipboardService.hasResources();
 	}
 }

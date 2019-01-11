@@ -31,7 +31,7 @@ import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
+import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -96,7 +96,8 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		@Inject(forwardRef(() => ChangeDetectorRef)) protected _cd: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(INotificationService) private notificationService: INotificationService,
-		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService
+		@Inject(IAngularEventingService) private angularEventingService: IAngularEventingService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
 	}
@@ -138,6 +139,12 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		// Before separating tabs into pinned / shown, ensure that the home tab is always set up as expected
 		allTabs = this.setAndRemoveHomeTab(allTabs, homeWidgets);
 
+		// If preview features are disabled only show the home tab
+		let extensionTabsEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (!extensionTabsEnabled) {
+			allTabs = [];
+		}
+
 		// Load tab setting configs
 		this._tabSettingConfigs = this.dashboardService.getSettings<Array<TabSettingConfig>>([this.context, 'tabs'].join('.'));
 
@@ -164,9 +171,13 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 
 		// Set panel actions
 		let openedTabs = [...pinnedDashboardTabs, ...alwaysShowTabs];
-		let addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
-		this._tabsDispose.push(addNewTabAction);
-		this.panelActions = [addNewTabAction];
+		if (extensionTabsEnabled) {
+			let addNewTabAction = this.instantiationService.createInstance(AddFeatureTabAction, allTabs, openedTabs, this.dashboardService.getUnderlyingUri());
+			this._tabsDispose.push(addNewTabAction);
+			this.panelActions = [addNewTabAction];
+		} else {
+			this.panelActions = [];
+		}
 		this._cd.detectChanges();
 
 		this._tabsDispose.push(this.dashboardService.onPinUnpinTab(e => {

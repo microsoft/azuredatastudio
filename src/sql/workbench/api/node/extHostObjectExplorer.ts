@@ -9,7 +9,7 @@ import { ExtHostObjectExplorerShape, SqlMainContext, MainThreadObjectExplorerSha
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape  {
+export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 
 	private _proxy: MainThreadObjectExplorerShape;
 
@@ -44,7 +44,7 @@ class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerN
 	public errorMessage: string;
 
 	constructor(nodeInfo: sqlops.NodeInfo, connectionId: string, private _proxy: MainThreadObjectExplorerShape) {
-		Object.entries(nodeInfo).forEach(([key, value]) => this[key] = value);
+		this.getDetailsFromInfo(nodeInfo);
 		this.connectionId = connectionId;
 	}
 
@@ -70,5 +70,13 @@ class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerN
 			return Promise.resolve(undefined);
 		}
 		return this._proxy.$getNode(this.connectionId, this.nodePath.slice(0, parentPathEndIndex)).then(nodeInfo => nodeInfo ? new ExtHostObjectExplorerNode(nodeInfo, this.connectionId, this._proxy) : undefined);
+	}
+
+	refresh(): Thenable<void> {
+		return this._proxy.$refresh(this.connectionId, this.nodePath).then(nodeInfo => this.getDetailsFromInfo(nodeInfo));
+	}
+
+	private getDetailsFromInfo(nodeInfo: sqlops.NodeInfo): void {
+		Object.entries(nodeInfo).forEach(([key, value]) => this[key] = value);
 	}
 }

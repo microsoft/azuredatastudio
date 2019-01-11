@@ -12,6 +12,8 @@ import { INavigator } from 'vs/base/common/iterator';
 import * as WinJS from 'vs/base/common/winjs.base';
 import * as _ from './tree';
 import { Event, Emitter, once, EventMultiplexer, Relay } from 'vs/base/common/event';
+// {{SQL CARBON EDIT}}
+import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 interface IMap<T> { [id: string]: T; }
 interface IItemMap extends IMap<Item> { }
@@ -373,7 +375,14 @@ export class Item {
 			return result.then(() => {
 				this._setExpanded(true);
 				this._onDidExpand.fire(eventData);
-				return true;
+				// {{SQL CARBON EDIT}} - Original code does not handle the need to refresh children in case previous refreshchildren errored out.
+				if ((this.element instanceof TreeNode) && (this.element.errorStateMessage)) {
+					this.needsChildrenRefresh = true;
+					return false;
+				} // We may need special handling for other types of this.element apart from TreeNode as well.
+				else {
+					return true;
+				}
 			});
 		});
 
@@ -507,6 +516,7 @@ export class Item {
 						return child.doRefresh(recursive, true);
 					}));
 				} else {
+					this.mapEachChild(child => child.updateVisibility());
 					return WinJS.TPromise.as(null);
 				}
 			});
@@ -522,11 +532,15 @@ export class Item {
 	private doRefresh(recursive: boolean, safe: boolean = false): WinJS.Promise {
 		this.doesHaveChildren = this.context.dataSource.hasChildren(this.context.tree, this.element);
 		this.height = this._getHeight();
-		this.setVisible(this._isVisible());
+		this.updateVisibility();
 
 		this._onDidRefresh.fire(this);
 
 		return this.refreshChildren(recursive, safe);
+	}
+
+	private updateVisibility(): void {
+		this.setVisible(this._isVisible());
 	}
 
 	public refresh(recursive: boolean): WinJS.Promise {
@@ -552,17 +566,6 @@ export class Item {
 
 		result.reverse();
 		return result;
-	}
-
-	public getChildren(): Item[] {
-		var child = this.firstChild;
-		var results = [];
-		while (child) {
-			results.push(child);
-			child = child.next;
-		}
-
-		return results;
 	}
 
 	private isAncestorOf(item: Item): boolean {
@@ -1033,27 +1036,6 @@ export class TreeModel {
 			promises.push(this.collapse(elements[i], recursive));
 		}
 		return WinJS.Promise.join(promises);
-	}
-
-	public collapseDeepestExpandedLevel(): WinJS.Promise {
-		var levelToCollapse = this.findDeepestExpandedLevel(this.input, 0);
-
-		var items = [this.input];
-		for (var i = 0; i < levelToCollapse; i++) {
-			items = arrays.flatten(items.map(node => node.getChildren()));
-		}
-
-		var promises = items.map(child => this.collapse(child, false));
-		return WinJS.Promise.join(promises);
-	}
-
-	private findDeepestExpandedLevel(item: Item, currentLevel: number): number {
-		var expandedChildren = item.getChildren().filter(child => child.isExpanded());
-		if (!expandedChildren.length) {
-			return currentLevel;
-		}
-
-		return Math.max(...expandedChildren.map(child => this.findDeepestExpandedLevel(child, currentLevel + 1)));
 	}
 
 	public toggleExpansion(element: any, recursive: boolean = false): WinJS.Promise {

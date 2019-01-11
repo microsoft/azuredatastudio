@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as dom from 'vs/base/browser/dom';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -30,9 +30,11 @@ import { IAction } from 'vs/base/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { ProxiesCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const VIEW_SELECTOR: string = 'jobproxiesview-component';
-export const ROW_HEIGHT: number = 30;
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
@@ -40,14 +42,22 @@ export const ROW_HEIGHT: number = 30;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => ProxiesViewComponent) }],
 })
 
-export class ProxiesViewComponent extends JobManagementView implements OnInit {
+export class ProxiesViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private NewProxyText: string = nls.localize('jobProxyToolbar-NewItem', "New Proxy");
 	private RefreshText: string = nls.localize('jobProxyToolbar-Refresh', "Refresh");
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobProxiesView.accountName', 'Account Name'), field: 'accountName', width: 200, id: 'accountName' },
+		{
+			name: nls.localize('jobProxiesView.accountName', 'Account Name'),
+			field: 'accountName',
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
+			width: 200,
+			id: 'accountName'
+		},
 		{ name: nls.localize('jobProxiesView.credentialName', 'Credential Name'), field: 'credentialName', width: 200, id: 'credentialName' },
+		{ name: nls.localize('jobProxiesView.description', 'Description'), field: 'description', width: 200, id: 'description'},
+		{ name: nls.localize('jobProxiesView.isEnabled', 'Enabled'), field: 'isEnabled', width: 200, id: 'isEnabled'}
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -59,12 +69,13 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	};
 
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
+	private _proxiesCacheObject: ProxiesCacheObject;
 
 	public proxies: sqlops.AgentProxyInfo[];
 	public readonly contextAction = NewProxyAction;
 
+	private _didTabChange: boolean;
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
 
 	constructor(
@@ -81,6 +92,15 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		let proxiesCacheObjectMap = this._jobManagementService.proxiesCacheObjectMap;
+		let proxiesCacheObject = proxiesCacheObjectMap[this._serverName];
+		if (proxiesCacheObject) {
+			this._proxiesCacheObject = proxiesCacheObject;
+		} else {
+			this._proxiesCacheObject = new ProxiesCacheObject();
+			this._proxiesCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._proxiesCacheObject);
+		}
 	}
 
 	ngOnInit(){
@@ -89,50 +109,81 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		this._parentComponent = this._agentViewComponent;
 	}
 
+	ngOnDestroy() {
+		this._didTabChange = true;
+	}
+
 	public layout() {
 		let height = dom.getContentHeight(this._gridEl.nativeElement) - 10;
 		if (height < 0) {
 			height = 0;
 		}
 
-		this._table.layout(new dom.Dimension(
-			dom.getContentWidth(this._gridEl.nativeElement),
-			height));
+		if (this._table) {
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._gridEl.nativeElement),
+				height));
+		}
 	}
 
 	onFirstVisible() {
 		let self = this;
+		let cached: boolean = false;
+		if (this._proxiesCacheObject.serverName === this._serverName) {
+			if (this._proxiesCacheObject.proxies && this._proxiesCacheObject.proxies.length > 0) {
+				cached = true;
+				this.proxies = this._proxiesCacheObject.proxies;
+			}
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		this.dataView = new Slick.Data.DataView();
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		let rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			useRowClick: false,
+			panelRows: 1
+		});
+		columns.unshift(rowDetail.getColumnDefinition());
 
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
 		this._table.grid.setData(this.dataView, true);
 
-		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getProxies(ownerUri).then((result) => {
-			if (result && result.proxies) {
-				self.proxies = result.proxies;
-				self.onProxiesAvailable(result.proxies);
-			} else {
-				// TODO: handle error
-			}
-
+		// checked for cached state
+		if (cached && this._agentViewComponent.refresh !== true) {
+			self.onProxiesAvailable(this.proxies);
 			this._showProgressWheel = false;
 			if (this.isVisible) {
 				this._cd.detectChanges();
 			}
-		});
+		} else {
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			this._jobManagementService.getProxies(ownerUri).then((result) => {
+				if (result && result.proxies) {
+					self.proxies = result.proxies;
+					self._proxiesCacheObject.proxies = result.proxies;
+					self.onProxiesAvailable(result.proxies);
+				} else {
+					// TODO: handle error
+				}
+				this._showProgressWheel = false;
+				if (this.isVisible && !this._didTabChange) {
+					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
+				}
+			});
+		}
 	}
 
 	private onProxiesAvailable(proxies: sqlops.AgentProxyInfo[]) {
@@ -140,13 +191,16 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 			return {
 				id: item.accountName,
 				accountName: item.accountName,
-				credentialName: item.credentialName
+				credentialName: item.credentialName,
+				description: item.description,
+				isEnabled: item.isEnabled
 			};
 		});
 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(items);
 		this.dataView.endUpdate();
+		this._proxiesCacheObject.dataview = this.dataView;
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 	}
@@ -162,6 +216,15 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit {
 		return (this.proxies && this.proxies.length >= rowIndex)
 			? this.proxies[rowIndex]
 			: undefined;
+	}
+
+	private renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass = dataContext.isEnabled ? 'proxyview-proxynameindicatorenabled' :
+			'proxyview-proxynameindicatordisabled';
+ 		return '<table class="proxyview-proxynametable"><tr class="proxyview-proxynamerow">' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
+			'<td nowrap class="proxyview-proxynametext">' + dataContext.accountName + '</td>' +
+			'</tr></table>';
 	}
 
 	public openCreateProxyDialog() {

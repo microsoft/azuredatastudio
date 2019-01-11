@@ -106,6 +106,14 @@ export class Taskbar {
 		this.actionBar.setAriaLabel(label);
 	}
 
+	public length(): number {
+		return this.actionBar.length();
+	}
+
+	public pull(index: number) {
+		this.actionBar.pull(index);
+	}
+
 	/**
 	 * Push HTMLElements and icons for IActions into the ActionBar UI. Push IActions into ActionBar's private collection.
 	 */
@@ -138,4 +146,5 @@ export class Taskbar {
 	public dispose(): void {
 		this.actionBar.dispose();
 	}
+
 }

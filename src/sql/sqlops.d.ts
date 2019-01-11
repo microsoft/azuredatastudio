@@ -37,6 +37,8 @@ declare module 'sqlops' {
 
 		export function registerCapabilitiesServiceProvider(provider: CapabilitiesProvider): vscode.Disposable;
 
+		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
+
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -185,6 +187,11 @@ declare module 'sqlops' {
 			 * Get the parent node. Returns undefined if there is none.
 			 */
 			getParent(): Thenable<ObjectExplorerNode>;
+
+			/**
+			 * Refresh the node, expanding it if it has children
+			 */
+			refresh(): Thenable<void>;
 		}
 	}
 
@@ -195,6 +202,7 @@ declare module 'sqlops' {
 	}
 
 	export interface IConnectionProfile extends ConnectionInfo {
+		connectionName: string;
 		serverName: string;
 		databaseName: string;
 		userName: string;
@@ -206,6 +214,39 @@ declare module 'sqlops' {
 		providerName: string;
 		saveProfile: boolean;
 		id: string;
+		azureTenantId?: string;
+	}
+
+	/**
+ 	* Options for the actions that could happen after connecting is complete
+ 	*/
+	export interface IConnectionCompletionOptions {
+		/**
+		 * Save the connection to MRU and settings (only save to setting if profile.saveProfile is set to true)
+		 * Default is true.
+	 	*/
+		saveConnection: boolean;
+
+		/**
+		 * If true, open the dashboard after connection is complete.
+		 * If undefined / false, dashboard won't be opened after connection completes.
+		 * Default is false.
+	 	*/
+		showDashboard?: boolean;
+
+		/**
+		 * If undefined / true, open the connection dialog if connection fails.
+		 * If false, connection dialog won't be opened even if connection fails.
+		 * Default is true.
+		 */
+		showConnectionDialogOnError?: boolean;
+
+		/**
+		 * If undefined / true, open the connection firewall rule dialog if connection fails.
+		 * If false, connection firewall rule dialog won't be opened even if connection fails.
+		 * Default is true.
+		 */
+		showFirewallRuleOnError?: boolean;
 	}
 
 	export interface ConnectionInfoSummary {
@@ -349,6 +390,7 @@ declare module 'sqlops' {
 	}
 
 	export enum ConnectionOptionSpecialType {
+		connectionName = 'connectionName',
 		serverName = 'serverName',
 		databaseName = 'databaseName',
 		authType = 'authType',
@@ -653,7 +695,8 @@ declare module 'sqlops' {
 		registerOnQueryComplete(handler: (result: QueryExecuteCompleteNotificationResult) => any): void;
 		registerOnBatchStart(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
 		registerOnBatchComplete(handler: (batchInfo: QueryExecuteBatchNotificationParams) => any): void;
-		registerOnResultSetComplete(handler: (resultSetInfo: QueryExecuteResultSetCompleteNotificationParams) => any): void;
+		registerOnResultSetAvailable(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
+		registerOnResultSetUpdated(handler: (resultSetInfo: QueryExecuteResultSetNotificationParams) => any): void;
 		registerOnMessage(handler: (message: QueryExecuteMessageParams) => any): void;
 
 		// Edit Data Requests
@@ -728,6 +771,7 @@ declare module 'sqlops' {
 		batchId: number;
 		rowCount: number;
 		columnInfo: IDbColumn[];
+		complete: boolean;
 	}
 
 	export interface BatchSummary {
@@ -796,7 +840,7 @@ declare module 'sqlops' {
 	}
 
 
-	export interface QueryExecuteResultSetCompleteNotificationParams {
+	export interface QueryExecuteResultSetNotificationParams {
 		resultSetSummary: ResultSetSummary;
 		ownerUri: string;
 	}
@@ -1131,8 +1175,9 @@ declare module 'sqlops' {
 
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
 
-		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
+		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 
+		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -1227,6 +1272,16 @@ declare module 'sqlops' {
 		Last = 16
 	}
 
+	export enum JobExecutionStatus {
+		Executing = 1,
+		WaitingForWorkerThread = 2,
+		BetweenRetries = 3,
+		Idle = 4,
+		Suspended = 5,
+		WaitingForStepToFinish = 6,
+		PerformingCompletionAction = 7
+	}
+
 	export interface AgentJobInfo {
 		name: string;
 		owner: string;
@@ -1245,15 +1300,16 @@ declare module 'sqlops' {
 		lastRun: string;
 		nextRun: string;
 		jobId: string;
-		EmailLevel: JobCompletionActionCondition;
-		PageLevel: JobCompletionActionCondition;
-		EventLogLevel: JobCompletionActionCondition;
-		DeleteLevel: JobCompletionActionCondition;
-		OperatorToEmail: string;
-		OperatorToPage: string;
-		JobSteps: AgentJobStepInfo[];
-		JobSchedules: AgentJobScheduleInfo[];
-		Alerts: AgentAlertInfo[];
+		startStepId: number;
+		emailLevel: JobCompletionActionCondition;
+		pageLevel: JobCompletionActionCondition;
+		eventLogLevel: JobCompletionActionCondition;
+		deleteLevel: JobCompletionActionCondition;
+		operatorToEmail: string;
+		operatorToPage: string;
+		jobSteps: AgentJobStepInfo[];
+		jobSchedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface AgentJobScheduleInfo {
@@ -1274,6 +1330,7 @@ declare module 'sqlops' {
 		jobCount: number;
 		activeEndDate: string;
 		scheduleUid: string;
+		description: string;
 	}
 
 	export interface AgentJobStep {
@@ -1283,6 +1340,7 @@ declare module 'sqlops' {
 		message: string;
 		runDate: string;
 		runStatus: number;
+		stepDetails: AgentJobStepInfo;
 	}
 
 	export interface AgentJobStepInfo {
@@ -1398,7 +1456,10 @@ declare module 'sqlops' {
 	}
 
 	export interface AgentJobHistoryResult extends ResultStatus {
-		jobs: AgentJobHistoryInfo[];
+		histories: AgentJobHistoryInfo[];
+		steps: AgentJobStepInfo[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
 	}
 
 	export interface CreateAgentJobResult extends ResultStatus {
@@ -1486,7 +1547,7 @@ declare module 'sqlops' {
 	export interface AgentServicesProvider extends DataProvider {
 		// Job management methods
 		getJobs(ownerUri: string): Thenable<AgentJobsResult>;
-		getJobHistory(ownerUri: string, jobId: string): Thenable<AgentJobHistoryResult>;
+		getJobHistory(ownerUri: string, jobId: string, jobName: string): Thenable<AgentJobHistoryResult>;
 		jobAction(ownerUri: string, jobName: string, action: string): Thenable<ResultStatus>;
 		createJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<CreateAgentJobResult>;
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
@@ -1494,9 +1555,9 @@ declare module 'sqlops' {
 		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
 
 		// Job Step management methods
-		createJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
-		updateJobStep(ownerUri: string, originalJobStepName: string, jobInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
-		deleteJobStep(ownerUri: string, jobInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
+		updateJobStep(ownerUri: string, originalJobStepName: string, stepInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
+		deleteJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<ResultStatus>;
 
 		// Alert management methods
 		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;
@@ -1526,6 +1587,49 @@ declare module 'sqlops' {
 		deleteJobSchedule(ownerUri: string, scheduleInfo: AgentJobScheduleInfo): Thenable<ResultStatus>;
 
 		registerOnUpdated(handler: () => any): void;
+	}
+
+	// DacFx interfaces  -----------------------------------------------------------------------
+	export interface DacFxResult extends ResultStatus {
+		operationId: string;
+	}
+
+	export interface ExportParams {
+		databaseName: string;
+		packageFilePath: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ImportParams {
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface ExtractParams {
+		databaseName: string;
+		packageFilePath: string;
+		applicationName: string;
+		applicationVersion: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DeployParams {
+		packageFilePath: string;
+		databaseName: string;
+		upgradeExisting: boolean;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface DacFxServicesProvider extends DataProvider {
+		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -1848,6 +1952,25 @@ declare module 'sqlops' {
 		 * @param {Account} updatedAccount Account object with updated properties
 		 */
 		export function accountUpdated(updatedAccount: Account): void;
+
+		/**
+		 * Gets all added accounts.
+		 * @returns {Thenable<Account>} Promise to return the accounts
+		 */
+		export function getAllAccounts(): Thenable<Account[]>;
+
+		/**
+		 * Generates a security token by asking the account's provider
+		 * @param {Account} account Account to generate security token for (defaults to
+		 * AzureResource.ResourceManagement if not given)
+		 * @return {Thenable<{}>} Promise to return the security token
+		 */
+		export function getSecurityToken(account: Account, resource?: AzureResource): Thenable<{}>;
+
+		/**
+		 * An [event](#Event) which fires when the accounts have changed.
+		 */
+		export const onDidChangeAccounts: vscode.Event<DidChangeAccountsParams>;
 	}
 
 	/**
@@ -1915,6 +2038,16 @@ declare module 'sqlops' {
 		isStale: boolean;
 	}
 
+	export enum AzureResource {
+		ResourceManagement = 0,
+		Sql = 1
+	}
+
+	export interface DidChangeAccountsParams {
+		// Updated accounts
+		accounts: Account[];
+	}
+
 	// - ACCOUNT PROVIDER //////////////////////////////////////////////////
 	/**
 	 * Error to be used when the user has cancelled the prompt or refresh methods. When
@@ -1967,9 +2100,10 @@ declare module 'sqlops' {
 		/**
 		 * Generates a security token for the provided account
 		 * @param {Account} account The account to generate a security token for
+		 * @param {AzureResource} resource The resource to get the token for
 		 * @return {Thenable<{}>} Promise to return a security token object
 		 */
-		getSecurityToken(account: Account): Thenable<{}>;
+		getSecurityToken(account: Account, resource: AzureResource): Thenable<{}>;
 
 		/**
 		 * Prompts the user to enter account information.

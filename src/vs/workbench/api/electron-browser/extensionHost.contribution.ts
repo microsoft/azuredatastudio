@@ -53,6 +53,7 @@ import './mainThreadTerminalService';
 import './mainThreadTreeViews';
 import './mainThreadLogService';
 import './mainThreadWebview';
+import './mainThreadComments';
 import './mainThreadUrls';
 import './mainThreadWindow';
 import './mainThreadWorkspace';

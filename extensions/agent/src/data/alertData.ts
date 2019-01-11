@@ -9,6 +9,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
+import { JobData } from './jobData';
 
 const localize = nls.loadMessageBundle();
 
@@ -45,8 +46,19 @@ export class AlertData implements IAgentDialogData {
 	wmiEventNamespace: string;
 	wmiEventQuery: string;
 
-	constructor(ownerUri:string, alertInfo: sqlops.AgentAlertInfo) {
+	private viaJobDialog: boolean;
+	private jobModel: JobData;
+
+	constructor(
+		ownerUri:string,
+		alertInfo: sqlops.AgentAlertInfo,
+		jobModel?: JobData,
+		viaJobDialog: boolean = false
+	) {
 		this.ownerUri = ownerUri;
+		this.viaJobDialog = viaJobDialog;
+		this.jobModel = jobModel;
+		this.jobName = this.jobName ? this.jobName : this.jobModel.name;
 
 		if (alertInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
@@ -57,10 +69,9 @@ export class AlertData implements IAgentDialogData {
 			this.eventDescriptionKeyword = alertInfo.eventDescriptionKeyword;
 			this.eventSource = alertInfo.eventSource;
 			this.hasNotification = alertInfo.hasNotification;
-			this.includeEventDescription = alertInfo.includeEventDescription.toString();
+			this.includeEventDescription = alertInfo.includeEventDescription ? alertInfo.includeEventDescription.toString() : null;
 			this.isEnabled = alertInfo.isEnabled;
 			this.jobId = alertInfo.jobId;
-			this.jobName = alertInfo.jobName;
 			this.lastOccurrenceDate = alertInfo.lastOccurrenceDate;
 			this.lastResponseDate = alertInfo.lastResponseDate;
 			this.messageId = alertInfo.messageId;
@@ -71,7 +82,7 @@ export class AlertData implements IAgentDialogData {
 			this.databaseName = alertInfo.databaseName;
 			this.countResetDate = alertInfo.countResetDate;
 			this.categoryName = alertInfo.categoryName;
-			this.alertType = alertInfo.alertType.toString();
+			this.alertType = alertInfo.alertType ? alertInfo.alertType.toString() : null;
 			this.wmiEventNamespace = alertInfo.wmiEventNamespace;
 			this.wmiEventQuery = alertInfo.wmiEventQuery;
 		}
@@ -82,10 +93,18 @@ export class AlertData implements IAgentDialogData {
 
 	public async save() {
 		let agentService = await AgentUtils.getAgentService();
-		let result = this.dialogMode === AgentDialogMode.CREATE
-			? await agentService.createAlert(this.ownerUri,  this.toAgentAlertInfo())
-			: await agentService.updateAlert(this.ownerUri, this.originalName, this.toAgentAlertInfo());
-
+		let result: any;
+		// if it's called via the job dialog, add it to the
+		// job model
+		if (this.viaJobDialog) {
+			if (this.jobModel) {
+				Promise.resolve(this);
+				return;
+			}
+		} else {
+			// has to be a create alert
+			result = await agentService.createAlert(this.ownerUri, this.toAgentAlertInfo());
+		}
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.saveErrorMessage', "Alert update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));

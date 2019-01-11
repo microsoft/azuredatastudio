@@ -20,6 +20,9 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { truncate } from 'fs';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -40,6 +43,9 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	public readonly onMessage: Event<string> = this._onMessage.event;
 	private _onMessageDisposable: IDisposable;
 
+	protected contextKey: IContextKey<boolean>;
+	protected findInputFocusContextKey: IContextKey<boolean>;
+
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -49,7 +55,9 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
 		@Inject(IPartService) private partService: IPartService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService
+		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super();
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
@@ -105,18 +113,16 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		if (this._onMessageDisposable) {
 			this._onMessageDisposable.dispose();
 		}
-		this._webview = new WebviewElement(
+
+		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.themeService,
-			this.environmentService,
-			this.contextViewService,
-			undefined,
-			undefined,
+			this.contextKey,
+			this.findInputFocusContextKey,
 			{
 				allowScripts: true,
 				enableWrappedPostMessage: true
-			}
-		);
+			});
+
 		this._webview.mountTo(this._el.nativeElement);
 		this._onMessageDisposable = this._webview.onMessage(e => {
 			this._onMessage.fire(e);

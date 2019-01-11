@@ -35,7 +35,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		};
 
 		extHostModelView = Mock.ofInstance(<ExtHostModelViewShape>{
-			$registerProvider: (widget, handler) => undefined
+			$registerProvider: (widget, handler, extensionLocation) => undefined
 		});
 		extHostModelViewDialog = new ExtHostModelViewDialog(mainContext, extHostModelView.object, undefined);
 	});

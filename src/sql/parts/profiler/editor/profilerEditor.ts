@@ -17,7 +17,6 @@ import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
-
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -37,15 +36,16 @@ import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Command } from 'vs/editor/browser/editorExtensions';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { ContextKeyExpr, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { CommonFindController, FindStartFocusAction } from 'vs/editor/contrib/find/findController';
 import * as types from 'vs/base/common/types';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -84,7 +84,10 @@ class BasicView extends View {
 			this._previousSize = this.size;
 			this.setFixed(this.headerSize);
 		} else {
-			this.setFlexible(this._previousSize);
+			// Enforce the min height for the view when user is doing expand operation,
+			// to make sure the view has a reasonable height.
+			const minHeight = 200;
+			this.setFlexible(Math.max(this._previousSize, minHeight));
 		}
 	}
 
@@ -99,7 +102,8 @@ export interface IDetailData {
 }
 
 export class ProfilerEditor extends BaseEditor {
-	public static ID: string = 'workbench.editor.profiler';
+	public static readonly ID: string = 'workbench.editor.profiler';
+
 	private _editor: ProfilerResourceEditor;
 	private _editorModel: ITextModel;
 	private _editorInput: UntitledEditorInput;
@@ -121,7 +125,6 @@ export class ProfilerEditor extends BaseEditor {
 	private _viewTemplates: Array<IProfilerViewTemplate>;
 	private _sessionSelector: SelectBox;
 	private _sessionsList: Array<string>;
-	private _connectionInfoText: HTMLElement;
 
 	// Actions
 	private _connectAction: Actions.ProfilerConnect;
@@ -143,24 +146,23 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (_editorGroupService) {
-			_editorGroupService.onEditorOpening(e => {
-				if (this.isVisible() && (e.input !== this.input || e.position !== this.position)) {
+		if (_editorService) {
+			_editorService.overrideOpenEditor((editor, options, group) => {
+				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
 					this.saveEditorViewState();
 				}
+				return {};
 			});
 		}
 	}
 
 	protected createEditor(parent: HTMLElement): void {
-		// test backend
-		//this._profilerService.registerProvider('default', this._instantiationService.createInstance(ProfilerTestBackend));
-
 		this._container = document.createElement('div');
 		this._container.className = 'carbon-profiler';
 		parent.appendChild(this._container);
@@ -211,6 +213,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._viewTemplates = this._profilerService.getViewTemplates();
 		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
+		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', 'Select View'));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
@@ -223,39 +226,45 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._sessionsList = [''];
 		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
+		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', 'Select Session'));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionName = e.selected;
 			}
 		}));
 		let sessionsContainer = document.createElement('div');
-		sessionsContainer.style.width = '150px';
+		sessionsContainer.style.minWidth = '150px';
+		sessionsContainer.style.maxWidth = '250px';
 		sessionsContainer.style.paddingRight = '5px';
 		this._sessionSelector.render(sessionsContainer);
-
-		this._connectionInfoText = document.createElement('div');
-		this._connectionInfoText.style.paddingRight = '5px';
-		this._connectionInfoText.innerText = '';
-		this._connectionInfoText.style.textAlign = 'center';
-		this._connectionInfoText.style.display = 'flex';
-		this._connectionInfoText.style.alignItems = 'center';
 
 		this._register(attachSelectBoxStyler(this._viewTemplateSelector, this.themeService));
 		this._register(attachSelectBoxStyler(this._sessionSelector, this.themeService));
 
 		this._actionBar.setContent([
-			{ action: this._startAction },
-			{ action: this._stopAction },
-			{ element: sessionsContainer },
 			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
+			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', 'Select Session:')) },
+			{ element: sessionsContainer },
+			{ action: this._startAction },
+			{ action: this._stopAction },
 			{ action: this._pauseAction },
-			{ action: this._autoscrollAction },
-			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) },
-			{ element: viewTemplateContainer },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._connectionInfoText }
+			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
+			{ element: viewTemplateContainer },
+			{ action: this._autoscrollAction },
+			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
 		]);
+	}
+
+	private _createTextElement(text: string): HTMLDivElement {
+		let textElement = document.createElement('div');
+		textElement.style.paddingRight = '10px';
+		textElement.innerText = text;
+		textElement.style.textAlign = 'center';
+		textElement.style.display = 'flex';
+		textElement.style.alignItems = 'center';
+		return textElement;
 	}
 
 	private _createProfilerTable(): HTMLElement {
@@ -327,20 +336,26 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableContainer.style.width = '100%';
 		detailTableContainer.style.height = '100%';
 		this._detailTableData = new TableDataView<IDetailData>();
-		this._detailTable = new Table(detailTableContainer, this._detailTableData, [
-			{
-				id: 'label',
-				name: nls.localize('label', "Label"),
-				field: 'label',
-				formatter: textFormatter
-			},
-			{
-				id: 'value',
-				name: nls.localize('profilerEditor.value', "Value"),
-				field: 'value',
-				formatter: textFormatter
-			}
-		], { forceFitColumns: true });
+		this._detailTable = new Table(detailTableContainer, {
+			dataProvider: this._detailTableData, columns: [
+				{
+					id: 'label',
+					name: nls.localize('label', "Label"),
+					field: 'label',
+					formatter: textFormatter
+				},
+				{
+					id: 'value',
+					name: nls.localize('profilerEditor.value', "Value"),
+					field: 'value',
+					formatter: textFormatter
+				}
+			]
+		}, { forceFitColumns: true });
+
+		this._detailTableData.onRowCountChange(() => {
+			this._detailTable.updateRowCount();
+		});
 
 		this._tabbedPanel.pushTab({
 			identifier: 'detailTable',
@@ -376,7 +391,7 @@ export class ProfilerEditor extends BaseEditor {
 		return this._input as ProfilerInput;
 	}
 
-	public setInput(input: ProfilerInput, options?: EditorOptions): TPromise<void> {
+	public setInput(input: ProfilerInput, options?: EditorOptions): Thenable<void> {
 		let savedViewState = this._savedTableViewStates.get(input);
 
 		this._profilerEditorContextKey.set(true);
@@ -387,7 +402,7 @@ export class ProfilerEditor extends BaseEditor {
 			return TPromise.as(null);
 		}
 
-		return super.setInput(input, options).then(() => {
+		return super.setInput(input, options, CancellationToken.None).then(() => {
 			this._profilerTableEditor.setInput(input);
 
 			if (input.viewTemplate) {
@@ -410,7 +425,6 @@ export class ProfilerEditor extends BaseEditor {
 				autoscroll: true,
 				isPanelCollapsed: true
 			});
-			this._connectionInfoText.innerText = input.connectionName;
 			this._profilerTableEditor.updateState();
 			this._splitView.layout();
 			this._profilerTableEditor.focus();
@@ -425,7 +439,7 @@ export class ProfilerEditor extends BaseEditor {
 	}
 
 	public toggleSearch(): void {
-		if (this._editor.getControl().isFocused()) {
+		if (this._editor.getControl().hasTextFocus()) {
 			let editor = this._editor.getControl() as ICodeEditor;
 			let controller = CommonFindController.get(editor);
 			if (controller) {
@@ -458,14 +472,15 @@ export class ProfilerEditor extends BaseEditor {
 
 			if (this.input.state.isConnected) {
 				this._updateToolbar();
-				this._sessionSelector.enable();
-				this._profilerService.getXEventSessions(this.input.id).then((r) => {
-					this._sessionSelector.setOptions(r);
-					this._sessionsList = r;
-					if (this.input.sessionName === undefined || this.input.sessionName === '') {
-						this.input.sessionName = this._sessionsList[0];
-					}
-				});
+
+				// Launch the create session dialog if openning a new window.
+				let uiState = this._profilerService.getSessionViewState(this.input.id);
+				let previousSessionName = uiState && uiState.previousSessionName;
+				if (!this.input.sessionName && !previousSessionName) {
+					this._profilerService.launchCreateSessionDialog(this.input);
+				}
+
+				this._updateSessionSelector(previousSessionName);
 			} else {
 				this._startAction.enabled = false;
 				this._stopAction.enabled = false;
@@ -491,16 +506,33 @@ export class ProfilerEditor extends BaseEditor {
 			}
 			if (this.input.state.isStopped) {
 				this._updateToolbar();
-				this._sessionSelector.enable();
-				this._profilerService.getXEventSessions(this.input.id).then((r) => {
-					this._sessionsList = r;
-					this._sessionSelector.setOptions(r);
-					if (this.input.sessionName === undefined || this.input.sessionName === '') {
-						this.input.sessionName = this._sessionsList[0];
-					}
-				});
+				this._updateSessionSelector();
 			}
 		}
+	}
+
+	private _updateSessionSelector(previousSessionName: string = undefined) {
+		this._sessionSelector.enable();
+		this._profilerService.getXEventSessions(this.input.id).then((r) => {
+			if (!r) {
+				r = [];
+			}
+
+			this._sessionSelector.setOptions(r);
+			this._sessionsList = r;
+			if (this._sessionsList.length > 0) {
+				if (!this.input.sessionName) {
+					this.input.sessionName = previousSessionName;
+				}
+
+				if (this._sessionsList.indexOf(this.input.sessionName) === -1) {
+					this.input.sessionName = this._sessionsList[0];
+				}
+
+				this._sessionSelector.selectWithOptionName(this.input.sessionName);
+			}
+		});
+
 	}
 
 	private _updateToolbar(): void {
@@ -523,12 +555,21 @@ export class ProfilerEditor extends BaseEditor {
 			this._savedTableViewStates.set(this.input, this._profilerTableEditor.saveViewState());
 		}
 	}
+
+	public focus() {
+		this._profilerEditorContextKey.set(true);
+		super.focus();
+		let savedViewState = this._savedTableViewStates.get(this.input);
+		if (savedViewState) {
+			this._profilerTableEditor.restoreViewState(savedViewState);
+		}
+	}
 }
 
 abstract class SettingsCommand extends Command {
 
 	protected getProfilerEditor(accessor: ServicesAccessor): ProfilerEditor {
-		const activeEditor = accessor.get(IWorkbenchEditorService).getActiveEditor();
+		const activeEditor = accessor.get(IEditorService).activeControl;
 		if (activeEditor instanceof ProfilerEditor) {
 			return activeEditor;
 		}
@@ -551,7 +592,9 @@ class StartSearchProfilerTableCommand extends SettingsCommand {
 const command = new StartSearchProfilerTableCommand({
 	id: PROFILER_TABLE_COMMAND_SEARCH,
 	precondition: ContextKeyExpr.and(CONTEXT_PROFILER_EDITOR),
-	kbOpts: { primary: KeyMod.CtrlCmd | KeyCode.KEY_F }
+	kbOpts: {
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		weight: KeybindingWeight.EditorContrib
+	}
 });
-
-KeybindingsRegistry.registerCommandAndKeybindingRule(command.toCommandAndKeybindingRule(KeybindingsRegistry.WEIGHT.editorContrib()));
+command.register();

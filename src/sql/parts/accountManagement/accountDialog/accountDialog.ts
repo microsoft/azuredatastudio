@@ -33,6 +33,7 @@ import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManag
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { FixedListView } from 'sql/platform/views/fixedListView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 export interface IProviderViewUiComponent {
 	view: FixedListView<sqlops.Account>;
@@ -66,19 +67,22 @@ export class AccountDialog extends Modal {
 
 	constructor(
 		@IPartService partService: IPartService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IListService private _listService: IListService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
 		super(
 			localize('linkedAccounts', 'Linked accounts'),
 			TelemetryKeys.Accounts,
 			partService,
 			telemetryService,
+			clipboardService,
+			themeService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
@@ -171,11 +175,15 @@ export class AccountDialog extends Modal {
 		if (!this.isEmptyLinkedAccount()) {
 			this.showSplitView();
 		} else {
-			this._splitViewContainer.hidden = true;
-			this._noaccountViewContainer.hidden = false;
-			this._addAccountButton.focus();
+			this.showNoAccountContainer();
 		}
 
+	}
+
+	private showNoAccountContainer() {
+		this._splitViewContainer.hidden = true;
+		this._noaccountViewContainer.hidden = false;
+		this._addAccountButton.focus();
 	}
 
 	private showSplitView() {
@@ -296,6 +304,10 @@ export class AccountDialog extends Modal {
 
 		if (args.accountList.length > 0 && this._splitViewContainer.hidden) {
 			this.showSplitView();
+		}
+
+		if (this.isEmptyLinkedAccount() && this._noaccountViewContainer.hidden) {
+			this.showNoAccountContainer();
 		}
 
 		this.layout();

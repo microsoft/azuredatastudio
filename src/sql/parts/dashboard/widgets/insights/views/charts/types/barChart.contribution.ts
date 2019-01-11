@@ -24,7 +24,7 @@ const properties: IJSONSchema = {
 		},
 		yAxisLabel: {
 			type: 'string',
-			description: nls.localize('yAxisLabel', "Label for the y axis")
+			description: nls.localize('barchart.yAxisLabel', "Label for the y axis")
 		},
 		xAxisMin: {
 			type: 'number',
@@ -36,7 +36,7 @@ const properties: IJSONSchema = {
 		},
 		xAxisLabel: {
 			type: 'string',
-			description: nls.localize('xAxisLabel', "Label for the x axis")
+			description: nls.localize('barchart.xAxisLabel', "Label for the x axis")
 		}
 	}
 };

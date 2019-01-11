@@ -11,7 +11,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import * as errors from 'vs/base/common/errors';
 import { IActionProvider, ITree, IDataSource, IRenderer, IAccessibilityProvider, IDragAndDropData, IDragOverReaction, DRAG_OVER_REJECT } from 'vs/base/parts/tree/browser/tree';
 import { CollapseAction } from 'vs/workbench/browser/viewlet';
-import { TreeViewsViewletPanel, IViewletViewOptions, IViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
+import { TreeViewsViewletPanel, IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IDebugService, IExpression, CONTEXT_WATCH_EXPRESSIONS_FOCUSED } from 'vs/workbench/parts/debug/common/debug';
 import { Expression, Variable, Model } from 'vs/workbench/parts/debug/common/debugModel';
 import { AddWatchExpressionAction, RemoveAllWatchExpressionsAction, EditWatchExpressionAction, RemoveWatchExpressionAction } from 'vs/workbench/parts/debug/browser/debugActions';
@@ -29,6 +29,7 @@ import { DefaultDragAndDrop, OpenMode, ClickBehavior } from 'vs/base/parts/tree/
 import { IVariableTemplateData, renderVariable, renderRenameBox, renderExpressionValue, BaseDebugController, twistiePixels, renderViewTree } from 'vs/workbench/parts/debug/browser/baseDebugView';
 import { WorkbenchTree } from 'vs/platform/list/browser/listService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 
 const $ = dom.$;
 const MAX_VALUE_RENDER_LENGTH_IN_VIEWLET = 1024;
@@ -49,7 +50,7 @@ export class WatchExpressionsView extends TreeViewsViewletPanel {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super({ ...(options as IViewOptions), ariaHeaderLabel: nls.localize('expressionsSection', "Expressions Section") }, keybindingService, contextMenuService, configurationService);
+		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: nls.localize('watchExpressionsSection', "Watch Expressions Section") }, keybindingService, contextMenuService, configurationService);
 		this.settings = options.viewletSettings;
 
 		this.onWatchExpressionsUpdatedScheduler = new RunOnceScheduler(() => {
@@ -176,7 +177,7 @@ class WatchExpressionsActionProvider implements IActionProvider {
 			if (element instanceof Variable) {
 				const variable = <Variable>element;
 				if (!variable.hasChildren) {
-					actions.push(new CopyValueAction(CopyValueAction.ID, CopyValueAction.LABEL, variable.value, this.debugService));
+					actions.push(new CopyValueAction(CopyValueAction.ID, CopyValueAction.LABEL, variable, this.debugService));
 				}
 				actions.push(new Separator());
 			}
@@ -214,7 +215,7 @@ class WatchExpressionsDataSource implements IDataSource {
 		if (element instanceof Model) {
 			const viewModel = this.debugService.getViewModel();
 			return TPromise.join(element.getWatchExpressions().map(we =>
-				we.name ? we.evaluate(viewModel.focusedProcess, viewModel.focusedStackFrame, 'watch').then(() => we) : TPromise.as(we)));
+				we.name ? we.evaluate(viewModel.focusedSession, viewModel.focusedStackFrame, 'watch').then(() => we) : TPromise.as(we)));
 		}
 
 		let expression = <Expression>element;
@@ -284,7 +285,7 @@ class WatchExpressionsRenderer implements IRenderer {
 		if (templateId === WatchExpressionsRenderer.WATCH_EXPRESSION_TEMPLATE_ID) {
 			this.renderWatchExpression(tree, element, templateData);
 		} else {
-			renderVariable(tree, element, templateData, true);
+			renderVariable(element, templateData, true);
 		}
 	}
 
@@ -299,16 +300,17 @@ class WatchExpressionsRenderer implements IRenderer {
 		}
 
 		data.name.textContent = watchExpression.name;
-		if (watchExpression.value) {
+		renderExpressionValue(watchExpression, data.value, {
+			showChanged: true,
+			maxValueLength: MAX_VALUE_RENDER_LENGTH_IN_VIEWLET,
+			preserveWhitespace: false,
+			showHover: true,
+			colorize: true
+		});
+		data.name.title = watchExpression.type ? watchExpression.type : watchExpression.value;
+
+		if (typeof watchExpression.value === 'string') {
 			data.name.textContent += ':';
-			renderExpressionValue(watchExpression, data.value, {
-				showChanged: true,
-				maxValueLength: MAX_VALUE_RENDER_LENGTH_IN_VIEWLET,
-				preserveWhitespace: false,
-				showHover: true,
-				colorize: true
-			});
-			data.name.title = watchExpression.type ? watchExpression.type : watchExpression.value;
 		}
 	}
 

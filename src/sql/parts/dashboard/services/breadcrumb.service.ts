@@ -17,7 +17,7 @@ import * as nls from 'vs/nls';
 export enum BreadcrumbClass {
 	DatabasePage,
 	ServerPage
-};
+}
 
 @Injectable()
 export class BreadcrumbService implements IBreadcrumbService {
@@ -60,7 +60,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 	}
 
 	private getServerBreadcrumb(profile: ConnectionProfile): MenuItem {
-		return { label: profile.serverName, routerLink: ['server-dashboard'] };
+		return profile.connectionName ? { label: profile.connectionName, routerLink: ['server-dashboard'] } : { label: profile.serverName, routerLink: ['server-dashboard'] };
 	}
 
 	private getDbBreadcrumb(profile: ConnectionProfile): MenuItem {

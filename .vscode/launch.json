@@ -66,13 +66,13 @@
 		{
 			"type": "chrome",
 			"request": "attach",
-			"name": "Attach to sqlops",
+			"name": "Attach to azuredatastudio",
 			"port": 9222
 		},
 		{
 			"type": "chrome",
 			"request": "launch",
-			"name": "Launch sqlops",
+			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
 			},
@@ -90,7 +90,31 @@
 				"**/winjs*.js"
 			],
 			"webRoot": "${workspaceFolder}",
-			"timeout": 15000
+			"timeout": 45000
+		},
+		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch azuredatastudio with new notebook command",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"urlFilter": "*index.html*",
+			"runtimeArgs": [
+				"--inspect=5875",
+				"--command=notebook.command.new"
+			],
+			"skipFiles": [
+				"**/winjs*.js"
+			],
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
 		},
 		{
 			"type": "node",
@@ -98,14 +122,15 @@
 			"name": "Unit Tests",
 			"protocol": "inspector",
 			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"runtimeExecutable": "${workspaceFolder}/.build/electron/SQL Operations Studio.app/Contents/MacOS/Electron",
+			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops.exe"
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/sqlops"
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
 			},
 			"stopOnEntry": false,
+			"outputCapture": "std",
 			"args": [
 				"--delay",
 				"--timeout",
@@ -118,21 +143,37 @@
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
+		},
+		{
+			"name": "Launch Built-in Extension",
+			"type": "extensionHost",
+			"request": "launch",
+			"runtimeExecutable": "${execPath}",
+			"args": [
+				"--extensionDevelopmentPath=${workspaceRoot}/extensions/debug-auto-launch"
+			]
 		}
 	],
 	"compounds": [
 		{
-			"name": "Debug sqlops Main and Renderer",
+			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [
-				"Launch sqlops",
+				"Launch azuredatastudio",
 				"Attach to Main Process"
 			]
 		},
 		{
 			"name": "Search and Renderer processes",
 			"configurations": [
-				"Launch sqlops",
+				"Launch azuredatastudio",
 				"Attach to Search Process"
+			]
+		},
+		{
+			"name": "Renderer and Extension Host processes",
+			"configurations": [
+				"Launch azuredatastudio",
+				"Attach to Extension Host"
 			]
 		}
 	]

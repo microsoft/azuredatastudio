@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./card';
 
-import { Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
+import {
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, ComponentFactoryResolver,
 	ViewChild, ViewChildren, ElementRef, Injector, OnDestroy, QueryList,
 } from '@angular/core';
 
@@ -29,10 +30,10 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	private backgroundColor: string;
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -53,7 +54,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		if (this.selectable) {
 			this.selected = !this.selected;
 			this._changeRef.detectChanges();
-			this._onEventEmitter.fire({
+			this.fireEvent({
 				eventType: ComponentEventType.onDidClick,
 				args: this.selected
 			});
@@ -70,7 +71,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	public getClass(): string {
 		return (this.selectable && this.selected || this._hasFocus) ? 'model-card selected' :
-		'model-card unselected';
+			'model-card unselected';
 	}
 
 	public onCardHoverChanged(event: any) {
@@ -81,11 +82,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 	/// IComponent implementation
 
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
-	public setLayout (layout: any): void {
+	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();
 	}
@@ -133,6 +130,14 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return this.cardType === 'VerticalButton';
 	}
 
+	public get showRadioButton():boolean{
+		return this.selectable && (this.selected || this._hasFocus);
+	}
+
+	public get showAsSelected(): boolean {
+		return this.selectable && this.selected;
+	}
+
 
 	public get actions(): ActionDescriptor[] {
 		return this.getPropertyOrDefault<CardProperties, ActionDescriptor[]>((props) => props.actions, []);
@@ -145,7 +150,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	public get statusColor(): string {
 		let status = this.getPropertyOrDefault<CardProperties, StatusIndicator>((props) => props.status, StatusIndicator.None);
-		switch(status) {
+		switch (status) {
 			case StatusIndicator.Ok:
 				return 'green';
 			case StatusIndicator.Warning:
@@ -159,10 +164,11 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 
 	private updateTheme(theme: IColorTheme) {
 		this.backgroundColor = theme.getColor(colors.editorBackground, true).toString();
+		this._changeRef.detectChanges();
 	}
 
 	private onDidActionClick(action: ActionDescriptor): void {
-		this._onEventEmitter.fire({
+		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: action
 		});

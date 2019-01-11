@@ -7,7 +7,6 @@ import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
@@ -19,22 +18,13 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
-import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
-import { FoldingController } from 'vs/editor/contrib/folding/folding';
-import { RenameController } from 'vs/editor/contrib/rename/rename';
-
-class QueryCodeEditor extends CodeEditor {
-
-	protected _getContributions(): IEditorContributionCtor[] {
-		let contributions = super._getContributions();
-		let skipContributions = [FoldingController.prototype, RenameController.prototype];
-		contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
-		return contributions;
-	}
-}
+import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { Configuration } from 'vs/editor/browser/config/configuration';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -43,6 +33,8 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
+	private _config: editorCommon.IConfiguration;
+	private _minHeight: number;
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -51,14 +43,17 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IThemeService themeService: IThemeService,
 		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEditorGroupService editorGroupService: IEditorGroupService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IEditorService protected editorService: IEditorService,
 
 	) {
-		super(QueryTextEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
+		super(
+			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
+			configurationService, themeService, textFileService, editorService, editorGroupService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
-		return this.instantiationService.createInstance(QueryCodeEditor, parent, configuration);
+		return this.instantiationService.createInstance(StandaloneCodeEditor, parent, configuration);
 	}
 
 	protected getConfigurationOverrides(): IEditorOptions {
@@ -75,12 +70,15 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.minimap = {
 				enabled: false
 			};
+			options.overviewRulerLanes = 0;
+			options.overviewRulerBorder = false;
+			options.hideCursorInOverviewRuler = true;
 		}
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): TPromise<void> {
-		return super.setInput(input, options)
+	setInput(input: UntitledEditorInput, options: EditorOptions): Thenable<void> {
+		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())
 				.then(editorModel => this.getControl().setModel((<ResourceEditorModel>editorModel).textEditorModel)));
@@ -107,7 +105,39 @@ export class QueryTextEditor extends BaseTextEditor {
 	public setHeight(height: number) {
 		if (this._dimension) {
 			this._dimension.height = height;
-			this.layout();
+			this.layout(this._dimension);
 		}
+	}
+
+	public get scrollHeight(): number {
+		let editorWidget = this.getControl() as ICodeEditor;
+		return editorWidget.getScrollHeight();
+	}
+
+	public setHeightToScrollHeight(): void {
+		let editorWidget = this.getControl() as ICodeEditor;
+		if (!this._config) {
+			this._config = new Configuration(undefined, editorWidget.getDomNode());
+		}
+		let editorWidgetModel = editorWidget.getModel();
+		let lineCount = editorWidgetModel.getLineCount();
+		// Need to also keep track of lines that wrap; if we just keep into account line count, then the editor's height would not be
+		// tall enough and we would need to show a scrollbar. Unfortunately, it looks like there isn't any metadata saved in a ICodeEditor
+		// around max column length for an editor (which we could leverage to see if we need to loop through every line to determine
+		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
+		// that the viewportColumn will always be greater than any character's column in an editor.
+		let numberWrappedLines = 0;
+		for (let line = 1; line <= lineCount; line++) {
+			if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn - 1) {
+				numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
+			}
+		}
+		let editorHeightUsingLines = this._config.editor.lineHeight * (lineCount + numberWrappedLines);
+		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		this.setHeight(editorHeightUsingMinHeight);
+	}
+
+	public setMinimumHeight(height: number) : void {
+		this._minHeight = height;
 	}
 }

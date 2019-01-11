@@ -7,7 +7,6 @@
 import 'vs/css!./media/referencesWidget';
 import * as nls from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { getPathLabel } from 'vs/base/common/labels';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, dispose, IReference } from 'vs/base/common/lifecycle';
 import { Schemas } from 'vs/base/common/network';
@@ -44,6 +43,9 @@ import { WorkbenchTree, WorkbenchTreeController } from 'vs/platform/list/browser
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Location } from 'vs/editor/common/modes';
 import { ClickBehavior } from 'vs/base/parts/tree/browser/treeDefaults';
+import { IUriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { dirname, basenameOrAuthority } from 'vs/base/common/resources';
+
 
 class DecorationsManager implements IDisposable {
 
@@ -203,7 +205,7 @@ class DataSource implements tree.IDataSource {
 	}
 
 	public getParent(tree: tree.ITree, element: any): TPromise<any> {
-		var result: any = null;
+		let result: any = null;
 		if (element instanceof FileReferences) {
 			result = (<FileReferences>element).parent;
 		} else if (element instanceof OneReference) {
@@ -231,14 +233,14 @@ class Controller extends WorkbenchTreeController {
 			return this._expandCollapse(tree, element);
 		}
 
-		var result = super.onTap(tree, element, event);
+		let result = super.onTap(tree, element, event);
 
 		this._onDidFocus.fire(element);
 		return result;
 	}
 
 	public onMouseDown(tree: tree.ITree, element: any, event: IMouseEvent): boolean {
-		var isDoubleClick = event.detail === 2;
+		let isDoubleClick = event.detail === 2;
 		if (event.leftButton) {
 			if (element instanceof FileReferences) {
 				if (this.openOnSingleClick || isDoubleClick || this.isClickOnTwistie(event)) {
@@ -248,8 +250,8 @@ class Controller extends WorkbenchTreeController {
 				}
 			}
 
-			var result = super.onClick(tree, element, event);
-			var openToSide = event.ctrlKey || event.metaKey || event.altKey;
+			let result = super.onClick(tree, element, event);
+			let openToSide = event.ctrlKey || event.metaKey || event.altKey;
 			if (openToSide && (isDoubleClick || this.openOnSingleClick)) {
 				this._onDidOpenToSide.fire(element);
 			} else if (isDoubleClick) {
@@ -530,11 +532,10 @@ export class ReferenceWidget extends PeekViewWidget {
 		editor: ICodeEditor,
 		private _defaultTreeKeyboardSupport: boolean,
 		public layoutData: LayoutData,
-		private _textModelResolverService: ITextModelService,
-		private _contextService: IWorkspaceContextService,
-		themeService: IThemeService,
-		private _instantiationService: IInstantiationService,
-		private _environmentService: IEnvironmentService
+		@IThemeService themeService: IThemeService,
+		@ITextModelService private _textModelResolverService: ITextModelService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IUriDisplayService private _uriDisplay: IUriDisplayService
 	) {
 		super(editor, { showFrame: false, showArrow: true, isResizeable: true, isAccessible: true });
 
@@ -585,7 +586,7 @@ export class ReferenceWidget extends PeekViewWidget {
 	}
 
 	protected _fillBody(containerElement: HTMLElement): void {
-		var container = $(containerElement);
+		let container = $(containerElement);
 
 		this.setCssClass('reference-zone-widget');
 
@@ -597,7 +598,7 @@ export class ReferenceWidget extends PeekViewWidget {
 		// editor
 		container.div({ 'class': 'preview inline' }, (div: Builder) => {
 
-			var options: IEditorOptions = {
+			let options: IEditorOptions = {
 				scrollBeyondLastLine: false,
 				scrollbar: {
 					verticalScrollbarSize: 14,
@@ -631,17 +632,17 @@ export class ReferenceWidget extends PeekViewWidget {
 
 		// tree
 		container.div({ 'class': 'ref-tree inline' }, (div: Builder) => {
-			var controller = this._instantiationService.createInstance(Controller, { keyboardSupport: this._defaultTreeKeyboardSupport, clickBehavior: ClickBehavior.ON_MOUSE_UP /* our controller already deals with this */ });
+			let controller = this._instantiationService.createInstance(Controller, { keyboardSupport: this._defaultTreeKeyboardSupport, clickBehavior: ClickBehavior.ON_MOUSE_UP /* our controller already deals with this */ });
 			this._callOnDispose.push(controller);
 
-			var config = <tree.ITreeConfiguration>{
+			let config = <tree.ITreeConfiguration>{
 				dataSource: this._instantiationService.createInstance(DataSource),
 				renderer: this._instantiationService.createInstance(Renderer),
 				controller,
 				accessibilityProvider: new AriaProvider()
 			};
 
-			var options: tree.ITreeOptions = {
+			let options: tree.ITreeOptions = {
 				twistiePixels: 20,
 				ariaLabel: nls.localize('treeAriaLabel', "References")
 			};
@@ -651,7 +652,7 @@ export class ReferenceWidget extends PeekViewWidget {
 			ctxReferenceWidgetSearchTreeFocused.bindTo(this._tree.contextKeyService);
 
 			// listen on selection and focus
-			var onEvent = (element: any, kind: 'show' | 'goto' | 'side') => {
+			let onEvent = (element: any, kind: 'show' | 'goto' | 'side') => {
 				if (element instanceof OneReference) {
 					if (kind === 'show') {
 						this._revealReference(element, false);
@@ -705,7 +706,7 @@ export class ReferenceWidget extends PeekViewWidget {
 		this._preview.layout();
 	}
 
-	public setSelection(selection: OneReference): TPromise<any> {
+	public setSelection(selection: OneReference): Promise<any> {
 		return this._revealReference(selection, true).then(() => {
 
 			// show in tree
@@ -776,11 +777,11 @@ export class ReferenceWidget extends PeekViewWidget {
 		return undefined;
 	}
 
-	private async _revealReference(reference: OneReference, revealParent: boolean): TPromise<void> {
+	private async _revealReference(reference: OneReference, revealParent: boolean): Promise<void> {
 
 		// Update widget header
 		if (reference.uri.scheme !== Schemas.inMemory) {
-			this.setTitle(reference.name, getPathLabel(reference.directory, this._contextService, this._environmentService));
+			this.setTitle(basenameOrAuthority(reference.uri), this._uriDisplay.getLabel(dirname(reference.uri), false));
 		} else {
 			this.setTitle(nls.localize('peekView.alternateTitle', "References"));
 		}
@@ -808,7 +809,7 @@ export class ReferenceWidget extends PeekViewWidget {
 				this._previewModelReference = ref;
 				let isSameModel = (this._preview.getModel() === model.textEditorModel);
 				this._preview.setModel(model.textEditorModel);
-				var sel = Range.lift(reference.range).collapseToStart();
+				let sel = Range.lift(reference.range).collapseToStart();
 				this._preview.setSelection(sel);
 				this._preview.revealRangeInCenter(sel, isSameModel ? editorCommon.ScrollType.Smooth : editorCommon.ScrollType.Immediate);
 			} else {

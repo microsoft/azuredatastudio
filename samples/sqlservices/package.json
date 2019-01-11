@@ -5,7 +5,7 @@
     "version": "0.0.1",
     "publisher": "demo",
     "engines": {
-        "vscode": "^1.21.0",
+        "vscode": "^1.26.0",
         "sqlops": "*"
     },
     "categories": [
@@ -110,6 +110,6 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Microsoft/sqlopsstudio/tree/master/samples/sqlservices"
+        "url": "https://github.com/Microsoft/azuredatastudio/tree/master/samples/sqlservices"
     }
 }

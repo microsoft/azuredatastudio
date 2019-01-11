@@ -1,17 +1,126 @@
 # Change Log
 
+## Version 1.3.8
+* Release date: January 9, 2018
+* Release status: General Availability
+
+## What's new in this version
+* #13 Feature Request: Azure Active Directory Authentication
+* #1040 Stream initial query results as they become available
+* #3298 Сan't add an azure account.
+* #2387 Support Per-User Installer
+* SQL Server Import updates for DACPAC\BACPAC
+* SQL Server Profiler UI and UX improvements
+* Updates to [SQL Server 2019 extension](https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension?view=sql-server-ver15)
+* **sp_executesql to SQL** and **New Database** extensions
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* Tarig0  for `Add Routine_Type to CreateStoredProc fixes #3257 (#3286)`
+* oltruong  for `typo fix #3025'`
+* Thomas-S-B for `Removed unnecessary IErrorDetectionStrategy #749`
+* Thomas-S-B for `Simplified code #750`
+
+## Version 1.2.4
+* Release date: November 6, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Update to the SQL Server 2019 Preview extension
+* Introducing Paste the Plan extension
+* Introducing High Color queries extension, including SSMS editor theme
+* Fixes in SQL Server Agent, Profiler, and Import extensions
+* Fix .Net Core Socket KeepAlive issue causing dropped inactive connections on macOS
+* Upgrade SQL Tools Service to .Net Core 2.2 Preview 3 (for eventual AAD support)
+* Fix customer reported GitHub issues
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* rdaniels6813  for `Add query plan theme support #3031`
+* Ruturaj123 for `Fixed some typos and grammatical errors #3027`
+* PromoFaux for `Use emoji shortcodes in CONTRIBUTING.md instead of � #3009`
+* ckaczor for `Fix: DATETIMEOFFSET data types should be ISO formatted #714`
+* hi-im-T0dd for `Fixed sync issue with my forked master so this commit is correct #2948`
+* hi-im-T0dd for `Fixed when right clicking and selecting Manage-correct name displays #2794`
+
+## Version 1.1.3
+* Release date: October 18, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Introducing the Azure Resource Explorer to browse Azure SQL Databases
+* Improve Object Explorer and Query Editor connectivity robustness
+* SQL Server 2019 and SQL Agent extension improvements
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* philoushka  for `center the icon #2760`
+* anthonypants for `Typo #2775`
+* kstolte for `Fix Invalid Configuration in Launch.json #2789`
+* kstolte for `Fixing a reference to SQL Ops Studio #2788`
+
+## Version 1.0.0
+* Release date: September 24, 2018
+* Release status: General Availability
+
+## What's new in this version
+* Announcing the SQL Server 2019 Preview extension.
+  * Support for SQL Server 2019 preview features including big data cluster support.
+  * Azure Data Studio Notebooks
+  * The Azure Resource Explorer viewlets you browse data-related endpoints for your Azure accounts and create connections to them in Object Explorer. In this release Azure SQL Databases and servers are supported.
+  * SQL Server Polybase Create External Table Wizard
+* Query Results Grid performance and UX improvements for large number of result sets.
+* Visual Studio Code source code refresh from 1.23 to 1.26.1 with Grid Layout and Improved Settings Editor (preview).
+* Accessibility improvements for screen reader, keyboard navigation and high-contrast.
+* Added Connection name option to provide an alternative display name in the Servers viewlet.
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* AlexFsmn `Feature: Ability to add connection name #2332`
+* AlexFsmn `Disabled connection name input when connecting to a server. #2566`
+
+## Version 0.33.7
+* Release date: August 30, 2018
+* Release status: Public Preview
+
+## What's new in this version
+* Announcing the SQL Server Import Extension
+* SQL Server Profiler Session management
+* SQL Server Agent improvements
+* New community extension: First Responder Kit
+* Quality of Life improvements: Connection strings
+* Fix many customer reported GitHub issues
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* SebastianPfliegel `Added more saveAsCsv options #2099`
+* ianychoi `Fixes a typo: Mimunum -> Minimum #1994`
+* AlexFsmn `Fixed bug where proper file extension wasn't appended to filename. #2151`
+* AlexFsmn `Added functionality for adding any file to import wizard #2329`
+* AlexFsmn `Fixed background issue when copying a chart to clipboard #2215`
+* AlexFsmn `Fixed problem where vertical charts didn't display labels correctly. #2263`
+* AlexFsmn `Fixed Initial values for charts to match visuals #2266`
+* AlexFsmn `Renamed chart option labels #2264`
+* AlexFsmn `Added feature for opening file after exporting to CSV/XLS/JSON & query files #2216`
+* AlexFsmm `Get Connection String should copy to clipboard #2175`
+
 ## Version 0.31.4
 * Release date: July 19, 2018
 * Release status: Public Preview
 
 ## What's new in this version
-* SQL Server Agent for SQL Operations Studio extension improvements
+* SQL Server Agent for Azure Data Studio extension improvements
   * Added view of Alerts, Operators, and Proxies and icons on left pane
   * Added dialogs for New Job, New Job Step, New Alert, and New Operator
   * Added Delete Job, Delete Alert, and Delete Operator (right-click)
   * Added Previous Runs visualization
   * Added Filters for each column name
-* SQL Server Profiler for SQL Operations Studio extension improvements
+* SQL Server Profiler for Azure Data Studio extension improvements
   * Added Hotkeys to quickly launch and start/stop Profiler
   * Added 5 Default Templates to view Extended Events
   * Added Server/Database connection name
@@ -26,10 +135,10 @@
 * Release status: Public Preview
 
 ## What's new in this version
-* **SQL Server Profiler for SQL Operations Studio  *Preview*** extension initial release
+* **SQL Server Profiler for Azure Data Studio  *Preview*** extension initial release
 * The new **SQL Data Warehouse** extension includes rich customizable dashboard widgets surfacing insights to your data warehouse. This unlocks key scenarios around managing and tuning your data warehouse to ensure it is optimized for consistent performance.
 * **Edit Data "Filtering and Sorting"** support
-* **SQL Server Agent for SQL Operations Studio *Preview*** extension enhancements for Jobs and Job History views
+* **SQL Server Agent for Azure Data Studio *Preview*** extension enhancements for Jobs and Job History views
 * Improved **Wizard & Dialog UI Builder Framework** extensibility APIs
 * Update VS Code Platform source code integrating [March 2018 (1.22)](https://code.visualstudio.com/updates/v1_22) and [April 2018 (1.23)](https://code.visualstudio.com/updates/v1_23)  releases
 * Fix GitHub Issues
@@ -43,7 +152,7 @@ The May release is focused on stabilization and bug fixes leading up to the Buil
 
 * Announcing **Redgate SQL Search** extension available in Extension Manager
 * Community Localization available for 10 languages: **German, Spanish, French, Italian, Japanese, Korean, Portuguese, Russian, Simplified Chinese and Traditional Chinese!**
-* Reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/sqlopsstudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
+* Reduced telemetry collection, improved [opt-out](https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting) experience and in-product links to [Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement)
 * Extension Manager has improved Marketplace experience to easily discover community extensions
 * SQL Agent extension Jobs and Job History view improvement
 * Updates for **whoisactive** and **Server Reports** extensions
@@ -69,8 +178,8 @@ The April Public Preview release contains some of the following highlights.
 * Release status: Public Preview
 
 ## What's new in this version
-The March Public Preview release enables some key aspects of the SQL Operations
-Studio extensibility story.  Here are some highlights in this release.
+The March Public Preview release enables some key aspects of the Azure Data Studio
+extensibility story.  Here are some highlights in this release.
 
 * Enhance the Manage Dashboard extensibility model to support tabbed Insights and Configuration panes
 * Dashboard Insights extensions for `sp_whoisactive` from [whoisactive.com](http://whoisactive.com)

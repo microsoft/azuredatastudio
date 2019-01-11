@@ -12,6 +12,7 @@ import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionS
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
+import URI from 'vs/base/common/uri';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -36,6 +37,8 @@ import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewD
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
+import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -72,6 +75,8 @@ export function createApiFactory(
 	const extHostDashboard = rpcProtocol.set(SqlExtHostContext.ExtHostDashboard, new ExtHostDashboard(rpcProtocol));
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
+	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
+	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 
 
 	return {
@@ -90,6 +95,15 @@ export function createApiFactory(
 				},
 				accountUpdated(updatedAccount: sqlops.Account): void {
 					return extHostAccountManagement.$accountUpdated(updatedAccount);
+				},
+				getAllAccounts(): Thenable<sqlops.Account[]> {
+					return extHostAccountManagement.$getAllAccounts();
+				},
+				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
+					return extHostAccountManagement.$getSecurityToken(account, resource);
+				},
+				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
+					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
 				}
 			};
 
@@ -104,8 +118,8 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
-				openConnectionDialog(providers?: string[]): Thenable<sqlops.connection.Connection> {
-					return extHostConnectionManagement.$openConnectionDialog(providers);
+				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
+					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
 				listDatabases(connectionId: string): Thenable<string[]> {
 					return extHostConnectionManagement.$listDatabases(connectionId);
@@ -185,8 +199,12 @@ export function createApiFactory(
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
-					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				provider.registerOnResultSetAvailable((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
+				});
+
+				provider.registerOnResultSetUpdated((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
 				});
 
 				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
@@ -204,6 +222,12 @@ export function createApiFactory(
 				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
 				});
+
+				if (provider.registerOnSessionDisconnected) {
+					provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
+						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
+					});
+				}
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
@@ -292,6 +316,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
+			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerDacFxServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
@@ -307,6 +335,7 @@ export function createApiFactory(
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
+				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -319,11 +348,11 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title);
+				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					return extHostModelViewDialog.createTab(title);
+					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
 					return extHostModelViewDialog.createButton(label);
@@ -364,7 +393,7 @@ export function createApiFactory(
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
 				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, options);
+					return extHostModelViewDialog.createModelViewEditor(title, extension.extensionLocation, options);
 				}
 			};
 
@@ -376,7 +405,7 @@ export function createApiFactory(
 
 			const ui = {
 				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
-					extHostModelView.$registerProvider(modelViewId, handler);
+					extHostModelView.$registerProvider(modelViewId, handler, extension.extensionLocation);
 				}
 			};
 
@@ -390,6 +419,31 @@ export function createApiFactory(
 				runQuery(fileUri: string): void {
 					extHostQueryEditor.$runQuery(fileUri);
 				}
+			};
+
+			const nb = {
+				get notebookDocuments() {
+					return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => doc.document);
+				},
+				get activeNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.getActiveEditor();
+				},
+				get visibleNotebookEditors() {
+					return extHostNotebookDocumentsAndEditors.getAllEditors();
+				},
+				get onDidOpenNotebookDocument() {
+					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
+				},
+				get onDidChangeNotebookCell() {
+					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
+				},
+				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
+					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
+				},
+				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
+					return extHostNotebook.registerNotebookProvider(provider);
+				},
+				CellRange: sqlExtHostTypes.CellRange
 			};
 
 			return {
@@ -412,6 +466,7 @@ export function createApiFactory(
 				WeekDays: sqlExtHostTypes.WeekDays,
 				NotifyMethods: sqlExtHostTypes.NotifyMethods,
 				JobCompletionActionCondition: sqlExtHostTypes.JobCompletionActionCondition,
+				JobExecutionStatus: sqlExtHostTypes.JobExecutionStatus,
 				AlertType: sqlExtHostTypes.AlertType,
 				FrequencyTypes: sqlExtHostTypes.FrequencyTypes,
 				FrequencySubDayTypes: sqlExtHostTypes.FrequencySubDayTypes,
@@ -424,8 +479,11 @@ export function createApiFactory(
 				ui: ui,
 				StatusIndicator: sqlExtHostTypes.StatusIndicator,
 				CardType: sqlExtHostTypes.CardType,
+				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
-				TreeComponentItem: sqlExtHostTypes.TreeComponentItem
+				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
+				nb: nb,
+				AzureResource: sqlExtHostTypes.AzureResource
 			};
 		}
 	};
@@ -444,7 +502,7 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 			return undefined;
 		}
 		return new TPromise((resolve, reject) => {
-			realpath(ext.extensionFolderPath, (err, path) => {
+			realpath(ext.extensionLocation.fsPath, (err, path) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -475,7 +533,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 		setDefaultApiImpl: (defaultImpl: ApiImpl) => void,
 		parent: any): ApiImpl {
 		// get extension id from filename and api for extension
-		const ext = extensionPaths.findSubstr(parent.filename);
+		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
 		if (ext) {
 			let apiImpl = apiMap.get(ext.id);
 			if (!apiImpl) {
@@ -487,6 +545,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 
 		// fall back to a default implementation
 		if (!defaultImpl) {
+			console.warn(`Could not identify extension for 'vscode' require call from ${parent.filename}`);
 			defaultImpl = createApi(nullExtensionDescription);
 			setDefaultApiImpl(defaultImpl);
 		}
@@ -526,8 +585,9 @@ const nullExtensionDescription: IExtensionDescription = {
 	enableProposedApi: false,
 	engines: undefined,
 	extensionDependencies: undefined,
-	extensionFolderPath: undefined,
+	extensionLocation: undefined,
 	isBuiltin: false,
 	main: undefined,
-	version: undefined
+	version: undefined,
+	isUnderDevelopment: true
 };

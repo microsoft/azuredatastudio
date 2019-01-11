@@ -12,11 +12,8 @@ const shell = require('gulp-shell');
 const es = require('event-stream');
 const vfs = require('vinyl-fs');
 const util = require('./lib/util');
-// @ts-ignore Microsoft/TypeScript#21262 complains about a require of a JSON file
 const packageJson = require('../package.json');
-// @ts-ignore Microsoft/TypeScript#21262 complains about a require of a JSON file
 const product = require('../product.json');
-// @ts-ignore Microsoft/TypeScript#21262 complains about a require of a JSON file
 const rpmDependencies = require('../resources/linux/rpm/dependencies.json');
 
 const linuxPackageRevision = Math.floor(new Date().getTime() / 1000);
@@ -27,7 +24,7 @@ function getDebPackageArch(arch) {
 
 function prepareDebPackage(arch) {
   // {{SQL CARBON EDIT}}
-	const binaryDir = '../sqlops-linux-' + arch;
+	const binaryDir = '../azuredatastudio-linux-' + arch;
 	const debArch = getDebPackageArch(arch);
 	const destination = '.build/linux/deb/' + debArch + '/' + product.applicationName + '-' + debArch;
 
@@ -76,7 +73,9 @@ function prepareDebPackage(arch) {
 		const postinst = gulp.src('resources/linux/debian/postinst.template', { base: '.' })
 			.pipe(replace('@@NAME@@', product.applicationName))
 			.pipe(replace('@@ARCHITECTURE@@', debArch))
+			// @ts-ignore JSON checking: quality is optional
 			.pipe(replace('@@QUALITY@@', product.quality || '@@QUALITY@@'))
+			// @ts-ignore JSON checking: updateUrl is optional
 			.pipe(replace('@@UPDATEURL@@', product.updateUrl || '@@UPDATEURL@@'))
 			.pipe(rename('DEBIAN/postinst'));
 
@@ -105,7 +104,7 @@ function getRpmPackageArch(arch) {
 
 function prepareRpmPackage(arch) {
 	// {{SQL CARBON EDIT}}
-	const binaryDir = '../sqlops-linux-' + arch;
+	const binaryDir = '../azuredatastudio-linux-' + arch;
 	const rpmArch = getRpmPackageArch(arch);
 
 	return function () {
@@ -135,7 +134,9 @@ function prepareRpmPackage(arch) {
 			.pipe(replace('@@RELEASE@@', linuxPackageRevision))
 			.pipe(replace('@@ARCHITECTURE@@', rpmArch))
 			.pipe(replace('@@LICENSE@@', product.licenseName))
+			// @ts-ignore JSON checking: quality is optional
 			.pipe(replace('@@QUALITY@@', product.quality || '@@QUALITY@@'))
+			// @ts-ignore JSON checking: updateUrl is optional
 			.pipe(replace('@@UPDATEURL@@', product.updateUrl || '@@UPDATEURL@@'))
 			.pipe(replace('@@DEPENDENCIES@@', rpmDependencies[rpmArch].join(', ')))
 			.pipe(rename('SPECS/' + product.applicationName + '.spec'));
@@ -212,7 +213,7 @@ function getFlatpakArch(arch) {
 
 function prepareFlatpak(arch) {
   // {{SQL CARBON EDIT}}
-	const binaryDir = '../sqlops-linux-' + arch;
+	const binaryDir = '../azuredatastudio-linux-' + arch;
 	const flatpakArch = getFlatpakArch(arch);
 	const destination = '.build/linux/flatpak/' + flatpakArch;
 

@@ -26,7 +26,7 @@ import { Context as SuggestContext } from './suggest';
 import { SuggestModel, State } from './suggestModel';
 import { ICompletionItem } from './completionModel';
 import { SuggestWidget, ISelectedSuggestion } from './suggestWidget';
-import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { SuggestMemories } from 'vs/editor/contrib/suggest/suggestMemory';
 
 class AcceptOnCharacterOracle {
@@ -196,10 +196,12 @@ export class SuggestController implements IEditorContribution {
 		const editorColumn = this._editor.getPosition().column;
 		const columnDelta = editorColumn - position.column;
 
+		// pushing undo stops *before* additional text edits and
+		// *after* the main edit
+		this._editor.pushUndoStop();
+
 		if (Array.isArray(suggestion.additionalTextEdits)) {
-			this._editor.pushUndoStop();
 			this._editor.executeEdits('suggestController.additionalTextEdits', suggestion.additionalTextEdits.map(edit => EditOperation.replace(Range.lift(edit.range), edit.text)));
-			this._editor.pushUndoStop();
 		}
 
 		// keep item in memory
@@ -213,8 +215,11 @@ export class SuggestController implements IEditorContribution {
 		SnippetController2.get(this._editor).insert(
 			insertText,
 			suggestion.overwriteBefore + columnDelta,
-			suggestion.overwriteAfter
+			suggestion.overwriteAfter,
+			false, false
 		);
+
+		this._editor.pushUndoStop();
 
 		if (!suggestion.command) {
 			// done
@@ -320,7 +325,8 @@ export class TriggerSuggestAction extends EditorAction {
 			kbOpts: {
 				kbExpr: EditorContextKeys.textInputFocus,
 				primary: KeyMod.CtrlCmd | KeyCode.Space,
-				mac: { primary: KeyMod.WinCtrl | KeyCode.Space }
+				mac: { primary: KeyMod.WinCtrl | KeyCode.Space },
+				weight: KeybindingWeight.EditorContrib
 			}
 		});
 	}
@@ -339,7 +345,7 @@ export class TriggerSuggestAction extends EditorAction {
 registerEditorContribution(SuggestController);
 registerEditorAction(TriggerSuggestAction);
 
-const weight = KeybindingsRegistry.WEIGHT.editorContrib(90);
+const weight = KeybindingWeight.EditorContrib + 90;
 
 const SuggestCommand = EditorCommand.bindToContribution<SuggestController>(SuggestController.get);
 

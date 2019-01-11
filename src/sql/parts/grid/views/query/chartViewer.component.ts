@@ -16,7 +16,7 @@ import { IGridDataSet } from 'sql/parts/grid/common/interfaces';
 import { IInsightData, IInsightsView, IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { DataType, ILineConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
+import { ILineConfig } from 'sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.component';
 import * as PathUtilities from 'sql/common/pathUtilities';
 import { IChartViewActionContext, CopyAction, CreateInsightAction, SaveImageAction } from 'sql/parts/grid/views/query/chartViewerActions';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
@@ -24,10 +24,11 @@ import * as Constants from 'sql/parts/query/common/constants';
 import { SelectBox as AngularSelectBox } from 'sql/base/browser/ui/selectBox/selectBox.component';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { LegendPosition, DataDirection, DataType } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 /* Insights */
 import {
-	ChartInsight, DataDirection, LegendPosition
+	ChartInsight
 } from 'sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -45,7 +46,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -106,7 +107,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 		@Inject(IWorkspaceContextService) private workspaceContextService: IWorkspaceContextService,
 		@Inject(IWindowService) private windowService: IWindowService,
 		@Inject(IQueryModelService) private queryModelService: IQueryModelService,
-		@Inject(IWorkbenchEditorService) private editorService: IWorkbenchEditorService
+		@Inject(IEditorService) private editorService: IEditorService
 	) {
 		this.setDefaultChartConfig();
 	}
@@ -294,7 +295,7 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 	private getActiveUriString(): string {
 		let editorService = this.editorService;
-		let editor = editorService.getActiveEditor();
+		let editor = editorService.activeControl;
 		if (editor && editor instanceof QueryEditor) {
 			let queryEditor: QueryEditor = editor;
 			return queryEditor.uri;
@@ -328,10 +329,14 @@ export class ChartViewerComponent implements OnInit, OnDestroy, IChartViewAction
 
 		// Remove first column and its value since this is the row number column
 		this._executeResult.columns = dataSet.columnDefinitions.slice(1).map(def => def.name);
-		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(gridRow => {
-			return gridRow.values.slice(1).map(cell => (cell.invariantCultureDisplayValue === null || cell.invariantCultureDisplayValue === undefined) ? cell.displayValue : cell.invariantCultureDisplayValue);
+		this._executeResult.rows = dataSet.dataRows.getRange(0, dataSet.dataRows.getLength()).map(v => {
+			return this._executeResult.columns.reduce((p, c) => {
+				p.push(v[c]);
+				return p;
+			}, []);
 		});
 	}
+
 
 	public initChart() {
 		this._cd.detectChanges();

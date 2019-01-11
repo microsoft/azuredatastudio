@@ -1,0 +1,30 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.chart-parent-container {
+	height: 100%;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.actionbar-container {
+	width: 100%;
+	flex: 0 0 auto;
+}
+
+.charting-container {
+	display: flex;
+	flex: 1 1 auto;
+}
+
+.insight-container {
+	flex: 1 1 0;
+}
+
+.options-container {
+	width: 250px;
+	padding-right: 10px;
+}

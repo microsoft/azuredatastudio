@@ -18,9 +18,9 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.6",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.10",
     "opener": "^1.4.3",
-    "service-downloader": "github:anthonydresser/service-downloader#0.1.4",
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
     "vscode-extension-telemetry": "^0.0.15"
   },
   "devDependencies": {
@@ -93,7 +93,31 @@
         "mssql.logDebugInfo": {
           "type": "boolean",
           "default": false,
-          "description": "[Optional] Log debug output to the VS Code console (Help -> Toggle Developer Tools)"
+          "description": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown"
+        },
+        "mssql.tracingLevel": {
+          "type": "string",
+          "description": "[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information",
+          "default": "Critical",
+          "enum": [
+            "All",
+            "Off",
+            "Critical",
+            "Error",
+            "Warning",
+            "Information",
+            "Verbose"
+          ]
+        },
+        "mssql.logRetentionMinutes": {
+          "type": "number",
+          "default": 10080,
+          "description": "Number of minutes to retain log files for backend services. Default is 1 week."
+        },
+        "mssql.logFilesRemovalLimit": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up."
         },
         "ignorePlatformWarning": {
           "type": "boolean",
@@ -202,6 +226,20 @@
       "displayName": "Microsoft SQL Server",
       "connectionOptions": [
         {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "Name (optional)",
+          "description": "Custom name of the connection",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
           "specialValueType": "serverName",
           "isIdentity": true,
           "name": "server",
@@ -247,6 +285,10 @@
             {
               "displayName": "Windows Authentication",
               "name": "Integrated"
+            },
+            {
+              "displayName": "Azure Active Directory - Universal with MFA support",
+              "name": "AzureMFA"
             }
           ],
           "isRequired": true,
@@ -307,7 +349,7 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "asynchronousProcessing",
-          "displayName": "Asynchronous processing enabled",
+          "displayName": "Asynchronous processing",
           "description": "When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider",
           "groupName": "Initialization",
           "valueType": "boolean",
@@ -349,7 +391,7 @@
           "specialValueType": null,
           "isIdentity": false,
           "name": "columnEncryptionSetting",
-          "displayName": "Column encryption setting",
+          "displayName": "Column encryption",
           "description": "Default column encryption setting for all the commands on the connection",
           "groupName": "Security",
           "valueType": "category",

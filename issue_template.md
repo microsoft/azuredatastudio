@@ -1,4 +1,4 @@
-- SQL Operations Studio Version:
+- Azure Data Studio Version:
 
 Steps to Reproduce:
 

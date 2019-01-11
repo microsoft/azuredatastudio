@@ -15,7 +15,7 @@ import 'vs/css!sql/base/browser/ui/table/media/table';
 import * as dom from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 import * as sqlops from 'sqlops';
-import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit } from '@angular/core';
+import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -30,9 +30,11 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { OperatorsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
-export const ROW_HEIGHT: number = 30;
+export const ROW_HEIGHT: number = 45;
 
 @Component({
 	selector: VIEW_SELECTOR,
@@ -40,10 +42,16 @@ export const ROW_HEIGHT: number = 30;
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => OperatorsViewComponent) }],
 })
 
-export class OperatorsViewComponent extends JobManagementView implements OnInit {
+export class OperatorsViewComponent extends JobManagementView implements OnInit, OnDestroy {
 
 	private columns: Array<Slick.Column<any>> = [
-		{ name: nls.localize('jobOperatorsView.name', 'Name'), field: 'name', width: 200, id: 'name' },
+		{
+			name: nls.localize('jobOperatorsView.name', 'Name'),
+			field: 'name',
+			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
+			width: 200,
+			id: 'name'
+		},
 		{ name: nls.localize('jobOperatorsView.emailAddress', 'Email Address'), field: 'emailAddress', width: 200, id: 'emailAddress' },
 		{ name: nls.localize('jobOperatorsView.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
 	];
@@ -57,9 +65,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	};
 
 	private dataView: any;
-	private _serverName: string;
 	private _isCloud: boolean;
+	private _operatorsCacheObject: OperatorsCacheObject;
 
+	private _didTabChange: boolean;
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
 	public operators: sqlops.AgentOperatorInfo[];
@@ -79,6 +88,15 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
+		let operatorsCacheObject = this._jobManagementService.operatorsCacheObjectMap;
+		let operatorsCache = operatorsCacheObject[this._serverName];
+		if (operatorsCache) {
+			this._operatorsCacheObject = operatorsCache;
+		} else {
+			this._operatorsCacheObject = new OperatorsCacheObject();
+			this._operatorsCacheObject.serverName = this._serverName;
+			this._jobManagementService.addToCache(this._serverName, this._operatorsCacheObject);
+		}
 	}
 
 	ngOnInit(){
@@ -87,50 +105,82 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		this._parentComponent = this._agentViewComponent;
 	}
 
+	ngOnDestroy() {
+		this._didTabChange = true;
+	}
+
 	public layout() {
 		let height = dom.getContentHeight(this._gridEl.nativeElement) - 10;
 		if (height < 0) {
 			height = 0;
 		}
 
-		this._table.layout(new dom.Dimension(
-			dom.getContentWidth(this._gridEl.nativeElement),
-			height));
+		if (this._table) {
+			this._table.layout(new dom.Dimension(
+				dom.getContentWidth(this._gridEl.nativeElement),
+				height));
+		}
 	}
 
 	onFirstVisible() {
 		let self = this;
+
+		let cached: boolean = false;
+		if (this._operatorsCacheObject.serverName === this._serverName) {
+			if (this._operatorsCacheObject.operators && this._operatorsCacheObject.operators.length > 0) {
+				cached = true;
+				this.operators = this._operatorsCacheObject.operators;
+			}
+		}
+
 		let columns = this.columns.map((column) => {
 			column.rerenderOnResize = true;
 			return column;
 		});
 
-		this.dataView = new Slick.Data.DataView();
+		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
+		let rowDetail = new RowDetailView({
+			cssClass: '_detail_selector',
+			useRowClick: false,
+			panelRows: 1
+		});
+		columns.unshift(rowDetail.getColumnDefinition());
 
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, undefined, columns, this.options);
+		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
 		this._table.grid.setData(this.dataView, true);
 
-		this._register(this._table.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);
 		}));
 
-		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getOperators(ownerUri).then((result) => {
-			if (result && result.operators) {
-				self.operators = result.operators;
-				self.onOperatorsAvailable(result.operators);
-			} else {
-				// TODO: handle error
-			}
-
+		// check for cached state
+		if (cached && this._agentViewComponent.refresh !== true) {
+			this.onOperatorsAvailable(this.operators);
 			this._showProgressWheel = false;
 			if (this.isVisible) {
 				this._cd.detectChanges();
 			}
-		});
+		} else {
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			this._jobManagementService.getOperators(ownerUri).then((result) => {
+				if (result && result.operators) {
+					self.operators = result.operators;
+					self._operatorsCacheObject.operators = result.operators;
+					self.onOperatorsAvailable(result.operators);
+				} else {
+					// TODO: handle error
+				}
+				this._showProgressWheel = false;
+				if (this.isVisible && !this._didTabChange) {
+					this._cd.detectChanges();
+				} else if (this._didTabChange) {
+					return;
+				}
+			});
+		}
 	}
 
 	private onOperatorsAvailable(operators: sqlops.AgentOperatorInfo[]) {
@@ -146,6 +196,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(items);
 		this.dataView.endUpdate();
+		this._operatorsCacheObject.dataview = this.dataView;
 		this._table.autosizeColumns();
 		this._table.resizeCanvas();
 	}
@@ -161,6 +212,15 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit 
 		return (this.operators && this.operators.length >= rowIndex)
 			? this.operators[rowIndex]
 			: undefined;
+	}
+
+	private renderName(row, cell, value, columnDef, dataContext) {
+		let resultIndicatorClass = dataContext.enabled ? 'operatorview-operatornameindicatorenabled' :
+			'operatorview-operatornameindicatordisabled';
+ 		return '<table class="operatorview-operatornametable"><tr class="operatorview-operatornamerow">' +
+			'<td nowrap class=' + resultIndicatorClass + '></td>' +
+			'<td nowrap class="operatorview-operatornametext">' + dataContext.name + '</td>' +
+			'</tr></table>';
 	}
 
 	public openCreateOperatorDialog() {

@@ -19,20 +19,22 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
 import { IEditorContributionCtor } from 'vs/editor/browser/editorExtensions';
 import { FoldingController } from 'vs/editor/contrib/folding/folding';
+import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCodeEditor';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
-class ProfilerResourceCodeEditor extends CodeEditor {
+class ProfilerResourceCodeEditor extends StandaloneCodeEditor {
 
-	protected _getContributions(): IEditorContributionCtor[] {
-		let contributions = super._getContributions();
-		let skipContributions = [FoldingController.prototype];
-		contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
-		return contributions;
-	}
+	// protected _getContributions(): IEditorContributionCtor[] {
+	// 	let contributions = super._getContributions();
+	// 	let skipContributions = [FoldingController.prototype];
+	// 	contributions = contributions.filter(c => skipContributions.indexOf(c.prototype) === -1);
+	// 	return contributions;
+	// }
 
 }
 
@@ -50,10 +52,11 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		@IThemeService themeService: IThemeService,
 		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEditorGroupService editorGroupService: IEditorGroupService
+		@IEditorService protected editorService: IEditorService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 
 	) {
-		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorGroupService);
+		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorService, editorGroupService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
@@ -79,8 +82,8 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledEditorInput, options: EditorOptions): TPromise<void> {
-		return super.setInput(input, options)
+	setInput(input: UntitledEditorInput, options: EditorOptions): Thenable<void> {
+		return super.setInput(input, options, CancellationToken.None)
 			.then(() => this.input.resolve()
 				.then(editorModel => editorModel.load())
 				.then(editorModel => this.getControl().setModel((<ResourceEditorModel>editorModel).textEditorModel)));

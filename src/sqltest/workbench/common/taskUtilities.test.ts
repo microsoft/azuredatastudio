@@ -29,7 +29,6 @@ suite('TaskUtilities', function () {
 			return { profile: expectedProfile, databaseName: undefined };
 		});
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === expectedProfile))).returns(() => true);
-		mockWorkbenchEditorService.setup(x => x.getActiveEditorInput()).returns(() => undefined);
 
 		// If I call getCurrentGlobalConnection, it should return the expected server profile
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
@@ -48,7 +47,6 @@ suite('TaskUtilities', function () {
 			return { profile: serverProfile, databaseName: dbName };
 		});
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === serverProfile))).returns(() => true);
-		mockWorkbenchEditorService.setup(x => x.getActiveEditorInput()).returns(() => undefined);
 
 		// If I call getCurrentGlobalConnection, it should return the expected database profile
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
@@ -79,9 +77,8 @@ suite('TaskUtilities', function () {
 
 		// Mock the workbench service to return the active tab connection
 		let tabConnectionUri = 'test_uri';
-		let editorInput = new UntitledEditorInput(URI.parse(tabConnectionUri), false, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+		let editorInput = new UntitledEditorInput(URI.parse(tabConnectionUri), false, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		let queryInput = new QueryInput(undefined, editorInput, undefined, undefined, undefined, undefined, undefined, undefined);
-		mockWorkbenchEditorService.setup(x => x.getActiveEditorInput()).returns(() => queryInput);
 		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri)).returns(() => tabProfile);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab
@@ -104,7 +101,6 @@ suite('TaskUtilities', function () {
 			return { profile: oeProfile, databaseName: undefined };
 		});
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === oeProfile))).returns(() => true);
-		mockWorkbenchEditorService.setup(x => x.getActiveEditorInput()).returns(() => undefined);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from OE
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);

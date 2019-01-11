@@ -160,7 +160,7 @@ export class ServerTreeRenderer implements IRenderer {
 		}
 
 		templateData.label.textContent = label;
-		templateData.root.title = label;
+		templateData.root.title = connection.serverInfo;
 		templateData.connectionProfile = connection;
 	}
 

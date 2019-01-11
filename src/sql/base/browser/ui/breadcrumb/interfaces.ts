@@ -10,7 +10,7 @@ export const IBreadcrumbService = new InjectionToken<IBreadcrumbService>('breadc
 
 export interface IBreadcrumbService {
 	breadcrumbItem: Subject<MenuItem[]>;
-	setBreadcrumbs(any): void;
+	setBreadcrumbs(page: any): void;
 }
 
 export interface MenuItem {

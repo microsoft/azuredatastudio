@@ -18,6 +18,7 @@ import { ITaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapPara
 import { TaskDialogModule } from 'sql/parts/tasks/dialog/taskDialog.module';
 import { TASKDIALOG_SELECTOR } from 'sql/parts/tasks/dialog/taskDialog.component';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class TaskDialogEditor extends BaseEditor {
 
@@ -50,7 +51,7 @@ export class TaskDialogEditor extends BaseEditor {
 	public layout(dimension: Dimension): void {
 	}
 
-	public setInput(input: TaskDialogInput, options: EditorOptions): TPromise<void> {
+	public setInput(input: TaskDialogInput, options: EditorOptions): Thenable<void> {
 		if (this.input instanceof TaskDialogInput && this.input.matches(input)) {
 			return TPromise.as(undefined);
 		}
@@ -60,7 +61,7 @@ export class TaskDialogEditor extends BaseEditor {
 		}
 		this.revealElementWithTagName(input.uniqueSelector, this.getContainer());
 
-		return super.setInput(input, options);
+		return super.setInput(input, options, CancellationToken.None);
 	}
 
 	/**

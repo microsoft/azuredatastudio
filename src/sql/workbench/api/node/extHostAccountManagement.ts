@@ -13,12 +13,16 @@ import {
 	MainThreadAccountManagementShape,
 	SqlMainContext,
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
+import { Event, Emitter } from 'vs/base/common/event';
 
 export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
+	private _accounts: { [handle: number]: sqlops.Account[] } = {};
+	private readonly _onDidChangeAccounts = new Emitter<sqlops.DidChangeAccountsParams>();
 
 	constructor(mainContext: IMainContext) {
 		super();
@@ -29,10 +33,6 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
 	public $clear(handle: number, accountKey: sqlops.AccountKey): Thenable<void> {
 		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.clear(accountKey));
-	}
-
-	public $getSecurityToken(handle: number, account: sqlops.Account): Thenable<{}> {
-		return this._withProvider(handle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account));
 	}
 
 	public $initialize(handle: number, restoredAccounts: sqlops.Account[]): Thenable<sqlops.Account[]> {
@@ -62,6 +62,56 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	public $accountUpdated(updatedAccount: sqlops.Account): void {
 		this._proxy.$accountUpdated(updatedAccount);
+	}
+
+	public $getAllAccounts(): Thenable<sqlops.Account[]> {
+		if (Object.keys(this._providers).length === 0) {
+			throw new Error('No account providers registered.');
+		}
+
+		this._accounts = {};
+
+		const resultAccounts: sqlops.Account[] = [];
+
+		const promises: Thenable<void>[] = [];
+
+		for (const providerKey in this._providers) {
+			const providerHandle = parseInt(providerKey);
+
+			const provider = this._providers[providerHandle];
+			promises.push(this._proxy.$getAccountsForProvider(provider.metadata.id).then(
+				(accounts) => {
+					this._accounts[providerHandle] = accounts;
+					resultAccounts.push(...accounts);
+				}
+			));
+		}
+
+		return Promise.all(promises).then(() => resultAccounts);
+	}
+
+	public $getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
+		if (resource === undefined) {
+			resource = AzureResource.ResourceManagement;
+		}
+		return this.$getAllAccounts().then(() => {
+			for (const handle in this._accounts) {
+				const providerHandle = parseInt(handle);
+				if (this._accounts[handle].findIndex((acct) => acct.key.accountId === account.key.accountId) !== -1) {
+					return this._withProvider(providerHandle, (provider: sqlops.AccountProvider) => provider.getSecurityToken(account, resource));
+				}
+			}
+
+			throw new Error(`Account ${account.key.accountId} not found.`);
+		});
+	}
+
+	public get onDidChangeAccounts(): Event<sqlops.DidChangeAccountsParams> {
+		return this._onDidChangeAccounts.event;
+	}
+
+	public $accountsChanged(handle: number, accounts: sqlops.Account[]): Thenable<void> {
+		return this._onDidChangeAccounts.fire({ accounts: accounts });
 	}
 
 	public $registerAccountProvider(providerMetadata: sqlops.AccountProviderMetadata, provider: sqlops.AccountProvider): Disposable {

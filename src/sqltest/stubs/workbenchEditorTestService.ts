@@ -3,38 +3,38 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorService, IEditor, IEditorInput, IEditorOptions, ITextEditorOptions, Position, Direction, IResourceInput, IResourceDiffInput, IResourceSideBySideInput }
-	from 'vs/platform/editor/common/editor';
+import { IEditorService, SIDE_GROUP_TYPE, ACTIVE_GROUP_TYPE, IResourceEditor, IResourceEditorReplacement, IOpenEditorOverrideHandler } from 'vs/workbench/services/editor/common/editorService';
+import { ServiceIdentifier, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IEditorOptions, IResourceInput, ITextEditorOptions  } from 'vs/platform/editor/common/editor';
+import { IEditor, IEditorInput, IResourceDiffInput, IResourceSideBySideInput, GroupIdentifier, ITextEditor, IUntitledResourceInput, ITextDiffEditor, ITextSideBySideEditor, IEditorInputWithOptions } from 'vs/workbench/common/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { EditorInput, EditorOptions, IFileEditorInput, TextEditorOptions, Extensions, SideBySideEditorInput } from 'vs/workbench/common/editor';
-import { ICloseEditorsFilter } from 'vs/workbench/browser/parts/editor/editorPart';
+import { Event } from 'vs/base/common/event';
+import { Position } from 'vs/editor/common/core/position';
+import { IEditorGroup, IEditorReplacement } from 'vs/workbench/services/group/common/editorGroupsService';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
-export class WorkbenchEditorTestService implements IWorkbenchEditorService {
+export class WorkbenchEditorTestService implements IEditorService {
 	_serviceBrand: ServiceIdentifier<any>;
 
-	/**
-	 * Returns the currently active editor or null if none.
-	 */
-	getActiveEditor(): IEditor {
-		return undefined;
-	}
+	readonly onDidActiveEditorChange: Event<void>;
 
-	/**
-	 * Returns the currently active editor input or null if none.
-	 */
-	getActiveEditorInput(): IEditorInput {
-		return undefined;
-	}
+	readonly onDidVisibleEditorsChange: Event<void>;
 
-	/**
-	 * Returns an array of visible editors.
-	 */
-	getVisibleEditors(): IEditor[] {
-		return undefined;
-	}
+	readonly activeEditor: IEditorInput;
+
+	readonly activeControl: IEditor;
+
+	readonly activeTextEditorWidget: ICodeEditor;
+
+	readonly visibleEditors: ReadonlyArray<IEditorInput>;
+
+	readonly visibleControls: ReadonlyArray<IEditor>;
+
+	readonly visibleTextEditorWidgets: ReadonlyArray<ICodeEditor>;
+
+	readonly editors: ReadonlyArray<IEditorInput>;
+
 
 	/**
 	 * Returns iff the provided input is currently visible.
@@ -46,33 +46,23 @@ export class WorkbenchEditorTestService implements IWorkbenchEditorService {
 		return undefined;
 	}
 
-	protected doOpenEditor(input: IEditorInput, options?: EditorOptions, sideBySide?: boolean): TPromise<IEditor>;
-	protected doOpenEditor(input: IEditorInput, options?: EditorOptions, position?: Position): TPromise<IEditor>;
-	protected doOpenEditor(input: IEditorInput, options?: EditorOptions, arg3?: any): TPromise<IEditor> {
+	public openEditor(editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<IEditor>;
+	public openEditor(editor: IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ITextEditor>;
+	public openEditor(editor: IResourceDiffInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ITextDiffEditor>;
+	public openEditor(editor: IResourceSideBySideInput, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ITextSideBySideEditor>;
+	public openEditor(input: any, arg2?: any, arg3?: any): TPromise<IEditor>  {
 		return undefined;
 	}
 
-	/**
-	 * Opens an Editor on the given input with the provided options at the given position. If sideBySide parameter
-	 * is provided, causes the editor service to decide in what position to open the input.
-	 */
-	public openEditor(input: IEditorInput, options?: IEditorOptions, sideBySide?: boolean): TPromise<IEditor>;
-	public openEditor(input: IEditorInput, options?: IEditorOptions, position?: Position): TPromise<IEditor>;
-	public openEditor(input: IResourceInput | IResourceDiffInput | IResourceSideBySideInput, position?: Position): TPromise<IEditor>;
-	public openEditor(input: IResourceInput | IResourceDiffInput | IResourceSideBySideInput, sideBySide?: boolean): TPromise<IEditor>;
-	public openEditor(input: any, arg2?: any, arg3?: any): TPromise<IEditor> {
-		return undefined;
-	}
-
-	public openEditors(editors: { input: IResourceInput | IResourceDiffInput | IResourceSideBySideInput, position: Position }[]): TPromise<IEditor[]>;
-	public openEditors(editors: { input: IEditorInput, position: Position, options?: IEditorOptions }[]): TPromise<IEditor[]>;
+	public openEditors(editors: IEditorInputWithOptions[], group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ReadonlyArray<IEditor>>;
+	public openEditors(editors: IResourceEditor[], group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): TPromise<ReadonlyArray<IEditor>>;
 	public openEditors(editors: any[]): TPromise<IEditor[]> {
 		return undefined;
 	}
 
-	public replaceEditors(editors: { toReplace: IResourceInput | IResourceDiffInput | IResourceSideBySideInput, replaceWith: IResourceInput | IResourceDiffInput | IResourceSideBySideInput }[], position?: Position): TPromise<BaseEditor[]>;
-	public replaceEditors(editors: { toReplace: IEditorInput, replaceWith: IEditorInput, options?: IEditorOptions }[], position?: Position): TPromise<BaseEditor[]>;
-	public replaceEditors(editors: any[], position?: Position): TPromise<BaseEditor[]> {
+	public replaceEditors(editors: IResourceEditorReplacement[], group: IEditorGroup | GroupIdentifier): TPromise<void>;
+	public replaceEditors(editors: IEditorReplacement[], group: IEditorGroup | GroupIdentifier): TPromise<void>;
+	public replaceEditors(editors: any[], group: any): TPromise<void> {
 		return undefined;
 	}
 
@@ -99,10 +89,21 @@ export class WorkbenchEditorTestService implements IWorkbenchEditorService {
 		return undefined;
 	}
 
-	/**
-	 * Allows to resolve an untyped input to a workbench typed instanceof editor input
-	 */
+
 	createInput(input: IResourceInput | IResourceDiffInput | IResourceSideBySideInput): IEditorInput {
+		return undefined;
+	}
+
+
+	isOpen(editor: IEditorInput | IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier): boolean {
+		return true;
+	}
+
+	overrideOpenEditor(handler: IOpenEditorOverrideHandler): IDisposable {
+		return undefined;
+	}
+
+	invokeWithinEditorContext<T>(fn: (accessor: ServicesAccessor) => T): T {
 		return undefined;
 	}
 }

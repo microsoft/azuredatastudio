@@ -45,6 +45,8 @@
 
 .account-view .header .count-badge-wrapper {
 	justify-content: flex-end;
+	/* hide the count badge as it is not providing much value and meanwhile not keyboard accessible*/
+	display: none;
 }
 
 .account-view .provider-view .list-row {

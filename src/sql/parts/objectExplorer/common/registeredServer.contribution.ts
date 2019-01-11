@@ -9,13 +9,14 @@ import { localize } from 'vs/nls';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ToggleViewletAction } from 'vs/workbench/browser/viewlet';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 
 import { VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 // Viewlet Action
 export class OpenConnectionsViewletAction extends ToggleViewletAction {
@@ -26,9 +27,9 @@ export class OpenConnectionsViewletAction extends ToggleViewletAction {
 		id: string,
 		label: string,
 		@IViewletService viewletService: IViewletService,
-		@IWorkbenchEditorService editorService: IWorkbenchEditorService
+		@IEditorGroupsService editorGroupService: IEditorGroupsService
 	) {
-		super(id, label, VIEWLET_ID, viewletService, editorService);
+		super(id, label, VIEWLET_ID, viewletService, editorGroupService);
 	}
 }
 
@@ -38,7 +39,7 @@ const viewletDescriptor = new ViewletDescriptor(
 	VIEWLET_ID,
 	'Servers',
 	'connectionViewlet',
-	-100
+	0
 );
 
 Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(viewletDescriptor);
@@ -79,7 +80,7 @@ configurationRegistry.registerConfiguration({
 	'properties': {
 		'startup.alwaysShowServersView': {
 			'type': 'boolean',
-			'description': localize('startup.alwaysShowServersView', 'True for the Servers view to be shown on launch of SQL Operations Studio default; false if the last opened view should be shown'),
+			'description': localize('startup.alwaysShowServersView', 'True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown'),
 			'default': true
 		}
 	}

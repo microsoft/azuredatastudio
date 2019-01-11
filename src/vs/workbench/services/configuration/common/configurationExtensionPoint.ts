@@ -11,6 +11,7 @@ import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/e
 import { IConfigurationNode, IConfigurationRegistry, Extensions, editorConfigurationSchemaId, IDefaultConfigurationExtension, validateProperty, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { workspaceSettingsSchemaId, launchSchemaId } from 'vs/workbench/services/configuration/common/configuration';
+import { isObject } from 'vs/base/common/types';
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
 
@@ -45,6 +46,13 @@ const configurationEntrySchema: IJSONSchema = {
 									nls.localize('scope.resource.description', "Resource specific configuration, which can be configured in the User, Workspace or Folder settings.")
 								],
 								description: nls.localize('scope.description', "Scope in which the configuration is applicable. Available scopes are `window` and `resource`.")
+							},
+							enumDescriptions: {
+								type: 'array',
+								items: {
+									type: 'string',
+								},
+								description: nls.localize('scope.enumDescriptions', 'Descriptions for enum values')
 							}
 						}
 					}
@@ -105,7 +113,8 @@ configurationExtPoint.setHandler(extensions => {
 
 		validateProperties(configuration, extension);
 
-		configuration.id = extension.description.uuid || extension.description.id;
+		configuration.id = node.id || extension.description.id || extension.description.uuid;
+		configuration.contributedByExtension = true;
 		configuration.title = configuration.title || extension.description.displayName || extension.description.id;
 		configurations.push(configuration);
 	}
@@ -131,7 +140,17 @@ function validateProperties(configuration: IConfigurationNode, extension: IExten
 		}
 		for (let key in properties) {
 			const message = validateProperty(key);
+			if (message) {
+				delete properties[key];
+				extension.collector.warn(message);
+				continue;
+			}
 			const propertyConfiguration = configuration.properties[key];
+			if (!isObject(propertyConfiguration)) {
+				delete properties[key];
+				extension.collector.error(nls.localize('invalid.property', "'configuration.property' must be an object"));
+				continue;
+			}
 			if (propertyConfiguration.scope) {
 				if (propertyConfiguration.scope.toString() === 'application') {
 					propertyConfiguration.scope = ConfigurationScope.APPLICATION;
@@ -144,10 +163,6 @@ function validateProperties(configuration: IConfigurationNode, extension: IExten
 				propertyConfiguration.scope = ConfigurationScope.WINDOW;
 			}
 			propertyConfiguration.notMultiRootAdopted = !(extension.description.isBuiltin || (Array.isArray(extension.description.keywords) && extension.description.keywords.indexOf('multi-root ready') !== -1));
-			if (message) {
-				extension.collector.warn(message);
-				delete properties[key];
-			}
 		}
 	}
 	let subNodes = configuration.allOf;

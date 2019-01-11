@@ -13,11 +13,11 @@ import * as sqlops from 'sqlops';
 import { ComponentWithIconBase } from 'sql/parts/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { attachButtonStyler } from 'sql/common/theme/styler';
-import { Button } from 'sql/base/browser/ui/button/button';
 
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
+import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
 
 
@@ -42,9 +42,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService
+		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
 	) {
-		super(changeRef);
+		super(changeRef, el);
 	}
 
 	ngOnInit(): void {
@@ -63,12 +64,12 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 				if (this._fileInputContainer) {
 					const self = this;
 					this._fileInputContainer.nativeElement.onchange = () => {
-						let file  = self._fileInputContainer.nativeElement.files[0];
+						let file = self._fileInputContainer.nativeElement.files[0];
 						let reader = new FileReader();
 						reader.onload = (e) => {
 							let text = (<FileReader>e.target).result;
-							self.fileContent = text;
-							self._onEventEmitter.fire({
+							self.fileContent = text.toString();
+							self.fireEvent({
 								eventType: ComponentEventType.onDidClick,
 								args: self.fileContent
 							});
@@ -76,7 +77,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 						reader.readAsText(file);
 					};
 				} else {
-					this._onEventEmitter.fire({
+					this.fireEvent({
 						eventType: ComponentEventType.onDidClick,
 						args: e
 					});
@@ -91,10 +92,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	/// IComponent implementation
 
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
-
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
 		this.layout();
@@ -104,6 +101,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		super.setProperties(properties);
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
+		this._button.title = this.title;
 		if (this.width) {
 			this._button.setWidth(this.convertSize(this.width.toString()));
 		}
@@ -157,7 +155,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<sqlops.ButtonProperties, string>(this.setFileContentProperties, newValue);
 	}
 
-	private setFileContentProperties(properties: sqlops.ButtonProperties, fileContent: string) : void {
+	private setFileContentProperties(properties: sqlops.ButtonProperties, fileContent: string): void {
 		properties.fileContent = fileContent;
 	}
 
@@ -168,4 +166,13 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	private setFileProperties(properties: sqlops.ButtonProperties, isFile: boolean): void {
 		properties.isFile = isFile;
 	}
+
+	private get title(): string {
+		return this.getPropertyOrDefault<sqlops.ButtonProperties, string>((props) => props.title, '');
+	}
+
+	private set title(newValue: string) {
+		this.setPropertyFromUI<sqlops.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
+	}
+
 }

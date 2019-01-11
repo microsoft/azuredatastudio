@@ -107,7 +107,7 @@ export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 							this.testData[i / columns.length] = new Array<string>();
 						}
 						this.testData[Math.floor(i / columns.length)][i % columns.length] = tabsep[i];
-					};
+					}
 					resolve(true);
 				});
 			});

@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import { IssueReporterModel } from 'vs/code/electron-browser/issue/issueReporterModel';
-import { normalizeGitHubIssuesUrl } from 'vs/code/electron-browser/issue/issueReporterUtil';
+import { normalizeGitHubUrl } from 'vs/code/electron-browser/issue/issueReporterUtil';
 import { IssueType } from 'vs/platform/issue/common/issue';
 
 suite('IssueReporter', () => {
@@ -33,7 +33,7 @@ Issue Type: <b>Feature Request</b>
 
 undefined
 
-SQL Operations Studio version: undefined
+Azure Data Studio version: undefined
 OS version: undefined
 
 
@@ -57,7 +57,7 @@ Issue Type: <b>Bug</b>
 
 undefined
 
-SQL Operations Studio version: undefined
+Azure Data Studio version: undefined
 OS version: undefined
 
 <details>
@@ -81,7 +81,7 @@ OS version: undefined
 			'https://github.com/repo/issues/new',
 			'https://github.com/repo/issues/new/'
 		].forEach(url => {
-			assert.equal('https://github.com/repo/issues/new', normalizeGitHubIssuesUrl(url));
+			assert.equal('https://github.com/repo', normalizeGitHubUrl(url));
 		});
 	});
 

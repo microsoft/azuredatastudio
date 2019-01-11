@@ -26,6 +26,7 @@ import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { ISerializationService } from 'sql/services/serialization/serializationService';
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IDacFxService } from 'sql/services/dacfx/dacFxService';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 /**
@@ -55,7 +56,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
+		@IDacFxService private _dacFxService: IDacFxService,
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
@@ -350,14 +352,17 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getJobs(connectionUri: string): Thenable<sqlops.AgentJobsResult> {
 				return self._proxy.$getJobs(handle, connectionUri);
 			},
-			getJobHistory(connectionUri: string, jobID: string): Thenable<sqlops.AgentJobHistoryResult> {
-				return self._proxy.$getJobHistory(handle, connectionUri, jobID);
+			getJobHistory(connectionUri: string, jobID: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> {
+				return self._proxy.$getJobHistory(handle, connectionUri, jobID, jobName);
 			},
 			jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$jobAction(handle, connectionUri, jobName, action);
 			},
 			deleteJob(connectionUri: string, jobInfo: sqlops.AgentJobInfo): Thenable<sqlops.ResultStatus> {
 				return self._proxy.$deleteJob(handle, connectionUri, jobInfo);
+			},
+			deleteJobStep(connectionUri: string, stepInfo: sqlops.AgentJobStepInfo): Thenable<sqlops.ResultStatus> {
+				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
 			},
 			getAlerts(connectionUri: string): Thenable<sqlops.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);
@@ -396,6 +401,26 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
+	public $registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._dacFxService.registerProvider(providerId, <sqlops.DacFxServicesProvider>{
+			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
+			},
+			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
+			},
+			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
+			},
+			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
+			}
+		});
+
+		return undefined;
+	}
+
 	// Connection Management handlers
 	public $onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void {
 		this._connectionManagementService.onConnectionComplete(handle, connectionInfoSummary);
@@ -419,8 +444,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $onBatchComplete(handle: number, batchInfo: sqlops.QueryExecuteBatchNotificationParams): void {
 		this._queryManagementService.onBatchComplete(batchInfo);
 	}
-	public $onResultSetComplete(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
-		this._queryManagementService.onResultSetComplete(resultSetInfo);
+	public $onResultSetAvailable(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._queryManagementService.onResultSetAvailable(resultSetInfo);
+	}
+	public $onResultSetUpdated(handle: number, resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams): void {
+		this._queryManagementService.onResultSetUpdated(resultSetInfo);
 	}
 	public $onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void {
 		this._queryManagementService.onMessage(message);
@@ -437,6 +465,10 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	//OE handlers
 	public $onObjectExplorerSessionCreated(handle: number, sessionResponse: sqlops.ObjectExplorerSession): void {
 		this._objectExplorerService.onSessionCreated(handle, sessionResponse);
+	}
+
+	public $onObjectExplorerSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession): void {
+		this._objectExplorerService.onSessionDisconnected(handle, sessionResponse);
 	}
 
 	public $onObjectExplorerNodeExpanded(handle: number, expandResponse: sqlops.ObjectExplorerExpandInfo): void {

@@ -10,9 +10,9 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { memoize, unmemoize } from 'sql/base/common/decorators';
 import { mixin } from 'sql/base/common/objects';
+import { LegendPosition, ChartType, defaultChartConfig, IChartConfig, IDataSet, IPointDataSet } from 'sql/parts/dashboard/widgets/insights/views/charts/interfaces';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
-import { Color } from 'vs/base/common/color';
 import * as types from 'vs/base/common/types';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -20,74 +20,6 @@ import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 declare var Chart: any;
-
-export enum ChartType {
-	Bar = 'bar',
-	Doughnut = 'doughnut',
-	HorizontalBar = 'horizontalBar',
-	Line = 'line',
-	Pie = 'pie',
-	TimeSeries = 'timeSeries',
-	Scatter = 'scatter'
-}
-
-export enum DataDirection {
-	Vertical = 'vertical',
-	Horizontal = 'horizontal'
-}
-
-export enum LegendPosition {
-	Top = 'top',
-	Bottom = 'bottom',
-	Left = 'left',
-	Right = 'right',
-	None = 'none'
-}
-
-export function customMixin(destination: any, source: any, overwrite?: boolean): any {
-	if (types.isObject(source)) {
-		mixin(destination, source, overwrite, customMixin);
-	} else if (types.isArray(source)) {
-		for (let i = 0; i < source.length; i++) {
-			if (destination[i]) {
-				mixin(destination[i], source[i], overwrite, customMixin);
-			} else {
-				destination[i] = source[i];
-			}
-		}
-	} else {
-		destination = source;
-	}
-	return destination;
-}
-
-export interface IDataSet {
-	data: Array<number>;
-	label?: string;
-}
-
-export interface IPointDataSet {
-	data: Array<{ x: number | string, y: number }>;
-	label?: string;
-	fill: boolean;
-	backgroundColor?: Color;
-}
-
-export interface IChartConfig {
-	colorMap?: { [column: string]: string };
-	labelFirstColumn?: boolean;
-	legendPosition?: LegendPosition;
-	dataDirection?: DataDirection;
-	columnsAsLabels?: boolean;
-	showTopNData?: number;
-}
-
-export const defaultChartConfig: IChartConfig = {
-	labelFirstColumn: true,
-	columnsAsLabels: true,
-	legendPosition: LegendPosition.Top,
-	dataDirection: DataDirection.Vertical
-};
 
 @Component({
 	template: `	<div style="display: block; width: 100%; height: 100%; position: relative">
@@ -103,8 +35,8 @@ export const defaultChartConfig: IChartConfig = {
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
 	private _isDataAvailable: boolean = false;
-	private _hasInit: boolean = false;
-	private _hasError: boolean = false;
+	protected _hasInit: boolean = false;
+	protected _hasError: boolean = false;
 	private _options: any = {};
 
 	@ViewChild(BaseChartDirective) private _chart: BaseChartDirective;
@@ -113,7 +45,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected _config: IChartConfig;
 	protected _data: IInsightData;
 
-	private readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', 'Chart cannot be displayed with the given data');
+	protected readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', 'Chart cannot be displayed with the given data');
 
 	protected abstract get chartType(): ChartType;
 

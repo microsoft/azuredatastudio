@@ -69,7 +69,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 			return;
 		}
 		if (Object.keys(container).length !== 1) {
-			extension.collector.error(localize('dashboardTab.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
+			extension.collector.error(localize('dashboardContainer.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
 			return;
 		}
 

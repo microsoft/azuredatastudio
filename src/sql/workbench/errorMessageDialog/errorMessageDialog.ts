@@ -14,7 +14,7 @@ import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/st
 import { Builder } from 'vs/base/browser/builder';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -42,20 +42,20 @@ export class ErrorMessageDialog extends Modal {
 	public onOk: Event<void> = this._onOk.event;
 
 	constructor(
-		@IThemeService private _themeService: IThemeService,
-		@IClipboardService private _clipboardService: IClipboardService,
+		@IThemeService themeService: IThemeService,
+		@IClipboardService clipboardService: IClipboardService,
 		@IPartService partService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ErrorMessage, partService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('errorMessageDialog.ok', 'OK');
 		this._closeLabel = localize('errorMessageDialog.close', 'Close');
 	}
 
 	protected renderBody(container: HTMLElement) {
 		new Builder(container).div({ 'class': 'error-dialog' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();;
+			this._body = bodyBuilder.getHTMLElement();
 		});
 	}
 
@@ -76,7 +76,7 @@ export class ErrorMessageDialog extends Modal {
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
 		this._copyButton.icon = 'icon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;
-		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
+		this._register(attachButtonStyler(this._copyButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND, buttonForeground: SIDE_BAR_FOREGROUND }));
 	}
 
 	private createStandardButton(label: string, onSelect: () => void): Button {
@@ -108,13 +108,13 @@ export class ErrorMessageDialog extends Modal {
 	private updateIconTitle(): void {
 		switch (this._severity) {
 			case Severity.Error:
-				this.titleIconClassName = 'icon error';
+				this.titleIconClassName = 'sql icon error';
 				break;
 			case Severity.Warning:
-				this.titleIconClassName = 'icon warning';
+				this.titleIconClassName = 'sql icon warning';
 				break;
 			case Severity.Info:
-				this.titleIconClassName = 'icon info';
+				this.titleIconClassName = 'sql icon info';
 				break;
 		}
 	}

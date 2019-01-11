@@ -1,0 +1,30 @@
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '8.9'
+  displayName: 'Install Node.js'
+
+- script: |
+    yarn
+  displayName: 'Yarn Install'
+
+- script: |
+    .\node_modules\.bin\gulp electron
+  displayName: 'Electron'
+
+- script: |
+    npm run compile
+  displayName: 'Compile'
+
+- script: |
+    .\scripts\test.bat --reporter mocha-junit-reporter
+  displayName: 'Test'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFiles: 'test-results.xml'
+  condition: succeededOrFailed()
+
+- script: |
+    yarn run tslint
+  displayName: 'Run TSLint'

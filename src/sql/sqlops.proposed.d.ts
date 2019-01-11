@@ -17,7 +17,9 @@ declare module 'sqlops' {
 	 */
 	export interface ModelBuilder {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
+		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
+		dom(): ComponentBuilder<DomComponent>
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
@@ -50,12 +52,13 @@ declare module 'sqlops' {
 	}
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
-		onNodeCheckedChanged:  vscode.Event<NodeCheckedEventParameters<T>>;
-		onDidChangeSelection:  vscode.Event<T[]>;
+		onNodeCheckedChanged: vscode.Event<NodeCheckedEventParameters<T>>;
+		onDidChangeSelection: vscode.Event<vscode.TreeViewSelectionChangeEvent<T>>;
 	}
 
 	export class TreeComponentItem extends vscode.TreeItem {
 		checked?: boolean;
+		enabled?: boolean;
 	}
 
 	export interface ComponentBuilder<T extends Component> {
@@ -72,11 +75,15 @@ declare module 'sqlops' {
 
 	}
 
+	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
+
+	}
+
 	export interface GroupBuilder extends ContainerBuilder<GroupContainer, GroupLayout, GroupItemLayout> {
 	}
 
-	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, any, any> {
-		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, any, any>;
+	export interface ToolbarBuilder extends ContainerBuilder<ToolbarContainer, ToolbarLayout, any> {
+		withToolbarItems(components: ToolbarComponent[]): ContainerBuilder<ToolbarContainer, ToolbarLayout, any>;
 
 		/**
 		 * Creates a collection of child components and adds them all to this container
@@ -119,6 +126,20 @@ declare module 'sqlops' {
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addFormItem(formComponent: FormComponent | FormComponentGroup, itemLayout?: FormItemLayout): void;
+
+		/**
+		 * Inserts a from component in a given position in the form. Returns error given invalid index
+		 * @param formComponent Form component
+		 * @param index index to insert the component to
+		 * @param itemLayout Item Layout
+		 */
+		insertFormItem(formComponent: FormComponent | FormComponentGroup, index?: number, itemLayout?: FormItemLayout);
+
+		/**
+		 * Removes a from item from the from
+		 * @param formComponent
+		 */
+		removeFormItem(formComponent: FormComponent | FormComponentGroup): boolean;
 	}
 
 	export interface Component {
@@ -132,6 +153,15 @@ declare module 'sqlops' {
 		 * @memberof Component
 		 */
 		updateProperties(properties: { [key: string]: any }): Thenable<void>;
+
+		/**
+		 * Sends an updated property of the component to the UI
+		 *
+		 * @returns {Thenable<void>} Thenable that completes once the update
+		 * has been applied in the UI
+		 * @memberof Component
+		 */
+		updateProperty(key: string, value: any): Thenable<void>;
 
 		enabled: boolean;
 		/**
@@ -201,11 +231,27 @@ declare module 'sqlops' {
 
 		/**
 		 * Creates a child component and adds it to this container.
+		 * Adding component to multiple containers is not supported
 		 *
 		 * @param {Component} component the component to be added
 		 * @param {*} [itemLayout] Optional layout for this child item
 		 */
 		addItem(component: Component, itemLayout?: TItemLayout): void;
+
+		/**
+		 * Creates a child component and inserts it to this container. Returns error given invalid index
+		 * Adding component to multiple containers is not supported
+		 * @param component the component to be added
+		 * @param index the index to insert the component to
+		 * @param {*} [itemLayout] Optional layout for this child item
+		 */
+		insertItem(component: Component, index: number, itemLayout?: TItemLayout): void;
+
+		/**
+		 *
+		 * @param component Removes a component from this container
+		 */
+		removeItem(component: Component): boolean;
 
 		/**
 		 * Defines the layout for this container
@@ -257,7 +303,16 @@ declare module 'sqlops' {
 		/**
 		 *
 		 */
-		textAlign?: string
+		textAlign?: string;
+
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself.
+		 */
+		position?: string;
 	}
 
 	export interface FlexItemLayout {
@@ -273,7 +328,7 @@ declare module 'sqlops' {
 		/**
 		 * Matches the CSS style key and its available values.
 		 */
-		CSSStyles?: { [key: string]: string }
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface FormItemLayout {
@@ -298,6 +353,33 @@ declare module 'sqlops' {
 	export interface GroupItemLayout {
 	}
 
+	export interface DivLayout {
+		/**
+		 * Container Height
+		 */
+		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
+	}
+
+	export interface DivItemLayout {
+		/**
+		 * Matches the order CSS property and its available values.
+		 */
+		order?: number;
+
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
+	}
+
+	export interface DivContainer extends Container<DivLayout, DivItemLayout>, DivContainerProperties {
+	}
+
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
 
@@ -307,7 +389,16 @@ declare module 'sqlops' {
 	export interface GroupContainer extends Container<GroupLayout, GroupItemLayout> {
 	}
 
-	export interface ToolbarContainer extends Container<any, any> {
+
+	export enum Orientation {
+		Horizontal = 'horizontal',
+		Vertical = 'vertial'
+	}
+
+	export interface ToolbarLayout {
+		orientation: Orientation;
+	}
+	export interface ToolbarContainer extends Container<ToolbarLayout, any> {
 	}
 
 	/**
@@ -371,6 +462,18 @@ declare module 'sqlops' {
 	export interface ComponentProperties {
 		height?: number | string;
 		width?: number | string;
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself
+		 */
+		position?: string;
+		/**
+		 * Matches the CSS style key and its available values.
+		 */
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface ComponentWithIcon {
@@ -459,15 +562,32 @@ declare module 'sqlops' {
 
 	}
 
-	export interface WebViewProperties {
+	export interface WebViewProperties extends ComponentProperties {
 		message?: any;
+
+		/**
+		 * Contents of the webview.
+		 *
+		 * Should be a complete html document.
+		 */
+		html?: string;
+		/**
+		 * Content settings for the webview.
+		 */
+		options?: vscode.WebviewOptions;
+	}
+
+	export interface DomProperties extends ComponentProperties {
+		/**
+		 * Contents of the DOM component.
+		 */
 		html?: string;
 	}
 
 	/**
 	 * Editor properties for the editor component
 	 */
-	export interface EditorProperties {
+	export interface EditorProperties extends ComponentProperties {
 		/**
 		 * The content inside the text editor
 		 */
@@ -475,22 +595,44 @@ declare module 'sqlops' {
 		/**
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
-		languageMode?: string
+		languageMode?: string;
+		/**
+		 * Minimum height for editor component
+		 */
+		minimumHeight?: number;
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		label?: string;
 		isFile?: boolean;
 		fileContent?: string;
+		title?: string;
 	}
 
 	export interface LoadingComponentProperties {
 		loading?: boolean;
 	}
 
+	export interface DivContainerProperties extends ComponentProperties {
+		/**
+		 * Matches the overflow-y CSS property and its available values.
+		 */
+		overflowY?: string;
+
+		/**
+		 * Setting the scroll based on the y offset
+		 * This is used when its child component is webview
+		 */
+		yOffsetChange?: number;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
+	}
+
+	export interface DomComponent extends Component, DomProperties {
+
 	}
 
 	export interface TextComponent extends Component {
@@ -549,6 +691,7 @@ declare module 'sqlops' {
 		html: string;
 		message: any;
 		onMessage: vscode.Event<any>;
+		readonly options: vscode.WebviewOptions;
 	}
 
 	/**
@@ -563,11 +706,51 @@ declare module 'sqlops' {
 		 * The languge mode for this text editor. The language mode is SQL by default.
 		 */
 		languageMode: string;
+		/**
+		 * The editor Uri which will be used as a reference for VSCode Language Service.
+		 * Currently this is auto-generated by the framework but can be queried after
+		 * view initialization is completed
+		 */
+		readonly editorUri: string;
+		/**
+		 * An event called when the editor content is updated
+		 */
+		readonly onContentChanged: vscode.Event<any>;
+
+		/**
+		 * An event called when the editor is created
+		 */
+		readonly onEditorCreated: vscode.Event<any>;
+
+		/**
+		 * Toggle for whether the editor should be automatically resized or not
+		 */
+		isAutoResizable: boolean;
+
+		/**
+		 * Minimum height for editor component
+		 */
+		minimumHeight: number;
+
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
+		/**
+		 * The label for the button
+		 */
 		label: string;
+		/**
+		 * The title for the button. This title will show when it hovers
+		 */
+		title: string;
+		/**
+		 * Icon Path for the button.
+		 */
 		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
+
+		/**
+		 * An event called when the button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 
@@ -656,7 +839,7 @@ declare module 'sqlops' {
 			 * Create a dialog with the given title
 			 * @param title The title of the dialog, displayed at the top
 			 */
-			export function createDialog(title: string): Dialog;
+			export function createDialog(title: string, dialogName?: string): Dialog;
 
 			/**
 			 * Create a dialog tab which can be included as part of the content of a dialog
@@ -707,6 +890,7 @@ declare module 'sqlops' {
 			 */
 			export type DialogMessage = {
 				readonly text: string,
+				readonly description?: string,
 				readonly level?: MessageLevel
 			};
 
@@ -766,6 +950,12 @@ declare module 'sqlops' {
 				 * undefined or the text is empty or undefined. The default level is error.
 				 */
 				message: DialogMessage;
+
+				/**
+				 * Set the dialog name when opening
+				 * the dialog for telemetry
+				 */
+				dialogName?: string;
 
 				/**
 				 * Register a callback that will be called when the user tries to click done. Only
@@ -1004,11 +1194,22 @@ declare module 'sqlops' {
 		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions): ModelViewEditor;
 
 		export interface ModelViewEditor extends window.modelviewdialog.ModelViewPanel {
+			/**
+			 * `true` if there are unpersisted changes.
+			 * This is editable to support extensions updating the dirty status.
+			 */
+			isDirty: boolean;
 
 			/**
 			 * Opens the editor
 			 */
 			openEditor(position?: vscode.ViewColumn): Thenable<void>;
+
+			/**
+			 * Registers a save handler for this editor. This will be called if [supportsSave](#ModelViewEditorOptions.supportsSave)
+			 * is set to true and the editor is marked as dirty
+			 */
+			registerSaveHandler(handler: () => Thenable<boolean>);
 		}
 	}
 
@@ -1017,6 +1218,11 @@ declare module 'sqlops' {
 		 * Should the model view editor's context be kept around even when the editor is no longer visible? It is false by default
 		 */
 		readonly retainContextWhenHidden?: boolean;
+
+		/**
+		 * Does this model view editor support save?
+		 */
+		readonly supportsSave?: boolean;
 	}
 
 	export enum DataProviderType {
@@ -1032,7 +1238,8 @@ declare module 'sqlops' {
 		QueryProvider = 'QueryProvider',
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
-		CapabilitiesProvider = 'CapabilitiesProvider'
+		CapabilitiesProvider = 'CapabilitiesProvider',
+		DacFxServicesProvider = 'DacFxServicesProvider',
 	}
 
 	export namespace dataprotocol {
@@ -1163,6 +1370,954 @@ declare module 'sqlops' {
 		 * returns the connection otherwise returns undefined
 		 * @param callback
 		 */
-		export function openConnectionDialog(provider?: string[]): Thenable<connection.Connection>;
+		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
 	}
+
+	export namespace nb {
+		/**
+		 * All notebook documents currently known to the system.
+		 *
+		 * @readonly
+		 */
+		export let notebookDocuments: NotebookDocument[];
+
+		/**
+		 * The currently active Notebook editor or `undefined`. The active editor is the one
+		 * that currently has focus or, when none has focus, the one that has changed
+		 * input most recently.
+		 */
+		export let activeNotebookEditor: NotebookEditor | undefined;
+
+		/**
+		 * The currently visible editors or an empty array.
+		 */
+		export let visibleNotebookEditors: NotebookEditor[];
+
+		/**
+		 * An event that is emitted when a [notebook document](#NotebookDocument) is opened.
+		 *
+		 * To add an event listener when a visible text document is opened, use the [TextEditor](#TextEditor) events in the
+		 * [window](#window) namespace. Note that:
+		 *
+		 * - The event is emitted before the [document](#NotebookDocument) is updated in the
+		 * [active notebook editor](#nb.activeNotebookEditor)
+		 * - When a [notebook document](#NotebookDocument) is already open (e.g.: open in another visible notebook editor) this event is not emitted
+		 *
+		 */
+		export const onDidOpenNotebookDocument: vscode.Event<NotebookDocument>;
+
+		/**
+		 * An event that is emitted when a [notebook's](#NotebookDocument) cell contents are changed.
+		 */
+		export const onDidChangeNotebookCell: vscode.Event<NotebookCellChangeEvent>;
+
+		/**
+		 * Show the given document in a notebook editor. A [column](#ViewColumn) can be provided
+		 * to control where the editor is being shown. Might change the [active editor](#nb.activeNotebookEditor).
+		 *
+		 * The document is denoted by an [uri](#Uri). Depending on the [scheme](#Uri.scheme) the
+		 * following rules apply:
+		 * `file`-scheme: Open a file on disk, will be rejected if the file does not exist or cannot be loaded.
+		 * `untitled`-scheme: A new file that should be saved on disk, e.g. `untitled:c:\frodo\new.js`. The language
+		 * will be derived from the file name.
+		 * For all other schemes the registered notebook providers are consulted.
+		 *
+		 * @param document A document to be shown.
+		 * @param column A view column in which the [editor](#NotebookEditor) should be shown. The default is the [active](#ViewColumn.Active), other values
+		 * are adjusted to be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside)
+		 * to open the editor to the side of the currently active one.
+		 * @param preserveFocus When `true` the editor will not take focus.
+		 * @return A promise that resolves to a [notebook editor](#NotebookEditor).
+		 */
+		export function showNotebookDocument(uri: vscode.Uri, showOptions?: NotebookShowOptions): Thenable<NotebookEditor>;
+
+		export interface NotebookDocument {
+			/**
+			 * The associated uri for this notebook document.
+			 *
+			 * *Note* that most documents use the `file`-scheme, which means they are files on disk. However, **not** all documents are
+			 * saved on disk and therefore the `scheme` must be checked before trying to access the underlying file or siblings on disk.
+			 *
+			 */
+			readonly uri: vscode.Uri;
+
+			/**
+			 * The file system path of the associated resource. Shorthand
+			 * notation for [TextDocument.uri.fsPath](#TextDocument.uri). Independent of the uri scheme.
+			 */
+			readonly fileName: string;
+
+			/**
+			 * Is this document representing an untitled file which has never been saved yet. *Note* that
+			 * this does not mean the document will be saved to disk, use [`uri.scheme`](#Uri.scheme)
+			 * to figure out where a document will be [saved](#FileSystemProvider), e.g. `file`, `ftp` etc.
+			 */
+			readonly isUntitled: boolean;
+
+			/**
+			 * The identifier of the Notebook provider associated with this document.
+			 */
+			readonly providerId: string;
+
+			/**
+			 * `true` if there are unpersisted changes.
+			 */
+			readonly isDirty: boolean;
+			/**
+			 * `true` if the document have been closed. A closed document isn't synchronized anymore
+			 * and won't be re-used when the same resource is opened again.
+			 */
+			readonly isClosed: boolean;
+
+			/**
+			 * All cells.
+			 */
+			readonly cells: NotebookCell[];
+
+			/**
+			 * Save the underlying file.
+			 *
+			 * @return A promise that will resolve to true when the file
+			 * has been saved. If the file was not dirty or the save failed,
+			 * will return false.
+			 */
+			save(): Thenable<boolean>;
+
+			/**
+			 * Ensure a cell range is completely contained in this document.
+			 *
+			 * @param range A cell range.
+			 * @return The given range or a new, adjusted range.
+			 */
+			validateCellRange(range: CellRange): CellRange;
+		}
+
+		/**
+		 * A cell range represents an ordered pair of two positions in a list of cells.
+		 * It is guaranteed that [start](#CellRange.start).isBeforeOrEqual([end](#CellRange.end))
+		 *
+		 * CellRange objects are __immutable__.
+		 */
+		export class CellRange {
+
+			/**
+			 * The start index. It is before or equal to [end](#CellRange.end).
+			 */
+			readonly start: number;
+
+			/**
+			 * The end index. It is after or equal to [start](#CellRange.start).
+			 */
+			readonly end: number;
+
+			/**
+			 * Create a new range from two positions. If `start` is not
+			 * before or equal to `end`, the values will be swapped.
+			 *
+			 * @param start A number.
+			 * @param end A number.
+			 */
+			constructor(start: number, end: number);
+		}
+
+		export interface NotebookEditor {
+			/**
+			 * The document associated with this editor. The document will be the same for the entire lifetime of this editor.
+			 */
+			readonly document: NotebookDocument;
+			/**
+			 * The column in which this editor shows. Will be `undefined` in case this
+			 * isn't one of the main editors, e.g an embedded editor, or when the editor
+			 * column is larger than three.
+			 */
+			viewColumn?: vscode.ViewColumn;
+
+			/**
+			 * Perform an edit on the document associated with this notebook editor.
+			 *
+			 * The given callback-function is invoked with an [edit-builder](#NotebookEditorEdit) which must
+			 * be used to make edits. Note that the edit-builder is only valid while the
+			 * callback executes.
+			 *
+			 * @param callback A function which can create edits using an [edit-builder](#NotebookEditorEdit).
+			 * @param options The undo/redo behavior around this edit. By default, undo stops will be created before and after this edit.
+			 * @return A promise that resolves with a value indicating if the edits could be applied.
+			 */
+			edit(callback: (editBuilder: NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean>;
+		}
+
+		export interface NotebookCell {
+			contents: ICellContents;
+			uri?: vscode.Uri;
+		}
+
+		export interface NotebookShowOptions {
+			/**
+			 * An optional view column in which the [editor](#NotebookEditor) should be shown.
+			 * The default is the [active](#ViewColumn.Active), other values are adjusted to
+			 * be `Min(column, columnCount + 1)`, the [active](#ViewColumn.Active)-column is
+			 * not adjusted. Use [`ViewColumn.Beside`](#ViewColumn.Beside) to open the
+			 * editor to the side of the currently active one.
+			 */
+			viewColumn?: vscode.ViewColumn;
+
+			/**
+			 * An optional flag that when `true` will stop the [editor](#NotebookEditor) from taking focus.
+			 */
+			preserveFocus?: boolean;
+
+			/**
+			 * An optional flag that controls if an [editor](#NotebookEditor)-tab will be replaced
+			 * with the next editor or if it will be kept.
+			 */
+			preview?: boolean;
+
+			/**
+			 * An optional string indicating which notebook provider to initially use
+			 */
+			providerId?: string;
+
+			/**
+			 * Optional ID indicating the initial connection to use for this editor
+			 */
+			connectionId?: string;
+		}
+
+		/**
+		 * Represents an event describing the change in a [notebook documents's cells](#NotebookDocument.cells).
+		 */
+		export interface NotebookCellChangeEvent {
+			/**
+			 * The [notebook document](#NotebookDocument) for which the selections have changed.
+			 */
+			notebook: NotebookDocument;
+			/**
+			 * The new value for the [notebook documents's cells](#NotebookDocument.cells).
+			 */
+			cells: NotebookCell[];
+			/**
+			 * The [change kind](#TextEditorSelectionChangeKind) which has triggered this
+			 * event. Can be `undefined`.
+			 */
+			kind?: vscode.TextEditorSelectionChangeKind;
+		}
+
+		/**
+		 * A complex edit that will be applied in one transaction on a TextEditor.
+		 * This holds a description of the edits and if the edits are valid (i.e. no overlapping regions, document was not changed in the meantime, etc.)
+		 * they can be applied on a [document](#TextDocument) associated with a [text editor](#TextEditor).
+		 *
+		 */
+		export interface NotebookEditorEdit {
+			/**
+			 * Replace a cell range with a new cell.
+			 *
+			 * @param location The range this operation should remove.
+			 * @param value The new cell this operation should insert after removing `location`.
+			 */
+			replace(location: number | CellRange, value: ICellContents): void;
+
+			/**
+			 * Insert a cell (optionally) at a specific index. Any index outside of the length of the cells
+			 * will result in the cell being added at the end.
+			 *
+			 * @param index The position where the new text should be inserted.
+			 * @param value The new text this operation should insert.
+			 */
+			insertCell(value: ICellContents, index?: number): void;
+
+			/**
+			 * Delete a certain cell.
+			 *
+			 * @param index The index of the cell to remove.
+			 */
+			deleteCell(index: number): void;
+		}
+
+		/**
+		 * Register a notebook provider. The supported file types handled by this
+		 * provider are defined in the `package.json:
+		 * ```json
+		* {
+		* 	"contributes": {
+		* 		"notebook.providers": [{
+		* 			"provider": "providername",
+		* 			"fileExtensions": ["FILEEXT"]
+		* 		}]
+		* 	}
+		* }
+		* ```
+		 * @export
+		 * @param {NotebookProvider} provider
+		 * @returns {vscode.Disposable}
+		 */
+		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
+
+		export interface NotebookProvider {
+			readonly providerId: string;
+			readonly standardKernels: string[];
+			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
+			handleNotebookClosed(notebookUri: vscode.Uri): void;
+		}
+
+		export interface NotebookManager {
+			/**
+			 * Manages reading and writing contents to/from files.
+			 * Files may be local or remote, with this manager giving them a chance to convert and migrate
+			 * from specific notebook file types to and from a standard type for this UI
+			 */
+			readonly contentManager: ContentManager;
+			/**
+			 * A SessionManager that handles starting, stopping and handling notifications around sessions.
+			 * Each notebook has 1 session associated with it, and the session is responsible
+			 * for kernel management
+			 */
+			readonly sessionManager: SessionManager;
+			/**
+			 * (Optional) ServerManager to handle server lifetime management operations.
+			 * Depending on the implementation this may not be needed.
+			 */
+			readonly serverManager?: ServerManager;
+		}
+
+		/**
+		 * Defines the contracts needed to manage the lifetime of a notebook server.
+		 */
+		export interface ServerManager {
+			/**
+			 * Indicates if the server is started at the current time
+			 */
+			readonly isStarted: boolean;
+
+			/**
+			 * Event sent when the server has started. This can be used to query
+			 * the manager for server settings
+			 */
+			readonly onServerStarted: vscode.Event<void>;
+
+			/**
+			 * Starts the server. Some server types may not support or require this.
+			 * Should no-op if server is already started
+			 */
+			startServer(): Thenable<void>;
+
+			/**
+			 * Stops the server. Some server types may not support or require this
+			 */
+			stopServer(): Thenable<void>;
+		}
+
+		//#region Content APIs
+		/**
+		 * Handles interacting with file and folder contents
+		 */
+		export interface ContentManager {
+			/* Reads contents from a Uri representing a local or remote notebook and returns a
+			 * JSON object containing the cells and metadata about the notebook
+			 */
+			getNotebookContents(notebookUri: vscode.Uri): Thenable<INotebookContents>;
+
+			/**
+			 * Save a file.
+			 *
+			 * @param notebookUri - The desired file path.
+			 *
+			 * @param notebook - notebook to be saved.
+			 *
+			 * @returns A thenable which resolves with the file content model when the
+			 *   file is saved.
+			 */
+			save(notebookUri: vscode.Uri, notebook: INotebookContents): Thenable<INotebookContents>;
+		}
+
+
+		/**
+		 * Interface defining the file format contents of a notebook, usually in a serializable
+		 * format. This interface does not have any methods for manipulating or interacting
+		 * with a notebook object.
+		 *
+		 */
+		export interface INotebookContents {
+
+			readonly cells: ICellContents[];
+			readonly metadata: INotebookMetadata;
+			readonly nbformat: number;
+			readonly nbformat_minor: number;
+		}
+
+		export interface INotebookMetadata {
+			kernelspec: IKernelInfo;
+			language_info?: ILanguageInfo;
+		}
+
+		export interface IKernelInfo {
+			name: string;
+			language?: string;
+			display_name?: string;
+		}
+
+		export interface ILanguageInfo {
+			name: string;
+			version: string;
+			mimetype?: string;
+			codemirror_mode?: string | ICodeMirrorMode;
+		}
+
+		export interface ICodeMirrorMode {
+			name: string;
+			version: string;
+		}
+
+		/**
+		 * Interface defining the file format contents of a notebook cell, usually in a serializable
+		 * format. This interface does not have any methods for manipulating or interacting
+		 * with a cell object.
+		 *
+		 */
+		export interface ICellContents {
+			cell_type: CellType;
+			source: string | string[];
+			metadata: {
+				language?: string;
+			};
+			execution_count?: number;
+			outputs?: ICellOutput[];
+		}
+
+		export type CellType = 'code' | 'markdown' | 'raw';
+
+		export interface ICellOutput {
+			output_type: OutputTypeName;
+		}
+
+		/**
+		 * An alias for a stream type.
+		 */
+		export type StreamType = 'stdout' | 'stderr';
+
+		/**
+		 * A multiline string.
+		 */
+		export type MultilineString = string | string[];
+
+		export interface IStreamResult extends ICellOutput {
+			output_type: 'stream';
+			/**
+			 * Stream output field defining the stream name, for example stdout
+			 */
+			name: StreamType;
+			/**
+			 * Stream output field defining the multiline stream text
+			 */
+			text: MultilineString;
+		}
+		export interface IDisplayResult extends ICellOutput {
+			/**
+			 * Mime bundle expected to contain mime type -> contents mappings.
+			 * This is dynamic and is controlled by kernels, so cannot be more specific
+			 */
+			data: {};
+			/**
+			 * Optional metadata, also a mime bundle
+			 */
+			metadata?: {};
+		}
+		export interface IDisplayData extends IDisplayResult {
+			output_type: 'display_data';
+		}
+		export interface IUpdateDisplayData extends IDisplayResult {
+			output_type: 'update_display_data';
+		}
+		export interface IExecuteResult extends IDisplayResult {
+			/**
+			 * Type of cell output.
+			 */
+			output_type: 'execute_result';
+			/**
+			 * Number of times the cell was executed
+			 */
+			execution_count: number;
+		}
+		export interface IErrorResult extends ICellOutput {
+			/**
+			 * Type of cell output.
+			 */
+			output_type: 'error';
+			/**
+			 * Exception name
+			 */
+			ename: string;
+			/**
+			 * Exception value
+			 */
+			evalue: string;
+			/**
+			 * Stacktrace equivalent
+			 */
+			traceback?: string[];
+		}
+
+		export type OutputTypeName =
+			| 'execute_result'
+			| 'display_data'
+			| 'stream'
+			| 'error'
+			| 'update_display_data';
+
+		export type Output = nb.IDisplayData | nb.IUpdateDisplayData | nb.IExecuteResult | nb.IErrorResult | nb.IStreamResult;
+
+		//#endregion
+
+		//#region Session APIs
+		export interface SessionManager {
+			/**
+			 * Indicates whether the manager is ready.
+			 */
+			readonly isReady: boolean;
+
+			/**
+			 * A Thenable that is fulfilled when the manager is ready.
+			 */
+			readonly ready: Thenable<void>;
+
+			readonly specs: IAllKernels | undefined;
+
+			startNew(options: ISessionOptions): Thenable<ISession>;
+
+			shutdown(id: string): Thenable<void>;
+		}
+
+		export interface ISession {
+			/**
+			 * Is change of kernels supported for this session?
+			 */
+			canChangeKernels: boolean;
+			/*
+			 * Unique id of the session.
+			 */
+			readonly id: string;
+
+			/**
+			 * The current path associated with the session.
+			 */
+			readonly path: string;
+
+			/**
+			 * The current name associated with the session.
+			 */
+			readonly name: string;
+
+			/**
+			 * The type of the session.
+			 */
+			readonly type: string;
+
+			/**
+			 * The status indicates if the kernel is healthy, dead, starting, etc.
+			 */
+			readonly status: KernelStatus;
+
+			/**
+			 * The kernel.
+			 *
+			 * #### Notes
+			 * This is a read-only property, and can be altered by [changeKernel].
+			 */
+			readonly kernel: IKernel;
+
+			/**
+			 * Tracks whether the default kernel failed to load
+			 * This could be for a reason such as the kernel name not being recognized as a valid kernel;
+			 */
+			defaultKernelLoaded?: boolean;
+
+			changeKernel(kernelInfo: IKernelSpec): Thenable<IKernel>;
+		}
+
+		export interface ISessionOptions {
+			/**
+			 * The path (not including name) to the session.
+			 */
+			path: string;
+			/**
+			 * The name of the session.
+			 */
+			name?: string;
+			/**
+			 * The type of the session.
+			 */
+			type?: string;
+			/**
+			 * The type of kernel (e.g. python3).
+			 */
+			kernelName?: string;
+			/**
+			 * The id of an existing kernel.
+			 */
+			kernelId?: string;
+		}
+
+		export interface IKernel {
+			readonly id: string;
+			readonly name: string;
+			readonly supportsIntellisense: boolean;
+			/**
+			 * Test whether the kernel is ready.
+			 */
+			readonly isReady: boolean;
+
+			/**
+			 * A Thenable that is fulfilled when the kernel is ready.
+			 */
+			readonly ready: Thenable<void>;
+
+			/**
+			 * The cached kernel info.
+			 *
+			 * #### Notes
+			 * This value will be null until the kernel is ready.
+			 */
+			readonly info: IInfoReply | null;
+
+			/**
+			 * Gets the full specification for this kernel, which can be serialized to
+			 * a noteobok file
+			 */
+			getSpec(): Thenable<IKernelSpec>;
+
+			/**
+			 * Send an `execute_request` message.
+			 *
+			 * @param content - The content of the request.
+			 *
+			 * @param disposeOnDone - Whether to dispose of the future when done.
+			 *
+			 * @returns A kernel future.
+			 *
+			 * #### Notes
+			 * See [Messaging in
+			 * Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#execute).
+			 *
+			 * This method returns a kernel future, rather than a Thenable, since execution may
+			 * have many response messages (for example, many iopub display messages).
+			 *
+			 * Future `onReply` is called with the `execute_reply` content when the
+			 * shell reply is received and validated.
+			 *
+			 * **See also:** [[IExecuteReply]]
+			 */
+			requestExecute(content: IExecuteRequest, disposeOnDone?: boolean): IFuture;
+
+
+			/**
+			 * Send a `complete_request` message.
+			 *
+			 * @param content - The content of the request.
+			 *
+			 * @returns A Thenable that resolves with the response message.
+			 *
+			 * #### Notes
+			 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#completion).
+			 *
+			 * Fulfills with the `complete_reply` content when the shell reply is
+			 * received and validated.
+			 */
+			requestComplete(content: ICompleteRequest): Thenable<ICompleteReplyMsg>;
+
+			/**
+			 * Interrupt a kernel.
+			 *
+			 * #### Notes
+			 * Uses the [Jupyter Notebook API](http://petstore.swagger.io/?url=https://raw.githubusercontent.com/jupyter/notebook/master/notebook/services/api/api.yaml#!/kernels).
+			 *
+			 * The promise is fulfilled on a valid response and rejected otherwise.
+			 *
+			 * It is assumed that the API call does not mutate the kernel id or name.
+			 *
+			 * The promise will be rejected if the kernel status is `Dead` or if the
+			 * request fails or the response is invalid.
+			 */
+			interrupt(): Thenable<void>;
+		}
+
+		export interface IInfoReply {
+			protocol_version: string;
+			implementation: string;
+			implementation_version: string;
+			language_info: ILanguageInfo;
+			banner: string;
+			help_links: {
+				text: string;
+				url: string;
+			}[];
+		}
+
+		/**
+		 * The contents of a requestExecute message sent to the server.
+		 */
+		export interface IExecuteRequest extends IExecuteOptions {
+			code: string;
+		}
+
+		/**
+		 * The options used to configure an execute request.
+		 */
+		export interface IExecuteOptions {
+			/**
+			 * Whether to execute the code as quietly as possible.
+			 * The default is `false`.
+			 */
+			silent?: boolean;
+
+			/**
+			 * Whether to store history of the execution.
+			 * The default `true` if silent is False.
+			 * It is forced to  `false ` if silent is `true`.
+			 */
+			store_history?: boolean;
+
+			/**
+			 * A mapping of names to expressions to be evaluated in the
+			 * kernel's interactive namespace.
+			 */
+			user_expressions?: {};
+
+			/**
+			 * Whether to allow stdin requests.
+			 * The default is `true`.
+			 */
+			allow_stdin?: boolean;
+
+			/**
+			 * Whether to the abort execution queue on an error.
+			 * The default is `false`.
+			 */
+			stop_on_error?: boolean;
+		}
+
+		/**
+		 * The content of a `'complete_request'` message.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#completion).
+		 *
+		 * **See also:** [[ICompleteReply]], [[IKernel.complete]]
+		 */
+		export interface ICompleteRequest {
+			code: string;
+			cursor_pos: number;
+		}
+
+		export interface ICompletionContent {
+			matches: string[];
+			cursor_start: number;
+			cursor_end: number;
+			metadata: any;
+			status: 'ok' | 'error';
+		}
+		/**
+		 * A `'complete_reply'` message on the `'stream'` channel.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#completion).
+		 *
+		 * **See also:** [[ICompleteRequest]], [[IKernel.complete]]
+		 */
+		export interface ICompleteReplyMsg extends IShellMessage {
+			content: ICompletionContent;
+		}
+
+		/**
+		 * The valid Kernel status states.
+		 */
+		export type KernelStatus =
+			| 'unknown'
+			| 'starting'
+			| 'reconnecting'
+			| 'idle'
+			| 'busy'
+			| 'restarting'
+			| 'dead'
+			| 'connected';
+
+		/**
+		 * An arguments object for the kernel changed event.
+		 */
+		export interface IKernelChangedArgs {
+			oldValue: IKernel | null;
+			newValue: IKernel | null;
+		}
+
+		/// -------- JSON objects, and objects primarily intended not to have methods -----------
+		export interface IAllKernels {
+			defaultKernel: string;
+			kernels: IKernelSpec[];
+		}
+		export interface IKernelSpec {
+			name: string;
+			language?: string;
+			display_name?: string;
+		}
+
+		export interface MessageHandler<T extends IMessage> {
+			handle(message: T): void | Thenable<void>;
+		}
+
+
+		/**
+		 * A Future interface for responses from the kernel.
+		 *
+		 * When a message is sent to a kernel, a Future is created to handle any
+		 * responses that may come from the kernel.
+		 */
+		export interface IFuture extends vscode.Disposable {
+
+			/**
+			 * The original outgoing message.
+			 */
+			readonly msg: IMessage;
+
+			/**
+			 * A Thenable that resolves when the future is done.
+			 *
+			 * #### Notes
+			 * The future is done when there are no more responses expected from the
+			 * kernel.
+			 *
+			 * The `done` Thenable resolves to the reply message if there is one,
+			 * otherwise it resolves to `undefined`.
+			 */
+			readonly done: Thenable<IShellMessage | undefined>;
+
+			/**
+			 * Set the reply handler for the kernel future.
+			 *
+			 * #### Notes
+			 * If the handler returns a Thenable, all kernel message processing pauses
+			 * until the Thenable is resolved. If there is a reply message, the future
+			 * `done` Thenable also resolves to the reply message after this handler has
+			 * been called.
+			 */
+			setReplyHandler(handler: MessageHandler<IShellMessage>): void;
+
+			/**
+			 * Sets the stdin handler for the kernel future.
+			 *
+			 * #### Notes
+			 * If the handler returns a Thenable, all kernel message processing pauses
+			 * until the Thenable is resolved.
+			 */
+			setStdInHandler(handler: MessageHandler<IStdinMessage>): void;
+
+			/**
+			 * Sets the iopub handler for the kernel future.
+			 *
+			 * #### Notes
+			 * If the handler returns a Thenable, all kernel message processing pauses
+			 * until the Thenable is resolved.
+			 */
+			setIOPubHandler(handler: MessageHandler<IIOPubMessage>): void;
+
+			/**
+			 * Register hook for IOPub messages.
+			 *
+			 * @param hook - The callback invoked for an IOPub message.
+			 *
+			 * #### Notes
+			 * The IOPub hook system allows you to preempt the handlers for IOPub
+			 * messages handled by the future.
+			 *
+			 * The most recently registered hook is run first. A hook can return a
+			 * boolean or a Thenable to a boolean, in which case all kernel message
+			 * processing pauses until the Thenable is fulfilled. If a hook return value
+			 * resolves to false, any later hooks will not run and the function will
+			 * return a Thenable resolving to false. If a hook throws an error, the error
+			 * is logged to the console and the next hook is run. If a hook is
+			 * registered during the hook processing, it will not run until the next
+			 * message. If a hook is removed during the hook processing, it will be
+			 * deactivated immediately.
+			 */
+			registerMessageHook(
+				hook: (msg: IIOPubMessage) => boolean | Thenable<boolean>
+			): void;
+
+			/**
+			 * Remove a hook for IOPub messages.
+			 *
+			 * @param hook - The hook to remove.
+			 *
+			 * #### Notes
+			 * If a hook is removed during the hook processing, it will be deactivated immediately.
+			 */
+			removeMessageHook(
+				hook: (msg: IIOPubMessage) => boolean | Thenable<boolean>
+			): void;
+
+			/**
+			 * Send an `input_reply` message.
+			 */
+			sendInputReply(content: IInputReply): void;
+		}
+
+		/**
+		 * The valid channel names.
+		 */
+		export type Channel = 'shell' | 'iopub' | 'stdin' | 'execute_reply';
+
+		/**
+		 * Kernel message header content.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#general-message-format).
+		 *
+		 * **See also:** [[IMessage]]
+		 */
+		export interface IHeader {
+			username: string;
+			version: string;
+			session: string;
+			msg_id: string;
+			msg_type: string;
+		}
+
+		/**
+		 * A kernel message
+		 */
+		export interface IMessage {
+			type: Channel;
+			header: IHeader;
+			parent_header: IHeader | {};
+			metadata: {};
+			content: any;
+		}
+
+		/**
+		 * A kernel message on the `'shell'` channel.
+		 */
+		export interface IShellMessage extends IMessage {
+			channel: 'shell';
+		}
+
+		/**
+		 * A kernel message on the `'iopub'` channel.
+		 */
+		export interface IIOPubMessage extends IMessage {
+			channel: 'iopub';
+		}
+
+		/**
+		 * A kernel message on the `'stdin'` channel.
+		 */
+		export interface IStdinMessage extends IMessage {
+			channel: 'stdin';
+		}
+
+		/**
+		 * The content of an `'input_reply'` message.
+		 */
+		export interface IInputReply {
+			value: string;
+		}
+
+		//#endregion
+
+	}
+
 }

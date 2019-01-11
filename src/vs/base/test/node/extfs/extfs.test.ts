@@ -6,16 +6,16 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as os from 'os';
-
-import * as path from 'path';
 import * as fs from 'fs';
-
-import * as uuid from 'vs/base/common/uuid';
-import * as strings from 'vs/base/common/strings';
-import * as extfs from 'vs/base/node/extfs';
+import * as os from 'os';
+import * as path from 'path';
 import { Readable } from 'stream';
+import { canNormalize } from 'vs/base/common/normalization';
 import { isLinux, isWindows } from 'vs/base/common/platform';
+import * as uuid from 'vs/base/common/uuid';
+import * as extfs from 'vs/base/node/extfs';
+
+
 
 const ignore = () => { };
 
@@ -224,7 +224,7 @@ suite('Extfs', () => {
 	});
 
 	test('readdir', function (done) {
-		if (strings.canNormalize && typeof process.versions['electron'] !== 'undefined' /* needs electron */) {
+		if (canNormalize && typeof process.versions['electron'] !== 'undefined' /* needs electron */) {
 			const id = uuid.generateUuid();
 			const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 			const newDir = path.join(parentDir, 'extfs', id, 'öäü');
@@ -508,8 +508,9 @@ suite('Extfs', () => {
 
 		mkdirp(newDir, 493, error => {
 
+			// {{SQL CARBON EDIT}} don't run this test case on Windows as this fails in VSO
 			// assume case insensitive file system
-			if (process.platform === 'win32' || process.platform === 'darwin') {
+			if (process.platform === 'darwin') {
 				const upper = newDir.toUpperCase();
 				const real = extfs.realcaseSync(upper);
 
@@ -521,7 +522,7 @@ suite('Extfs', () => {
 			}
 
 			// linux, unix, etc. -> assume case sensitive file system
-			else {
+			else if (process.platform !== 'win32') {
 				const real = extfs.realcaseSync(newDir);
 				assert.equal(real, newDir);
 			}

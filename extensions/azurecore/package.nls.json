@@ -1,0 +1,22 @@
+{
+	"azure.displayName": "Azure (Core)",
+	"azure.description": "Browse and work with Azure resources",
+	"azure.title": "Azure",
+
+	"azure.resource.config.title": "Azure Resource Configuration",
+	"azure.resource.config.filter.description": "The resource filter, each element is an account id, a subscription id and name separated by a slash",
+	"azure.resource.explorer.title": "Resource Explorer",
+	"azure.resource.refreshall.title": "Refresh All",
+	"azure.resource.refresh.title": "Refresh",
+	"azure.resource.signin.title": "Sign In",
+	"azure.resource.selectsubscriptions.title": "Select Subscriptions",
+	"azure.resource.connectsqlserver.title": "Connect",
+	"azure.resource.connectsqldb.title": "Connect",
+
+	"accounts.clearTokenCache": "Clear Azure Account Token Cache",
+
+	"config.enablePublicCloudDescription": "Should Azure public cloud integration be enabled",
+	"config.enableUsGovCloudDescription": "Should US Government Azure cloud (Fairfax) integration be enabled",
+	"config.enableChinaCloudDescription": "Should Azure China integration be enabled",
+	"config.enableGermanyCloudDescription": "Should Azure Germany integration be enabled"
+}

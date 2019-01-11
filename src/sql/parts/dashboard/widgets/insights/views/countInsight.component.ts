@@ -15,8 +15,8 @@ import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insight
 	`
 })
 export default class CountInsight implements IInsightsView {
-	private _labels: Array<string>;
-	private _values: Array<string>;
+	protected _labels: Array<string>;
+	protected _values: Array<string>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef) { }

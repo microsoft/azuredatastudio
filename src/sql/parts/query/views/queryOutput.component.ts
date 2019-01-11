@@ -22,6 +22,7 @@ import { PanelComponent, IPanelOptions } from 'sql/base/browser/ui/panel/panel.c
 
 import * as nls from 'vs/nls';
 import { IDisposable } from 'vs/base/common/lifecycle';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const QUERY_OUTPUT_SELECTOR: string = 'query-output-component';
 
@@ -66,7 +67,8 @@ export class QueryOutputComponent implements OnDestroy {
 	constructor(
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
-		@Inject(IBootstrapParams) public queryParameters: IQueryComponentParams
+		@Inject(IBootstrapParams) public queryParameters: IQueryComponentParams,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -75,12 +77,14 @@ export class QueryOutputComponent implements OnDestroy {
 	 */
 	public ngAfterViewInit(): void {
 		this._disposables.push(toDisposableSubscription(this.queryComponent.queryPlanAvailable.subscribe((xml) => {
-			this.hasQueryPlan = true;
-			this._cd.detectChanges();
-			this._panel.selectTab(this.topOperationsTabIdentifier);
-			this.topOperationsComponent.planXml = xml;
-			this._panel.selectTab(this.queryPlanTabIdentifier);
-			this.queryPlanComponent.planXml = xml;
+			if (this._configurationService.getValue('workbench')['enablePreviewFeatures']) {
+				this.hasQueryPlan = true;
+				this._cd.detectChanges();
+				this._panel.selectTab(this.topOperationsTabIdentifier);
+				this.topOperationsComponent.planXml = xml;
+				this._panel.selectTab(this.queryPlanTabIdentifier);
+				this.queryPlanComponent.planXml = xml;
+			}
 		})));
 
 		this._disposables.push(toDisposableSubscription(this.queryComponent.showChartRequested.subscribe((dataSet) => {

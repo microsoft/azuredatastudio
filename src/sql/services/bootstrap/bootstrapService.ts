@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, enableProdMode, InjectionToken, Type, PlatformRef, Provider, Injector, Optional, Inject, ComponentFactoryResolver } from '@angular/core';
+import { NgModuleRef, enableProdMode, InjectionToken, Type, PlatformRef, Provider } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
-import { IEditorInput } from 'vs/platform/editor/common/editor';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
+import { IEditorInput } from 'vs/workbench/common/editor';
 
 const selectorCounter = new Map<string, number>();
 

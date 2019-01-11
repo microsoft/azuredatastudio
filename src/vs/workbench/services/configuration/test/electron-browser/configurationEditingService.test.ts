@@ -38,6 +38,7 @@ import { mkdirp } from 'vs/base/node/pfs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { CommandService } from 'vs/workbench/services/commands/common/commandService';
+import URI from 'vs/base/common/uri';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
@@ -90,7 +91,7 @@ suite('ConfigurationEditingService', () => {
 		workspaceDir = path.join(parentDir, 'workspaceconfig', id);
 		globalSettingsFile = path.join(workspaceDir, 'config.json');
 		// {{SQL CARBON EDIT}}
-		workspaceSettingsDir = path.join(workspaceDir, '.sqlops');
+		workspaceSettingsDir = path.join(workspaceDir, '.azuredatastudio');
 
 		return mkdirp(workspaceSettingsDir, 493);
 	}
@@ -104,7 +105,7 @@ suite('ConfigurationEditingService', () => {
 		instantiationService.stub(IEnvironmentService, environmentService);
 		const workspaceService = new WorkspaceService(environmentService);
 		instantiationService.stub(IWorkspaceContextService, workspaceService);
-		return workspaceService.initialize(noWorkspace ? {} as IWindowConfiguration : workspaceDir).then(() => {
+		return workspaceService.initialize(noWorkspace ? {} as IWindowConfiguration : URI.file(workspaceDir)).then(() => {
 			instantiationService.stub(IConfigurationService, workspaceService);
 			instantiationService.stub(IFileService, new FileService(workspaceService, TestEnvironmentService, new TestTextResourceConfigurationService(), new TestConfigurationService(), new TestLifecycleService(), new TestStorageService(), new TestNotificationService(), { disableWatcher: true }));
 			instantiationService.stub(ITextFileService, instantiationService.createInstance(TestTextFileService));

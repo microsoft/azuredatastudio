@@ -5,7 +5,7 @@
 
 import 'vs/css!./loadingComponent';
 import {
-	Component, Input, Inject, ChangeDetectorRef, forwardRef, OnDestroy, AfterViewInit, ViewChild, ElementRef
+	Component, Input, Inject, ChangeDetectorRef, forwardRef, OnDestroy, AfterViewInit, ElementRef
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -31,12 +31,10 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
-	@ViewChild('spinnerElement', { read: ElementRef }) private _spinnerElement: ElementRef;
-	@ViewChild('childElement', { read: ElementRef }) private _childElement: ElementRef;
-
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		super(changeRef, el);
 		this._validations.push(() => {
 			if (!this._component) {
 				return true;
@@ -59,10 +57,6 @@ export default class LoadingComponent extends ComponentBase implements IComponen
 	}
 
 	/// IComponent implementation
-
-	public layout(): void {
-		this._changeRef.detectChanges();
-	}
 
 	public setLayout(): void {
 		this.layout();

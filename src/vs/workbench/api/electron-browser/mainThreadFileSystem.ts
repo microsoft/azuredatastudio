@@ -5,10 +5,10 @@
 'use strict';
 
 import { Emitter, Event } from 'vs/base/common/event';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import URI from 'vs/base/common/uri';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { FileWriteOptions, FileSystemProviderCapabilities, IFileChange, IFileService, IFileSystemProvider, IStat, IWatchOptions, FileType, FileOverwriteOptions } from 'vs/platform/files/common/files';
+import { FileWriteOptions, FileSystemProviderCapabilities, IFileChange, IFileService, IFileSystemProvider, IStat, IWatchOptions, FileType, FileOverwriteOptions, FileDeleteOptions } from 'vs/platform/files/common/files';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { ExtHostContext, ExtHostFileSystemShape, IExtHostContext, IFileChangeDto, MainContext, MainThreadFileSystemShape } from '../node/extHost.protocol';
 
@@ -71,11 +71,9 @@ class RemoteFileSystemProvider implements IFileSystemProvider {
 	watch(resource: URI, opts: IWatchOptions) {
 		const session = Math.random();
 		this._proxy.$watch(this._handle, session, resource, opts);
-		return {
-			dispose: () => {
-				this._proxy.$unwatch(this._handle, session);
-			}
-		};
+		return toDisposable(() => {
+			this._proxy.$unwatch(this._handle, session);
+		});
 	}
 
 	$onFileSystemChange(changes: IFileChangeDto[]): void {
@@ -107,8 +105,8 @@ class RemoteFileSystemProvider implements IFileSystemProvider {
 		return this._proxy.$writeFile(this._handle, resource, encoded, opts);
 	}
 
-	delete(resource: URI): TPromise<void, any> {
-		return this._proxy.$delete(this._handle, resource);
+	delete(resource: URI, opts: FileDeleteOptions): TPromise<void, any> {
+		return this._proxy.$delete(this._handle, resource, opts);
 	}
 
 	mkdir(resource: URI): TPromise<void, any> {

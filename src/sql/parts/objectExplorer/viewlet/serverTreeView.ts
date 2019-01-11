@@ -138,7 +138,7 @@ export class ServerTreeView {
 
 			let expandGroups: boolean = self._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				 self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -150,7 +150,7 @@ export class ServerTreeView {
 		});
 	}
 
-	private isObjectExplorerConnectionUri(uri: string): boolean {
+	public isObjectExplorerConnectionUri(uri: string): boolean {
 		let isBackupRestoreUri: boolean = uri.indexOf(ConnectionUtils.ConnectionUriBackupIdAttributeName) >= 0 ||
 			uri.indexOf(ConnectionUtils.ConnectionUriRestoreIdAttributeName) >= 0;
 		return uri && uri.startsWith(ConnectionUtils.uriPrefixes.default) && !isBackupRestoreUri;
@@ -227,21 +227,27 @@ export class ServerTreeView {
 		}
 	}
 
-	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): void {
+	public deleteObjectExplorerNodeAndRefreshTree(connection: IConnectionProfile): Thenable<void> {
 		if (connection) {
 			var conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				this._objectExplorerService.deleteObjectExplorerNode(conn);
-				this._tree.collapse(conn);
-				this._tree.refresh(conn);
+				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
+					this._tree.collapse(conn);
+					this._tree.refresh(conn);
+				});
 			}
 		}
+		return Promise.resolve();
 	}
 
 	public refreshTree(): void {
 		this.messages.hide();
 		this.clearOtherActions();
 		TreeUpdateUtils.registeredServerUpdate(this._tree, this._connectionManagementService);
+	}
+
+	public refreshElement(element: any): Thenable<void> {
+		return this._tree.refresh(element);
 	}
 
 	/**

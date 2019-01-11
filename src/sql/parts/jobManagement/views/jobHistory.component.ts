@@ -23,13 +23,14 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
@@ -63,9 +64,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	private _jobCacheObject: JobCacheObject;
 	private _agentJobInfo: sqlops.AgentJobInfo;
 	private _noJobsAvailable: boolean = false;
-	private _serverName: string;
 
-	private static readonly INITIAL_TREE_HEIGHT: number = 780;
 	private static readonly HEADING_HEIGHT: number = 24;
 
 	constructor(
@@ -74,12 +73,12 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => AgentViewComponent)) private _agentViewComponent: AgentViewComponent,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
 		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
-		@Inject(IDashboardService) dashboardService: IDashboardService
+		@Inject(IDashboardService) dashboardService: IDashboardService,
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._treeController = new JobHistoryController();
@@ -143,24 +142,25 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			renderer: this._treeRenderer
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.themeService));
-		this._tree.layout(JobHistoryComponent.INITIAL_TREE_HEIGHT);
+		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 		this.initActionBar();
-
+		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
 	}
 
 	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId).then((result) => {
-			if (result && result.jobs) {
-				if (result.jobs.length > 0) {
+		let jobName = this._agentViewComponent.agentJobInfo.name;
+		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId, jobName).then((result) => {
+			if (result && result.histories) {
+				if (result.histories.length > 0) {
 					self._showPreviousRuns = true;
-					self.buildHistoryTree(self, result.jobs);
+					self.buildHistoryTree(self, result.histories);
 					if (self._agentViewComponent.showHistory) {
 						self._cd.detectChanges();
 					}
 				} else {
-					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.jobs);
+					self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, result.histories);
 					self._showPreviousRuns = false;
 				}
 			} else {
@@ -185,8 +185,8 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 					stepViewRow.runStatus = jobStepStatus ? JobManagementUtilities.convertToStatusString(0) :
 						JobManagementUtilities.convertToStatusString(step.runStatus);
 					self._runStatus = JobManagementUtilities.convertToStatusString(self.agentJobHistoryInfo.runStatus);
-					stepViewRow.stepName = step.stepName;
-					stepViewRow.stepID = step.stepId.toString();
+					stepViewRow.stepName = step.stepDetails.stepName;
+					stepViewRow.stepId = step.stepDetails.id.toString();
 					return stepViewRow;
 				});
 				this._showSteps = self._stepRows.length > 0;
@@ -294,6 +294,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		if (historyDetails && statusBar) {
 			let historyBottom = historyDetails.getBoundingClientRect().bottom;
 			let statusTop = statusBar.getBoundingClientRect().top;
+
 			let height: number = statusTop - historyBottom - JobHistoryComponent.HEADING_HEIGHT;
 
 			if (this._table) {
@@ -303,16 +304,13 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			}
 
 			if (this._tree) {
-				this._tree.layout(height);
-			}
-
-			if (this._jobStepsView) {
-				let element = this._jobStepsView.nativeElement as HTMLElement;
-				if (element) {
-					element.style.height = height + 'px';
-				}
+				this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 			}
 		}
+	}
+
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
 	}
 
 	protected initActionBar() {
@@ -353,4 +351,5 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._showSteps = value;
 		this._cd.detectChanges();
 	}
+
 }

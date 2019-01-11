@@ -3,10 +3,10 @@
 		"c": "#",
 		"t": "source.yaml comment.line.number-sign.yaml punctuation.definition.comment.yaml",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -14,10 +14,10 @@
 		"c": " sequencer protocols for Laser eye surgery",
 		"t": "source.yaml comment.line.number-sign.yaml",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -25,21 +25,32 @@
 		"c": "---",
 		"t": "source.yaml entity.other.document.begin.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -47,10 +58,10 @@
 		"c": "step",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -58,10 +69,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -69,10 +80,10 @@
 		"c": "  ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -80,10 +91,10 @@
 		"c": "&",
 		"t": "source.yaml meta.property.yaml keyword.control.property.anchor.yaml punctuation.definition.anchor.yaml",
 		"r": {
-			"dark_plus": "keyword.control: #C586C0",
-			"light_plus": "keyword.control: #AF00DB",
-			"dark_vs": "keyword.control: #569CD6",
-			"light_vs": "keyword.control: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "keyword.control: #C586C0"
 		}
 	},
@@ -91,10 +102,10 @@
 		"c": "id001",
 		"t": "source.yaml meta.property.yaml entity.name.type.anchor.yaml",
 		"r": {
-			"dark_plus": "entity.name.type: #4EC9B0",
-			"light_plus": "entity.name.type: #267F99",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.type: #4EC9B0"
 		}
 	},
@@ -102,10 +113,10 @@
 		"c": "                  ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -113,10 +124,10 @@
 		"c": "#",
 		"t": "source.yaml comment.line.number-sign.yaml punctuation.definition.comment.yaml",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -124,10 +135,10 @@
 		"c": " defines anchor label &id001",
 		"t": "source.yaml comment.line.number-sign.yaml",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -135,10 +146,10 @@
 		"c": "    ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -146,10 +157,10 @@
 		"c": "instrument",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -157,10 +168,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -168,10 +179,10 @@
 		"c": "      ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -179,10 +190,10 @@
 		"c": "Lasik 2000",
 		"t": "source.yaml string.unquoted.plain.out.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.out.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.out.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -190,10 +201,10 @@
 		"c": "    ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -201,10 +212,10 @@
 		"c": "pulseEnergy",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -212,10 +223,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -223,10 +234,10 @@
 		"c": "     ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -234,10 +245,10 @@
 		"c": "5.4",
 		"t": "source.yaml constant.numeric.float.yaml",
 		"r": {
-			"dark_plus": "constant.numeric: #B5CEA8",
-			"light_plus": "constant.numeric: #09885A",
-			"dark_vs": "constant.numeric: #B5CEA8",
-			"light_vs": "constant.numeric: #09885A",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "constant.numeric: #B5CEA8"
 		}
 	},
@@ -245,10 +256,10 @@
 		"c": "    ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -256,10 +267,10 @@
 		"c": "spotSize",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -267,10 +278,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -278,10 +289,10 @@
 		"c": "        ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -289,43 +300,21 @@
 		"c": "1mm",
 		"t": "source.yaml string.unquoted.plain.out.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.out.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.out.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
-			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "step",
-		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ":",
-		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -333,10 +322,43 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": "step",
+		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "entity.name.tag: #569CD6"
+		}
+	},
+	{
+		"c": ":",
+		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -344,10 +366,10 @@
 		"c": "*",
 		"t": "source.yaml keyword.control.flow.alias.yaml punctuation.definition.alias.yaml",
 		"r": {
-			"dark_plus": "keyword.control: #C586C0",
-			"light_plus": "keyword.control: #AF00DB",
-			"dark_vs": "keyword.control: #569CD6",
-			"light_vs": "keyword.control: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "keyword.control: #C586C0"
 		}
 	},
@@ -355,10 +377,10 @@
 		"c": "id001",
 		"t": "source.yaml variable.other.alias.yaml",
 		"r": {
-			"dark_plus": "variable: #9CDCFE",
-			"light_plus": "variable: #001080",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "variable: #9CDCFE"
 		}
 	},
@@ -366,10 +388,10 @@
 		"c": "                   ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -377,10 +399,10 @@
 		"c": "#",
 		"t": "source.yaml comment.line.number-sign.yaml punctuation.definition.comment.yaml",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
@@ -388,43 +410,21 @@
 		"c": " refers to the first step (with anchor &id001)",
 		"t": "source.yaml comment.line.number-sign.yaml",
 		"r": {
-			"dark_plus": "comment: #608B4E",
-			"light_plus": "comment: #008000",
-			"dark_vs": "comment: #608B4E",
-			"light_vs": "comment: #008000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "comment: #7CA668"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
-			"hc_black": "default: #FFFFFF"
-		}
-	},
-	{
-		"c": "step",
-		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
-		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
-			"hc_black": "entity.name.tag: #569CD6"
-		}
-	},
-	{
-		"c": ":",
-		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
-		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -432,10 +432,43 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": "step",
+		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "entity.name.tag: #569CD6"
+		}
+	},
+	{
+		"c": ":",
+		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -443,10 +476,10 @@
 		"c": "*",
 		"t": "source.yaml keyword.control.flow.alias.yaml punctuation.definition.alias.yaml",
 		"r": {
-			"dark_plus": "keyword.control: #C586C0",
-			"light_plus": "keyword.control: #AF00DB",
-			"dark_vs": "keyword.control: #569CD6",
-			"light_vs": "keyword.control: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "keyword.control: #C586C0"
 		}
 	},
@@ -454,10 +487,10 @@
 		"c": "id001",
 		"t": "source.yaml variable.other.alias.yaml",
 		"r": {
-			"dark_plus": "variable: #9CDCFE",
-			"light_plus": "variable: #001080",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "variable: #9CDCFE"
 		}
 	},
@@ -465,10 +498,10 @@
 		"c": "    ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -476,10 +509,10 @@
 		"c": "spotSize",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -487,10 +520,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -498,10 +531,10 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -509,10 +542,10 @@
 		"c": "2mm",
 		"t": "source.yaml string.unquoted.plain.out.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.out.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.out.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -520,21 +553,32 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -542,10 +586,10 @@
 		"c": "step",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -553,10 +597,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -564,10 +608,10 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -575,10 +619,10 @@
 		"c": "*",
 		"t": "source.yaml keyword.control.flow.alias.yaml punctuation.definition.alias.yaml",
 		"r": {
-			"dark_plus": "keyword.control: #C586C0",
-			"light_plus": "keyword.control: #AF00DB",
-			"dark_vs": "keyword.control: #569CD6",
-			"light_vs": "keyword.control: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "keyword.control: #C586C0"
 		}
 	},
@@ -586,21 +630,32 @@
 		"c": "id002",
 		"t": "source.yaml variable.other.alias.yaml",
 		"r": {
-			"dark_plus": "variable: #9CDCFE",
-			"light_plus": "variable: #001080",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "variable: #9CDCFE"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -608,10 +663,10 @@
 		"c": "{",
 		"t": "source.yaml meta.flow-mapping.yaml punctuation.definition.mapping.begin.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -619,10 +674,10 @@
 		"c": "name",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.key.yaml string.unquoted.plain.in.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -630,10 +685,10 @@
 		"c": ":",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -641,10 +696,10 @@
 		"c": " ",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.yaml meta.flow-pair.value.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -652,10 +707,10 @@
 		"c": "John Smith",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.yaml meta.flow-pair.value.yaml string.unquoted.plain.in.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.in.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.in.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -663,10 +718,10 @@
 		"c": ",",
 		"t": "source.yaml meta.flow-mapping.yaml punctuation.separator.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -674,10 +729,10 @@
 		"c": " ",
 		"t": "source.yaml meta.flow-mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -685,10 +740,10 @@
 		"c": "age",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.key.yaml string.unquoted.plain.in.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -696,10 +751,10 @@
 		"c": ":",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -707,10 +762,10 @@
 		"c": " ",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.yaml meta.flow-pair.value.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -718,10 +773,10 @@
 		"c": "33",
 		"t": "source.yaml meta.flow-mapping.yaml meta.flow-pair.yaml meta.flow-pair.value.yaml constant.numeric.integer.yaml",
 		"r": {
-			"dark_plus": "constant.numeric: #B5CEA8",
-			"light_plus": "constant.numeric: #09885A",
-			"dark_vs": "constant.numeric: #B5CEA8",
-			"light_vs": "constant.numeric: #09885A",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "constant.numeric: #B5CEA8"
 		}
 	},
@@ -729,21 +784,32 @@
 		"c": "}",
 		"t": "source.yaml meta.flow-mapping.yaml punctuation.definition.mapping.end.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -751,10 +817,10 @@
 		"c": "name",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -762,10 +828,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -773,10 +839,10 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -784,10 +850,10 @@
 		"c": "Mary Smith",
 		"t": "source.yaml string.unquoted.plain.out.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.out.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.out.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -795,10 +861,10 @@
 		"c": "  ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -806,10 +872,10 @@
 		"c": "age",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -817,10 +883,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -828,10 +894,10 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -839,10 +905,10 @@
 		"c": "27",
 		"t": "source.yaml constant.numeric.integer.yaml",
 		"r": {
-			"dark_plus": "constant.numeric: #B5CEA8",
-			"light_plus": "constant.numeric: #09885A",
-			"dark_vs": "constant.numeric: #B5CEA8",
-			"light_vs": "constant.numeric: #09885A",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "constant.numeric: #B5CEA8"
 		}
 	},
@@ -850,10 +916,10 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -861,10 +927,10 @@
 		"c": "men",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -872,10 +938,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -883,10 +949,10 @@
 		"c": " ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -894,10 +960,10 @@
 		"c": "[",
 		"t": "source.yaml meta.flow-sequence.yaml punctuation.definition.sequence.begin.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -905,10 +971,10 @@
 		"c": "John Smith",
 		"t": "source.yaml meta.flow-sequence.yaml string.unquoted.plain.in.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.in.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.in.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -916,10 +982,10 @@
 		"c": ",",
 		"t": "source.yaml meta.flow-sequence.yaml punctuation.separator.sequence.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -927,10 +993,10 @@
 		"c": " ",
 		"t": "source.yaml meta.flow-sequence.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -938,10 +1004,10 @@
 		"c": "Bill Jones",
 		"t": "source.yaml meta.flow-sequence.yaml string.unquoted.plain.in.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.in.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.in.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -949,10 +1015,10 @@
 		"c": "]",
 		"t": "source.yaml meta.flow-sequence.yaml punctuation.definition.sequence.end.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -960,10 +1026,10 @@
 		"c": "women",
 		"t": "source.yaml string.unquoted.plain.out.yaml entity.name.tag.yaml",
 		"r": {
-			"dark_plus": "entity.name.tag: #569CD6",
-			"light_plus": "entity.name.tag: #800000",
-			"dark_vs": "entity.name.tag: #569CD6",
-			"light_vs": "entity.name.tag: #800000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "entity.name.tag: #569CD6"
 		}
 	},
@@ -971,10 +1037,10 @@
 		"c": ":",
 		"t": "source.yaml punctuation.separator.key-value.mapping.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -982,21 +1048,32 @@
 		"c": "  ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1004,10 +1081,10 @@
 		"c": "Mary Smith",
 		"t": "source.yaml string.unquoted.plain.out.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.out.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.out.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	},
@@ -1015,21 +1092,32 @@
 		"c": "  ",
 		"t": "source.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
 	{
-		"c": "- ",
+		"c": "-",
 		"t": "source.yaml punctuation.definition.block.sequence.item.yaml",
 		"r": {
-			"dark_plus": "default: #D4D4D4",
-			"light_plus": "default: #000000",
-			"dark_vs": "default: #D4D4D4",
-			"light_vs": "default: #000000",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
+			"hc_black": "default: #FFFFFF"
+		}
+	},
+	{
+		"c": " ",
+		"t": "source.yaml",
+		"r": {
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "default: #FFFFFF"
 		}
 	},
@@ -1037,10 +1125,10 @@
 		"c": "Susan Williams",
 		"t": "source.yaml string.unquoted.plain.out.yaml",
 		"r": {
-			"dark_plus": "string: #CE9178",
-			"light_plus": "string.unquoted.plain.out.yaml: #0000FF",
-			"dark_vs": "string: #CE9178",
-			"light_vs": "string.unquoted.plain.out.yaml: #0000FF",
+			"dark_plus": null,
+			"light_plus": null,
+			"dark_vs": null,
+			"light_vs": null,
 			"hc_black": "string: #CE9178"
 		}
 	}

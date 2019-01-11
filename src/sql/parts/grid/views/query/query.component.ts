@@ -15,7 +15,7 @@ import {
 	ElementRef, QueryList, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject,
 	ViewChildren, forwardRef, EventEmitter, Input, ViewChild
 } from '@angular/core';
-import { IGridDataRow, SlickGrid, VirtualizedCollection, ISlickRange } from 'angular2-slickgrid';
+import { IGridDataRow, SlickGrid, VirtualizedCollection } from 'angular2-slickgrid';
 
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -42,6 +42,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { localize } from 'vs/nls';
 
 export const QUERY_SELECTOR: string = 'query-component';
 
@@ -126,7 +128,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			}
 		},
 		{
-			showCondition: () => { return true; },
+			showCondition: () => {
+				return this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+			},
 			icon: () => { return 'viewChart'; },
 			hoverText: () => { return LocalizedConstants.viewChartLabel; },
 			functionality: (batchId, resultId, index) => {
@@ -163,7 +167,7 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	public onActiveCellChanged: (gridIndex: number) => void;
 
 	private savedViewState: {
-		gridSelections: ISlickRange[][];
+		gridSelections: Slick.Range[][];
 		resultsScroll: number;
 		messagePaneScroll: number;
 		slickGridScrolls: { vertical: number; horizontal: number }[];
@@ -187,9 +191,10 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 		@Inject(IContextKeyService) contextKeyService: IContextKeyService,
 		@Inject(IConfigurationService) configurationService: IConfigurationService,
 		@Inject(IClipboardService) clipboardService: IClipboardService,
-		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService
+		@Inject(IQueryEditorService) queryEditorService: IQueryEditorService,
+		@Inject(INotificationService) notificationService: INotificationService,
 	) {
-		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService);
+		super(el, cd, contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, notificationService);
 		this._el.nativeElement.className = 'slickgridContainer';
 		this.rowHeight = configurationService.getValue<any>('resultsGrid').rowHeight;
 		configurationService.onDidChangeConfiguration(e => {

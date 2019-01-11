@@ -8,6 +8,7 @@ import * as assert from 'assert';
 import * as dom from 'vs/base/browser/dom';
 const $ = dom.$;
 
+// {{SQL CARBON EDIT}} disable broken tests
 suite('dom', () => {
 	test('hasClass', () => {
 	});

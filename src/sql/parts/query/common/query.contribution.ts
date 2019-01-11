@@ -12,7 +12,7 @@ import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/action
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
-import { KeybindingsRegistry } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -120,7 +120,8 @@ actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		RunCurrentQueryWithActualPlanKeyboardAction,
 		RunCurrentQueryWithActualPlanKeyboardAction.ID,
-		RunCurrentQueryWithActualPlanKeyboardAction.LABEL
+		RunCurrentQueryWithActualPlanKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_M }
 	),
 	RunCurrentQueryWithActualPlanKeyboardAction.LABEL
 );
@@ -178,7 +179,7 @@ actionRegistry.registerWorkbenchAction(
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_COPY_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
 	handler: gridCommands.copySelection
@@ -186,7 +187,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.MESSAGES_SELECTALL_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsMessagesFocusCondition,
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_A,
 	handler: gridCommands.selectAllMessages
@@ -194,7 +195,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SELECTALL_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_A,
 	handler: gridCommands.selectAll
@@ -202,7 +203,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.MESSAGES_COPY_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsMessagesFocusCondition,
 	primary: KeyMod.CtrlCmd | KeyCode.KEY_C,
 	handler: gridCommands.copyMessagesSelection
@@ -210,7 +211,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVECSV_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_C),
 	handler: gridCommands.saveAsCsv
@@ -218,7 +219,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEJSON_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_J),
 	handler: gridCommands.saveAsJson
@@ -226,7 +227,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_SAVEEXCEL_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_E),
 	handler: gridCommands.saveAsExcel
@@ -234,7 +235,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_VIEWASCHART_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_V),
 	handler: gridCommands.viewAsChart
@@ -242,7 +243,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_GOTONEXTGRID_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
 	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_N),
 	handler: gridCommands.goToNextGrid
@@ -250,7 +251,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLERESULTS_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_R,
 	handler: gridCommands.toggleResultsPane
@@ -258,7 +259,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLEMESSAGES_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Y,
 	handler: gridCommands.toggleMessagePane
@@ -266,7 +267,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
-	weight: KeybindingsRegistry.WEIGHT.workbenchContrib(gridCommandsWeightBonus),
+	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
 	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
 	handler: gridCommands.goToNextQueryOutputTab
@@ -304,6 +305,11 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
 		'default': 'utf-8'
 	},
+	'sql.results.streaming': {
+		'type': 'boolean',
+		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
+		'default': false
+	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
@@ -338,7 +344,12 @@ let registryProperties = {
 	'sql.showConnectionInfoInTitle': {
 		'type': 'boolean',
 		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
-		'default': false
+		'default': true
+	},
+	'sql.promptToSaveGeneratedFiles': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('sql.promptToSaveGeneratedFiles', 'Prompt to save generated SQL files')
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
@@ -383,7 +394,7 @@ for (let i = 0; i < 9; i++) {
 
 	KeybindingsRegistry.registerCommandAndKeybindingRule({
 		id: `workbench.action.query.shortcut${queryIndex}`,
-		weight: KeybindingsRegistry.WEIGHT.workbenchContrib(),
+		weight: KeybindingWeight.WorkbenchContrib,
 		when: QueryEditorVisibleCondition,
 		primary: defaultPrimary,
 		handler: accessor => {
@@ -407,6 +418,3 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
-
-
-

@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/agent/out/dialogs/scheduleDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="scheduleDialog.newSchedule">
+      <source xml:lang="en">New Schedule</source>
+    </trans-unit>
+    <trans-unit id="scheduleDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="scheduleDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="scheduleDialog.scheduleName">
+      <source xml:lang="en">Schedule Name</source>
+    </trans-unit>
+    <trans-unit id="scheduleDialog.schedules">
+      <source xml:lang="en">Schedules</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/proxyDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="createProxy.createProxy">
+      <source xml:lang="en">Create Proxy</source>
+    </trans-unit>
+    <trans-unit id="createProxy.editProxy">
+      <source xml:lang="en">Edit Proxy</source>
+    </trans-unit>
+    <trans-unit id="createProxy.General">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="createProxy.ProxyName">
+      <source xml:lang="en">Proxy name</source>
+    </trans-unit>
+    <trans-unit id="createProxy.CredentialName">
+      <source xml:lang="en">Credential name</source>
+    </trans-unit>
+    <trans-unit id="createProxy.Description">
+      <source xml:lang="en">Description</source>
+    </trans-unit>
+    <trans-unit id="createProxy.SubsystemName">
+      <source xml:lang="en">Subsystem</source>
+    </trans-unit>
+    <trans-unit id="createProxy.OperatingSystem">
+      <source xml:lang="en">Operating system (CmdExec)</source>
+    </trans-unit>
+    <trans-unit id="createProxy.ReplicationSnapshot">
+      <source xml:lang="en">Replication Snapshot</source>
+    </trans-unit>
+    <trans-unit id="createProxy.ReplicationTransactionLog">
+      <source xml:lang="en">Replication Transaction-Log Reader</source>
+    </trans-unit>
+    <trans-unit id="createProxy.ReplicationDistributor">
+      <source xml:lang="en">Replication Distributor</source>
+    </trans-unit>
+    <trans-unit id="createProxy.ReplicationMerge">
+      <source xml:lang="en">Replication Merge</source>
+    </trans-unit>
+    <trans-unit id="createProxy.ReplicationQueueReader">
+      <source xml:lang="en">Replication Queue Reader</source>
+    </trans-unit>
+    <trans-unit id="createProxy.SSASQueryLabel">
+      <source xml:lang="en">SQL Server Analysis Services Query</source>
+    </trans-unit>
+    <trans-unit id="createProxy.SSASCommandLabel">
+      <source xml:lang="en">SQL Server Analysis Services Command</source>
+    </trans-unit>
+    <trans-unit id="createProxy.SSISPackage">
+      <source xml:lang="en">SQL Server Integration Services Package</source>
+    </trans-unit>
+    <trans-unit id="createProxy.PowerShell">
+      <source xml:lang="en">PowerShell</source>
+    </trans-unit>
+    <trans-unit id="createProxy.subSystemHeading">
+      <source xml:lang="en">Active to the following subsytems</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/pickScheduleDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="pickSchedule.jobSchedules">
+      <source xml:lang="en">Job Schedules</source>
+    </trans-unit>
+    <trans-unit id="pickSchedule.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="pickSchedule.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="pickSchedule.scheduleName">
+      <source xml:lang="en">Schedule Name</source>
+    </trans-unit>
+    <trans-unit id="pickSchedule.schedules">
+      <source xml:lang="en">Schedules</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/operatorDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="createOperator.createOperator">
+      <source xml:lang="en">Create Operator</source>
+    </trans-unit>
+    <trans-unit id="createOperator.editOperator">
+      <source xml:lang="en">Edit Operator</source>
+    </trans-unit>
+    <trans-unit id="createOperator.General">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="createOperator.Notifications">
+      <source xml:lang="en">Notifications</source>
+    </trans-unit>
+    <trans-unit id="createOperator.Name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="createOperator.Enabled">
+      <source xml:lang="en">Enabled</source>
+    </trans-unit>
+    <trans-unit id="createOperator.EmailName">
+      <source xml:lang="en">E-mail Name</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerEmailName">
+      <source xml:lang="en">Pager E-mail Name</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerMondayCheckBox">
+      <source xml:lang="en">Monday</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerTuesdayCheckBox">
+      <source xml:lang="en">Tuesday</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerWednesdayCheckBox">
+      <source xml:lang="en">Wednesday</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerThursdayCheckBox">
+      <source xml:lang="en">Thursday</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerFridayCheckBox">
+      <source xml:lang="en">Friday  </source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerSaturdayCheckBox">
+      <source xml:lang="en">Saturday</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerSundayCheckBox">
+      <source xml:lang="en">Sunday</source>
+    </trans-unit>
+    <trans-unit id="createOperator.workdayBegin">
+      <source xml:lang="en">Workday begin</source>
+    </trans-unit>
+    <trans-unit id="createOperator.workdayEnd">
+      <source xml:lang="en">Workday end</source>
+    </trans-unit>
+    <trans-unit id="createOperator.PagerDutySchedule">
+      <source xml:lang="en">Pager on duty schdule</source>
+    </trans-unit>
+    <trans-unit id="createOperator.AlertListHeading">
+      <source xml:lang="en">Alert list</source>
+    </trans-unit>
+    <trans-unit id="createOperator.AlertNameColumnLabel">
+      <source xml:lang="en">Alert name</source>
+    </trans-unit>
+    <trans-unit id="createOperator.AlertEmailColumnLabel">
+      <source xml:lang="en">E-mail</source>
+    </trans-unit>
+    <trans-unit id="createOperator.AlertPagerColumnLabel">
+      <source xml:lang="en">Pager</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/jobStepDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="jobStepDialog.newJobStep">
+      <source xml:lang="en">New Job Step</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.fileBrowserTitle">
+      <source xml:lang="en">Locate Database Files - </source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.general">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.advanced">
+      <source xml:lang="en">Advanced</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.open">
+      <source xml:lang="en">Open...</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.parse">
+      <source xml:lang="en">Parse</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.next">
+      <source xml:lang="en">Next</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.previous">
+      <source xml:lang="en">Previous</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.successParse">
+      <source xml:lang="en">The command was successfully parsed.</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.failParse">
+      <source xml:lang="en">The command failed.</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.blankStepName">
+      <source xml:lang="en">The step name cannot be left blank</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.stepNameLabel">
+      <source xml:lang="en">Step Name</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.typeLabel">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.runAsLabel">
+      <source xml:lang="en">Run as</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.databaseLabel">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.commandLabel">
+      <source xml:lang="en">Command</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.successAction">
+      <source xml:lang="en">On success action</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.failureAction">
+      <source xml:lang="en">On failure action</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.runAsUser">
+      <source xml:lang="en">Run as user</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.retryAttempts">
+      <source xml:lang="en">Retry Attempts</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.retryInterval">
+      <source xml:lang="en">Retry Interval (minutes)</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.logToTable">
+      <source xml:lang="en">Log to table</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.appendExistingTableEntry">
+      <source xml:lang="en">Append output to exisiting entry in table</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.includeStepOutputHistory">
+      <source xml:lang="en">Include step output in history</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.outputFile">
+      <source xml:lang="en">Output File</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.appendOutputToFile">
+      <source xml:lang="en">Append output to existing file</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.selectedPath">
+      <source xml:lang="en">Selected path</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.filesOfType">
+      <source xml:lang="en">Files of type</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.fileName">
+      <source xml:lang="en">File name</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.allFiles">
+      <source xml:lang="en">All Files (*)</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.TSQL">
+      <source xml:lang="en">Transact-SQL script (T-SQL)</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.agentServiceAccount">
+      <source xml:lang="en">SQL Server Agent Service Account</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.nextStep">
+      <source xml:lang="en">Go to the next step</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.quitJobSuccess">
+      <source xml:lang="en">Quit the job reporting success</source>
+    </trans-unit>
+    <trans-unit id="jobStepDialog.quitJobFailure">
+      <source xml:lang="en">Quit the job reporting failure</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="jobDialog.general">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.steps">
+      <source xml:lang="en">Steps</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.schedules">
+      <source xml:lang="en">Schedules</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.alerts">
+      <source xml:lang="en">Alerts</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.notifications">
+      <source xml:lang="en">Notifications</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.blankJobNameError">
+      <source xml:lang="en">The name of the job cannot be blank.</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.owner">
+      <source xml:lang="en">Owner</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.category">
+      <source xml:lang="en">Category</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.description">
+      <source xml:lang="en">Description</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.enabled">
+      <source xml:lang="en">Enabled</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.jobStepList">
+      <source xml:lang="en">Job step list</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.step">
+      <source xml:lang="en">Step</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.type">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.onSuccess">
+      <source xml:lang="en">On Success</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.onFailure">
+      <source xml:lang="en">On Failure</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.new">
+      <source xml:lang="en">New...</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.edit">
+      <source xml:lang="en">Edit</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.delete">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.moveUp">
+      <source xml:lang="en">Move Step Up</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.moveDown">
+      <source xml:lang="en">Move Step Up</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.notificationsTabTop">
+      <source xml:lang="en">Actions to perform when the job completes</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.email">
+      <source xml:lang="en">Email</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.page">
+      <source xml:lang="en">Page</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.eventLogCheckBoxLabel">
+      <source xml:lang="en">Write to the Windows Application event log</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.deleteJobLabel">
+      <source xml:lang="en">Automatically delete job</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.schedulesaLabel">
+      <source xml:lang="en">Schedules list</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.pickSchedule">
+      <source xml:lang="en">Pick Schedule</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.scheduleNameLabel">
+      <source xml:lang="en">Schedule Name</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.alertsList">
+      <source xml:lang="en">Alerts list</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.newAlert">
+      <source xml:lang="en">New Alert</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.alertNameLabel">
+      <source xml:lang="en">Alert Name</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.newJob">
+      <source xml:lang="en">New Job</source>
+    </trans-unit>
+    <trans-unit id="jobDialog.editJob">
+      <source xml:lang="en">Edit Job</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/alertDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="alertDialog.createAlert">
+      <source xml:lang="en">Create Alert</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.editAlert">
+      <source xml:lang="en">Edit Alert</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.General">
+      <source xml:lang="en">General</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Response">
+      <source xml:lang="en">Response</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Options">
+      <source xml:lang="en">Options</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.eventAlert">
+      <source xml:lang="en">Event alert definition</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Type">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Enabled">
+      <source xml:lang="en">Enabled</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.DatabaseName">
+      <source xml:lang="en">Database name</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.ErrorNumber">
+      <source xml:lang="en">Error number</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity">
+      <source xml:lang="en">Severity</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.RaiseAlertContains">
+      <source xml:lang="en">Raise alert when message contains</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.MessageText">
+      <source xml:lang="en">Message text</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity001">
+      <source xml:lang="en">001 - Miscellaneous System Information</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity002">
+      <source xml:lang="en">002 - Reserved</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity003">
+      <source xml:lang="en">003 - Reserved</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity004">
+      <source xml:lang="en">004 - Reserved</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity005">
+      <source xml:lang="en">005 - Reserved</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity006">
+      <source xml:lang="en">006 - Reserved</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity007">
+      <source xml:lang="en">007 - Notification: Status Information</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity008">
+      <source xml:lang="en">008 - Notification: User Intervention Required</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity009">
+      <source xml:lang="en">009 - User Defined</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity010">
+      <source xml:lang="en">010 - Information</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity011">
+      <source xml:lang="en">011 - Specified Database Object Not Found</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity012">
+      <source xml:lang="en">012 - Unused</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity013">
+      <source xml:lang="en">013 - User Transaction Syntax Error</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity014">
+      <source xml:lang="en">014 - Insufficient Permission</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity015">
+      <source xml:lang="en">015 - Syntax Error in SQL Statements</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity016">
+      <source xml:lang="en">016 - Miscellaneous User Error</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity017">
+      <source xml:lang="en">017 - Insufficient Resources</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity018">
+      <source xml:lang="en">018 - Nonfatal Internal Error</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity019">
+      <source xml:lang="en">019 - Fatal Error in Resource</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity020">
+      <source xml:lang="en">020 - Fatal Error in Current Process</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity021">
+      <source xml:lang="en">021 - Fatal Error in Database Processes</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity022">
+      <source xml:lang="en">022 - Fatal Error: Table Integrity Suspect</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity023">
+      <source xml:lang="en">023 - Fatal Error: Database Integrity Suspect</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity024">
+      <source xml:lang="en">024 - Fatal Error: Hardware Error</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.Severity025">
+      <source xml:lang="en">025 - Fatal Error</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.AllDatabases">
+      <source xml:lang="en">&lt;all databases&gt;</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.ExecuteJob">
+      <source xml:lang="en">Execute Job</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.ExecuteJobName">
+      <source xml:lang="en">Job Name</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.NotifyOperators">
+      <source xml:lang="en">Notify Operators</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.NewJob">
+      <source xml:lang="en">New Job</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.OperatorList">
+      <source xml:lang="en">Operator List</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.OperatorName">
+      <source xml:lang="en">Operator</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.OperatorEmail">
+      <source xml:lang="en">E-mail</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.OperatorPager">
+      <source xml:lang="en">Pager</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.NewOperator">
+      <source xml:lang="en">New Operator</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.IncludeErrorInEmail">
+      <source xml:lang="en">Include alert error text in e-mail</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.IncludeErrorInPager">
+      <source xml:lang="en">Include alert error text in pager</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.AdditionalNotification">
+      <source xml:lang="en">Additional notification message to send</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.DelayBetweenResponse">
+      <source xml:lang="en">Delay between responses</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.DelayMinutes">
+      <source xml:lang="en">Delay Minutes</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.DelaySeconds">
+      <source xml:lang="en">Delay Seconds</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/dialogs/agentDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="agentDialog.OK">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="agentDialog.Cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/data/jobData" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="jobData.whenJobCompletes">
+      <source xml:lang="en">When the job completes</source>
+    </trans-unit>
+    <trans-unit id="jobData.whenJobFails">
+      <source xml:lang="en">When the job fails</source>
+    </trans-unit>
+    <trans-unit id="jobData.whenJobSucceeds">
+      <source xml:lang="en">When the job succeeds</source>
+    </trans-unit>
+    <trans-unit id="jobData.jobNameRequired">
+      <source xml:lang="en">Job name must be provided</source>
+    </trans-unit>
+    <trans-unit id="jobData.saveErrorMessage">
+      <source xml:lang="en">Job update failed '{0}'</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/data/alertData" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="alertData.saveErrorMessage">
+      <source xml:lang="en">Alert update failed '{0}'</source>
+    </trans-unit>
+    <trans-unit id="alertData.DefaultAlertTypString">
+      <source xml:lang="en">SQL Server event alert</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.PerformanceCondition">
+      <source xml:lang="en">SQL Server performance condition alert</source>
+    </trans-unit>
+    <trans-unit id="alertDialog.WmiEvent">
+      <source xml:lang="en">WMI event alert</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/agent/out/mainController" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="mainController.notImplemented">
+      <source xml:lang="en">This feature is under development.  Check-out the latest insiders build if you'd like to try out the most recent changes!</source>
+    </trans-unit>
+  </body></file>
+</xliff>

@@ -14,7 +14,7 @@ export class TestAgentService implements sqlops.AgentServicesProvider {
 	getJobs(ownerUri: string): Thenable<sqlops.AgentJobsResult> {
 		return undefined;
 	}
-	getJobHistory(ownerUri: string, jobId: string): Thenable<sqlops.AgentJobHistoryResult> {
+	getJobHistory(ownerUri: string, jobId: string, jobName: string): Thenable<sqlops.AgentJobHistoryResult> {
 		return undefined;
 	}
 	jobAction(ownerUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus> {

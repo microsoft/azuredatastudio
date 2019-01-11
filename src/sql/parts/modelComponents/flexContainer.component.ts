@@ -24,7 +24,7 @@ class FlexItem {
 
 @Component({
 	template: `
-		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent"
+		<div *ngIf="items" class="flexContainer" [style.flexFlow]="flexFlow" [style.justifyContent]="justifyContent" [style.position]="position"
 				[style.alignItems]="alignItems" [style.alignContent]="alignContent" [style.height]="height" [style.width]="width">
 			<div *ngFor="let item of items" [style.flex]="getItemFlex(item)" [style.textAlign]="textAlign" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
@@ -43,9 +43,13 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 	private _textAlign: string;
 	private _height: string;
 	private _width: string;
+	private _position: string;
 
-	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
-		super(changeRef);
+	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef
+	) {
+		super(changeRef, el);
 		this._flexFlow = '';	// default
 		this._justifyContent = '';	// default
 	}
@@ -67,6 +71,7 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 		this._alignItems = layout.alignItems ? layout.alignItems : '';
 		this._alignContent = layout.alignContent ? layout.alignContent : '';
 		this._textAlign = layout.textAlign ? layout.textAlign : '';
+		this._position = layout.position ? layout.position : '';
 		this._height = this.convertSize(layout.height);
 		this._width = this.convertSize(layout.width);
 
@@ -100,6 +105,10 @@ export default class FlexContainer extends ContainerBase<FlexItemLayout> impleme
 
 	public get textAlign(): string {
 		return this._textAlign;
+	}
+
+	public get position(): string {
+		return this._position;
 	}
 
 	private getItemFlex(item: FlexItem): string {

@@ -23,6 +23,18 @@ export class Button extends vsButton {
 			this.$el.style('outline-color', this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null);
 			this.$el.style('outline-width', '1px');
 		});
+
+		this.$el.on(DOM.EventType.MOUSE_DOWN, (e) => {
+			const mouseEvent = e as MouseEvent;
+			if (!this.$el.hasClass('disabled') && mouseEvent.button === 0) {
+				this.$el.addClass('active');
+			}
+		});
+
+		this.$el.on([DOM.EventType.MOUSE_UP], (e) => {
+			DOM.EventHelper.stop(e);
+			this.$el.removeClass('active');
+		});
 	}
 
 	public style(styles: IButtonStyles): void {

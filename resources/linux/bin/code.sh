@@ -12,7 +12,7 @@ if [ "$(id -u)" = "0" ]; then
 		fi
 	done
 	if [ -z $CAN_LAUNCH_AS_ROOT ]; then
-		echo "You are trying to start SQL Operations Studio as a super user which is not recommended. If you really want to, you must specify an alternate user data directory using the --user-data-dir argument." 1>&2
+		echo "You are trying to start Azure Data Studio as a super user which is not recommended. If you really want to, you must specify an alternate user data directory using the --user-data-dir argument." 1>&2
 		exit 1
 	fi
 fi

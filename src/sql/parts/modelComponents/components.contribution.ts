@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import DivContainer from './divContainer.component';
 import FlexContainer from './flexContainer.component';
 import FormContainer from './formContainer.component';
 import ToolbarContainer from './toolbarContainer.component';
@@ -22,8 +22,12 @@ import TextComponent from './text.component';
 import LoadingComponent from './loadingComponent.component';
 import FileBrowserTreeComponent from './fileBrowserTree.component';
 import EditorComponent from './editor.component';
+import DomComponent from './dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
+
+export const DIV_CONTAINER = 'div-container';
+registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
 
 export const FLEX_CONTAINER = 'flex-container';
 registerComponentType(FLEX_CONTAINER, ModelComponentTypes.FlexContainer, FlexContainer);
@@ -82,3 +86,6 @@ registerComponentType(FILEBROWSERTREE_COMPONENT, ModelComponentTypes.FileBrowser
 
 export const EDITOR_COMPONENT = 'editor-component';
 registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorComponent);
+
+export const DOM_COMPONENT = 'dom-component';
+registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);

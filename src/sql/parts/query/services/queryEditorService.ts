@@ -7,7 +7,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IEditorGroupService } from 'vs/workbench/services/group/common/groupService';
+import { IEditorGroupsService, IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/parts/common/customInputConverter';
@@ -15,11 +15,8 @@ import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 import { IMode } from 'vs/editor/common/modes';
 import { ITextModel } from 'vs/editor/common/model';
-import { IEditor, IEditorInput, Position } from 'vs/platform/editor/common/editor';
-import { CodeEditor } from 'vs/editor/browser/codeEditor';
-import { IEditorGroup } from 'vs/workbench/common/editor';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IWorkbenchEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/parts/files/common/editors/fileEditorInput';
 import Severity from 'vs/base/common/severity';
@@ -30,6 +27,9 @@ import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
+import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const fs = require('fs');
 
@@ -51,18 +51,19 @@ export class QueryEditorService implements IQueryEditorService {
 	);
 
 	// service references for static functions
-	private static editorService: IWorkbenchEditorService;
+	private static editorService: IEditorService;
 	private static instantiationService: IInstantiationService;
-	private static editorGroupService: IEditorGroupService;
+	private static editorGroupService: IEditorGroupsService;
 	private static notificationService: INotificationService;
 
 	constructor(
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IWorkbenchEditorService private _editorService: IWorkbenchEditorService,
-		@IEditorGroupService private _editorGroupService: IEditorGroupService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@INotificationService private _notificationService: INotificationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
@@ -75,7 +76,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
-	public newSqlEditor(sqlContent?: string, connectionProviderName?: string): Promise<IConnectableInput> {
+	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput> {
 		return new Promise<IConnectableInput>((resolve, reject) => {
 			try {
 				// Create file path and file URI
@@ -87,10 +88,11 @@ export class QueryEditorService implements IQueryEditorService {
 				fileInput.resolve().then(m => {
 					if (sqlContent) {
 						m.textEditorModel.setValue(sqlContent);
+						if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+							m.setDirty(false);
+						}
 					}
 				});
-
-				//input.resolve().then(model => this.backupFileService.backupResource(resource, model.getValue(), model.getVersionId())).done(null, errors.onUnexpectedError);
 
 				const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
 				let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', fileInput, queryResultsInput, connectionProviderName);
@@ -113,7 +115,7 @@ export class QueryEditorService implements IQueryEditorService {
 		const self = this;
 		return new Promise<any>((resolve, reject) => {
 			let queryPlanInput: QueryPlanInput = self._instantiationService.createInstance(QueryPlanInput, xmlShowPlan, 'aaa', undefined);
-			self._editorService.openEditor(queryPlanInput, { pinned: true }, false);
+			self._editorService.openEditor(queryPlanInput, { pinned: true }, ACTIVE_GROUP);
 			resolve(true);
 		});
 	}
@@ -127,7 +129,7 @@ export class QueryEditorService implements IQueryEditorService {
 			try {
 				// Create file path and file URI
 				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
-				let filePath = this.createEditDataFileName(objectName);
+				let filePath = this.createPrefixedSqlFilePath(objectName);
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
@@ -155,34 +157,27 @@ export class QueryEditorService implements IQueryEditorService {
 		});
 	}
 
-	/**
-	 * Clears any QueryEditor data for the given URI held by this service
-	 */
-	public onQueryInputClosed(uri: string): void {
-	}
-
 	onSaveAsCompleted(oldResource: URI, newResource: URI): void {
 		let oldResourceString: string = oldResource.toString();
-		const stacks = this._editorGroupService.getStacksModel();
-		stacks.groups.forEach(group => {
-			group.getEditors().forEach(input => {
-				if (input instanceof QueryInput) {
-					const resource = input.getResource();
 
-					// Update Editor if file (or any parent of the input) got renamed or moved
-					// Note: must check the new file name for this since this method is called after the rename is completed
-					if (paths.isEqualOrParent(resource.fsPath, newResource.fsPath, !isLinux /* ignorecase */)) {
-						// In this case, we know that this is a straight rename so support this as a rename / replace operation
-						TaskUtilities.replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
-							if (result && result.connected) {
-								input.onConnectSuccess();
-							} else {
-								input.onConnectReject();
-							}
-						});
-					}
+
+		this._editorService.editors.forEach(input => {
+			if (input instanceof QueryInput) {
+				const resource = input.getResource();
+
+				// Update Editor if file (or any parent of the input) got renamed or moved
+				// Note: must check the new file name for this since this method is called after the rename is completed
+				if (paths.isEqualOrParent(resource.fsPath, newResource.fsPath, !isLinux /* ignorecase */)) {
+					// In this case, we know that this is a straight rename so support this as a rename / replace operation
+					TaskUtilities.replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
+						if (result && result.connected) {
+							input.onConnectSuccess();
+						} else {
+							input.onConnectReject();
+						}
+					});
 				}
-			});
+			}
 		});
 	}
 
@@ -240,12 +235,10 @@ export class QueryEditorService implements IQueryEditorService {
 			return Promise.resolve(undefined);
 		}
 
-		let group: IEditorGroup = QueryEditorService.editorGroupService.getStacksModel().groupAt(editor.position);
-		let index: number = group.indexOf(editor.input);
-		let position: Position = editor.position;
+		let group: IEditorGroup = editor.group;
+		let index: number = group.editors.indexOf(editor.input);
 		let options: IQueryEditorOptions = editor.options ? editor.options : {};
 		options = Object.assign(options, { index: index });
-		options.pinned = group.isPinned(index);
 
 		// Return a promise that will resovle when the old editor has been replaced by a new editor
 		return new Promise<ITextModel>((resolve, reject) => {
@@ -256,12 +249,10 @@ export class QueryEditorService implements IQueryEditorService {
 				options.denyQueryEditor = true;
 			}
 
-			// Close the current editor
-			QueryEditorService.editorService.closeEditor(position, editor.input).then(() => {
-
+			group.closeEditor(editor.input).then(() => {
 				// Reopen a new editor in the same position/index
-				QueryEditorService.editorService.openEditor(newEditorInput, options, position).then((editor) => {
-					resolve(QueryEditorService._onEditorOpened(editor, uri.toString(), position, options.pinned));
+				QueryEditorService.editorService.openEditor(newEditorInput, options, group).then((editor) => {
+					resolve(QueryEditorService._onEditorOpened(editor, uri.toString(), undefined, options.pinned));
 				},
 					(error) => {
 						reject(error);
@@ -273,45 +264,26 @@ export class QueryEditorService implements IQueryEditorService {
 	////// Private functions
 
 	private createUntitledSqlFilePath(): string {
-		let sqlFileName = (counter: number): string => {
-			return `${untitledFilePrefix}${counter}`;
-		};
-
-		let counter = 1;
-		// Get document name and check if it exists
-		let filePath = sqlFileName(counter);
-		while (fs.existsSync(filePath)) {
-			counter++;
-			filePath = sqlFileName(counter);
-		}
-
-		// check if this document name already exists in any open documents
-		let untitledEditors = this._untitledEditorService.getAll();
-		while (untitledEditors.find(x => x.getName().toUpperCase() === filePath.toUpperCase())) {
-			counter++;
-			filePath = sqlFileName(counter);
-		}
-
-		return filePath;
+		return this.createPrefixedSqlFilePath(untitledFilePrefix);
 	}
 
-	private createEditDataFileName(tableName: string): string {
-		let editDataFileName = (counter: number): string => {
-			return encodeURIComponent(`${tableName}_${counter}`);
+	private createPrefixedSqlFilePath(prefix: string): string {
+		let prefixFileName = (counter: number): string => {
+			return `${prefix}_${counter}`;
 		};
 
 		let counter = 1;
 		// Get document name and check if it exists
-		let filePath = editDataFileName(counter);
+		let filePath = prefixFileName(counter);
 		while (fs.existsSync(filePath)) {
 			counter++;
-			filePath = editDataFileName(counter);
+			filePath = prefixFileName(counter);
 		}
 
 		let untitledEditors = this._untitledEditorService.getAll();
 		while (untitledEditors.find(x => x.getName().toUpperCase() === filePath.toUpperCase())) {
 			counter++;
-			filePath = editDataFileName(counter);
+			filePath = prefixFileName(counter);
 		}
 
 		return filePath;
@@ -365,10 +337,10 @@ export class QueryEditorService implements IQueryEditorService {
 		// causes the text on the tab to slightly flicker for unpinned files (from non-italic to italic to non-italic).
 		// This is currently unavoidable because vscode ignores "pinned" on IEditorOptions if "index" is not undefined,
 		// and we need to specify "index"" so the editor tab remains in the same place
-		let group: IEditorGroup = QueryEditorService.editorGroupService.getStacksModel().groupAt(position);
-		if (isPinned) {
-			QueryEditorService.editorGroupService.pinEditor(group, editor.input);
-		}
+		// let group: IEditorGroup = QueryEditorService.editorGroupService.getStacksModel().groupAt(position);
+		// if (isPinned) {
+		// 	QueryEditorService.editorGroupService.pinEditor(group, editor.input);
+		// }
 
 		// @SQLTODO do we need the below
 		// else {
@@ -377,7 +349,7 @@ export class QueryEditorService implements IQueryEditorService {
 
 		// Grab and returns the IModel that will be used to resolve the sqlLanguageModeCheck promise.
 		let control = editor.getControl();
-		let codeEditor: CodeEditor = <CodeEditor>control;
+		let codeEditor: ICodeEditor = <ICodeEditor>control;
 		let newModel = codeEditor ? codeEditor.getModel() : undefined;
 		return newModel;
 	}

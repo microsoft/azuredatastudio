@@ -24,6 +24,18 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 
 		let connectionProvider: sqlops.ConnectionOption[] = [
 			{
+				name: 'connectionName',
+				displayName: undefined,
+				description: undefined,
+				groupName: undefined,
+				categoryValues: undefined,
+				defaultValue: undefined,
+				isIdentity: true,
+				isRequired: true,
+				specialValueType: ConnectionOptionSpecialType.connectionName,
+				valueType: ServiceOptionType.string
+			},
+			{
 				name: 'serverName',
 				displayName: undefined,
 				description: undefined,
@@ -101,7 +113,7 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 	}
 
 	public getLegacyCapabilities(provider: string): sqlops.DataProtocolServerCapabilities {
-		throw new Error("Method not implemented.");
+		throw new Error('Method not implemented.');
 	}
 
 	public get providers(): { [id: string]: ProviderFeatures } {

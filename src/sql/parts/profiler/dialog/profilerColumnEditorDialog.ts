@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import 'vs/css!./media/profilerDialog';
+import 'vs/css!sql/parts/profiler/media/profiler';
 
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
@@ -26,6 +26,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 class EventItem {
 
@@ -313,12 +314,13 @@ export class ProfilerColumnEditorDialog extends Modal {
 
 	constructor(
 		@IPartService _partService: IPartService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextViewService private _contextViewService: IContextViewService
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, _partService, telemetryService, contextKeyService);
+		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, _partService, telemetryService, clipboardService, themeService, contextKeyService);
 	}
 
 	public render(): void {
@@ -361,7 +363,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 	}
 
 	// currently not used, this dialog is a work in progress
-	// tracked in issue #1545 https://github.com/Microsoft/sqlopsstudio/issues/1545
+	// tracked in issue #1545 https://github.com/Microsoft/azuredatastudio/issues/1545
 	private _updateInput(): void {
 		/*
 		this._element.getUnsortedChildren().forEach(e => {
@@ -394,7 +396,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 	}
 
 	// currently not used, this dialog is a work in progress
-	// tracked in issue #1545 https://github.com/Microsoft/sqlopsstudio/issues/1545
+	// tracked in issue #1545 https://github.com/Microsoft/azuredatastudio/issues/1545
 	private _updateList(): void {
 		/*
 		this._element = new SessionItem(this._input.sessionTemplate.name, this._selectedValue === 0 ? 'event' : 'column');

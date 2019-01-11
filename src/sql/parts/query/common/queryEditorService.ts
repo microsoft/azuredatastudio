@@ -24,16 +24,13 @@ export interface IQueryEditorService {
 	_serviceBrand: any;
 
 	// Creates new untitled document for SQL queries and opens it in a new editor tab
-	newSqlEditor(sqlContent?: string, connectionProviderName?: string): Promise<IConnectableInput>;
+	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput>;
 
 	// Creates a new query plan document
 	newQueryPlanEditor(xmlShowPlan: string): Promise<any>;
 
 	// Creates new edit data session
 	newEditDataEditor(schemaName: string, tableName: string, queryString: string): Promise<IConnectableInput>;
-
-	// Clears any QueryEditor data for the given URI held by this service
-	onQueryInputClosed(uri: string): void;
 
 	/**
 	 * Handles updating of SQL files on a save as event. These need special consideration

@@ -39,6 +39,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -124,16 +125,17 @@ export class InsightsDialogView extends Modal {
 	constructor(
 		private _model: IInsightsDialogModel,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IThemeService private _themeService: IThemeService,
+		@IThemeService themeService: IThemeService,
 		@IListService private _listService: IListService,
 		@IPartService partService: IPartService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ICommandService private _commandService: ICommandService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, partService, telemetryService, clipboardService, themeService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 
@@ -188,29 +190,37 @@ export class InsightsDialogView extends Modal {
 				for (let i = 0; i < this._model.columns.length; i++) {
 					resourceArray.push({ label: this._model.columns[i], value: element.data[i], data: element.data });
 				}
+
 				this._bottomTableData.clear();
 				this._bottomTableData.push(resourceArray);
+				// this table view has to be collapsed and expanded
+				// because the initial expand doesn't have the
+				// loaded data
+				if (bottomTableView.isExpanded()) {
+					bottomTableView.collapse();
+					bottomTableView.expand();
+				}
 				this._enableTaskButtons(true);
 			} else {
 				this._enableTaskButtons(false);
 			}
 		}));
 
-		this._register(this._topTable.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._topTable.onContextMenu(e => {
 			if (this.hasActions()) {
 				this._contextMenuService.showContextMenu({
-					getAnchor: () => e.target as HTMLElement,
+					getAnchor: () => e.anchor,
 					getActions: () => this.insightActions,
-					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(this._topTable.getCellFromEvent(e).row))
+					getActionsContext: () => this.topInsightContext(this._topTableData.getItem(e.cell.row))
 				});
 			}
 		}));
 
-		this._register(this._bottomTable.onContextMenu((e: DOMEvent, data: Slick.OnContextMenuEventArgs<any>) => {
+		this._register(this._bottomTable.onContextMenu(e => {
 			this._contextMenuService.showContextMenu({
-				getAnchor: () => e.target as HTMLElement,
+				getAnchor: () => e.anchor,
 				getActions: () => TPromise.as([this._instantiationService.createInstance(CopyInsightDialogSelectionAction, CopyInsightDialogSelectionAction.ID, CopyInsightDialogSelectionAction.LABEL)]),
-				getActionsContext: () => this.bottomInsightContext(this._bottomTableData.getItem(this._bottomTable.getCellFromEvent(e).row), this._bottomTable.getCellFromEvent(e))
+				getActionsContext: () => this.bottomInsightContext(this._bottomTableData.getItem(e.cell.row), e.cell)
 			});
 		}));
 
@@ -334,6 +344,7 @@ export class InsightsDialogView extends Modal {
 		this.hide();
 		dispose(this._taskButtonDisposables);
 		this._taskButtonDisposables = [];
+		this.dispose();
 	}
 
 	protected onClose(e: StandardKeyboardEvent) {

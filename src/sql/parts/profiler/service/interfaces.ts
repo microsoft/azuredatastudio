@@ -110,6 +110,12 @@ export interface IProfilerService {
 	 */
 	getSessionTemplates(providerId?: string): Array<IProfilerSessionTemplate>;
 	/**
+	 * Gets the session view state
+	 * @param sessionId The session ID to get the view state for
+	 * @returns Sessions view state
+	 */
+	getSessionViewState(sessionId: string): any;
+	/**
 	 * Launches the dialog for editing the view columns of a profiler session template for the given input
 	 * @param input input object that contains the necessary information which will be modified based on used input
 	 */
