@@ -354,13 +354,17 @@ export function showCreateLogin(uri: string, connection: IConnectionProfile, adm
 
 export function showBackup(connection: IConnectionProfile, backupUiService: IBackupUiService): Promise<void> {
 	return new Promise<void>((resolve) => {
-		backupUiService.showBackup(connection);
+		backupUiService.showBackup(connection).then(() => {
+			resolve(void 0);
+		});
 	});
 }
 
 export function showRestore(connection: IConnectionProfile, restoreDialogService: IRestoreDialogController): Promise<void> {
 	return new Promise<void>((resolve) => {
-		restoreDialogService.showDialog(connection);
+		restoreDialogService.showDialog(connection).then(() => {
+			resolve(void 0);
+		});
 	});
 }
 
