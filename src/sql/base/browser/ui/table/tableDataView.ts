@@ -8,6 +8,7 @@ import { Observer } from 'rxjs/Observer';
 import { Event, Emitter } from 'vs/base/common/event';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as types from 'vs/base/common/types';
+import { compare as stringCompare } from 'vs/base/common/strings';
 
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
 
@@ -19,7 +20,23 @@ export interface IFindPosition {
 function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T> {
 	let field = args.sortCol.field;
 	let sign = args.sortAsc ? 1 : -1;
-	return data.sort((a, b) => (a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1)) * sign);
+	let comparer: (a, b) => number;
+	if (types.isString(data[0][field])) {
+		if (Number(data[0][field]) !== NaN) {
+			comparer = (a: number, b: number) => {
+				let anum = Number(a[field]);
+				let bnum = Number(b[field]);
+				return anum === bnum ? 0 : anum > bnum ? 1 : -1;
+			};
+		} else {
+			comparer = stringCompare;
+		}
+	} else {
+		comparer = (a: number, b: number) => {
+			return a[field] === b[field] ? 0 : (a[field] > b[field] ? 1 : -1);
+		};
+	}
+	return data.sort((a, b) => comparer(a, b) * sign);
 }
 
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
@@ -78,7 +95,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._onRowCountChange.fire();
 	}
 
-	find(exp: string): Thenable<IFindPosition> {
+	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
 		if (!this._findFn) {
 			return TPromise.wrapError(new Error('no find function provided'));
 		}
@@ -87,7 +104,8 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			this._findObs = Observable.create((observer: Observer<IFindPosition>) => {
-				this._data.forEach((item, i) => {
+				for (let i = 0; i < this._data.length; i++) {
+					let item = this._data[i];
 					let result = this._findFn(item, exp);
 					if (result) {
 						result.forEach(pos => {
@@ -96,8 +114,11 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 							observer.next(index);
 							this._onFindCountChange.fire(this._findArray.length);
 						});
+						if (maxMatches > 0 && this._findArray.length > maxMatches) {
+							break;
+						}
 					}
-				});
+				}
 			});
 			return this._findObs.take(1).toPromise().then(() => {
 				return this._findArray[this._findIndex];

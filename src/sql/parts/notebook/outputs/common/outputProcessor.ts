@@ -4,9 +4,9 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-import { JSONObject, isPrimitive } from './jsonext';
+import { JSONObject, isPrimitive } from '../../models/jsonext';
 import { MimeModel } from './mimemodel';
-import { nbformat } from './nbformat';
+import { nbformat } from '../../models/nbformat';
 import { nb } from 'sqlops';
 
 /**
@@ -62,9 +62,7 @@ export function getMetadata(output: nbformat.IOutput): JSONObject {
 /**
  * Get the bundle options given output model options.
  */
-export function getBundleOptions(
-	options: IOutputModelOptions
-): MimeModel.IOptions {
+export function getBundleOptions(options: IOutputModelOptions): MimeModel.IOptions {
 	let data = getData(options.value);
 	let metadata = getMetadata(options.value);
 	let trusted = !!options.trusted;

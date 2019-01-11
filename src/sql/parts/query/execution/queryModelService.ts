@@ -387,8 +387,12 @@ export class QueryModelService implements IQueryModelService {
 			// We do not have a query runner for this editor, so create a new one
 			// and map it to the results uri
 			queryRunner = this._instantiationService.createInstance(QueryRunner, ownerUri);
+			const resultSetEventType = 'resultSet';
 			queryRunner.addListener(QREvents.RESULT_SET, resultSet => {
-				this._fireQueryEvent(ownerUri, 'resultSet', resultSet);
+				this._fireQueryEvent(ownerUri, resultSetEventType, resultSet);
+			});
+			queryRunner.onResultSetUpdate(resultSetSummary => {
+				this._fireQueryEvent(ownerUri, resultSetEventType, resultSetSummary);
 			});
 			queryRunner.addListener(QREvents.BATCH_START, batch => {
 				let link = undefined;

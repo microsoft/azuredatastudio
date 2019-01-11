@@ -4,11 +4,16 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
+import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
+import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { RunCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -19,20 +24,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import URI from 'vs/base/common/uri';
-import { localize } from 'vs/nls';
-import { Action } from 'vs/base/common/actions';
-import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { RunCellAction, DeleteCellAction, AddCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
-import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
-import { CellTypes } from 'sql/parts/notebook/models/contracts';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export const CODE_SELECTOR: string = 'code-component';
@@ -41,11 +37,12 @@ export const CODE_SELECTOR: string = 'code-component';
 	selector: CODE_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./code.component.html'))
 })
-export class CodeComponent extends AngularDisposable implements OnInit {
+export class CodeComponent extends AngularDisposable implements OnInit, OnChanges {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
-	@ViewChild('moreactions', { read: ElementRef }) private moreactionsElement: ElementRef;
+	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
+	@Input() hideVerticalToolbar: boolean = false;
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -53,14 +50,19 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._model = value;
 	}
 
+	@Input() set activeCellId(value: string) {
+		this._activeCellId = value;
+	}
+
 	protected _actionBar: Taskbar;
-	protected _moreActions: ActionBar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _uri: string;
 	private _model: NotebookModel;
+	private _activeCellId: string;
+	private _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -74,17 +76,32 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		@Inject(INotificationService) private notificationService: INotificationService,
 	) {
 		super();
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 	}
 
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.initActionBar();
+		if (!this.hideVerticalToolbar) {
+			this.initActionBar();
+		}
 	}
 
-	ngOnChanges() {
+	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		this.updateLanguageMode();
 		this.updateModel();
+		for (let propName in changes) {
+			if (propName === 'activeCellId') {
+				let changedProp = changes[propName];
+				if (this.cellModel.id === changedProp.currentValue) {
+					this._cellToggleMoreActions.toggle(true, this.moreActionsElementRef, this.model, this.cellModel);
+				}
+				else {
+					this._cellToggleMoreActions.toggle(false, this.moreActionsElementRef, this.model, this.cellModel);
+				}
+				break;
+			}
+		}
 	}
 
 	ngAfterContentInit(): void {
@@ -98,6 +115,10 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		return this._model;
 	}
 
+	get activeCellId(): string {
+		return this._activeCellId;
+	}
+
 	private createEditor(): void {
 		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
@@ -107,6 +128,7 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
+		this._editor.focus();
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);
@@ -139,20 +161,8 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
-
-		let moreActionsElement = <HTMLElement>this.moreactionsElement.nativeElement;
-		this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
-		this._moreActions.context = { target: moreActionsElement };
-
-		let actions: Action[] = [];
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeBefore', localize('codeBefore', 'Insert Code before'), CellTypes.Code, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'codeAfter', localize('codeAfter', 'Insert Code after'), CellTypes.Code, true));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownBefore', localize('markdownBefore', 'Insert Markdown before'), CellTypes.Markdown, false));
-		actions.push(this._instantiationService.createInstance(AddCellAction, 'markdownAfter', localize('markdownAfter', 'Insert Markdown after'), CellTypes.Markdown, true));
-		actions.push(this._instantiationService.createInstance(DeleteCellAction, 'delete', localize('delete', 'Delete')));
-
-		this._moreActions.push(this._instantiationService.createInstance(ToggleMoreWidgetAction, actions, context), { icon: true, label: false });
 	}
+
 
 	private createUri(): URI {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
@@ -180,8 +190,8 @@ export class CodeComponent extends AngularDisposable implements OnInit {
 		let toolbarEl = <HTMLElement>this.toolbarElement.nativeElement;
 		toolbarEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 
-		let moreactionsEl = <HTMLElement>this.moreactionsElement.nativeElement;
-		moreactionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
 }

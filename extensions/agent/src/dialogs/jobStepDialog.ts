@@ -67,6 +67,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', 'Quit the job reporting success');
 	private readonly QuitJobReportingFailure: string = localize('jobStepDialog.quitJobFailure', 'Quit the job reporting failure');
 
+	// Event Name strings
+	private readonly NewStepDialog = 'NewStepDialogOpened';
+	private readonly EditStepDialog = 'EditStepDialogOpened';
 	// UI Components
 
 	// Dialogs
@@ -131,6 +134,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.jobModel = jobModel;
 		this.jobName = this.jobName ?  this.jobName : this.jobModel.name;
 		this.server = server;
+		this.dialogName = this.isEdit ? this.EditStepDialog : this.NewStepDialog;
 	}
 
 	private initializeUIComponents() {
@@ -519,6 +523,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.model.failureAction = this.failureActionDropdown.value as string;
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
+		this.model.command = this.commandTextBox.value ? this.commandTextBox.value : '';
 	}
 
 	public async initializeDialog() {

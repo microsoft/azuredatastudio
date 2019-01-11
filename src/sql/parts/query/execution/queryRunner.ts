@@ -13,6 +13,7 @@ import { IQueryManagementService } from 'sql/parts/query/common/queryManagement'
 import * as Utils from 'sql/parts/connection/common/utils';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { echo, debounceEvent } from 'sql/base/common/event';
+import { Deferred } from 'sql/base/common/promise';
 
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -26,7 +27,6 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Deferred } from 'sql/base/common/promise';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -69,6 +69,7 @@ export default class QueryRunner extends Disposable {
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
 	private _batchSets: sqlops.BatchSummary[] = [];
+	private _messages: sqlops.IResultMessage[] = [];
 	private _eventEmitter = new EventEmitter();
 
 	private _isQueryPlan: boolean;
@@ -77,28 +78,13 @@ export default class QueryRunner extends Disposable {
 	public get planXml(): Thenable<string> { return this._planXml.promise; }
 
 	private _onMessage = this._register(new Emitter<sqlops.IResultMessage>());
-	private _debouncedMessage = debounceEvent<sqlops.IResultMessage, sqlops.IResultMessage[]>(this._onMessage.event, (l, e) => {
-		// on first run
-		if (types.isUndefinedOrNull(l)) {
-			return [e];
-		} else {
-			return l.concat(e);
-		}
-	});
-	private _echoedMessages = echo(this._debouncedMessage.event);
-	public readonly onMessage = this._echoedMessages.event;
+	public readonly onMessage = this._onMessage.event;
 
 	private _onResultSet = this._register(new Emitter<sqlops.ResultSetSummary>());
-	private _debouncedResultSet = debounceEvent<sqlops.ResultSetSummary, sqlops.ResultSetSummary[]>(this._onResultSet.event, (l, e) => {
-		// on first run
-		if (types.isUndefinedOrNull(l)) {
-			return [e];
-		} else {
-			return l.concat(e);
-		}
-	});
-	private _echoedResultSet = echo(this._debouncedResultSet.event);
-	public readonly onResultSet = this._echoedResultSet.event;
+	public readonly onResultSet = this._onResultSet.event;
+
+	private _onResultSetUpdate = this._register(new Emitter<sqlops.ResultSetSummary>());
+	public readonly onResultSetUpdate = this._onResultSetUpdate.event;
 
 	private _onQueryStart = this._register(new Emitter<void>());
 	public readonly onQueryStart: Event<void> = this._onQueryStart.event;
@@ -141,8 +127,18 @@ export default class QueryRunner extends Disposable {
 		return this._hasCompleted;
 	}
 
-	get batchSets(): sqlops.BatchSummary[] {
-		return this._batchSets;
+	/**
+	 * For public use only, for private use, directly access the member
+	 */
+	public get batchSets(): sqlops.BatchSummary[] {
+		return this._batchSets.slice(0);
+	}
+
+	/**
+	 * For public use only, for private use, directly access the member
+	 */
+	public get messages(): sqlops.IResultMessage[] {
+		return this._messages.slice(0);
 	}
 
 	// PUBLIC METHODS ======================================================
@@ -190,10 +186,6 @@ export default class QueryRunner extends Disposable {
 		if (this.isExecuting) {
 			return TPromise.as(undefined);
 		}
-		this._echoedMessages.clear();
-		this._echoedResultSet.clear();
-		this._debouncedMessage.clear();
-		this._debouncedResultSet.clear();
 		this._planXml = new Deferred<string>();
 		this._batchSets = [];
 		this._hasCompleted = false;
@@ -262,7 +254,7 @@ export default class QueryRunner extends Disposable {
 		this._hasCompleted = true;
 		this._batchSets = result.batchSummaries ? result.batchSummaries : [];
 
-		this.batchSets.map(batch => {
+		this._batchSets.map(batch => {
 			if (batch.selection) {
 				batch.selection.startLine = batch.selection.startLine + this._resultLineOffset;
 				batch.selection.endLine = batch.selection.endLine + this._resultLineOffset;
@@ -279,6 +271,7 @@ export default class QueryRunner extends Disposable {
 			isError: false,
 			time: undefined
 		};
+		this._messages.push(message);
 
 		this._onQueryEnd.fire(timeStamp);
 		this._onMessage.fire(message);
@@ -300,7 +293,7 @@ export default class QueryRunner extends Disposable {
 		batch.resultSetSummaries = [];
 
 		// Store the batch
-		this.batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = batch;
 
 		let message = {
 			// account for index by 1
@@ -309,6 +302,7 @@ export default class QueryRunner extends Disposable {
 			selection: batch.selection,
 			isError: false
 		};
+		this._messages.push(message);
 		this._eventEmitter.emit(EventType.BATCH_START, batch);
 		this._onMessage.fire(message);
 		this._onBatchStart.fire(batch);
@@ -321,7 +315,7 @@ export default class QueryRunner extends Disposable {
 		let batch: sqlops.BatchSummary = result.batchSummary;
 
 		// Store the batch again to get the rest of the data
-		this.batchSets[batch.id] = batch;
+		this._batchSets[batch.id] = batch;
 		let executionTime = <number>(Utils.parseTimeString(batch.executionElapsed) || 0);
 		this._totalElapsedMilliseconds += executionTime;
 		if (executionTime > 0) {
@@ -336,15 +330,15 @@ export default class QueryRunner extends Disposable {
 	/**
 	 * Handle a ResultSetComplete from the service layer
 	 */
-	public handleResultSetComplete(result: sqlops.QueryExecuteResultSetCompleteNotificationParams): void {
+	public handleResultSetAvailable(result: sqlops.QueryExecuteResultSetNotificationParams): void {
 		if (result && result.resultSetSummary) {
 			let resultSet = result.resultSetSummary;
 			let batchSet: sqlops.BatchSummary;
 			if (!resultSet.batchId) {
 				// Missing the batchId. In this case, default to always using the first batch in the list
 				// or create one in the case the DMP extension didn't obey the contract perfectly
-				if (this.batchSets.length > 0) {
-					batchSet = this.batchSets[0];
+				if (this._batchSets.length > 0) {
+					batchSet = this._batchSets[0];
 				} else {
 					batchSet = <sqlops.BatchSummary>{
 						id: 0,
@@ -352,11 +346,35 @@ export default class QueryRunner extends Disposable {
 						hasError: false,
 						resultSetSummaries: []
 					};
-					this.batchSets[0] = batchSet;
+					this._batchSets[0] = batchSet;
 				}
 			} else {
-				batchSet = this.batchSets[resultSet.batchId];
+				batchSet = this._batchSets[resultSet.batchId];
 			}
+			// handle getting queryPlanxml if we need too
+			if (this.isQueryPlan) {
+				// check if this result has show plan, this needs work, it won't work for any other provider
+				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
+				if (hasShowPlan) {
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+				}
+			}
+			// we will just ignore the set if we already have it
+			// ideally this should never happen
+			if (batchSet && !batchSet.resultSetSummaries[resultSet.id]) {
+				// Store the result set in the batch and emit that a result set has completed
+				batchSet.resultSetSummaries[resultSet.id] = resultSet;
+				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
+				this._onResultSet.fire(resultSet);
+			}
+		}
+	}
+
+	public handleResultSetUpdated(result: sqlops.QueryExecuteResultSetNotificationParams): void {
+		if (result && result.resultSetSummary) {
+			let resultSet = result.resultSetSummary;
+			let batchSet: sqlops.BatchSummary;
+			batchSet = this._batchSets[resultSet.batchId];
 			// handle getting queryPlanxml if we need too
 			if (this.isQueryPlan) {
 				// check if this result has show plan, this needs work, it won't work for any other provider
@@ -368,8 +386,7 @@ export default class QueryRunner extends Disposable {
 			if (batchSet) {
 				// Store the result set in the batch and emit that a result set has completed
 				batchSet.resultSetSummaries[resultSet.id] = resultSet;
-				this._eventEmitter.emit(EventType.RESULT_SET, resultSet);
-				this._onResultSet.fire(resultSet);
+				this._onResultSetUpdate.fire(resultSet);
 			}
 		}
 	}
@@ -380,6 +397,7 @@ export default class QueryRunner extends Disposable {
 	public handleMessage(obj: sqlops.QueryExecuteMessageParams): void {
 		let message = obj.message;
 		message.time = new Date(message.time).toLocaleTimeString();
+		this._messages.push(message);
 
 		// Send the message to the results pane
 		this._eventEmitter.emit(EventType.MESSAGE, message);
@@ -601,7 +619,7 @@ export default class QueryRunner extends Disposable {
 
 	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
-		let batchSummary: sqlops.BatchSummary = this.batchSets[batchId];
+		let batchSummary: sqlops.BatchSummary = this._batchSets[batchId];
 		if (batchSummary !== undefined) {
 			let resultSetSummary = batchSummary.resultSetSummaries[resultId];
 			headers = resultSetSummary.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
@@ -634,6 +652,7 @@ export default class QueryRunner extends Disposable {
 				time: undefined,
 				isError: false
 			};
+			this._messages.push(message);
 			// Send the message to the results pane
 			this._onMessage.fire(message);
 		}

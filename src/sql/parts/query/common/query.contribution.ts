@@ -305,6 +305,11 @@ let registryProperties = {
 		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
 		'default': 'utf-8'
 	},
+	'sql.results.streaming': {
+		'type': 'boolean',
+		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
+		'default': false
+	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
@@ -340,6 +345,11 @@ let registryProperties = {
 		'type': 'boolean',
 		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
 		'default': true
+	},
+	'sql.promptToSaveGeneratedFiles': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('sql.promptToSaveGeneratedFiles', 'Prompt to save generated SQL files')
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
@@ -408,6 +418,3 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
-
-
-

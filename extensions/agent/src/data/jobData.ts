@@ -45,6 +45,7 @@ export class JobData implements IAgentDialogData {
 	public jobSchedules: sqlops.AgentJobScheduleInfo[];
 	public alerts: sqlops.AgentAlertInfo[];
 	public jobId: string;
+	public startStepId: number;
 
 	constructor(
 		ownerUri: string,
@@ -60,10 +61,11 @@ export class JobData implements IAgentDialogData {
 			this.category = jobInfo.category;
 			this.description = jobInfo.description;
 			this.enabled = jobInfo.enabled;
-			this.jobSteps = jobInfo.JobSteps;
-			this.jobSchedules = jobInfo.JobSchedules;
-			this.alerts = jobInfo.Alerts;
+			this.jobSteps = jobInfo.jobSteps;
+			this.jobSchedules = jobInfo.jobSchedules;
+			this.alerts = jobInfo.alerts;
 			this.jobId = jobInfo.jobId;
+			this.startStepId = jobInfo.startStepId;
 		}
 	}
 
@@ -141,17 +143,17 @@ export class JobData implements IAgentDialogData {
 			name: this.name,
 			owner: this.owner,
 			description: this.description,
-			EmailLevel: this.emailLevel,
-			PageLevel: this.pageLevel,
-			EventLogLevel: this.eventLogLevel,
-			DeleteLevel: this.deleteLevel,
-			OperatorToEmail: this.operatorToEmail,
-			OperatorToPage: this.operatorToPage,
+			emailLevel: this.emailLevel,
+			pageLevel: this.pageLevel,
+			eventLogLevel: this.eventLogLevel,
+			deleteLevel: this.deleteLevel,
+			operatorToEmail: this.operatorToEmail,
+			operatorToPage: this.operatorToPage,
 			enabled: this.enabled,
 			category: this.category,
-			Alerts: this.alerts,
-			JobSchedules: this.jobSchedules,
-			JobSteps: this.jobSteps,
+			alerts: this.alerts,
+			jobSchedules: this.jobSchedules,
+			jobSteps: this.jobSteps,
 			// The properties below are not collected from UI
 			// We could consider using a seperate class for create job request
 			//
@@ -166,7 +168,8 @@ export class JobData implements IAgentDialogData {
 			categoryType: 1, // LocalJob, hard-coding the value, corresponds to the target tab in SSMS
 			lastRun: '',
 			nextRun: '',
-			jobId: this.jobId
+			jobId: this.jobId,
+			startStepId: this.startStepId
 		};
 	}
 }

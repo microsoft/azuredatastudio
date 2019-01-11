@@ -6,11 +6,11 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import * as nls from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 
 import { Event, Emitter } from 'vs/base/common/event';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
@@ -21,7 +21,7 @@ import { AutoOAuthDialogController } from 'sql/parts/accountManagement/autoOAuth
 import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { Deferred } from 'sql/base/common/promise';
 
 export class AccountManagementService implements IAccountManagementService {
 	// CONSTANTS ///////////////////////////////////////////////////////////
@@ -198,11 +198,6 @@ export class AccountManagementService implements IAccountManagementService {
 	public getAccountsForProvider(providerId: string): Thenable<sqlops.Account[]> {
 		let self = this;
 
-		// Make sure the provider exists before attempting to retrieve accounts
-		if (!this._providers[providerId]) {
-			return Promise.reject(new Error(nls.localize('accountManagementNoProvider', 'Account provider does not exist'))).then();
-		}
-
 		// 1) Get the accounts from the store
 		// 2) Update our local cache of accounts
 		return this.doWithProvider(providerId, provider => {
@@ -217,11 +212,12 @@ export class AccountManagementService implements IAccountManagementService {
 	/**
 	 * Generates a security token by asking the account's provider
 	 * @param {Account} account Account to generate security token for
+	 * @param {sqlops.AzureResource} resource The resource to get the security token for
 	 * @return {Thenable<{}>} Promise to return the security token
 	 */
-	public getSecurityToken(account: sqlops.Account): Thenable<{}> {
+	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
 		return this.doWithProvider(account.key.providerId, provider => {
-			return provider.provider.getSecurityToken(account);
+			return provider.provider.getSecurityToken(account, resource);
 		});
 	}
 
@@ -388,10 +384,17 @@ export class AccountManagementService implements IAccountManagementService {
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private doWithProvider<T>(providerId: string, op: (provider: AccountProviderWithMetadata) => Thenable<T>): Thenable<T> {
-		// Make sure the provider exists before attempting to retrieve accounts
 		let provider = this._providers[providerId];
 		if (!provider) {
-			return Promise.reject(new Error(nls.localize('accountManagementNoProvider', 'Account provider does not exist'))).then();
+			// If the provider doesn't already exist wait until it gets registered
+			let deferredPromise = new Deferred<T>();
+			let toDispose = this.addAccountProviderEvent(params => {
+				if (params.addedProvider.id === providerId) {
+					toDispose.dispose();
+					deferredPromise.resolve(op(this._providers[providerId]));
+				}
+			});
+			return deferredPromise;
 		}
 
 		return op(provider);

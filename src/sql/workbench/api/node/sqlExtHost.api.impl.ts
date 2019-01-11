@@ -38,6 +38,7 @@ import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelVi
 import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -75,6 +76,7 @@ export function createApiFactory(
 	const extHostModelViewDialog = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewDialog, new ExtHostModelViewDialog(rpcProtocol, extHostModelView, extHostBackgroundTaskManagement));
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
+	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 
 
 	return {
@@ -97,8 +99,8 @@ export function createApiFactory(
 				getAllAccounts(): Thenable<sqlops.Account[]> {
 					return extHostAccountManagement.$getAllAccounts();
 				},
-				getSecurityToken(account: sqlops.Account): Thenable<{}> {
-					return extHostAccountManagement.$getSecurityToken(account);
+				getSecurityToken(account: sqlops.Account, resource?: sqlops.AzureResource): Thenable<{}> {
+					return extHostAccountManagement.$getSecurityToken(account, resource);
 				},
 				onDidChangeAccounts(listener: (e: sqlops.DidChangeAccountsParams) => void, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostAccountManagement.onDidChangeAccounts(listener, thisArgs, disposables);
@@ -197,8 +199,12 @@ export function createApiFactory(
 					extHostDataProvider.$onBatchComplete(provider.handle, batchInfo);
 				});
 
-				provider.registerOnResultSetComplete((resultSetInfo: sqlops.QueryExecuteResultSetCompleteNotificationParams) => {
-					extHostDataProvider.$onResultSetComplete(provider.handle, resultSetInfo);
+				provider.registerOnResultSetAvailable((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetAvailable(provider.handle, resultSetInfo);
+				});
+
+				provider.registerOnResultSetUpdated((resultSetInfo: sqlops.QueryExecuteResultSetNotificationParams) => {
+					extHostDataProvider.$onResultSetUpdated(provider.handle, resultSetInfo);
 				});
 
 				provider.registerOnMessage((message: sqlops.QueryExecuteMessageParams) => {
@@ -310,6 +316,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
+			let registerDacFxServicesProvider = (provider: sqlops.DacFxServicesProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerDacFxServiceProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
@@ -325,6 +335,7 @@ export function createApiFactory(
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
+				registerDacFxServicesProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -337,8 +348,8 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title, extension.extensionLocation);
+				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
@@ -411,9 +422,28 @@ export function createApiFactory(
 			};
 
 			const nb = {
+				get notebookDocuments() {
+					return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => doc.document);
+				},
+				get activeNotebookEditor() {
+					return extHostNotebookDocumentsAndEditors.getActiveEditor();
+				},
+				get visibleNotebookEditors() {
+					return extHostNotebookDocumentsAndEditors.getAllEditors();
+				},
+				get onDidOpenNotebookDocument() {
+					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
+				},
+				get onDidChangeNotebookCell() {
+					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
+				},
+				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
+					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
+				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
-				}
+				},
+				CellRange: sqlExtHostTypes.CellRange
 			};
 
 			return {
@@ -452,7 +482,8 @@ export function createApiFactory(
 				Orientation: sqlExtHostTypes.Orientation,
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
-				nb: nb
+				nb: nb,
+				AzureResource: sqlExtHostTypes.AzureResource
 			};
 		}
 	};

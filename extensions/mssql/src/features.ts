@@ -8,7 +8,7 @@ import { SqlOpsDataClient, SqlOpsFeature } from 'dataprotocol-client';
 import { ClientCapabilities, StaticFeature, RPCMessageType, ServerCapabilities } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import { Telemetry } from './telemetry';
-import * as contracts  from './contracts';
+import * as contracts from './contracts';
 import * as sqlops from 'sqlops';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -24,6 +24,94 @@ export class TelemetryFeature implements StaticFeature {
 	initialize(): void {
 		this._client.onNotification(contracts.TelemetryNotification.type, e => {
 			Telemetry.sendTelemetryEvent(e.params.eventName, e.params.properties, e.params.measures);
+		});
+	}
+}
+
+export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
+	private static readonly messageTypes: RPCMessageType[] = [
+		contracts.ExportRequest.type,
+		contracts.ImportRequest.type,
+		contracts.ExtractRequest.type,
+		contracts.DeployRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, DacFxServicesFeature.messageTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+		let self = this;
+
+		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.ExportRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.ExportRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let importBacpac = (packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+			let params: contracts.ImportParams = { packageFilePath: packageFilePath, databaseName: databaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.ImportRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.ImportRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let extractDacpac = (databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+			let params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.ExtractRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.ExtractRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let deployDacpac = (packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+			let params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.DeployRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.DeployRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return sqlops.dataprotocol.registerDacFxServicesProvider({
+			providerId: client.providerId,
+			exportBacpac,
+			importBacpac,
+			extractDacpac,
+			deployDacpac
 		});
 	}
 }
@@ -229,7 +317,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Alert management methods
-		let  getAlerts = (ownerUri: string): Thenable<sqlops.AgentAlertsResult>  => {
+		let getAlerts = (ownerUri: string): Thenable<sqlops.AgentAlertsResult> => {
 			let params: contracts.AgentAlertsParams = {
 				ownerUri: ownerUri
 			};
@@ -299,7 +387,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Operator management methods
-		let  getOperators = (ownerUri: string): Thenable<sqlops.AgentOperatorsResult>  => {
+		let getOperators = (ownerUri: string): Thenable<sqlops.AgentOperatorsResult> => {
 			let params: contracts.AgentOperatorsParams = {
 				ownerUri: ownerUri
 			};
@@ -369,7 +457,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Proxy management methods
-		let  getProxies = (ownerUri: string): Thenable<sqlops.AgentProxiesResult>  => {
+		let getProxies = (ownerUri: string): Thenable<sqlops.AgentProxiesResult> => {
 			let params: contracts.AgentProxiesParams = {
 				ownerUri: ownerUri
 			};
@@ -439,7 +527,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Agent Credential Method
-		let  getCredentials = (ownerUri: string): Thenable<sqlops.GetCredentialsResult>  => {
+		let getCredentials = (ownerUri: string): Thenable<sqlops.GetCredentialsResult> => {
 			let params: contracts.GetCredentialsParams = {
 				ownerUri: ownerUri
 			};
@@ -455,7 +543,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 
 
 		// Job Schedule management methods
-		let  getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult>  => {
+		let getJobSchedules = (ownerUri: string): Thenable<sqlops.AgentJobSchedulesResult> => {
 			let params: contracts.AgentJobScheduleParams = {
 				ownerUri: ownerUri
 			};

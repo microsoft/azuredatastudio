@@ -11,6 +11,7 @@ import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/edi
 import { Emitter, Event } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import * as resources from 'vs/base/common/resources';
 
 import { INotebookService } from 'sql/services/notebook/notebookService';
 
@@ -23,9 +24,10 @@ export class NotebookInputModel extends EditorModel {
 	private dirty: boolean;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _providerId: string;
-	constructor(public readonly notebookUri: URI, private readonly handle: number, private _isTrusted: boolean = false, private saveHandler?: ModeViewSaveHandler) {
+	constructor(public readonly notebookUri: URI, private readonly handle: number, private _isTrusted: boolean = false, private saveHandler?: ModeViewSaveHandler, provider?: string, private _providers?: string[]) {
 		super();
 		this.dirty = false;
+		this._providerId = provider;
 	}
 
 	public get providerId(): string {
@@ -34,6 +36,14 @@ export class NotebookInputModel extends EditorModel {
 
 	public set providerId(value: string) {
 		this._providerId = value;
+	}
+
+	public get providers(): string[] {
+		return this._providers;
+	}
+
+	public set providers(value: string[]) {
+		this._providers = value;
 	}
 
 	get isTrusted(): boolean {
@@ -88,15 +98,6 @@ export class NotebookInput extends EditorInput {
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
-		this.onDispose(() => {
-			if (this.notebookService) {
-				this.notebookService.handleNotebookClosed(this.notebookUri);
-			}
-		});
-	}
-
-	public get title(): string {
-		return this._title;
 	}
 
 	public get notebookUri(): URI {
@@ -105,6 +106,10 @@ export class NotebookInput extends EditorInput {
 
 	public get providerId(): string {
 		return this._model.providerId;
+	}
+
+	public get providers(): string[] {
+		return this._model.providers;
 	}
 
 	public getTypeId(): string {
@@ -116,6 +121,10 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public getName(): string {
+		if (!this._title) {
+			this._title = resources.basenameOrAuthority(this._model.notebookUri);
+		}
+
 		return this._title;
 	}
 
@@ -172,5 +181,29 @@ export class NotebookInput extends EditorInput {
 	 */
 	save(): TPromise<boolean> {
 		return this._model.save();
+	}
+
+	/**
+	 * Sets active editor with dirty value.
+	 * @param isDirty boolean value to set editor dirty
+	 */
+	setDirty(isDirty: boolean): void {
+		this._model.setDirty(isDirty);
+	}
+
+
+	public matches(otherInput: any): boolean {
+		if (super.matches(otherInput) === true) {
+			return true;
+		}
+
+		if (otherInput instanceof NotebookInput) {
+			const otherNotebookEditorInput = <NotebookInput>otherInput;
+
+			// Compare by resource
+			return otherNotebookEditorInput.notebookUri.toString() === this.notebookUri.toString();
+		}
+
+		return false;
 	}
 }

@@ -86,7 +86,9 @@ export class NotebookEditor extends BaseEditor {
 		input.hasBootstrapped = true;
 		let params: INotebookParams = {
 			notebookUri: input.notebookUri,
+			input: input,
 			providerId: input.providerId ? input.providerId : DEFAULT_NOTEBOOK_PROVIDER,
+			providers: input.providers ? input.providers : [DEFAULT_NOTEBOOK_PROVIDER],
 			isTrusted: input.isTrusted
 		};
 		bootstrapAngular(this.instantiationService,

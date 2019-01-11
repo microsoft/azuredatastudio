@@ -109,7 +109,7 @@ export class BackupUiService implements IBackupUiService {
 		let self = this;
 		return new Promise<void>((resolve, reject) => {
 			self.showBackupDialog(connection).then(() => {
-				resolve();
+				resolve(void 0);
 			}, error => {
 				reject();
 			});
@@ -145,7 +145,7 @@ export class BackupUiService implements IBackupUiService {
 		}
 
 		let backupOptions = this.getOptions(this._currentProvider);
-		return new TPromise<void>(() => {
+		return new TPromise<void>((resolve) => {
 			let uri = this._connectionManagementService.getConnectionUri(connection)
 			+ ProviderConnectionInfo.idSeparator
 			+ ConnectionUtils.ConnectionUriBackupIdAttributeName
@@ -168,6 +168,7 @@ export class BackupUiService implements IBackupUiService {
 			} else {
 				(backupDialog as BackupDialog).open(connection);
 			}
+			resolve(void 0);
 		});
 	}
 

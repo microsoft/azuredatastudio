@@ -11,7 +11,6 @@ code-component {
 
 code-component .toolbar {
 	border-right-width: 1px;
-	border-right-style: solid;
 }
 
 code-component .toolbarIconRun {
@@ -46,10 +45,6 @@ code-component .carbon-taskbar .icon {
 	width: 40px;
 }
 
-code-component .action-label.icon.toggle-more {
-	height: 20px;
-	width: 20px;
-}
 
 code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container
 {

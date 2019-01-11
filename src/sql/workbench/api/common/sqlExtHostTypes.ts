@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import { nb } from 'sqlops';
 import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types
@@ -285,7 +286,8 @@ export enum DataProviderType {
 	QueryProvider = 'QueryProvider',
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
-	CapabilitiesProvider = 'CapabilitiesProvider'
+	CapabilitiesProvider = 'CapabilitiesProvider',
+	DacFxServicesProvider = 'DacFxServicesProvider',
 }
 
 export enum DeclarativeDataType {
@@ -311,6 +313,11 @@ export interface ToolbarLayout {
 
 export class TreeComponentItem extends TreeItem {
 	checked?: boolean;
+}
+
+export enum AzureResource {
+	ResourceManagement = 0,
+	Sql = 1
 }
 
 export class SqlThemeIcon {
@@ -451,4 +458,44 @@ export enum FutureMessageType {
 export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
+}
+
+export interface ICellRange {
+	readonly start: number;
+	readonly end: number;
+}
+
+export class CellRange {
+
+	protected _start: number;
+	protected _end: number;
+
+	get start(): number {
+		return this._start;
+	}
+
+	get end(): number {
+		return this._end;
+	}
+
+	constructor(start: number, end: number) {
+		if (typeof(start) !== 'number' || typeof(start) !== 'number' || start < 0 || end < 0) {
+			throw new Error('Invalid arguments');
+		}
+
+		// Logic taken from range handling.
+		if (start <= end) {
+			this._start = start;
+			this._end = end;
+		} else {
+			this._start = end;
+			this._end = start;
+		}
+	}
+}
+
+export interface ISingleNotebookEditOperation {
+	range: ICellRange;
+	cell: Partial<nb.ICellContents>;
+	forceMoveMarkers: boolean;
 }

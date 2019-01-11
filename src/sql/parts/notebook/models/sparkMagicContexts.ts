@@ -26,7 +26,7 @@ export class SparkMagicContexts {
 			id: '-1',
 			options:
 			{
-				host: localize('selectConnection', 'Select Connection')
+				host: localize('selectConnection', 'Select connection')
 			}
 		};
 
@@ -76,10 +76,13 @@ export class SparkMagicContexts {
 		let defaultConnection: IConnectionProfile = SparkMagicContexts.DefaultContext.defaultConnection;
 		let activeConnections: IConnectionProfile[] = await connectionService.getActiveConnections();
 		// If no connections exist, only show 'n/a'
-		if (activeConnections.length === 0) {
-			return SparkMagicContexts.DefaultContext;
-		}
-		activeConnections = activeConnections.filter(conn => conn.providerName === notebookConstants.hadoopKnoxProviderName);
+        if (activeConnections && activeConnections.length > 0) {
+            // Remove all non-Spark connections
+            activeConnections = activeConnections.filter(conn => conn.providerName === notebookConstants.hadoopKnoxProviderName);
+        }
+        if (activeConnections.length === 0) {
+            return SparkMagicContexts.DefaultContext;
+        }
 
 		// If launched from the right click or server dashboard, connection profile data exists, so use that as default
 		if (profile && profile.options) {
@@ -109,13 +112,11 @@ export class SparkMagicContexts {
 		};
 	}
 
-	public static async configureContext(connection: IConnectionProfile, options: INotebookModelOptions): Promise<object> {
+	public static async configureContext(options: INotebookModelOptions): Promise<object> {
 		let sparkmagicConfDir = path.join(notebookUtils.getUserHome(), '.sparkmagic');
 		// TODO NOTEBOOK REFACTOR re-enable this or move to extension. Requires config files to be available in order to work
 		// await notebookUtils.mkDir(sparkmagicConfDir);
 
-		// let hadoopConnection = new Connection({ options: connection.options }, undefined, connection.connectionId);
-		// await hadoopConnection.getCredential();
 		// // Default to localhost in config file.
 		// let creds: ICredentials = {
 		//     'url': 'http://localhost:8088'
@@ -139,12 +140,19 @@ export class SparkMagicContexts {
 	 * @param savedKernelInfo kernel info loaded from
 	 */
 	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo, notificationService: INotificationService): nb.IKernelSpec {
-		let defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+		let foundSavedKernelInSpecs;
+		let defaultKernel;
+		if (specs) {
+			defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+			if (savedKernelInfo) {
+				foundSavedKernelInSpecs = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+			}
+		}
 		let profile = connectionInfo as IConnectionProfile;
 		if (specs && connectionInfo && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
 			// set default kernel to default spark kernel if profile exists
 			// otherwise, set default to kernel info loaded from existing file
-			defaultKernel = !savedKernelInfo ? specs.kernels.find((spec) => spec.name === notebookConstants.defaultSparkKernel) : savedKernelInfo;
+			defaultKernel = !foundSavedKernelInSpecs ? specs.kernels.find((spec) => spec.name === notebookConstants.defaultSparkKernel) : foundSavedKernelInSpecs;
 		} else {
 			// Handle kernels
 			if (savedKernelInfo && savedKernelInfo.name.toLowerCase().indexOf('spark') > -1) {

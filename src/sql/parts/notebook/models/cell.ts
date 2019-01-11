@@ -14,6 +14,7 @@ import { ICellModelOptions, IModelFactory, FutureInternal } from './modelInterfa
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 
 let modelId = 0;
 
@@ -34,18 +35,18 @@ export class CellModel implements ICellModel {
 	private _active: boolean;
 	private _cellUri: URI;
 
-	constructor(private factory: IModelFactory, cellData?: nb.ICell, private _options?: ICellModelOptions) {
+	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
 		CellModel.CreateLanguageMappings();
-		// Do nothing for now
 		if (cellData) {
+			// Read in contents if available
 			this.fromJSON(cellData);
 		} else {
 			this._cellType = CellTypes.Code;
 			this._source = '';
 		}
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
-		this.setDefaultLanguage();
+		this.ensureDefaultLanguage();
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
 		} else {
@@ -156,7 +157,7 @@ export class CellModel implements ICellModel {
 		future.setIOPubHandler({ handle: (msg) => this.handleIOPub(msg) });
 	}
 
-	private clearOutputs(): void {
+	public clearOutputs(): void {
 		this._outputs = [];
 		this.fireOutputsChanged();
 	}
@@ -172,7 +173,7 @@ export class CellModel implements ICellModel {
 		}
 	}
 
-	public get outputs(): ReadonlyArray<nb.ICellOutput> {
+	public get outputs(): Array<nb.ICellOutput> {
 		return this._outputs;
 	}
 
@@ -220,9 +221,44 @@ export class CellModel implements ICellModel {
 		//     this._displayIdMap.set(displayId, targets);
 		// }
 		if (output) {
-			this._outputs.push(output);
+			// deletes transient node in the serialized JSON
+			delete output['transient'];
+			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
 		}
+		if (!this._future.inProgress) {
+			this._future.dispose();
+		}
+	}
+
+	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
+		// Only rewrite if this is coming back during execution, not when loading from disk.
+		// A good approximation is that the model has a future (needed for execution)
+		if (this.future) {
+			try {
+				let result = output as nb.IDisplayResult;
+				if (result && result.data && result.data['text/html']) {
+					let nbm = (this as CellModel).options.notebook as NotebookModel;
+					if (nbm.hadoopConnection) {
+						let host = nbm.hadoopConnection.host;
+						let html = result.data['text/html'];
+						html = html.replace(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, function (a, b, c) {
+							let ret = '';
+							if (b !== '') {
+								ret = 'https://' + host + ':30443/gateway/default/yarn/proxy';
+							}
+							if (c !== '') {
+								ret = ret + c;
+							}
+							return ret;
+						});
+						(<nb.IDisplayResult>output).data['text/html'] = html;
+					}
+				}
+			}
+			catch (e) {}
+		}
+		return output;
 	}
 
 	private getDisplayId(msg: nb.IIOPubMessage): string | undefined {
@@ -230,8 +266,8 @@ export class CellModel implements ICellModel {
 		return transient['display_id'] as string;
 	}
 
-	public toJSON(): nb.ICell {
-		let cellJson: Partial<nb.ICell> = {
+	public toJSON(): nb.ICellContents {
+		let cellJson: Partial<nb.ICellContents> = {
 			cell_type: this._cellType,
 			source: this._source,
 			metadata: {
@@ -241,24 +277,32 @@ export class CellModel implements ICellModel {
 			cellJson.metadata.language = this._language,
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = 1; // TODO: keep track of actual execution count
-
 		}
-		return cellJson as nb.ICell;
+		return cellJson as nb.ICellContents;
 	}
 
-	public fromJSON(cell: nb.ICell): void {
+	public fromJSON(cell: nb.ICellContents): void {
 		if (!cell) {
 			return;
 		}
 		this._cellType = cell.cell_type;
 		this._source = Array.isArray(cell.source) ? cell.source.join('') : cell.source;
-		this._language = (cell.metadata && cell.metadata.language) ? cell.metadata.language : 'python';
+		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
 				// For now, we're assuming it's OK to save these as-is with no modification
 				this.addOutput(output);
 			}
 		}
+	}
+
+	private setLanguageFromContents(cell: nb.ICellContents): void {
+		if (cell.cell_type === CellTypes.Markdown) {
+			this._language = 'markdown';
+		} else if (cell.metadata && cell.metadata.language) {
+			this._language = cell.metadata.language;
+		}
+		// else skip, we set default language anyhow
 	}
 
 	private addOutput(output: nb.ICellOutput) {
@@ -286,6 +330,7 @@ export class CellModel implements ICellModel {
 		CellModel.LanguageMapping['pyspark3'] = 'python';
 		CellModel.LanguageMapping['python'] = 'python';
 		CellModel.LanguageMapping['scala'] = 'scala';
+		CellModel.LanguageMapping['sql'] = 'sql';
 	}
 
 	private get languageInfo(): nb.ILanguageInfo {
@@ -295,8 +340,32 @@ export class CellModel implements ICellModel {
 		return undefined;
 	}
 
-	private setDefaultLanguage(): void {
-		this._language = 'python';
+	/**
+	 * Ensures there is a default language set, if none was already defined.
+	 * Will read information from the overall Notebook (passed as options to the model), or
+	 * if all else fails default back to python.
+	 *
+	 */
+	private ensureDefaultLanguage(): void {
+		// See if language is already set / is known based on cell type
+		if (this.hasLanguage()) {
+			return;
+		}
+		if (this._cellType === CellTypes.Markdown) {
+			this._language = 'markdown';
+			return;
+		}
+
+		// try set it based on overall Notebook language
+		this.trySetLanguageFromLangInfo();
+
+		// fallback to python
+		if (!this._language) {
+			this._language = 'python';
+		}
+	}
+
+	private trySetLanguageFromLangInfo() {
 		// In languageInfo, set the language to the "name" property
 		// If the "name" property isn't defined, check the "mimeType" property
 		// Otherwise, default to python as the language
@@ -306,16 +375,25 @@ export class CellModel implements ICellModel {
 				// check the LanguageMapping to determine if a mapping is necessary (example 'pyspark' -> 'python')
 				if (CellModel.LanguageMapping[languageInfo.name]) {
 					this._language = CellModel.LanguageMapping[languageInfo.name];
-				} else {
+				}
+				else {
 					this._language = languageInfo.name;
 				}
-			} else if (languageInfo.mimetype) {
+			}
+			else if (languageInfo.mimetype) {
 				this._language = languageInfo.mimetype;
 			}
 		}
-		let mimeTypePrefix = 'x-';
-		if (this._language.includes(mimeTypePrefix)) {
-			this._language = this._language.replace(mimeTypePrefix, '');
+
+		if (this._language) {
+			let mimeTypePrefix = 'x-';
+			if (this._language.includes(mimeTypePrefix)) {
+				this._language = this._language.replace(mimeTypePrefix, '');
+			}
 		}
+	}
+
+	private hasLanguage(): boolean {
+		return !!this._language;
 	}
 }

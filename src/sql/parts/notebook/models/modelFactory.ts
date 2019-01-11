@@ -13,7 +13,7 @@ import { ClientSession } from './clientSession';
 
 export class ModelFactory implements IModelFactory {
 
-	public createCell(cell: nb.ICell, options: ICellModelOptions): ICellModel {
+	public createCell(cell: nb.ICellContents, options: ICellModelOptions): ICellModel {
 		return new CellModel(this, cell, options);
 	}
 

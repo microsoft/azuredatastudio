@@ -31,9 +31,13 @@
 	text-align: center;
 	cursor: pointer;
 	padding-left: 15px;
-	background-size: 11px;
+	background-size: 13px;
 	margin-right: 0.3em;
-	font-size: 11px;
+	font-size: 13px;
+}
+
+.notebookEditor .monaco-select-box {
+	min-width: 100px;
 }
 
 .notebookEditor .notebook-button.icon-add{
@@ -61,4 +65,18 @@
 .vs-dark .notebookEditor .notebook-button.icon-notTrusted,
 .hc-black .notebookEditor .notebook-button.icon-notTrusted{
 	background-image: url("./media/dark/nottrusted_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-save{
+	background-image: url("./media/light/save.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-save,
+.hc-black .notebookEditor .notebook-button.icon-save{
+	background-image: url("./media/dark/save_inverse.svg");
+}
+
+.moreActions .action-label.icon.toggle-more {
+	height: 20px;
+	width: 20px;
 }
