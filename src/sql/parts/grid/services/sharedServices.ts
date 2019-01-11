@@ -48,13 +48,13 @@ export function textFormatter(row: number, cell: any, value: any, columnDef: any
 		if (!value.isNull) {
 			valueToDisplay = value.displayValue.replace(/(\r\n|\n|\r)/g, ' ');
 			valueToDisplay = escape(valueToDisplay.length > 250 ? valueToDisplay.slice(0, 250) + '...' : valueToDisplay);
-			titleValue = value.displayValue;
+			titleValue = valueToDisplay;
 		} else {
 			cellClasses += ' missing-value';
 		}
 	} else if (typeof value === 'string') {
 		valueToDisplay = escape(value.length > 250 ? value.slice(0, 250) + '...' : value);
-		titleValue = value;
+		titleValue = valueToDisplay;
 	}
 
 	return `<span title="${titleValue}" class="${cellClasses}">${valueToDisplay}</span>`;
