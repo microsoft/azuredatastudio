@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { ProviderBase } from './providerBase';
 import { HadoopConnectionProvider, Connection } from './connectionProvider';
 import * as utils from './utils';
@@ -18,10 +19,6 @@ import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvi
 import { IFileSource } from './fileSources';
 import { AppContext } from './appContext';
 import * as constants from './constants';
-
-// SERVICE NAMES //////////////////////////////////////////////////////////
-export const ObjectExplorerService = 'objectexplorer';
-const objectExplorerPrefix: string = 'objectexplorer://';
 
 export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops.ObjectExplorerExpander, ITreeChangeHandler {
     public readonly supportedProviderId: string = constants.mssqlProviderId;
@@ -38,7 +35,7 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
         this.appContext.registerService<HadoopObjectExplorerExpander>(constants.ObjectExplorerService, this);
     }
 
-    expandNodeFromExpander(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
+    expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
         return new Promise((resolve, reject) => {
             if (!nodeInfo) {
                 reject('expandNode requires a nodeInfo object to be passed');
@@ -51,24 +48,29 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
     private async doExpandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
         let session = this.sessionMap.get(nodeInfo.sessionId);
         if (!session) {
-            if (nodeInfo.bigDataClusterEndpoints) {
-                let endpoints = nodeInfo.bigDataClusterEndpoints;
-                let index = endpoints.findIndex(ep => ep.serviceName === 'Knox');
+            let parentConnection = await sqlops.connection.getCurrentConnection();
+            if (parentConnection && parentConnection.providerName === this.supportedProviderId) {
+                let credentials = await sqlops.connection.getCredentials(parentConnection.connectionId);
+                parentConnection.options = Object.assign(parentConnection.options, credentials);
+
+                let serverInfo = await sqlops.connection.getServerInfo(parentConnection.connectionId);
+                let endpoints = serverInfo.bigDataClusterEndpoints;
+                let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+
                 let connInfo: sqlops.connection.Connection = {
                     options: {
                         'host': endpoints[index].ipAddress,
-                        'groupId': 'C777F06B-202E-4480-B475-FA416154D458',
+                        'groupId': parentConnection.options.groupId,
                         'knoxport': '',
-                        'user': 'root',
-                        'password': 'Yukon900'
+                        'user': 'root', //con.options.userName cluster setup has to have the same user for master and big data cluster
+                        'password': credentials.password,
                     },
-                    providerName: 'HADOOP_KNOX',
-                    connectionId: 'abcd1234'
+                    providerName: constants.hadoopKnoxProviderName,
+                    connectionId: UUID.generateUuid()
                 };
 
                 let connection = new Connection(connInfo);
-                connection.saveUriWithPrefix(objectExplorerPrefix);
-                //session = new Session(connection, nodeInfo.nodePath);
+                connection.saveUriWithPrefix(constants.objectExplorerPrefix);
                 session = new Session(connection, nodeInfo.sessionId);
                 session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), nodeInfo.nodePath);
                 this.sessionMap.set(nodeInfo.sessionId, session);
@@ -104,39 +106,14 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
                 return false;
             }
         } else {
-            if (nodeInfo.nodePath.indexOf('/') > 0) {
-                setTimeout(() => {
+            setTimeout(() => {
 
-                    // Running after promise resolution as we need the Ops Studio-side map to have been updated
-                    // Intentionally not awaiting or catching errors.
-                    // Any failure in startExpansion should be emitted in the expand complete result
-                    // We want this to be async and ideally return true before it completes
-                    this.startExpansion(session, nodeInfo, isRefresh);
-                }, 10);
-            }
-            else {
-                let expandResult: sqlops.ObjectExplorerExpandInfo = {
-                    sessionId: session.uri,
-                    nodePath: nodeInfo.nodePath,
-                    errorMessage: undefined,
-                    nodes: []
-                };
-                try {
-                    let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
-                    if (!node) {
-                        expandResult.errorMessage = localize('nodeNotFound', 'Cannot expand object explorer node. Couldn\t find node for path {0}', nodeInfo.nodePath);
-                    } else {
-                        expandResult.errorMessage = node.getNodeInfo().errorMessage;
-                        if (node.getNodeInfo().nodeType === 'hadoop:root') {
-                            expandResult.nodes = [node.getNodeInfo()];
-                        }
-                    }
-
-                } catch (error) {
-                    expandResult.errorMessage = utils.getErrorMessage(error);
-                }
-                this.expandCompleteEmitter.fire(expandResult);
-            }
+                // Running after promise resolution as we need the Ops Studio-side map to have been updated
+                // Intentionally not awaiting or catching errors.
+                // Any failure in startExpansion should be emitted in the expand complete result
+                // We want this to be async and ideally return true before it completes
+                this.startExpansion(session, nodeInfo, isRefresh);
+            }, 10);
         }
         return true;
     }
@@ -167,7 +144,7 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
 
     refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
         // TODO #658 implement properly
-        return this.expandNodeFromExpander(nodeInfo, true);
+        return this.expandNode(nodeInfo, true);
     }
 
     closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
@@ -209,8 +186,7 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
                 let nodeInfo = node.getNodeInfo();
                 let expandInfo: sqlops.ExpandNodeInfo = {
                     nodePath: nodeInfo.nodePath,
-                    sessionId: session.uri,
-                    bigDataClusterEndpoints: []
+                    sessionId: session.uri
                 };
                 await this.refreshNode(expandInfo);
             }
@@ -283,6 +259,7 @@ export class Session {
     public get root(): RootNode {
         return this._root;
     }
+
 }
 
 class RootNode extends TreeNode {
@@ -296,7 +273,6 @@ class RootNode extends TreeNode {
     }
 
     public get nodePathValue(): string {
-        //return this.session.uri;
         return this.nodePath + '/' + constants.dataService;
     }
 
@@ -328,7 +304,7 @@ class RootNode extends TreeNode {
             nodeStatus: undefined,
             nodeType: 'hadoop:root',
             nodeSubType: undefined,
-            iconType: 'root'
+            iconType: 'folder'
         };
         return nodeInfo;
     }

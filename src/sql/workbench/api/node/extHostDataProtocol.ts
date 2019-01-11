@@ -349,33 +349,26 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	public $expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).expandNode(nodeInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).expandNode(nodeInfo);
 	}
 
-	public $expandObjectExplorerNodeFromExpander(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerExpander>(handle).expandNodeFromExpander(nodeInfo);
-	}
 
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).refreshNode(nodeInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).refreshNode(nodeInfo);
 	}
 
 	public $closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).closeSession(closeSessionInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).closeSession(closeSessionInfo);
 	}
 
 	public $findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).findNodes(findNodesInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).findNodes(findNodesInfo);
 	}
 
 	public $onObjectExplorerSessionCreated(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionCreated(handle, response);
 	}
-
-	public $onObjectExplorerSessionCreatedFromExpander(handle: number, response: sqlops.ObjectExplorerSession): void {
-		this._proxy.$onObjectExplorerSessionCreated(handle, response);
-	}
-
+	
 	public $onObjectExplorerSessionDisconnected(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionDisconnected(handle, response);
 	}

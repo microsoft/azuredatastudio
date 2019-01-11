@@ -104,6 +104,13 @@ declare module 'sqlops' {
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
 		/**
+		 * Get the credentials for an active connection
+		 * @param {string} connectionId The id of the connection
+		 * @returns ServerInfo
+		 */
+		export function getServerInfo(connectionId: string): Thenable<ServerInfo>;
+
+		/**
 		 * Interface for representing a connection when working with connection APIs
 		*/
 		export interface Connection extends ConnectionInfo {
@@ -1133,7 +1140,6 @@ declare module 'sqlops' {
 		sessionId: string;
 		rootNode: NodeInfo;
 		errorMessage: string;
-		bigDataClusterEndpoints: BigDataClusterEndpoint [];
 	}
 
 	export interface ObjectExplorerSessionResponse {
@@ -1150,7 +1156,6 @@ declare module 'sqlops' {
 	export interface ExpandNodeInfo {
 		sessionId: string;
 		nodePath: string;
-		bigDataClusterEndpoints: BigDataClusterEndpoint [];
 	}
 
 	export interface FindNodesInfo {
@@ -1173,32 +1178,6 @@ declare module 'sqlops' {
 
 	export interface ObjectExplorerFindNodesResponse {
 		nodes: NodeInfo[];
-	}
-
-	/**
-	 * Context object passed as an argument to command callbacks.
-	 * Defines the key properties required to identify a node in the object
-	 * explorer tree and take action against it.
-	 */
-	export interface ObjectExplorerContext {
-
-		/**
-		 * The connection information for the selected object.
-		 * Note that the connection is not guaranteed to be in a connected
-		 * state on click.
-		 */
-		connectionProfile: IConnectionProfile;
-		/**
-		 * Defines whether this is a Connection-level object.
-		 * If not, the object is expected to be a child object underneath
-		 * one of the connections.
-		 */
-		isConnectionNode: boolean;
-		/**
-		 * Node info for objects below a specific connection. This
-		 * may be null for a Connection-level object
-		 */
-		nodeInfo: NodeInfo;
 	}
 
 	export interface ObjectExplorerProvider extends DataProvider {
@@ -1225,13 +1204,15 @@ declare module 'sqlops' {
 		 */
 		readonly supportedProviderId: string;
 
-		expandNodeFromExpander(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
+		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
 		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
+		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
+
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
-		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
+		//registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}

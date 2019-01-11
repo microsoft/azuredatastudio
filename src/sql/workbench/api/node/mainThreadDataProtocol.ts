@@ -256,8 +256,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		let expander: sqlops.ObjectExplorerExpander = {
 			supportedProviderId: providerId,
 			providerId: undefined,
-			expandNodeFromExpander(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-				return self._proxy.$expandObjectExplorerNodeFromExpander(handle, nodeInfo);
+			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},
 			refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$refreshObjectExplorerNode(handle, nodeInfo);
@@ -265,12 +265,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
 				return self._proxy.$findNodes(handle, findNodesInfo);
 			},
-			registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
-				// TODO implement in exthostdataprotocol
-				// return self._proxy.$regis(handle, findNodesInfo);
+			closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+				return self._proxy.$closeObjectExplorerSession(handle, closeSessionInfo);
 			},
 			registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
-				// TODO implement in exthostdataprotocol
+				//throw new error('Not Implemented!');
 			}
 		};
 		this._objectExplorerService.registerExpander(expander);

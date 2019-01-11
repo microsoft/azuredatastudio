@@ -263,6 +263,14 @@ export interface IConnectionManagementService {
 	 */
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
 
+		/**
+	 * Get the credentials for a connected connection profile, as they would appear in the options dictionary
+	 * @param {string} profileId The id of the connection profile to get the password for
+	 * @returns ServerInfo
+	 * in the connection profile's options dictionary, or undefined if the profile is not connected
+	 */
+	getActiveConnectionServerInfo(profileId: string): sqlops.ServerInfo;
+
 	/**
 	 * Get the connection string for the provided connection ID
 	 */

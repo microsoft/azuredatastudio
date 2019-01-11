@@ -118,6 +118,9 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
+				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
+					return extHostConnectionManagement.$getServerInfo(connectionId);
+				},
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
@@ -237,9 +240,6 @@ export function createApiFactory(
 			};
 
 			let registerObjectExplorerExpander = (provider: sqlops.ObjectExplorerExpander): vscode.Disposable => {
-				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
-					extHostDataProvider.$onObjectExplorerSessionCreatedFromExpander(provider.handle, response);
-				});
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);

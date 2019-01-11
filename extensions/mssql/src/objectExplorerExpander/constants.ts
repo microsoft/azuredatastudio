@@ -8,6 +8,7 @@ export const configLogDebugInfo = 'logDebugInfo';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const hadoopKnoxProviderName = 'HADOOP_KNOX';
+export const hadoopKnoxEndpointName = 'Knox';
 export const protocolVersion = '1.0';
 export const hostPropName = 'host';
 export const userPropName = 'user';
@@ -89,6 +90,7 @@ export const workbenchCloseActiveEditor = 'workbench.action.closeActiveEditor';
 
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
+export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 
 export enum BuiltInCommands {

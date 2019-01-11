@@ -87,7 +87,6 @@ suite('SQL Object Explorer Service tests', () => {
 				errorMessage: ''
 			},
 			errorMessage: '',
-			bigDataClusterEndpoints: [],
 		};
 
 		objectExplorerFailedSession = {
@@ -95,7 +94,6 @@ suite('SQL Object Explorer Service tests', () => {
 			sessionId: failedSessionId,
 			rootNode: undefined,
 			errorMessage: 'Connection Failed',
-			bigDataClusterEndpoints: [],
 		};
 
 		objectExplorerCloseSessionResponse = {
