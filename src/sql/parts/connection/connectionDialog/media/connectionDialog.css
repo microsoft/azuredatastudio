@@ -90,6 +90,8 @@
 	margin: 0px 13px;
 }
 
+.vs-dark .connection-dialog .connection-history-actions .action-label.icon,
+.hc-black .connection-dialog .connection-history-actions .action-label.icon,
 .connection-dialog .connection-history-actions .action-label.icon {
 	display: block;
 	height: 20px;
