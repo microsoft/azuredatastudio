@@ -6,16 +6,21 @@ import 'vs/css!./textCell';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, OnChanges, SimpleChange } from '@angular/core';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
-
+import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Emitter } from 'vs/base/common/event';
+import URI from 'vs/base/common/uri';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/parts/notebook/outputs/sanitizer';
-import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 
@@ -25,6 +30,7 @@ export const TEXT_SELECTOR: string = 'text-cell-component';
 })
 export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('preview', { read: ElementRef }) private output: ElementRef;
+	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@Input() cellModel: ICellModel;
 
 	@Input() set model(value: NotebookModel) {
@@ -38,18 +44,25 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _content: string;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
-	private _previewCssApplied: boolean = false;
 	private _model: NotebookModel;
 	private _activeCellId: string;
+	private readonly _onDidClickLink = this._register(new Emitter<URI>());
+	public readonly onDidClickLink = this._onDidClickLink.event;
+	protected isLoading: boolean;
+	private _cellToggleMoreActions: CellToggleMoreActions;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IOpenerService) private readonly openerService: IOpenerService,
 	) {
 		super();
 		this.isEditMode = false;
+		this.isLoading = true;
+		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -68,13 +81,19 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this._activeCellId;
 	}
 
+	private setLoading(isLoading: boolean): void {
+		this.isLoading = isLoading;
+		this._changeRef.detectChanges();
+	}
+
 	ngOnInit() {
 		this.updatePreview();
+		this.setLoading(false);
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.cellModel.onOutputsChanged(e => {
+		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
-		});
+		}));
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -82,9 +101,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
-				if (this._activeCellId) {
-					this.toggleEditMode(false);
-				}
+				this.toggleEditMode(false);
 				break;
 			}
 		}
@@ -117,7 +134,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		return content;
 	}
-	
+
 
 	// Todo: implement layout
 	public layout() {
@@ -126,32 +143,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateTheme(theme: IColorTheme): void {
 		let outputElement = <HTMLElement>this.output.nativeElement;
 		outputElement.style.borderTopColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
+
+		let moreActionsEl = <HTMLElement>this.moreActionsElementRef.nativeElement;
+		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
 	public handleContentChanged(): void {
-		if (!this._previewCssApplied) {
-			this.updatePreviewCssClass();
-		}
 		this.updatePreview();
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
-		this.updatePreviewCssClass();
-		this.updatePreview();
-		this._changeRef.detectChanges();
-	}
-
-	// Updates the css class to preview 'div' based on edit mode
-	private updatePreviewCssClass() {
-		let outputElement = <HTMLElement>this.output.nativeElement;
-		if (this.isEditMode && this.cellModel.source) {
-			outputElement.className = 'notebook-preview';
-			this._previewCssApplied = true;
+		if (!this.isEditMode && this.cellModel.id === this._activeCellId) {
+			this._cellToggleMoreActions.toggle(true, this.moreActionsElementRef, this.model, this.cellModel);
 		}
 		else {
-			outputElement.className = '';
-			this._previewCssApplied = false;
+			this._cellToggleMoreActions.toggle(false, this.moreActionsElementRef, this.model, this.cellModel);
 		}
+		this.updatePreview();
+		this._changeRef.detectChanges();
 	}
 }

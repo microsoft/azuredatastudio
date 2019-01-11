@@ -348,8 +348,8 @@ export function createApiFactory(
 			};
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
-				createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title, extension.extensionLocation);
+				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
 					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
@@ -432,17 +432,18 @@ export function createApiFactory(
 					return extHostNotebookDocumentsAndEditors.getAllEditors();
 				},
 				get onDidOpenNotebookDocument() {
-					return extHostNotebook.onDidOpenNotebookDocument;
+					return extHostNotebookDocumentsAndEditors.onDidOpenNotebookDocument;
 				},
 				get onDidChangeNotebookCell() {
-					return extHostNotebook.onDidChangeNotebookCell;
+					return extHostNotebookDocumentsAndEditors.onDidChangeNotebookCell;
 				},
 				showNotebookDocument(uri: vscode.Uri, showOptions: sqlops.nb.NotebookShowOptions) {
 					return extHostNotebookDocumentsAndEditors.showNotebookDocument(uri, showOptions);
 				},
 				registerNotebookProvider(provider: sqlops.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
-				}
+				},
+				CellRange: sqlExtHostTypes.CellRange
 			};
 
 			return {

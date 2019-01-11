@@ -26,7 +26,6 @@ const attachToLabel: string = localize('AttachTo', 'Attach to: ');
 const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
-const msgConnectionNotApplicable = localize('connectionNotSupported', 'n/a');
 const msgLocalHost = localize('localhost', 'Localhost');
 
 // Action to add a cell to notebook based on cell type(code/markdown).
@@ -65,8 +64,6 @@ export class SaveNotebookAction extends Action {
 		let saved = await context.save();
 		if (saved) {
 			this._notificationService.notify({ severity: Severity.Info, message: SaveNotebookAction.notebookSavedMsg, actions });
-		} else {
-			this._notificationService.error(SaveNotebookAction.notebookFailedSaveMsg);
 		}
 		return saved;
 	}

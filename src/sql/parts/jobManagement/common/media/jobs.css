@@ -304,14 +304,6 @@ table.jobprevruns > tbody {
 	background-image: url('refresh_inverse.svg');
 }
 
-.agent-actionbar-container .monaco-action-bar > ul.actions-container {
-	padding-top: 10px;
-}
-
-jobsview-component .agent-actionbar-container {
-    height: 40px;
-}
-
 .agent-actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
 	padding-left: 20px;
 }
@@ -414,4 +406,11 @@ jobsview-component .jobview-grid .slick-cell.error-row {
 #proxiesDiv .proxyview-proxynameindicatordisabled {
     width: 5px;
     background: red;
+}
+
+#jobsDiv jobsview-component .monaco-toolbar.carbon-taskbar,
+#operatorsDiv joboperatorsview-component .monaco-toolbar.carbon-taskbar,
+#alertsDiv jobalertsview-component .monaco-toolbar.carbon-taskbar,
+#proxiesDiv jobproxiesview-component .monaco-toolbar.carbon-taskbar {
+    margin: 10px 0px 10px 0px;
 }

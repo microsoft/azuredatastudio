@@ -21,9 +21,10 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, ModelComponentTypes, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
+import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -716,7 +717,7 @@ export interface ExtHostModelViewDialogShape {
 
 export interface MainThreadModelViewDialogShape extends IDisposable {
 	$openEditor(handle: number, modelViewId: string, title: string, options?: sqlops.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void>;
-	$openDialog(handle: number): Thenable<void>;
+	$openDialog(handle: number, dialogName?: string): Thenable<void>;
 	$closeDialog(handle: number): Thenable<void>;
 	$setDialogDetails(handle: number, details: IModelViewDialogDetails): Thenable<void>;
 	$setTabDetails(handle: number, details: IModelViewTabDetails): Thenable<void>;
@@ -795,7 +796,17 @@ export interface INotebookDocumentsAndEditorsDelta {
 export interface INotebookModelAddedData {
 	uri: UriComponents;
 	providerId: string;
+	providers: string[];
 	isDirty: boolean;
+	cells: sqlops.nb.NotebookCell[];
+}
+
+export interface INotebookModelChangedData {
+	uri: UriComponents;
+	providerId: string;
+	providers: string[];
+	isDirty: boolean;
+	cells: sqlops.nb.NotebookCell[];
 }
 
 export interface INotebookEditorAddData {
@@ -814,9 +825,11 @@ export interface INotebookShowOptions {
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {
 	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void;
+	$acceptModelChanged(strURL: UriComponents, e: INotebookModelChangedData);
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
+	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
 }

@@ -202,7 +202,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async deploy() {
-		let service = await DataTierApplicationWizard.getService();
+		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, sqlops.TaskExecutionMode.execute);
@@ -213,7 +213,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async extract() {
-		let service = await DataTierApplicationWizard.getService();
+		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, sqlops.TaskExecutionMode.execute);
@@ -224,7 +224,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async export() {
-		let service = await DataTierApplicationWizard.getService();
+		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, sqlops.TaskExecutionMode.execute);
@@ -235,7 +235,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async import() {
-		let service = await DataTierApplicationWizard.getService();
+		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
 		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
@@ -245,9 +245,8 @@ export class DataTierApplicationWizard {
 		}
 	}
 
-	public static async getService(): Promise<sqlops.DacFxServicesProvider> {
-		let currentConnection = await sqlops.connection.getCurrentConnection();
-		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(currentConnection.providerName, sqlops.DataProviderType.DacFxServicesProvider);
+	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
+		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);
 		return service;
 	}
 }

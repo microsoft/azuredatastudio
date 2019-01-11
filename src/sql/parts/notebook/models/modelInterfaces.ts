@@ -19,6 +19,7 @@ import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -248,9 +249,9 @@ export interface INotebookModel {
 	readonly languageInfo: nb.ILanguageInfo;
 
 	/**
-	 * The notebook service used to call backend APIs
+	 * All notebook managers applicable for a given notebook
 	 */
-	readonly notebookManager: INotebookManager;
+	readonly notebookManagers: INotebookManager[];
 
 	/**
 	 * Event fired on first initialization of the kernel and
@@ -288,9 +289,20 @@ export interface INotebookModel {
 	readonly contexts: IDefaultConnection | undefined;
 
 	/**
+	 * Event fired on first initialization of the cells and
+	 * on subsequent change events
+	 */
+	readonly contentChanged: Event<NotebookContentChange>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
+
+	/**
+	 * Current notebook provider id
+	 */
+	providerId: string;
 
 	/**
 	 * Change the current kernel from the Kernel dropdown
@@ -328,6 +340,37 @@ export interface INotebookModel {
 	 * Notifies the notebook of a change in the cell
 	 */
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void;
+
+
+	/**
+	 * Push edit operations, basically editing the model. This is the preferred way of
+	 * editing the model. Long-term, this will ensure edit operations can be added to the undo stack
+	 * @param edits The edit operations to perform
+	 */
+	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
+}
+
+export interface NotebookContentChange {
+	/**
+	 * The type of change that occurred
+	 */
+	changeType: NotebookChangeType;
+	/**
+	 * Optional cells that were changed
+	 */
+	cells?: ICellModel | ICellModel[];
+	/**
+	 * Optional index of the change, indicating the cell at which an insert or
+	 * delete occurred
+	 */
+	cellIndex?: number;
+	/**
+	 * Optional value indicating if the notebook is in a dirty or clean state after this change
+	 *
+	 * @type {boolean}
+	 * @memberof NotebookContentChange
+	 */
+	isDirty?: boolean;
 }
 
 export interface ICellModelOptions {
@@ -373,7 +416,8 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
-	notebookManager: INotebookManager;
+	notebookManagers: INotebookManager[];
+	providerId: string;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;

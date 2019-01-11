@@ -37,7 +37,7 @@
 }
 
 .notebookEditor .monaco-select-box {
-	min-width: 150px;
+	min-width: 100px;
 }
 
 .notebookEditor .notebook-button.icon-add{
@@ -74,4 +74,9 @@
 .vs-dark .notebookEditor .notebook-button.icon-save,
 .hc-black .notebookEditor .notebook-button.icon-save{
 	background-image: url("./media/dark/save_inverse.svg");
+}
+
+.moreActions .action-label.icon.toggle-more {
+	height: 20px;
+	width: 20px;
 }

@@ -97,15 +97,6 @@ export class WizardModal extends Modal {
 
 		messageChangeHandler(this._wizard.message);
 		this._wizard.onMessageChange(message => messageChangeHandler(message));
-
-		this._wizard.pages.forEach((page, index) => {
-			page.onValidityChanged(valid => {
-				if (index === this._wizard.currentPage) {
-					this._nextButton.enabled = this._wizard.nextButton.enabled && page.valid;
-					this._doneButton.enabled = this._wizard.doneButton.enabled && page.valid;
-				}
-			});
-		});
 	}
 
 	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false): Button {
@@ -198,6 +189,13 @@ export class WizardModal extends Modal {
 		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;
 		this._nextButton.enabled = this._wizard.nextButton.enabled && currentPageValid;
 		this._doneButton.enabled = this._wizard.doneButton.enabled && currentPageValid;
+
+		pageToShow.onValidityChanged(valid => {
+			if (index === this._wizard.currentPage) {
+				this._nextButton.enabled = this._wizard.nextButton.enabled && pageToShow.valid;
+				this._doneButton.enabled = this._wizard.doneButton.enabled && pageToShow.valid;
+			}
+		});
 	}
 
 	private setButtonsForPage(index: number) {

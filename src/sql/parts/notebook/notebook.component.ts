@@ -5,41 +5,50 @@
 
 import './notebookStyles';
 
-import { nb } from 'sqlops';
-
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
-import { INotificationService, INotification } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
-
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
-
-import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
-import { ICellModel, IModelFactory, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor } from 'sql/services/notebook/notebookService';
-import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { NotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/notebookModel';
-import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
-import * as notebookUtils from './notebookUtils';
-import { Deferred } from 'sql/base/common/promise';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, IActionItem } from 'vs/base/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
+import { Schemas } from 'vs/base/common/network';
+import URI from 'vs/base/common/uri';
+import { IHistoryService } from 'vs/workbench/services/history/common/history';
+import * as paths from 'vs/base/common/paths';
+import { IWindowService } from 'vs/platform/windows/common/windows';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/parts/extensions/common/extensions';
+
+import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
+import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
+import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
+import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { Deferred } from 'sql/base/common/promise';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IResourceInput } from 'vs/platform/editor/common/editor';
+import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -54,14 +63,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
 	protected _actionBar: Taskbar;
-	private _activeCell: ICellModel;
 	protected isLoading: boolean;
-	private notebookManager: INotebookManager;
+	private notebookManagers: INotebookManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
-	private _activeCellId: string;
 
 
 	constructor(
@@ -80,7 +87,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IConnectionDialogService) private connectionDialogService: IConnectionDialogService,
 		@Inject(IContextKeyService) private contextKeyService: IContextKeyService,
 		@Inject(IMenuService) private menuService: IMenuService,
-		@Inject(IKeybindingService) private keybindingService: IKeybindingService
+		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
+		@Inject(IHistoryService) private historyService: IHistoryService,
+		@Inject(IWindowService) private windowService: IWindowService,
+		@Inject(IViewletService) private viewletService: IViewletService,
+		@Inject(IUntitledEditorService) private untitledEditorService: IUntitledEditorService,
+		@Inject(IEditorGroupsService) private editorGroupService: IEditorGroupsService
 	) {
 		super();
 		this.updateProfile();
@@ -114,6 +126,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
+		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
 		}
@@ -124,14 +137,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public get activeCellId(): string {
-		return this._activeCellId;
+		return this._model && this._model.activeCell ? this._model.activeCell.id :  '';
 	}
 
 	public get modelRegistered(): Promise<NotebookModel> {
 		return this._modelRegisteredDeferred.promise;
 	}
 
-	protected get cells(): ReadonlyArray<ICellModel> {
+	public get cells(): ICellModel[] {
 		return this._model ? this._model.cells : [];
 	}
 
@@ -140,23 +153,32 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
-	public selectCell(cell: ICellModel) {
-		if (cell !== this._activeCell) {
-			if (this._activeCell) {
-				this._activeCell.active = false;
+	public selectCell(cell: ICellModel, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
+		if (cell !== this.model.activeCell) {
+			if (this.model.activeCell) {
+				this.model.activeCell.active = false;
 			}
-			this._activeCell = cell;
-			this._activeCell.active = true;
-			this._model.activeCell = this._activeCell;
-			this._activeCellId = cell.id;
+			this._model.activeCell = cell;
+			this._model.activeCell.active = true;
 			this._changeRef.detectChanges();
 		}
+	}
+
+	public unselectActiveCell() {
+		if (this.model.activeCell) {
+			this.model.activeCell.active = false;
+		}
+		this._changeRef.detectChanges();
 	}
 
 	// Add cell based on cell type
 	public addCell(cellType: CellType)
 	{
-		this._model.addCell(cellType);
+		let newCell = this._model.addCell(cellType);
+		this.selectCell(newCell);
 	}
 
 	// Updates Notebook model's trust details
@@ -174,12 +196,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		switch (event.key) {
 			case 'ArrowDown':
 			case 'ArrowRight':
-				let nextIndex = (this.findCellIndex(this._activeCell) + 1) % this.cells.length;
+				let nextIndex = (this.findCellIndex(this.model.activeCell) + 1) % this.cells.length;
 				this.selectCell(this.cells[nextIndex]);
 				break;
 			case 'ArrowUp':
 			case 'ArrowLeft':
-				let index = this.findCellIndex(this._activeCell);
+				let index = this.findCellIndex(this.model.activeCell);
 				if (index === 0) {
 					index = this.cells.length;
 				}
@@ -208,23 +230,61 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private async loadModel(): Promise<void> {
-		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
+		await this.awaitNonDefaultProvider();
+		for (let providerId of this._notebookParams.providers) {
+			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			this.notebookManagers.push(notebookManager);
+		}
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
-			notebookManager: this.notebookManager
+			notebookManagers: this.notebookManagers,
+			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter' // this is tricky; really should also depend on the connection profile
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
-		this._model = model;
+		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
-		this._register(model);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
+		// Set first cell as default active cell
+		if (this._model && this._model.cells && this._model.cells[0]) {
+			this.selectCell(model.cells[0]);
+		}
 		this._changeRef.detectChanges();
+	}
+
+	private async awaitNonDefaultProvider(): Promise<void> {
+		// Wait on registration for now. Long-term would be good to cache and refresh
+		await this.notebookService.registrationComplete;
+		// Refresh the provider if we had been using default
+		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
+			let providers= notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
+			this._notebookParams.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
+		}
+		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
+			// If it's still the default, warn them they should install an extension
+			this.notificationService.prompt(Severity.Warning,
+				localize('noKernelInstalled', 'Please install the SQL Server 2019 extension to run cells'),
+				[{
+					label: localize('installSql2019Extension', 'Install Extension'),
+					run: () => this.openExtensionGallery()
+				}]);
+		}
+	}
+
+	private async openExtensionGallery(): Promise<void> {
+		try {
+			let viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true) as IExtensionsViewlet;
+			viewlet.search('sql-vnext');
+			viewlet.focus();
+		} catch (error) {
+			this.notificationService.error(error.message);
+		}
 	}
 
 	// Updates toolbar components
@@ -318,7 +378,78 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	// Gets file path from recent workspace in local
+	private getLastActiveFilePath(untitledResource: URI): string {
+		let fileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE.toLocaleLowerCase();
+
+		let lastActiveFile = this.historyService.getLastActiveFile();
+		if (lastActiveFile) {
+			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), fileName)).fsPath;
+		}
+
+		let lastActiveFolder = this.historyService.getLastActiveWorkspaceRoot('file');
+		if (lastActiveFolder) {
+			return URI.file(paths.join(lastActiveFolder.fsPath, fileName)).fsPath;
+		}
+		return fileName;
+	}
+
+	promptForPath(defaultPath: string): TPromise<string> {
+		return this.windowService.showSaveDialog({
+			defaultPath: defaultPath,
+			filters: [{ name: localize('notebookFile', 'Notebook'), extensions: ['ipynb']}]
+		 });
+	}
+
+	// Entry point to save notebook
 	public async save(): Promise<boolean> {
+		let self = this;
+		let notebookUri = this.notebookParams.notebookUri;
+		if (notebookUri.scheme === Schemas.untitled) {
+			let dialogPath = this.getLastActiveFilePath(notebookUri);
+			return this.promptForPath(dialogPath).then(path => {
+				if (path) {
+					let target = URI.file(path);
+					let resource = self._model.notebookUri;
+					self._model.notebookUri = target;
+					this.saveNotebook().then(result => {
+						if(result)
+						{
+							return this.replaceUntitledNotebookEditor(resource, target);
+						}
+						return result;
+					 });
+				}
+				return false; // User clicks cancel
+			});
+		}
+		else {
+			return await this.saveNotebook();
+		}
+	}
+
+	// Replaces untitled notebook editor with the saved file name
+	private async replaceUntitledNotebookEditor(resource: URI, target: URI): Promise<boolean> {
+		let encodingOfSource = this.untitledEditorService.getEncoding(resource);
+		const replacement: IResourceInput = {
+			resource: target,
+			encoding: encodingOfSource,
+			options: {
+				pinned: true
+			}
+		};
+
+		return TPromise.join(this.editorGroupService.groups.map(g =>
+			this.editorService.replaceEditors([{
+				editor: { resource },
+				replacement
+			}], g))).then(() => {
+				this.notebookService.renameNotebookEditor(resource, target, this);
+				return true;
+			});
+	}
+
+	private async saveNotebook(): Promise<boolean> {
 		try {
 			let saved = await this._model.saveModel();
 			if (saved) {
@@ -354,6 +485,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._notebookParams.notebookUri.toString();
 	}
 
+	public get modelReady(): Promise<INotebookModel> {
+		return this._modelReadyDeferred.promise;
+	}
+
 	isActive(): boolean {
 		return this.editorService.activeEditor === this.notebookParams.input;
 	}
@@ -365,5 +500,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	isDirty(): boolean {
 		return this.notebookParams.input.isDirty();
+	}
+
+	executeEdits(edits: ISingleNotebookEditOperation[]): boolean {
+		if (!edits || edits.length === 0) {
+			return false;
+		}
+		this._model.pushEditOperations(edits);
+		return true;
 	}
 }

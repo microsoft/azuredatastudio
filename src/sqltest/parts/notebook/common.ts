@@ -8,9 +8,10 @@
 import { nb, IConnectionProfile } from 'sqlops';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, IDefaultConnection } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class NotebookModelStub implements INotebookModel {
     constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -29,7 +30,7 @@ export class NotebookModelStub implements INotebookModel {
     get clientSession(): IClientSession {
         throw new Error('method not implemented.');
     }
-    get notebookManager(): INotebookManager {
+    get notebookManagers(): INotebookManager[] {
         throw new Error('method not implemented.');
     }
     get kernelChanged(): Event<nb.IKernelChangedArgs> {
@@ -43,10 +44,16 @@ export class NotebookModelStub implements INotebookModel {
     get contextsChanged(): Event<void> {
         throw new Error('method not implemented.');
     }
+    get contentChanged(): Event<NotebookContentChange> {
+		throw new Error('method not implemented.');
+	}
     get specs(): nb.IAllKernels {
         throw new Error('method not implemented.');
     }
     get contexts(): IDefaultConnection {
+        throw new Error('method not implemented.');
+    }
+    get providerId(): string {
         throw new Error('method not implemented.');
     }
     changeKernel(displayName: string): void {
@@ -65,6 +72,9 @@ export class NotebookModelStub implements INotebookModel {
         throw new Error('Method not implemented.');
     }
     saveModel(): Promise<boolean> {
+        throw new Error('Method not implemented.');
+    }
+    pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
         throw new Error('Method not implemented.');
     }
 }

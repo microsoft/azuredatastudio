@@ -12,16 +12,18 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants } from './modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants, NotebookContentChange } from './modelInterfaces';
 import { NotebookChangeType, CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
+import URI from 'vs/base/common/uri';
+import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -37,35 +39,14 @@ export class ErrorInfo {
 	constructor(public readonly message: string, public readonly severity: MessageLevel) {
 	}
 }
-export interface NotebookContentChange {
-	/**
-	 * What was the change that occurred?
-	 */
-	changeType: NotebookChangeType;
-	/**
-	 * Optional cells that were changed
-	 */
-	cells?: ICellModel | ICellModel[];
-	/**
-	 * Optional index of the change, indicating the cell at which an insert or
-	 * delete occurred
-	 */
-	cellIndex?: number;
-	/**
-	 * Optional value indicating if the notebook is in a dirty or clean state after this change
-	 *
-	 * @type {boolean}
-	 * @memberof NotebookContentChange
-	 */
-	isDirty?: boolean;
-}
 
 export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
 	private _inErrorState: boolean = false;
-	private _clientSession: IClientSession;
+	private _clientSessions: IClientSession[] = [];
+	private _activeClientSession: IClientSession;
 	private _sessionLoadFinished: Promise<void>;
 	private _onClientSessionReady = new Emitter<IClientSession>();
 	private _activeContexts: IDefaultConnection;
@@ -80,20 +61,33 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _hadoopConnection: NotebookConnection;
 	private _defaultKernel: nb.IKernelSpec;
 	private _activeCell: ICellModel;
+	private _providerId: string;
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
-		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManager) {
+		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
 		}
 		if (startSessionImmediately) {
 			this.backgroundStartSession();
 		}
 		this._trustedMode = false;
+		this._providerId = notebookOptions.providerId;
+	}
+
+	public get notebookManagers(): INotebookManager[] {
+		return this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 	}
 
 	public get notebookManager(): INotebookManager {
-		return this.notebookOptions.notebookManager;
+		return this.notebookManagers.find(manager => manager.providerId === this._providerId);
+	}
+
+	public get notebookUri() : URI {
+		return this.notebookOptions.notebookUri;
+	}
+	public set notebookUri(value : URI) {
+		this.notebookOptions.notebookUri = value;
 	}
 
 	public get hasServerManager(): boolean {
@@ -106,7 +100,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get isSessionReady(): boolean {
-		return !!this._clientSession;
+		return !!this._activeClientSession;
 	}
 
 	/**
@@ -115,11 +109,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * notebook environment
 	 */
 	public get clientSession(): IClientSession {
-		return this._clientSession;
+		return this._activeClientSession;
 	}
 
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
-		return this.clientSession.kernelChanged;
+		return this._activeClientSession.kernelChanged;
 	}
 
 	public get kernelsChanged(): Event<nb.IKernelSpec> {
@@ -143,7 +137,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get specs(): nb.IAllKernels | undefined {
-		return this.notebookManager.sessionManager.specs;
+		let specs: nb.IAllKernels = {
+			defaultKernel: undefined,
+			kernels: []
+		};
+		this.notebookManagers.forEach(manager => {
+			if (manager.sessionManager && manager.sessionManager.specs && manager.sessionManager.specs.kernels) {
+				manager.sessionManager.specs.kernels.forEach(kernel => {
+					specs.kernels.push(kernel);
+				});
+				if (!specs.defaultKernel) {
+					specs.defaultKernel = manager.sessionManager.specs.defaultKernel;
+				}
+			}
+		});
+		return specs;
 	}
 
 	public get inErrorState(): boolean {
@@ -156,6 +164,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get trustedMode(): boolean {
 		return this._trustedMode;
+	}
+
+	public get providerId(): string {
+		return this._providerId;
 	}
 
 	public set trustedMode(isTrusted: boolean) {
@@ -191,11 +203,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._trustedMode = isTrusted;
 			let contents = null;
 			if (this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
-				contents = await this.notebookManager.contentManager.getNotebookContents(this.notebookOptions.notebookUri);
+				// TODO: separate ContentManager from NotebookManager
+				contents = await this.notebookManagers[0].contentManager.getNotebookContents(this.notebookOptions.notebookUri);
 			}
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = undefined;
+			this._defaultLanguageInfo = {
+				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
+				version: ''
+			};
 			if (contents) {
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
@@ -216,9 +233,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._cells.findIndex((cell) => cell.equals(cellModel));
 	}
 
-	public addCell(cellType: CellType, index?: number): void {
+	public addCell(cellType: CellType, index?: number): ICellModel {
 		if (this.inErrorState || !this._cells) {
-			return;
+			return null;
 		}
 		let cell = this.createCell(cellType);
 
@@ -228,12 +245,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._cells.push(cell);
 			index = undefined;
 		}
+		// Set newly created cell as active cell
+		this._activeCell.active = false;
+		this._activeCell = cell;
+		this._activeCell.active = true;
 
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsAdded,
 			cells: [cell],
 			cellIndex: index
 		});
+
+		return cell;
 	}
 
 	private createCell(cellType: CellType): ICellModel {
@@ -263,6 +286,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+		if (this.inErrorState || !this._cells) {
+			return;
+		}
+
+		for (let edit of edits) {
+			let newCells: ICellModel[] = [];
+			if (edit.cell) {
+				// TODO: should we validate and complete required missing parameters?
+				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
+				newCells.push(this.notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+			}
+			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+			this._contentChangedEmitter.fire({
+				changeType: NotebookChangeType.CellsAdded
+			});
+		}
+	}
+
 	public get activeCell(): ICellModel {
 		return this._activeCell;
 	}
@@ -276,29 +318,36 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public backgroundStartSession(): void {
-		this._clientSession = this.notebookOptions.factory.createClientSession({
-			notebookUri: this.notebookOptions.notebookUri,
-			notebookManager: this.notebookManager,
-			notificationService: this.notebookOptions.notificationService
-		});
-		let profile = this.connectionProfile as IConnectionProfile;
-
-		if (this.isValidKnoxConnection(profile)) {
-            this._hadoopConnection = new NotebookConnection(this.connectionProfile);
-        } else {
-            this._hadoopConnection = undefined;
-		}
-
-		this._clientSession.initialize(this._hadoopConnection);
-		this._sessionLoadFinished = this._clientSession.ready.then(async () => {
-			if (this._clientSession.isInErrorState) {
-				this.setErrorState(this._clientSession.errorMessage);
-			} else {
-				this._onClientSessionReady.fire(this._clientSession);
-				// Once session is loaded, can use the session manager to retrieve useful info
-				this.loadKernelInfo();
-				await this.loadActiveContexts(undefined);
+		// TODO: only one session should be active at a time, depending on the current provider
+		this.notebookManagers.forEach(manager => {
+			let clientSession = this.notebookOptions.factory.createClientSession({
+				notebookUri: this.notebookOptions.notebookUri,
+				notebookManager: manager,
+				notificationService: this.notebookOptions.notificationService
+			});
+			this._clientSessions.push(clientSession);
+			if (!this._activeClientSession) {
+				this._activeClientSession = clientSession;
 			}
+			let profile = this.connectionProfile as IConnectionProfile;
+
+			if (this.isValidKnoxConnection(profile)) {
+				this._hadoopConnection = new NotebookConnection(this.connectionProfile);
+			} else {
+				this._hadoopConnection = undefined;
+			}
+
+			clientSession.initialize(this._hadoopConnection);
+			this._sessionLoadFinished = clientSession.ready.then(async () => {
+				if (clientSession.isInErrorState) {
+					this.setErrorState(clientSession.errorMessage);
+				} else {
+					this._onClientSessionReady.fire(clientSession);
+					// Once session is loaded, can use the session manager to retrieve useful info
+					this.loadKernelInfo();
+					await this.loadActiveContexts(undefined);
+				}
+			});
 		});
 	}
 
@@ -322,7 +371,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
-		return this._clientSession.changeKernel(kernelSpec)
+		this.findProviderIdForKernel(kernelSpec);
+		return this._activeClientSession.changeKernel(kernelSpec)
 			.then((kernel) => {
 				kernel.ready.then(() => {
 					if (kernel.info) {
@@ -347,7 +397,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			SparkMagicContexts.configureContext(this.notebookOptions);
 			this._hadoopConnection = new NotebookConnection(newConnection);
 			this.refreshConnections(newConnection);
-			this._clientSession.updateConnection(this._hadoopConnection);
+			this._activeClientSession.updateConnection(this._hadoopConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
@@ -369,20 +419,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private loadKernelInfo(): void {
-		this.clientSession.kernelChanged(async (e) => {
-			await this.loadActiveContexts(e);
+		this._clientSessions.forEach(clientSession => {
+			clientSession.kernelChanged(async (e) => {
+				await this.loadActiveContexts(e);
+			});
 		});
 		try {
 			let sessionManager = this.notebookManager.sessionManager;
 			if (sessionManager) {
 				let defaultKernel = SparkMagicContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
 				this._defaultKernel = defaultKernel;
-				this._clientSession.statusChanged(async (session) => {
-					if (session && session.defaultKernelLoaded === true) {
-						this._kernelsChangedEmitter.fire(defaultKernel);
-					} else if (session && !session.defaultKernelLoaded) {
-						this._kernelsChangedEmitter.fire({ name: notebookConstants.python3, display_name: notebookConstants.python3DisplayName });
-					}
+				this._clientSessions.forEach(clientSession => {
+					clientSession.statusChanged(async (session) => {
+						if (session && session.defaultKernelLoaded === true) {
+							this._kernelsChangedEmitter.fire(defaultKernel);
+						} else if (session && !session.defaultKernelLoaded) {
+							this._kernelsChangedEmitter.fire({ name: notebookConstants.python3, display_name: notebookConstants.python3DisplayName });
+						}
+					});
 				});
 				this.doChangeKernel(defaultKernel);
 			}
@@ -396,9 +450,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// Otherwise, default to python
 	private getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
 		return notebook!.metadata!.language_info || {
-			name: 'python',
+			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 			version: '',
-			mimetype: 'x-python'
+			mimetype: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'x-sql' : 'x-python'
 		};
 	}
 
@@ -432,9 +486,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async handleClosed(): Promise<void> {
 		try {
-			if (this._clientSession) {
-				await this._clientSession.shutdown();
-				this._clientSession = undefined;
+			if (this._activeClientSession) {
+				await this._activeClientSession.shutdown();
+				this._clientSessions = undefined;
+				this._activeClientSession = undefined;
 			}
 		} catch (err) {
 			this.notifyError(localize('shutdownError', 'An error occurred when closing the notebook: {0}', err));
@@ -470,7 +525,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (!notebook) {
 			return false;
 		}
-		await this.notebookManager.contentManager.save(this.notebookOptions.notebookUri, notebook);
+		// TODO: refactor ContentManager out from NotebookManager
+		await this.notebookManagers[0].contentManager.save(this.notebookOptions.notebookUri, notebook);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.DirtyStateChanged,
 			isDirty: false
@@ -489,6 +545,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				};
 			} catch (err) {
 				// Don't worry about this for now. Just use saved values
+			}
+		}
+	}
+
+	/**
+	 * Set _providerId and _activeClientSession based on a kernelSpec representing new kernel
+	 * @param kernelSpec KernelSpec for new kernel
+	 */
+	private findProviderIdForKernel(kernelSpec: nb.IKernelSpec): void {
+		for (let i = 0; i < this.notebookManagers.length; i++) {
+			if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
+				let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
+				if (index >= 0) {
+					this._activeClientSession = this._clientSessions[i];
+					this._providerId = this.notebookManagers[i].providerId;
+					break;
+				}
 			}
 		}
 	}
