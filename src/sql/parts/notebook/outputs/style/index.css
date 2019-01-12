@@ -172,17 +172,14 @@ output-component .jp-RenderedHTMLCommon u {
 
 output-component .jp-RenderedHTMLCommon a:link {
   text-decoration: none;
-  color: var(--jp-content-link-color);
 }
 
 output-component .jp-RenderedHTMLCommon a:hover {
   text-decoration: underline;
-  color: var(--jp-content-link-color);
 }
 
 output-component .jp-RenderedHTMLCommon a:visited {
   text-decoration: none;
-  color: var(--jp-content-link-color);
 }
 
 /* Headings */

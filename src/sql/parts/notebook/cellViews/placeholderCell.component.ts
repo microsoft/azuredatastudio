@@ -73,7 +73,6 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 		if (!type) {
 			type = 'code';
 		}
-		this._model.deleteCell(this.cellModel);
 		this._model.addCell(<CellType>cellType);
 	}
 

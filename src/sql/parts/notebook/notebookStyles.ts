@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, buttonBackground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, buttonBackground, textLinkForeground } from 'vs/platform/theme/common/colorRegistry';
 
 registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
@@ -46,6 +46,18 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 			.notebookEditor .notebook-cell:hover:not(.active) {
 				outline-style: dashed;
 			}
+		`);
+	}
+
+	// Styling for all links in notebooks
+	const linkForeground = theme.getColor(textLinkForeground);
+	if (linkForeground) {
+		collector.addRule(`
+		.notebookEditor a:link {
+			text-decoration: none;
+			font-weight: bold;
+			color: ${linkForeground};
+		}
 		`);
 	}
 });

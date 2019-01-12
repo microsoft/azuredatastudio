@@ -1784,7 +1784,7 @@ declare module 'sqlops' {
 			outputs?: ICellOutput[];
 		}
 
-		export type CellType = 'code' | 'markdown' | 'raw' | 'placeholder';
+		export type CellType = 'code' | 'markdown' | 'raw';
 
 		export interface ICellOutput {
 			output_type: OutputTypeName;

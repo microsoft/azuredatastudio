@@ -212,7 +212,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
-			this._cells = undefined;
+			this._cells = [];
 			this._defaultLanguageInfo = {
 				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 				version: ''
@@ -223,9 +223,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
 				}
-			}
-			if (!this._cells) {
-				this._cells = [this.createCell(CellTypes.Placeholder)];
 			}
 		} catch (error) {
 			this._inErrorState = true;
@@ -238,7 +235,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public addCell(cellType: CellType, index?: number): ICellModel {
-		if (this.inErrorState || !this._cells) {
+		if (this.inErrorState) {
 			return null;
 		}
 		let cell = this.createCell(cellType);
@@ -250,7 +247,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			index = undefined;
 		}
 		// Set newly created cell as active cell
-		this._activeCell.active = false;
+		if (this._activeCell) {
+			this._activeCell.active = false;
+		}
 		this._activeCell = cell;
 		this._activeCell.active = true;
 
