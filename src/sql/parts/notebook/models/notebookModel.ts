@@ -225,7 +225,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 			}
 			if (!this._cells) {
-				this._cells = [this.createCell(CellTypes.Code)];
+				this._cells = [this.createCell(CellTypes.Placeholder)];
 			}
 		} catch (error) {
 			this._inErrorState = true;
