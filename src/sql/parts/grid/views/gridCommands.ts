@@ -69,6 +69,10 @@ export const saveAsExcel = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsExcel);
 };
 
+export const saveAsXml = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.SaveAsXML);
+};
+
 export const selectAll = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.SelectAll);
 };

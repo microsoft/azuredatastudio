@@ -154,6 +154,9 @@ export abstract class GridParentComponent {
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
 					break;
+				case GridContentEvents.SaveAsXML:
+					self.sendSaveRequest(SaveFormat.XML);
+					break;
 				case GridContentEvents.GoToNextQueryOutputTab:
 					self.goToNextQueryOutputTab();
 					break;
@@ -320,6 +323,9 @@ export abstract class GridParentComponent {
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
 			},
+			'SaveAsXML': () => {
+				this.sendSaveRequest(SaveFormat.XML);
+			},
 			'GoToNextQueryOutputTab': () => {
 				this.goToNextQueryOutputTab();
 			}
@@ -344,6 +350,9 @@ export abstract class GridParentComponent {
 				break;
 			case 'saveexcel':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.EXCEL, selection: event.selection });
+				break;
+			case 'savexml':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.XML, selection: event.selection });
 				break;
 			case 'selectall':
 				this.activeGrid = event.index;

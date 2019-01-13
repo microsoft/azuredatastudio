@@ -112,6 +112,11 @@
 	background-image: url("saveExcel.svg");
 }
 
+.vs .icon.saveXml {
+	/* ResultToXML_16x_vscode */
+	background-image: url("saveXml.svg");
+}
+
 .vs .icon.viewChart {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("viewChart.svg");
@@ -241,6 +246,12 @@
 .hc-black .icon.saveExcel {
 	/* ResultToXlsx_16x_vscode_inverse.svg */
 	background-image: url("saveExcel_inverse.svg");
+}
+
+.vs-dark .icon.saveXml,
+.hc-black .icon.saveXml {
+	/* ResultToXml_16x_vscode_inverse.svg */
+	background-image: url("saveXml_inverse.svg");
 }
 
 .vs-dark .icon.viewChart,

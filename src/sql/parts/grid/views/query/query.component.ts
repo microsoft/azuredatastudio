@@ -128,6 +128,19 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 			}
 		},
 		{
+			showCondition: () => { return true; },
+			icon: () => { return 'saveXml'; },
+			hoverText: () => { return LocalizedConstants.saveXMLLabel; },
+			functionality: (batchId, resultId, index) => {
+				let selection = this.getSelection(index);
+				if (selection.length <= 1) {
+					this.handleContextClick({ type: 'savexml', batchId: batchId, resultId: resultId, index: index, selection: selection });
+				} else {
+					this.dataService.showWarning(LocalizedConstants.msgCannotSaveMultipleSelections);
+				}
+			}
+		},
+		{
 			showCondition: () => {
 				return this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 			},
