@@ -76,7 +76,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get notebookManagers(): INotebookManager[] {
-		return this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		let notebookManagers = this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		if (!notebookManagers.length) {
+			return this.notebookOptions.notebookManagers;
+		}
+		return notebookManagers;
 	}
 
 	public get notebookManager(): INotebookManager {
@@ -424,6 +428,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this.loadActiveContexts(e);
 			});
 		});
+		if (!this.notebookManager) {
+			return;
+		}
 		try {
 			let sessionManager = this.notebookManager.sessionManager;
 			if (sessionManager) {

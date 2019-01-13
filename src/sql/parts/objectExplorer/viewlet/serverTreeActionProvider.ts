@@ -27,7 +27,7 @@ import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
-import { NewQueryAction } from 'sql/workbench/common/actions';
+import { NewQueryAction, BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TreeNodeContextKey } from './treeNodeContextKey';
@@ -161,8 +161,10 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
 		let treeNode = context.treeNode;
+		let isAvailableDatabaseNode = false;
 		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
+				isAvailableDatabaseNode = true;
 				actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
 				this.addNewQueryAction(context, actions);
 			} else {
@@ -171,6 +173,12 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		}
 
 		this.addScriptingActions(context, actions);
+
+		if (isAvailableDatabaseNode) {
+			this.addBackupAction(context, actions);
+			this.addRestoreAction(context, actions);
+		}
+
 		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, treeNode));
 
 		return actions;
@@ -179,6 +187,18 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private addNewQueryAction(context: ObjectExplorerContext, actions: IAction[]): void {
 		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
 			actions.push(this._instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
+		}
+	}
+
+	private addBackupAction(context: ObjectExplorerContext, actions: IAction[]): void {
+		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
+			actions.push(this._instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL));
+		}
+	}
+
+	private addRestoreAction(context: ObjectExplorerContext, actions: IAction[]): void {
+		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
+			actions.push(this._instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL));
 		}
 	}
 
