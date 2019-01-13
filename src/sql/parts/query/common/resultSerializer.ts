@@ -288,7 +288,6 @@ export class ResultSerializer {
 			saveResultsParams = this.getConfigForExcel();
 		} else if (format === SaveFormat.XML) {
 			saveResultsParams = this.getConfigForXml();
-			console.log("hello4");
 		}
 
 		saveResultsParams.filePath = this._filePath;
