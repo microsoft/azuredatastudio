@@ -231,6 +231,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._objectExplorerService.registerProvider(providerId, <sqlops.ObjectExplorerProvider>{
+			providerId: providerId,
 			createNewSession(connection: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> {
 				return self._proxy.$createObjectExplorerSession(handle, connection);
 			},
@@ -253,9 +254,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 
 	public $registerObjectExplorerExpander(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		let expander: sqlops.ObjectExplorerExpander = {
+		this._objectExplorerService.registerExpander(<sqlops.ObjectExplorerExpander> {
 			supportedProviderId: providerId,
-			providerId: undefined,
+			providerId: 'DataServices',
 			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},
@@ -268,11 +269,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
 				return self._proxy.$closeObjectExplorerSession(handle, closeSessionInfo);
 			},
-			registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
-				//throw new error('Not Implemented!');
-			}
-		};
-		this._objectExplorerService.registerExpander(expander);
+		});
 
 		return undefined;
 	}

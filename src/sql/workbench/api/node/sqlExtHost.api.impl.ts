@@ -240,7 +240,16 @@ export function createApiFactory(
 			};
 
 			let registerObjectExplorerExpander = (provider: sqlops.ObjectExplorerExpander): vscode.Disposable => {
+				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
+					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
+				});
 
+				if (provider.registerOnSessionDisconnected) {
+					provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
+						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
+					});
+				}
+				
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
 				});
@@ -339,7 +348,7 @@ export function createApiFactory(
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
-				registerObjectExplorerExpander: registerObjectExplorerExpander,
+				registerObjectExplorerExpander,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,

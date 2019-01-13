@@ -100,6 +100,13 @@ export interface NodeInfoWithConnection {
 	nodeInfo: sqlops.NodeInfo;
 }
 
+export interface TopLevelExpander {
+	providerId: string;
+	supportedProviderId: string,
+	path: string[];
+	expanderObject: sqlops.ObjectExplorerExpander | sqlops.ObjectExplorerProvider;
+}
+
 export class ObjectExplorerService implements IObjectExplorerService {
 
 	public _serviceBrand: any;
@@ -107,12 +114,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _disposables: IDisposable[] = [];
 
 	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
-	private _providersTopLevelChildrenPath: { [handle: string]: string[]; } = Object.create(null);
 
 	private _expanders: { [handle: string]: sqlops.ObjectExplorerExpander[]; } = Object.create(null);
-	private _expandersTopLevelChildrenPath: { [handle: string]: string[]; } = Object.create(null);
+
+	private _topLevelChildrenPath: TopLevelExpander[] = Object.create(null);
 
 	private _activeObjectExplorerNodes: { [id: string]: TreeNode };
+
 	private _sessions: { [sessionId: string]: SessionStatus };
 
 	private _onUpdateObjectExplorerNodes: Emitter<ObjectExplorerNodeEventArgs>;
@@ -131,8 +139,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._sessions = {};
 		this._providers = {};
 		this._expanders = {};
-		this._providersTopLevelChildrenPath = {};
-		this._expandersTopLevelChildrenPath = {};
+		this._topLevelChildrenPath = [];
+
 		this._onSelectionOrFocusChange = new Emitter<void>();
 	}
 
@@ -313,53 +321,47 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						reject(error);
 					});
 				} else {
-					if (!this._providersTopLevelChildrenPath[providerId]) {
+					if (this._topLevelChildrenPath.length === 0 ) {
 						this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 							if (result) {
 								let pathes: string[] = [];
 								result.nodes.forEach(node => pathes.push(node.nodePath));
-								this._providersTopLevelChildrenPath[providerId] = pathes;
-							}
-							let expanders = this._expanders[providerId];
-							if (expanders && expanders.length > 0) {
-								for (let expander of expanders) {
-									this.expandOrRefreshNode(expander, session, nodePath).then(result2 => {
-										if (result2) {
-											let pathes: string[] = [];
-											result2.nodes.forEach(node => pathes.push(node.nodePath));
-											this._expandersTopLevelChildrenPath[providerId] = pathes;
-										}
-										result.nodes = result.nodes.concat(result2.nodes);
-										resolve(result);
-									}, error => {
-										reject(error);
-									});
+								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, path: pathes, expanderObject: provider });
+
+								let expanders = this._expanders[providerId];
+								if (expanders) {
+									for (let expander of expanders) {
+										this.expandOrRefreshNode(expander, session, nodePath).then(result2 => {
+											if (result2) {
+												let pathes: string[] = [];
+												result2.nodes.forEach(node => pathes.push(node.nodePath));
+												this._topLevelChildrenPath.push({ providerId: expander.providerId, supportedProviderId: expander.supportedProviderId, path: pathes, expanderObject: expander });
+
+												result.nodes = result.nodes.concat(result2.nodes);
+												resolve(result);
+											}
+										}, error => {
+											reject(error);
+										});
+									}
 								}
 							}
 						}, error => {
 							reject(error);
 						});
 					} else {
-						if (this._expandersTopLevelChildrenPath[providerId] && this._expandersTopLevelChildrenPath[providerId].some(path => nodePath.indexOf(path) >= 0)) {
-							let expanders = this._expanders[providerId];
-							if (expanders && expanders.length > 0) {
-								let nodesResult: sqlops.NodeInfo[] = [];
-								for (let expander of expanders) {
-									this.expandOrRefreshNode(expander, session, nodePath).then(result => {
-										nodesResult = nodesResult.concat(result.nodes);
-										result.nodes = nodesResult;
+						if (this._topLevelChildrenPath) {
+							for (let topLevelExpander of this._topLevelChildrenPath) {
+								if (topLevelExpander.supportedProviderId === providerId
+									&& topLevelExpander.path.some(p => nodePath.indexOf(p) >= 0)
+									&& topLevelExpander.expanderObject) {
+									this.expandOrRefreshNode(topLevelExpander.expanderObject, session, nodePath).then(result => {
 										resolve(result);
 									}, error => {
 										reject(error);
 									});
 								}
 							}
-						} else {
-							this.expandOrRefreshNode(provider, session, nodePath).then(result => {
-								resolve(result);
-							}, error => {
-								reject(error);
-							});
 						}
 					}
 				}
@@ -445,8 +447,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		let provider = this._providers[providerId];
 		if (provider) {
-			this._providersTopLevelChildrenPath = {};
-			this._expandersTopLevelChildrenPath = {};
+			this._topLevelChildrenPath = [];
 			provider.closeSession({
 				sessionId: session ? session.sessionId : undefined
 			}).then(() => {

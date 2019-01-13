@@ -1212,7 +1212,9 @@ declare module 'sqlops' {
 
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
-		//registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
+		registerOnSessionCreated?(handler: (response: ObjectExplorerSession) => any): void;
+
+		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
