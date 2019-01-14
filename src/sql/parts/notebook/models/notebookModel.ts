@@ -350,7 +350,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			SparkMagicContexts.configureContext(this.notebookOptions);
+			SparkMagicContexts.configureContext();
 			this._hadoopConnection = new NotebookConnection(newConnection);
 			this.refreshConnections(newConnection);
 			this._clientSession.updateConnection(this._hadoopConnection);
