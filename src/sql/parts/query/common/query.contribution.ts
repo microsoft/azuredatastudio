@@ -346,6 +346,11 @@ let registryProperties = {
 		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
 		'default': true
 	},
+	'sql.promptToSaveGeneratedFiles': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('sql.promptToSaveGeneratedFiles', 'Prompt to save generated SQL files')
+	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
 		'default': true,
@@ -413,6 +418,3 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
-
-
-

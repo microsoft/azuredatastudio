@@ -128,7 +128,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
-		this._editor.focus();
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);

@@ -115,7 +115,9 @@ export class UntitledEditorModel extends BaseTextEditorModel implements IEncodin
 		return this.dirty;
 	}
 
-	private setDirty(dirty: boolean): void {
+	// {{SQL CARBON EDIT}}
+	// make property public
+	public setDirty(dirty: boolean): void {
 		if (this.dirty === dirty) {
 			return;
 		}
