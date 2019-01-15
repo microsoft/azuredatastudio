@@ -321,16 +321,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
 		let providerId = options.providerId;
 		let providers: string[] = undefined;
-		if (!providerId)
-		{
-			// Ensure there is always a sensible provider ID for this file type
-			providers = getProvidersForFileName(uri.fsPath, this._notebookService);
-			// Try to use a non-builtin provider first
-			if (providers) {
-				providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
-				if (!providerId) {
-					providerId = model.providerId;
-				}
+		// Ensure there is always a sensible provider ID for this file type
+		providers = getProvidersForFileName(uri.fsPath, this._notebookService);
+		// Try to use a non-builtin provider first
+		if (providers) {
+			providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
+			if (!providerId) {
+				providerId = model.providerId;
 			}
 		}
 		model.providers = providers;

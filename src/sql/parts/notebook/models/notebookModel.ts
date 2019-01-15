@@ -62,6 +62,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _defaultKernel: nb.IKernelSpec;
 	private _activeCell: ICellModel;
 	private _providerId: string;
+	private _isNewNotebook: boolean = true;
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -170,6 +171,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._trustedMode;
 	}
 
+	public get isNewNotebook(): boolean {
+		return this._isNewNotebook;
+	}
+
 	public get providerId(): string {
 		return this._providerId;
 	}
@@ -212,20 +217,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			let factory = this.notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
-			this._cells = undefined;
+			this._cells = [];
 			this._defaultLanguageInfo = {
 				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 				version: ''
 			};
 			if (contents) {
+				this._isNewNotebook = false;
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
 				}
-			}
-			if (!this._cells) {
-				this._cells = [this.createCell(CellTypes.Code)];
 			}
 		} catch (error) {
 			this._inErrorState = true;
@@ -238,7 +241,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public addCell(cellType: CellType, index?: number): ICellModel {
-		if (this.inErrorState || !this._cells) {
+		if (this.inErrorState) {
 			return null;
 		}
 		let cell = this.createCell(cellType);
@@ -250,7 +253,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			index = undefined;
 		}
 		// Set newly created cell as active cell
-		this._activeCell.active = false;
+		if (this._activeCell) {
+			this._activeCell.active = false;
+		}
 		this._activeCell = cell;
 		this._activeCell.active = true;
 
@@ -398,7 +403,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			SparkMagicContexts.configureContext(this.notebookOptions);
+			SparkMagicContexts.configureContext();
 			this._hadoopConnection = new NotebookConnection(newConnection);
 			this.refreshConnections(newConnection);
 			this._activeClientSession.updateConnection(this._hadoopConnection);
