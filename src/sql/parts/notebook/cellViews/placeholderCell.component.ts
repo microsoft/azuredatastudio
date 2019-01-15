@@ -76,7 +76,6 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 		this._model.addCell(<CellType>cellType);
 	}
 
-	// Todo: implement layout
 	public layout() {
 
 	}
