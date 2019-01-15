@@ -128,6 +128,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
+		this.setFocusAndScroll();
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);
@@ -193,4 +194,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
+	private setFocusAndScroll(): void {
+		if (this.cellModel.id === this._activeCellId) {
+			this._editor.focus();
+			this._editor.getContainer().scrollIntoView();
+		}
+	}
 }

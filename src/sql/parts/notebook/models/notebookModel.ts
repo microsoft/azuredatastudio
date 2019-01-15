@@ -62,6 +62,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _defaultKernel: nb.IKernelSpec;
 	private _activeCell: ICellModel;
 	private _providerId: string;
+	private _isNewNotebook: boolean = true;
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -170,6 +171,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._trustedMode;
 	}
 
+	public get isNewNotebook(): boolean {
+		return this._isNewNotebook;
+	}
+
 	public get providerId(): string {
 		return this._providerId;
 	}
@@ -218,6 +223,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				version: ''
 			};
 			if (contents) {
+				this._isNewNotebook = false;
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
@@ -397,7 +403,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!newConnection && this._activeContexts.defaultConnection.options['host'] === host) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			SparkMagicContexts.configureContext(this.notebookOptions);
+			SparkMagicContexts.configureContext();
 			this._hadoopConnection = new NotebookConnection(newConnection);
 			this.refreshConnections(newConnection);
 			this._activeClientSession.updateConnection(this._hadoopConnection);
