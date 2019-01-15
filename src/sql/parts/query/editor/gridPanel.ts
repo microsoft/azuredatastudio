@@ -459,6 +459,7 @@ class GridTable<T> extends Disposable implements IView {
 		});
 		this.dataProvider.dataRows = collection;
 		this.table.updateRowCount();
+		this.setupState();
 	}
 
 	public onRemove() {
@@ -595,6 +596,8 @@ class GridTable<T> extends Disposable implements IView {
 
 		this.restoreScrollState();
 
+		this.rebuildActionBar();
+
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
 
@@ -613,7 +616,6 @@ class GridTable<T> extends Disposable implements IView {
 
 	public set state(val: GridTableState) {
 		this._state = val;
-		this.setupState();
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
