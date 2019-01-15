@@ -11,7 +11,6 @@ import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
 
-import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
@@ -22,12 +21,12 @@ import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox.component';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { Registry } from 'vs/platform/registry/common/platform';
 import { CodeComponent } from 'sql/parts/notebook/cellViews/code.component';
 import { CodeCellComponent } from 'sql/parts/notebook/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/parts/notebook/cellViews/textCell.component';
 import { OutputAreaComponent } from 'sql/parts/notebook/cellViews/outputArea.component';
 import { OutputComponent } from 'sql/parts/notebook/cellViews/output.component';
+import { PlaceholderCellComponent } from 'sql/parts/notebook/cellViews/placeholderCell.component';
 import LoadingSpinner from 'sql/parts/modelComponents/loadingSpinner.component';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
@@ -41,6 +40,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			CodeComponent,
 			CodeCellComponent,
 			TextCellComponent,
+			PlaceholderCellComponent,
 			NotebookComponent,
 			ComponentHostDirective,
 			OutputAreaComponent,

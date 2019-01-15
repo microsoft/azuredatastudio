@@ -1,0 +1,20 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+ placeholder-cell-component {
+	height: 50px;
+	width: 100%;
+	display: block;
+	box-shadow: 0px 4px 6px 0px rgba(0,0,0,0.14);
+}
+
+placeholder-cell-component .text {
+	display: flex;
+    align-items: center;
+	justify-content: center;
+	height: 50px;
+	-webkit-margin-before: 0em;
+	-webkit-margin-after: 0em;
+}
