@@ -62,6 +62,12 @@
     <trans-unit id="sql.saveAsCsv.encoding">
       <source xml:lang="en">[Optional] File encoding used when saving results as CSV</source>
     </trans-unit>
+    <trans-unit id="sql.saveAsXml.formatted">
+      <source xml:lang="en">[Optional] When true, XML output will be formatted when saving results as XML</source>
+    </trans-unit>
+    <trans-unit id="sql.saveAsXml.encoding">
+      <source xml:lang="en">[Optional] File encoding used when saving results as XML</source>
+    </trans-unit>
     <trans-unit id="sql.copyIncludeHeaders">
       <source xml:lang="en">[Optional] Configuration options for copying results from the Results View</source>
     </trans-unit>
@@ -595,6 +601,9 @@
     </trans-unit>
     <trans-unit id="saveAsExcel">
       <source xml:lang="en">Save As Excel</source>
+    </trans-unit>
+    <trans-unit id="saveAsXml">
+      <source xml:lang="en">Save As XML</source>
     </trans-unit>
     <trans-unit id="copySelection">
       <source xml:lang="en">Copy</source>
@@ -1141,6 +1150,9 @@
     </trans-unit>
     <trans-unit id="saveExcelLabel">
       <source xml:lang="en">Save as Excel</source>
+    </trans-unit>
+    <trans-unit id="saveXMLLabel">
+      <source xml:lang="en">Save as XML</source>
     </trans-unit>
     <trans-unit id="viewChartLabel">
       <source xml:lang="en">View as Chart</source>
