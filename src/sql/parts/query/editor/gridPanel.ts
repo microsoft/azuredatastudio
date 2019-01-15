@@ -90,6 +90,7 @@ export class GridTableState extends Disposable {
 	/* The top row of the current scroll */
 	public scrollPositionY = 0;
 	public scrollPositionX = 0;
+	public columnSizes: number[] = undefined;
 	public selection: Slick.Range[];
 	public activeCell: Slick.Cell;
 
@@ -287,8 +288,7 @@ export class GridPanel extends ViewletPanel {
 					this._state.tableStates.push(tableState);
 				}
 			}
-			let table = this.instantiationService.createInstance(GridTable, this.runner, set);
-			table.state = tableState;
+			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
 			this.tableDisposable.push(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -418,6 +418,7 @@ class GridTable<T> extends Disposable implements IView {
 	constructor(
 		private runner: QueryRunner,
 		private _resultSet: sqlops.ResultSetSummary,
+		state: GridTableState,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
@@ -425,6 +426,7 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		this.container.className = 'grid-panel';
@@ -438,7 +440,8 @@ class GridTable<T> extends Disposable implements IView {
 					? 'XML Showplan'
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: isLinked ? hyperLinkFormatter : textFormatter
+				formatter: isLinked ? hyperLinkFormatter : textFormatter,
+				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
 	}
@@ -505,7 +508,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -559,6 +562,12 @@ class GridTable<T> extends Disposable implements IView {
 				this.state.scrollPositionY = data.scrollTop;
 				this.state.scrollPositionX = data.scrollLeft;
 			}
+		});
+
+		// we need to remove the first column since this is the row number
+		this.table.onColumnResize(() => {
+			let columnSizes = this.table.grid.getColumns().slice(1).map(v => v.width);
+			this.state.columnSizes = columnSizes;
 		});
 
 		this.table.grid.onActiveCellChanged.subscribe(e => {

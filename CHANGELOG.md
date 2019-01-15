@@ -1,7 +1,7 @@
 # Change Log
 
 ## Version 1.3.8
-* Release date: January 9, 2018
+* Release date: January 9, 2019
 * Release status: General Availability
 
 ## What's new in this version

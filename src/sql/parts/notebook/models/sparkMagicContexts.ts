@@ -8,7 +8,6 @@
 import * as path from 'path';
 import { nb } from 'sqlops';
 
-import * as json from 'vs/base/common/json';
 import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
@@ -17,11 +16,48 @@ import * as notebookUtils from '../notebookUtils';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
+const configBase = {
+	'kernel_python_credentials': {
+		'url': ''
+	},
+	'kernel_scala_credentials': {
+		'url': ''
+	},
+	'kernel_r_credentials': {
+		'url': ''
+	},
+
+	'ignore_ssl_errors': true,
+
+	'logging_config': {
+		'version': 1,
+		'formatters': {
+			'magicsFormatter': {
+				'format': '%(asctime)s\t%(levelname)s\t%(message)s',
+				'datefmt': ''
+			}
+		},
+		'handlers': {
+			'magicsHandler': {
+				'class': 'hdijupyterutils.filehandler.MagicsFileHandler',
+				'formatter': 'magicsFormatter',
+				'home_path': ''
+			}
+		},
+		'loggers': {
+			'magicsLogger': {
+				'handlers': ['magicsHandler'],
+				'level': 'DEBUG',
+				'propagate': 0
+			}
+		}
+	}
+};
 export class SparkMagicContexts {
 
 	public static get DefaultContext(): IDefaultConnection {
 		// TODO NOTEBOOK REFACTOR fix default connection handling
-		let defaultConnection: IConnectionProfile = <any> {
+		let defaultConnection: IConnectionProfile = <any>{
 			providerName: notebookConstants.hadoopKnoxProviderName,
 			id: '-1',
 			options:
@@ -47,7 +83,7 @@ export class SparkMagicContexts {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
 			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
-			(kernelChangedArgs.oldValue && kernelChangedArgs.newValue.id === kernelChangedArgs.oldValue.id)) {
+				(kernelChangedArgs.oldValue && kernelChangedArgs.newValue.id === kernelChangedArgs.oldValue.id)) {
 				// nothing to do, kernels are the same or new kernel is undefined
 				return connections;
 			}
@@ -55,7 +91,7 @@ export class SparkMagicContexts {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			switch (kernelChangedArgs.newValue.name) {
 				case (notebookConstants.python3):
-				// python3 case, use this.DefaultContext for the only connection
+					// python3 case, use this.DefaultContext for the only connection
 					break;
 				//TO DO: Handle server connections based on kernel type. Right now, we call the same method for all kernel types.
 				default:
@@ -76,13 +112,13 @@ export class SparkMagicContexts {
 		let defaultConnection: IConnectionProfile = SparkMagicContexts.DefaultContext.defaultConnection;
 		let activeConnections: IConnectionProfile[] = await connectionService.getActiveConnections();
 		// If no connections exist, only show 'n/a'
-        if (activeConnections && activeConnections.length > 0) {
-            // Remove all non-Spark connections
-            activeConnections = activeConnections.filter(conn => conn.providerName === notebookConstants.hadoopKnoxProviderName);
-        }
-        if (activeConnections.length === 0) {
-            return SparkMagicContexts.DefaultContext;
-        }
+		if (activeConnections && activeConnections.length > 0) {
+			// Remove all non-Spark connections
+			activeConnections = activeConnections.filter(conn => conn.providerName === notebookConstants.hadoopKnoxProviderName);
+		}
+		if (activeConnections.length === 0) {
+			return SparkMagicContexts.DefaultContext;
+		}
 
 		// If launched from the right click or server dashboard, connection profile data exists, so use that as default
 		if (profile && profile.options) {
@@ -95,7 +131,7 @@ export class SparkMagicContexts {
 				defaultConnection = activeConnections[0];
 			} else {
 				// TODO NOTEBOOK REFACTOR change this so it's no longer incompatible with IConnectionProfile
-				defaultConnection = <IConnectionProfile> <any>{
+				defaultConnection = <IConnectionProfile><any>{
 					providerName: notebookConstants.hadoopKnoxProviderName,
 					id: '-1',
 					options:
@@ -107,31 +143,28 @@ export class SparkMagicContexts {
 			}
 		}
 		return {
-				otherConnections: activeConnections,
-				defaultConnection: defaultConnection
+			otherConnections: activeConnections,
+			defaultConnection: defaultConnection
 		};
 	}
 
-	public static async configureContext(options: INotebookModelOptions): Promise<object> {
+	public static async configureContext(): Promise<object> {
 		let sparkmagicConfDir = path.join(notebookUtils.getUserHome(), '.sparkmagic');
 		// TODO NOTEBOOK REFACTOR re-enable this or move to extension. Requires config files to be available in order to work
-		// await notebookUtils.mkDir(sparkmagicConfDir);
+		await notebookUtils.mkDir(sparkmagicConfDir);
 
-		// // Default to localhost in config file.
-		// let creds: ICredentials = {
-		//     'url': 'http://localhost:8088'
-		// };
+		// Default to localhost in config file.
+		let creds: ICredentials = {
+		    'url': 'http://localhost:8088'
+		};
 
-		// let configPath = notebookUtils.getTemplatePath(options.extensionContext.extensionPath, path.join('jupyter_config', 'sparkmagic_config.json'));
-		// let fileBuffer: Buffer = await pfs.readFile(configPath);
-		// let fileContents: string = fileBuffer.toString();
-		// let config: ISparkMagicConfig = json.parse(fileContents);
-		// SparkMagicContexts.updateConfig(config, creds, sparkmagicConfDir);
+		let config: ISparkMagicConfig = Object.assign({}, configBase);
+		SparkMagicContexts.updateConfig(config, creds, sparkmagicConfDir);
 
-		// let configFilePath = path.join(sparkmagicConfDir, 'config.json');
-		// await pfs.writeFile(configFilePath, JSON.stringify(config));
+		let configFilePath = path.join(sparkmagicConfDir, 'config.json');
+		await pfs.writeFile(configFilePath, JSON.stringify(config));
 
-		return {'SPARKMAGIC_CONF_DIR': sparkmagicConfDir};
+		return { 'SPARKMAGIC_CONF_DIR': sparkmagicConfDir };
 	}
 	/**
 	 *
@@ -186,10 +219,13 @@ interface ISparkMagicConfig {
 	kernel_python_credentials: ICredentials;
 	kernel_scala_credentials: ICredentials;
 	kernel_r_credentials: ICredentials;
+	ignore_ssl_errors?: boolean;
 	logging_config: {
 		handlers: {
 			magicsHandler: {
 				home_path: string;
+				class?: string;
+				formatter?: string
 			}
 		}
 	};
