@@ -26,7 +26,7 @@
 		},
 		{
 			"type": "object",
-			"title": "%notebook.configuration.title%",
+			"title": "%notebook.python.configuration.title%",
 			"properties": {
 				"notebook.pythonPath": {
 					"type": "string",
