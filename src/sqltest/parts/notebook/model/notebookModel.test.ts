@@ -103,7 +103,7 @@ describe('notebook model', function(): void {
         });
     });
 
-    it('Should create single cell if model has no contents', async function(): Promise<void> {
+    it('Should create no cells if model has no contents', async function(): Promise<void> {
         // Given an empty notebook
         let emptyNotebook: nb.INotebookContents = {
             cells: [],
@@ -125,9 +125,8 @@ describe('notebook model', function(): void {
         let model = new NotebookModel(defaultModelOptions);
         await model.requestModelLoad();
 
-        // Then I expect to have 1 code cell as the contents
-        should(model.cells).have.length(1);
-        should(model.cells[0].source).be.empty();
+        // Then I expect to have 0 code cell as the contents
+        should(model.cells).have.length(0);
     });
 
     it('Should throw if model load fails', async function(): Promise<void> {

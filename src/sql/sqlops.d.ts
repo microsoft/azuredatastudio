@@ -895,7 +895,7 @@ declare module 'sqlops' {
 	// Save Results ===============================================================================
 	export interface SaveResultsRequestParams {
 		/**
-		 * 'csv', 'json', 'excel'
+		 * 'csv', 'json', 'excel', 'xml'
 		 */
 		resultFormat: string;
 		ownerUri: string;
@@ -911,6 +911,7 @@ declare module 'sqlops' {
 		lineSeperator?: string;
 		textIdentifier?: string;
 		encoding?: string;
+		formatted?: boolean;
 	}
 
 	export interface SaveResultRequestResult {
