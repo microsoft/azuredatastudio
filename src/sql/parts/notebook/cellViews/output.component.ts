@@ -4,12 +4,12 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, Output, EventEmitter } from '@angular/core';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { nb } from 'sqlops';
 import { INotebookService } from 'sql/services/notebook/notebookService';
 import { MimeModel } from 'sql/parts/notebook/outputs/common/mimemodel';
-import * as outputProcessor from '../outputs/common/outputProcessor';
+import * as outputProcessor from 'sql/parts/notebook/outputs/common/outputProcessor';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import 'vs/css!sql/parts/notebook/outputs/style/index';
 

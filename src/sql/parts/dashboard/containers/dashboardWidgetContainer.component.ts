@@ -5,20 +5,13 @@
 
 import 'vs/css!./dashboardWidgetContainer';
 
-import { Component, Inject, Input, forwardRef, ViewChild, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
-import { NgGridConfig, NgGrid, NgGridItem } from 'angular2-grid';
+import { Component, Inject, Input, forwardRef, ViewChild, OnDestroy, ChangeDetectorRef, AfterContentInit } from '@angular/core';
 
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
-import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
 import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetContent } from 'sql/parts/dashboard/contents/widgetContent.component';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
-import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
 
 @Component({

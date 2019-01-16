@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { SelectBox as vsSelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';

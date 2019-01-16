@@ -6,7 +6,7 @@
 'use strict';
 
 import * as electron from 'electron';
-import { ISqlOAuthService } from 'sql/common/sqlOAuthService';
+import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 
 /**
  * Implements simple electron based utilities for registering and sending IPC to the main thread to

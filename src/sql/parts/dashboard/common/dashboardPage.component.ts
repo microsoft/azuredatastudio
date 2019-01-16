@@ -6,7 +6,7 @@
 import 'vs/css!sql/parts/dashboard/common/dashboardPage';
 import 'sql/parts/dashboard/common/dashboardPanelStyles';
 
-import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
@@ -21,7 +21,7 @@ import { DashboardTab, IConfigModifierCollection } from 'sql/parts/dashboard/com
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import * as Constants from 'sql/parts/connection/common/constants';
 
 import { Registry } from 'vs/platform/registry/common/platform';

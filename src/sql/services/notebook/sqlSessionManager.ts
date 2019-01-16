@@ -283,14 +283,14 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				let hrow = <HTMLTableRowElement>table.insertRow();
 				// headers
 				for (let column of data.columns) {
-					var cell = hrow.insertCell();
+					let cell = hrow.insertCell();
 					cell.innerHTML = column;
 				}
 
 				for (let row in data.rows) {
 					let hrow = <HTMLTableRowElement>table.insertRow();
 					for (let column in data.columns) {
-						var cell = hrow.insertCell();
+						let cell = hrow.insertCell();
 						cell.innerHTML = data.rows[row][column];
 					}
 				}

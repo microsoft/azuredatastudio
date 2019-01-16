@@ -14,7 +14,7 @@ import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView, IModelViewEventArgs } from 'sql/services/model/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';
 

@@ -8,7 +8,7 @@ import { Directive, Inject, forwardRef, ElementRef, Input } from '@angular/core'
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { getContentHeight, addDisposableListener, EventType, getContentWidth } from 'vs/base/browser/dom';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 
 @Directive({
 	selector: '[scrollable]'

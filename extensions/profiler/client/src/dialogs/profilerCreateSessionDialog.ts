@@ -106,7 +106,7 @@ export class CreateSessionDialog {
 
 	private updateSessionName() {
 		if (this.templatesBox.value) {
-			this.sessionNameBox.value = `ADS_${this.templatesBox.value.toString()}`
+			this.sessionNameBox.value = `ADS_${this.templatesBox.value.toString()}`;
 		}
 	}
 

@@ -4,19 +4,15 @@
 *--------------------------------------------------------------------------------------------*/
 // import 'vs/css!./modelViewContent';
 
-import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { Parts } from 'vs/workbench/services/part/common/partService';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
-import * as nls from 'vs/nls';
 
-import { TabConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IModelView } from 'sql/services/model/modelViewService';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
 import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
 

@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown/dropdown';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachEditableDropdownStyler } from 'sql/common/theme/styler';

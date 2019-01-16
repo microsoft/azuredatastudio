@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Node Modules */
-import { Injectable, Inject, forwardRef, OnDestroy } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
@@ -16,13 +16,13 @@ import { ConnectionManagementInfo } from 'sql/parts/connection/common/connection
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 
 import { ProviderMetadata, DatabaseInfo, SimpleExecuteResult } from 'sqlops';
 
 /* VS imports */
-import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 /* Wrapper for a metadata service that contains the uri string to use on each request */
 export class SingleConnectionMetadataService {
