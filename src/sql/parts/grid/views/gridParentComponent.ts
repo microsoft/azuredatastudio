@@ -232,7 +232,7 @@ export abstract class GridParentComponent {
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
-		return selection;
+			return selection;
 		} else {
 			return undefined;
 		}

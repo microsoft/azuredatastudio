@@ -74,7 +74,7 @@ export class ScrollableDirective extends AngularDisposable {
 	private resetScrollDimensions() {
 		this.scrollableElement.setScrollDimensions({
 			scrollHeight: this.verticalScroll === ScrollbarVisibility.Auto ? getContentHeight(this.scrolled) : undefined,
-			height:  this.verticalScroll === ScrollbarVisibility.Auto ? getContentHeight(this.parent) : undefined,
+			height: this.verticalScroll === ScrollbarVisibility.Auto ? getContentHeight(this.parent) : undefined,
 			scrollWidth: this.horizontalScroll === ScrollbarVisibility.Auto ? this.scrolled.scrollWidth : undefined,
 			width: this.horizontalScroll === ScrollbarVisibility.Auto ? this.scrolled.offsetWidth : undefined
 		});

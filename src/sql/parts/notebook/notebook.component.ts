@@ -137,7 +137,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public get activeCellId(): string {
-		return this._model && this._model.activeCell ? this._model.activeCell.id :  '';
+		return this._model && this._model.activeCell ? this._model.activeCell.id : '';
 	}
 
 	public get modelRegistered(): Promise<NotebookModel> {
@@ -175,15 +175,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	// Add cell based on cell type
-	public addCell(cellType: CellType)
-	{
+	public addCell(cellType: CellType) {
 		let newCell = this._model.addCell(cellType);
 		this.selectCell(newCell);
 	}
 
 	// Updates Notebook model's trust details
-	public updateModelTrustDetails(isTrusted: boolean)
-	{
+	public updateModelTrustDetails(isTrusted: boolean) {
 		this._model.trustedMode = isTrusted;
 		this._model.cells.forEach(cell => {
 			cell.trustedMode = isTrusted;
@@ -258,7 +256,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.notebookService.registrationComplete;
 		// Refresh the provider if we had been using default
 		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
-			let providers= notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+			let providers = notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
 			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
 			this._notebookParams.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
@@ -284,10 +282,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	// Updates toolbar components
-	private updateToolbarComponents(isTrusted: boolean)
-	{
-		if(this._trustedAction)
-		{
+	private updateToolbarComponents(isTrusted: boolean) {
+		if (this._trustedAction) {
 			this._trustedAction.enabled = true;
 			this._trustedAction.trusted = isTrusted;
 		}
@@ -336,7 +332,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell',localize('text', 'Text'), 'notebook-button icon-add');
+		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', 'Text'), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
@@ -353,10 +349,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
 		let primary: IAction[] = [];
 		let secondary: IAction[] = [];
-		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
 
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
-		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action)});
+		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
 		this._actionBar.setContent([
 			{ element: kernelContainer },
@@ -393,8 +389,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	promptForPath(defaultPath: string): TPromise<string> {
 		return this.windowService.showSaveDialog({
 			defaultPath: defaultPath,
-			filters: [{ name: localize('notebookFile', 'Notebook'), extensions: ['ipynb']}]
-		 });
+			filters: [{ name: localize('notebookFile', 'Notebook'), extensions: ['ipynb'] }]
+		});
 	}
 
 	// Entry point to save notebook
@@ -409,12 +405,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let resource = self._model.notebookUri;
 					self._model.notebookUri = target;
 					this.saveNotebook().then(result => {
-						if(result)
-						{
+						if (result) {
 							return this.replaceUntitledNotebookEditor(resource, target);
 						}
 						return result;
-					 });
+					});
 				}
 				return false; // User clicks cancel
 			});
@@ -459,7 +454,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private setDirty(isDirty: boolean): void {
-		if(this._notebookParams.input){
+		if (this._notebookParams.input) {
 			this._notebookParams.input.setDirty(isDirty);
 		}
 	}

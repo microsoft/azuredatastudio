@@ -31,7 +31,7 @@ export interface SQLData {
 }
 
 export class SqlSessionManager implements nb.SessionManager {
-	constructor(private _instantiationService: IInstantiationService) {}
+	constructor(private _instantiationService: IInstantiationService) { }
 
 	public get isReady(): boolean {
 		return true;
@@ -113,9 +113,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _columns: IDbColumn[];
 	private _rows: DbCellValue[][];
 
-	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-				@IInstantiationService private _instantiationService: IInstantiationService,
-				@IErrorMessageService private _errorMessageService: IErrorMessageService) {
+	constructor( @IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
 		super();
 	}
 
@@ -170,8 +170,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			let connectionProfile = connections.find(connection => connection.providerName === mssqlProviderName);
 			let connectionUri = Utils.generateUri(connectionProfile, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri, undefined);
-			this._connectionManagementService.connect(connectionProfile, connectionUri).then((result) =>
-			{
+			this._connectionManagementService.connect(connectionProfile, connectionUri).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(content.code);
 			});
@@ -181,7 +180,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	requestComplete(content: nb.ICompleteRequest): Thenable<nb.ICompleteReplyMsg> {
-		let response: Partial<nb.ICompleteReplyMsg> = { };
+		let response: Partial<nb.ICompleteReplyMsg> = {};
 		return Promise.resolve(response as nb.ICompleteReplyMsg);
 	}
 
@@ -240,7 +239,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	get done(): Thenable<nb.IShellMessage> {
-		let deferred = new Deferred<nb.IShellMessage> ();
+		let deferred = new Deferred<nb.IShellMessage>();
 		try {
 			this._register(this._queryRunner.onBatchEnd(e => {
 				let msg: nb.IShellMessage = {
@@ -273,7 +272,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
 		this._register(this._queryRunner.onBatchEnd(batch => {
 			this._queryRunner.getQueryRows(0, batch.resultSetSummaries[0].rowCount, 0, 0).then(d => {
-				let data:SQLData = {
+				let data: SQLData = {
 					columns: batch.resultSetSummaries[0].columnInfo.map(c => c.columnName),
 					rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
 				};
@@ -299,15 +298,15 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				let msg: nb.IIOPubMessage = {
 					channel: 'iopub',
 					type: 'iopub',
-					header: <nb.IHeader> {
+					header: <nb.IHeader>{
 						msg_id: undefined,
 						msg_type: 'execute_result'
 					},
-					content: <nb.IExecuteResult> {
+					content: <nb.IExecuteResult>{
 						output_type: 'execute_result',
 						metadata: {},
 						execution_count: 0,
-						data: { 'text/html' : tableHtml},
+						data: { 'text/html': tableHtml },
 					},
 					metadata: undefined,
 					parent_header: undefined

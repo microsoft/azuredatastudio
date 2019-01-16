@@ -11,17 +11,17 @@ import { DefaultUrlSerializer, UrlSerializer, UrlTree } from '@angular/router';
  * encode and decode the parentheses. Github issue angular/angular#10280, microsoft/carbon#1116
  */
 export default class CustomUrlSerializer implements UrlSerializer {
-    private _defaultUrlSerializer: DefaultUrlSerializer = new DefaultUrlSerializer();
+	private _defaultUrlSerializer: DefaultUrlSerializer = new DefaultUrlSerializer();
 
-    parse(url: string): UrlTree {
-       // Encode parentheses
-       url = url.replace(/\(/g, '%28').replace(/\)/g, '%29');
-       // Use the default serializer from here on
-       return this._defaultUrlSerializer.parse(url);
-    }
+	parse(url: string): UrlTree {
+		// Encode parentheses
+		url = url.replace(/\(/g, '%28').replace(/\)/g, '%29');
+		// Use the default serializer from here on
+		return this._defaultUrlSerializer.parse(url);
+	}
 
-    serialize(tree: UrlTree): string {
-        // serialize parentheses after angular router
-       return this._defaultUrlSerializer.serialize(tree).replace(/%28/g, '(').replace(/%29/g, ')');
-    }
+	serialize(tree: UrlTree): string {
+		// serialize parentheses after angular router
+		return this._defaultUrlSerializer.serialize(tree).replace(/%28/g, '(').replace(/%29/g, ')');
+	}
 }
