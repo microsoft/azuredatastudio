@@ -356,11 +356,10 @@ declare module 'sqlops' {
 		 * The Operating System version string of the machine running the instance.
 		 */
 		osVersion: string;
-
-		//bigDataClusterEndpoints?: BigDataClusterEndpoint [];
-
+		/**
+		 * options for all new server properties.
+		 */
 		options: ServerInfoOption;
-
 	}
 
 

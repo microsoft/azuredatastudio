@@ -24,7 +24,7 @@ import * as utils from './utils';
 import { Connection } from './connectionProvider';
 import { AppContext } from './appContext';
 import { TreeNode } from './treeNodes';
-import { HadoopObjectExplorerNodeExpander } from './objectExplorerExpander';
+import { HadoopObjectExplorerNodeExpander } from './objectExplorerNodeExpander';
 
 function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): vscode.Uri {
     let root = utils.getUserHome();

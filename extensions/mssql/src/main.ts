@@ -18,10 +18,10 @@ import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
-import { HadoopConnectionProvider } from './objectExplorerExpander/connectionProvider';
-import { AppContext } from './objectExplorerExpander/appContext';
-import { ApiWrapper } from './objectExplorerExpander/apiWrapper';
-import { HadoopObjectExplorerNodeExpander } from './objectExplorerExpander/objectExplorerExpander';
+import { HadoopConnectionProvider } from './objectExplorerNodeExpander/connectionProvider';
+import { AppContext } from './objectExplorerNodeExpander/appContext';
+import { ApiWrapper } from './objectExplorerNodeExpander/apiWrapper';
+import { HadoopObjectExplorerNodeExpander } from './objectExplorerNodeExpander/objectExplorerNodeExpander';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
