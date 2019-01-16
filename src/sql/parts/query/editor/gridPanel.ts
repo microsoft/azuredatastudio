@@ -655,7 +655,6 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
 		this._onDidChange.fire();
 	}
 
