@@ -21,7 +21,7 @@ declare module 'sqlops' {
 
 		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
 
-		export function registerObjectExplorerExpander(provider: ObjectExplorerExpander): vscode.Disposable;
+		export function registerObjectExplorerNodeExpander(provider: ObjectExplorerNodeExpander): vscode.Disposable;
 
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
@@ -357,9 +357,18 @@ declare module 'sqlops' {
 		 */
 		osVersion: string;
 
-		bigDataClusterEndpoints: BigDataClusterEndpoint [];
+		//bigDataClusterEndpoints?: BigDataClusterEndpoint [];
+
+		options: ServerInfoOption;
 
 	}
+
+
+	export interface ServerInfoOption {
+		isBigDataCluster: boolean;
+		bigDataClusterEndpoints: BigDataClusterEndpoint[];
+	}
+
 	export interface BigDataClusterEndpoint {
 		serviceName: string;
 		ipAddress: string;
@@ -1181,28 +1190,7 @@ declare module 'sqlops' {
 	}
 
 	export interface ObjectExplorerProvider extends DataProvider {
-		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
-
-		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
-
-		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
-
-		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
-
-		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
-
-		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
-
-		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
-
-		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
-	}
-
-	export interface ObjectExplorerExpander extends DataProvider {
-		/**
-		 * The providerId for whichever type of ObjectExplorer connection this can add folders and objects to
-		 */
-		readonly supportedProviderId: string;
+		createNewSession?(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
 
 		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
@@ -1217,6 +1205,15 @@ declare module 'sqlops' {
 		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
+	}
+
+	export interface ObjectExplorerNodeExpander extends ObjectExplorerProvider {
+		/**
+		 * The providerId for whichever type of ObjectExplorer connection this can add folders and objects to
+		 */
+		readonly supportedProviderId: string;
+
+		readonly groupingId?: number;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------

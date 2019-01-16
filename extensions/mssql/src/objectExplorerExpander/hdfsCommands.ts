@@ -24,7 +24,7 @@ import * as utils from './utils';
 import { Connection } from './connectionProvider';
 import { AppContext } from './appContext';
 import { TreeNode } from './treeNodes';
-import { HadoopObjectExplorerExpander } from './objectExplorerExpander';
+import { HadoopObjectExplorerNodeExpander } from './objectExplorerExpander';
 
 function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): vscode.Uri {
     let root = utils.getUserHome();
@@ -50,7 +50,7 @@ export async function getNode<T extends TreeNode>(context: ICommandViewContext |
     if (context && context.type === constants.ViewType && context.node) {
         node = context.node as T;
     } else if (context && context.type === constants.ObjectExplorerService) {
-        let oeProvider = appContext.getService<HadoopObjectExplorerExpander>(constants.ObjectExplorerService);
+        let oeProvider = appContext.getService<HadoopObjectExplorerNodeExpander>(constants.ObjectExplorerService);
         if (oeProvider) {
             node = await oeProvider.findNodeForContext<T>(context.explorerContext);
         }

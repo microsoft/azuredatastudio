@@ -210,7 +210,7 @@ export class Connection {
     }
 
     private getEmptyServerInfo(): sqlops.ServerInfo {
-        let info: sqlops.ServerInfo =  {
+        let info: sqlops.ServerInfo = {
             serverMajorVersion: 0,
             serverMinorVersion: 0,
             serverReleaseVersion: 0,
@@ -221,7 +221,7 @@ export class Connection {
             isCloud: false,
             azureVersion: 0,
             osVersion: '',
-            bigDataClusterEndpoints: null
+            options: { isBigDataCluster: false, bigDataClusterEndpoints: [] }
         };
         return info;
     }

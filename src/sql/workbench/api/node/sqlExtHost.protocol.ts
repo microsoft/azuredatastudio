@@ -496,7 +496,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerQueryProvider(providerId: string, handle: number): TPromise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): TPromise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any>;
-	$registerObjectExplorerExpander(providerId: string, handle: number): TPromise<any>;
+	$registerObjectExplorerNodeExpander(providerId: string, handle: number): TPromise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): TPromise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;

@@ -288,7 +288,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
-	ObjectExplorerExpander = 'ObjectExplorerExpander',
+	ObjectExplorerNodeExpander = 'ObjectExplorerNodeExpander',
 }
 
 export enum DeclarativeDataType {
@@ -321,6 +321,16 @@ export enum AzureResource {
 	Sql = 1
 }
 
+export interface ServerInfoOption {
+	isBigDataCluster: boolean;
+	bigDataClusterEndpoints: BigDataClusterEndpoint;
+}
+
+export interface BigDataClusterEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
+}
 export class SqlThemeIcon {
 
 	static readonly Folder = new SqlThemeIcon('Folder');

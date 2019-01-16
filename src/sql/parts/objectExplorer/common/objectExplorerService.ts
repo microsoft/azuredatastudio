@@ -52,7 +52,7 @@ export interface IObjectExplorerService {
 	 */
 	registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void;
 
-	registerExpander(expander: sqlops.ObjectExplorerExpander): void;
+	registerExpander(expander: sqlops.ObjectExplorerNodeExpander): void;
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
 
@@ -102,9 +102,10 @@ export interface NodeInfoWithConnection {
 
 export interface TopLevelExpander {
 	providerId: string;
-	supportedProviderId: string,
+	supportedProviderId: string;
+	groupingId: number;
 	path: string[];
-	expanderObject: sqlops.ObjectExplorerExpander | sqlops.ObjectExplorerProvider;
+	expanderObject: sqlops.ObjectExplorerNodeExpander | sqlops.ObjectExplorerProvider;
 }
 
 export class ObjectExplorerService implements IObjectExplorerService {
@@ -115,7 +116,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
 
-	private _expanders: { [handle: string]: sqlops.ObjectExplorerExpander[]; } = Object.create(null);
+	private _expanders: { [handle: string]: sqlops.ObjectExplorerNodeExpander[]; } = Object.create(null);
 
 	private _topLevelChildrenPath: TopLevelExpander[] = Object.create(null);
 
@@ -298,7 +299,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	public expandNodeFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
+	public expandNodeFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
 		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
 			this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 				resolve(result);
@@ -314,7 +315,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 				let serverInfo = this._connectionManagementService.getActiveConnectionServerInfo(this._sessions[session.sessionId].connection.id);
-				if (serverInfo && !serverInfo.bigDataClusterEndpoints) {
+				if (serverInfo && !serverInfo.options.isBigDataCluster) {
 					this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 						resolve(result);
 					}, error => {
@@ -326,17 +327,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							if (result) {
 								let pathes: string[] = [];
 								result.nodes.forEach(node => pathes.push(node.nodePath));
-								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, path: pathes, expanderObject: provider });
+								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, groupingId: 0,path: pathes, expanderObject: provider });
 
-								let expanders = this._expanders[providerId];
+								let expanders = this._expanders[providerId].sort(expander=> expander.groupingId);
 								if (expanders) {
 									for (let expander of expanders) {
 										this.expandOrRefreshNode(expander, session, nodePath).then(result2 => {
 											if (result2) {
 												let pathes: string[] = [];
 												result2.nodes.forEach(node => pathes.push(node.nodePath));
-												this._topLevelChildrenPath.push({ providerId: expander.providerId, supportedProviderId: expander.supportedProviderId, path: pathes, expanderObject: expander });
-
+												this._topLevelChildrenPath.push({ providerId: expander.providerId, supportedProviderId: expander.supportedProviderId, groupingId: expander.groupingId,path: pathes, expanderObject: expander });
 												result.nodes = result.nodes.concat(result2.nodes);
 												resolve(result);
 											}
@@ -371,7 +371,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
+	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -380,7 +380,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private expandOrRefreshNode(
-		provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander,
+		provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander,
 		session: sqlops.ObjectExplorerSession,
 		nodePath: string,
 		refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
@@ -470,7 +470,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._providers[providerId] = provider;
 	}
 
-	public registerExpander(expander: sqlops.ObjectExplorerExpander): void {
+	public registerExpander(expander: sqlops.ObjectExplorerNodeExpander): void {
 		let expanders = this._expanders[expander.supportedProviderId] || [];
 		expanders.push(expander);
 		this._expanders[expander.supportedProviderId] = expanders;

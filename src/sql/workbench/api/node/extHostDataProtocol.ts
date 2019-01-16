@@ -132,9 +132,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerObjectExplorerExpander(provider: sqlops.ObjectExplorerExpander): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerExpander);
-		this._proxy.$registerObjectExplorerExpander(provider.supportedProviderId, provider.handle);
+	$registerObjectExplorerNodeExpander(provider: sqlops.ObjectExplorerNodeExpander): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerNodeExpander);
+		this._proxy.$registerObjectExplorerNodeExpander(provider.supportedProviderId, provider.handle);
 		return rt;
 	}
 
@@ -349,26 +349,26 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	public $expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).expandNode(nodeInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander>(handle).expandNode(nodeInfo);
 	}
 
 
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).refreshNode(nodeInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander>(handle).refreshNode(nodeInfo);
 	}
 
 	public $closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).closeSession(closeSessionInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander>(handle).closeSession(closeSessionInfo);
 	}
 
 	public $findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerExpander>(handle).findNodes(findNodesInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander>(handle).findNodes(findNodesInfo);
 	}
 
 	public $onObjectExplorerSessionCreated(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionCreated(handle, response);
 	}
-	
+
 	public $onObjectExplorerSessionDisconnected(handle: number, response: sqlops.ObjectExplorerSession): void {
 		this._proxy.$onObjectExplorerSessionDisconnected(handle, response);
 	}

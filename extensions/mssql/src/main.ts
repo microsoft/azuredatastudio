@@ -19,9 +19,9 @@ import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
 import { HadoopConnectionProvider } from './objectExplorerExpander/connectionProvider';
-import { HadoopObjectExplorerExpander } from './objectExplorerExpander/objectExplorerExpander';
 import { AppContext } from './objectExplorerExpander/appContext';
 import { ApiWrapper } from './objectExplorerExpander/apiWrapper';
+import { HadoopObjectExplorerNodeExpander } from './objectExplorerExpander/objectExplorerExpander';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -91,8 +91,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		credentialsStore.start();
 		resourceProvider.start();
 		let connectionProvider = new HadoopConnectionProvider();
-		let expander = new HadoopObjectExplorerExpander(connectionProvider, new AppContext(context, new ApiWrapper()));
-		sqlops.dataprotocol.registerObjectExplorerExpander(expander);
+		let expander = new HadoopObjectExplorerNodeExpander(connectionProvider, new AppContext(context, new ApiWrapper()));
+		sqlops.dataprotocol.registerObjectExplorerNodeExpander(expander);
 		sqlops.dataprotocol.registerConnectionProvider(connectionProvider);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');

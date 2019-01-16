@@ -20,8 +20,9 @@ import { IFileSource } from './fileSources';
 import { AppContext } from './appContext';
 import * as constants from './constants';
 
-export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops.ObjectExplorerExpander, ITreeChangeHandler {
+export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sqlops.ObjectExplorerNodeExpander, ITreeChangeHandler {
     public readonly supportedProviderId: string = constants.mssqlProviderId;
+    public readonly groupingId: number = constants.objectexplorerGroupingId;
     private sessionMap: Map<string, Session>;
     private sessionCreatedEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerSession>();
     private expandCompleteEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerExpandInfo>();
@@ -32,7 +33,11 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
             throw new Error(localize('connectionProviderRequired', 'Connection provider is required'));
         }
         this.sessionMap = new Map();
-        this.appContext.registerService<HadoopObjectExplorerExpander>(constants.ObjectExplorerService, this);
+        this.appContext.registerService<HadoopObjectExplorerNodeExpander>(constants.ObjectExplorerService, this);
+    }
+
+    public createNewSession(connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+		return Promise.resolve(undefined);
     }
 
     expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
@@ -54,7 +59,7 @@ export class HadoopObjectExplorerExpander extends ProviderBase implements sqlops
                 parentConnection.options = Object.assign(parentConnection.options, credentials);
 
                 let serverInfo = await sqlops.connection.getServerInfo(parentConnection.connectionId);
-                let endpoints = serverInfo.bigDataClusterEndpoints;
+                let endpoints = serverInfo.options.bigDataClusterEndpoints;
                 let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
 
                 let connInfo: sqlops.connection.Connection = {

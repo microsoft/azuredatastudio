@@ -239,7 +239,7 @@ export function createApiFactory(
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
 			};
 
-			let registerObjectExplorerExpander = (provider: sqlops.ObjectExplorerExpander): vscode.Disposable => {
+			let registerObjectExplorerNodeExpander = (provider: sqlops.ObjectExplorerNodeExpander): vscode.Disposable => {
 				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
 					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
 				});
@@ -249,12 +249,12 @@ export function createApiFactory(
 						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
 					});
 				}
-				
+
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
 				});
 
-				return extHostDataProvider.$registerObjectExplorerExpander(provider);
+				return extHostDataProvider.$registerObjectExplorerNodeExpander(provider);
 			};
 
 			let registerTaskServicesProvider = (provider: sqlops.TaskServicesProvider): vscode.Disposable => {
@@ -348,7 +348,7 @@ export function createApiFactory(
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
-				registerObjectExplorerExpander,
+				registerObjectExplorerNodeExpander,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,
@@ -505,7 +505,7 @@ export function createApiFactory(
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				nb: nb,
-				AzureResource: sqlExtHostTypes.AzureResource
+				AzureResource: sqlExtHostTypes.AzureResource,
 			};
 		}
 	};
