@@ -13,7 +13,7 @@
 		"*"
 	],
 	"contributes": {
-		"configuration": {
+		"configuration": [{
 			"type": "object",
 			"title": "%notebook.configuration.title%",
 			"properties": {
@@ -24,6 +24,18 @@
 				}
 			}
 		},
+		{
+			"type": "object",
+			"title": "%notebook.configuration.title%",
+			"properties": {
+				"notebook.pythonPath": {
+					"type": "string",
+					"default": "",
+					"description": "%notebook.pythonPath.description%"
+				}
+			}
+		}
+	],
 		"commands": [
 			{
 				"command": "notebook.command.new",
