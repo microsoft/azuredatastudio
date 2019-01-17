@@ -244,6 +244,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this.connection.serverName));
 		}
 
+		let newEvents = [];
 		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
@@ -261,9 +262,12 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					data[columnName] = escape(value);
 				}
 			}
-			this._data.push(data);
+			newEvents.push(data);
 		}
 
+		if (newEvents.length > 0) {
+			this._data.push(newEvents);
+		}
 	}
 
 	filterSession(filter: ProfilerFilter) {
