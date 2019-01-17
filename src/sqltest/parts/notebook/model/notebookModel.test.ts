@@ -44,8 +44,8 @@ let expectedNotebookContent: nb.INotebookContents = {
             language: 'sql'
         }
     },
-    nbformat: 5,
-    nbformat_minor: 0
+    nbformat: 4,
+    nbformat_minor: 5
 };
 
 let expectedNotebookContentOneCell: nb.INotebookContents = {
@@ -61,8 +61,8 @@ let expectedNotebookContentOneCell: nb.INotebookContents = {
             language: 'sql'
         }
     },
-    nbformat: 5,
-    nbformat_minor: 0
+    nbformat: 4,
+    nbformat_minor: 5
 };
 
 let defaultUri = URI.file('/some/path.ipynb');
@@ -73,7 +73,7 @@ let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
 
 describe('notebook model', function(): void {
-    let notebookManager = new NotebookManagerStub();
+    let notebookManagers = [new NotebookManagerStub()];
     let memento: TypeMoq.Mock<Memento>;
     let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
     let defaultModelOptions: INotebookModelOptions;
@@ -87,9 +87,10 @@ describe('notebook model', function(): void {
         defaultModelOptions = {
             notebookUri: defaultUri,
             factory: new ModelFactory(),
-            notebookManager,
+            notebookManagers,
             notificationService: notificationService.object,
-            connectionService: queryConnectionService.object };
+            connectionService: queryConnectionService.object,
+            providerId: 'jupyter' };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
         mockClientSession.setup(c => c.initialize(TypeMoq.It.isAny())).returns(() => {
             return Promise.resolve();
@@ -102,7 +103,7 @@ describe('notebook model', function(): void {
         });
     });
 
-    it('Should create single cell if model has no contents', async function(): Promise<void> {
+    it('Should create no cells if model has no contents', async function(): Promise<void> {
         // Given an empty notebook
         let emptyNotebook: nb.INotebookContents = {
             cells: [],
@@ -112,21 +113,20 @@ describe('notebook model', function(): void {
                     language: 'sql'
                 }
             },
-            nbformat: 5,
-            nbformat_minor: 0
+            nbformat: 4,
+            nbformat_minor: 5
         };
 
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(emptyNotebook));
-        notebookManager.contentManager = mockContentManager.object;
+        notebookManagers[0].contentManager = mockContentManager.object;
 
         // When I initialize the model
         let model = new NotebookModel(defaultModelOptions);
         await model.requestModelLoad();
 
-        // Then I expect to have 1 code cell as the contents
-        should(model.cells).have.length(1);
-        should(model.cells[0].source).be.empty();
+        // Then I expect to have 0 code cell as the contents
+        should(model.cells).have.length(0);
     });
 
     it('Should throw if model load fails', async function(): Promise<void> {
@@ -134,7 +134,7 @@ describe('notebook model', function(): void {
         let error = new Error('File not found');
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).throws(error);
-        notebookManager.contentManager = mockContentManager.object;
+        notebookManagers[0].contentManager = mockContentManager.object;
 
         // When I initalize the model
         // Then it should throw
@@ -148,7 +148,7 @@ describe('notebook model', function(): void {
         // Given a notebook with 2 cells
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
-        notebookManager.contentManager = mockContentManager.object;
+        notebookManagers[0].contentManager = mockContentManager.object;
 
         // When I initalize the model
         let model = new NotebookModel(defaultModelOptions);
@@ -163,7 +163,7 @@ describe('notebook model', function(): void {
     it('Should load contents but then go to error state if client session startup fails', async function(): Promise<void> {
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
-        notebookManager.contentManager = mockContentManager.object;
+        notebookManagers[0].contentManager = mockContentManager.object;
 
         // Given I have a session that fails to start
         mockClientSession.setup(c => c.isInErrorState).returns(() => true);
@@ -192,7 +192,7 @@ describe('notebook model', function(): void {
     it('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
-        notebookManager.contentManager = mockContentManager.object;
+        notebookManagers[0].contentManager = mockContentManager.object;
         let kernelChangedEmitter: Emitter<nb.IKernelChangedArgs> = new Emitter<nb.IKernelChangedArgs>();
 
         mockClientSession.setup(c => c.isInErrorState).returns(() => false);

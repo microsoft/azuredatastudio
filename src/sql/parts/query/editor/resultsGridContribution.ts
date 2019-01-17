@@ -21,7 +21,6 @@ const resultsGridConfiguration: IConfigurationNode = {
 	type: 'object',
 	title: nls.localize('resultsGridConfigurationTitle', "Results Grid"),
 	overridable: true,
-	scope: ConfigurationScope.RESOURCE,
 	properties: {
 		'resultsGrid.fontFamily': {
 			type: 'string',
@@ -62,6 +61,11 @@ const resultsGridConfiguration: IConfigurationNode = {
 			],
 			default: RESULTS_GRID_DEFAULTS.cellPadding,
 			description: nls.localize('cellPadding', "Controls the cell padding in pixels")
+		},
+		'resultsGrid.autoSizeColumns': {
+			type: 'boolean',
+			default: false,
+			description: nls.localize('autoSizeColumns', "Auto size the columns width on inital results. Could have performance problems with large number of columns or large cells")
 		}
 	}
 };

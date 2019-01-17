@@ -29,8 +29,8 @@ let expectedNotebookContent: nb.INotebookContents = {
             language: 'sql'
         }
     },
-    nbformat: 5,
-    nbformat_minor: 0
+    nbformat: 4,
+    nbformat_minor: 2
 };
 let notebookContentString = JSON.stringify(expectedNotebookContent);
 
@@ -73,5 +73,42 @@ describe('Local Content Manager', function(): void {
         let notebook = await contentManager.getNotebookContents(URI.file(localFile));
         // then I expect notebook format to still be valid
         verifyMatchesExpectedNotebook(notebook);
+    });
+    it('Should inline mime data into a single string', async function(): Promise<void> {
+        let mimeNotebook: nb.INotebookContents = {
+            cells: [{
+                cell_type: CellTypes.Code,
+                source: 'insert into t1 values (c1, c2)',
+                metadata: { language: 'python' },
+                execution_count: 1,
+                outputs: [
+                    <nb.IDisplayData> {
+                        output_type: 'display_data',
+                        data: {
+                            'text/html': [
+                                '<div>',
+                                '</div>'
+                            ]
+                        }
+                    }
+                ]
+            }],
+            metadata: {
+                kernelspec: {
+                    name: 'mssql',
+                    language: 'sql'
+                }
+            },
+            nbformat: 4,
+            nbformat_minor: 2
+        };
+        let mimeContentString = JSON.stringify(mimeNotebook);
+        // Given a file containing a valid notebook with multiline mime type
+        let localFile = tempWrite.sync(mimeContentString, 'notebook.ipynb');
+        // when I read the content
+        let notebook = await contentManager.getNotebookContents(URI.file(localFile));
+        // then I expect output to have been normalized into a single string
+        let displayOutput = <nb.IDisplayData> notebook.cells[0].outputs[0];
+        should(displayOutput.data['text/html']).equal('<div></div>');
     });
 });

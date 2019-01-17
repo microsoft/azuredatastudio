@@ -88,7 +88,7 @@ export function parseNumAsTimeString(value: number, includeFraction: boolean = t
 	return tempVal > 0 && includeFraction ? rs + '.' + mss : rs;
 }
 
-export function generateUri(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection'): string {
+export function generateUri(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook'): string {
 	let prefix = purpose ? uriPrefixes[purpose] : uriPrefixes.default;
 	let uri = generateUriWithPrefix(connection, prefix);
 

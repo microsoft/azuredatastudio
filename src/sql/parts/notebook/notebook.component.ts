@@ -34,7 +34,7 @@ import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
@@ -64,7 +64,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _errorMessage: string;
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
-	private notebookManager: INotebookManager;
+	private notebookManagers: INotebookManager[] = [];
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
@@ -171,7 +171,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this.model.activeCell) {
 			this.model.activeCell.active = false;
 		}
-		this.model.activeCell = null;
 		this._changeRef.detectChanges();
 	}
 
@@ -232,13 +231,17 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
-		this.notebookManager = await this.notebookService.getOrCreateNotebookManager(this._notebookParams.providerId, this._notebookParams.notebookUri);
+		for (let providerId of this._notebookParams.providers) {
+			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
+			this.notebookManagers.push(notebookManager);
+		}
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
-			notebookManager: this.notebookManager
+			notebookManagers: this.notebookManagers,
+			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter' // this is tricky; really should also depend on the connection profile
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
@@ -247,10 +250,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
 		model.backgroundStartSession();
-		// Set first cell as default active cell
-		if (this._model && this._model.cells && this._model.cells[0]) {
-			this.selectCell(model.cells[0]);
-		}
 		this._changeRef.detectChanges();
 	}
 
@@ -259,7 +258,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.notebookService.registrationComplete;
 		// Refresh the provider if we had been using default
 		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
-			this._notebookParams.providerId = notebookUtils.getProviderForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+			let providers= notebookUtils.getProvidersForFileName(this._notebookParams.notebookUri.fsPath, this.notebookService);
+			let tsqlProvider = providers.find(provider => provider === SQL_NOTEBOOK_PROVIDER);
+			this._notebookParams.providerId = tsqlProvider ? SQL_NOTEBOOK_PROVIDER : providers[0];
 		}
 		if (DEFAULT_NOTEBOOK_PROVIDER === this._notebookParams.providerId) {
 			// If it's still the default, warn them they should install an extension

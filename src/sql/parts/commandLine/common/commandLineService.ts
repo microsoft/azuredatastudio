@@ -15,10 +15,13 @@ import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions a
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { warn } from 'sql/base/common/log';
 
 export class CommandLineService implements ICommandLineProcessing {
 	private _connectionProfile: ConnectionProfile;
 	private _showConnectionDialog: boolean;
+	private _commandName:string;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -27,49 +30,96 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
+		@ICommandService private _commandService: ICommandService
 	) {
 		let profile = null;
-		if (this._environmentService && this._environmentService.args.server) {
-			profile = new ConnectionProfile(_capabilitiesService, null);
-			// We want connection store to use any matching password it finds
-			profile.savePassword = true;
-			profile.providerName = Constants.mssqlProviderName;
-			profile.serverName = _environmentService.args.server;
-			profile.databaseName = _environmentService.args.database ? _environmentService.args.database : '';
-			profile.userName = _environmentService.args.user ? _environmentService.args.user : '';
-			profile.authenticationType = _environmentService.args.integrated ? 'Integrated' : 'SqlLogin';
-			profile.connectionName = '';
-			profile.setOptionValue('applicationName', Constants.applicationName);
-			profile.setOptionValue('databaseDisplayName', profile.databaseName);
-			profile.setOptionValue('groupId', profile.groupId);
+		if (this._environmentService) {
+			if (this._commandService) {
+				this._commandName = this._environmentService.args.command;
+			}
+			if (this._environmentService.args.server) {
+				profile = new ConnectionProfile(_capabilitiesService, null);
+				// We want connection store to use any matching password it finds
+				profile.savePassword = true;
+				profile.providerName = Constants.mssqlProviderName;
+				profile.serverName = _environmentService.args.server;
+				profile.databaseName = _environmentService.args.database ? _environmentService.args.database : '';
+				profile.userName = _environmentService.args.user ? _environmentService.args.user : '';
+				profile.authenticationType = _environmentService.args.integrated ? 'Integrated' : 'SqlLogin';
+				profile.connectionName = '';
+				profile.setOptionValue('applicationName', Constants.applicationName);
+				profile.setOptionValue('databaseDisplayName', profile.databaseName);
+				profile.setOptionValue('groupId', profile.groupId);
+			}
 		}
 		this._connectionProfile = profile;
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {
-			this.processCommandLine();
+			this.processCommandLine().catch(reason=>{warn('processCommandLine failed: ' + reason);});
 		} else {
 			registry.onNewProvider(e => {
 				if (e.id === Constants.mssqlProviderName) {
-					this.processCommandLine();
+					this.processCommandLine().catch(reason=>{warn('processCommandLine failed: ' + reason);});
 				}
 			});
 		}
 	}
 	public _serviceBrand: any;
-	public processCommandLine(): void {
-		if (!this._connectionProfile && !this._connectionManagementService.hasRegisteredServers()) {
-			// prompt the user for a new connection on startup if no profiles are registered
-			this._connectionManagementService.showConnectionDialog();
-		} else if (this._connectionProfile) {
-			this._connectionManagementService.connectIfNotConnected(this._connectionProfile, 'connection', true)
-				.then(result => TaskUtilities.newQuery(this._connectionProfile,
-					this._connectionManagementService,
-					this._queryEditorService,
-					this._objectExplorerService,
-					this._editorService))
-				.catch(() => { });
-		}
+	// We base our logic on the combination of (server, command) values.
+	// (serverName, commandName) => Connect object explorer and execute the command, passing the connection profile to the command. Do not load query editor.
+	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
+	// (serverName, null) => Connect object explorer and open a new query editor
+	// (null, null) => Prompt for a connection unless there are registered servers
+	public processCommandLine(): Promise<void> {
+
+		let self = this;
+		return new Promise<void>((resolve, reject) => {
+
+			if (!self._commandName && !self._connectionProfile && !self._connectionManagementService.hasRegisteredServers()) {
+				// prompt the user for a new connection on startup if no profiles are registered
+				self._connectionManagementService.showConnectionDialog()
+					.then(() => {
+							resolve();
+						},
+						error => {
+							reject(error);
+						});
+			} else if (self._connectionProfile) {
+				if (!self._commandName) {
+					self._connectionManagementService.connectIfNotConnected(self._connectionProfile, 'connection', true)
+						.then(() => {
+							TaskUtilities.newQuery(self._connectionProfile,
+							self._connectionManagementService,
+							self._queryEditorService,
+							self._objectExplorerService,
+							self._editorService)
+							.then( () => {
+								resolve();
+							}, error => {
+								// ignore query editor failing to open.
+								// the tests don't mock this out
+								warn('unable to open query editor ' + error);
+								resolve();
+							});
+						}, error => {
+							reject(error);
+						});
+				} else {
+					self._connectionManagementService.connectIfNotConnected(self._connectionProfile, 'connection', true)
+					.then(() => {
+						self._commandService.executeCommand(self._commandName, self._connectionProfile).then(() => resolve(), error => reject(error));
+					}, error => {
+						reject(error);
+					});
+				}
+			} else if (self._commandName) {
+						self._commandService.executeCommand(self._commandName).then(() => resolve(), error => reject(error));
+			}
+			else {
+				resolve();
+			}
+		});
 	}
 }

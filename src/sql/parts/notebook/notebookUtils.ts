@@ -39,21 +39,26 @@ export async function mkDir(dirPath: string, outputChannel?: IOutputChannel): Pr
 	}
 }
 
-export function getProviderForFileName(fileName: string, notebookService: INotebookService): string {
+export function getProvidersForFileName(fileName: string, notebookService: INotebookService): string[] {
 	let fileExt = path.extname(fileName);
-	let provider: string;
+	let providers: string[];
 	// First try to get provider for actual file type
 	if (fileExt && fileExt.startsWith('.')) {
 		fileExt = fileExt.slice(1,fileExt.length);
-		provider = notebookService.getProviderForFileType(fileExt);
+		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
-	if (!provider) {
-		provider = notebookService.getProviderForFileType(DEFAULT_NOTEBOOK_FILETYPE);
+	if (!providers) {
+		providers = notebookService.getProvidersForFileType(DEFAULT_NOTEBOOK_FILETYPE);
 	}
 	// Finally if all else fails, use the built-in handler
-	if (!provider) {
-		provider = DEFAULT_NOTEBOOK_PROVIDER;
+	if (!providers) {
+		providers = [DEFAULT_NOTEBOOK_PROVIDER];
 	}
-	return provider;
+	return providers;
+}
+
+// Private feature flag to enable Sql Notebook experience
+export function sqlNotebooksEnabled() {
+	return process.env['SQLOPS_SQL_NOTEBOOK'] !== undefined;
 }

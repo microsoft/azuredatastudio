@@ -29,6 +29,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const fs = require('fs');
 
@@ -61,7 +62,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@INotificationService private _notificationService: INotificationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
@@ -74,7 +76,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
-	public newSqlEditor(sqlContent?: string, connectionProviderName?: string): Promise<IConnectableInput> {
+	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput> {
 		return new Promise<IConnectableInput>((resolve, reject) => {
 			try {
 				// Create file path and file URI
@@ -86,6 +88,9 @@ export class QueryEditorService implements IQueryEditorService {
 				fileInput.resolve().then(m => {
 					if (sqlContent) {
 						m.textEditorModel.setValue(sqlContent);
+						if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+							m.setDirty(false);
+						}
 					}
 				});
 

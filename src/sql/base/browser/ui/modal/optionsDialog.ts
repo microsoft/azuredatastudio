@@ -6,19 +6,20 @@
 'use strict';
 
 import 'vs/css!./media/optionsDialog';
-import { Button } from 'sql/base/browser/ui/button/button';
-import { FixedCollapsibleView } from 'sql/platform/views/fixedCollapsibleView';
 import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/common/theme/styler';
+import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import * as sqlops from 'sqlops';
+
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -26,58 +27,56 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import * as styler from 'vs/platform/theme/common/styler';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { SplitView, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 import { Builder, $ } from 'vs/base/browser/builder';
 import { Widget } from 'vs/base/browser/ui/widget';
-import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IViewletPanelOptions, ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-export class CategoryView extends FixedCollapsibleView {
-	private _treecontainer: HTMLElement;
-	private _collapsed: CollapsibleState;
+export class CategoryView extends ViewletPanel {
 
-	constructor(private viewTitle: string, private _bodyContainer: HTMLElement, collapsed: boolean, initialBodySize: number, headerSize: number) {
-		super(
-			initialBodySize,
-			{
-				expandedBodySize: initialBodySize,
-				sizing: headerSize,
-				initialState: collapsed ? CollapsibleState.COLLAPSED : CollapsibleState.EXPANDED,
-				ariaHeaderLabel: viewTitle
-			});
-		this._collapsed = collapsed ? CollapsibleState.COLLAPSED : CollapsibleState.EXPANDED;
+	constructor(
+		private contentElement: HTMLElement,
+		private size: number,
+		options: IViewletPanelOptions,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IConfigurationService configurationService: IConfigurationService
+	) {
+		super(options, keybindingService, contextMenuService, configurationService);
 	}
 
-	public renderHeader(container: HTMLElement): void {
-		const titleDiv = $('div.title').appendTo(container);
-		$('span').text(this.viewTitle).appendTo(titleDiv);
+	// we want a fixed size, so when we render to will measure our content and set that to be our
+	// minimum and max size
+	protected renderBody(container: HTMLElement): void {
+		container.appendChild(this.contentElement);
+		this.maximumBodySize = this.size;
+		this.minimumBodySize = this.size;
 	}
 
-	public renderBody(container: HTMLElement): void {
-		this._treecontainer = document.createElement('div');
-		container.appendChild(this._treecontainer);
-		this._treecontainer.appendChild(this._bodyContainer);
-		this.changeState(this._collapsed);
+	protected layoutBody(size: number): void {
+		//
 	}
+}
 
-	public layoutBody(size: number): void {
-		this._treecontainer.style.height = size + 'px';
-	}
+export interface IOptionsDialogOptions extends IModalOptions {
+	cancelLabel?: string;
 }
 
 export class OptionsDialog extends Modal {
 	private _body: HTMLElement;
 	private _optionGroups: HTMLElement;
 	private _dividerBuilder: Builder;
-	private _okButton: Button;
-	private _closeButton: Button;
 	private _optionTitle: Builder;
 	private _optionDescription: Builder;
 	private _optionElements: { [optionName: string]: OptionsDialogHelper.IOptionElement } = {};
 	private _optionValues: { [optionName: string]: string };
 	private _optionRowSize = 31;
 	private _optionCategoryPadding = 30;
-	private _categoryHeaderSize = 22;
+	private height: number;
+	private splitview: ScrollableSplitView;
 
 	private _onOk = new Emitter<void>();
 	public onOk: Event<void> = this._onOk.event;
@@ -85,16 +84,14 @@ export class OptionsDialog extends Modal {
 	private _onCloseEvent = new Emitter<void>();
 	public onCloseEvent: Event<void> = this._onCloseEvent.event;
 
-	public okLabel: string = localize('optionsDialog.ok', 'OK');
-	public cancelLabel: string = localize('optionsDialog.cancel', 'Cancel');
-
 	constructor(
 		title: string,
 		name: string,
-		options: IModalOptions,
+		private options: IOptionsDialogOptions,
 		@IPartService partService: IPartService,
 		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
 		@IContextViewService private _contextViewService: IContextViewService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService
@@ -109,14 +106,13 @@ export class OptionsDialog extends Modal {
 			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
-		this._okButton = this.addFooterButton(this.okLabel, () => this.ok());
-		this._closeButton = this.addFooterButton(this.cancelLabel, () => this.cancel());
+		let okButton = this.addFooterButton(localize('optionsDialog.ok', 'OK'), () => this.ok());
+		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
 		// Theme styler
-		attachButtonStyler(this._okButton, this._themeService);
-		attachButtonStyler(this._closeButton, this._themeService);
-		let self = this;
-		this._register(self._workbenchThemeService.onDidColorThemeChange(e => self.updateTheme(e)));
-		self.updateTheme(self._workbenchThemeService.getColorTheme());
+		attachButtonStyler(okButton, this._themeService);
+		attachButtonStyler(closeButton, this._themeService);
+		this._register(this._workbenchThemeService.onDidColorThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._workbenchThemeService.getColorTheme());
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -151,24 +147,24 @@ export class OptionsDialog extends Modal {
 	}
 
 	private onOptionLinkClicked(optionName: string): void {
-		var option = this._optionElements[optionName].option;
+		let option = this._optionElements[optionName].option;
 		this._optionTitle.text(option.displayName);
 		this._optionDescription.text(option.description);
 	}
 
 	private fillInOptions(container: Builder, options: sqlops.ServiceOption[]): void {
-		for (var i = 0; i < options.length; i++) {
-			var option: sqlops.ServiceOption = options[i];
-			var rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
+		for (let i = 0; i < options.length; i++) {
+			let option: sqlops.ServiceOption = options[i];
+			let rowContainer = DialogHelper.appendRow(container, option.displayName, 'optionsDialog-label', 'optionsDialog-input');
 			OptionsDialogHelper.createOptionElement(option, rowContainer, this._optionValues, this._optionElements, this._contextViewService, (name) => this.onOptionLinkClicked(name));
 		}
 	}
 
 	private registerStyling(): void {
 		// Theme styler
-		for (var optionName in this._optionElements) {
-			var widget: Widget = this._optionElements[optionName].optionWidget;
-			var option = this._optionElements[optionName].option;
+		for (let optionName in this._optionElements) {
+			let widget: Widget = this._optionElements[optionName].optionWidget;
+			let option = this._optionElements[optionName].option;
 			switch (option.valueType) {
 				case ServiceOptionType.category:
 				case ServiceOptionType.boolean:
@@ -225,47 +221,51 @@ export class OptionsDialog extends Modal {
 
 	public open(options: sqlops.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
-		var firstOption: string;
-		var containerGroup: Builder;
-		var layoutSize = 0;
-		var optionsContentBuilder: Builder = $().div({ class: 'optionsDialog-options-groups' }, (container) => {
+		let firstOption: string;
+		let containerGroup: Builder;
+		let optionsContentBuilder: Builder = $().div({ class: 'optionsDialog-options-groups monaco-panel-view' }, (container) => {
 			containerGroup = container;
 			this._optionGroups = container.getHTMLElement();
 		});
-		var splitview = new SplitView(containerGroup.getHTMLElement());
+		this.splitview = new ScrollableSplitView(containerGroup.getHTMLElement(), { enableResizing: false, scrollDebounce: 0 });
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
-		for (var category in categoryMap) {
-			var serviceOptions: sqlops.ServiceOption[] = categoryMap[category];
-			var bodyContainer = $().element('table', { class: 'optionsDialog-table' }, (tableContainer: Builder) => {
+		for (let category in categoryMap) {
+			let serviceOptions: sqlops.ServiceOption[] = categoryMap[category];
+			let bodyContainer = $().element('table', { class: 'optionsDialog-table' }, (tableContainer: Builder) => {
 				this.fillInOptions(tableContainer, serviceOptions);
 			});
 
-			var viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
-			layoutSize += (viewSize + this._categoryHeaderSize);
-			var categoryView = new CategoryView(category, bodyContainer.getHTMLElement(), false, viewSize, this._categoryHeaderSize);
-			splitview.addView(categoryView);
+			let viewSize = this._optionCategoryPadding + serviceOptions.length * this._optionRowSize;
+			let categoryView = this._instantiationService.createInstance(CategoryView, bodyContainer.getHTMLElement(), viewSize, { title: category, ariaHeaderLabel: category, id: category });
+			this.splitview.addView(categoryView, viewSize);
+			categoryView.render();
+			attachPanelStyler(categoryView, this._themeService);
 
 			if (!firstOption) {
 				firstOption = serviceOptions[0].name;
 			}
 		}
-		splitview.layout(layoutSize);
+		if (this.height) {
+			this.splitview.layout(this.height - 120);
+		}
 		let body = new Builder(this._body);
 		body.append(optionsContentBuilder.getHTMLElement(), 0);
 		this.show();
-		var firstOptionWidget = this._optionElements[firstOption].optionWidget;
+		let firstOptionWidget = this._optionElements[firstOption].optionWidget;
 		this.registerStyling();
 		firstOptionWidget.focus();
 	}
 
 	protected layout(height?: number): void {
-		// Nothing currently laid out in this class
+		this.height = height;
+		// account for padding and the details view
+		this.splitview.layout(this.height - 120 - 20);
 	}
 
 	public dispose(): void {
 		super.dispose();
-		for (var optionName in this._optionElements) {
-			var widget: Widget = this._optionElements[optionName].optionWidget;
+		for (let optionName in this._optionElements) {
+			let widget: Widget = this._optionElements[optionName].optionWidget;
 			widget.dispose();
 			delete this._optionElements[optionName];
 		}

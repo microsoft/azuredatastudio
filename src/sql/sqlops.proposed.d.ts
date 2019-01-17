@@ -1655,6 +1655,7 @@ declare module 'sqlops' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
+			readonly standardKernels: string[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
@@ -1779,24 +1780,36 @@ declare module 'sqlops' {
 			metadata: {
 				language?: string;
 			};
-			execution_count: number;
+			execution_count?: number;
 			outputs?: ICellOutput[];
 		}
 
 		export type CellType = 'code' | 'markdown' | 'raw';
 
 		export interface ICellOutput {
-			output_type: OutputType;
+			output_type: OutputTypeName;
 		}
+
+		/**
+		 * An alias for a stream type.
+		 */
+		export type StreamType = 'stdout' | 'stderr';
+
+		/**
+		 * A multiline string.
+		 */
+		export type MultilineString = string | string[];
+
 		export interface IStreamResult extends ICellOutput {
+			output_type: 'stream';
 			/**
 			 * Stream output field defining the stream name, for example stdout
 			 */
-			name: string;
+			name: StreamType;
 			/**
 			 * Stream output field defining the multiline stream text
 			 */
-			text: string | Buffer;
+			text: MultilineString;
 		}
 		export interface IDisplayResult extends ICellOutput {
 			/**
@@ -1809,13 +1822,27 @@ declare module 'sqlops' {
 			 */
 			metadata?: {};
 		}
+		export interface IDisplayData extends IDisplayResult {
+			output_type: 'display_data';
+		}
+		export interface IUpdateDisplayData extends IDisplayResult {
+			output_type: 'update_display_data';
+		}
 		export interface IExecuteResult extends IDisplayResult {
+			/**
+			 * Type of cell output.
+			 */
+			output_type: 'execute_result';
 			/**
 			 * Number of times the cell was executed
 			 */
-			executionCount: number;
+			execution_count: number;
 		}
 		export interface IErrorResult extends ICellOutput {
+			/**
+			 * Type of cell output.
+			 */
+			output_type: 'error';
 			/**
 			 * Exception name
 			 */
@@ -1830,12 +1857,14 @@ declare module 'sqlops' {
 			traceback?: string[];
 		}
 
-		export type OutputType =
+		export type OutputTypeName =
 			| 'execute_result'
 			| 'display_data'
 			| 'stream'
 			| 'error'
 			| 'update_display_data';
+
+		export type Output = nb.IDisplayData | nb.IUpdateDisplayData | nb.IExecuteResult | nb.IErrorResult | nb.IStreamResult;
 
 		//#endregion
 
@@ -2231,7 +2260,7 @@ declare module 'sqlops' {
 		/**
 		 * The valid channel names.
 		 */
-		export type Channel = 'shell' | 'iopub' | 'stdin';
+		export type Channel = 'shell' | 'iopub' | 'stdin' | 'execute_reply';
 
 		/**
 		 * Kernel message header content.

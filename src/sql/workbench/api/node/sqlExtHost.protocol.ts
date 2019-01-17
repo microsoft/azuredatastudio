@@ -801,6 +801,7 @@ export interface INotebookDocumentsAndEditorsDelta {
 export interface INotebookModelAddedData {
 	uri: UriComponents;
 	providerId: string;
+	providers: string[];
 	isDirty: boolean;
 	cells: sqlops.nb.NotebookCell[];
 }
@@ -808,6 +809,7 @@ export interface INotebookModelAddedData {
 export interface INotebookModelChangedData {
 	uri: UriComponents;
 	providerId: string;
+	providers: string[];
 	isDirty: boolean;
 	cells: sqlops.nb.NotebookCell[];
 }
