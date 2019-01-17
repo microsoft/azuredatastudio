@@ -1,0 +1,3141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/parts/taskHistory/common/taskHistory.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="inProgressTasksChangesBadge">
+      <source xml:lang="en">{0} in progress tasks</source>
+      <target state="translated">{0} tareas en progreso</target>
+    </trans-unit>
+    <trans-unit id="showTaskHistory">
+      <source xml:lang="en">Show Task History</source>
+      <target state="translated">Mostrar historial de tareas</target>
+      <note>Show Task History</note>
+    </trans-unit>
+    <trans-unit id="taskHistory.view">
+      <source xml:lang="en">View</source>
+      <target state="translated">Vista</target>
+    </trans-unit>
+    <trans-unit id="taskHistory">
+      <source xml:lang="en">Task History</source>
+      <target state="translated">Historial de tareas</target>
+    </trans-unit>
+    <trans-unit id="datasource.task">
+      <source xml:lang="en">Operation Task Status</source>
+      <target state="translated">Estado de tareas operación</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/connectionViewlet" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="Search server names">
+      <source xml:lang="en">Search server names</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/common/registeredServer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="registeredServers.view">
+      <source xml:lang="en">View</source>
+      <target state="translated">Vista</target>
+    </trans-unit>
+    <trans-unit id="databaseConnections">
+      <source xml:lang="en">Database Connections</source>
+      <target state="translated">Conexiones de base de datos</target>
+    </trans-unit>
+    <trans-unit id="datasource.connections">
+      <source xml:lang="en">data source connections</source>
+      <target state="translated">Conexiones de fuentes de datos</target>
+    </trans-unit>
+    <trans-unit id="datasource.connectionGroups">
+      <source xml:lang="en">data source groups</source>
+      <target state="translated">grupos de origen de datos</target>
+    </trans-unit>
+    <trans-unit id="startupConfig">
+      <source xml:lang="en">Startup Configuration</source>
+      <target state="translated">Configuración de inicio</target>
+    </trans-unit>
+    <trans-unit id="startup.alwaysShowServersView">
+      <source xml:lang="en">True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/query.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="sql.messagesDefaultOpen">
+      <source xml:lang="en">True for the messages pane to be open by default; false for closed</source>
+      <target state="translated">Cuando es True, el panel de mensajes será abierto de forma predeterminada; False para cerrado</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.includeHeaders">
+      <source xml:lang="en">[Optional] When true, column headers are included when saving results as CSV</source>
+      <target state="translated">[Opcional] Cuando es verdadero, los encabezados de columna se incluyen al guardar resultados como CSV</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.delimiter">
+      <source xml:lang="en">[Optional] The custom delimiter to use between values when saving as CSV</source>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.lineSeperator">
+      <source xml:lang="en">[Optional] Character(s) used for seperating rows when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.textIdentifier">
+      <source xml:lang="en">[Optional] Character used for enclosing text fields when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.encoding">
+      <source xml:lang="en">[Optional] File encoding used when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="sql.copyIncludeHeaders">
+      <source xml:lang="en">[Optional] Configuration options for copying results from the Results View</source>
+      <target state="translated">[Opcional] Opciones de configuración para copiar resultados desde el punto de vista de resultados</target>
+    </trans-unit>
+    <trans-unit id="sql.copyRemoveNewLine">
+      <source xml:lang="en">[Optional] Configuration options for copying multi-line results from the Results View</source>
+      <target state="translated">[Opcional] Opciones de configuración para copiar resultados de varias líneas de la vista de resultados</target>
+    </trans-unit>
+    <trans-unit id="sql.showBatchTime">
+      <source xml:lang="en">[Optional] Should execution time be shown for individual batches</source>
+      <target state="translated">[Opcional] Si el tiempo de ejecución se mostrará para lotes individuales</target>
+    </trans-unit>
+    <trans-unit id="defaultChartType">
+      <source xml:lang="en">[Optional] the default chart type to use when opening Chart Viewer from a Query Results</source>
+      <target state="translated">[Opcional] El tipo de gráfico predeterminado para usar al abrir el visor de gráficos desde los resultados de una consulta</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.off">
+      <source xml:lang="en">Tab coloring will be disabled</source>
+      <target state="translated">Se deshabilitará el coloreado de las pestañas</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.border">
+      <source xml:lang="en">The top border of each editor tab will be colored to match the relevant server group</source>
+      <target state="translated">El borde superior de cada pestaña del editor se coloreará para que coincida con el grupo de servidores correspondiente</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.fill">
+      <source xml:lang="en">Each editor tab's background color will match the relevant server group</source>
+      <target state="translated">Cada color de fondo de la ficha Editor coincidirá con el grupo de servidores pertinente</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode">
+      <source xml:lang="en">Controls how to color tabs based on the server group of their active connection</source>
+      <target state="translated">Controla cómo colorear las pestañas basadas en el grupo de servidor de la conexión activa</target>
+    </trans-unit>
+    <trans-unit id="showConnectionInfoInTitle">
+      <source xml:lang="en">Controls whether to show the connection info for a tab in the title.</source>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableIntelliSense">
+      <source xml:lang="en">Should IntelliSense be enabled</source>
+      <target state="translated">IntelliSense debe habilitarse</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableErrorChecking">
+      <source xml:lang="en">Should IntelliSense error checking be enabled</source>
+      <target state="translated">Debe habilitarse la comprobación de errores de IntelliSense</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
+      <target state="translated">Debe habilitar las sugerencias de IntelliSense</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableQuickInfo">
+      <source xml:lang="en">Should IntelliSense quick info be enabled</source>
+      <target state="translated">Si se habilita la información rápida de IntelliSense</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.lowerCaseSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be lowercase</source>
+      <target state="translated">Las sugerencias de IntelliSense deberían ser minúsculas</target>
+    </trans-unit>
+    <trans-unit id="queryShortcutDescription">
+      <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter</source>
+      <target state="translated">Establece los puntos clave workbench.action.query.shortcut{0} para ejecutar el acceso directo del texto como un procedimiento almacenado. Caulquier texto seleccionado en el editor de consultas será pasado como un parámetro.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="serverGroup.colors">
+      <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
+    </trans-unit>
+    <trans-unit id="serverGroup.autoExpand">
+      <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connection.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="sql.maxRecentConnectionsDescription">
+      <source xml:lang="en">The maximum number of recently used connections to store in the connection list.</source>
+      <target state="translated">El número máximo de conexiones recientemente utilizadas para almacenar en la lista de conexiones.</target>
+    </trans-unit>
+    <trans-unit id="sql.defaultEngineDescription">
+      <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL</source>
+      <target state="translated">Motor de SQL predeterminado a utilizar. Esto indica el proveedor de idioma predeterminado en archivos .sql y el predeterminado a utilizar al crear una nueva conexión. La opción válida es actualmente MSSQL</target>
+    </trans-unit>
+    <trans-unit id="connection.parseClipboardForConnectionStringDescription">
+      <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/editor/resultsGridContribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="resultsGridConfigurationTitle">
+      <source xml:lang="en">Results Grid</source>
+      <target state="translated">Cuadrícula de resultados</target>
+    </trans-unit>
+    <trans-unit id="fontFamily">
+      <source xml:lang="en">Controls the font family.</source>
+    </trans-unit>
+    <trans-unit id="fontWeight">
+      <source xml:lang="en">Controls the font weight.</source>
+    </trans-unit>
+    <trans-unit id="fontSize">
+      <source xml:lang="en">Controls the font size in pixels.</source>
+    </trans-unit>
+    <trans-unit id="letterSpacing">
+      <source xml:lang="en">Controls the letter spacing in pixels.</source>
+    </trans-unit>
+    <trans-unit id="rowHeight">
+      <source xml:lang="en">Controls the row height in pixels</source>
+    </trans-unit>
+    <trans-unit id="cellPadding">
+      <source xml:lang="en">Controls the cell padding in pixels</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profilerActions.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="profilerCategory">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">Analizador</target>
+    </trans-unit>
+    <trans-unit id="carbon.actions.newProfiler">
+      <source xml:lang="en">Open up a new profiler window</source>
+      <target state="translated">Abrir una nueva ventana del generador de perfiles</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountManagement.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="carbon.extension.contributes.account.id">
+      <source xml:lang="en">Identifier of the account type</source>
+      <target state="translated">Identificador del tipo de cuenta</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon">
+      <source xml:lang="en">(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration</source>
+      <target state="translated">(Opcional) El icono que se usa para representar el comando en la UI. Ya sea una ruta de acceso al archivo o una configuración con temas</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon.light">
+      <source xml:lang="en">Icon path when a light theme is used</source>
+      <target state="translated">Ruta del ícono cuando un tema light es usado</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon.dark">
+      <source xml:lang="en">Icon path when a dark theme is used</source>
+      <target state="translated">Ruta de icono cuando se utiliza un tema oscuro</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account">
+      <source xml:lang="en">Contributes icons to account provider.</source>
+      <target state="translated">Contribuye los iconos al proveedor de la cuenta.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profiler.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="profiler.settings.viewTemplates">
+      <source xml:lang="en">Specifies view templates</source>
+    </trans-unit>
+    <trans-unit id="profiler.settings.sessionTemplates">
+      <source xml:lang="en">Specifies session templates</source>
+      <target state="translated">Especifica plantillas de sesión</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="yAxisMin">
+      <source xml:lang="en">Minimum value of the y axis</source>
+    </trans-unit>
+    <trans-unit id="yAxisMax">
+      <source xml:lang="en">Maximum value of the y axis</source>
+      <target state="translated">Valor máximo del eje y</target>
+    </trans-unit>
+    <trans-unit id="barchart.yAxisLabel">
+      <source xml:lang="en">Label for the y axis</source>
+      <target state="translated">Etiqueta para el eje y</target>
+    </trans-unit>
+    <trans-unit id="xAxisMin">
+      <source xml:lang="en">Minimum value of the x axis</source>
+    </trans-unit>
+    <trans-unit id="xAxisMax">
+      <source xml:lang="en">Maximum value of the x axis</source>
+      <target state="translated">Valor máximo del eje x</target>
+    </trans-unit>
+    <trans-unit id="barchart.xAxisLabel">
+      <source xml:lang="en">Label for the x axis</source>
+      <target state="translated">Etiqueta para el eje x</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dataTypeDescription">
+      <source xml:lang="en">Indicates data property of a data set for a chart.</source>
+      <target state="translated">Indica la propiedad data de un conjunto de datos para un gráfico.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="imageInsightDescription">
+      <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
+      <target state="translated">Muestra una imagen, por ejemplo uno devuelto por una consulta R con ggplot2</target>
+    </trans-unit>
+    <trans-unit id="imageFormatDescription">
+      <source xml:lang="en">What format is expected - is this a JPEG, PNG or other format?</source>
+      <target state="translated">¿Qué formato se espera - es un archivo JPEG, PNG u otro formato?</target>
+    </trans-unit>
+    <trans-unit id="encodingDescription">
+      <source xml:lang="en">Is this encoded as hex, base64 or some other format?</source>
+      <target state="translated">¿Está codificado como hexadecimal, base64 o algún otro formato?</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="tableInsightDescription">
+      <source xml:lang="en">Displays the results in a simple table</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="countInsightDescription">
+      <source xml:lang="en">For each column in a resultset, displays the value in row 0 as a count followed by the column name. Supports "1 Healthy", "3 Unhealthy" for example, where "Healthy" is the column name and 1 is the value in row 1 cell 1</source>
+      <target state="translated">Para cada columna en un conjunto de resultados, muestra el valor en la fila 0 como un número seguido por el nombre de columna. Admite "1 Healthy",  "3 Unhealthy" por ejemplo, donde "Healthy" es el nombre de la columna y 1 es el valor de la celda 1 de la fila 1</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.webview">
+      <source xml:lang="en">The webview that will be displayed in this tab.</source>
+      <target state="translated">La vista WebView que se mostrará en esta ficha.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.widgets">
+      <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
+      <target state="translated">La lista de widgets que se muestran en esta ficha.</target>
+    </trans-unit>
+    <trans-unit id="widgetContainer.invalidInputs">
+      <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.gridtab.items">
+      <source xml:lang="en">The list of widgets or webviews that will be displayed in this tab.</source>
+      <target state="translated">La lista de widgets o webviews que se muestran en esta ficha.</target>
+    </trans-unit>
+    <trans-unit id="gridContainer.invalidInputs">
+      <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.left-nav-bar.id">
+      <source xml:lang="en">Unique identifier for this nav section. Will be passed to the extension for any requests.</source>
+      <target state="translated">Identificador único para esta sección de navegación. Se pasará a la extensión de las solicitudes.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon">
+      <source xml:lang="en">(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration</source>
+      <target state="translated">(opcional) Icono que se utiliza para representar esta sección de navegación en la IU. Una ruta de archivo o una configuración temática</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon.light">
+      <source xml:lang="en">Icon path when a light theme is used</source>
+      <target state="translated">Ruta del ícono cuando un tema light es usado</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon.dark">
+      <source xml:lang="en">Icon path when a dark theme is used</source>
+      <target state="translated">Ruta de icono cuando se utiliza un tema oscuro</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.title">
+      <source xml:lang="en">Title of the nav section to show the user.</source>
+      <target state="translated">Título de la sección de navegación para mostrar al usuario.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.container">
+      <source xml:lang="en">The container that will be displayed in this nav section.</source>
+      <target state="translated">El contenedor que se mostrará en esta sección de navegación.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar">
+      <source xml:lang="en">The list of dashboard containers that will be displayed in this navigation section.</source>
+      <target state="translated">La lista de contenedores de panel de instrumentos que se muestran en esta sección de navegación.</target>
+    </trans-unit>
+    <trans-unit id="opticon">
+      <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
+    </trans-unit>
+    <trans-unit id="navSection.missingTitle_error">
+      <source xml:lang="en">No title in nav section specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="navSection.missingContainer_error">
+      <source xml:lang="en">No container in nav section specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="navSection.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+    </trans-unit>
+    <trans-unit id="navSection.invalidContainer_error">
+      <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.dashboard.container.id">
+      <source xml:lang="en">Unique identifier for this container.</source>
+      <target state="translated">Identificador único para este contenedor.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.container.container">
+      <source xml:lang="en">The container that will be displayed in the tab.</source>
+      <target state="translated">El contenedor que se mostrará en la ficha.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.containers">
+      <source xml:lang="en">Contributes a single or multiple dashboard containers for users to add to their dashboard.</source>
+      <target state="translated">Contribuye con uno o múltiples contenedores de tablero para que los usuarios los adicionen en su propio tablero.</target>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noIdError">
+      <source xml:lang="en">No id in dashboard container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noContainerError">
+      <source xml:lang="en">No container in dashboard container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.unKnownContainerType">
+      <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.modelview">
+      <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.controlhost">
+      <source xml:lang="en">The controlhost that will be displayed in this tab.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.id">
+      <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+      <target state="translated">Identificador único para esta ficha. Se pasará a la extensión para cualquier solicitud.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.title">
+      <source xml:lang="en">Title of the tab to show the user.</source>
+      <target state="translated">Título de la pestaña para mostrar al usuario.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.description">
+      <source xml:lang="en">Description of this tab that will be shown to the user.</source>
+      <target state="translated">Descripción de esta pestaña que será mostrada al usuario.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tab.when">
+      <source xml:lang="en">Condition which must be true to show this item</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tab.provider">
+      <source xml:lang="en">Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.container">
+      <source xml:lang="en">The container that will be displayed in this tab.</source>
+      <target state="translated">El contenedor que será mostrado en esta pestaña.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.alwaysShow">
+      <source xml:lang="en">Whether or not this tab should always be shown or only when the user adds it.</source>
+      <target state="translated">Si esta ficha se debe mostrar siempre, o sólo cuando el usuario la agrega.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.isHomeTab">
+      <source xml:lang="en">Whether or not this tab should be used as the Home tab for a connection type.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tabs">
+      <source xml:lang="en">Contributes a single or multiple tabs for users to add to their dashboard.</source>
+      <target state="translated">Aporta una o varias pestañas que los usuarios pueden agregar a su panel.</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noTitleError">
+      <source xml:lang="en">No title specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noDescriptionWarning">
+      <source xml:lang="en">No description specified to show.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noContainerError">
+      <source xml:lang="en">No container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space</source>
+      <target state="translated">Debe definirse exactamente 1 contenedor de paneles por espacio</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/errorMessageDialog/errorMessageService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="error">
+      <source xml:lang="en">Error</source>
+      <target state="translated">Fehler</target>
+    </trans-unit>
+    <trans-unit id="warning">
+      <source xml:lang="en">Warning</source>
+      <target state="translated">Advertencia</target>
+    </trans-unit>
+    <trans-unit id="info">
+      <source xml:lang="en">Info</source>
+      <target state="translated">Información</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionDialogService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="connectionError">
+      <source xml:lang="en">Connection error</source>
+      <target state="translated">Error de conexión</target>
+    </trans-unit>
+    <trans-unit id="kerberosErrorStart">
+      <source xml:lang="en">Connection failed due to Kerberos error.</source>
+      <target state="translated">Error en la conexión debido a un error de Kerberos.</target>
+    </trans-unit>
+    <trans-unit id="kerberosHelpLink">
+      <source xml:lang="en">Help configuring Kerberos is available at {0}</source>
+    </trans-unit>
+    <trans-unit id="kerberosKinit">
+      <source xml:lang="en">If you have previously connected you may need to re-run kinit.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionManagementService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="connectionNotAcceptedError">
+      <source xml:lang="en">Connection Not Accepted</source>
+      <target state="translated">Conexión no aceptada</target>
+    </trans-unit>
+    <trans-unit id="connectionService.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="connectionService.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+    <trans-unit id="cancelConnectionConfirmation">
+      <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+      <target state="translated">¿Está seguro que desea cancelar esta conexión?</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/common/taskService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="InProgressWarning">
+      <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>
+      <target state="translated">1 o más tareas están en curso. ¿Está seguro que desea salir?</target>
+    </trans-unit>
+    <trans-unit id="taskService.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="taskService.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/common/objectExplorerService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="OeSessionFailedError">
+      <source xml:lang="en">Failed to create Object Explorer session</source>
+      <target state="translated">Error al crear la sesión del explorador de objetos</target>
+    </trans-unit>
+    <trans-unit id="treeNodeNoLongerExists">
+      <source xml:lang="en">The given tree node no longer exists</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryModelService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="commitEditFailed">
+      <source xml:lang="en">Commit row failed: </source>
+      <target state="translated">Someter el error de fila:</target>
+    </trans-unit>
+    <trans-unit id="runQueryStringBatchStartMessage">
+      <source xml:lang="en">Started executing query "{0}"</source>
+      <target state="translated">Comenzó a ejecutar la consulta "{0}"</target>
+    </trans-unit>
+    <trans-unit id="updateCellFailed">
+      <source xml:lang="en">Update cell failed: </source>
+      <target state="translated">Error en la celda de actualización: </target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/services/queryEditorService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="queryEditorServiceChangeUnsupportedError">
+      <source xml:lang="en">Change Language Mode is not supported for unsaved queries</source>
+      <target state="translated">El modo de cambio de idioma no está soportado con consultas no guardadas</target>
+    </trans-unit>
+    <trans-unit id="queryEditorServiceChangeError">
+      <source xml:lang="en">Please save or discard changes before switching to/from the SQL Language Mode</source>
+      <target state="translated">Guarde o descarte los cambios antes de cambiar a o desde el modo de lenguaje SQL</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/admin/common/adminService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="adminService.providerIdNotValidError">
+      <source xml:lang="en">Connection is required in order to interact with adminservice</source>
+      <target state="translated">Se necesita la conexión para interactuar con el servicio de administración</target>
+    </trans-unit>
+    <trans-unit id="adminService.noHandlerRegistered">
+      <source xml:lang="en">No Handler Registered</source>
+      <target state="translated">Ningún controlador registrado</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobManagementService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="providerIdNotValidError">
+      <source xml:lang="en">Connection is required in order to interact with JobManagementService</source>
+    </trans-unit>
+    <trans-unit id="noHandlerRegistered">
+      <source xml:lang="en">No Handler Registered</source>
+      <target state="translated">Ningún controlador registrado</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/common/fileBrowserService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="fileBrowserErrorMessage">
+      <source xml:lang="en">An error occured while loading the file browser.</source>
+      <target state="translated">Se ha producido un error al cargar el navegador de archivos.</target>
+    </trans-unit>
+    <trans-unit id="fileBrowserErrorDialogTitle">
+      <source xml:lang="en">File browser error</source>
+      <target state="translated">Error del navegador de archivos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserDialogController" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.selectFile">
+      <source xml:lang="en">Select a file</source>
+      <target state="translated">Seleccione un archivo</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/services/accountManagement/accountManagementService" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="accountManagementNoProvider">
+      <source xml:lang="en">Account provider does not exist</source>
+      <target state="translated">Proveedor de la cuenta no existe</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskHistoryView" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="noTaskMessage">
+      <source xml:lang="en">No task history to display. Try backup or restore task to view its execution status.</source>
+      <target state="translated">No hay historial de tareas que mostrar. Pruebe la tarea de backup o restore para ver su estado de ejecución.</target>
+    </trans-unit>
+    <trans-unit id="taskHistory.regTreeAriaLabel">
+      <source xml:lang="en">Task history</source>
+      <target state="translated">Historial de tareas</target>
+      <note>TaskHistory</note>
+    </trans-unit>
+    <trans-unit id="taskError">
+      <source xml:lang="en">Task error</source>
+      <target state="translated">Error de la tarea</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/serverTreeView" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="serverTree.addConnection">
+      <source xml:lang="en">Add Connection</source>
+      <target state="translated">Agregar conexión</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/connectionTreeAction" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="connectionTree.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">Actualizar</target>
+    </trans-unit>
+    <trans-unit id="DisconnectAction">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">Desconectar</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.addConnection">
+      <source xml:lang="en">New Connection</source>
+      <target state="translated">Nueva conexión</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.addServerGroup">
+      <source xml:lang="en">New Server Group</source>
+      <target state="translated">Nuevo grupo de servidores</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.editServerGroup">
+      <source xml:lang="en">Edit Server Group</source>
+      <target state="translated">Editar grupo de servidores</target>
+    </trans-unit>
+    <trans-unit id="activeConnections">
+      <source xml:lang="en">Show Active Connections</source>
+      <target state="translated">Mostrar conexiones activas</target>
+    </trans-unit>
+    <trans-unit id="clearAll">
+      <source xml:lang="en">Clear All</source>
+      <target state="translated">Borrar todo</target>
+    </trans-unit>
+    <trans-unit id="recentConnections">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">Conexiones recientes</target>
+    </trans-unit>
+    <trans-unit id="registeredServers.newQuery">
+      <source xml:lang="en">New Query</source>
+      <target state="translated">Nueva consulta</target>
+    </trans-unit>
+    <trans-unit id="deleteConnection">
+      <source xml:lang="en">Delete Connection</source>
+      <target state="translated">Eliminar conexión</target>
+    </trans-unit>
+    <trans-unit id="deleteConnectionGroup">
+      <source xml:lang="en">Delete Group</source>
+      <target state="translated">Eliminar grupo</target>
+    </trans-unit>
+    <trans-unit id="clearSearch">
+      <source xml:lang="en">Clear Search</source>
+      <target state="translated">Borrar búsqueda</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/queryResultsInput" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="extensionsInputName">
+      <source xml:lang="en">Extension</source>
+      <target state="translated">Extensión</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/queryInput" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="disconnected">
+      <source xml:lang="en">disconnected</source>
+      <target state="translated">Desconectado</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/common/editDataInput" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="connectionFailure">
+      <source xml:lang="en">Edit Data Session Failed To Connect</source>
+      <target state="translated">Editar datos de sesión no se pudo conectar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/editor/editDataEditor" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="maxRowTaskbar">
+      <source xml:lang="en">Max Rows:</source>
+      <target state="translated">Máximo de filas:</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/keyboardQueryActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="focusOnCurrentQueryKeyboardAction">
+      <source xml:lang="en">Focus on Current Query</source>
+    </trans-unit>
+    <trans-unit id="runQueryKeyboardAction">
+      <source xml:lang="en">Run Query</source>
+      <target state="translated">Ejecutar consulta</target>
+    </trans-unit>
+    <trans-unit id="runCurrentQueryKeyboardAction">
+      <source xml:lang="en">Run Current Query</source>
+      <target state="translated">Ejecutar la consulta actual</target>
+    </trans-unit>
+    <trans-unit id="runCurrentQueryWithActualPlanKeyboardAction">
+      <source xml:lang="en">Run Current Query with Actual Plan</source>
+      <target state="translated">Ejecutar la consulta actual con el plan actual</target>
+    </trans-unit>
+    <trans-unit id="cancelQueryKeyboardAction">
+      <source xml:lang="en">Cancel Query</source>
+      <target state="translated">Cancelar consulta</target>
+    </trans-unit>
+    <trans-unit id="refreshIntellisenseKeyboardAction">
+      <source xml:lang="en">Refresh IntelliSense Cache</source>
+      <target state="translated">Actualizar Cache de IntelliSense</target>
+    </trans-unit>
+    <trans-unit id="toggleQueryResultsKeyboardAction">
+      <source xml:lang="en">Toggle Query Results</source>
+      <target state="translated">Alternar resultados de la consulta</target>
+    </trans-unit>
+    <trans-unit id="queryShortcutNoEditor">
+      <source xml:lang="en">Editor parameter is required for a shortcut to be executed</source>
+      <target state="translated">Parámetro de editor es necesario para un acceso directo a ejecutar</target>
+    </trans-unit>
+    <trans-unit id="parseSyntaxLabel">
+      <source xml:lang="en">Parse Query</source>
+    </trans-unit>
+    <trans-unit id="queryActions.parseSyntaxSuccess">
+      <source xml:lang="en">Commands completed successfully</source>
+      <target state="translated">Comandos completados correctamente</target>
+    </trans-unit>
+    <trans-unit id="queryActions.parseSyntaxFailure">
+      <source xml:lang="en">Command failed: </source>
+    </trans-unit>
+    <trans-unit id="queryActions.notConnected">
+      <source xml:lang="en">Please connect to a server</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/gridActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="saveAsCsv">
+      <source xml:lang="en">Save As CSV</source>
+      <target state="translated">Guardar como CSV</target>
+    </trans-unit>
+    <trans-unit id="saveAsJson">
+      <source xml:lang="en">Save As JSON</source>
+      <target state="translated">Guardar como JSON</target>
+    </trans-unit>
+    <trans-unit id="saveAsExcel">
+      <source xml:lang="en">Save As Excel</source>
+      <target state="translated">Guardar como Excel</target>
+    </trans-unit>
+    <trans-unit id="copySelection">
+      <source xml:lang="en">Copy</source>
+      <target state="translated">Copiar</target>
+    </trans-unit>
+    <trans-unit id="copyWithHeaders">
+      <source xml:lang="en">Copy With Headers</source>
+      <target state="translated">Copiar con encabezados</target>
+    </trans-unit>
+    <trans-unit id="selectAll">
+      <source xml:lang="en">Select All</source>
+      <target state="translated">Seleccionar todo</target>
+    </trans-unit>
+    <trans-unit id="copyMessages">
+      <source xml:lang="en">Copy</source>
+      <target state="translated">Copiar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="ClearRecentlyUsedLabel">
+      <source xml:lang="en">Clear List</source>
+    </trans-unit>
+    <trans-unit id="ClearedRecentConnections">
+      <source xml:lang="en">Recent connections list cleared</source>
+      <target state="translated">Lista de conexiones recientes borrada</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+    <trans-unit id="clearRecentConnectionMessage">
+      <source xml:lang="en">Are you sure you want to delete all the connections from the list?</source>
+      <target state="translated">¿Está seguro que desea eliminar todas las conexiones de la lista?</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+    <trans-unit id="delete">
+      <source xml:lang="en">Delete</source>
+      <target state="translated">Eliminar</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.GetCurrentConnectionString">
+      <source xml:lang="en">Get Current Connection String</source>
+    </trans-unit>
+    <trans-unit id="connectionAction.connectionString">
+      <source xml:lang="en">Connection string not available</source>
+    </trans-unit>
+    <trans-unit id="connectionAction.noConnection">
+      <source xml:lang="en">No active connection available</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerInput" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="confirmStopProfilerSession">
+      <source xml:lang="en">Would you like to stop the running XEvent session?</source>
+    </trans-unit>
+    <trans-unit id="profilerClosingActions.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="profilerClosingActions.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+    <trans-unit id="profilerInput.profiler">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">Analizador</target>
+    </trans-unit>
+    <trans-unit id="profilerInput.notConnected">
+      <source xml:lang="en">Not connected</source>
+    </trans-unit>
+    <trans-unit id="profiler.sessionStopped">
+      <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
+    </trans-unit>
+    <trans-unit id="profiler.sessionCreationError">
+      <source xml:lang="en">Error while starting new session</source>
+    </trans-unit>
+    <trans-unit id="profiler.eventsLost">
+      <source xml:lang="en">The XEvent Profiler session for {0} has lost events.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerEditor" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="text">
+      <source xml:lang="en">Text</source>
+      <target state="translated">Texto</target>
+    </trans-unit>
+    <trans-unit id="label">
+      <source xml:lang="en">Label</source>
+      <target state="translated">Etiqueta</target>
+    </trans-unit>
+    <trans-unit id="profilerEditor.value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">Valor</target>
+    </trans-unit>
+    <trans-unit id="details">
+      <source xml:lang="en">Details</source>
+      <target state="translated">Detalles</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/common/taskUtilities" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="selectOperationName">
+      <source xml:lang="en">Select</source>
+      <target state="translated">Seleccionar</target>
+    </trans-unit>
+    <trans-unit id="createOperationName">
+      <source xml:lang="en">Create</source>
+      <target state="translated">Crear</target>
+    </trans-unit>
+    <trans-unit id="insertOperationName">
+      <source xml:lang="en">Insert</source>
+      <target state="translated">Insertar</target>
+    </trans-unit>
+    <trans-unit id="updateOperationName">
+      <source xml:lang="en">Update</source>
+      <target state="translated">Actualizar</target>
+    </trans-unit>
+    <trans-unit id="deleteOperationName">
+      <source xml:lang="en">Delete</source>
+      <target state="translated">Eliminar</target>
+    </trans-unit>
+    <trans-unit id="scriptSelectNotFound">
+      <source xml:lang="en">No script was returned when calling select script on object </source>
+      <target state="translated">El script no fue devuelto cuando se llama a seleccionar script en el objeto</target>
+    </trans-unit>
+    <trans-unit id="scriptNotFoundForObject">
+      <source xml:lang="en">No script was returned when scripting as {0} on object {1}</source>
+      <target state="translated">No se devolvió ningún script al escribir como {0} en el objeto {1}</target>
+    </trans-unit>
+    <trans-unit id="scriptingFailed">
+      <source xml:lang="en">Scripting Failed</source>
+      <target state="translated">Error de secuencias de comandos</target>
+    </trans-unit>
+    <trans-unit id="scriptNotFound">
+      <source xml:lang="en">No script was returned when scripting as {0}</source>
+      <target state="translated">No se devolvió ningún script al interpretado como {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="manageLinedAccounts">
+      <source xml:lang="en">Manage Linked Accounts</source>
+      <target state="translated">Administrar cuentas vinculadas</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/insightRegistry" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">Widget utilizado en los paneles</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="chartInsightDescription">
+      <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
+      <target state="translated">Muestra los resultados de una consulta como un gráfico en el panel de información</target>
+    </trans-unit>
+    <trans-unit id="colorMapDescription">
+      <source xml:lang="en">Maps "column name" -&gt; color. for example add "column1": red to ensure this column uses a red color </source>
+    </trans-unit>
+    <trans-unit id="legendDescription">
+      <source xml:lang="en">Indicates preferred position and visibility of the chart legend. These are the column names from your query, and map to the label of each chart entry</source>
+      <target state="translated">Indica la posición y visibilidad preferidas de la leyenda del gráfico. Estos son los nombres de columna de la consulta y se asignan a la etiqueta de cada entrada de gráfico</target>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnDescription">
+      <source xml:lang="en">If dataDirection is horizontal, setting this to true uses the first columns value for the legend.</source>
+      <target state="translated">Si dataDirection es horizontal, al establecerlo como verdadero se utilizará los valores de las primeras columnas para la leyenda.</target>
+    </trans-unit>
+    <trans-unit id="columnsAsLabels">
+      <source xml:lang="en">If dataDirection is vertical, setting this to true will use the columns names for the legend.</source>
+      <target state="translated">Si dataDirection es vertical, al configurarlo como verdadero utilizará los valores de las primeras columnas para la leyenda.</target>
+    </trans-unit>
+    <trans-unit id="dataDirectionDescription">
+      <source xml:lang="en">Defines whether the data is read from a column (vertical) or a row (horizontal). For time series this is ignored as direction must be vertical.</source>
+      <target state="translated">Define si se leen los datos de una fila (horizontal) o una columna (vertical). Para series de tiempo esto se omite la dirección debe ser vertical.</target>
+    </trans-unit>
+    <trans-unit id="showTopNData">
+      <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="insightWidgetDescription">
+      <source xml:lang="en">Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more</source>
+      <target state="translated">Añade un widget que puede consultar un servidor o base de datos y mostrar los resultados de múltiples maneras, como un gráfico o una cuenta de resumen, entre otras.</target>
+    </trans-unit>
+    <trans-unit id="insightIdDescription">
+      <source xml:lang="en">Unique Identifier used for cacheing the results of the insight.</source>
+      <target state="translated">Identificador único para el almacenamiento en cache de los resultados de la revisión.</target>
+    </trans-unit>
+    <trans-unit id="insightQueryDescription">
+      <source xml:lang="en">SQL query to run. This should return exactly 1 resultset.</source>
+      <target state="translated">Consulta SQL para ejecutar. Esto debería devolver exactamente un conjunto de datos.</target>
+    </trans-unit>
+    <trans-unit id="insightQueryFileDescription">
+      <source xml:lang="en">[Optional] path to a file that contains a query. Use if "query" is not set</source>
+      <target state="translated">[Opcional] Ruta de acceso a un archivo que contiene una consulta. Utilizar si la consulta no está establicida</target>
+    </trans-unit>
+    <trans-unit id="insightAutoRefreshIntervalDescription">
+      <source xml:lang="en">[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh</source>
+    </trans-unit>
+    <trans-unit id="actionTypes">
+      <source xml:lang="en">Which actions to use</source>
+      <target state="translated">Qué acciones utilizar</target>
+    </trans-unit>
+    <trans-unit id="actionDatabaseDescription">
+      <source xml:lang="en">Target database for the action; can use the format "${columnName}" to use a data driven column name.</source>
+    </trans-unit>
+    <trans-unit id="actionServerDescription">
+      <source xml:lang="en">Target server for the action; can use the format "${columnName}" to use a data driven column name.</source>
+    </trans-unit>
+    <trans-unit id="actionUserDescription">
+      <source xml:lang="en">Target user for the action; can use the format "${columnName}" to use a data driven column name.</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.insightType.id">
+      <source xml:lang="en">Identifier of the insight</source>
+      <target state="translated">Identificador de la información</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.insights">
+      <source xml:lang="en">Contributes insights to the dashboard palette.</source>
+      <target state="translated">Aporta conocimientos a la paleta del panel.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/update/releaseNotes" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="gettingStarted">
+      <source xml:lang="en">Get Started</source>
+      <target state="translated">Iniciar</target>
+    </trans-unit>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
+      <target state="translated">Ver introducción</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboardDatabaseProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
+      <target state="translated">Activar o desactivar el widget de propiedades</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties">
+      <source xml:lang="en">Property values to show</source>
+      <target state="translated">Valores de la propiedad a mostrar</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+      <target state="translated">Nombre de la propiedad</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.value">
+      <source xml:lang="en">Value in the Database Info Object</source>
+      <target state="translated">Valor en el objeto de la información de la base de datos</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.ignore">
+      <source xml:lang="en">Specify specific values to ignore</source>
+      <target state="translated">Especificar valores específicos que ignorar</target>
+    </trans-unit>
+    <trans-unit id="recoveryModel">
+      <source xml:lang="en">Recovery Model</source>
+      <target state="translated">Modelo de recuperación</target>
+    </trans-unit>
+    <trans-unit id="lastDatabaseBackup">
+      <source xml:lang="en">Last Database Backup</source>
+      <target state="translated">Última copia de seguridad de base de datos</target>
+    </trans-unit>
+    <trans-unit id="lastLogBackup">
+      <source xml:lang="en">Last Log Backup</source>
+      <target state="translated">Último backup del log</target>
+    </trans-unit>
+    <trans-unit id="compatibilityLevel">
+      <source xml:lang="en">Compatibility Level</source>
+      <target state="translated">Nivel de compatibilidad</target>
+    </trans-unit>
+    <trans-unit id="owner">
+      <source xml:lang="en">Owner</source>
+      <target state="translated">Propietario</target>
+    </trans-unit>
+    <trans-unit id="dashboardDatabase">
+      <source xml:lang="en">Customizes the database dashboard page</source>
+      <target state="translated">Personaliza la página del panel de base de datos</target>
+    </trans-unit>
+    <trans-unit id="dashboardDatabaseTabs">
+      <source xml:lang="en">Customizes the database dashboard tabs</source>
+      <target state="translated">Personaliza las pestañas de consola de base de datos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.widget.when">
+      <source xml:lang="en">Condition which must be true to show this item</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.tabName">
+      <source xml:lang="en">The title of the container</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.rowNumber">
+      <source xml:lang="en">The row of the component in the grid</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.rowSpan">
+      <source xml:lang="en">The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.colNumber">
+      <source xml:lang="en">The column of the component in the grid</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.colspan">
+      <source xml:lang="en">The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboardPage.tab.id">
+      <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+      <target state="translated">Identificador único para esta ficha. Se pasará a la extensión para cualquier solicitud.</target>
+    </trans-unit>
+    <trans-unit id="dashboardTabError">
+      <source xml:lang="en">Extension tab is unknown or not installed.</source>
+      <target state="translated">La pestaña extensión es desconocida o no está instalada.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboardServerProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
+      <target state="translated">Activar o desactivar el widget de propiedades</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties">
+      <source xml:lang="en">Property values to show</source>
+      <target state="translated">Valores de la propiedad a mostrar</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+      <target state="translated">Nombre de la propiedad</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.value">
+      <source xml:lang="en">Value in the Server Info Object</source>
+      <target state="translated">Valor en el objeto de información de servidor</target>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+      <target state="translated">Versión</target>
+    </trans-unit>
+    <trans-unit id="edition">
+      <source xml:lang="en">Edition</source>
+      <target state="translated">Edición</target>
+    </trans-unit>
+    <trans-unit id="computerName">
+      <source xml:lang="en">Computer Name</source>
+      <target state="translated">Nombre del equipo</target>
+    </trans-unit>
+    <trans-unit id="osVersion">
+      <source xml:lang="en">OS Version</source>
+      <target state="translated">Versión del sistema operativo</target>
+    </trans-unit>
+    <trans-unit id="dashboardServer">
+      <source xml:lang="en">Customizes the server dashboard page</source>
+      <target state="translated">Personaliza la página de panel de servidor</target>
+    </trans-unit>
+    <trans-unit id="dashboardServerTabs">
+      <source xml:lang="en">Customizes the Server dashboard tabs</source>
+      <target state="translated">Personaliza las pestañas de consola de servidor</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/widgetRegistry" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.all">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">Widget utilizado en los paneles</target>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.database">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">Widget utilizado en los paneles</target>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.server">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">Widget utilizado en los paneles</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/common/actions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="newQueryAction.newQuery">
+      <source xml:lang="en">New Query</source>
+      <target state="translated">Nueva consulta</target>
+    </trans-unit>
+    <trans-unit id="scriptSelect">
+      <source xml:lang="en">Select Top 1000</source>
+      <target state="translated">Seleccionar el Top 1000</target>
+    </trans-unit>
+    <trans-unit id="scriptExecute">
+      <source xml:lang="en">Script as Execute</source>
+      <target state="translated">Secuencia de comandos, ejecutar</target>
+    </trans-unit>
+    <trans-unit id="scriptAlter">
+      <source xml:lang="en">Script as Alter</source>
+      <target state="translated">Generar script como Alter</target>
+    </trans-unit>
+    <trans-unit id="editData">
+      <source xml:lang="en">Edit Data</source>
+      <target state="translated">Editar datos</target>
+    </trans-unit>
+    <trans-unit id="scriptCreate">
+      <source xml:lang="en">Script as Create</source>
+      <target state="translated">Escribir como Crear</target>
+    </trans-unit>
+    <trans-unit id="scriptDelete">
+      <source xml:lang="en">Script as Drop</source>
+    </trans-unit>
+    <trans-unit id="backupAction.backup">
+      <source xml:lang="en">Backup</source>
+      <target state="translated">Copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="restoreAction.restore">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">Restaurar</target>
+    </trans-unit>
+    <trans-unit id="manage">
+      <source xml:lang="en">Manage</source>
+      <target state="translated">Administrar</target>
+    </trans-unit>
+    <trans-unit id="showDetails">
+      <source xml:lang="en">Show Details</source>
+      <target state="translated">Mostrar detalles</target>
+    </trans-unit>
+    <trans-unit id="newDatabase">
+      <source xml:lang="en">New Database</source>
+      <target state="translated">Nueva base de datos</target>
+    </trans-unit>
+    <trans-unit id="configureDashboard">
+      <source xml:lang="en">Configure</source>
+      <target state="translated">Configurar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/inputbox.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="invalidValueError">
+      <source xml:lang="en">Invalid value</source>
+      <target state="translated">Valor no válido</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/loadingComponent.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="loadingMessage">
+      <source xml:lang="en">Loading</source>
+      <target state="translated">Cargando</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/dashboardRegistry" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.properties.property">
+      <source xml:lang="en">Defines a property to show on the dashboard</source>
+      <target state="translated">Define una propiedad para mostrar en el tablero</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.displayName">
+      <source xml:lang="en">What value to use as a label for the property</source>
+      <target state="translated">Qué valor utilizar como etiqueta de la propiedad</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.value">
+      <source xml:lang="en">What value in the object to access for the value</source>
+      <target state="translated">¿Qué valor tiene el objeto para acceder por el valor?</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.ignore">
+      <source xml:lang="en">Specify values to be ignored</source>
+      <target state="translated">Especificar los valores a ser ignorados</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.default">
+      <source xml:lang="en">Default value to show if ignored or no value</source>
+      <target state="translated">Valor predeterminado para mostrar si se omite o no hay valor</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor">
+      <source xml:lang="en">A flavor for defining dashboard properties</source>
+      <target state="translated">Estilo para definir propiedades en un panel</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.id">
+      <source xml:lang="en">Id of the flavor</source>
+      <target state="translated">ID del estilo</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition">
+      <source xml:lang="en">Condition to use this flavor</source>
+      <target state="translated">Condición para utilizar este tipo</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.field">
+      <source xml:lang="en">Field to compare to</source>
+      <target state="translated">Campo para comparar con</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.operator">
+      <source xml:lang="en">Which operator to use for comparison</source>
+      <target state="translated">Operador a utilizar para la comparación</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.value">
+      <source xml:lang="en">Value to compare the field to</source>
+      <target state="translated">Valor con que comparar el campo</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.databaseProperties">
+      <source xml:lang="en">Properties to show for database page</source>
+      <target state="translated">Propiedades a mostrar por página de base de datos</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.serverProperties">
+      <source xml:lang="en">Properties to show for server page</source>
+      <target state="translated">Propiedades a mostrar de la página de servidor</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.dashboard">
+      <source xml:lang="en">Defines that this provider supports the dashboard</source>
+      <target state="translated">Define que este proveedor admite el panel de información</target>
+    </trans-unit>
+    <trans-unit id="dashboard.id">
+      <source xml:lang="en">Provider id (ex. MSSQL)</source>
+      <target state="translated">Id de proveedor (por ejemplo MSSQL)</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties">
+      <source xml:lang="en">Property values to show on dashboard</source>
+      <target state="translated">Valores de las propiedades a mostrar en el tablero</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/extensions/sqlExtensionsHelper" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="tabs">
+      <source xml:lang="en">Dashboard Tabs ({0})</source>
+    </trans-unit>
+    <trans-unit id="tabId">
+      <source xml:lang="en">Id</source>
+      <target state="translated">ID.</target>
+    </trans-unit>
+    <trans-unit id="tabTitle">
+      <source xml:lang="en">Title</source>
+      <target state="translated">Título</target>
+    </trans-unit>
+    <trans-unit id="tabDescription">
+      <source xml:lang="en">Description</source>
+      <target state="translated">Descripción</target>
+    </trans-unit>
+    <trans-unit id="insights">
+      <source xml:lang="en">Dashboard Insights ({0})</source>
+    </trans-unit>
+    <trans-unit id="insightId">
+      <source xml:lang="en">Id</source>
+      <target state="translated">ID.</target>
+    </trans-unit>
+    <trans-unit id="name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">Nombre</target>
+    </trans-unit>
+    <trans-unit id="insight condition">
+      <source xml:lang="en">When</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/errorMessageDialog/errorMessageDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="errorMessageDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="errorMessageDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">Cerrar</target>
+    </trans-unit>
+    <trans-unit id="copyDetails">
+      <source xml:lang="en">Copy details</source>
+      <target state="translated">Copiar detalles</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionDialogWidget" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="connection">
+      <source xml:lang="en">Connection</source>
+      <target state="translated">Conexión</target>
+    </trans-unit>
+    <trans-unit id="recentConnectionTitle">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">Conexiones recientes</target>
+    </trans-unit>
+    <trans-unit id="savedConnectionTitle">
+      <source xml:lang="en">Saved Connections</source>
+      <target state="translated">Conexiones guardadas</target>
+    </trans-unit>
+    <trans-unit id="connectType">
+      <source xml:lang="en">Connection type</source>
+      <target state="translated">Tipo de conexión</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.connect">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">Conectar</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="recentHistory">
+      <source xml:lang="en">Recent history</source>
+      <target state="translated">Historial reciente</target>
+    </trans-unit>
+    <trans-unit id="noRecentConnections">
+      <source xml:lang="en">No recent connection</source>
+      <target state="translated">Ninguna conexión reciente</target>
+    </trans-unit>
+    <trans-unit id="noSavedConnections">
+      <source xml:lang="en">No saved connection</source>
+      <target state="translated">Ninguna conexión guardada</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="ServerGroupsDialogTitle">
+      <source xml:lang="en">Server Groups</source>
+      <target state="translated">Grupos de servidores</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="connectionGroupName">
+      <source xml:lang="en">Server group name</source>
+      <target state="translated">Nombre del grupo de servidores</target>
+    </trans-unit>
+    <trans-unit id="MissingGroupNameError">
+      <source xml:lang="en">Group name is required.</source>
+      <target state="translated">Se requiere el nombre del grupo.</target>
+    </trans-unit>
+    <trans-unit id="groupDescription">
+      <source xml:lang="en">Group description</source>
+      <target state="translated">Descripción del grupo</target>
+    </trans-unit>
+    <trans-unit id="groupColor">
+      <source xml:lang="en">Group color</source>
+      <target state="translated">Color de grupo</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="serverGroup.addServerGroup">
+      <source xml:lang="en">Add server group</source>
+      <target state="translated">Añadir Grupo de servidores</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.editServerGroup">
+      <source xml:lang="en">Edit server group</source>
+      <target state="translated">Editar grupo de servidores</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/parts/connection/common/connectionProviderExtension" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="schema.providerId">
+      <source xml:lang="en">Common id for the provider</source>
+    </trans-unit>
+    <trans-unit id="schema.displayName">
+      <source xml:lang="en">Display Name for the provider</source>
+    </trans-unit>
+    <trans-unit id="schema.connectionOptions">
+      <source xml:lang="en">Options for connection</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/localizedConstants" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="runQueryBatchStartMessage">
+      <source xml:lang="en">Started executing query at </source>
+      <target state="translated">Comenzó la ejecución de la consulta en</target>
+    </trans-unit>
+    <trans-unit id="runQueryBatchStartLine">
+      <source xml:lang="en">Line {0}</source>
+      <target state="translated">Línea {0}</target>
+    </trans-unit>
+    <trans-unit id="msgCancelQueryFailed">
+      <source xml:lang="en">Canceling the query failed: {0}</source>
+      <target state="translated">Error al cancelar la consulta: {0}</target>
+    </trans-unit>
+    <trans-unit id="msgSaveStarted">
+      <source xml:lang="en">Started saving results to </source>
+      <target state="translated">Comenzó a guardar los resultados en</target>
+    </trans-unit>
+    <trans-unit id="msgSaveFailed">
+      <source xml:lang="en">Failed to save results. </source>
+      <target state="translated">Error al guardar los resultados.</target>
+    </trans-unit>
+    <trans-unit id="msgSaveSucceeded">
+      <source xml:lang="en">Successfully saved results to </source>
+      <target state="translated">Correctamente guardados los resultados a</target>
+    </trans-unit>
+    <trans-unit id="msgStatusRunQueryInProgress">
+      <source xml:lang="en">Executing query...</source>
+      <target state="translated">Ejecutando consulta...</target>
+    </trans-unit>
+    <trans-unit id="maximizeLabel">
+      <source xml:lang="en">Maximize</source>
+      <target state="translated">Maximizar</target>
+    </trans-unit>
+    <trans-unit id="resultsPane.restoreLabel">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">Restaurar</target>
+    </trans-unit>
+    <trans-unit id="saveCSVLabel">
+      <source xml:lang="en">Save as CSV</source>
+      <target state="translated">Guardar como CSV</target>
+    </trans-unit>
+    <trans-unit id="saveJSONLabel">
+      <source xml:lang="en">Save as JSON</source>
+      <target state="translated">Guardar como JSON</target>
+    </trans-unit>
+    <trans-unit id="saveExcelLabel">
+      <source xml:lang="en">Save as Excel</source>
+      <target state="translated">Guardar como Excel</target>
+    </trans-unit>
+    <trans-unit id="viewChartLabel">
+      <source xml:lang="en">View as Chart</source>
+      <target state="translated">Ver como gráfico</target>
+    </trans-unit>
+    <trans-unit id="resultPaneLabel">
+      <source xml:lang="en">Results</source>
+      <target state="translated">Resultados</target>
+    </trans-unit>
+    <trans-unit id="executeQueryLabel">
+      <source xml:lang="en">Executing query </source>
+      <target state="translated">Ejecutando consulta</target>
+    </trans-unit>
+    <trans-unit id="messagePaneLabel">
+      <source xml:lang="en">Messages</source>
+      <target state="translated">Mensajes</target>
+    </trans-unit>
+    <trans-unit id="elapsedTimeLabel">
+      <source xml:lang="en">Total execution time: {0}</source>
+      <target state="translated">Tiempo total de ejecución: {0}</target>
+    </trans-unit>
+    <trans-unit id="msgCannotSaveMultipleSelections">
+      <source xml:lang="en">Save results command cannot be used with multiple selections.</source>
+      <target state="translated">El comando Guardar resultados no puede ser usado con selecciones múltiples</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/flavorStatus" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="chooseSqlLang">
+      <source xml:lang="en">Choose SQL Language</source>
+      <target state="translated">Elegir lenguaje SQL</target>
+    </trans-unit>
+    <trans-unit id="changeProvider">
+      <source xml:lang="en">Change SQL language provider</source>
+      <target state="translated">Cambiar proveedor de lenguaje SQL</target>
+    </trans-unit>
+    <trans-unit id="changeSqlProvider">
+      <source xml:lang="en">Change SQL Engine Provider</source>
+      <target state="translated">Cambiar el proveedor de SQL Engine</target>
+    </trans-unit>
+    <trans-unit id="alreadyConnected">
+      <source xml:lang="en">A connection using engine {0} exists. To change please disconnect or change connection</source>
+      <target state="translated">Existe una conexión mediante el motor {0}. Para cambiar, por favor desconecte o cambie la conexión</target>
+    </trans-unit>
+    <trans-unit id="noEditor">
+      <source xml:lang="en">No text editor active at this time</source>
+      <target state="translated">Ningún editor de texto activo en este momento</target>
+    </trans-unit>
+    <trans-unit id="pickSqlProvider">
+      <source xml:lang="en">Select SQL Language Provider</source>
+      <target state="translated">Seleccione proveedor de lenguaje de SQL</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryRunner" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="query.ExecutionFailedError">
+      <source xml:lang="en">Execution failed due to an unexpected error: {0}	{1}</source>
+      <target state="translated">Ejecución falló debido a un error inesperado: {0} {1}</target>
+    </trans-unit>
+    <trans-unit id="query.gettingRowsFailedError">
+      <source xml:lang="en">Something went wrong getting more rows: {0}</source>
+      <target state="translated">Algo salió mal al recuperar más filas: {0}</target>
+    </trans-unit>
+    <trans-unit id="query.initEditExecutionFailed">
+      <source xml:lang="en">Init Edit Execution failed: </source>
+      <target state="translated">Error al ejecutar la edición de Inicio:</target>
+    </trans-unit>
+    <trans-unit id="query.moreRowsFailedError">
+      <source xml:lang="en">Something went wrong getting more rows:</source>
+      <target state="translated">Algo salió mal obteniendo más filas:</target>
+    </trans-unit>
+    <trans-unit id="elapsedBatchTime">
+      <source xml:lang="en">Batch execution time: {0}</source>
+      <target state="translated">Tiempo de ejecución por lotes: {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/rowCountStatus" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="rowStatus">
+      <source xml:lang="en">Row Count</source>
+      <target state="translated">Recuento de filas</target>
+    </trans-unit>
+    <trans-unit id="rowCount">
+      <source xml:lang="en">{0} rows</source>
+      <target state="translated">{0} filas</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/optionsDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="optionsDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/restore/restoreDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="backupFilePath">
+      <source xml:lang="en">Backup file path</source>
+      <target state="translated">Ruta del archivo de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="targetDatabase">
+      <source xml:lang="en">Target database</source>
+      <target state="translated">Base de datos destino</target>
+    </trans-unit>
+    <trans-unit id="RestoreDialogTitle">
+      <source xml:lang="en">Restore database</source>
+      <target state="translated">Restaurar base de datos</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.restoreTitle">
+      <source xml:lang="en">Restore database</source>
+      <target state="translated">Restaurar base de datos</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.database">
+      <source xml:lang="en">Database</source>
+      <target state="translated">Base de datos</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.backupFile">
+      <source xml:lang="en">Backup file</source>
+      <target state="translated">Archivo de respaldo</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.restore">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">Restaurar</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">Script</target>
+    </trans-unit>
+    <trans-unit id="source">
+      <source xml:lang="en">Source</source>
+      <target state="translated">ORIGEN</target>
+    </trans-unit>
+    <trans-unit id="restoreFrom">
+      <source xml:lang="en">Restore from</source>
+      <target state="translated">Restaurar desde</target>
+    </trans-unit>
+    <trans-unit id="missingBackupFilePathError">
+      <source xml:lang="en">Backup file path is required.</source>
+      <target state="translated">Se requiere la ruta de acceso del archivo de copia de seguridad.</target>
+    </trans-unit>
+    <trans-unit id="multipleBackupFilePath">
+      <source xml:lang="en">Please enter one or more file paths separated by commas</source>
+      <target state="translated">Introduzca una o más rutas de archivo separadas por comas</target>
+    </trans-unit>
+    <trans-unit id="database">
+      <source xml:lang="en">Database</source>
+      <target state="translated">Base de datos</target>
+    </trans-unit>
+    <trans-unit id="destination">
+      <source xml:lang="en">Destination</source>
+      <target state="translated">Destino</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+    </trans-unit>
+    <trans-unit id="restoreTo">
+      <source xml:lang="en">Restore to</source>
+      <target state="translated">Restaurar a</target>
+    </trans-unit>
+    <trans-unit id="restorePlan">
+      <source xml:lang="en">Restore plan</source>
+      <target state="translated">Plan de recuperación</target>
+    </trans-unit>
+    <trans-unit id="backupSetsToRestore">
+      <source xml:lang="en">Backup sets to restore</source>
+      <target state="translated">Grupos de copias de seguridad a restaurar</target>
+    </trans-unit>
+    <trans-unit id="restoreDatabaseFileAs">
+      <source xml:lang="en">Restore database files as</source>
+      <target state="translated">Restaurar archivos de base de datos como</target>
+    </trans-unit>
+    <trans-unit id="restoreDatabaseFileDetails">
+      <source xml:lang="en">Restore database file details</source>
+      <target state="translated">Restaurar detalles del archivo de base de datos</target>
+    </trans-unit>
+    <trans-unit id="logicalFileName">
+      <source xml:lang="en">Logical file Name</source>
+      <target state="translated">Nombre lógico de archivo</target>
+    </trans-unit>
+    <trans-unit id="fileType">
+      <source xml:lang="en">File type</source>
+      <target state="translated">Tipo de archivo</target>
+    </trans-unit>
+    <trans-unit id="originalFileName">
+      <source xml:lang="en">Original File Name</source>
+      <target state="translated">Nombre de archivo original</target>
+    </trans-unit>
+    <trans-unit id="restoreAs">
+      <source xml:lang="en">Restore as</source>
+      <target state="translated">Restaurar como</target>
+    </trans-unit>
+    <trans-unit id="restoreOptions">
+      <source xml:lang="en">Restore options</source>
+      <target state="translated">Opciones de restaurar</target>
+    </trans-unit>
+    <trans-unit id="taillogBackup">
+      <source xml:lang="en">Tail-Log backup</source>
+      <target state="translated">Copia de seguridad del registro de cola</target>
+    </trans-unit>
+    <trans-unit id="serverConnection">
+      <source xml:lang="en">Server connections</source>
+      <target state="translated">Conexiones de servidor</target>
+    </trans-unit>
+    <trans-unit id="generalTitle">
+      <source xml:lang="en">General</source>
+      <target state="translated">General</target>
+    </trans-unit>
+    <trans-unit id="filesTitle">
+      <source xml:lang="en">Files</source>
+      <target state="translated">Archivos</target>
+    </trans-unit>
+    <trans-unit id="optionsTitle">
+      <source xml:lang="en">Options</source>
+      <target state="translated">Opciones</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="newDashboardTab.openDashboardExtensions">
+      <source xml:lang="en">Open dashboard extensions</source>
+    </trans-unit>
+    <trans-unit id="newDashboardTab.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="newDashboardTab.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="newdashboardTabDialog.noExtensionLabel">
+      <source xml:lang="en">No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.</source>
+    </trans-unit>
+    <trans-unit id="allFeatures">
+      <source xml:lang="en">All features</source>
+      <target state="translated">Todas las características</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/node/insightsDialogController" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="insightsInputError">
+      <source xml:lang="en">No Connection Profile was passed to insights flyout</source>
+      <target state="translated">No se pasó ningún perfil de conexión al menú desplegable de información</target>
+    </trans-unit>
+    <trans-unit id="insightsError">
+      <source xml:lang="en">Insights error</source>
+      <target state="translated">Error de insights</target>
+    </trans-unit>
+    <trans-unit id="insightsFileError">
+      <source xml:lang="en">There was an error reading the query file: </source>
+      <target state="translated">Hubo un error leyendo el archivo de consulta: </target>
+    </trans-unit>
+    <trans-unit id="insightsConfigError">
+      <source xml:lang="en">There was an error parsing the insight config; could not find query array/string or queryfile</source>
+      <target state="translated">Error al analizar la configuración de la perspectiva; no se pudo encontrar la matriz/cadena de consulta o el archivo de consulta</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.filepath">
+      <source xml:lang="en">Selected path</source>
+      <target state="translated">Ruta seleccionada</target>
+    </trans-unit>
+    <trans-unit id="fileFilter">
+      <source xml:lang="en">Files of type</source>
+      <target state="translated">Archivos de tipo</target>
+    </trans-unit>
+    <trans-unit id="fileBrowser.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="fileBrowser.discard">
+      <source xml:lang="en">Discard</source>
+      <target state="translated">Descartar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/browser/insightsDialogView" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="insights.item">
+      <source xml:lang="en">Item</source>
+      <target state="translated">Artículo</target>
+    </trans-unit>
+    <trans-unit id="insights.value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">Valor</target>
+    </trans-unit>
+    <trans-unit id="property">
+      <source xml:lang="en">Property</source>
+      <target state="translated">Propiedad</target>
+    </trans-unit>
+    <trans-unit id="value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">Valor</target>
+    </trans-unit>
+    <trans-unit id="InsightsDialogTitle">
+      <source xml:lang="en">Insights</source>
+      <target state="translated">Puntos de vista</target>
+    </trans-unit>
+    <trans-unit id="insights.dialog.items">
+      <source xml:lang="en">Items</source>
+      <target state="translated">Artículos</target>
+    </trans-unit>
+    <trans-unit id="insights.dialog.itemDetails">
+      <source xml:lang="en">Item Details</source>
+      <target state="translated">Detalles del artículo</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountDialog/accountDialogController" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="accountDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+      <target state="translated">Error al agregar cuenta</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="firewallDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+      <target state="translated">Error al agregar cuenta</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleError">
+      <source xml:lang="en">Firewall rule error</source>
+      <target state="translated">Error de regla de Firewall</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/dialog/profilerColumnEditorDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="eventSort">
+      <source xml:lang="en">Sort by event</source>
+      <target state="translated">Ordenar por evento</target>
+    </trans-unit>
+    <trans-unit id="nameColumn">
+      <source xml:lang="en">Sort by column</source>
+      <target state="translated">Ordenar por columna</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.profiler">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">Analizador</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="oauthFlyoutIsAlreadyOpen">
+      <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+      <target state="translated">No se puede iniciar auto OAuth. Un auto OAuth ya está en progreso.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskHistoryRenderer" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="succeeded">
+      <source xml:lang="en">succeeded</source>
+      <target state="translated">Se realizó correctamente</target>
+    </trans-unit>
+    <trans-unit id="failed">
+      <source xml:lang="en">failed</source>
+      <target state="translated">fallido</target>
+    </trans-unit>
+    <trans-unit id="inProgress">
+      <source xml:lang="en">in progress</source>
+      <target state="translated">En curso</target>
+    </trans-unit>
+    <trans-unit id="notStarted">
+      <source xml:lang="en">not started</source>
+      <target state="translated">no se inició</target>
+    </trans-unit>
+    <trans-unit id="canceled">
+      <source xml:lang="en">canceled</source>
+      <target state="translated">cancelado</target>
+    </trans-unit>
+    <trans-unit id="canceling">
+      <source xml:lang="en">canceling</source>
+      <target state="translated">Cancelando</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/treeCreationUtils" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="treeAriaLabel">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">Conexiones recientes</target>
+    </trans-unit>
+    <trans-unit id="treeCreation.regTreeAriaLabel">
+      <source xml:lang="en">Servers</source>
+      <target state="translated">Servidores</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/objectExplorerActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="ManageAction">
+      <source xml:lang="en">Manage</source>
+      <target state="translated">Administrar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/views/queryOutput.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="results">
+      <source xml:lang="en">Results</source>
+      <target state="translated">Resultados</target>
+    </trans-unit>
+    <trans-unit id="queryPlan">
+      <source xml:lang="en">Query Plan</source>
+      <target state="translated">Plan de consulta</target>
+    </trans-unit>
+    <trans-unit id="topOperations">
+      <source xml:lang="en">Top Operations</source>
+      <target state="translated">Operaciones principales</target>
+    </trans-unit>
+    <trans-unit id="chartViewer">
+      <source xml:lang="en">Chart Viewer</source>
+      <target state="translated">Visor de gráficos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/execution/editDataActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="editData.run">
+      <source xml:lang="en">Run</source>
+      <target state="translated">Ejecutar</target>
+    </trans-unit>
+    <trans-unit id="disposeEditFailure">
+      <source xml:lang="en">Dispose Edit Failed With Error: </source>
+      <target state="translated">Eliminar edición fallida con error:</target>
+    </trans-unit>
+    <trans-unit id="editData.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">Detener</target>
+    </trans-unit>
+    <trans-unit id="editData.showSql">
+      <source xml:lang="en">Show SQL Pane</source>
+    </trans-unit>
+    <trans-unit id="editData.closeSql">
+      <source xml:lang="en">Close SQL Pane</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="runQueryLabel">
+      <source xml:lang="en">Run</source>
+      <target state="translated">Ejecutar</target>
+    </trans-unit>
+    <trans-unit id="cancelQueryLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="estimatedQueryPlan">
+      <source xml:lang="en">Explain</source>
+      <target state="translated">Explicar</target>
+    </trans-unit>
+    <trans-unit id="actualQueryPlan">
+      <source xml:lang="en">Actual</source>
+      <target state="translated">Actual</target>
+    </trans-unit>
+    <trans-unit id="disconnectDatabaseLabel">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">Desconectar</target>
+    </trans-unit>
+    <trans-unit id="changeConnectionDatabaseLabel">
+      <source xml:lang="en">Change Connection</source>
+      <target state="translated">Cambiar conexión</target>
+    </trans-unit>
+    <trans-unit id="connectDatabaseLabel">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">Conectar</target>
+    </trans-unit>
+    <trans-unit id="selectDatabase">
+      <source xml:lang="en">Select Database</source>
+      <target state="translated">Seleccione la base de datos</target>
+    </trans-unit>
+    <trans-unit id="listDatabases.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+    </trans-unit>
+    <trans-unit id="changeDatabase.failed">
+      <source xml:lang="en">Failed to change database</source>
+      <target state="translated">Error al cambiar la base de datos</target>
+    </trans-unit>
+    <trans-unit id="changeDatabase.failedWithError">
+      <source xml:lang="en">Failed to change database {0}</source>
+      <target state="translated">No se pudo cambiar de base de datos {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dialog/dialogTypes" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dialogModalDoneButtonLabel">
+      <source xml:lang="en">Done</source>
+      <target state="translated">hecho</target>
+    </trans-unit>
+    <trans-unit id="dialogModalCancelButtonLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profilerActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="profilerAction.disconnect">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">Desconectar</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.connect">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">Conectar</target>
+    </trans-unit>
+    <trans-unit id="start">
+      <source xml:lang="en">Start</source>
+      <target state="translated">Inicio</target>
+    </trans-unit>
+    <trans-unit id="create">
+      <source xml:lang="en">New Session</source>
+    </trans-unit>
+    <trans-unit id="profilerAction.resumeCapture">
+      <source xml:lang="en">Resume</source>
+    </trans-unit>
+    <trans-unit id="profilerAction.pauseCapture">
+      <source xml:lang="en">Pause</source>
+      <target state="translated">Pausa</target>
+    </trans-unit>
+    <trans-unit id="profilerStop.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">Detener</target>
+    </trans-unit>
+    <trans-unit id="profiler.clear">
+      <source xml:lang="en">Clear Data</source>
+      <target state="translated">Borrar los datos</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.autoscrollOn">
+      <source xml:lang="en">Auto Scroll: On</source>
+    </trans-unit>
+    <trans-unit id="profilerAction.autoscrollOff">
+      <source xml:lang="en">Auto Scroll: Off</source>
+    </trans-unit>
+    <trans-unit id="profiler.toggleCollapsePanel">
+      <source xml:lang="en">Toggle Collapsed Panel</source>
+      <target state="translated">Alternar el Panel contraído</target>
+    </trans-unit>
+    <trans-unit id="profiler.editColumns">
+      <source xml:lang="en">Edit Columns</source>
+      <target state="translated">Editar columnas</target>
+    </trans-unit>
+    <trans-unit id="profiler.findNext">
+      <source xml:lang="en">Find Next String</source>
+      <target state="translated">Buscar la cadena siguiente</target>
+    </trans-unit>
+    <trans-unit id="profiler.findPrevious">
+      <source xml:lang="en">Find Previous String</source>
+      <target state="translated">Buscar la cadena anterior</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.newProfiler">
+      <source xml:lang="en">Launch Profiler</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="alertErrorMessage">
+      <source xml:lang="en">Error: {0}</source>
+      <target state="translated">Error: {0}</target>
+    </trans-unit>
+    <trans-unit id="alertWarningMessage">
+      <source xml:lang="en">Warning: {0}</source>
+      <target state="translated">Advertencia: {0}</target>
+    </trans-unit>
+    <trans-unit id="alertInfoMessage">
+      <source xml:lang="en">Info: {0}</source>
+      <target state="translated">Información: {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerResourceEditor" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="profilerTextEditorAriaLabel">
+      <source xml:lang="en">Profiler editor for event text. Readonly</source>
+      <target state="translated">Editor de Profiler para el texto del evento. Sólo lectura</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="chartErrorMessage">
+      <source xml:lang="en">Chart cannot be displayed with the given data</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/editableDropdown/dropdown" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="editableDropdown.errorValidate">
+      <source xml:lang="en">Must be an option from the list</source>
+      <target state="translated">Debe ser una opción de la lista</target>
+    </trans-unit>
+    <trans-unit id="dropdownAction.toggle">
+      <source xml:lang="en">Toggle dropdown</source>
+      <target state="translated">Alternar menú desplegable</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/queryTextEditor" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="queryTextEditorAriaLabel">
+      <source xml:lang="en">modelview code editor for view model.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserViewModel" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="allFiles">
+      <source xml:lang="en">All files</source>
+      <target state="translated">Todos los archivos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserTreeView" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="fileBrowser.regTreeAriaLabel">
+      <source xml:lang="en">File browser tree</source>
+      <target state="translated">Árbol explorador de archivos</target>
+      <note>FileBrowserTree</note>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/webViewDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="webViewDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="webViewDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">Cerrar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/modal" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="infoAltText">
+      <source xml:lang="en">Info</source>
+      <target state="translated">Información</target>
+    </trans-unit>
+    <trans-unit id="warningAltText">
+      <source xml:lang="en">Warning</source>
+      <target state="translated">Advertencia</target>
+    </trans-unit>
+    <trans-unit id="errorAltText">
+      <source xml:lang="en">Error</source>
+      <target state="translated">Fehler</target>
+    </trans-unit>
+    <trans-unit id="modalBack">
+      <source xml:lang="en">Back</source>
+      <target state="translated">Atrás</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/advancedPropertiesController" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="connectionAdvancedProperties">
+      <source xml:lang="en">Advanced Properties</source>
+      <target state="translated">Propiedades avanzadas</target>
+    </trans-unit>
+    <trans-unit id="advancedProperties.discard">
+      <source xml:lang="en">Discard</source>
+      <target state="translated">Descartar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionWidget" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="defaultDatabaseOption">
+      <source xml:lang="en">&lt;Default&gt;</source>
+    </trans-unit>
+    <trans-unit id="loadingDatabaseOption">
+      <source xml:lang="en">Loading...</source>
+      <target state="translated">Cargando...</target>
+    </trans-unit>
+    <trans-unit id="defaultServerGroup">
+      <source xml:lang="en">&lt;Default&gt;</source>
+    </trans-unit>
+    <trans-unit id="addNewServerGroup">
+      <source xml:lang="en">Add new group...</source>
+      <target state="translated">Agregar nuevo grupo...</target>
+    </trans-unit>
+    <trans-unit id="noneServerGroup">
+      <source xml:lang="en">&lt;None&gt;</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.missingRequireField">
+      <source xml:lang="en">{0} is required.</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.fieldWillBeTrimmed">
+      <source xml:lang="en">{0} will be trimmed.</source>
+    </trans-unit>
+    <trans-unit id="rememberPassword">
+      <source xml:lang="en">Remember password</source>
+      <target state="translated">Recordar contraseña</target>
+    </trans-unit>
+    <trans-unit id="connectionWidget.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+    </trans-unit>
+    <trans-unit id="serverGroup">
+      <source xml:lang="en">Server group</source>
+      <target state="translated">Grupo de servidores</target>
+    </trans-unit>
+    <trans-unit id="advanced">
+      <source xml:lang="en">Advanced...</source>
+      <target state="translated">Avanzado...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionConfig" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="invalidServerName">
+      <source xml:lang="en">A server group with the same name already exists.</source>
+      <target state="translated">Ya existe un grupo de servidores con el mismo nombre.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/localizedConstants" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="onDidConnectMessage">
+      <source xml:lang="en">Connected to</source>
+      <target state="translated">Conectado a</target>
+    </trans-unit>
+    <trans-unit id="onDidDisconnectMessage">
+      <source xml:lang="en">Disconnected</source>
+      <target state="translated">Desconectado</target>
+    </trans-unit>
+    <trans-unit id="unsavedGroupLabel">
+      <source xml:lang="en">Unsaved Connections</source>
+      <target state="translated">Conexiones sin guardar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/resultSerializer" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="resultsSerializer.saveAsFileTitle">
+      <source xml:lang="en">Choose Results File</source>
+      <target state="translated">Seleccionar Archivo de Resultados</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
+      <source xml:lang="en">CSV (Comma delimited)</source>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionJSONTitle">
+      <source xml:lang="en">JSON</source>
+      <target state="translated">JSON</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionExcelTitle">
+      <source xml:lang="en">Excel Workbook</source>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionXMLTitle">
+      <source xml:lang="en">XML</source>
+      <target state="translated">XML</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionTXTTitle">
+      <source xml:lang="en">Plain Text</source>
+      <target state="translated">Texto sin formato</target>
+    </trans-unit>
+    <trans-unit id="openLocation">
+      <source xml:lang="en">Open file location</source>
+    </trans-unit>
+    <trans-unit id="openFile">
+      <source xml:lang="en">Open file</source>
+      <target state="translated">Abrir archivo</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/optionsDialogHelper" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.missingRequireField">
+      <source xml:lang="en"> is required.</source>
+      <target state="translated"> se requiere.</target>
+    </trans-unit>
+    <trans-unit id="optionsDialog.invalidInput">
+      <source xml:lang="en">Invalid input.  Numeric value expected.</source>
+      <target state="translated">Entrada no válida. Se espera un valor numérico.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/backup/constants" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="backup.filterBackupFiles">
+      <source xml:lang="en">Backup Files</source>
+      <target state="translated">Archivos de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.allFiles">
+      <source xml:lang="en">All Files</source>
+      <target state="translated">Todos los archivos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="selectDeselectAll">
+      <source xml:lang="en">Select/Deselect All</source>
+      <target state="translated">Seleccionar o deseleccionar todos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/backup/backup.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="backup.backupName">
+      <source xml:lang="en">Backup name</source>
+      <target state="translated">Nombre de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.recoveryModel">
+      <source xml:lang="en">Recovery model</source>
+      <target state="translated">Modelo de recuperación</target>
+    </trans-unit>
+    <trans-unit id="backup.backupType">
+      <source xml:lang="en">Backup type</source>
+      <target state="translated">Tipo de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.backupDevice">
+      <source xml:lang="en">Backup files</source>
+      <target state="translated">Archivos de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.algorithm">
+      <source xml:lang="en">Algorithm</source>
+      <target state="translated">Algoritmo</target>
+    </trans-unit>
+    <trans-unit id="backup.certificateOrAsymmetricKey">
+      <source xml:lang="en">Certificate or Asymmetric key</source>
+      <target state="translated">Certificado o llave asimétrica</target>
+    </trans-unit>
+    <trans-unit id="backup.media">
+      <source xml:lang="en">Media</source>
+      <target state="translated">Multimedia</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaOption">
+      <source xml:lang="en">Backup to the existing media set</source>
+      <target state="translated">Realizar la copia de seguridad sobre el conjunto de medios existente</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaOptionFormat">
+      <source xml:lang="en">Backup to a new media set</source>
+      <target state="translated">Realizar copia de seguridad en un nuevo conjunto de medios</target>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaAppend">
+      <source xml:lang="en">Append to the existing backup set</source>
+      <target state="translated">Añadir al conjunto de copia de seguridad existente</target>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaOverwrite">
+      <source xml:lang="en">Overwrite all existing backup sets</source>
+      <target state="translated">Sobrescribir todos los conjuntos de copia de seguridad existentes</target>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetName">
+      <source xml:lang="en">New media set name</source>
+      <target state="translated">Nuevo nombre de conjunto de medios</target>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetDescription">
+      <source xml:lang="en">New media set description</source>
+      <target state="translated">Nueva descripción del conjunto de medios</target>
+    </trans-unit>
+    <trans-unit id="backup.checksumContainer">
+      <source xml:lang="en">Perform checksum before writing to media</source>
+      <target state="translated">Realizar la suma de comprobación antes de escribir en los medios</target>
+    </trans-unit>
+    <trans-unit id="backup.verifyContainer">
+      <source xml:lang="en">Verify backup when finished</source>
+      <target state="translated">Comprobar copia de seguridad cuando haya terminado</target>
+    </trans-unit>
+    <trans-unit id="backup.continueOnErrorContainer">
+      <source xml:lang="en">Continue on error</source>
+      <target state="translated">Seguir en caso de error</target>
+    </trans-unit>
+    <trans-unit id="backup.expiration">
+      <source xml:lang="en">Expiration</source>
+      <target state="translated">Expiración</target>
+    </trans-unit>
+    <trans-unit id="backup.setBackupRetainDays">
+      <source xml:lang="en">Set backup retain days</source>
+      <target state="translated">Configure los días de conservación de la copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.copyOnly">
+      <source xml:lang="en">Copy-only backup</source>
+      <target state="translated">Respaldo solo de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.advancedConfiguration">
+      <source xml:lang="en">Advanced Configuration</source>
+      <target state="translated">Configuración avanzada</target>
+    </trans-unit>
+    <trans-unit id="backup.compression">
+      <source xml:lang="en">Compression</source>
+      <target state="translated">Compresión</target>
+    </trans-unit>
+    <trans-unit id="backup.setBackupCompression">
+      <source xml:lang="en">Set backup compression</source>
+      <target state="translated">Establecer la compresión de copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backup.encryption">
+      <source xml:lang="en">Encryption</source>
+      <target state="translated">Cifrado</target>
+    </trans-unit>
+    <trans-unit id="backup.transactionLog">
+      <source xml:lang="en">Transaction log</source>
+      <target state="translated">Registro de transacciones</target>
+    </trans-unit>
+    <trans-unit id="backup.truncateTransactionLog">
+      <source xml:lang="en">Truncate the transaction log</source>
+    </trans-unit>
+    <trans-unit id="backup.backupTail">
+      <source xml:lang="en">Backup the tail of the log</source>
+    </trans-unit>
+    <trans-unit id="backup.reliability">
+      <source xml:lang="en">Reliability</source>
+      <target state="translated">Fiabilidad</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaNameRequired">
+      <source xml:lang="en">Media name is required</source>
+      <target state="translated">Nombre del Medio es requerido</target>
+    </trans-unit>
+    <trans-unit id="backup.noEncryptorWarning">
+      <source xml:lang="en">No certificate or asymmetric key is available</source>
+      <target state="translated">No hay certificado o clave asimétrica disponible</target>
+    </trans-unit>
+    <trans-unit id="addFile">
+      <source xml:lang="en">Add a file</source>
+      <target state="translated">Agregar un archivo</target>
+    </trans-unit>
+    <trans-unit id="removeFile">
+      <source xml:lang="en">Remove files</source>
+      <target state="translated">Eliminar archivos</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.invalidInput">
+      <source xml:lang="en">Invalid input. Value must be greater than or equal 0.</source>
+      <target state="translated">Entrada no válida. Valor debe ser igual o mayor que 0.</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">Script</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.backup">
+      <source xml:lang="en">Backup</source>
+      <target state="translated">Copia de seguridad</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="backup.containsBackupToUrlError">
+      <source xml:lang="en">Only backup to file is supported</source>
+      <target state="translated">Únicamente respaldo a archivo es soportado</target>
+    </trans-unit>
+    <trans-unit id="backup.backupFileRequired">
+      <source xml:lang="en">Backup file path is required</source>
+      <target state="translated">La ruta del archivo de copia de seguridad es obligatoria</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/common/insightDialogActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="workbench.action.insights.copySelection">
+      <source xml:lang="en">Copy Cell</source>
+      <target state="translated">Copiar celda</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountDialog/accountDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="linkedAccounts">
+      <source xml:lang="en">Linked accounts</source>
+      <target state="translated">Cuentas vinculadas</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">Cerrar</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.noAccountLabel">
+      <source xml:lang="en">There is no linked account. Please add an account.</source>
+    </trans-unit>
+    <trans-unit id="accountDialog.addConnection">
+      <source xml:lang="en">Add an account</source>
+      <target state="translated">Agregar una cuenta</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="from">
+      <source xml:lang="en">From</source>
+      <target state="translated">Desde</target>
+    </trans-unit>
+    <trans-unit id="to">
+      <source xml:lang="en">To</source>
+      <target state="translated">Para</target>
+    </trans-unit>
+    <trans-unit id="createNewFirewallRule">
+      <source xml:lang="en">Create new firewall rule</source>
+      <target state="translated">Crear nueva regla de firewall</target>
+    </trans-unit>
+    <trans-unit id="firewall.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">Aceptar</target>
+    </trans-unit>
+    <trans-unit id="firewall.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleDialogDescription">
+      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+      <target state="translated">Su dirección IP no tiene acceso al servidor. Inicie sesión con una cuenta de Azure y cree una regla en el firewall para permitir el acceso.</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpDescription">
+      <source xml:lang="en">Learn more about firewall settings</source>
+      <target state="translated">Más información sobre configuración de firewall</target>
+    </trans-unit>
+    <trans-unit id="azureAccount">
+      <source xml:lang="en">Azure account</source>
+      <target state="translated">Cuenta de Azure</target>
+    </trans-unit>
+    <trans-unit id="filewallRule">
+      <source xml:lang="en">Firewall rule</source>
+      <target state="translated">Regla de Firewall</target>
+    </trans-unit>
+    <trans-unit id="addIPAddressLabel">
+      <source xml:lang="en">Add my client IP </source>
+      <target state="translated">Agregar mi IP de cliente</target>
+    </trans-unit>
+    <trans-unit id="addIpRangeLabel">
+      <source xml:lang="en">Add my subnet IP range</source>
+      <target state="translated">Añadir mi rango IP de subred</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="addAccount">
+      <source xml:lang="en">Add an account</source>
+      <target state="translated">Agregar una cuenta</target>
+    </trans-unit>
+    <trans-unit id="removeAccount">
+      <source xml:lang="en">Remove account</source>
+      <target state="translated">Eliminar cuenta</target>
+    </trans-unit>
+    <trans-unit id="confirmRemoveUserAccountMessage">
+      <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
+      <target state="translated">¿Está seguro que desea eliminar '{0}'?</target>
+    </trans-unit>
+    <trans-unit id="accountActions.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="accountActions.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+    <trans-unit id="removeAccountFailed">
+      <source xml:lang="en">Failed to remove account</source>
+      <target state="translated">Error al quitar cuenta</target>
+    </trans-unit>
+    <trans-unit id="applyFilters">
+      <source xml:lang="en">Apply Filters</source>
+      <target state="translated">Aplicar filtros</target>
+    </trans-unit>
+    <trans-unit id="refreshAccount">
+      <source xml:lang="en">Reenter your credentials</source>
+      <target state="translated">Vuelva a introducir sus credenciales</target>
+    </trans-unit>
+    <trans-unit id="NoAccountToRefresh">
+      <source xml:lang="en">There is no account to refresh</source>
+      <target state="translated">No hay ninguna cuenta para actualizar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="copyAndOpen">
+      <source xml:lang="en">Copy &amp; Open</source>
+    </trans-unit>
+    <trans-unit id="oauthDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="userCode">
+      <source xml:lang="en">User code</source>
+      <target state="translated">Código de usuario</target>
+    </trans-unit>
+    <trans-unit id="website">
+      <source xml:lang="en">Website</source>
+      <target state="translated">Sitio web</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountListRenderer" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="refreshCredentials">
+      <source xml:lang="en">You need to refresh the credentials for this account.</source>
+      <target state="translated">Debe actualizar las credenciales para esta cuenta.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/serverTreeRenderer" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="loading">
+      <source xml:lang="en">Loading...</source>
+      <target state="translated">Cargando...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/admin/database/create/createDatabase.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="createDatabase.databaseFiles">
+      <source xml:lang="en">Database files:</source>
+      <target state="translated">Archivos de base de datos:</target>
+    </trans-unit>
+    <trans-unit id="createDatabase.noRecordsFound">
+      <source xml:lang="en">No records found</source>
+      <target state="translated">No se han encontrado registros</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskAction" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="cancelTask.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="errorMsgFromCancelTask">
+      <source xml:lang="en">The task is failed to cancel.</source>
+      <target state="translated">La tarea no se cancelará.</target>
+    </trans-unit>
+    <trans-unit id="taskAction.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">Script</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/common/theme/colors" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="tableHeaderBackground">
+      <source xml:lang="en">Table header background color</source>
+      <target state="translated">Color de fondo de encabezado de tabla</target>
+    </trans-unit>
+    <trans-unit id="tableHeaderForeground">
+      <source xml:lang="en">Table header foreground color</source>
+      <target state="translated">Color de primer plano de encabezado de tabla</target>
+    </trans-unit>
+    <trans-unit id="disabledInputBoxBackground">
+      <source xml:lang="en">Disabled Input box background.</source>
+      <target state="translated">Fondo de Input box deshabilitado.</target>
+    </trans-unit>
+    <trans-unit id="disabledInputBoxForeground">
+      <source xml:lang="en">Disabled Input box foreground.</source>
+      <target state="translated">Se ha deshabilitado el cuadro de entrada en primer plano.</target>
+    </trans-unit>
+    <trans-unit id="buttonFocusOutline">
+      <source xml:lang="en">Button outline color when focused.</source>
+      <target state="translated">Contorno del botón remarcado cuando se enfoca</target>
+    </trans-unit>
+    <trans-unit id="listFocusAndSelectionBackground">
+      <source xml:lang="en">List/Table background color for the selected and focus item when the list/table is active</source>
+    </trans-unit>
+    <trans-unit id="agentTableBackground">
+      <source xml:lang="en">SQL Agent Table background color.</source>
+    </trans-unit>
+    <trans-unit id="agentCellBackground">
+      <source xml:lang="en">SQL Agent table cell background color.</source>
+    </trans-unit>
+    <trans-unit id="agentTableHoverBackground">
+      <source xml:lang="en">SQL Agent table hover background color.</source>
+    </trans-unit>
+    <trans-unit id="agentJobsHeadingColor">
+      <source xml:lang="en">SQL Agent heading background color.</source>
+    </trans-unit>
+    <trans-unit id="agentCellBorderColor">
+      <source xml:lang="en">SQL Agent table cell border color.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/queryPlan/topOperations.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="topOperations.operation">
+      <source xml:lang="en">Operation</source>
+      <target state="translated">Operación</target>
+    </trans-unit>
+    <trans-unit id="topOperations.object">
+      <source xml:lang="en">Object</source>
+      <target state="translated">Objeto</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estCost">
+      <source xml:lang="en">Est Cost</source>
+      <target state="translated">Costo estimado</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estSubtreeCost">
+      <source xml:lang="en">Est Subtree Cost</source>
+      <target state="translated">Estimación de coste del subárbol</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRows">
+      <source xml:lang="en">Actual Rows</source>
+      <target state="translated">Filas actuales</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRows">
+      <source xml:lang="en">Est Rows</source>
+      <target state="translated">Filas estimadas</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualExecutions">
+      <source xml:lang="en">Actual Executions</source>
+      <target state="translated">Ejecuciones reales</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estCPUCost">
+      <source xml:lang="en">Est CPU Cost</source>
+      <target state="translated">Costo estimado de CPU</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estIOCost">
+      <source xml:lang="en">Est IO Cost</source>
+      <target state="translated">Costo estimado de IO</target>
+    </trans-unit>
+    <trans-unit id="topOperations.parallel">
+      <source xml:lang="en">Parallel</source>
+      <target state="translated">Paralelo</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRebinds">
+      <source xml:lang="en">Actual Rebinds</source>
+      <target state="translated">Reenlaces reales</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRebinds">
+      <source xml:lang="en">Est Rebinds</source>
+      <target state="translated">Reenlaces estimados</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRewinds">
+      <source xml:lang="en">Actual Rewinds</source>
+      <target state="translated">'Rewinds' reales</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRewinds">
+      <source xml:lang="en">Est Rewinds</source>
+      <target state="translated">Rebobinados estimados</target>
+    </trans-unit>
+    <trans-unit id="topOperations.partitioned">
+      <source xml:lang="en">Partitioned</source>
+      <target state="translated">Particionado</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/query/chartViewer.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="chartTypeLabel">
+      <source xml:lang="en">Chart Type</source>
+      <target state="translated">Tipo de gráfico</target>
+    </trans-unit>
+    <trans-unit id="dataDirectionLabel">
+      <source xml:lang="en">Data Direction</source>
+      <target state="translated">Dirección de datos</target>
+    </trans-unit>
+    <trans-unit id="verticalLabel">
+      <source xml:lang="en">Vertical</source>
+      <target state="translated">Vertical</target>
+    </trans-unit>
+    <trans-unit id="horizontalLabel">
+      <source xml:lang="en">Horizontal</source>
+      <target state="translated">Horizontal</target>
+    </trans-unit>
+    <trans-unit id="dataTypeLabel">
+      <source xml:lang="en">Data Type</source>
+      <target state="translated">Tipo de datos</target>
+    </trans-unit>
+    <trans-unit id="numberLabel">
+      <source xml:lang="en">Number</source>
+      <target state="translated">Número</target>
+    </trans-unit>
+    <trans-unit id="pointLabel">
+      <source xml:lang="en">Point</source>
+      <target state="translated">Punto</target>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnLabel">
+      <source xml:lang="en">Use first column as row label</source>
+    </trans-unit>
+    <trans-unit id="columnsAsLabelsLabel">
+      <source xml:lang="en">Use column names as labels</source>
+    </trans-unit>
+    <trans-unit id="legendLabel">
+      <source xml:lang="en">Legend Position</source>
+      <target state="translated">Posición de la leyenda</target>
+    </trans-unit>
+    <trans-unit id="chartNotFound">
+      <source xml:lang="en">Could not find chart to save</source>
+      <target state="translated">No se pudo encontrar el gráfico a guardar</target>
+    </trans-unit>
+    <trans-unit id="xAxisLabel">
+      <source xml:lang="en">X Axis Label</source>
+    </trans-unit>
+    <trans-unit id="xAxisMinVal">
+      <source xml:lang="en">X Axis Minimum Value</source>
+    </trans-unit>
+    <trans-unit id="xAxisMaxVal">
+      <source xml:lang="en">X Axis Maximum Value</source>
+    </trans-unit>
+    <trans-unit id="yAxisLabel">
+      <source xml:lang="en">Y Axis Label</source>
+    </trans-unit>
+    <trans-unit id="yAxisMinVal">
+      <source xml:lang="en">Y Axis Minimum Value</source>
+    </trans-unit>
+    <trans-unit id="yAxisMaxVal">
+      <source xml:lang="en">Y Axis Maximum Value</source>
+    </trans-unit>
+    <trans-unit id="chartSaved">
+      <source xml:lang="en">Saved Chart to path: {0}</source>
+      <target state="translated">Gráfico guardado en ruta: {0}</target>
+    </trans-unit>
+    <trans-unit id="chartViewer.saveAsFileTitle">
+      <source xml:lang="en">Choose Results File</source>
+      <target state="translated">Seleccionar Archivo de Resultados</target>
+    </trans-unit>
+    <trans-unit id="createInsightNoEditor">
+      <source xml:lang="en">Cannot create insight as the active editor is not a SQL Editor</source>
+      <target state="translated">No se puede crear la perspectiva porque el editor activo no es un Editor de SQL</target>
+    </trans-unit>
+    <trans-unit id="createInsightNoDataService">
+      <source xml:lang="en">Cannot create insight, backing data model not found</source>
+      <target state="translated">No se puede crear inspección, modelo de datos de respaldo no encontrado</target>
+    </trans-unit>
+    <trans-unit id="myWidgetName">
+      <source xml:lang="en">My-Widget</source>
+      <target state="translated">Mi Widget</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="homeCrumb">
+      <source xml:lang="en">Home</source>
+      <target state="translated">Página de inicio</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.changeDatabaseFailure">
+      <source xml:lang="en">Failed to change database</source>
+      <target state="translated">Error al cambiar la base de datos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboardNavSection_loadTabError">
+      <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/agent/agentView.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="jobview.Jobs">
+      <source xml:lang="en">Jobs</source>
+      <target state="translated">Trabajos</target>
+    </trans-unit>
+    <trans-unit id="jobview.Alerts">
+      <source xml:lang="en">Alerts</source>
+    </trans-unit>
+    <trans-unit id="jobview.Proxies">
+      <source xml:lang="en">Proxies</source>
+    </trans-unit>
+    <trans-unit id="jobview.Operators">
+      <source xml:lang="en">Operators</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/alertsView.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="jobAlertColumns.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">Nombre</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.lastOccurrenceDate">
+      <source xml:lang="en">Last Occurrence</source>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">Habilitado</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.databaseName">
+      <source xml:lang="en">Database Name</source>
+      <target state="translated">Nombre de la base de datos</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.categoryName">
+      <source xml:lang="en">Category Name</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/operatorsView.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="jobOperatorsView.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">Nombre</target>
+    </trans-unit>
+    <trans-unit id="jobOperatorsView.emailAddress">
+      <source xml:lang="en">Email Address</source>
+    </trans-unit>
+    <trans-unit id="jobOperatorsView.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">Habilitado</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/jobsView.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="jobColumns.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">Nombre</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.lastRun">
+      <source xml:lang="en">Last Run</source>
+    </trans-unit>
+    <trans-unit id="jobColumns.nextRun">
+      <source xml:lang="en">Next Run</source>
+    </trans-unit>
+    <trans-unit id="jobColumns.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">Habilitado</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.status">
+      <source xml:lang="en">Status</source>
+      <target state="translated">Estado</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.category">
+      <source xml:lang="en">Category</source>
+      <target state="translated">Categoría</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.runnable">
+      <source xml:lang="en">Runnable</source>
+    </trans-unit>
+    <trans-unit id="jobColumns.schedule">
+      <source xml:lang="en">Schedule</source>
+      <target state="translated">Programación</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.lastRunOutcome">
+      <source xml:lang="en">Last Run Outcome</source>
+    </trans-unit>
+    <trans-unit id="jobColumns.previousRuns">
+      <source xml:lang="en">Previous Runs</source>
+    </trans-unit>
+    <trans-unit id="jobsView.noSteps">
+      <source xml:lang="en">No Steps available for this job.</source>
+    </trans-unit>
+    <trans-unit id="jobsView.error">
+      <source xml:lang="en">Error: </source>
+      <target state="translated">Error: </target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="serverPageName">
+      <source xml:lang="en">SERVER DASHBOARD</source>
+      <target state="translated">CONSOLA DE SERVIDOR</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="databasePageName">
+      <source xml:lang="en">DATABASE DASHBOARD</source>
+      <target state="translated">Panel de base de datos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/proxiesView.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="jobProxyToolbar-NewItem">
+      <source xml:lang="en">New Proxy</source>
+    </trans-unit>
+    <trans-unit id="jobProxyToolbar-Refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">Actualizar</target>
+    </trans-unit>
+    <trans-unit id="jobProxiesView.accountName">
+      <source xml:lang="en">Account Name</source>
+    </trans-unit>
+    <trans-unit id="jobProxiesView.credentialName">
+      <source xml:lang="en">Credential Name</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="seachObjects">
+      <source xml:lang="en">Search by name of type (a:, t:, v:, f:, or sp:)</source>
+      <target state="translated">Búsqueda por nombre de tipo (a:, t:, v:, f: o sp:)</target>
+    </trans-unit>
+    <trans-unit id="searchDatabases">
+      <source xml:lang="en">Search databases</source>
+      <target state="translated">Buscar en las bases de datos</target>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.objectError">
+      <source xml:lang="en">Unable to load objects</source>
+      <target state="translated">No se pueden cargar objetos</target>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.databaseError">
+      <source xml:lang="en">Unable to load databases</source>
+      <target state="translated">No se pueden cargar las bases de datos</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dashboard.properties.error">
+      <source xml:lang="en">Unable to load dashboard properties</source>
+      <target state="translated">No se puede cargar las propiedades del panel</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/editData/editDataGridActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="deleteRow">
+      <source xml:lang="en">Delete Row</source>
+      <target state="translated">Eliminar fila</target>
+    </trans-unit>
+    <trans-unit id="revertRow">
+      <source xml:lang="en">Revert Current Row</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/actions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="editDashboard">
+      <source xml:lang="en">Edit</source>
+      <target state="translated">Editar</target>
+    </trans-unit>
+    <trans-unit id="editDashboardExit">
+      <source xml:lang="en">Exit</source>
+      <target state="translated">Salir</target>
+    </trans-unit>
+    <trans-unit id="refreshWidget">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">Actualizar</target>
+    </trans-unit>
+    <trans-unit id="toggleMore">
+      <source xml:lang="en">Toggle More</source>
+      <target state="translated">Alternar más</target>
+    </trans-unit>
+    <trans-unit id="deleteWidget">
+      <source xml:lang="en">Delete Widget</source>
+      <target state="translated">Eliminar Widget</target>
+    </trans-unit>
+    <trans-unit id="clickToUnpin">
+      <source xml:lang="en">Click to unpin</source>
+      <target state="translated">Haga clic para liberar</target>
+    </trans-unit>
+    <trans-unit id="clickToPin">
+      <source xml:lang="en">Click to pin</source>
+      <target state="translated">Haga clic para anclar</target>
+    </trans-unit>
+    <trans-unit id="addFeatureAction.openInstalledFeatures">
+      <source xml:lang="en">Open installed features</source>
+      <target state="translated">Abrir funciones instaladas</target>
+    </trans-unit>
+    <trans-unit id="collapseWidget">
+      <source xml:lang="en">Collapse</source>
+      <target state="translated">Contraer</target>
+    </trans-unit>
+    <trans-unit id="expandWidget">
+      <source xml:lang="en">Expand</source>
+      <target state="translated">Expandir</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/controller/profilerFindWidget" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="label.find">
+      <source xml:lang="en">Find</source>
+      <target state="translated">Buscar</target>
+    </trans-unit>
+    <trans-unit id="placeholder.find">
+      <source xml:lang="en">Find</source>
+      <target state="translated">Buscar</target>
+    </trans-unit>
+    <trans-unit id="label.previousMatchButton">
+      <source xml:lang="en">Previous match</source>
+      <target state="translated">Coincidencia anterior</target>
+    </trans-unit>
+    <trans-unit id="label.nextMatchButton">
+      <source xml:lang="en">Next match</source>
+      <target state="translated">Próxima coincidencia</target>
+    </trans-unit>
+    <trans-unit id="label.closeButton">
+      <source xml:lang="en">Close</source>
+      <target state="translated">Cerrar</target>
+    </trans-unit>
+    <trans-unit id="title.matchesCountLimit">
+      <source xml:lang="en">Only the first 999 results are highlighted, but all find operations work on the entire text.</source>
+      <target state="translated">Se destacan solo los primeros 999 resultados, pero todas las operaciones de búsqueda se aplican a todo el texto.</target>
+    </trans-unit>
+    <trans-unit id="label.matchesLocation">
+      <source xml:lang="en">{0} of {1}</source>
+      <target state="translated">{0} de {1}</target>
+    </trans-unit>
+    <trans-unit id="label.noResults">
+      <source xml:lang="en">No Results</source>
+      <target state="translated">No hay resultados</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelView" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="unknownComponentType">
+      <source xml:lang="en">Unkown component type. Must use ModelBuilder to create objects</source>
+    </trans-unit>
+    <trans-unit id="unknownConfig">
+      <source xml:lang="en">Unkown component configuration, must use ModelBuilder to create a configuration object</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelViewDialog" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="dialogDoneLabel">
+      <source xml:lang="en">Done</source>
+      <target state="translated">hecho</target>
+    </trans-unit>
+    <trans-unit id="dialogCancelLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="generateScriptLabel">
+      <source xml:lang="en">Generate script</source>
+    </trans-unit>
+    <trans-unit id="dialogNextLabel">
+      <source xml:lang="en">Next</source>
+      <target state="translated">Siguiente</target>
+    </trans-unit>
+    <trans-unit id="dialogPreviousLabel">
+      <source xml:lang="en">Previous</source>
+      <target state="translated">Anterior</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelViewTree" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="treeView.notRegistered">
+      <source xml:lang="en">No tree view with id '{0}' registered.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="insights.lastUpdated">
+      <source xml:lang="en">Last Updated: {0} {1}</source>
+      <target state="translated">Última actualización: {0} {1}</target>
+    </trans-unit>
+    <trans-unit id="noResults">
+      <source xml:lang="en">No results to show</source>
+      <target state="translated">No hay resultados para mostrar</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/views/browser/views" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="viewToolbarAriaLabel">
+      <source xml:lang="en">{0} actions</source>
+      <target state="translated">acciones de {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardHelper" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="unknownDashboardContainerError">
+      <source xml:lang="en">{0} is an unknown container.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/query/chartViewerActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="chartContextRequired">
+      <source xml:lang="en">Chart View context is required to run this action</source>
+      <target state="translated">Contexto de vista gráfico es necesario para ejecutar esta acción</target>
+    </trans-unit>
+    <trans-unit id="createInsightLabel">
+      <source xml:lang="en">Create Insight</source>
+      <target state="translated">Crear Insight</target>
+    </trans-unit>
+    <trans-unit id="copyChartLabel">
+      <source xml:lang="en">Copy as image</source>
+      <target state="translated">Copiar como imagen</target>
+    </trans-unit>
+    <trans-unit id="saveImageLabel">
+      <source xml:lang="en">Save as image</source>
+      <target state="translated">Guardar como imagen</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/rowdetailview" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="rowDetailView.loadError">
+      <source xml:lang="en">Loading Error...</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/viewBase" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="componentTypeNotRegistered">
+      <source xml:lang="en">Could not find component for type {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="jobaction.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">Actualizar</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newJob">
+      <source xml:lang="en">New Job</source>
+    </trans-unit>
+    <trans-unit id="jobaction.run">
+      <source xml:lang="en">Run</source>
+      <target state="translated">Ejecutar</target>
+    </trans-unit>
+    <trans-unit id="jobSuccessfullyStarted">
+      <source xml:lang="en">: The job was successfully started.</source>
+    </trans-unit>
+    <trans-unit id="jobaction.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">Detener</target>
+    </trans-unit>
+    <trans-unit id="jobSuccessfullyStopped">
+      <source xml:lang="en">: The job was successfully stopped.</source>
+    </trans-unit>
+    <trans-unit id="jobaction.editJob">
+      <source xml:lang="en">Edit Job</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteJob">
+      <source xml:lang="en">Delete Job</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteJobConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the job '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteJob">
+      <source xml:lang="en">Could not delete job '{0}'.
+Error: {1}</source>
+    </trans-unit>
+    <trans-unit id="jobaction.newStep">
+      <source xml:lang="en">New Step</source>
+    </trans-unit>
+    <trans-unit id="jobaction.newAlert">
+      <source xml:lang="en">New Alert</source>
+    </trans-unit>
+    <trans-unit id="jobaction.editAlert">
+      <source xml:lang="en">Edit Alert</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteAlert">
+      <source xml:lang="en">Delete Alert</source>
+    </trans-unit>
+    <trans-unit id="jobaction.Cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Cancelar</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteAlertConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the alert '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteAlert">
+      <source xml:lang="en">Could not delete alert '{0}'.
+Error: {1}</source>
+    </trans-unit>
+    <trans-unit id="jobaction.newOperator">
+      <source xml:lang="en">New Operator</source>
+      <target state="translated">Nuevo operador</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editOperator">
+      <source xml:lang="en">Edit Operator</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteOperator">
+      <source xml:lang="en">Delete Operator</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteOperatorConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the operator '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteOperator">
+      <source xml:lang="en">Could not delete operator '{0}'.
+Error: {1}</source>
+    </trans-unit>
+    <trans-unit id="jobaction.newProxy">
+      <source xml:lang="en">New Proxy</source>
+    </trans-unit>
+    <trans-unit id="jobaction.editProxy">
+      <source xml:lang="en">Edit Proxy</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteProxy">
+      <source xml:lang="en">Delete Proxy</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteProxyConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the proxy '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteProxy">
+      <source xml:lang="en">Could not delete proxy '{0}'.
+Error: {1}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobManagementUtilities" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="agentUtilities.failed">
+      <source xml:lang="en">Failed</source>
+      <target state="translated">fallido</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.succeeded">
+      <source xml:lang="en">Succeeded</source>
+      <target state="translated">Se realizó correctamente</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.canceled">
+      <source xml:lang="en">Canceled</source>
+      <target state="translated">cancelado</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.statusUnknown">
+      <source xml:lang="en">Status Unknown</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.executing">
+      <source xml:lang="en">Executing</source>
+      <target state="translated">En ejecución</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.waitingForThread">
+      <source xml:lang="en">Waiting for Thread</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.betweenRetries">
+      <source xml:lang="en">Between Retries</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.idle">
+      <source xml:lang="en">Idle</source>
+      <target state="translated">Inactivo</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.suspended">
+      <source xml:lang="en">Suspended</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.obsolete">
+      <source xml:lang="en">[Obsolete]</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.performingCompletionActions">
+      <source xml:lang="en">PerformingCompletionActions</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">Sí</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">No</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.notScheduled">
+      <source xml:lang="en">Not Scheduled</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.neverRun">
+      <source xml:lang="en">Never Run</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="home">
+      <source xml:lang="en">Home</source>
+      <target state="translated">Página de inicio</target>
+    </trans-unit>
+    <trans-unit id="missingConnectionInfo">
+      <source xml:lang="en">No connection information could be found for this dashboard</source>
+      <target state="translated">No se encontró información de conexión para este panel</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/actions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="insights.runQuery">
+      <source xml:lang="en">Run Query</source>
+      <target state="translated">Ejecutar consulta</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/panel/tabActions" source-language="en" target-language="es" datatype="plaintext"><body>
+    <trans-unit id="closeTab">
+      <source xml:lang="en">Close</source>
+      <target state="translated">Cerrar</target>
+    </trans-unit>
+  </body></file>
+</xliff>

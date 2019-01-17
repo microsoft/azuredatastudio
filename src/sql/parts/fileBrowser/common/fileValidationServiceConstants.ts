@@ -7,5 +7,5 @@
  * List of services that provide file validation callback to file browser service
  */
 
-export const backup: string = "Backup";
-export const restore: string = "Restore";
+export const backup: string = 'Backup';
+export const restore: string = 'Restore';

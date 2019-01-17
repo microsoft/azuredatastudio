@@ -46,6 +46,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	private _onClick = new Emitter<ITableMouseEvent>();
 	public readonly onClick: Event<ITableMouseEvent> = this._onClick.event;
 
+	private _onColumnResize = new Emitter<void>();
+	public readonly onColumnResize = this._onColumnResize.event;
+
 	constructor(parent: HTMLElement, configuration?: ITableConfiguration<T>, options?: Slick.GridOptions<T>) {
 		super();
 		if (!configuration || !configuration.dataProvider || isArray(configuration.dataProvider)) {
@@ -105,6 +108,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 
 		this.mapMouseEvent(this._grid.onContextMenu, this._onContextMenu);
 		this.mapMouseEvent(this._grid.onClick, this._onClick);
+		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
 	}
 
 	private mapMouseEvent(slickEvent: Slick.Event<any>, emitter: Emitter<ITableMouseEvent>) {

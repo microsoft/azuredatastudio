@@ -349,6 +349,7 @@ export class RowDetailView {
 			//slick-cell to escape the cell overflow clipping.
 
 			//sneaky extra </div> inserted here-----------------v
+			/* tslint:disable:no-unexternalized-strings */
 			html.push("<div class='detailView-toggle collapse'></div></div>");
 
 			html.push("<div id='cellDetailView_", dataContext.id, "' class='dynamic-cell-detail' ");   //apply custom css to detail
@@ -356,6 +357,7 @@ export class RowDetailView {
 			html.push("top:", rowHeight, "px'>");             //shift detail below 1st row
 			html.push("<div id='detailViewContainer_", dataContext.id, "'  class='detail-container' style='max-height:" + (dataContext._height - rowHeight + bottomMargin) + "px'>"); //sub ctr for custom styling
 			html.push("<div id='innerDetailView_", dataContext.id, "'>", escape(dataContext._detailContent), "</div></div>");
+			/* tslint:enable:no-unexternalized-strings */
 			//&omit a final closing detail container </div> that would come next
 
 			return html.join('');
@@ -364,17 +366,21 @@ export class RowDetailView {
 	}
 
 	public resizeDetailView(item) {
-		if (!item) return;
+		if (!item) {
+			return;
+		}
 
 		// Grad each of the dom items
 		let mainContainer = document.getElementById('detailViewContainer_' + item.id);
 		let cellItem = document.getElementById('cellDetailView_' + item.id);
 		let inner = document.getElementById('innerDetailView_' + item.id);
 
-		if (!mainContainer || !cellItem || !inner) return;
+		if (!mainContainer || !cellItem || !inner) {
+			return;
+		}
 
 		for (let idx = 1; idx <= item._sizePadding; idx++) {
-			this._dataView.deleteItem(item.id + "." + idx);
+			this._dataView.deleteItem(item.id + '.' + idx);
 		}
 
 		let rowHeight = this._grid.getOptions().rowHeight; // height of a row
@@ -395,9 +401,9 @@ export class RowDetailView {
 			this._grid.getOptions().minRowBuffer = item._sizePadding + 3;
 		}
 
-		mainContainer.setAttribute("style", "max-height: " + item._height + "px");
+		mainContainer.setAttribute('style', 'max-height: ' + item._height + 'px');
 		if (cellItem) {
-			cellItem.setAttribute("style", "height: " + item._height + "px;top:" + rowHeight + "px");
+			cellItem.setAttribute('style', 'height: ' + item._height + 'px;top:' + rowHeight + 'px');
 		}
 
 		let idxParent = this._dataView.getIdxById(item.id);

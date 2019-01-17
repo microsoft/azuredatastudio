@@ -131,7 +131,7 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	public get showRadioButton():boolean{
-		return this.selectable && (this.selected || this._hasFocus)
+		return this.selectable && (this.selected || this._hasFocus);
 	}
 
 	public get showAsSelected(): boolean {

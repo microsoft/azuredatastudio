@@ -343,6 +343,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	handleResultSet(self: EditDataComponent, event: any): void {
 		// Clone the data before altering it to avoid impacting other subscribers
 		let resultSet = Object.assign({}, event.data);
+		if (!resultSet.complete) {
+			return;
+		}
 
 		// Add an extra 'new row'
 		resultSet.rowCount++;

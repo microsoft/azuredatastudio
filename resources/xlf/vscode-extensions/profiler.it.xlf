@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/profiler/client\out/dialogs/profilerCreateSessionDialog" source-language="en" target-language="it" datatype="plaintext"><body>
+    <trans-unit id="createSessionDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">Annulla</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.create">
+      <source xml:lang="en">Create</source>
+      <target state="translated">Crea</target>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.title">
+      <source xml:lang="en">Create New Profiler Session</source>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.templatesInvalid">
+      <source xml:lang="en">Invalid templates list, cannot open dialog</source>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.dialogOwnerInvalid">
+      <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.selectTemplates">
+      <source xml:lang="en">Select session template:</source>
+    </trans-unit>
+    <trans-unit id="createSessionDialog.enterSessionName">
+      <source xml:lang="en">Enter session name:</source>
+    </trans-unit>
+  </body></file>
+</xliff>

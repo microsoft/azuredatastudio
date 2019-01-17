@@ -47,7 +47,7 @@ export class CopyKeybind<T> implements Slick.Plugin<T> {
 				if (!isUndefinedOrNull(this.grid.getColumns()[0].selectable) && !this.grid.getColumns()[0].selectable) {
 					startColumn = 1;
 				}
-				ranges = [new Slick.Range(selectedRows[0], startColumn, selectedRows[selectedRows.length - 1], this.grid.getColumns().length)]
+				ranges = [new Slick.Range(selectedRows[0], startColumn, selectedRows[selectedRows.length - 1], this.grid.getColumns().length)];
 			}
 			this._onCopy.fire(ranges);
 		}

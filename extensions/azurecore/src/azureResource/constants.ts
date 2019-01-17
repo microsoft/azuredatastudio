@@ -6,11 +6,19 @@
 'use strict';
 
 export enum AzureResourceItemType {
-	account = 'azureResource.itemType.account',
-	subscription = 'azureResource.itemType.subscription',
-	databaseContainer = 'azureResource.itemType.databaseContainer',
-	database = 'azureResource.itemType.database',
-	databaseServerContainer = 'azureResource.itemType.databaseServerContainer',
-	databaseServer = 'azureResource.itemType.databaseServer',
-	message = 'azureResource.itemType.message'
+	account = 'azure.resource.itemType.account',
+	subscription = 'azure.resource.itemType.subscription',
+	databaseContainer = 'azure.resource.itemType.databaseContainer',
+	database = 'azure.resource.itemType.database',
+	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
+	databaseServer = 'azure.resource.itemType.databaseServer',
+	message = 'azure.resource.itemType.message'
+}
+
+export enum AzureResourceServiceNames {
+	cacheService = 'AzureResourceCacheService',
+	accountService = 'AzureResourceAccountService',
+	subscriptionService = 'AzureResourceSubscriptionService',
+	subscriptionFilterService = 'AzureResourceSubscriptionFilterService',
+	tenantService = 'AzureResourceTenantService'
 }

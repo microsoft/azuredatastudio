@@ -168,8 +168,7 @@ export const DashboardModule = (params, selector: string, instantiationService: 
 				if (e instanceof NavigationEnd) {
 					this.navigations++;
 					TelemetryUtils.addTelemetry(this.telemetryService, TelemetryKeys.DashboardNavigated, {
-						numberOfNavigations: this.navigations,
-						routeUrl: e.url
+						numberOfNavigations: this.navigations
 					});
 				}
 			});

@@ -30,7 +30,7 @@ export class NotebookModelStub implements INotebookModel {
     get clientSession(): IClientSession {
         throw new Error('method not implemented.');
     }
-    get notebookManager(): INotebookManager {
+    get notebookManagers(): INotebookManager[] {
         throw new Error('method not implemented.');
     }
     get kernelChanged(): Event<nb.IKernelChangedArgs> {
@@ -51,6 +51,9 @@ export class NotebookModelStub implements INotebookModel {
         throw new Error('method not implemented.');
     }
     get contexts(): IDefaultConnection {
+        throw new Error('method not implemented.');
+    }
+    get providerId(): string {
         throw new Error('method not implemented.');
     }
     changeKernel(displayName: string): void {

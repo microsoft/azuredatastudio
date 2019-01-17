@@ -55,7 +55,7 @@ export class ErrorMessageDialog extends Modal {
 
 	protected renderBody(container: HTMLElement) {
 		new Builder(container).div({ 'class': 'error-dialog' }, (bodyBuilder) => {
-			this._body = bodyBuilder.getHTMLElement();;
+			this._body = bodyBuilder.getHTMLElement();
 		});
 	}
 

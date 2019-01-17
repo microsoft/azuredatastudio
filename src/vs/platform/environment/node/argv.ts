@@ -38,6 +38,7 @@ const options: minimist.Opts = {
 	    'database',
 	    'server',
 		'user',
+		'command'
 		// {{SQL CARBON EDIT}}
 	],
 	boolean: [
@@ -99,6 +100,7 @@ const options: minimist.Opts = {
 		integrated: 'E',
 		server: 'S',
 		user: 'U',
+		command : 'c',
 		// {{SQL CARBON EDIT}}
 	}
 };

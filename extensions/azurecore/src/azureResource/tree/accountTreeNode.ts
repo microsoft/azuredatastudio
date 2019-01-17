@@ -6,44 +6,59 @@
 'use strict';
 
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { Account, NodeInfo } from 'sqlops';
-import { TreeNode } from '../../treeNodes';
+import { Account, NodeInfo, AzureResource } from 'sqlops';
+import { TokenCredentials } from 'ms-rest';
+import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
+import { azureResource } from '../azure-resource';
+import { TreeNode } from '../treeNode';
+import { AzureResourceCredentialError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { AzureResourceItemType } from '../constants';
+import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { AzureResourceSubscriptionTreeNode } from './subscriptionTreeNode';
-import { AzureResourceMessageTreeNode } from './messageTreeNode';
+import { AzureResourceMessageTreeNode } from '../messageTreeNode';
 import { AzureResourceErrorMessageUtil } from '../utils';
-import { AzureResourceSubscription } from '../models';
-import { IAzureResourceTreeChangeHandler } from './treeProvider';
+import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
+import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureResourceTenantService } from '../../azureResource/interfaces';
 
 export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNodeBase {
 	public constructor(
-		account: Account,
+		public readonly account: Account,
+		appContext: AppContext,
 		treeChangeHandler: IAzureResourceTreeChangeHandler
 	) {
-		super(account, treeChangeHandler, undefined);
+		super(appContext, treeChangeHandler, undefined);
+
+		this._subscriptionService = this.appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
+		this._subscriptionFilterService = this.appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
+		this._tenantService = this.appContext.getService<IAzureResourceTenantService>(AzureResourceServiceNames.tenantService);
 
 		this._id = `account_${this.account.key.accountId}`;
+		this.setCacheKey(`${this._id}.subscriptions`);
 		this._label = this.generateLabel();
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
 		try {
-			let subscriptions: AzureResourceSubscription[] = [];
+			let subscriptions: azureResource.AzureResourceSubscription[] = [];
 
 			if (this._isClearingCache) {
-				const credentials = await this.getCredentials();
-				subscriptions = (await this.servicePool.subscriptionService.getSubscriptions(this.account, credentials)) || <AzureResourceSubscription[]>[];
+				try {
+				    const tokens = await this.appContext.apiWrapper.getSecurityToken(this.account, AzureResource.ResourceManagement);
 
-				let cache = this.getCache<AzureResourceSubscriptionsCache>();
-				if (!cache) {
-					cache = { subscriptions: { } };
+					for (const tenant of this.account.properties.tenants) {
+						const token = tokens[tenant.id].token;
+						const tokenType = tokens[tenant.id].tokenType;
+
+						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token, tokenType)) || <azureResource.AzureResourceSubscription[]>[]));
+					}
+				} catch (error) {
+					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', 'Failed to get credential for account {0}. Please refresh the account.', this.account.key.accountId), error);
 				}
-				cache.subscriptions[this.account.key.accountId] = subscriptions;
-				this.updateCache<AzureResourceSubscriptionsCache>(cache);
+
+				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
 
 				this._isClearingCache = false;
 			} else {
@@ -52,8 +67,8 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 
 			this._totalSubscriptionCount = subscriptions.length;
 
-			let selectedSubscriptions = await this.servicePool.subscriptionFilterService.getSelectedSubscriptions(this.account);
-			let selectedSubscriptionIds = (selectedSubscriptions || <AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
+			const selectedSubscriptions = await this._subscriptionFilterService.getSelectedSubscriptions(this.account);
+			const selectedSubscriptionIds = (selectedSubscriptions || <azureResource.AzureResourceSubscription[]>[]).map((subscription) => subscription.id);
 			if (selectedSubscriptionIds.length > 0) {
 				subscriptions = subscriptions.filter((subscription) => selectedSubscriptionIds.indexOf(subscription.id) !== -1);
 				this._selectedSubscriptionCount = selectedSubscriptionIds.length;
@@ -65,31 +80,36 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			this.refreshLabel();
 
 			if (subscriptions.length === 0) {
-				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.NoSubscriptions, this)];
+				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
-				return subscriptions.map((subscription) => new AzureResourceSubscriptionTreeNode(subscription, this.account, this.treeChangeHandler, this));
+				return await Promise.all(subscriptions.map(async (subscription) => {
+					const tenantId = await this._tenantService.getTenantId(subscription);
+
+					return new AzureResourceSubscriptionTreeNode(this.account, subscription, tenantId, this.appContext, this.treeChangeHandler, this);
+				}));
 			}
 		} catch (error) {
-			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
+			if (error instanceof AzureResourceCredentialError) {
+				this.appContext.apiWrapper.showErrorMessage(error.message);
+
+				this.appContext.apiWrapper.executeCommand('azure.resource.signin');
+			} else {
+				return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
+			}
 		}
 	}
 
-	public async getCachedSubscriptions(): Promise<AzureResourceSubscription[]> {
-		const subscriptions: AzureResourceSubscription[] = [];
-		const cache = this.getCache<AzureResourceSubscriptionsCache>();
-		if (cache) {
-			subscriptions.push(...cache.subscriptions[this.account.key.accountId]);
-		}
-		return subscriptions;
+	public async getCachedSubscriptions(): Promise<azureResource.AzureResourceSubscription[]> {
+		return this.getCache<azureResource.AzureResourceSubscription[]>();
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		let item = new TreeItem(this._label, TreeItemCollapsibleState.Collapsed);
+		const item = new TreeItem(this._label, TreeItemCollapsibleState.Collapsed);
 		item.id = this._id;
 		item.contextValue = AzureResourceItemType.account;
 		item.iconPath = {
-			dark: this.servicePool.contextService.getAbsolutePath('resources/dark/account_inverse.svg'),
-			light: this.servicePool.contextService.getAbsolutePath('resources/light/account.svg')
+			dark: this.appContext.extensionContext.asAbsolutePath('resources/dark/account_inverse.svg'),
+			light: this.appContext.extensionContext.asAbsolutePath('resources/light/account.svg')
 		};
 		return item;
 	}
@@ -128,10 +148,6 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		}
 	}
 
-	protected get cacheKey(): string {
-		return 'azureResource.cache.subscriptions';
-	}
-
 	private generateLabel(): string {
 		let label = `${this.account.displayInfo.displayName} (${this.account.key.accountId})`;
 
@@ -142,14 +158,14 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 		return label;
 	}
 
+	private _subscriptionService: IAzureResourceSubscriptionService = undefined;
+	private _subscriptionFilterService: IAzureResourceSubscriptionFilterService = undefined;
+	private _tenantService: IAzureResourceTenantService = undefined;
+
 	private _id: string = undefined;
 	private _label: string = undefined;
 	private _totalSubscriptionCount = 0;
 	private _selectedSubscriptionCount = 0;
 
-	private static readonly NoSubscriptions = localize('azureResource.tree.accountTreeNode.noSubscriptions', 'No Subscriptions found.');
-}
-
-interface AzureResourceSubscriptionsCache {
-	subscriptions: { [accountId: string]: AzureResourceSubscription[] };
+	private static readonly noSubscriptionsLabel = localize('azure.resource.tree.accountTreeNode.noSubscriptionsLabel', 'No Subscriptions found.');
 }

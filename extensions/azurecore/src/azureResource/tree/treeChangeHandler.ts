@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { TreeNode } from '../../treeNodes';
+import { TreeNode } from '../treeNode';
 
 export interface IAzureResourceTreeChangeHandler {
 	notifyNodeChanged(node: TreeNode): void;

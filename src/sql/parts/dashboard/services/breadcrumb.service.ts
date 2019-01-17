@@ -17,7 +17,7 @@ import * as nls from 'vs/nls';
 export enum BreadcrumbClass {
 	DatabasePage,
 	ServerPage
-};
+}
 
 @Injectable()
 export class BreadcrumbService implements IBreadcrumbService {

@@ -1,6 +1,6 @@
 {
   "name": "azuredatastudio",
-  "version": "1.3.8",
+  "version": "1.4.1",
   "distro": "8c3e97e3425cc9814496472ab73e076de2ba99ee",
   "author": {
     "name": "Microsoft Corporation"
@@ -23,7 +23,8 @@
     "smoketest": "cd test/smoke && node test/index.js",
     "monaco-compile-check": "tsc -p src/tsconfig.monaco.json --noEmit",
     "download-builtin-extensions": "node build/lib/builtInExtensions.js",
-    "check-monaco-editor-compilation": "tsc -p src/tsconfig.monaco.json --noEmit"
+    "check-monaco-editor-compilation": "tsc -p src/tsconfig.monaco.json --noEmit",
+    "tslint": "node node_modules/tslint/bin/tslint -c tslint-gci.json -p src/tsconfig.json"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
@@ -154,6 +155,7 @@
     "source-map": "^0.4.4",
     "temp-write": "^3.4.0",
     "tslint": "^5.9.1",
+    "tslint-microsoft-contrib": "^6.0.0",
     "typemoq": "^0.3.2",
     "typescript": "2.9.2",
     "typescript-formatter": "7.1.0",

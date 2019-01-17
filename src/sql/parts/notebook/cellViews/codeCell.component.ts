@@ -38,9 +38,9 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		if (this.cellModel) {
-			this.cellModel.onOutputsChanged(() => {
+			this._register(this.cellModel.onOutputsChanged(() => {
 				this._changeRef.detectChanges();
-			});
+			}));
 		}
 	}
 

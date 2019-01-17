@@ -5,9 +5,7 @@
 'use strict';
 
 import { IWorkspaceConfigurationService  } from 'vs/workbench/services/configuration/common/configuration';
-import { IConfigurationData, IConfigurationOverrides, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
-import { IConfigurationValue } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import { IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationData, IConfigurationOverrides, ConfigurationTarget, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Event } from 'vs/base/common/event';
@@ -36,11 +34,11 @@ export class WorkspaceConfigurationTestService implements IWorkspaceConfiguratio
 		return TPromise.as(null);
 	}
 
-	updateValue(key: string, value: any): TPromise<void>
-	updateValue(key: string, value: any, overrides: IConfigurationOverrides): TPromise<void>
-	updateValue(key: string, value: any, target: ConfigurationTarget): TPromise<void>
-	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget): TPromise<void>
-	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget, donotNotifyError: boolean): TPromise<void>
+	updateValue(key: string, value: any): TPromise<void>;
+	updateValue(key: string, value: any, overrides: IConfigurationOverrides): TPromise<void>;
+	updateValue(key: string, value: any, target: ConfigurationTarget): TPromise<void>;
+	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget): TPromise<void>;
+	updateValue(key: string, value: any, overrides: IConfigurationOverrides, target: ConfigurationTarget, donotNotifyError: boolean): TPromise<void>;
 	updateValue(key: string, value: any, arg3?: any, arg4?: any, donotNotifyError?: any): TPromise<void> {
 		return TPromise.as(null);
 	}

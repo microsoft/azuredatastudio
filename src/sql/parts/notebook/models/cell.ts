@@ -226,6 +226,9 @@ export class CellModel implements ICellModel {
 			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
 		}
+		if (!this._future.inProgress) {
+			this._future.dispose();
+		}
 	}
 
 	private rewriteOutputUrls(output: nb.ICellOutput): nb.ICellOutput {
@@ -327,6 +330,7 @@ export class CellModel implements ICellModel {
 		CellModel.LanguageMapping['pyspark3'] = 'python';
 		CellModel.LanguageMapping['python'] = 'python';
 		CellModel.LanguageMapping['scala'] = 'scala';
+		CellModel.LanguageMapping['sql'] = 'sql';
 	}
 
 	private get languageInfo(): nb.ILanguageInfo {

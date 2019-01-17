@@ -1,0 +1,3049 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/parts/taskHistory/common/taskHistory.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="inProgressTasksChangesBadge">
+      <source xml:lang="en">{0} in progress tasks</source>
+    </trans-unit>
+    <trans-unit id="showTaskHistory">
+      <source xml:lang="en">Show Task History</source>
+      <target state="translated">작업 이력 보기</target>
+      <note>Show Task History</note>
+    </trans-unit>
+    <trans-unit id="taskHistory.view">
+      <source xml:lang="en">View</source>
+      <target state="translated">보기</target>
+    </trans-unit>
+    <trans-unit id="taskHistory">
+      <source xml:lang="en">Task History</source>
+      <target state="translated">작업 기록</target>
+    </trans-unit>
+    <trans-unit id="datasource.task">
+      <source xml:lang="en">Operation Task Status</source>
+      <target state="translated">운영 작업 상태</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/connectionViewlet" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="Search server names">
+      <source xml:lang="en">Search server names</source>
+      <target state="translated">서버 이름 검색</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/common/registeredServer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="registeredServers.view">
+      <source xml:lang="en">View</source>
+      <target state="translated">보기</target>
+    </trans-unit>
+    <trans-unit id="databaseConnections">
+      <source xml:lang="en">Database Connections</source>
+    </trans-unit>
+    <trans-unit id="datasource.connections">
+      <source xml:lang="en">data source connections</source>
+      <target state="translated">데이터 원본 연결</target>
+    </trans-unit>
+    <trans-unit id="datasource.connectionGroups">
+      <source xml:lang="en">data source groups</source>
+      <target state="translated">데이터 소스 그룹</target>
+    </trans-unit>
+    <trans-unit id="startupConfig">
+      <source xml:lang="en">Startup Configuration</source>
+      <target state="translated">시작 구성</target>
+    </trans-unit>
+    <trans-unit id="startup.alwaysShowServersView">
+      <source xml:lang="en">True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/query.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="sql.messagesDefaultOpen">
+      <source xml:lang="en">True for the messages pane to be open by default; false for closed</source>
+      <target state="translated">메시지 창이 기본적으로 펼쳐지게 하려면 true로 설정; 닫힌 상태는 false로 설정</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.includeHeaders">
+      <source xml:lang="en">[Optional] When true, column headers are included when saving results as CSV</source>
+      <target state="translated">[옵션] true로 설정하면, 결과를 CSV로 저장할 때 열의 머리글이 포함됨</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.delimiter">
+      <source xml:lang="en">[Optional] The custom delimiter to use between values when saving as CSV</source>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.lineSeperator">
+      <source xml:lang="en">[Optional] Character(s) used for seperating rows when saving results as CSV</source>
+      <target state="translated">[옵션] 결과를 CSV로 저장할 때 행 분리에 이용할 문자</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.textIdentifier">
+      <source xml:lang="en">[Optional] Character used for enclosing text fields when saving results as CSV</source>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.encoding">
+      <source xml:lang="en">[Optional] File encoding used when saving results as CSV</source>
+      <target state="translated">[옵션] 결과를 CSV로 저장할 때 사용할 파일 인코딩</target>
+    </trans-unit>
+    <trans-unit id="sql.copyIncludeHeaders">
+      <source xml:lang="en">[Optional] Configuration options for copying results from the Results View</source>
+      <target state="translated">[옵션] 결과 뷰에서 결과를 복사에 대한 구성 옵션</target>
+    </trans-unit>
+    <trans-unit id="sql.copyRemoveNewLine">
+      <source xml:lang="en">[Optional] Configuration options for copying multi-line results from the Results View</source>
+      <target state="translated">[옵션] 결과 뷰에서 여러 줄을 포함한 결과를 복사할지에 대한 구성 옵션</target>
+    </trans-unit>
+    <trans-unit id="sql.showBatchTime">
+      <source xml:lang="en">[Optional] Should execution time be shown for individual batches</source>
+      <target state="translated">[옵션] 개별 일괄 처리에 대한 실행시간 표시 여부</target>
+    </trans-unit>
+    <trans-unit id="defaultChartType">
+      <source xml:lang="en">[Optional] the default chart type to use when opening Chart Viewer from a Query Results</source>
+    </trans-unit>
+    <trans-unit id="tabColorMode.off">
+      <source xml:lang="en">Tab coloring will be disabled</source>
+      <target state="translated">탭 색칠 비활성화</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.border">
+      <source xml:lang="en">The top border of each editor tab will be colored to match the relevant server group</source>
+    </trans-unit>
+    <trans-unit id="tabColorMode.fill">
+      <source xml:lang="en">Each editor tab's background color will match the relevant server group</source>
+    </trans-unit>
+    <trans-unit id="tabColorMode">
+      <source xml:lang="en">Controls how to color tabs based on the server group of their active connection</source>
+    </trans-unit>
+    <trans-unit id="showConnectionInfoInTitle">
+      <source xml:lang="en">Controls whether to show the connection info for a tab in the title.</source>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableIntelliSense">
+      <source xml:lang="en">Should IntelliSense be enabled</source>
+      <target state="translated">IntelliSense의 사용 여부</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableErrorChecking">
+      <source xml:lang="en">Should IntelliSense error checking be enabled</source>
+      <target state="translated">IntelliSense 오류 검사의 사용 여부</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
+      <target state="translated">IntelliSense 제안의 사용 여부</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableQuickInfo">
+      <source xml:lang="en">Should IntelliSense quick info be enabled</source>
+      <target state="translated">IntelliSense 요약정보의 사용 여부</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.lowerCaseSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be lowercase</source>
+      <target state="translated">IntelliSense 제안을 소문자로 표시 여부</target>
+    </trans-unit>
+    <trans-unit id="queryShortcutDescription">
+      <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="serverGroup.colors">
+      <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
+    </trans-unit>
+    <trans-unit id="serverGroup.autoExpand">
+      <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connection.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="sql.maxRecentConnectionsDescription">
+      <source xml:lang="en">The maximum number of recently used connections to store in the connection list.</source>
+      <target state="translated">최근에 사용한 연결을 연결 목록에 저장할 최대 수입니다.</target>
+    </trans-unit>
+    <trans-unit id="sql.defaultEngineDescription">
+      <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL</source>
+    </trans-unit>
+    <trans-unit id="connection.parseClipboardForConnectionStringDescription">
+      <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/editor/resultsGridContribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="resultsGridConfigurationTitle">
+      <source xml:lang="en">Results Grid</source>
+    </trans-unit>
+    <trans-unit id="fontFamily">
+      <source xml:lang="en">Controls the font family.</source>
+    </trans-unit>
+    <trans-unit id="fontWeight">
+      <source xml:lang="en">Controls the font weight.</source>
+      <target state="translated">글꼴 두께를 조정합니다.</target>
+    </trans-unit>
+    <trans-unit id="fontSize">
+      <source xml:lang="en">Controls the font size in pixels.</source>
+      <target state="translated">픽셀 단위로 글꼴 크기를 제어합니다.</target>
+    </trans-unit>
+    <trans-unit id="letterSpacing">
+      <source xml:lang="en">Controls the letter spacing in pixels.</source>
+    </trans-unit>
+    <trans-unit id="rowHeight">
+      <source xml:lang="en">Controls the row height in pixels</source>
+    </trans-unit>
+    <trans-unit id="cellPadding">
+      <source xml:lang="en">Controls the cell padding in pixels</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profilerActions.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="profilerCategory">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">프로파일러</target>
+    </trans-unit>
+    <trans-unit id="carbon.actions.newProfiler">
+      <source xml:lang="en">Open up a new profiler window</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountManagement.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="carbon.extension.contributes.account.id">
+      <source xml:lang="en">Identifier of the account type</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon">
+      <source xml:lang="en">(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon.light">
+      <source xml:lang="en">Icon path when a light theme is used</source>
+      <target state="translated">밝은 테마를 사용하는 경우의 아이콘 경로</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon.dark">
+      <source xml:lang="en">Icon path when a dark theme is used</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account">
+      <source xml:lang="en">Contributes icons to account provider.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profiler.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="profiler.settings.viewTemplates">
+      <source xml:lang="en">Specifies view templates</source>
+    </trans-unit>
+    <trans-unit id="profiler.settings.sessionTemplates">
+      <source xml:lang="en">Specifies session templates</source>
+      <target state="translated">세션 템플릿 지정</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="yAxisMin">
+      <source xml:lang="en">Minimum value of the y axis</source>
+    </trans-unit>
+    <trans-unit id="yAxisMax">
+      <source xml:lang="en">Maximum value of the y axis</source>
+    </trans-unit>
+    <trans-unit id="barchart.yAxisLabel">
+      <source xml:lang="en">Label for the y axis</source>
+    </trans-unit>
+    <trans-unit id="xAxisMin">
+      <source xml:lang="en">Minimum value of the x axis</source>
+      <target state="translated">X 축의 최소값</target>
+    </trans-unit>
+    <trans-unit id="xAxisMax">
+      <source xml:lang="en">Maximum value of the x axis</source>
+    </trans-unit>
+    <trans-unit id="barchart.xAxisLabel">
+      <source xml:lang="en">Label for the x axis</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dataTypeDescription">
+      <source xml:lang="en">Indicates data property of a data set for a chart.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="imageInsightDescription">
+      <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
+    </trans-unit>
+    <trans-unit id="imageFormatDescription">
+      <source xml:lang="en">What format is expected - is this a JPEG, PNG or other format?</source>
+    </trans-unit>
+    <trans-unit id="encodingDescription">
+      <source xml:lang="en">Is this encoded as hex, base64 or some other format?</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="tableInsightDescription">
+      <source xml:lang="en">Displays the results in a simple table</source>
+      <target state="translated">테이블에 결과를 표시합니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="countInsightDescription">
+      <source xml:lang="en">For each column in a resultset, displays the value in row 0 as a count followed by the column name. Supports "1 Healthy", "3 Unhealthy" for example, where "Healthy" is the column name and 1 is the value in row 1 cell 1</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.webview">
+      <source xml:lang="en">The webview that will be displayed in this tab.</source>
+      <target state="translated">이 탭에 표시할 webview.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.widgets">
+      <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
+    </trans-unit>
+    <trans-unit id="widgetContainer.invalidInputs">
+      <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.gridtab.items">
+      <source xml:lang="en">The list of widgets or webviews that will be displayed in this tab.</source>
+    </trans-unit>
+    <trans-unit id="gridContainer.invalidInputs">
+      <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.left-nav-bar.id">
+      <source xml:lang="en">Unique identifier for this nav section. Will be passed to the extension for any requests.</source>
+      <target state="translated">이 탐색 영역에 대한 고유 식별자 입니다. 모든 확장 요청에 대해  전달됩니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon">
+      <source xml:lang="en">(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration</source>
+      <target state="translated">(선택 사항) UI에서 탐색 섹션을 나타내는 아이콘입니다. 파일 경로를 지정하거나 테마 구성을 이용할 수 있습니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon.light">
+      <source xml:lang="en">Icon path when a light theme is used</source>
+      <target state="translated">밝은 테마를 사용하는 경우의 아이콘 경로</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon.dark">
+      <source xml:lang="en">Icon path when a dark theme is used</source>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.title">
+      <source xml:lang="en">Title of the nav section to show the user.</source>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.container">
+      <source xml:lang="en">The container that will be displayed in this nav section.</source>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar">
+      <source xml:lang="en">The list of dashboard containers that will be displayed in this navigation section.</source>
+    </trans-unit>
+    <trans-unit id="opticon">
+      <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
+    </trans-unit>
+    <trans-unit id="navSection.missingTitle_error">
+      <source xml:lang="en">No title in nav section specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="navSection.missingContainer_error">
+      <source xml:lang="en">No container in nav section specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="navSection.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+    </trans-unit>
+    <trans-unit id="navSection.invalidContainer_error">
+      <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.dashboard.container.id">
+      <source xml:lang="en">Unique identifier for this container.</source>
+      <target state="translated">이 컨테이너의 고유 식별자입니다.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.container.container">
+      <source xml:lang="en">The container that will be displayed in the tab.</source>
+      <target state="translated">컨테이너는 탭에 표시 됩니다.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.containers">
+      <source xml:lang="en">Contributes a single or multiple dashboard containers for users to add to their dashboard.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noIdError">
+      <source xml:lang="en">No id in dashboard container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noContainerError">
+      <source xml:lang="en">No container in dashboard container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.unKnownContainerType">
+      <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.modelview">
+      <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.controlhost">
+      <source xml:lang="en">The controlhost that will be displayed in this tab.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.id">
+      <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+      <target state="translated">이 탭에 대 한 고유 식별자입니다. 확장에 모든 요청에 대해 전달 됩니다.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.title">
+      <source xml:lang="en">Title of the tab to show the user.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.description">
+      <source xml:lang="en">Description of this tab that will be shown to the user.</source>
+      <target state="translated">탭의 기능 설명입니다. 이 탭은 사용자에게 표시됩니다.</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tab.when">
+      <source xml:lang="en">Condition which must be true to show this item</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tab.provider">
+      <source xml:lang="en">Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.container">
+      <source xml:lang="en">The container that will be displayed in this tab.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.alwaysShow">
+      <source xml:lang="en">Whether or not this tab should always be shown or only when the user adds it.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.isHomeTab">
+      <source xml:lang="en">Whether or not this tab should be used as the Home tab for a connection type.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tabs">
+      <source xml:lang="en">Contributes a single or multiple tabs for users to add to their dashboard.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noTitleError">
+      <source xml:lang="en">No title specified for extension.</source>
+      <target state="translated">확장을 위해 지정된 제목이 없습니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noDescriptionWarning">
+      <source xml:lang="en">No description specified to show.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noContainerError">
+      <source xml:lang="en">No container specified for extension.</source>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/errorMessageDialog/errorMessageService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="error">
+      <source xml:lang="en">Error</source>
+      <target state="translated">오류</target>
+    </trans-unit>
+    <trans-unit id="warning">
+      <source xml:lang="en">Warning</source>
+      <target state="translated">경고</target>
+    </trans-unit>
+    <trans-unit id="info">
+      <source xml:lang="en">Info</source>
+      <target state="translated">정보</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionDialogService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="connectionError">
+      <source xml:lang="en">Connection error</source>
+      <target state="translated">연결 오류</target>
+    </trans-unit>
+    <trans-unit id="kerberosErrorStart">
+      <source xml:lang="en">Connection failed due to Kerberos error.</source>
+      <target state="translated">Kerberos 오류로 인해 연결이 실패했습니다.</target>
+    </trans-unit>
+    <trans-unit id="kerberosHelpLink">
+      <source xml:lang="en">Help configuring Kerberos is available at {0}</source>
+    </trans-unit>
+    <trans-unit id="kerberosKinit">
+      <source xml:lang="en">If you have previously connected you may need to re-run kinit.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionManagementService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="connectionNotAcceptedError">
+      <source xml:lang="en">Connection Not Accepted</source>
+      <target state="translated">연결이 허용되지 않습니다</target>
+    </trans-unit>
+    <trans-unit id="connectionService.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="connectionService.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+    <trans-unit id="cancelConnectionConfirmation">
+      <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/common/taskService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="InProgressWarning">
+      <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>
+      <target state="translated">1개 이상의 작업이 진행 중입니다. 그래도 작업을 종료하시겠습니까?</target>
+    </trans-unit>
+    <trans-unit id="taskService.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="taskService.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/common/objectExplorerService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="OeSessionFailedError">
+      <source xml:lang="en">Failed to create Object Explorer session</source>
+      <target state="translated">개체 탐색기 세션을 만들지 못했습니다.</target>
+    </trans-unit>
+    <trans-unit id="treeNodeNoLongerExists">
+      <source xml:lang="en">The given tree node no longer exists</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryModelService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="commitEditFailed">
+      <source xml:lang="en">Commit row failed: </source>
+    </trans-unit>
+    <trans-unit id="runQueryStringBatchStartMessage">
+      <source xml:lang="en">Started executing query "{0}"</source>
+      <target state="translated">쿼리 "{0}" 실행 시작</target>
+    </trans-unit>
+    <trans-unit id="updateCellFailed">
+      <source xml:lang="en">Update cell failed: </source>
+      <target state="translated">셀 업데이트 실패:</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/services/queryEditorService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="queryEditorServiceChangeUnsupportedError">
+      <source xml:lang="en">Change Language Mode is not supported for unsaved queries</source>
+      <target state="translated">저장되지 않은 쿼리에는 언어 모드 변경이 지원되지 않습니다.</target>
+    </trans-unit>
+    <trans-unit id="queryEditorServiceChangeError">
+      <source xml:lang="en">Please save or discard changes before switching to/from the SQL Language Mode</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/admin/common/adminService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="adminService.providerIdNotValidError">
+      <source xml:lang="en">Connection is required in order to interact with adminservice</source>
+    </trans-unit>
+    <trans-unit id="adminService.noHandlerRegistered">
+      <source xml:lang="en">No Handler Registered</source>
+      <target state="translated">등록된 처리기 없음</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobManagementService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="providerIdNotValidError">
+      <source xml:lang="en">Connection is required in order to interact with JobManagementService</source>
+    </trans-unit>
+    <trans-unit id="noHandlerRegistered">
+      <source xml:lang="en">No Handler Registered</source>
+      <target state="translated">등록된 처리기 없음</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/common/fileBrowserService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="fileBrowserErrorMessage">
+      <source xml:lang="en">An error occured while loading the file browser.</source>
+      <target state="translated">파일 브라우저를 로드 하는 동안 오류가 발생 했습니다.</target>
+    </trans-unit>
+    <trans-unit id="fileBrowserErrorDialogTitle">
+      <source xml:lang="en">File browser error</source>
+      <target state="translated">파일 브라우저 오류</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserDialogController" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.selectFile">
+      <source xml:lang="en">Select a file</source>
+      <target state="translated">파일 선택</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/services/accountManagement/accountManagementService" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="accountManagementNoProvider">
+      <source xml:lang="en">Account provider does not exist</source>
+      <target state="translated">계정 공급자가 존재하지 않습니다</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskHistoryView" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="noTaskMessage">
+      <source xml:lang="en">No task history to display. Try backup or restore task to view its execution status.</source>
+    </trans-unit>
+    <trans-unit id="taskHistory.regTreeAriaLabel">
+      <source xml:lang="en">Task history</source>
+      <target state="translated">작업 기록</target>
+      <note>TaskHistory</note>
+    </trans-unit>
+    <trans-unit id="taskError">
+      <source xml:lang="en">Task error</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/serverTreeView" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="serverTree.addConnection">
+      <source xml:lang="en">Add Connection</source>
+      <target state="translated">연결 추가</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/connectionTreeAction" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="connectionTree.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">새로 고침</target>
+    </trans-unit>
+    <trans-unit id="DisconnectAction">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">연결 끊기</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.addConnection">
+      <source xml:lang="en">New Connection</source>
+      <target state="translated">새 연결</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.addServerGroup">
+      <source xml:lang="en">New Server Group</source>
+      <target state="translated">새 서버 그룹</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.editServerGroup">
+      <source xml:lang="en">Edit Server Group</source>
+      <target state="translated">서버 그룹 편집</target>
+    </trans-unit>
+    <trans-unit id="activeConnections">
+      <source xml:lang="en">Show Active Connections</source>
+      <target state="translated">활성 연결 표시</target>
+    </trans-unit>
+    <trans-unit id="clearAll">
+      <source xml:lang="en">Clear All</source>
+      <target state="translated">모두 지우기</target>
+    </trans-unit>
+    <trans-unit id="recentConnections">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">최근 연결</target>
+    </trans-unit>
+    <trans-unit id="registeredServers.newQuery">
+      <source xml:lang="en">New Query</source>
+      <target state="translated">새 쿼리</target>
+    </trans-unit>
+    <trans-unit id="deleteConnection">
+      <source xml:lang="en">Delete Connection</source>
+      <target state="translated">연결 삭제</target>
+    </trans-unit>
+    <trans-unit id="deleteConnectionGroup">
+      <source xml:lang="en">Delete Group</source>
+      <target state="translated">그룹 삭제</target>
+    </trans-unit>
+    <trans-unit id="clearSearch">
+      <source xml:lang="en">Clear Search</source>
+      <target state="translated">검색 지우기</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/queryResultsInput" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="extensionsInputName">
+      <source xml:lang="en">Extension</source>
+      <target state="translated">확장</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/queryInput" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="disconnected">
+      <source xml:lang="en">disconnected</source>
+      <target state="translated">연결 끊김</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/common/editDataInput" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="connectionFailure">
+      <source xml:lang="en">Edit Data Session Failed To Connect</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/editor/editDataEditor" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="maxRowTaskbar">
+      <source xml:lang="en">Max Rows:</source>
+      <target state="translated">최대 행:</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/keyboardQueryActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="focusOnCurrentQueryKeyboardAction">
+      <source xml:lang="en">Focus on Current Query</source>
+    </trans-unit>
+    <trans-unit id="runQueryKeyboardAction">
+      <source xml:lang="en">Run Query</source>
+      <target state="translated">쿼리 실행</target>
+    </trans-unit>
+    <trans-unit id="runCurrentQueryKeyboardAction">
+      <source xml:lang="en">Run Current Query</source>
+      <target state="translated">현재 쿼리 실행</target>
+    </trans-unit>
+    <trans-unit id="runCurrentQueryWithActualPlanKeyboardAction">
+      <source xml:lang="en">Run Current Query with Actual Plan</source>
+      <target state="translated">실제 실행 계획과 함께 현재 쿼리 실행</target>
+    </trans-unit>
+    <trans-unit id="cancelQueryKeyboardAction">
+      <source xml:lang="en">Cancel Query</source>
+      <target state="translated">쿼리 취소</target>
+    </trans-unit>
+    <trans-unit id="refreshIntellisenseKeyboardAction">
+      <source xml:lang="en">Refresh IntelliSense Cache</source>
+      <target state="translated">IntelliSense 캐시를 새로 고침</target>
+    </trans-unit>
+    <trans-unit id="toggleQueryResultsKeyboardAction">
+      <source xml:lang="en">Toggle Query Results</source>
+    </trans-unit>
+    <trans-unit id="queryShortcutNoEditor">
+      <source xml:lang="en">Editor parameter is required for a shortcut to be executed</source>
+      <target state="translated">단축키를 실행하려면 편집기 매개변수가 필요합니다</target>
+    </trans-unit>
+    <trans-unit id="parseSyntaxLabel">
+      <source xml:lang="en">Parse Query</source>
+    </trans-unit>
+    <trans-unit id="queryActions.parseSyntaxSuccess">
+      <source xml:lang="en">Commands completed successfully</source>
+    </trans-unit>
+    <trans-unit id="queryActions.parseSyntaxFailure">
+      <source xml:lang="en">Command failed: </source>
+    </trans-unit>
+    <trans-unit id="queryActions.notConnected">
+      <source xml:lang="en">Please connect to a server</source>
+      <target state="translated">서버에 연결하세요.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/gridActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="saveAsCsv">
+      <source xml:lang="en">Save As CSV</source>
+      <target state="translated">CSV로 저장</target>
+    </trans-unit>
+    <trans-unit id="saveAsJson">
+      <source xml:lang="en">Save As JSON</source>
+      <target state="translated">JSON으로 저장</target>
+    </trans-unit>
+    <trans-unit id="saveAsExcel">
+      <source xml:lang="en">Save As Excel</source>
+      <target state="translated">Excel로 저장</target>
+    </trans-unit>
+    <trans-unit id="copySelection">
+      <source xml:lang="en">Copy</source>
+      <target state="translated">복사</target>
+    </trans-unit>
+    <trans-unit id="copyWithHeaders">
+      <source xml:lang="en">Copy With Headers</source>
+      <target state="translated">복사(머리글 포함)</target>
+    </trans-unit>
+    <trans-unit id="selectAll">
+      <source xml:lang="en">Select All</source>
+      <target state="translated">모두 선택</target>
+    </trans-unit>
+    <trans-unit id="copyMessages">
+      <source xml:lang="en">Copy</source>
+      <target state="translated">복사</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="ClearRecentlyUsedLabel">
+      <source xml:lang="en">Clear List</source>
+    </trans-unit>
+    <trans-unit id="ClearedRecentConnections">
+      <source xml:lang="en">Recent connections list cleared</source>
+      <target state="translated">최근 연결 목록을 삭제했습니다.</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+    <trans-unit id="clearRecentConnectionMessage">
+      <source xml:lang="en">Are you sure you want to delete all the connections from the list?</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+    <trans-unit id="delete">
+      <source xml:lang="en">Delete</source>
+      <target state="translated">삭제</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.GetCurrentConnectionString">
+      <source xml:lang="en">Get Current Connection String</source>
+    </trans-unit>
+    <trans-unit id="connectionAction.connectionString">
+      <source xml:lang="en">Connection string not available</source>
+      <target state="translated">연결 문자열을 사용할 수 없습니다</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.noConnection">
+      <source xml:lang="en">No active connection available</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerInput" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="confirmStopProfilerSession">
+      <source xml:lang="en">Would you like to stop the running XEvent session?</source>
+    </trans-unit>
+    <trans-unit id="profilerClosingActions.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="profilerClosingActions.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+    <trans-unit id="profilerInput.profiler">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">프로파일러</target>
+    </trans-unit>
+    <trans-unit id="profilerInput.notConnected">
+      <source xml:lang="en">Not connected</source>
+      <target state="translated">연결되지 않음</target>
+    </trans-unit>
+    <trans-unit id="profiler.sessionStopped">
+      <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
+    </trans-unit>
+    <trans-unit id="profiler.sessionCreationError">
+      <source xml:lang="en">Error while starting new session</source>
+    </trans-unit>
+    <trans-unit id="profiler.eventsLost">
+      <source xml:lang="en">The XEvent Profiler session for {0} has lost events.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerEditor" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="text">
+      <source xml:lang="en">Text</source>
+      <target state="translated">텍스트</target>
+    </trans-unit>
+    <trans-unit id="label">
+      <source xml:lang="en">Label</source>
+      <target state="translated">레이블</target>
+    </trans-unit>
+    <trans-unit id="profilerEditor.value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">값</target>
+    </trans-unit>
+    <trans-unit id="details">
+      <source xml:lang="en">Details</source>
+      <target state="translated">세부 정보</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/common/taskUtilities" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="selectOperationName">
+      <source xml:lang="en">Select</source>
+      <target state="translated">선택</target>
+    </trans-unit>
+    <trans-unit id="createOperationName">
+      <source xml:lang="en">Create</source>
+      <target state="translated">만들기</target>
+    </trans-unit>
+    <trans-unit id="insertOperationName">
+      <source xml:lang="en">Insert</source>
+      <target state="translated">삽입</target>
+    </trans-unit>
+    <trans-unit id="updateOperationName">
+      <source xml:lang="en">Update</source>
+      <target state="translated">업데이트</target>
+    </trans-unit>
+    <trans-unit id="deleteOperationName">
+      <source xml:lang="en">Delete</source>
+      <target state="translated">삭제</target>
+    </trans-unit>
+    <trans-unit id="scriptSelectNotFound">
+      <source xml:lang="en">No script was returned when calling select script on object </source>
+      <target state="translated">객체에서 select 스크립트를 호출 할 때 스크립트가 반환되지 않았습니다</target>
+    </trans-unit>
+    <trans-unit id="scriptNotFoundForObject">
+      <source xml:lang="en">No script was returned when scripting as {0} on object {1}</source>
+      <target state="translated">개체 {1}를 {0} (으)로 스크립팅 했지만, 스크립트가 반환되지 않았습니다.</target>
+    </trans-unit>
+    <trans-unit id="scriptingFailed">
+      <source xml:lang="en">Scripting Failed</source>
+    </trans-unit>
+    <trans-unit id="scriptNotFound">
+      <source xml:lang="en">No script was returned when scripting as {0}</source>
+      <target state="translated">{0}의 결과로 반환된 스크립트가 없습니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="manageLinedAccounts">
+      <source xml:lang="en">Manage Linked Accounts</source>
+      <target state="translated">연결 된 계정 관리</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/insightRegistry" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">대시보드에 사용되는 위젯</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="chartInsightDescription">
+      <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
+    </trans-unit>
+    <trans-unit id="colorMapDescription">
+      <source xml:lang="en">Maps "column name" -&gt; color. for example add "column1": red to ensure this column uses a red color </source>
+    </trans-unit>
+    <trans-unit id="legendDescription">
+      <source xml:lang="en">Indicates preferred position and visibility of the chart legend. These are the column names from your query, and map to the label of each chart entry</source>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnDescription">
+      <source xml:lang="en">If dataDirection is horizontal, setting this to true uses the first columns value for the legend.</source>
+    </trans-unit>
+    <trans-unit id="columnsAsLabels">
+      <source xml:lang="en">If dataDirection is vertical, setting this to true will use the columns names for the legend.</source>
+    </trans-unit>
+    <trans-unit id="dataDirectionDescription">
+      <source xml:lang="en">Defines whether the data is read from a column (vertical) or a row (horizontal). For time series this is ignored as direction must be vertical.</source>
+    </trans-unit>
+    <trans-unit id="showTopNData">
+      <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="insightWidgetDescription">
+      <source xml:lang="en">Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more</source>
+    </trans-unit>
+    <trans-unit id="insightIdDescription">
+      <source xml:lang="en">Unique Identifier used for cacheing the results of the insight.</source>
+      <target state="translated">인사이트 결과를 캐싱하기 위한 고유 식별자.</target>
+    </trans-unit>
+    <trans-unit id="insightQueryDescription">
+      <source xml:lang="en">SQL query to run. This should return exactly 1 resultset.</source>
+    </trans-unit>
+    <trans-unit id="insightQueryFileDescription">
+      <source xml:lang="en">[Optional] path to a file that contains a query. Use if "query" is not set</source>
+      <target state="translated">[옵션] 쿼리를 포함 하는 파일입니다. "쿼리" 설정 되지 않은 경우 사용</target>
+    </trans-unit>
+    <trans-unit id="insightAutoRefreshIntervalDescription">
+      <source xml:lang="en">[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh</source>
+    </trans-unit>
+    <trans-unit id="actionTypes">
+      <source xml:lang="en">Which actions to use</source>
+      <target state="translated">사용할 작업</target>
+    </trans-unit>
+    <trans-unit id="actionDatabaseDescription">
+      <source xml:lang="en">Target database for the action; can use the format "${columnName}" to use a data driven column name.</source>
+    </trans-unit>
+    <trans-unit id="actionServerDescription">
+      <source xml:lang="en">Target server for the action; can use the format "${columnName}" to use a data driven column name.</source>
+    </trans-unit>
+    <trans-unit id="actionUserDescription">
+      <source xml:lang="en">Target user for the action; can use the format "${columnName}" to use a data driven column name.</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.insightType.id">
+      <source xml:lang="en">Identifier of the insight</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.insights">
+      <source xml:lang="en">Contributes insights to the dashboard palette.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/update/releaseNotes" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="gettingStarted">
+      <source xml:lang="en">Get Started</source>
+    </trans-unit>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
+      <target state="translated">시작 보기</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboardDatabaseProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
+      <target state="translated">속성 위젯을 활성화 또는 비활성화합니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties">
+      <source xml:lang="en">Property values to show</source>
+      <target state="translated">표시할 속성 값</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+      <target state="translated">속성의 표시 이름</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.value">
+      <source xml:lang="en">Value in the Database Info Object</source>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.ignore">
+      <source xml:lang="en">Specify specific values to ignore</source>
+    </trans-unit>
+    <trans-unit id="recoveryModel">
+      <source xml:lang="en">Recovery Model</source>
+      <target state="translated">복구 모델</target>
+    </trans-unit>
+    <trans-unit id="lastDatabaseBackup">
+      <source xml:lang="en">Last Database Backup</source>
+      <target state="translated">마지막 데이터베이스 백업</target>
+    </trans-unit>
+    <trans-unit id="lastLogBackup">
+      <source xml:lang="en">Last Log Backup</source>
+      <target state="translated">마지막 로그 백업</target>
+    </trans-unit>
+    <trans-unit id="compatibilityLevel">
+      <source xml:lang="en">Compatibility Level</source>
+      <target state="translated">호환성 수준</target>
+    </trans-unit>
+    <trans-unit id="owner">
+      <source xml:lang="en">Owner</source>
+      <target state="translated">소유자</target>
+    </trans-unit>
+    <trans-unit id="dashboardDatabase">
+      <source xml:lang="en">Customizes the database dashboard page</source>
+      <target state="translated">데이터베이스 대시보드 페이지를 수정합니다</target>
+    </trans-unit>
+    <trans-unit id="dashboardDatabaseTabs">
+      <source xml:lang="en">Customizes the database dashboard tabs</source>
+      <target state="translated">데이터베이스 대시 보드 탭을 사용자 정의합니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.widget.when">
+      <source xml:lang="en">Condition which must be true to show this item</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.tabName">
+      <source xml:lang="en">The title of the container</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.rowNumber">
+      <source xml:lang="en">The row of the component in the grid</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.rowSpan">
+      <source xml:lang="en">The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.colNumber">
+      <source xml:lang="en">The column of the component in the grid</source>
+    </trans-unit>
+    <trans-unit id="dashboardpage.colspan">
+      <source xml:lang="en">The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.</source>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboardPage.tab.id">
+      <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+      <target state="translated">이 탭에 대 한 고유 식별자입니다. 확장에 모든 요청에 대해 전달 됩니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboardTabError">
+      <source xml:lang="en">Extension tab is unknown or not installed.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboardServerProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
+      <target state="translated">속성 위젯을 활성화 또는 비활성화합니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties">
+      <source xml:lang="en">Property values to show</source>
+      <target state="translated">표시할 속성 값</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+      <target state="translated">속성의 표시 이름</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.value">
+      <source xml:lang="en">Value in the Server Info Object</source>
+      <target state="translated">서버 정보 개체의 값</target>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+      <target state="translated">버전</target>
+    </trans-unit>
+    <trans-unit id="edition">
+      <source xml:lang="en">Edition</source>
+      <target state="translated">에디션</target>
+    </trans-unit>
+    <trans-unit id="computerName">
+      <source xml:lang="en">Computer Name</source>
+      <target state="translated">컴퓨터 이름</target>
+    </trans-unit>
+    <trans-unit id="osVersion">
+      <source xml:lang="en">OS Version</source>
+      <target state="translated">OS 버전</target>
+    </trans-unit>
+    <trans-unit id="dashboardServer">
+      <source xml:lang="en">Customizes the server dashboard page</source>
+    </trans-unit>
+    <trans-unit id="dashboardServerTabs">
+      <source xml:lang="en">Customizes the Server dashboard tabs</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/widgetRegistry" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.all">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">대시보드에 사용되는 위젯</target>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.database">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">대시보드에 사용되는 위젯</target>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.server">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">대시보드에 사용되는 위젯</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/common/actions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="newQueryAction.newQuery">
+      <source xml:lang="en">New Query</source>
+      <target state="translated">새 쿼리</target>
+    </trans-unit>
+    <trans-unit id="scriptSelect">
+      <source xml:lang="en">Select Top 1000</source>
+      <target state="translated">Select Top 1000</target>
+    </trans-unit>
+    <trans-unit id="scriptExecute">
+      <source xml:lang="en">Script as Execute</source>
+    </trans-unit>
+    <trans-unit id="scriptAlter">
+      <source xml:lang="en">Script as Alter</source>
+    </trans-unit>
+    <trans-unit id="editData">
+      <source xml:lang="en">Edit Data</source>
+      <target state="translated">데이터 편집</target>
+    </trans-unit>
+    <trans-unit id="scriptCreate">
+      <source xml:lang="en">Script as Create</source>
+    </trans-unit>
+    <trans-unit id="scriptDelete">
+      <source xml:lang="en">Script as Drop</source>
+      <target state="translated">Drop 스크립트</target>
+    </trans-unit>
+    <trans-unit id="backupAction.backup">
+      <source xml:lang="en">Backup</source>
+      <target state="translated">백업</target>
+    </trans-unit>
+    <trans-unit id="restoreAction.restore">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">복원</target>
+    </trans-unit>
+    <trans-unit id="manage">
+      <source xml:lang="en">Manage</source>
+      <target state="translated">관리</target>
+    </trans-unit>
+    <trans-unit id="showDetails">
+      <source xml:lang="en">Show Details</source>
+    </trans-unit>
+    <trans-unit id="newDatabase">
+      <source xml:lang="en">New Database</source>
+      <target state="translated">새 데이터베이스</target>
+    </trans-unit>
+    <trans-unit id="configureDashboard">
+      <source xml:lang="en">Configure</source>
+      <target state="translated">구성</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/inputbox.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="invalidValueError">
+      <source xml:lang="en">Invalid value</source>
+      <target state="translated">잘못된 값</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/loadingComponent.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="loadingMessage">
+      <source xml:lang="en">Loading</source>
+      <target state="translated">로드</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/dashboardRegistry" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.properties.property">
+      <source xml:lang="en">Defines a property to show on the dashboard</source>
+      <target state="translated">대시보드에 표시 속성을 정의 합니다.</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.displayName">
+      <source xml:lang="en">What value to use as a label for the property</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.value">
+      <source xml:lang="en">What value in the object to access for the value</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.ignore">
+      <source xml:lang="en">Specify values to be ignored</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.default">
+      <source xml:lang="en">Default value to show if ignored or no value</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor">
+      <source xml:lang="en">A flavor for defining dashboard properties</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.id">
+      <source xml:lang="en">Id of the flavor</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition">
+      <source xml:lang="en">Condition to use this flavor</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.field">
+      <source xml:lang="en">Field to compare to</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.operator">
+      <source xml:lang="en">Which operator to use for comparison</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.value">
+      <source xml:lang="en">Value to compare the field to</source>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.databaseProperties">
+      <source xml:lang="en">Properties to show for database page</source>
+      <target state="translated">데이터베이스 페이지 표시 속성</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.serverProperties">
+      <source xml:lang="en">Properties to show for server page</source>
+    </trans-unit>
+    <trans-unit id="carbon.extension.dashboard">
+      <source xml:lang="en">Defines that this provider supports the dashboard</source>
+    </trans-unit>
+    <trans-unit id="dashboard.id">
+      <source xml:lang="en">Provider id (ex. MSSQL)</source>
+      <target state="translated">공급자 id (예: MSSQL)</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties">
+      <source xml:lang="en">Property values to show on dashboard</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/extensions/sqlExtensionsHelper" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="tabs">
+      <source xml:lang="en">Dashboard Tabs ({0})</source>
+      <target state="translated">대시보드 탭 ({0})</target>
+    </trans-unit>
+    <trans-unit id="tabId">
+      <source xml:lang="en">Id</source>
+      <target state="translated">ID</target>
+    </trans-unit>
+    <trans-unit id="tabTitle">
+      <source xml:lang="en">Title</source>
+      <target state="translated">제목</target>
+    </trans-unit>
+    <trans-unit id="tabDescription">
+      <source xml:lang="en">Description</source>
+      <target state="translated">설명</target>
+    </trans-unit>
+    <trans-unit id="insights">
+      <source xml:lang="en">Dashboard Insights ({0})</source>
+    </trans-unit>
+    <trans-unit id="insightId">
+      <source xml:lang="en">Id</source>
+      <target state="translated">ID</target>
+    </trans-unit>
+    <trans-unit id="name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">이름</target>
+    </trans-unit>
+    <trans-unit id="insight condition">
+      <source xml:lang="en">When</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/errorMessageDialog/errorMessageDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="errorMessageDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="errorMessageDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">닫기</target>
+    </trans-unit>
+    <trans-unit id="copyDetails">
+      <source xml:lang="en">Copy details</source>
+      <target state="translated">세부 내용 복사</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionDialogWidget" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="connection">
+      <source xml:lang="en">Connection</source>
+      <target state="translated">연결</target>
+    </trans-unit>
+    <trans-unit id="recentConnectionTitle">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">최근 연결</target>
+    </trans-unit>
+    <trans-unit id="savedConnectionTitle">
+      <source xml:lang="en">Saved Connections</source>
+      <target state="translated">저장된 연결</target>
+    </trans-unit>
+    <trans-unit id="connectType">
+      <source xml:lang="en">Connection type</source>
+    </trans-unit>
+    <trans-unit id="connectionDialog.connect">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">연결</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="recentHistory">
+      <source xml:lang="en">Recent history</source>
+      <target state="translated">최근 이력</target>
+    </trans-unit>
+    <trans-unit id="noRecentConnections">
+      <source xml:lang="en">No recent connection</source>
+    </trans-unit>
+    <trans-unit id="noSavedConnections">
+      <source xml:lang="en">No saved connection</source>
+      <target state="translated">저장된 연결 없음</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="ServerGroupsDialogTitle">
+      <source xml:lang="en">Server Groups</source>
+      <target state="translated">서버 그룹</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="connectionGroupName">
+      <source xml:lang="en">Server group name</source>
+      <target state="translated">서버 그룹명</target>
+    </trans-unit>
+    <trans-unit id="MissingGroupNameError">
+      <source xml:lang="en">Group name is required.</source>
+      <target state="translated">그룹 이름이 필요합니다.</target>
+    </trans-unit>
+    <trans-unit id="groupDescription">
+      <source xml:lang="en">Group description</source>
+      <target state="translated">그룹 설명</target>
+    </trans-unit>
+    <trans-unit id="groupColor">
+      <source xml:lang="en">Group color</source>
+      <target state="translated">그룹 색상</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="serverGroup.addServerGroup">
+      <source xml:lang="en">Add server group</source>
+      <target state="translated">서버 그룹 추가</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.editServerGroup">
+      <source xml:lang="en">Edit server group</source>
+      <target state="translated">서버 그룹 편집</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/parts/connection/common/connectionProviderExtension" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="schema.providerId">
+      <source xml:lang="en">Common id for the provider</source>
+    </trans-unit>
+    <trans-unit id="schema.displayName">
+      <source xml:lang="en">Display Name for the provider</source>
+    </trans-unit>
+    <trans-unit id="schema.connectionOptions">
+      <source xml:lang="en">Options for connection</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/localizedConstants" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="runQueryBatchStartMessage">
+      <source xml:lang="en">Started executing query at </source>
+      <target state="translated">쿼리 실행 시작: </target>
+    </trans-unit>
+    <trans-unit id="runQueryBatchStartLine">
+      <source xml:lang="en">Line {0}</source>
+      <target state="translated">줄 {0}</target>
+    </trans-unit>
+    <trans-unit id="msgCancelQueryFailed">
+      <source xml:lang="en">Canceling the query failed: {0}</source>
+      <target state="translated">쿼리 취소 실패: {0}</target>
+    </trans-unit>
+    <trans-unit id="msgSaveStarted">
+      <source xml:lang="en">Started saving results to </source>
+      <target state="translated">결과 저장 시작: </target>
+    </trans-unit>
+    <trans-unit id="msgSaveFailed">
+      <source xml:lang="en">Failed to save results. </source>
+      <target state="translated">결과 저장에 실패하였습니다.</target>
+    </trans-unit>
+    <trans-unit id="msgSaveSucceeded">
+      <source xml:lang="en">Successfully saved results to </source>
+      <target state="translated">결과 저장 완료: </target>
+    </trans-unit>
+    <trans-unit id="msgStatusRunQueryInProgress">
+      <source xml:lang="en">Executing query...</source>
+      <target state="translated">쿼리를 실행하는 중...</target>
+    </trans-unit>
+    <trans-unit id="maximizeLabel">
+      <source xml:lang="en">Maximize</source>
+      <target state="translated">최대화</target>
+    </trans-unit>
+    <trans-unit id="resultsPane.restoreLabel">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">복원</target>
+    </trans-unit>
+    <trans-unit id="saveCSVLabel">
+      <source xml:lang="en">Save as CSV</source>
+      <target state="translated">CSV로 저장</target>
+    </trans-unit>
+    <trans-unit id="saveJSONLabel">
+      <source xml:lang="en">Save as JSON</source>
+      <target state="translated">JSON으로 저장</target>
+    </trans-unit>
+    <trans-unit id="saveExcelLabel">
+      <source xml:lang="en">Save as Excel</source>
+      <target state="translated">Excel로 저장</target>
+    </trans-unit>
+    <trans-unit id="viewChartLabel">
+      <source xml:lang="en">View as Chart</source>
+      <target state="translated">차트 보기</target>
+    </trans-unit>
+    <trans-unit id="resultPaneLabel">
+      <source xml:lang="en">Results</source>
+      <target state="translated">결과</target>
+    </trans-unit>
+    <trans-unit id="executeQueryLabel">
+      <source xml:lang="en">Executing query </source>
+      <target state="translated">쿼리 실행 </target>
+    </trans-unit>
+    <trans-unit id="messagePaneLabel">
+      <source xml:lang="en">Messages</source>
+      <target state="translated">메시지</target>
+    </trans-unit>
+    <trans-unit id="elapsedTimeLabel">
+      <source xml:lang="en">Total execution time: {0}</source>
+      <target state="translated">총 실행 시간: {0}</target>
+    </trans-unit>
+    <trans-unit id="msgCannotSaveMultipleSelections">
+      <source xml:lang="en">Save results command cannot be used with multiple selections.</source>
+      <target state="translated">결과 저장 명령은 다중 선택을 사용할 수 없습니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/flavorStatus" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="chooseSqlLang">
+      <source xml:lang="en">Choose SQL Language</source>
+      <target state="translated">SQL 언어 선택</target>
+    </trans-unit>
+    <trans-unit id="changeProvider">
+      <source xml:lang="en">Change SQL language provider</source>
+    </trans-unit>
+    <trans-unit id="changeSqlProvider">
+      <source xml:lang="en">Change SQL Engine Provider</source>
+    </trans-unit>
+    <trans-unit id="alreadyConnected">
+      <source xml:lang="en">A connection using engine {0} exists. To change please disconnect or change connection</source>
+      <target state="translated">{0} 엔진을 사용한 연결이 존재합니다. 변경을 위해서 연결을 변경하거나 취소하십시오.</target>
+    </trans-unit>
+    <trans-unit id="noEditor">
+      <source xml:lang="en">No text editor active at this time</source>
+    </trans-unit>
+    <trans-unit id="pickSqlProvider">
+      <source xml:lang="en">Select SQL Language Provider</source>
+      <target state="translated">SQL 공급자를 선택하세요</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryRunner" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="query.ExecutionFailedError">
+      <source xml:lang="en">Execution failed due to an unexpected error: {0}	{1}</source>
+    </trans-unit>
+    <trans-unit id="query.gettingRowsFailedError">
+      <source xml:lang="en">Something went wrong getting more rows: {0}</source>
+    </trans-unit>
+    <trans-unit id="query.initEditExecutionFailed">
+      <source xml:lang="en">Init Edit Execution failed: </source>
+      <target state="translated">초기화 편집 실행 실패: </target>
+    </trans-unit>
+    <trans-unit id="query.moreRowsFailedError">
+      <source xml:lang="en">Something went wrong getting more rows:</source>
+      <target state="translated">더 많은 행을 가져오는 중에 문제가 발생했습니다:</target>
+    </trans-unit>
+    <trans-unit id="elapsedBatchTime">
+      <source xml:lang="en">Batch execution time: {0}</source>
+      <target state="translated">일괄 처리 실행 시간: {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/rowCountStatus" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="rowStatus">
+      <source xml:lang="en">Row Count</source>
+      <target state="translated">행 개수</target>
+    </trans-unit>
+    <trans-unit id="rowCount">
+      <source xml:lang="en">{0} rows</source>
+      <target state="translated">{0}개의 행</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/optionsDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="optionsDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/restore/restoreDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="backupFilePath">
+      <source xml:lang="en">Backup file path</source>
+      <target state="translated">백업 파일 경로</target>
+    </trans-unit>
+    <trans-unit id="targetDatabase">
+      <source xml:lang="en">Target database</source>
+      <target state="translated">대상 데이터베이스</target>
+    </trans-unit>
+    <trans-unit id="RestoreDialogTitle">
+      <source xml:lang="en">Restore database</source>
+      <target state="translated">데이터베이스 복원</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.restoreTitle">
+      <source xml:lang="en">Restore database</source>
+      <target state="translated">데이터베이스 복원</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.database">
+      <source xml:lang="en">Database</source>
+      <target state="translated">데이터베이스</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.backupFile">
+      <source xml:lang="en">Backup file</source>
+      <target state="translated">백업 파일</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.restore">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">복원</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">스크립트</target>
+    </trans-unit>
+    <trans-unit id="source">
+      <source xml:lang="en">Source</source>
+      <target state="translated">소스</target>
+    </trans-unit>
+    <trans-unit id="restoreFrom">
+      <source xml:lang="en">Restore from</source>
+    </trans-unit>
+    <trans-unit id="missingBackupFilePathError">
+      <source xml:lang="en">Backup file path is required.</source>
+      <target state="translated">백업 파일의 경로가 필요합니다.</target>
+    </trans-unit>
+    <trans-unit id="multipleBackupFilePath">
+      <source xml:lang="en">Please enter one or more file paths separated by commas</source>
+    </trans-unit>
+    <trans-unit id="database">
+      <source xml:lang="en">Database</source>
+      <target state="translated">데이터베이스</target>
+    </trans-unit>
+    <trans-unit id="destination">
+      <source xml:lang="en">Destination</source>
+      <target state="translated">대상</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+      <target state="translated">데이터베이스 토글 드롭다운을 선택하십시오</target>
+    </trans-unit>
+    <trans-unit id="restoreTo">
+      <source xml:lang="en">Restore to</source>
+      <target state="translated">복원 위치</target>
+    </trans-unit>
+    <trans-unit id="restorePlan">
+      <source xml:lang="en">Restore plan</source>
+      <target state="translated">복원 계획</target>
+    </trans-unit>
+    <trans-unit id="backupSetsToRestore">
+      <source xml:lang="en">Backup sets to restore</source>
+    </trans-unit>
+    <trans-unit id="restoreDatabaseFileAs">
+      <source xml:lang="en">Restore database files as</source>
+      <target state="translated">으로 데이터베이스 파일을 복원</target>
+    </trans-unit>
+    <trans-unit id="restoreDatabaseFileDetails">
+      <source xml:lang="en">Restore database file details</source>
+      <target state="translated">복원 데이터베이스 파일 세부 사항</target>
+    </trans-unit>
+    <trans-unit id="logicalFileName">
+      <source xml:lang="en">Logical file Name</source>
+    </trans-unit>
+    <trans-unit id="fileType">
+      <source xml:lang="en">File type</source>
+      <target state="translated">파일 형식</target>
+    </trans-unit>
+    <trans-unit id="originalFileName">
+      <source xml:lang="en">Original File Name</source>
+      <target state="translated">원래 파일 이름</target>
+    </trans-unit>
+    <trans-unit id="restoreAs">
+      <source xml:lang="en">Restore as</source>
+      <target state="translated">으로 복원</target>
+    </trans-unit>
+    <trans-unit id="restoreOptions">
+      <source xml:lang="en">Restore options</source>
+      <target state="translated">복원 옵션</target>
+    </trans-unit>
+    <trans-unit id="taillogBackup">
+      <source xml:lang="en">Tail-Log backup</source>
+      <target state="translated">비상 로그 백업</target>
+    </trans-unit>
+    <trans-unit id="serverConnection">
+      <source xml:lang="en">Server connections</source>
+      <target state="translated">서버 연결</target>
+    </trans-unit>
+    <trans-unit id="generalTitle">
+      <source xml:lang="en">General</source>
+      <target state="translated">일반</target>
+    </trans-unit>
+    <trans-unit id="filesTitle">
+      <source xml:lang="en">Files</source>
+      <target state="translated">파일</target>
+    </trans-unit>
+    <trans-unit id="optionsTitle">
+      <source xml:lang="en">Options</source>
+      <target state="translated">옵션</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="newDashboardTab.openDashboardExtensions">
+      <source xml:lang="en">Open dashboard extensions</source>
+      <target state="translated">대시보드 확장 열기</target>
+    </trans-unit>
+    <trans-unit id="newDashboardTab.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="newDashboardTab.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="newdashboardTabDialog.noExtensionLabel">
+      <source xml:lang="en">No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.</source>
+    </trans-unit>
+    <trans-unit id="allFeatures">
+      <source xml:lang="en">All features</source>
+      <target state="translated">모든 기능</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/node/insightsDialogController" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="insightsInputError">
+      <source xml:lang="en">No Connection Profile was passed to insights flyout</source>
+    </trans-unit>
+    <trans-unit id="insightsError">
+      <source xml:lang="en">Insights error</source>
+    </trans-unit>
+    <trans-unit id="insightsFileError">
+      <source xml:lang="en">There was an error reading the query file: </source>
+    </trans-unit>
+    <trans-unit id="insightsConfigError">
+      <source xml:lang="en">There was an error parsing the insight config; could not find query array/string or queryfile</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.filepath">
+      <source xml:lang="en">Selected path</source>
+      <target state="translated">선택한 경로</target>
+    </trans-unit>
+    <trans-unit id="fileFilter">
+      <source xml:lang="en">Files of type</source>
+    </trans-unit>
+    <trans-unit id="fileBrowser.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="fileBrowser.discard">
+      <source xml:lang="en">Discard</source>
+      <target state="translated">폐기</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/browser/insightsDialogView" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="insights.item">
+      <source xml:lang="en">Item</source>
+      <target state="translated">항목</target>
+    </trans-unit>
+    <trans-unit id="insights.value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">값</target>
+    </trans-unit>
+    <trans-unit id="property">
+      <source xml:lang="en">Property</source>
+      <target state="translated">속성</target>
+    </trans-unit>
+    <trans-unit id="value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">값</target>
+    </trans-unit>
+    <trans-unit id="InsightsDialogTitle">
+      <source xml:lang="en">Insights</source>
+    </trans-unit>
+    <trans-unit id="insights.dialog.items">
+      <source xml:lang="en">Items</source>
+      <target state="translated">항목</target>
+    </trans-unit>
+    <trans-unit id="insights.dialog.itemDetails">
+      <source xml:lang="en">Item Details</source>
+      <target state="translated">항목 세부 정보</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountDialog/accountDialogController" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="accountDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+      <target state="translated">계정 추가 오류</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="firewallDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+      <target state="translated">계정 추가 오류</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleError">
+      <source xml:lang="en">Firewall rule error</source>
+      <target state="translated">방화벽 규칙 오류</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/dialog/profilerColumnEditorDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="eventSort">
+      <source xml:lang="en">Sort by event</source>
+      <target state="translated">이벤트로 정렬</target>
+    </trans-unit>
+    <trans-unit id="nameColumn">
+      <source xml:lang="en">Sort by column</source>
+      <target state="translated">열 정렬</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.profiler">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">프로파일러</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="oauthFlyoutIsAlreadyOpen">
+      <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskHistoryRenderer" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="succeeded">
+      <source xml:lang="en">succeeded</source>
+      <target state="translated">성공</target>
+    </trans-unit>
+    <trans-unit id="failed">
+      <source xml:lang="en">failed</source>
+      <target state="translated">실패</target>
+    </trans-unit>
+    <trans-unit id="inProgress">
+      <source xml:lang="en">in progress</source>
+      <target state="translated">진행 중</target>
+    </trans-unit>
+    <trans-unit id="notStarted">
+      <source xml:lang="en">not started</source>
+      <target state="translated">시작 되지 않음</target>
+    </trans-unit>
+    <trans-unit id="canceled">
+      <source xml:lang="en">canceled</source>
+      <target state="translated">취소됨</target>
+    </trans-unit>
+    <trans-unit id="canceling">
+      <source xml:lang="en">canceling</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/treeCreationUtils" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="treeAriaLabel">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">최근 연결</target>
+    </trans-unit>
+    <trans-unit id="treeCreation.regTreeAriaLabel">
+      <source xml:lang="en">Servers</source>
+      <target state="translated">서버</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/objectExplorerActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="ManageAction">
+      <source xml:lang="en">Manage</source>
+      <target state="translated">관리</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/views/queryOutput.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="results">
+      <source xml:lang="en">Results</source>
+      <target state="translated">결과</target>
+    </trans-unit>
+    <trans-unit id="queryPlan">
+      <source xml:lang="en">Query Plan</source>
+      <target state="translated">쿼리 실행 계획</target>
+    </trans-unit>
+    <trans-unit id="topOperations">
+      <source xml:lang="en">Top Operations</source>
+      <target state="translated">상위 작업</target>
+    </trans-unit>
+    <trans-unit id="chartViewer">
+      <source xml:lang="en">Chart Viewer</source>
+      <target state="translated">차트 뷰어</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/execution/editDataActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="editData.run">
+      <source xml:lang="en">Run</source>
+      <target state="translated">실행</target>
+    </trans-unit>
+    <trans-unit id="disposeEditFailure">
+      <source xml:lang="en">Dispose Edit Failed With Error: </source>
+      <target state="translated">오류와 함께 실패한 편집 내용을 삭제합니다.</target>
+    </trans-unit>
+    <trans-unit id="editData.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">중지</target>
+    </trans-unit>
+    <trans-unit id="editData.showSql">
+      <source xml:lang="en">Show SQL Pane</source>
+    </trans-unit>
+    <trans-unit id="editData.closeSql">
+      <source xml:lang="en">Close SQL Pane</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="runQueryLabel">
+      <source xml:lang="en">Run</source>
+      <target state="translated">실행</target>
+    </trans-unit>
+    <trans-unit id="cancelQueryLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="estimatedQueryPlan">
+      <source xml:lang="en">Explain</source>
+    </trans-unit>
+    <trans-unit id="actualQueryPlan">
+      <source xml:lang="en">Actual</source>
+      <target state="translated">실제</target>
+    </trans-unit>
+    <trans-unit id="disconnectDatabaseLabel">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">연결 끊기</target>
+    </trans-unit>
+    <trans-unit id="changeConnectionDatabaseLabel">
+      <source xml:lang="en">Change Connection</source>
+      <target state="translated">연결 변경</target>
+    </trans-unit>
+    <trans-unit id="connectDatabaseLabel">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">연결</target>
+    </trans-unit>
+    <trans-unit id="selectDatabase">
+      <source xml:lang="en">Select Database</source>
+      <target state="translated">데이터베이스 선택</target>
+    </trans-unit>
+    <trans-unit id="listDatabases.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+      <target state="translated">데이터베이스 토글 드롭다운을 선택하십시오</target>
+    </trans-unit>
+    <trans-unit id="changeDatabase.failed">
+      <source xml:lang="en">Failed to change database</source>
+    </trans-unit>
+    <trans-unit id="changeDatabase.failedWithError">
+      <source xml:lang="en">Failed to change database {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dialog/dialogTypes" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dialogModalDoneButtonLabel">
+      <source xml:lang="en">Done</source>
+      <target state="translated">완료</target>
+    </trans-unit>
+    <trans-unit id="dialogModalCancelButtonLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profilerActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="profilerAction.disconnect">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">연결 끊기</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.connect">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">연결</target>
+    </trans-unit>
+    <trans-unit id="start">
+      <source xml:lang="en">Start</source>
+      <target state="translated">시작</target>
+    </trans-unit>
+    <trans-unit id="create">
+      <source xml:lang="en">New Session</source>
+      <target state="translated">새 세션</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.resumeCapture">
+      <source xml:lang="en">Resume</source>
+      <target state="translated">재개</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.pauseCapture">
+      <source xml:lang="en">Pause</source>
+      <target state="translated">일시 중지</target>
+    </trans-unit>
+    <trans-unit id="profilerStop.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">중지</target>
+    </trans-unit>
+    <trans-unit id="profiler.clear">
+      <source xml:lang="en">Clear Data</source>
+    </trans-unit>
+    <trans-unit id="profilerAction.autoscrollOn">
+      <source xml:lang="en">Auto Scroll: On</source>
+      <target state="translated">자동 스크롤 : 사용</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.autoscrollOff">
+      <source xml:lang="en">Auto Scroll: Off</source>
+    </trans-unit>
+    <trans-unit id="profiler.toggleCollapsePanel">
+      <source xml:lang="en">Toggle Collapsed Panel</source>
+      <target state="translated">축소된 패널로 전환</target>
+    </trans-unit>
+    <trans-unit id="profiler.editColumns">
+      <source xml:lang="en">Edit Columns</source>
+      <target state="translated">열 편집</target>
+    </trans-unit>
+    <trans-unit id="profiler.findNext">
+      <source xml:lang="en">Find Next String</source>
+      <target state="translated">다음 문자열 찾기</target>
+    </trans-unit>
+    <trans-unit id="profiler.findPrevious">
+      <source xml:lang="en">Find Previous String</source>
+      <target state="translated">이전 문자열 찾기</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.newProfiler">
+      <source xml:lang="en">Launch Profiler</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="alertErrorMessage">
+      <source xml:lang="en">Error: {0}</source>
+      <target state="translated">오류: {0}</target>
+    </trans-unit>
+    <trans-unit id="alertWarningMessage">
+      <source xml:lang="en">Warning: {0}</source>
+      <target state="translated">경고: {0}</target>
+    </trans-unit>
+    <trans-unit id="alertInfoMessage">
+      <source xml:lang="en">Info: {0}</source>
+      <target state="translated">정보: {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerResourceEditor" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="profilerTextEditorAriaLabel">
+      <source xml:lang="en">Profiler editor for event text. Readonly</source>
+      <target state="translated">이벤트 텍스트의 프로파일러 편집기. 읽기 전용</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="chartErrorMessage">
+      <source xml:lang="en">Chart cannot be displayed with the given data</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/editableDropdown/dropdown" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="editableDropdown.errorValidate">
+      <source xml:lang="en">Must be an option from the list</source>
+    </trans-unit>
+    <trans-unit id="dropdownAction.toggle">
+      <source xml:lang="en">Toggle dropdown</source>
+      <target state="translated">토글 메뉴</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/queryTextEditor" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="queryTextEditorAriaLabel">
+      <source xml:lang="en">modelview code editor for view model.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserViewModel" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="allFiles">
+      <source xml:lang="en">All files</source>
+      <target state="translated">모든 파일</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserTreeView" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="fileBrowser.regTreeAriaLabel">
+      <source xml:lang="en">File browser tree</source>
+      <target state="translated">파일 브라우저 트리</target>
+      <note>FileBrowserTree</note>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/webViewDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="webViewDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="webViewDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">닫기</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/modal" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="infoAltText">
+      <source xml:lang="en">Info</source>
+      <target state="translated">정보</target>
+    </trans-unit>
+    <trans-unit id="warningAltText">
+      <source xml:lang="en">Warning</source>
+      <target state="translated">경고</target>
+    </trans-unit>
+    <trans-unit id="errorAltText">
+      <source xml:lang="en">Error</source>
+      <target state="translated">오류</target>
+    </trans-unit>
+    <trans-unit id="modalBack">
+      <source xml:lang="en">Back</source>
+      <target state="translated">뒤로</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/advancedPropertiesController" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="connectionAdvancedProperties">
+      <source xml:lang="en">Advanced Properties</source>
+      <target state="translated">고급 속성</target>
+    </trans-unit>
+    <trans-unit id="advancedProperties.discard">
+      <source xml:lang="en">Discard</source>
+      <target state="translated">폐기</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionWidget" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="defaultDatabaseOption">
+      <source xml:lang="en">&lt;Default&gt;</source>
+    </trans-unit>
+    <trans-unit id="loadingDatabaseOption">
+      <source xml:lang="en">Loading...</source>
+      <target state="translated">로드 중...</target>
+    </trans-unit>
+    <trans-unit id="defaultServerGroup">
+      <source xml:lang="en">&lt;Default&gt;</source>
+    </trans-unit>
+    <trans-unit id="addNewServerGroup">
+      <source xml:lang="en">Add new group...</source>
+      <target state="translated">새 그룹 추가...</target>
+    </trans-unit>
+    <trans-unit id="noneServerGroup">
+      <source xml:lang="en">&lt;None&gt;</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.missingRequireField">
+      <source xml:lang="en">{0} is required.</source>
+      <target state="translated">{0}이(가) 필요합니다.</target>
+    </trans-unit>
+    <trans-unit id="connectionWidget.fieldWillBeTrimmed">
+      <source xml:lang="en">{0} will be trimmed.</source>
+      <target state="translated">{0}가 잘립니다.</target>
+    </trans-unit>
+    <trans-unit id="rememberPassword">
+      <source xml:lang="en">Remember password</source>
+    </trans-unit>
+    <trans-unit id="connectionWidget.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+      <target state="translated">데이터베이스 토글 드롭다운을 선택하십시오</target>
+    </trans-unit>
+    <trans-unit id="serverGroup">
+      <source xml:lang="en">Server group</source>
+      <target state="translated">서버 그룹</target>
+    </trans-unit>
+    <trans-unit id="advanced">
+      <source xml:lang="en">Advanced...</source>
+      <target state="translated">고급...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionConfig" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="invalidServerName">
+      <source xml:lang="en">A server group with the same name already exists.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/localizedConstants" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="onDidConnectMessage">
+      <source xml:lang="en">Connected to</source>
+      <target state="translated">에 연결</target>
+    </trans-unit>
+    <trans-unit id="onDidDisconnectMessage">
+      <source xml:lang="en">Disconnected</source>
+      <target state="translated">연결 끊김</target>
+    </trans-unit>
+    <trans-unit id="unsavedGroupLabel">
+      <source xml:lang="en">Unsaved Connections</source>
+      <target state="translated">저장 되지 않은 연결</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/resultSerializer" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="resultsSerializer.saveAsFileTitle">
+      <source xml:lang="en">Choose Results File</source>
+      <target state="translated">결과 파일 선택</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
+      <source xml:lang="en">CSV (Comma delimited)</source>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionJSONTitle">
+      <source xml:lang="en">JSON</source>
+      <target state="translated">JSON</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionExcelTitle">
+      <source xml:lang="en">Excel Workbook</source>
+      <target state="translated">Excel 통합 문서</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionXMLTitle">
+      <source xml:lang="en">XML</source>
+      <target state="translated">XML</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionTXTTitle">
+      <source xml:lang="en">Plain Text</source>
+      <target state="translated">일반 텍스트</target>
+    </trans-unit>
+    <trans-unit id="openLocation">
+      <source xml:lang="en">Open file location</source>
+    </trans-unit>
+    <trans-unit id="openFile">
+      <source xml:lang="en">Open file</source>
+      <target state="translated">파일 열기</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/optionsDialogHelper" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.missingRequireField">
+      <source xml:lang="en"> is required.</source>
+      <target state="translated">가 필요 합니다.</target>
+    </trans-unit>
+    <trans-unit id="optionsDialog.invalidInput">
+      <source xml:lang="en">Invalid input.  Numeric value expected.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/backup/constants" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="backup.filterBackupFiles">
+      <source xml:lang="en">Backup Files</source>
+      <target state="translated">백업 파일</target>
+    </trans-unit>
+    <trans-unit id="backup.allFiles">
+      <source xml:lang="en">All Files</source>
+      <target state="translated">모든 파일</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="selectDeselectAll">
+      <source xml:lang="en">Select/Deselect All</source>
+      <target state="translated">모두 선택/해제</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/backup/backup.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="backup.backupName">
+      <source xml:lang="en">Backup name</source>
+      <target state="translated">백업 이름</target>
+    </trans-unit>
+    <trans-unit id="backup.recoveryModel">
+      <source xml:lang="en">Recovery model</source>
+      <target state="translated">복구 모델</target>
+    </trans-unit>
+    <trans-unit id="backup.backupType">
+      <source xml:lang="en">Backup type</source>
+      <target state="translated">백업 유형</target>
+    </trans-unit>
+    <trans-unit id="backup.backupDevice">
+      <source xml:lang="en">Backup files</source>
+      <target state="translated">백업 파일</target>
+    </trans-unit>
+    <trans-unit id="backup.algorithm">
+      <source xml:lang="en">Algorithm</source>
+      <target state="translated">알고리즘</target>
+    </trans-unit>
+    <trans-unit id="backup.certificateOrAsymmetricKey">
+      <source xml:lang="en">Certificate or Asymmetric key</source>
+      <target state="translated">인증서 또는 비대칭 키</target>
+    </trans-unit>
+    <trans-unit id="backup.media">
+      <source xml:lang="en">Media</source>
+      <target state="translated">미디어</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaOption">
+      <source xml:lang="en">Backup to the existing media set</source>
+    </trans-unit>
+    <trans-unit id="backup.mediaOptionFormat">
+      <source xml:lang="en">Backup to a new media set</source>
+      <target state="translated">새 미디어 세트에 백업</target>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaAppend">
+      <source xml:lang="en">Append to the existing backup set</source>
+      <target state="translated">기존 백업 세트에 추가</target>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaOverwrite">
+      <source xml:lang="en">Overwrite all existing backup sets</source>
+      <target state="translated">모든 기존 백업 세트 덮어쓰기</target>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetName">
+      <source xml:lang="en">New media set name</source>
+      <target state="translated">새 미디어 세트 이름</target>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetDescription">
+      <source xml:lang="en">New media set description</source>
+      <target state="translated">새 미디어 세트 설명</target>
+    </trans-unit>
+    <trans-unit id="backup.checksumContainer">
+      <source xml:lang="en">Perform checksum before writing to media</source>
+    </trans-unit>
+    <trans-unit id="backup.verifyContainer">
+      <source xml:lang="en">Verify backup when finished</source>
+    </trans-unit>
+    <trans-unit id="backup.continueOnErrorContainer">
+      <source xml:lang="en">Continue on error</source>
+    </trans-unit>
+    <trans-unit id="backup.expiration">
+      <source xml:lang="en">Expiration</source>
+      <target state="translated">만료</target>
+    </trans-unit>
+    <trans-unit id="backup.setBackupRetainDays">
+      <source xml:lang="en">Set backup retain days</source>
+      <target state="translated">백업 유지 일수 설정</target>
+    </trans-unit>
+    <trans-unit id="backup.copyOnly">
+      <source xml:lang="en">Copy-only backup</source>
+      <target state="translated">복사 전용 백업</target>
+    </trans-unit>
+    <trans-unit id="backup.advancedConfiguration">
+      <source xml:lang="en">Advanced Configuration</source>
+      <target state="translated">고급 구성</target>
+    </trans-unit>
+    <trans-unit id="backup.compression">
+      <source xml:lang="en">Compression</source>
+      <target state="translated">압축</target>
+    </trans-unit>
+    <trans-unit id="backup.setBackupCompression">
+      <source xml:lang="en">Set backup compression</source>
+      <target state="translated">백업 압축 설정</target>
+    </trans-unit>
+    <trans-unit id="backup.encryption">
+      <source xml:lang="en">Encryption</source>
+      <target state="translated">암호화</target>
+    </trans-unit>
+    <trans-unit id="backup.transactionLog">
+      <source xml:lang="en">Transaction log</source>
+      <target state="translated">트랜잭션 로그</target>
+    </trans-unit>
+    <trans-unit id="backup.truncateTransactionLog">
+      <source xml:lang="en">Truncate the transaction log</source>
+    </trans-unit>
+    <trans-unit id="backup.backupTail">
+      <source xml:lang="en">Backup the tail of the log</source>
+    </trans-unit>
+    <trans-unit id="backup.reliability">
+      <source xml:lang="en">Reliability</source>
+      <target state="translated">안정성</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaNameRequired">
+      <source xml:lang="en">Media name is required</source>
+    </trans-unit>
+    <trans-unit id="backup.noEncryptorWarning">
+      <source xml:lang="en">No certificate or asymmetric key is available</source>
+      <target state="translated">사용 가능한 인증서 또는 비대칭 키가 없습니다</target>
+    </trans-unit>
+    <trans-unit id="addFile">
+      <source xml:lang="en">Add a file</source>
+      <target state="translated">파일 추가</target>
+    </trans-unit>
+    <trans-unit id="removeFile">
+      <source xml:lang="en">Remove files</source>
+      <target state="translated">파일 제거</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.invalidInput">
+      <source xml:lang="en">Invalid input. Value must be greater than or equal 0.</source>
+    </trans-unit>
+    <trans-unit id="backupComponent.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">스크립트</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.backup">
+      <source xml:lang="en">Backup</source>
+      <target state="translated">백업</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="backup.containsBackupToUrlError">
+      <source xml:lang="en">Only backup to file is supported</source>
+    </trans-unit>
+    <trans-unit id="backup.backupFileRequired">
+      <source xml:lang="en">Backup file path is required</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/common/insightDialogActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="workbench.action.insights.copySelection">
+      <source xml:lang="en">Copy Cell</source>
+      <target state="translated">셀 복사</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountDialog/accountDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="linkedAccounts">
+      <source xml:lang="en">Linked accounts</source>
+      <target state="translated">연결 된 계정</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">닫기</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.noAccountLabel">
+      <source xml:lang="en">There is no linked account. Please add an account.</source>
+    </trans-unit>
+    <trans-unit id="accountDialog.addConnection">
+      <source xml:lang="en">Add an account</source>
+      <target state="translated">계정 추가</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="from">
+      <source xml:lang="en">From</source>
+      <target state="translated">보낸 사람</target>
+    </trans-unit>
+    <trans-unit id="to">
+      <source xml:lang="en">To</source>
+      <target state="translated">받는 사람</target>
+    </trans-unit>
+    <trans-unit id="createNewFirewallRule">
+      <source xml:lang="en">Create new firewall rule</source>
+      <target state="translated">새 방화벽 규칙 만들기</target>
+    </trans-unit>
+    <trans-unit id="firewall.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">확인</target>
+    </trans-unit>
+    <trans-unit id="firewall.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleDialogDescription">
+      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+      <target state="translated">클라이언트 IP 주소에는 해당 서버에 액세스할 권한이 없습니다. 액세스하려면 Azure 계정에 로그인하고 새 방화벽 규칙을 만드세요.</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpDescription">
+      <source xml:lang="en">Learn more about firewall settings</source>
+      <target state="translated">방화벽 설정에 대한 자세한 정보</target>
+    </trans-unit>
+    <trans-unit id="azureAccount">
+      <source xml:lang="en">Azure account</source>
+      <target state="translated">Azure 계정</target>
+    </trans-unit>
+    <trans-unit id="filewallRule">
+      <source xml:lang="en">Firewall rule</source>
+      <target state="translated">방화벽 규칙</target>
+    </trans-unit>
+    <trans-unit id="addIPAddressLabel">
+      <source xml:lang="en">Add my client IP </source>
+    </trans-unit>
+    <trans-unit id="addIpRangeLabel">
+      <source xml:lang="en">Add my subnet IP range</source>
+      <target state="translated">내 서브넷 IP 범위를 추가</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="addAccount">
+      <source xml:lang="en">Add an account</source>
+      <target state="translated">계정 추가</target>
+    </trans-unit>
+    <trans-unit id="removeAccount">
+      <source xml:lang="en">Remove account</source>
+      <target state="translated">계정 제거</target>
+    </trans-unit>
+    <trans-unit id="confirmRemoveUserAccountMessage">
+      <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
+      <target state="translated">'{0}'을 제거하시겠습니까?</target>
+    </trans-unit>
+    <trans-unit id="accountActions.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="accountActions.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+    <trans-unit id="removeAccountFailed">
+      <source xml:lang="en">Failed to remove account</source>
+    </trans-unit>
+    <trans-unit id="applyFilters">
+      <source xml:lang="en">Apply Filters</source>
+      <target state="translated">필터 적용</target>
+    </trans-unit>
+    <trans-unit id="refreshAccount">
+      <source xml:lang="en">Reenter your credentials</source>
+      <target state="translated">자격 증명 다시 입력</target>
+    </trans-unit>
+    <trans-unit id="NoAccountToRefresh">
+      <source xml:lang="en">There is no account to refresh</source>
+      <target state="translated">갱신할 계정이 없습니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="copyAndOpen">
+      <source xml:lang="en">Copy &amp; Open</source>
+    </trans-unit>
+    <trans-unit id="oauthDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="userCode">
+      <source xml:lang="en">User code</source>
+    </trans-unit>
+    <trans-unit id="website">
+      <source xml:lang="en">Website</source>
+      <target state="translated">웹사이트</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountListRenderer" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="refreshCredentials">
+      <source xml:lang="en">You need to refresh the credentials for this account.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/serverTreeRenderer" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="loading">
+      <source xml:lang="en">Loading...</source>
+      <target state="translated">로드 중...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/admin/database/create/createDatabase.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="createDatabase.databaseFiles">
+      <source xml:lang="en">Database files:</source>
+    </trans-unit>
+    <trans-unit id="createDatabase.noRecordsFound">
+      <source xml:lang="en">No records found</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskAction" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="cancelTask.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="errorMsgFromCancelTask">
+      <source xml:lang="en">The task is failed to cancel.</source>
+      <target state="translated">작업을 취소하지 못했습니다.</target>
+    </trans-unit>
+    <trans-unit id="taskAction.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">스크립트</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/common/theme/colors" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="tableHeaderBackground">
+      <source xml:lang="en">Table header background color</source>
+    </trans-unit>
+    <trans-unit id="tableHeaderForeground">
+      <source xml:lang="en">Table header foreground color</source>
+    </trans-unit>
+    <trans-unit id="disabledInputBoxBackground">
+      <source xml:lang="en">Disabled Input box background.</source>
+    </trans-unit>
+    <trans-unit id="disabledInputBoxForeground">
+      <source xml:lang="en">Disabled Input box foreground.</source>
+    </trans-unit>
+    <trans-unit id="buttonFocusOutline">
+      <source xml:lang="en">Button outline color when focused.</source>
+      <target state="translated">선택한 버튼의 윤곽선 색.</target>
+    </trans-unit>
+    <trans-unit id="listFocusAndSelectionBackground">
+      <source xml:lang="en">List/Table background color for the selected and focus item when the list/table is active</source>
+    </trans-unit>
+    <trans-unit id="agentTableBackground">
+      <source xml:lang="en">SQL Agent Table background color.</source>
+    </trans-unit>
+    <trans-unit id="agentCellBackground">
+      <source xml:lang="en">SQL Agent table cell background color.</source>
+    </trans-unit>
+    <trans-unit id="agentTableHoverBackground">
+      <source xml:lang="en">SQL Agent table hover background color.</source>
+    </trans-unit>
+    <trans-unit id="agentJobsHeadingColor">
+      <source xml:lang="en">SQL Agent heading background color.</source>
+    </trans-unit>
+    <trans-unit id="agentCellBorderColor">
+      <source xml:lang="en">SQL Agent table cell border color.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/queryPlan/topOperations.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="topOperations.operation">
+      <source xml:lang="en">Operation</source>
+      <target state="translated">작업</target>
+    </trans-unit>
+    <trans-unit id="topOperations.object">
+      <source xml:lang="en">Object</source>
+      <target state="translated">개체</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estCost">
+      <source xml:lang="en">Est Cost</source>
+    </trans-unit>
+    <trans-unit id="topOperations.estSubtreeCost">
+      <source xml:lang="en">Est Subtree Cost</source>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRows">
+      <source xml:lang="en">Actual Rows</source>
+    </trans-unit>
+    <trans-unit id="topOperations.estRows">
+      <source xml:lang="en">Est Rows</source>
+    </trans-unit>
+    <trans-unit id="topOperations.actualExecutions">
+      <source xml:lang="en">Actual Executions</source>
+      <target state="translated">실제 실행</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estCPUCost">
+      <source xml:lang="en">Est CPU Cost</source>
+      <target state="translated">예측 CPU 비용</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estIOCost">
+      <source xml:lang="en">Est IO Cost</source>
+    </trans-unit>
+    <trans-unit id="topOperations.parallel">
+      <source xml:lang="en">Parallel</source>
+      <target state="translated">병렬</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRebinds">
+      <source xml:lang="en">Actual Rebinds</source>
+      <target state="translated">실제 리바인딩</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRebinds">
+      <source xml:lang="en">Est Rebinds</source>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRewinds">
+      <source xml:lang="en">Actual Rewinds</source>
+      <target state="translated">실제 되감기</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRewinds">
+      <source xml:lang="en">Est Rewinds</source>
+      <target state="translated">예상 되감기 수</target>
+    </trans-unit>
+    <trans-unit id="topOperations.partitioned">
+      <source xml:lang="en">Partitioned</source>
+      <target state="translated">분할</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/query/chartViewer.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="chartTypeLabel">
+      <source xml:lang="en">Chart Type</source>
+    </trans-unit>
+    <trans-unit id="dataDirectionLabel">
+      <source xml:lang="en">Data Direction</source>
+      <target state="translated">데이터 방향</target>
+    </trans-unit>
+    <trans-unit id="verticalLabel">
+      <source xml:lang="en">Vertical</source>
+      <target state="translated">수직</target>
+    </trans-unit>
+    <trans-unit id="horizontalLabel">
+      <source xml:lang="en">Horizontal</source>
+    </trans-unit>
+    <trans-unit id="dataTypeLabel">
+      <source xml:lang="en">Data Type</source>
+      <target state="translated">데이터 타입</target>
+    </trans-unit>
+    <trans-unit id="numberLabel">
+      <source xml:lang="en">Number</source>
+      <target state="translated">번호</target>
+    </trans-unit>
+    <trans-unit id="pointLabel">
+      <source xml:lang="en">Point</source>
+      <target state="translated">포인트</target>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnLabel">
+      <source xml:lang="en">Use first column as row label</source>
+    </trans-unit>
+    <trans-unit id="columnsAsLabelsLabel">
+      <source xml:lang="en">Use column names as labels</source>
+    </trans-unit>
+    <trans-unit id="legendLabel">
+      <source xml:lang="en">Legend Position</source>
+      <target state="translated">범례 위치</target>
+    </trans-unit>
+    <trans-unit id="chartNotFound">
+      <source xml:lang="en">Could not find chart to save</source>
+    </trans-unit>
+    <trans-unit id="xAxisLabel">
+      <source xml:lang="en">X Axis Label</source>
+      <target state="translated">X 축 레이블</target>
+    </trans-unit>
+    <trans-unit id="xAxisMinVal">
+      <source xml:lang="en">X Axis Minimum Value</source>
+    </trans-unit>
+    <trans-unit id="xAxisMaxVal">
+      <source xml:lang="en">X Axis Maximum Value</source>
+    </trans-unit>
+    <trans-unit id="yAxisLabel">
+      <source xml:lang="en">Y Axis Label</source>
+      <target state="translated">Y 축 레이블</target>
+    </trans-unit>
+    <trans-unit id="yAxisMinVal">
+      <source xml:lang="en">Y Axis Minimum Value</source>
+      <target state="translated">Y 축 최소 값</target>
+    </trans-unit>
+    <trans-unit id="yAxisMaxVal">
+      <source xml:lang="en">Y Axis Maximum Value</source>
+      <target state="translated">Y 축 최댓값</target>
+    </trans-unit>
+    <trans-unit id="chartSaved">
+      <source xml:lang="en">Saved Chart to path: {0}</source>
+    </trans-unit>
+    <trans-unit id="chartViewer.saveAsFileTitle">
+      <source xml:lang="en">Choose Results File</source>
+      <target state="translated">결과 파일 선택</target>
+    </trans-unit>
+    <trans-unit id="createInsightNoEditor">
+      <source xml:lang="en">Cannot create insight as the active editor is not a SQL Editor</source>
+      <target state="translated">활성 편집기가 SQL 편집기가 아니기 때문에 인사이트를 만들 수 없습니다</target>
+    </trans-unit>
+    <trans-unit id="createInsightNoDataService">
+      <source xml:lang="en">Cannot create insight, backing data model not found</source>
+    </trans-unit>
+    <trans-unit id="myWidgetName">
+      <source xml:lang="en">My-Widget</source>
+      <target state="translated">내 위젯</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="homeCrumb">
+      <source xml:lang="en">Home</source>
+      <target state="translated">홈</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.changeDatabaseFailure">
+      <source xml:lang="en">Failed to change database</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboardNavSection_loadTabError">
+      <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
+      <target state="translated">"{0}" 섹션에 유효하지 않은 내용이 있습니다. 확장 소유자에게 문의 하시기 바랍니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/agent/agentView.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="jobview.Jobs">
+      <source xml:lang="en">Jobs</source>
+      <target state="translated">작업</target>
+    </trans-unit>
+    <trans-unit id="jobview.Alerts">
+      <source xml:lang="en">Alerts</source>
+      <target state="translated">경고</target>
+    </trans-unit>
+    <trans-unit id="jobview.Proxies">
+      <source xml:lang="en">Proxies</source>
+      <target state="translated">프록시</target>
+    </trans-unit>
+    <trans-unit id="jobview.Operators">
+      <source xml:lang="en">Operators</source>
+      <target state="translated">운영자</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/alertsView.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="jobAlertColumns.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">이름</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.lastOccurrenceDate">
+      <source xml:lang="en">Last Occurrence</source>
+      <target state="translated">마지막 발생</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">사용</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.databaseName">
+      <source xml:lang="en">Database Name</source>
+      <target state="translated">데이터베이스 이름</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.categoryName">
+      <source xml:lang="en">Category Name</source>
+      <target state="translated">범주 이름</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/operatorsView.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="jobOperatorsView.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">이름</target>
+    </trans-unit>
+    <trans-unit id="jobOperatorsView.emailAddress">
+      <source xml:lang="en">Email Address</source>
+    </trans-unit>
+    <trans-unit id="jobOperatorsView.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">사용</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/jobsView.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="jobColumns.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">이름</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.lastRun">
+      <source xml:lang="en">Last Run</source>
+      <target state="translated">마지막 실행</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.nextRun">
+      <source xml:lang="en">Next Run</source>
+      <target state="translated">다음 실행</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">사용</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.status">
+      <source xml:lang="en">Status</source>
+      <target state="translated">상태</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.category">
+      <source xml:lang="en">Category</source>
+      <target state="translated">범주</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.runnable">
+      <source xml:lang="en">Runnable</source>
+      <target state="translated">실행 가능</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.schedule">
+      <source xml:lang="en">Schedule</source>
+      <target state="translated">일정</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.lastRunOutcome">
+      <source xml:lang="en">Last Run Outcome</source>
+      <target state="translated">마지막 실행 결과</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.previousRuns">
+      <source xml:lang="en">Previous Runs</source>
+    </trans-unit>
+    <trans-unit id="jobsView.noSteps">
+      <source xml:lang="en">No Steps available for this job.</source>
+    </trans-unit>
+    <trans-unit id="jobsView.error">
+      <source xml:lang="en">Error: </source>
+      <target state="translated">오류:</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="serverPageName">
+      <source xml:lang="en">SERVER DASHBOARD</source>
+      <target state="translated">서버 대시보드</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="databasePageName">
+      <source xml:lang="en">DATABASE DASHBOARD</source>
+      <target state="translated">데이터베이스 대시보드</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/proxiesView.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="jobProxyToolbar-NewItem">
+      <source xml:lang="en">New Proxy</source>
+      <target state="translated">새 프록시</target>
+    </trans-unit>
+    <trans-unit id="jobProxyToolbar-Refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">새로 고침</target>
+    </trans-unit>
+    <trans-unit id="jobProxiesView.accountName">
+      <source xml:lang="en">Account Name</source>
+      <target state="translated">계정 이름</target>
+    </trans-unit>
+    <trans-unit id="jobProxiesView.credentialName">
+      <source xml:lang="en">Credential Name</source>
+      <target state="translated">자격 증명 이름</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="seachObjects">
+      <source xml:lang="en">Search by name of type (a:, t:, v:, f:, or sp:)</source>
+      <target state="translated">형식의 이름으로 검색 (a:, t:, v:, f: 또는 sp:)</target>
+    </trans-unit>
+    <trans-unit id="searchDatabases">
+      <source xml:lang="en">Search databases</source>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.objectError">
+      <source xml:lang="en">Unable to load objects</source>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.databaseError">
+      <source xml:lang="en">Unable to load databases</source>
+      <target state="translated">데이터베이스를 로드할 수 없습니다</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dashboard.properties.error">
+      <source xml:lang="en">Unable to load dashboard properties</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/editData/editDataGridActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="deleteRow">
+      <source xml:lang="en">Delete Row</source>
+      <target state="translated">행 삭제</target>
+    </trans-unit>
+    <trans-unit id="revertRow">
+      <source xml:lang="en">Revert Current Row</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/actions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="editDashboard">
+      <source xml:lang="en">Edit</source>
+      <target state="translated">편집</target>
+    </trans-unit>
+    <trans-unit id="editDashboardExit">
+      <source xml:lang="en">Exit</source>
+      <target state="translated">끝내기</target>
+    </trans-unit>
+    <trans-unit id="refreshWidget">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">새로 고침</target>
+    </trans-unit>
+    <trans-unit id="toggleMore">
+      <source xml:lang="en">Toggle More</source>
+      <target state="translated">추가 설정</target>
+    </trans-unit>
+    <trans-unit id="deleteWidget">
+      <source xml:lang="en">Delete Widget</source>
+      <target state="translated">위젯 삭제</target>
+    </trans-unit>
+    <trans-unit id="clickToUnpin">
+      <source xml:lang="en">Click to unpin</source>
+      <target state="translated">클릭하여 고정 해제</target>
+    </trans-unit>
+    <trans-unit id="clickToPin">
+      <source xml:lang="en">Click to pin</source>
+      <target state="translated">고정하려면 클릭</target>
+    </trans-unit>
+    <trans-unit id="addFeatureAction.openInstalledFeatures">
+      <source xml:lang="en">Open installed features</source>
+    </trans-unit>
+    <trans-unit id="collapseWidget">
+      <source xml:lang="en">Collapse</source>
+      <target state="translated">Collapse</target>
+    </trans-unit>
+    <trans-unit id="expandWidget">
+      <source xml:lang="en">Expand</source>
+      <target state="translated">확장</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/controller/profilerFindWidget" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="label.find">
+      <source xml:lang="en">Find</source>
+      <target state="translated">찾기</target>
+    </trans-unit>
+    <trans-unit id="placeholder.find">
+      <source xml:lang="en">Find</source>
+      <target state="translated">찾기</target>
+    </trans-unit>
+    <trans-unit id="label.previousMatchButton">
+      <source xml:lang="en">Previous match</source>
+    </trans-unit>
+    <trans-unit id="label.nextMatchButton">
+      <source xml:lang="en">Next match</source>
+    </trans-unit>
+    <trans-unit id="label.closeButton">
+      <source xml:lang="en">Close</source>
+      <target state="translated">닫기</target>
+    </trans-unit>
+    <trans-unit id="title.matchesCountLimit">
+      <source xml:lang="en">Only the first 999 results are highlighted, but all find operations work on the entire text.</source>
+    </trans-unit>
+    <trans-unit id="label.matchesLocation">
+      <source xml:lang="en">{0} of {1}</source>
+      <target state="translated">{1}의 {0}</target>
+    </trans-unit>
+    <trans-unit id="label.noResults">
+      <source xml:lang="en">No Results</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelView" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="unknownComponentType">
+      <source xml:lang="en">Unkown component type. Must use ModelBuilder to create objects</source>
+    </trans-unit>
+    <trans-unit id="unknownConfig">
+      <source xml:lang="en">Unkown component configuration, must use ModelBuilder to create a configuration object</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelViewDialog" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="dialogDoneLabel">
+      <source xml:lang="en">Done</source>
+      <target state="translated">완료</target>
+    </trans-unit>
+    <trans-unit id="dialogCancelLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="generateScriptLabel">
+      <source xml:lang="en">Generate script</source>
+      <target state="translated">스크립트 생성</target>
+    </trans-unit>
+    <trans-unit id="dialogNextLabel">
+      <source xml:lang="en">Next</source>
+      <target state="translated">다음</target>
+    </trans-unit>
+    <trans-unit id="dialogPreviousLabel">
+      <source xml:lang="en">Previous</source>
+      <target state="translated">이전</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelViewTree" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="treeView.notRegistered">
+      <source xml:lang="en">No tree view with id '{0}' registered.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="insights.lastUpdated">
+      <source xml:lang="en">Last Updated: {0} {1}</source>
+    </trans-unit>
+    <trans-unit id="noResults">
+      <source xml:lang="en">No results to show</source>
+      <target state="translated">표시할 결과가 없습니다</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/views/browser/views" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="viewToolbarAriaLabel">
+      <source xml:lang="en">{0} actions</source>
+      <target state="translated">{0} 작업</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardHelper" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="unknownDashboardContainerError">
+      <source xml:lang="en">{0} is an unknown container.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/query/chartViewerActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="chartContextRequired">
+      <source xml:lang="en">Chart View context is required to run this action</source>
+    </trans-unit>
+    <trans-unit id="createInsightLabel">
+      <source xml:lang="en">Create Insight</source>
+    </trans-unit>
+    <trans-unit id="copyChartLabel">
+      <source xml:lang="en">Copy as image</source>
+      <target state="translated">이미지로 복사</target>
+    </trans-unit>
+    <trans-unit id="saveImageLabel">
+      <source xml:lang="en">Save as image</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/rowdetailview" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="rowDetailView.loadError">
+      <source xml:lang="en">Loading Error...</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/viewBase" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="componentTypeNotRegistered">
+      <source xml:lang="en">Could not find component for type {0}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="jobaction.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">새로 고침</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newJob">
+      <source xml:lang="en">New Job</source>
+      <target state="translated">새 작업</target>
+    </trans-unit>
+    <trans-unit id="jobaction.run">
+      <source xml:lang="en">Run</source>
+      <target state="translated">실행</target>
+    </trans-unit>
+    <trans-unit id="jobSuccessfullyStarted">
+      <source xml:lang="en">: The job was successfully started.</source>
+    </trans-unit>
+    <trans-unit id="jobaction.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">중지</target>
+    </trans-unit>
+    <trans-unit id="jobSuccessfullyStopped">
+      <source xml:lang="en">: The job was successfully stopped.</source>
+    </trans-unit>
+    <trans-unit id="jobaction.editJob">
+      <source xml:lang="en">Edit Job</source>
+      <target state="translated">작업 편집</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteJob">
+      <source xml:lang="en">Delete Job</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteJobConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the job '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteJob">
+      <source xml:lang="en">Could not delete job '{0}'.
+Error: {1}</source>
+      <target state="translated">작업 '{0}' 을 삭제할 수 없습니다.
+오류: {1}</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newStep">
+      <source xml:lang="en">New Step</source>
+      <target state="translated">새로운 단계</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newAlert">
+      <source xml:lang="en">New Alert</source>
+      <target state="translated">새 경고</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editAlert">
+      <source xml:lang="en">Edit Alert</source>
+      <target state="translated">경고 편집</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteAlert">
+      <source xml:lang="en">Delete Alert</source>
+    </trans-unit>
+    <trans-unit id="jobaction.Cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">취소</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteAlertConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the alert '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteAlert">
+      <source xml:lang="en">Could not delete alert '{0}'.
+Error: {1}</source>
+    </trans-unit>
+    <trans-unit id="jobaction.newOperator">
+      <source xml:lang="en">New Operator</source>
+      <target state="translated">새 운영자</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editOperator">
+      <source xml:lang="en">Edit Operator</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteOperator">
+      <source xml:lang="en">Delete Operator</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteOperatorConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the operator '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteOperator">
+      <source xml:lang="en">Could not delete operator '{0}'.
+Error: {1}</source>
+      <target state="translated">연산자 '{0}'를 삭제할 수 없습니다.
+오류: {1}</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newProxy">
+      <source xml:lang="en">New Proxy</source>
+      <target state="translated">새 프록시</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editProxy">
+      <source xml:lang="en">Edit Proxy</source>
+      <target state="translated">프록시 편집</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteProxy">
+      <source xml:lang="en">Delete Proxy</source>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteProxyConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the proxy '{0}'?</source>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteProxy">
+      <source xml:lang="en">Could not delete proxy '{0}'.
+Error: {1}</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobManagementUtilities" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="agentUtilities.failed">
+      <source xml:lang="en">Failed</source>
+      <target state="translated">실패</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.succeeded">
+      <source xml:lang="en">Succeeded</source>
+      <target state="translated">성공</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.canceled">
+      <source xml:lang="en">Canceled</source>
+      <target state="translated">취소됨</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.statusUnknown">
+      <source xml:lang="en">Status Unknown</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.executing">
+      <source xml:lang="en">Executing</source>
+      <target state="translated">실행 중</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.waitingForThread">
+      <source xml:lang="en">Waiting for Thread</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.betweenRetries">
+      <source xml:lang="en">Between Retries</source>
+      <target state="translated">다시 시도 대기 중</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.idle">
+      <source xml:lang="en">Idle</source>
+      <target state="translated">유휴 상태</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.suspended">
+      <source xml:lang="en">Suspended</source>
+      <target state="translated">일시 중지됨</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.obsolete">
+      <source xml:lang="en">[Obsolete]</source>
+      <target state="translated">[이전 방식]</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.performingCompletionActions">
+      <source xml:lang="en">PerformingCompletionActions</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">예</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">아니요</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.notScheduled">
+      <source xml:lang="en">Not Scheduled</source>
+    </trans-unit>
+    <trans-unit id="agentUtilities.neverRun">
+      <source xml:lang="en">Never Run</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="home">
+      <source xml:lang="en">Home</source>
+      <target state="translated">홈</target>
+    </trans-unit>
+    <trans-unit id="missingConnectionInfo">
+      <source xml:lang="en">No connection information could be found for this dashboard</source>
+      <target state="translated">이 대시보드에 대한 연결 정보를 찾을 수 없습니다.</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/actions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="insights.runQuery">
+      <source xml:lang="en">Run Query</source>
+      <target state="translated">쿼리 실행</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/panel/tabActions" source-language="en" target-language="ko" datatype="plaintext"><body>
+    <trans-unit id="closeTab">
+      <source xml:lang="en">Close</source>
+      <target state="translated">닫기</target>
+    </trans-unit>
+  </body></file>
+</xliff>

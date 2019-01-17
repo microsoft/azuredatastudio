@@ -8,7 +8,7 @@
 export class AzureResourceCredentialError extends Error {
 	constructor(
 		message: string,
-		public innerError: Error
+		public readonly innerError: Error
 	) {
 		super(message);
 	}

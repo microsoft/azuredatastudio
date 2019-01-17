@@ -17,12 +17,12 @@
 		"configuration": [
 			{
 				"type": "object",
-				"title": "%azure.config.title%",
+				"title": "%azure.resource.config.title%",
 				"properties": {
-					"azureResource.resourceFilter": {
+					"azure.resource.config.filter": {
 						"type": "array",
 						"default": null,
-						"description": "%azure.resourceFilter.description%"
+						"description": "%azure.resource.config.filter.description%"
 					}
 				}
 			},
@@ -61,39 +61,47 @@
 				"category": "Azure Accounts"
 			},
 			{
-				"command": "azureresource.refreshall",
-				"title": "%azureresource.refreshall%",
+				"command": "azure.resource.refreshall",
+				"title": "%azure.resource.refreshall.title%",
 				"icon": {
 					"dark": "resources/dark/refresh_inverse.svg",
 					"light": "resources/light/refresh.svg"
 				}
 			},
 			{
-				"command": "azureresource.refresh",
-				"title": "%azureresource.refresh%",
+				"command": "azure.resource.refresh",
+				"title": "%azure.resource.refresh.title%",
 				"icon": {
 					"dark": "resources/dark/refresh_inverse.svg",
 					"light": "resources/light/refresh.svg"
 				}
 			},
 			{
-				"command": "azureresource.signin",
-				"title": "%azureresource.signin%"
+				"command": "azure.resource.signin",
+				"title": "%azure.resource.signin.title%"
 			},
 			{
-				"command": "azureresource.connectsqldb",
-				"title": "%azureresource.connectsqldb%",
+				"command": "azure.resource.selectsubscriptions",
+				"title": "%azure.resource.selectsubscriptions.title%",
+				"icon": {
+					"dark": "resources/dark/filter_inverse.svg",
+					"light": "resources/light/filter.svg"
+				}
+			},
+			{
+				"command": "azure.resource.connectsqlserver",
+				"title": "%azure.resource.connectsqlserver.title%",
 				"icon": {
 					"dark": "resources/dark/connect_to_inverse.svg",
 					"light": "resources/light/connect_to.svg"
 				}
 			},
 			{
-				"command": "azureresource.selectsubscriptions",
-				"title": "%azureresource.selectsubscriptions%",
+				"command": "azure.resource.connectsqldb",
+				"title": "%azure.resource.connectsqldb.title%",
 				"icon": {
-					"dark": "resources/dark/filter_inverse.svg",
-					"light": "resources/light/filter.svg"
+					"dark": "resources/dark/connect_to_inverse.svg",
+					"light": "resources/light/connect_to.svg"
 				}
 			}
 		],
@@ -110,46 +118,47 @@
 			"azureResource": [
 				{
 					"id": "azureResourceExplorer",
-					"name": "%azure.resourceExplorer.title%"
+					"name": "%azure.resource.explorer.title%"
 				}
 			]
 		},
 		"menus": {
 			"view/title": [
 				{
-					"command": "azureresource.refreshall",
+					"command": "azure.resource.refreshall",
 					"when": "view == azureResourceExplorer",
 					"group": "navigation@1"
 				}
 			],
 			"view/item/context": [
 				{
-					"command": "azureresource.connectsqldb",
-					"when": "viewItem =~ /^azureResource\\.itemType\\.database(?:Server){0,1}$/",
-					"group": "1azureresource@1"
-				},
-				{
-					"command": "azureresource.connectsqldb",
-					"when": "viewItem =~ /^azureResource\\.itemType\\.database(?:Server){0,1}$/",
+					"command": "azure.resource.selectsubscriptions",
+					"when": "viewItem == azure.resource.itemType.account",
 					"group": "inline"
 				},
 				{
-					"command": "azureresource.selectsubscriptions",
-					"when": "viewItem == azureResource.itemType.account",
+					"command": "azure.resource.refresh",
+					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
 					"group": "inline"
 				},
 				{
-					"command": "azureresource.refresh",
-					"when": "viewItem =~ /^azureResource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+					"command": "azure.resource.connectsqlserver",
+					"when": "viewItem == azure.resource.itemType.databaseServer",
+					"group": "inline"
+				},
+				{
+					"command": "azure.resource.connectsqldb",
+					"when": "viewItem == azure.resource.itemType.database",
 					"group": "inline"
 				}
 			]
-		}
+		},
+		"hasAzureResourceProviders": true
 	},
 	"dependencies": {
-		"request": "2.88.0",
 		"azure-arm-resource": "^7.0.0",
 		"azure-arm-sql": "^5.0.1",
+		"request": "2.88.0",
 		"vscode-nls": "^4.0.0"
 	},
 	"devDependencies": {
@@ -157,6 +166,7 @@
 		"@types/node": "^8.0.24",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
+		"vscode": "^1.1.26",
 		"typemoq": "^2.1.0"
 	}
 }

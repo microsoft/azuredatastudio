@@ -6,11 +6,16 @@ import * as path from 'path';
 import * as os from 'os';
 import * as constants from './constants';
 
-import MainController from './controllers/mainController';
+import AzureResourceController from './controllers/azureResourceController';
 import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 import { AzureAccountProviderService } from './account-provider/azureAccountProviderService';
+
+import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
+import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
+import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
+import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
 
 let controllers: ControllerBase[] = [];
 
@@ -35,7 +40,8 @@ export function getDefaultLogLocation() {
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(extensionContext: vscode.ExtensionContext) {
-	let appContext = new AppContext(extensionContext, new ApiWrapper());
+	const apiWrapper = new ApiWrapper();
+	let appContext = new AppContext(extensionContext, apiWrapper);
 	let activations: Thenable<boolean>[] = [];
 
 	// Create the folder for storing the token caches
@@ -56,21 +62,19 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(accountProviderService);
 	accountProviderService.activate();
 
-	// Start the main controller
-	let mainController = new MainController(appContext);
-	controllers.push(mainController);
-	extensionContext.subscriptions.push(mainController);
-	activations.push(mainController.activate());
+	const azureResourceController = new AzureResourceController(appContext);
+	controllers.push(azureResourceController);
+	extensionContext.subscriptions.push(azureResourceController);
+	activations.push(azureResourceController.activate());
 
-	return Promise.all(activations)
-		.then((results: boolean[]) => {
-			for (let result of results) {
-				if (!result) {
-					return false;
-				}
-			}
-			return true;
-		});
+	return {
+		provideResources() {
+			return [
+				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
+				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+			];
+		}
+	};
 }
 
 // this method is called when your extension is deactivated

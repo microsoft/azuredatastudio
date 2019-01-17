@@ -1,0 +1,3314 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="src/sql/parts/taskHistory/common/taskHistory.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="inProgressTasksChangesBadge">
+      <source xml:lang="en">{0} in progress tasks</source>
+      <target state="translated">{0} 正在执行任务</target>
+    </trans-unit>
+    <trans-unit id="showTaskHistory">
+      <source xml:lang="en">Show Task History</source>
+      <target state="translated">显示任务历史</target>
+      <note>Show Task History</note>
+    </trans-unit>
+    <trans-unit id="taskHistory.view">
+      <source xml:lang="en">View</source>
+      <target state="translated">视图</target>
+    </trans-unit>
+    <trans-unit id="taskHistory">
+      <source xml:lang="en">Task History</source>
+      <target state="translated">任务历史记录</target>
+    </trans-unit>
+    <trans-unit id="datasource.task">
+      <source xml:lang="en">Operation Task Status</source>
+      <target state="translated">操作任务状态</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/connectionViewlet" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="Search server names">
+      <source xml:lang="en">Search server names</source>
+      <target state="translated">搜索服务器名称</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/common/registeredServer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="registeredServers.view">
+      <source xml:lang="en">View</source>
+      <target state="translated">视图</target>
+    </trans-unit>
+    <trans-unit id="databaseConnections">
+      <source xml:lang="en">Database Connections</source>
+      <target state="translated">数据库连接</target>
+    </trans-unit>
+    <trans-unit id="datasource.connections">
+      <source xml:lang="en">data source connections</source>
+      <target state="translated">数据源连接</target>
+    </trans-unit>
+    <trans-unit id="datasource.connectionGroups">
+      <source xml:lang="en">data source groups</source>
+      <target state="translated">数据源组</target>
+    </trans-unit>
+    <trans-unit id="startupConfig">
+      <source xml:lang="en">Startup Configuration</source>
+      <target state="translated">启动配置</target>
+    </trans-unit>
+    <trans-unit id="startup.alwaysShowServersView">
+      <source xml:lang="en">True for the Servers view to be shown on launch of Azure Data Studio default; false if the last opened view should be shown</source>
+      <target state="translated">如果在Azure Data Studio默认启动时显示服务器视图，则为True;如果应显示上次打开的视图，则返回false</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/query.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="sql.messagesDefaultOpen">
+      <source xml:lang="en">True for the messages pane to be open by default; false for closed</source>
+      <target state="translated">"true" 时默认开启消息面板；"false" 时默认关闭</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.includeHeaders">
+      <source xml:lang="en">[Optional] When true, column headers are included when saving results as CSV</source>
+      <target state="translated">[可选] 当为 "true" 时，将在保存结果为 CSV 时包含列标题</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.delimiter">
+      <source xml:lang="en">[Optional] The custom delimiter to use between values when saving as CSV</source>
+      <target state="translated">[可选] 保存为 CSV 时使用的自定义分隔符</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.lineSeperator">
+      <source xml:lang="en">[Optional] Character(s) used for seperating rows when saving results as CSV</source>
+      <target state="translated">[可选] 将结果保存为CSV文件时，用于分离行的字符 (s)</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.textIdentifier">
+      <source xml:lang="en">[Optional] Character used for enclosing text fields when saving results as CSV</source>
+      <target state="translated">[可选]将结果保存为CSV时用于封闭文本字段的字符</target>
+    </trans-unit>
+    <trans-unit id="sql.saveAsCsv.encoding">
+      <source xml:lang="en">[Optional] File encoding used when saving results as CSV</source>
+      <target state="translated">[可选]将结果保存为 CSV 时使用的文件编码</target>
+    </trans-unit>
+    <trans-unit id="sql.copyIncludeHeaders">
+      <source xml:lang="en">[Optional] Configuration options for copying results from the Results View</source>
+      <target state="translated">[可选] 从结果视图复制结果的配置选项</target>
+    </trans-unit>
+    <trans-unit id="sql.copyRemoveNewLine">
+      <source xml:lang="en">[Optional] Configuration options for copying multi-line results from the Results View</source>
+      <target state="translated">[可选]从结果视图中复制多行结果的配置选项</target>
+    </trans-unit>
+    <trans-unit id="sql.showBatchTime">
+      <source xml:lang="en">[Optional] Should execution time be shown for individual batches</source>
+      <target state="translated">[可选] 是否显示每个批处理的执行时间</target>
+    </trans-unit>
+    <trans-unit id="defaultChartType">
+      <source xml:lang="en">[Optional] the default chart type to use when opening Chart Viewer from a Query Results</source>
+      <target state="translated">[可选] 从查询结果打开图表查看器时要使用的默认图表类型</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.off">
+      <source xml:lang="en">Tab coloring will be disabled</source>
+      <target state="translated">选项卡着色将被禁用</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.border">
+      <source xml:lang="en">The top border of each editor tab will be colored to match the relevant server group</source>
+      <target state="translated">每个编辑器选项卡的上边框将被着色以匹配相关的服务器组</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode.fill">
+      <source xml:lang="en">Each editor tab's background color will match the relevant server group</source>
+      <target state="translated">每个编辑器选项卡的背景颜色将与相关的服务器组匹配</target>
+    </trans-unit>
+    <trans-unit id="tabColorMode">
+      <source xml:lang="en">Controls how to color tabs based on the server group of their active connection</source>
+      <target state="translated">控制如何根据活动连接的服务器组为选项卡着色</target>
+    </trans-unit>
+    <trans-unit id="showConnectionInfoInTitle">
+      <source xml:lang="en">Controls whether to show the connection info for a tab in the title.</source>
+      <target state="translated">控制是否显示标题中选项卡的连接信息。</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableIntelliSense">
+      <source xml:lang="en">Should IntelliSense be enabled</source>
+      <target state="translated">是否应启用智能感知</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableErrorChecking">
+      <source xml:lang="en">Should IntelliSense error checking be enabled</source>
+      <target state="translated">是否开启IntelliSense错误检查</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
+      <target state="translated">是否应启用智能感知建议</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableQuickInfo">
+      <source xml:lang="en">Should IntelliSense quick info be enabled</source>
+      <target state="translated">是否开启IntelliSense快速信息</target>
+    </trans-unit>
+    <trans-unit id="mssql.intelliSense.lowerCaseSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be lowercase</source>
+      <target state="translated">是否小写显示IntelliSense建议</target>
+    </trans-unit>
+    <trans-unit id="queryShortcutDescription">
+      <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter</source>
+      <target state="translated">设置 keybinding 工作台. 操作. 查询. 快捷方式 {0} 将快捷方式文本作为过程调用运行。查询编辑器中的任何选定文本都将作为参数传递</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="serverGroup.colors">
+      <source xml:lang="en">Server Group color palette used in the Object Explorer viewlet.</source>
+      <target state="translated">在对象资源管理器 viewlet 中使用的服务器组调色板。</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.autoExpand">
+      <source xml:lang="en">Auto-expand Server Groups in the Object Explorer viewlet.</source>
+      <target state="translated">在对象资源管理器 viewlet 中自动展开服务器组。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connection.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="sql.maxRecentConnectionsDescription">
+      <source xml:lang="en">The maximum number of recently used connections to store in the connection list.</source>
+      <target state="translated">连接列表中保存的最近使用连接的最大值</target>
+    </trans-unit>
+    <trans-unit id="sql.defaultEngineDescription">
+      <source xml:lang="en">Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL</source>
+      <target state="translated">要使用的默认SQL引擎。这将驱动.sql文件中的默认语言提供程序，以及创建新连接时使用的默认语言提供程序。有效选项目前是MSSQL</target>
+    </trans-unit>
+    <trans-unit id="connection.parseClipboardForConnectionStringDescription">
+      <source xml:lang="en">Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.</source>
+      <target state="translated">在打开连接对话框或执行粘贴时尝试解析剪贴板的内容。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/editor/resultsGridContribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="resultsGridConfigurationTitle">
+      <source xml:lang="en">Results Grid</source>
+      <target state="translated">结果网格</target>
+    </trans-unit>
+    <trans-unit id="fontFamily">
+      <source xml:lang="en">Controls the font family.</source>
+      <target state="translated">控制字体系列。</target>
+    </trans-unit>
+    <trans-unit id="fontWeight">
+      <source xml:lang="en">Controls the font weight.</source>
+      <target state="translated">控制字体粗细。</target>
+    </trans-unit>
+    <trans-unit id="fontSize">
+      <source xml:lang="en">Controls the font size in pixels.</source>
+      <target state="translated">以像素为单位控制字体大小。</target>
+    </trans-unit>
+    <trans-unit id="letterSpacing">
+      <source xml:lang="en">Controls the letter spacing in pixels.</source>
+      <target state="translated">控制以像素为单位的字母间距。</target>
+    </trans-unit>
+    <trans-unit id="rowHeight">
+      <source xml:lang="en">Controls the row height in pixels</source>
+      <target state="translated">以像素为单位控制行高</target>
+    </trans-unit>
+    <trans-unit id="cellPadding">
+      <source xml:lang="en">Controls the cell padding in pixels</source>
+      <target state="translated">以像素为单位控制单元格边距</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profilerActions.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="profilerCategory">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">分析器</target>
+    </trans-unit>
+    <trans-unit id="carbon.actions.newProfiler">
+      <source xml:lang="en">Open up a new profiler window</source>
+      <target state="translated">打开一个新的分析器窗口</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountManagement.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="carbon.extension.contributes.account.id">
+      <source xml:lang="en">Identifier of the account type</source>
+      <target state="translated">帐户类型的标识符</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon">
+      <source xml:lang="en">(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration</source>
+      <target state="translated">（可选）用于表示UI中的accpunt的图标。文件路径或可配置配置</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon.light">
+      <source xml:lang="en">Icon path when a light theme is used</source>
+      <target state="translated">使用浅色主题时的图标路径</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account.icon.dark">
+      <source xml:lang="en">Icon path when a dark theme is used</source>
+      <target state="translated">使用暗主题时的图标路径</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.account">
+      <source xml:lang="en">Contributes icons to account provider.</source>
+      <target state="translated">将图标贡献给账号提供者。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profiler.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="profiler.settings.viewTemplates">
+      <source xml:lang="en">Specifies view templates</source>
+      <target state="translated">指定视图模板</target>
+    </trans-unit>
+    <trans-unit id="profiler.settings.sessionTemplates">
+      <source xml:lang="en">Specifies session templates</source>
+      <target state="translated">指定会话模板</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="yAxisMin">
+      <source xml:lang="en">Minimum value of the y axis</source>
+      <target state="translated">y 轴的最小值</target>
+    </trans-unit>
+    <trans-unit id="yAxisMax">
+      <source xml:lang="en">Maximum value of the y axis</source>
+      <target state="translated">y 轴的最大值</target>
+    </trans-unit>
+    <trans-unit id="barchart.yAxisLabel">
+      <source xml:lang="en">Label for the y axis</source>
+      <target state="translated">y 轴的标签</target>
+    </trans-unit>
+    <trans-unit id="xAxisMin">
+      <source xml:lang="en">Minimum value of the x axis</source>
+      <target state="translated">x 轴的最小值</target>
+    </trans-unit>
+    <trans-unit id="xAxisMax">
+      <source xml:lang="en">Maximum value of the x axis</source>
+      <target state="translated">x 轴的最大值</target>
+    </trans-unit>
+    <trans-unit id="barchart.xAxisLabel">
+      <source xml:lang="en">Label for the x axis</source>
+      <target state="translated">x 轴标签</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dataTypeDescription">
+      <source xml:lang="en">Indicates data property of a data set for a chart.</source>
+      <target state="translated">指示图表数据集的数据属性。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/imageInsight.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="imageInsightDescription">
+      <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
+      <target state="translated">显示图像，例如使用ggplot2由R查询返回的图像</target>
+    </trans-unit>
+    <trans-unit id="imageFormatDescription">
+      <source xml:lang="en">What format is expected - is this a JPEG, PNG or other format?</source>
+      <target state="translated">期望什么格式-这是 JPEG、PNG 还是其他格式？</target>
+    </trans-unit>
+    <trans-unit id="encodingDescription">
+      <source xml:lang="en">Is this encoded as hex, base64 or some other format?</source>
+      <target state="translated">此编码为十六进制、base64 还是其他格式？</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/tableInsight.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="tableInsightDescription">
+      <source xml:lang="en">Displays the results in a simple table</source>
+      <target state="translated">在简单表中显示结果</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/countInsight.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="countInsightDescription">
+      <source xml:lang="en">For each column in a resultset, displays the value in row 0 as a count followed by the column name. Supports "1 Healthy", "3 Unhealthy" for example, where "Healthy" is the column name and 1 is the value in row 1 cell 1</source>
+      <target state="translated">对于结果集中的每一列, 将行0中的值显示为计数, 后跟列名。支持 "1 健康", "3 不健康" 例如, 其中 "健康" 是列名, 1 是行1单元格1中的值</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardWebviewContainer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.webview">
+      <source xml:lang="en">The webview that will be displayed in this tab.</source>
+      <target state="translated">将在此选项卡中显示的webview。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardWidgetContainer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.widgets">
+      <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
+      <target state="translated">将在此选项卡中显示的小部件列表。</target>
+    </trans-unit>
+    <trans-unit id="widgetContainer.invalidInputs">
+      <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+      <target state="translated">控件容器里的控件列表应该是用于扩展的</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardGridContainer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.gridtab.items">
+      <source xml:lang="en">The list of widgets or webviews that will be displayed in this tab.</source>
+      <target state="translated">将显示在此选项卡中的小部件或 webviews 的列表。</target>
+    </trans-unit>
+    <trans-unit id="gridContainer.invalidInputs">
+      <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
+      <target state="translated">小部件或 webviews 在小部件中被期望为扩展的容器。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardNavSection.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.left-nav-bar.id">
+      <source xml:lang="en">Unique identifier for this nav section. Will be passed to the extension for any requests.</source>
+      <target state="translated">此导航部分的唯一标识符。将被传递给任何请求的扩展名。</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon">
+      <source xml:lang="en">(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration</source>
+      <target state="translated">(可选) 用于在UI 中表示此导航节的图标。应为文件路径或可主体化的配置</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon.light">
+      <source xml:lang="en">Icon path when a light theme is used</source>
+      <target state="translated">使用浅色主题时的图标路径</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.icon.dark">
+      <source xml:lang="en">Icon path when a dark theme is used</source>
+      <target state="translated">使用暗主题时的图标路径</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.title">
+      <source xml:lang="en">Title of the nav section to show the user.</source>
+      <target state="translated">要向用户显示的 "导航" 部分的标题。</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar.container">
+      <source xml:lang="en">The container that will be displayed in this nav section.</source>
+      <target state="translated">容器将显示在此导航节中。</target>
+    </trans-unit>
+    <trans-unit id="dashboard.container.left-nav-bar">
+      <source xml:lang="en">The list of dashboard containers that will be displayed in this navigation section.</source>
+      <target state="translated">将显示在此导航节中的仪表板容器的列表。</target>
+    </trans-unit>
+    <trans-unit id="opticon">
+      <source xml:lang="en">property `icon` can be omitted or must be either a string or a literal like `{dark, light}`</source>
+      <target state="translated">属性 "icon" 可以省略, 或者必须是字符串或文字, 如 "{dark, light}"</target>
+    </trans-unit>
+    <trans-unit id="navSection.missingTitle_error">
+      <source xml:lang="en">No title in nav section specified for extension.</source>
+      <target state="translated">未指定用于扩展的 "导航" 部分中的标题。</target>
+    </trans-unit>
+    <trans-unit id="navSection.missingContainer_error">
+      <source xml:lang="en">No container in nav section specified for extension.</source>
+      <target state="translated">在 "导航" 部分中未指定用于扩展的容器。</target>
+    </trans-unit>
+    <trans-unit id="navSection.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+      <target state="translated">必须为每个空间定义1个仪表板容器。</target>
+    </trans-unit>
+    <trans-unit id="navSection.invalidContainer_error">
+      <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
+      <target state="translated">NAV_SECTION 内的 NAV_SECTION 是一个无效的扩展容器。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardContainer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.dashboard.container.id">
+      <source xml:lang="en">Unique identifier for this container.</source>
+      <target state="translated">此容器的唯一标识符。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.container.container">
+      <source xml:lang="en">The container that will be displayed in the tab.</source>
+      <target state="translated">将在选项卡中显示的容器。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.containers">
+      <source xml:lang="en">Contributes a single or multiple dashboard containers for users to add to their dashboard.</source>
+      <target state="translated">为用户提供单个或多个仪表板容器, 供其添加到其仪表板中。</target>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noIdError">
+      <source xml:lang="en">No id in dashboard container specified for extension.</source>
+      <target state="translated">用于扩展的仪表板容器中没有指定Id。</target>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.noContainerError">
+      <source xml:lang="en">No container in dashboard container specified for extension.</source>
+      <target state="translated">为扩展指定的仪表板容器中没有容器。</target>
+    </trans-unit>
+    <trans-unit id="dashboardContainer.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+      <target state="translated">必须为每个空间定义1个仪表板容器。</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.unKnownContainerType">
+      <source xml:lang="en">Unknown container type defines in dashboard container for extension.</source>
+      <target state="translated">在仪表板容器中为扩展定义了未知容器类型。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardModelViewContainer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.modelview">
+      <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
+      <target state="translated">将在此选项卡中显示的模型支持视图。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardControlHostContainer.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.container.controlhost">
+      <source xml:lang="en">The controlhost that will be displayed in this tab.</source>
+      <target state="translated">将在此选项卡中显示  controlhost</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardTab.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.id">
+      <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+      <target state="translated">此选项卡的唯一标识符。将被传递给任何请求的扩展名。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.title">
+      <source xml:lang="en">Title of the tab to show the user.</source>
+      <target state="translated">显示用户的选项卡的标题。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.description">
+      <source xml:lang="en">Description of this tab that will be shown to the user.</source>
+      <target state="translated">将显示给用户的此选项卡的说明。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tab.when">
+      <source xml:lang="en">Condition which must be true to show this item</source>
+      <target state="translated">显示此项目时条件必须为 true</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tab.provider">
+      <source xml:lang="en">Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set</source>
+      <target state="translated">定义此选项卡兼容的连接类型。如果未设置，则默认为“MSSQL”</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.container">
+      <source xml:lang="en">The container that will be displayed in this tab.</source>
+      <target state="translated">将在此选项卡中显示的容器。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.alwaysShow">
+      <source xml:lang="en">Whether or not this tab should always be shown or only when the user adds it.</source>
+      <target state="translated">此选项卡是否应始终显示或仅当用户添加时显示。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboard.tab.isHomeTab">
+      <source xml:lang="en">Whether or not this tab should be used as the Home tab for a connection type.</source>
+      <target state="translated">此选项卡是否作为连接类型的主选项卡。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.tabs">
+      <source xml:lang="en">Contributes a single or multiple tabs for users to add to their dashboard.</source>
+      <target state="translated">为用户提供一个或多个选项卡以添加到其仪表板中。</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noTitleError">
+      <source xml:lang="en">No title specified for extension.</source>
+      <target state="translated">没有为扩展指定标题。</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noDescriptionWarning">
+      <source xml:lang="en">No description specified to show.</source>
+      <target state="translated">未指定要显示的说明。</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.noContainerError">
+      <source xml:lang="en">No container specified for extension.</source>
+      <target state="translated">没有为扩展指定容器。</target>
+    </trans-unit>
+    <trans-unit id="dashboardTab.contribution.moreThanOneDashboardContainersError">
+      <source xml:lang="en">Exactly 1 dashboard container must be defined per space</source>
+      <target state="translated">每个空间必须定义一个完整的仪表板容器</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/errorMessageDialog/errorMessageService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="error">
+      <source xml:lang="en">Error</source>
+      <target state="translated">错误</target>
+    </trans-unit>
+    <trans-unit id="warning">
+      <source xml:lang="en">Warning</source>
+      <target state="translated">警告</target>
+    </trans-unit>
+    <trans-unit id="info">
+      <source xml:lang="en">Info</source>
+      <target state="translated">信息</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionDialogService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="connectionError">
+      <source xml:lang="en">Connection error</source>
+      <target state="translated">连接错误</target>
+    </trans-unit>
+    <trans-unit id="kerberosErrorStart">
+      <source xml:lang="en">Connection failed due to Kerberos error.</source>
+      <target state="translated">由于 Kerberos 错误, 连接失败。</target>
+    </trans-unit>
+    <trans-unit id="kerberosHelpLink">
+      <source xml:lang="en">Help configuring Kerberos is available at {0}</source>
+      <target state="translated">帮助配置 Kerberos 使其在 {0} 上可用</target>
+    </trans-unit>
+    <trans-unit id="kerberosKinit">
+      <source xml:lang="en">If you have previously connected you may need to re-run kinit.</source>
+      <target state="translated">如果您之前已连接过，则可能需要重新运行kinit。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionManagementService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="connectionNotAcceptedError">
+      <source xml:lang="en">Connection Not Accepted</source>
+      <target state="translated">连接未被接受</target>
+    </trans-unit>
+    <trans-unit id="connectionService.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="connectionService.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+    <trans-unit id="cancelConnectionConfirmation">
+      <source xml:lang="en">Are you sure you want to cancel this connection?</source>
+      <target state="translated">您确定要取消此连接吗？</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/common/taskService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="InProgressWarning">
+      <source xml:lang="en">1 or more tasks are in progress. Are you sure you want to quit?</source>
+      <target state="translated">一个或多个任务正在运行中，确定要退出吗？</target>
+    </trans-unit>
+    <trans-unit id="taskService.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="taskService.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/common/objectExplorerService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="OeSessionFailedError">
+      <source xml:lang="en">Failed to create Object Explorer session</source>
+      <target state="translated">未能创建对象资源管理器会话</target>
+    </trans-unit>
+    <trans-unit id="treeNodeNoLongerExists">
+      <source xml:lang="en">The given tree node no longer exists</source>
+      <target state="translated">给定的树节点不再存在</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryModelService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="commitEditFailed">
+      <source xml:lang="en">Commit row failed: </source>
+      <target state="translated">提交行失败:</target>
+    </trans-unit>
+    <trans-unit id="runQueryStringBatchStartMessage">
+      <source xml:lang="en">Started executing query "{0}"</source>
+      <target state="translated">已开始执行查询 "{0}"</target>
+    </trans-unit>
+    <trans-unit id="updateCellFailed">
+      <source xml:lang="en">Update cell failed: </source>
+      <target state="translated">更新单元格失败:</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/services/queryEditorService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="queryEditorServiceChangeUnsupportedError">
+      <source xml:lang="en">Change Language Mode is not supported for unsaved queries</source>
+      <target state="translated">未保存的查询不支持更改语言模式</target>
+    </trans-unit>
+    <trans-unit id="queryEditorServiceChangeError">
+      <source xml:lang="en">Please save or discard changes before switching to/from the SQL Language Mode</source>
+      <target state="translated">请在切换到/自 SQL 语言模式之前保存或放弃更改</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/admin/common/adminService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="adminService.providerIdNotValidError">
+      <source xml:lang="en">Connection is required in order to interact with adminservice</source>
+      <target state="translated">为了与 adminservice 交互, 需要连接</target>
+    </trans-unit>
+    <trans-unit id="adminService.noHandlerRegistered">
+      <source xml:lang="en">No Handler Registered</source>
+      <target state="translated">未注册处理程序</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobManagementService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="providerIdNotValidError">
+      <source xml:lang="en">Connection is required in order to interact with JobManagementService</source>
+      <target state="translated">为了与 JobManagementService 交互, 需要连接</target>
+    </trans-unit>
+    <trans-unit id="noHandlerRegistered">
+      <source xml:lang="en">No Handler Registered</source>
+      <target state="translated">未注册处理程序</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/common/fileBrowserService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="fileBrowserErrorMessage">
+      <source xml:lang="en">An error occured while loading the file browser.</source>
+      <target state="translated">加载文件浏览器时出错。</target>
+    </trans-unit>
+    <trans-unit id="fileBrowserErrorDialogTitle">
+      <source xml:lang="en">File browser error</source>
+      <target state="translated">文件浏览器错误</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserDialogController" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.selectFile">
+      <source xml:lang="en">Select a file</source>
+      <target state="translated">选择文件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/services/accountManagement/accountManagementService" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="accountManagementNoProvider">
+      <source xml:lang="en">Account provider does not exist</source>
+      <target state="translated">帐户提供程序不存在</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskHistoryView" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="noTaskMessage">
+      <source xml:lang="en">No task history to display. Try backup or restore task to view its execution status.</source>
+      <target state="translated">没有要显示的任务历史记录。尝试备份或还原任务以查看其执行状态。</target>
+    </trans-unit>
+    <trans-unit id="taskHistory.regTreeAriaLabel">
+      <source xml:lang="en">Task history</source>
+      <target state="translated">任务历史记录</target>
+      <note>TaskHistory</note>
+    </trans-unit>
+    <trans-unit id="taskError">
+      <source xml:lang="en">Task error</source>
+      <target state="translated">任务错误</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/serverTreeView" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="serverTree.addConnection">
+      <source xml:lang="en">Add Connection</source>
+      <target state="translated">添加连接</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/connectionTreeAction" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="connectionTree.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">刷新</target>
+    </trans-unit>
+    <trans-unit id="DisconnectAction">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">断开</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.addConnection">
+      <source xml:lang="en">New Connection</source>
+      <target state="translated">新建连接</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.addServerGroup">
+      <source xml:lang="en">New Server Group</source>
+      <target state="translated">新服务器组</target>
+    </trans-unit>
+    <trans-unit id="connectionTree.editServerGroup">
+      <source xml:lang="en">Edit Server Group</source>
+      <target state="translated">编辑服务器组</target>
+    </trans-unit>
+    <trans-unit id="activeConnections">
+      <source xml:lang="en">Show Active Connections</source>
+      <target state="translated">显示活动连接</target>
+    </trans-unit>
+    <trans-unit id="clearAll">
+      <source xml:lang="en">Clear All</source>
+      <target state="translated">全部清除</target>
+    </trans-unit>
+    <trans-unit id="recentConnections">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">最近的连接</target>
+    </trans-unit>
+    <trans-unit id="registeredServers.newQuery">
+      <source xml:lang="en">New Query</source>
+      <target state="translated">新建查询</target>
+    </trans-unit>
+    <trans-unit id="deleteConnection">
+      <source xml:lang="en">Delete Connection</source>
+      <target state="translated">删除连接</target>
+    </trans-unit>
+    <trans-unit id="deleteConnectionGroup">
+      <source xml:lang="en">Delete Group</source>
+      <target state="translated">删除组</target>
+    </trans-unit>
+    <trans-unit id="clearSearch">
+      <source xml:lang="en">Clear Search</source>
+      <target state="translated">清除搜索</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/queryResultsInput" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="extensionsInputName">
+      <source xml:lang="en">Extension</source>
+      <target state="translated">扩展</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/queryInput" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="disconnected">
+      <source xml:lang="en">disconnected</source>
+      <target state="translated">已断开连接</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/common/editDataInput" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="connectionFailure">
+      <source xml:lang="en">Edit Data Session Failed To Connect</source>
+      <target state="translated">编辑数据会话无法连接</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/editor/editDataEditor" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="maxRowTaskbar">
+      <source xml:lang="en">Max Rows:</source>
+      <target state="translated">最大行数:</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/keyboardQueryActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="focusOnCurrentQueryKeyboardAction">
+      <source xml:lang="en">Focus on Current Query</source>
+      <target state="translated">关注当前查询</target>
+    </trans-unit>
+    <trans-unit id="runQueryKeyboardAction">
+      <source xml:lang="en">Run Query</source>
+      <target state="translated">运行查询</target>
+    </trans-unit>
+    <trans-unit id="runCurrentQueryKeyboardAction">
+      <source xml:lang="en">Run Current Query</source>
+      <target state="translated">运行当前查询</target>
+    </trans-unit>
+    <trans-unit id="runCurrentQueryWithActualPlanKeyboardAction">
+      <source xml:lang="en">Run Current Query with Actual Plan</source>
+      <target state="translated">使用实际计划运行当前查询</target>
+    </trans-unit>
+    <trans-unit id="cancelQueryKeyboardAction">
+      <source xml:lang="en">Cancel Query</source>
+      <target state="translated">取消查询</target>
+    </trans-unit>
+    <trans-unit id="refreshIntellisenseKeyboardAction">
+      <source xml:lang="en">Refresh IntelliSense Cache</source>
+      <target state="translated">刷新智能感知缓存</target>
+    </trans-unit>
+    <trans-unit id="toggleQueryResultsKeyboardAction">
+      <source xml:lang="en">Toggle Query Results</source>
+      <target state="translated">切换查询结果</target>
+    </trans-unit>
+    <trans-unit id="queryShortcutNoEditor">
+      <source xml:lang="en">Editor parameter is required for a shortcut to be executed</source>
+      <target state="translated">要执行的快捷方式需要编辑器参数</target>
+    </trans-unit>
+    <trans-unit id="parseSyntaxLabel">
+      <source xml:lang="en">Parse Query</source>
+      <target state="translated">解析查询</target>
+    </trans-unit>
+    <trans-unit id="queryActions.parseSyntaxSuccess">
+      <source xml:lang="en">Commands completed successfully</source>
+      <target state="translated">命令已成功完成</target>
+    </trans-unit>
+    <trans-unit id="queryActions.parseSyntaxFailure">
+      <source xml:lang="en">Command failed: </source>
+      <target state="translated">命令失败:</target>
+    </trans-unit>
+    <trans-unit id="queryActions.notConnected">
+      <source xml:lang="en">Please connect to a server</source>
+      <target state="translated">请连接到服务器</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/gridActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="saveAsCsv">
+      <source xml:lang="en">Save As CSV</source>
+      <target state="translated">另存为 CSV</target>
+    </trans-unit>
+    <trans-unit id="saveAsJson">
+      <source xml:lang="en">Save As JSON</source>
+      <target state="translated">另存为 JSON</target>
+    </trans-unit>
+    <trans-unit id="saveAsExcel">
+      <source xml:lang="en">Save As Excel</source>
+      <target state="translated">另存为 Excel</target>
+    </trans-unit>
+    <trans-unit id="copySelection">
+      <source xml:lang="en">Copy</source>
+      <target state="translated">复制</target>
+    </trans-unit>
+    <trans-unit id="copyWithHeaders">
+      <source xml:lang="en">Copy With Headers</source>
+      <target state="translated">连同标题一起复制</target>
+    </trans-unit>
+    <trans-unit id="selectAll">
+      <source xml:lang="en">Select All</source>
+      <target state="translated">选择全部</target>
+    </trans-unit>
+    <trans-unit id="copyMessages">
+      <source xml:lang="en">Copy</source>
+      <target state="translated">复制</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="ClearRecentlyUsedLabel">
+      <source xml:lang="en">Clear List</source>
+      <target state="translated">清除列表</target>
+    </trans-unit>
+    <trans-unit id="ClearedRecentConnections">
+      <source xml:lang="en">Recent connections list cleared</source>
+      <target state="translated">已清空最近的连接列表</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+    <trans-unit id="clearRecentConnectionMessage">
+      <source xml:lang="en">Are you sure you want to delete all the connections from the list?</source>
+      <target state="translated">确定要删除列表中的所有连接吗?</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+    <trans-unit id="delete">
+      <source xml:lang="en">Delete</source>
+      <target state="translated">删除</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.GetCurrentConnectionString">
+      <source xml:lang="en">Get Current Connection String</source>
+      <target state="translated">获取当前连接字符串</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.connectionString">
+      <source xml:lang="en">Connection string not available</source>
+      <target state="translated">连接字符串不可用</target>
+    </trans-unit>
+    <trans-unit id="connectionAction.noConnection">
+      <source xml:lang="en">No active connection available</source>
+      <target state="translated">没有可用的活动连接</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerInput" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="confirmStopProfilerSession">
+      <source xml:lang="en">Would you like to stop the running XEvent session?</source>
+      <target state="translated">是否要停止正在运行的 XEvent 会话？</target>
+    </trans-unit>
+    <trans-unit id="profilerClosingActions.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="profilerClosingActions.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+    <trans-unit id="profilerInput.profiler">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">分析器</target>
+    </trans-unit>
+    <trans-unit id="profilerInput.notConnected">
+      <source xml:lang="en">Not connected</source>
+      <target state="translated">未连接</target>
+    </trans-unit>
+    <trans-unit id="profiler.sessionStopped">
+      <source xml:lang="en">XEvent Profiler Session stopped unexpectedly on the server {0}.</source>
+      <target state="translated">XEvent 探查器会话在服务器 {0} 上意外停止。</target>
+    </trans-unit>
+    <trans-unit id="profiler.sessionCreationError">
+      <source xml:lang="en">Error while starting new session</source>
+      <target state="translated">启动新会话时出错</target>
+    </trans-unit>
+    <trans-unit id="profiler.eventsLost">
+      <source xml:lang="en">The XEvent Profiler session for {0} has lost events.</source>
+      <target state="translated">{0} 的 XEvent 分析会话已丢失事件。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerEditor" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="text">
+      <source xml:lang="en">Text</source>
+      <target state="translated">文本</target>
+    </trans-unit>
+    <trans-unit id="label">
+      <source xml:lang="en">Label</source>
+      <target state="translated">标签</target>
+    </trans-unit>
+    <trans-unit id="profilerEditor.value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">值</target>
+    </trans-unit>
+    <trans-unit id="details">
+      <source xml:lang="en">Details</source>
+      <target state="translated">细节</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/common/taskUtilities" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="selectOperationName">
+      <source xml:lang="en">Select</source>
+      <target state="translated">选择</target>
+    </trans-unit>
+    <trans-unit id="createOperationName">
+      <source xml:lang="en">Create</source>
+      <target state="translated">创建</target>
+    </trans-unit>
+    <trans-unit id="insertOperationName">
+      <source xml:lang="en">Insert</source>
+      <target state="translated">插入</target>
+    </trans-unit>
+    <trans-unit id="updateOperationName">
+      <source xml:lang="en">Update</source>
+      <target state="translated">更新</target>
+    </trans-unit>
+    <trans-unit id="deleteOperationName">
+      <source xml:lang="en">Delete</source>
+      <target state="translated">删除</target>
+    </trans-unit>
+    <trans-unit id="scriptSelectNotFound">
+      <source xml:lang="en">No script was returned when calling select script on object </source>
+      <target state="translated">在对象上调用select脚本时，没有返回脚本</target>
+    </trans-unit>
+    <trans-unit id="scriptNotFoundForObject">
+      <source xml:lang="en">No script was returned when scripting as {0} on object {1}</source>
+      <target state="translated">当在对象 {1} 上运行脚本 {0} 时没有返回任何脚本</target>
+    </trans-unit>
+    <trans-unit id="scriptingFailed">
+      <source xml:lang="en">Scripting Failed</source>
+      <target state="translated">脚本执行失败</target>
+    </trans-unit>
+    <trans-unit id="scriptNotFound">
+      <source xml:lang="en">No script was returned when scripting as {0}</source>
+      <target state="translated">脚本为 {0} 时未返回任何脚本</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="manageLinedAccounts">
+      <source xml:lang="en">Manage Linked Accounts</source>
+      <target state="translated">管理链接帐户</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/insightRegistry" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.InsightsRegistry">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">仪表板中使用的小部件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="chartInsightDescription">
+      <source xml:lang="en">Displays results of a query as a chart on the dashboard</source>
+      <target state="translated">将查询结果显示为仪表板上的图表</target>
+    </trans-unit>
+    <trans-unit id="colorMapDescription">
+      <source xml:lang="en">Maps "column name" -&gt; color. for example add "column1": red to ensure this column uses a red color </source>
+      <target state="translated">映射“列名”->颜色。例如，添加“column1”:红色以确保该列使用红色</target>
+    </trans-unit>
+    <trans-unit id="legendDescription">
+      <source xml:lang="en">Indicates preferred position and visibility of the chart legend. These are the column names from your query, and map to the label of each chart entry</source>
+      <target state="translated">表示图表图例的首选位置和可见性。这些是查询中的列名称，并映射到每个图表条目的标签</target>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnDescription">
+      <source xml:lang="en">If dataDirection is horizontal, setting this to true uses the first columns value for the legend.</source>
+      <target state="translated">如果 dataDirection 是水平的, 则将其设置为 true 将使用图例的第一列值。</target>
+    </trans-unit>
+    <trans-unit id="columnsAsLabels">
+      <source xml:lang="en">If dataDirection is vertical, setting this to true will use the columns names for the legend.</source>
+      <target state="translated">如果dataDirection是垂直的，则将其设置为true将使用图例的列名称。</target>
+    </trans-unit>
+    <trans-unit id="dataDirectionDescription">
+      <source xml:lang="en">Defines whether the data is read from a column (vertical) or a row (horizontal). For time series this is ignored as direction must be vertical.</source>
+      <target state="translated">定义无论是从列（垂直）还是从行（水平）读取数据。对于时间序列，这都将被忽略，因为方向必须是垂直的。</target>
+    </trans-unit>
+    <trans-unit id="showTopNData">
+      <source xml:lang="en">If showTopNData is set, showing only top N data in the chart.</source>
+      <target state="translated">如果设置了 showTopNData, 则只在图表中显示前 N 个数据。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidgetSchemas" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="insightWidgetDescription">
+      <source xml:lang="en">Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more</source>
+      <target state="translated">添加一个可以查询服务器或数据库并以多种方式显示结果的小部件, 如图表、汇总计数等。</target>
+    </trans-unit>
+    <trans-unit id="insightIdDescription">
+      <source xml:lang="en">Unique Identifier used for cacheing the results of the insight.</source>
+      <target state="translated">用于缓存洞察结果的唯一标识符</target>
+    </trans-unit>
+    <trans-unit id="insightQueryDescription">
+      <source xml:lang="en">SQL query to run. This should return exactly 1 resultset.</source>
+      <target state="translated">要运行的 SQL 查询。这应该返回恰好1结果集。</target>
+    </trans-unit>
+    <trans-unit id="insightQueryFileDescription">
+      <source xml:lang="en">[Optional] path to a file that contains a query. Use if "query" is not set</source>
+      <target state="translated">[可选] 指向包含一个查询的文件路径。在未设置 "查询"时使用</target>
+    </trans-unit>
+    <trans-unit id="insightAutoRefreshIntervalDescription">
+      <source xml:lang="en">[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh</source>
+      <target state="translated">[可选] 以分钟为单位的自动刷新频率，如未设置将不会自动刷新。</target>
+    </trans-unit>
+    <trans-unit id="actionTypes">
+      <source xml:lang="en">Which actions to use</source>
+      <target state="translated">要使用的操作</target>
+    </trans-unit>
+    <trans-unit id="actionDatabaseDescription">
+      <source xml:lang="en">Target database for the action; can use the format "${columnName}" to use a data driven column name.</source>
+      <target state="translated">要操作的目标数据库;可以使用 "${columnName}" 格式使用数据驱动的列名。</target>
+    </trans-unit>
+    <trans-unit id="actionServerDescription">
+      <source xml:lang="en">Target server for the action; can use the format "${columnName}" to use a data driven column name.</source>
+      <target state="translated">操作的目标服务器;可以使用 "${columnName}" 格式使用数据驱动的列名。</target>
+    </trans-unit>
+    <trans-unit id="actionUserDescription">
+      <source xml:lang="en">Target user for the action; can use the format "${columnName}" to use a data driven column name.</source>
+      <target state="translated">用于操作的目标用户；可以使用格式“$ {columnName}”来使用数据驱动的列名。</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.insightType.id">
+      <source xml:lang="en">Identifier of the insight</source>
+      <target state="translated">智能见解的标识符</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.contributes.insights">
+      <source xml:lang="en">Contributes insights to the dashboard palette.</source>
+      <target state="translated">为仪表板调色板提供见解。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/update/releaseNotes" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="gettingStarted">
+      <source xml:lang="en">Get Started</source>
+      <target state="translated">入门</target>
+    </trans-unit>
+    <trans-unit id="showReleaseNotes">
+      <source xml:lang="en">Show Getting Started</source>
+      <target state="translated">显示入门</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboardDatabaseProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
+      <target state="translated">启用或禁用属性窗口小部件</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties">
+      <source xml:lang="en">Property values to show</source>
+      <target state="translated">要显示的属性值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+      <target state="translated">属性的显示名称</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.value">
+      <source xml:lang="en">Value in the Database Info Object</source>
+      <target state="translated">数据库信息对象中的值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.databaseproperties.ignore">
+      <source xml:lang="en">Specify specific values to ignore</source>
+      <target state="translated">指定要忽略的特定值</target>
+    </trans-unit>
+    <trans-unit id="recoveryModel">
+      <source xml:lang="en">Recovery Model</source>
+      <target state="translated">恢复模型</target>
+    </trans-unit>
+    <trans-unit id="lastDatabaseBackup">
+      <source xml:lang="en">Last Database Backup</source>
+      <target state="translated">上次数据库备份</target>
+    </trans-unit>
+    <trans-unit id="lastLogBackup">
+      <source xml:lang="en">Last Log Backup</source>
+      <target state="translated">上次日志备份</target>
+    </trans-unit>
+    <trans-unit id="compatibilityLevel">
+      <source xml:lang="en">Compatibility Level</source>
+      <target state="translated">兼容级别</target>
+    </trans-unit>
+    <trans-unit id="owner">
+      <source xml:lang="en">Owner</source>
+      <target state="translated">所有者</target>
+    </trans-unit>
+    <trans-unit id="dashboardDatabase">
+      <source xml:lang="en">Customizes the database dashboard page</source>
+      <target state="translated">自定义 "数据库仪表板" 页</target>
+    </trans-unit>
+    <trans-unit id="dashboardDatabaseTabs">
+      <source xml:lang="en">Customizes the database dashboard tabs</source>
+      <target state="translated">自定义数据库仪表板选项卡</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/dashboardPageContribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="sqlops.extension.contributes.widget.when">
+      <source xml:lang="en">Condition which must be true to show this item</source>
+      <target state="translated">显示此项目时条件必须为 true</target>
+    </trans-unit>
+    <trans-unit id="dashboardpage.tabName">
+      <source xml:lang="en">The title of the container</source>
+      <target state="translated">容器的标题</target>
+    </trans-unit>
+    <trans-unit id="dashboardpage.rowNumber">
+      <source xml:lang="en">The row of the component in the grid</source>
+      <target state="translated">网格中组件的行</target>
+    </trans-unit>
+    <trans-unit id="dashboardpage.rowSpan">
+      <source xml:lang="en">The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.</source>
+      <target state="translated">网格中组件的 rowspan。默认值为1。使用 "*" 设置为网格中的行数。</target>
+    </trans-unit>
+    <trans-unit id="dashboardpage.colNumber">
+      <source xml:lang="en">The column of the component in the grid</source>
+      <target state="translated">网格中组件的列</target>
+    </trans-unit>
+    <trans-unit id="dashboardpage.colspan">
+      <source xml:lang="en">The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.</source>
+      <target state="translated">网格中组件的列跨距。默认值为1。使用 "*" 设置网格中的列数。</target>
+    </trans-unit>
+    <trans-unit id="sqlops.extension.contributes.dashboardPage.tab.id">
+      <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+      <target state="translated">此选项卡的唯一标识符。将被传递给任何请求的扩展名。</target>
+    </trans-unit>
+    <trans-unit id="dashboardTabError">
+      <source xml:lang="en">Extension tab is unknown or not installed.</source>
+      <target state="translated">"扩展" 选项卡未知或未安装。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.contribution" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboardServerProperties">
+      <source xml:lang="en">Enable or disable the properties widget</source>
+      <target state="translated">启用或禁用属性窗口小部件</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties">
+      <source xml:lang="en">Property values to show</source>
+      <target state="translated">要显示的属性值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.displayName">
+      <source xml:lang="en">Display name of the property</source>
+      <target state="translated">属性的显示名称</target>
+    </trans-unit>
+    <trans-unit id="dashboard.serverproperties.value">
+      <source xml:lang="en">Value in the Server Info Object</source>
+      <target state="translated">服务器信息对象中的值</target>
+    </trans-unit>
+    <trans-unit id="version">
+      <source xml:lang="en">Version</source>
+      <target state="translated">版本</target>
+    </trans-unit>
+    <trans-unit id="edition">
+      <source xml:lang="en">Edition</source>
+      <target state="translated">版</target>
+    </trans-unit>
+    <trans-unit id="computerName">
+      <source xml:lang="en">Computer Name</source>
+      <target state="translated">计算机名</target>
+    </trans-unit>
+    <trans-unit id="osVersion">
+      <source xml:lang="en">OS Version</source>
+      <target state="translated">OS 版本</target>
+    </trans-unit>
+    <trans-unit id="dashboardServer">
+      <source xml:lang="en">Customizes the server dashboard page</source>
+      <target state="translated">自定义服务器仪表板页面</target>
+    </trans-unit>
+    <trans-unit id="dashboardServerTabs">
+      <source xml:lang="en">Customizes the Server dashboard tabs</source>
+      <target state="translated">自定义服务器仪表板选项卡</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/widgetRegistry" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="schema.dashboardWidgets.all">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">仪表板中使用的小部件</target>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.database">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">仪表板中使用的小部件</target>
+    </trans-unit>
+    <trans-unit id="schema.dashboardWidgets.server">
+      <source xml:lang="en">Widget used in the dashboards</source>
+      <target state="translated">仪表板中使用的小部件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/common/actions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="newQueryAction.newQuery">
+      <source xml:lang="en">New Query</source>
+      <target state="translated">新建查询</target>
+    </trans-unit>
+    <trans-unit id="scriptSelect">
+      <source xml:lang="en">Select Top 1000</source>
+      <target state="translated">选择前 1000 项</target>
+    </trans-unit>
+    <trans-unit id="scriptExecute">
+      <source xml:lang="en">Script as Execute</source>
+      <target state="translated">作为执行的脚本</target>
+    </trans-unit>
+    <trans-unit id="scriptAlter">
+      <source xml:lang="en">Script as Alter</source>
+      <target state="translated">生成Alter脚本</target>
+    </trans-unit>
+    <trans-unit id="editData">
+      <source xml:lang="en">Edit Data</source>
+      <target state="translated">编辑数据</target>
+    </trans-unit>
+    <trans-unit id="scriptCreate">
+      <source xml:lang="en">Script as Create</source>
+      <target state="translated">编写脚本为创建</target>
+    </trans-unit>
+    <trans-unit id="scriptDelete">
+      <source xml:lang="en">Script as Drop</source>
+      <target state="translated">生成DROP脚本</target>
+    </trans-unit>
+    <trans-unit id="backupAction.backup">
+      <source xml:lang="en">Backup</source>
+      <target state="translated">备份</target>
+    </trans-unit>
+    <trans-unit id="restoreAction.restore">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">还原</target>
+    </trans-unit>
+    <trans-unit id="manage">
+      <source xml:lang="en">Manage</source>
+      <target state="translated">管理</target>
+    </trans-unit>
+    <trans-unit id="showDetails">
+      <source xml:lang="en">Show Details</source>
+      <target state="translated">显示详细信息</target>
+    </trans-unit>
+    <trans-unit id="newDatabase">
+      <source xml:lang="en">New Database</source>
+      <target state="translated">新建数据库</target>
+    </trans-unit>
+    <trans-unit id="configureDashboard">
+      <source xml:lang="en">Configure</source>
+      <target state="translated">配置</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/inputbox.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="invalidValueError">
+      <source xml:lang="en">Invalid value</source>
+      <target state="translated">无效值</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/loadingComponent.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="loadingMessage">
+      <source xml:lang="en">Loading</source>
+      <target state="translated">正在加载</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dashboard/common/dashboardRegistry" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.properties.property">
+      <source xml:lang="en">Defines a property to show on the dashboard</source>
+      <target state="translated">定义要在仪表板上显示的属性</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.displayName">
+      <source xml:lang="en">What value to use as a label for the property</source>
+      <target state="translated">用作属性标签的值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.value">
+      <source xml:lang="en">What value in the object to access for the value</source>
+      <target state="translated">定义该值访问的对象中的值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.ignore">
+      <source xml:lang="en">Specify values to be ignored</source>
+      <target state="translated">指定要忽略的值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.property.default">
+      <source xml:lang="en">Default value to show if ignored or no value</source>
+      <target state="translated">在忽略或没有值时显示的默认值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor">
+      <source xml:lang="en">A flavor for defining dashboard properties</source>
+      <target state="translated">用于定义仪表板属性的风格</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.id">
+      <source xml:lang="en">Id of the flavor</source>
+      <target state="translated">风格的 Id</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition">
+      <source xml:lang="en">Condition to use this flavor</source>
+      <target state="translated">使用这种风格的条件</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.field">
+      <source xml:lang="en">Field to compare to</source>
+      <target state="translated">要比较的字段</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.operator">
+      <source xml:lang="en">Which operator to use for comparison</source>
+      <target state="translated">用于比较的运算符</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.flavor.condition.value">
+      <source xml:lang="en">Value to compare the field to</source>
+      <target state="translated">用于和字段比较的值</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.databaseProperties">
+      <source xml:lang="en">Properties to show for database page</source>
+      <target state="translated">用于显示于数据库页的属性</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties.serverProperties">
+      <source xml:lang="en">Properties to show for server page</source>
+      <target state="translated">用于显示服务器页的属性</target>
+    </trans-unit>
+    <trans-unit id="carbon.extension.dashboard">
+      <source xml:lang="en">Defines that this provider supports the dashboard</source>
+      <target state="translated">定义此提供程序支持仪表板</target>
+    </trans-unit>
+    <trans-unit id="dashboard.id">
+      <source xml:lang="en">Provider id (ex. MSSQL)</source>
+      <target state="translated">提供程序ID (如： MSSQL)</target>
+    </trans-unit>
+    <trans-unit id="dashboard.properties">
+      <source xml:lang="en">Property values to show on dashboard</source>
+      <target state="translated">要在仪表板上显示的属性值</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/extensions/sqlExtensionsHelper" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="tabs">
+      <source xml:lang="en">Dashboard Tabs ({0})</source>
+      <target state="translated">仪表板选项卡 ({0})</target>
+    </trans-unit>
+    <trans-unit id="tabId">
+      <source xml:lang="en">Id</source>
+      <target state="translated">ID</target>
+    </trans-unit>
+    <trans-unit id="tabTitle">
+      <source xml:lang="en">Title</source>
+      <target state="translated">标题</target>
+    </trans-unit>
+    <trans-unit id="tabDescription">
+      <source xml:lang="en">Description</source>
+      <target state="translated">说明</target>
+    </trans-unit>
+    <trans-unit id="insights">
+      <source xml:lang="en">Dashboard Insights ({0})</source>
+      <target state="translated">仪表板洞察 ({0})</target>
+    </trans-unit>
+    <trans-unit id="insightId">
+      <source xml:lang="en">Id</source>
+      <target state="translated">ID</target>
+    </trans-unit>
+    <trans-unit id="name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">名称</target>
+    </trans-unit>
+    <trans-unit id="insight condition">
+      <source xml:lang="en">When</source>
+      <target state="translated">当</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/errorMessageDialog/errorMessageDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="errorMessageDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="errorMessageDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">关闭</target>
+    </trans-unit>
+    <trans-unit id="copyDetails">
+      <source xml:lang="en">Copy details</source>
+      <target state="translated">复制详细信息</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionDialogWidget" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="connection">
+      <source xml:lang="en">Connection</source>
+      <target state="translated">连接</target>
+    </trans-unit>
+    <trans-unit id="recentConnectionTitle">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">最近的连接</target>
+    </trans-unit>
+    <trans-unit id="savedConnectionTitle">
+      <source xml:lang="en">Saved Connections</source>
+      <target state="translated">保存的连接</target>
+    </trans-unit>
+    <trans-unit id="connectType">
+      <source xml:lang="en">Connection type</source>
+      <target state="translated">连接类型</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.connect">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">连接</target>
+    </trans-unit>
+    <trans-unit id="connectionDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="recentHistory">
+      <source xml:lang="en">Recent history</source>
+      <target state="translated">最近历史</target>
+    </trans-unit>
+    <trans-unit id="noRecentConnections">
+      <source xml:lang="en">No recent connection</source>
+      <target state="translated">没有最近的连接</target>
+    </trans-unit>
+    <trans-unit id="noSavedConnections">
+      <source xml:lang="en">No saved connection</source>
+      <target state="translated">没有保存的连接</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="ServerGroupsDialogTitle">
+      <source xml:lang="en">Server Groups</source>
+      <target state="translated">服务器组</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="connectionGroupName">
+      <source xml:lang="en">Server group name</source>
+      <target state="translated">服务器组名称</target>
+    </trans-unit>
+    <trans-unit id="MissingGroupNameError">
+      <source xml:lang="en">Group name is required.</source>
+      <target state="translated">组名称是必需的。</target>
+    </trans-unit>
+    <trans-unit id="groupDescription">
+      <source xml:lang="en">Group description</source>
+      <target state="translated">组描述</target>
+    </trans-unit>
+    <trans-unit id="groupColor">
+      <source xml:lang="en">Group color</source>
+      <target state="translated">组颜色</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="serverGroup.addServerGroup">
+      <source xml:lang="en">Add server group</source>
+      <target state="translated">添加服务器组</target>
+    </trans-unit>
+    <trans-unit id="serverGroup.editServerGroup">
+      <source xml:lang="en">Edit server group</source>
+      <target state="translated">编辑服务器组</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/parts/connection/common/connectionProviderExtension" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="schema.providerId">
+      <source xml:lang="en">Common id for the provider</source>
+      <target state="translated">提供程序的公共 id</target>
+    </trans-unit>
+    <trans-unit id="schema.displayName">
+      <source xml:lang="en">Display Name for the provider</source>
+      <target state="translated">提供程序的显示名称</target>
+    </trans-unit>
+    <trans-unit id="schema.connectionOptions">
+      <source xml:lang="en">Options for connection</source>
+      <target state="translated">连接选项</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/localizedConstants" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="runQueryBatchStartMessage">
+      <source xml:lang="en">Started executing query at </source>
+      <target state="translated">开始执行查询于</target>
+    </trans-unit>
+    <trans-unit id="runQueryBatchStartLine">
+      <source xml:lang="en">Line {0}</source>
+      <target state="translated">第 {0} 行</target>
+    </trans-unit>
+    <trans-unit id="msgCancelQueryFailed">
+      <source xml:lang="en">Canceling the query failed: {0}</source>
+      <target state="translated">取消查询失败: {0}</target>
+    </trans-unit>
+    <trans-unit id="msgSaveStarted">
+      <source xml:lang="en">Started saving results to </source>
+      <target state="translated">已开始将结果保存到</target>
+    </trans-unit>
+    <trans-unit id="msgSaveFailed">
+      <source xml:lang="en">Failed to save results. </source>
+      <target state="translated">保存结果失败。</target>
+    </trans-unit>
+    <trans-unit id="msgSaveSucceeded">
+      <source xml:lang="en">Successfully saved results to </source>
+      <target state="translated">成功将结果保存到</target>
+    </trans-unit>
+    <trans-unit id="msgStatusRunQueryInProgress">
+      <source xml:lang="en">Executing query...</source>
+      <target state="translated">正在执行查询...</target>
+    </trans-unit>
+    <trans-unit id="maximizeLabel">
+      <source xml:lang="en">Maximize</source>
+      <target state="translated">最大化</target>
+    </trans-unit>
+    <trans-unit id="resultsPane.restoreLabel">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">还原</target>
+    </trans-unit>
+    <trans-unit id="saveCSVLabel">
+      <source xml:lang="en">Save as CSV</source>
+      <target state="translated">另存为 CSV</target>
+    </trans-unit>
+    <trans-unit id="saveJSONLabel">
+      <source xml:lang="en">Save as JSON</source>
+      <target state="translated">另存为 JSON</target>
+    </trans-unit>
+    <trans-unit id="saveExcelLabel">
+      <source xml:lang="en">Save as Excel</source>
+      <target state="translated">另存为 Excel</target>
+    </trans-unit>
+    <trans-unit id="viewChartLabel">
+      <source xml:lang="en">View as Chart</source>
+      <target state="translated">图表视图</target>
+    </trans-unit>
+    <trans-unit id="resultPaneLabel">
+      <source xml:lang="en">Results</source>
+      <target state="translated">结果集</target>
+    </trans-unit>
+    <trans-unit id="executeQueryLabel">
+      <source xml:lang="en">Executing query </source>
+      <target state="translated">执行查询</target>
+    </trans-unit>
+    <trans-unit id="messagePaneLabel">
+      <source xml:lang="en">Messages</source>
+      <target state="translated">消息</target>
+    </trans-unit>
+    <trans-unit id="elapsedTimeLabel">
+      <source xml:lang="en">Total execution time: {0}</source>
+      <target state="translated">执行时间总计: {0}</target>
+    </trans-unit>
+    <trans-unit id="msgCannotSaveMultipleSelections">
+      <source xml:lang="en">Save results command cannot be used with multiple selections.</source>
+      <target state="translated">多选时不能使用保存结果命令。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/flavorStatus" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="chooseSqlLang">
+      <source xml:lang="en">Choose SQL Language</source>
+      <target state="translated">选择 SQL 语言</target>
+    </trans-unit>
+    <trans-unit id="changeProvider">
+      <source xml:lang="en">Change SQL language provider</source>
+      <target state="translated">更改 SQL 语言提供程序</target>
+    </trans-unit>
+    <trans-unit id="changeSqlProvider">
+      <source xml:lang="en">Change SQL Engine Provider</source>
+      <target state="translated">更改 SQL 引擎提供程序</target>
+    </trans-unit>
+    <trans-unit id="alreadyConnected">
+      <source xml:lang="en">A connection using engine {0} exists. To change please disconnect or change connection</source>
+      <target state="translated">使用引擎 {0} 的连接已存在。若要更改, 请先断开或更改连接</target>
+    </trans-unit>
+    <trans-unit id="noEditor">
+      <source xml:lang="en">No text editor active at this time</source>
+      <target state="translated">此时没有活动的文本编辑器</target>
+    </trans-unit>
+    <trans-unit id="pickSqlProvider">
+      <source xml:lang="en">Select SQL Language Provider</source>
+      <target state="translated">选择 SQL 语言提供程序</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryRunner" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="query.ExecutionFailedError">
+      <source xml:lang="en">Execution failed due to an unexpected error: {0}	{1}</source>
+      <target state="translated">由于意外错误, 执行失败: {0} {1}</target>
+    </trans-unit>
+    <trans-unit id="query.gettingRowsFailedError">
+      <source xml:lang="en">Something went wrong getting more rows: {0}</source>
+      <target state="translated">获得更多行时出错了：{0}</target>
+    </trans-unit>
+    <trans-unit id="query.initEditExecutionFailed">
+      <source xml:lang="en">Init Edit Execution failed: </source>
+      <target state="translated">初始化编辑失败：</target>
+    </trans-unit>
+    <trans-unit id="query.moreRowsFailedError">
+      <source xml:lang="en">Something went wrong getting more rows:</source>
+      <target state="translated">获取更多的行时出现错误</target>
+    </trans-unit>
+    <trans-unit id="elapsedBatchTime">
+      <source xml:lang="en">Batch execution time: {0}</source>
+      <target state="translated">批处理执行时间: {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/rowCountStatus" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="rowStatus">
+      <source xml:lang="en">Row Count</source>
+      <target state="translated">行计数</target>
+    </trans-unit>
+    <trans-unit id="rowCount">
+      <source xml:lang="en">{0} rows</source>
+      <target state="translated">{0} 行</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/optionsDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="optionsDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/restore/restoreDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="backupFilePath">
+      <source xml:lang="en">Backup file path</source>
+      <target state="translated">备份文件路径</target>
+    </trans-unit>
+    <trans-unit id="targetDatabase">
+      <source xml:lang="en">Target database</source>
+      <target state="translated">目标数据库</target>
+    </trans-unit>
+    <trans-unit id="RestoreDialogTitle">
+      <source xml:lang="en">Restore database</source>
+      <target state="translated">还原数据库</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.restoreTitle">
+      <source xml:lang="en">Restore database</source>
+      <target state="translated">还原数据库</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.database">
+      <source xml:lang="en">Database</source>
+      <target state="translated">数据库</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.backupFile">
+      <source xml:lang="en">Backup file</source>
+      <target state="translated">备份文件</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.restore">
+      <source xml:lang="en">Restore</source>
+      <target state="translated">还原</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">脚本</target>
+    </trans-unit>
+    <trans-unit id="source">
+      <source xml:lang="en">Source</source>
+      <target state="translated">SOURCE</target>
+    </trans-unit>
+    <trans-unit id="restoreFrom">
+      <source xml:lang="en">Restore from</source>
+      <target state="translated">还原自</target>
+    </trans-unit>
+    <trans-unit id="missingBackupFilePathError">
+      <source xml:lang="en">Backup file path is required.</source>
+      <target state="translated">备份文件路径是必须的。</target>
+    </trans-unit>
+    <trans-unit id="multipleBackupFilePath">
+      <source xml:lang="en">Please enter one or more file paths separated by commas</source>
+      <target state="translated">请输入一个或多个用逗号分隔的文件路径</target>
+    </trans-unit>
+    <trans-unit id="database">
+      <source xml:lang="en">Database</source>
+      <target state="translated">数据库</target>
+    </trans-unit>
+    <trans-unit id="destination">
+      <source xml:lang="en">Destination</source>
+      <target state="translated">目标</target>
+    </trans-unit>
+    <trans-unit id="restoreDialog.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+      <target state="translated">选择数据库切换下拉列表</target>
+    </trans-unit>
+    <trans-unit id="restoreTo">
+      <source xml:lang="en">Restore to</source>
+      <target state="translated">还原到</target>
+    </trans-unit>
+    <trans-unit id="restorePlan">
+      <source xml:lang="en">Restore plan</source>
+      <target state="translated">还原计划</target>
+    </trans-unit>
+    <trans-unit id="backupSetsToRestore">
+      <source xml:lang="en">Backup sets to restore</source>
+      <target state="translated">恢复备份集</target>
+    </trans-unit>
+    <trans-unit id="restoreDatabaseFileAs">
+      <source xml:lang="en">Restore database files as</source>
+      <target state="translated">将数据库文件还原为</target>
+    </trans-unit>
+    <trans-unit id="restoreDatabaseFileDetails">
+      <source xml:lang="en">Restore database file details</source>
+      <target state="translated">还原数据库文件详细信息</target>
+    </trans-unit>
+    <trans-unit id="logicalFileName">
+      <source xml:lang="en">Logical file Name</source>
+      <target state="translated">逻辑文件名</target>
+    </trans-unit>
+    <trans-unit id="fileType">
+      <source xml:lang="en">File type</source>
+      <target state="translated">文件类型</target>
+    </trans-unit>
+    <trans-unit id="originalFileName">
+      <source xml:lang="en">Original File Name</source>
+      <target state="translated">原始文件名</target>
+    </trans-unit>
+    <trans-unit id="restoreAs">
+      <source xml:lang="en">Restore as</source>
+      <target state="translated">还原为</target>
+    </trans-unit>
+    <trans-unit id="restoreOptions">
+      <source xml:lang="en">Restore options</source>
+      <target state="translated">还原选项</target>
+    </trans-unit>
+    <trans-unit id="taillogBackup">
+      <source xml:lang="en">Tail-Log backup</source>
+      <target state="translated">尾日志备份</target>
+    </trans-unit>
+    <trans-unit id="serverConnection">
+      <source xml:lang="en">Server connections</source>
+      <target state="translated">服务器连接</target>
+    </trans-unit>
+    <trans-unit id="generalTitle">
+      <source xml:lang="en">General</source>
+      <target state="translated">常规</target>
+    </trans-unit>
+    <trans-unit id="filesTitle">
+      <source xml:lang="en">Files</source>
+      <target state="translated">文件</target>
+    </trans-unit>
+    <trans-unit id="optionsTitle">
+      <source xml:lang="en">Options</source>
+      <target state="translated">选项</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="newDashboardTab.openDashboardExtensions">
+      <source xml:lang="en">Open dashboard extensions</source>
+      <target state="translated">打开仪表板扩展</target>
+    </trans-unit>
+    <trans-unit id="newDashboardTab.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="newDashboardTab.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="newdashboardTabDialog.noExtensionLabel">
+      <source xml:lang="en">No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.</source>
+      <target state="translated">此时没有安装仪表板扩展。转到扩展管理器来搜索推荐的扩展。</target>
+    </trans-unit>
+    <trans-unit id="allFeatures">
+      <source xml:lang="en">All features</source>
+      <target state="translated">所有功能</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/node/insightsDialogController" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="insightsInputError">
+      <source xml:lang="en">No Connection Profile was passed to insights flyout</source>
+      <target state="translated">没有将连接配置文件传递给洞察弹出</target>
+    </trans-unit>
+    <trans-unit id="insightsError">
+      <source xml:lang="en">Insights error</source>
+      <target state="translated">洞察错误</target>
+    </trans-unit>
+    <trans-unit id="insightsFileError">
+      <source xml:lang="en">There was an error reading the query file: </source>
+      <target state="translated">读取查询文件时出错:</target>
+    </trans-unit>
+    <trans-unit id="insightsConfigError">
+      <source xml:lang="en">There was an error parsing the insight config; could not find query array/string or queryfile</source>
+      <target state="translated">分析洞察配置时出错。找不到查询数组/字符串或查询文件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="filebrowser.filepath">
+      <source xml:lang="en">Selected path</source>
+      <target state="translated">选定的路径</target>
+    </trans-unit>
+    <trans-unit id="fileFilter">
+      <source xml:lang="en">Files of type</source>
+      <target state="translated">文件类型</target>
+    </trans-unit>
+    <trans-unit id="fileBrowser.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="fileBrowser.discard">
+      <source xml:lang="en">Discard</source>
+      <target state="translated">放弃</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/browser/insightsDialogView" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="insights.item">
+      <source xml:lang="en">Item</source>
+      <target state="translated">项</target>
+    </trans-unit>
+    <trans-unit id="insights.value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">值</target>
+    </trans-unit>
+    <trans-unit id="property">
+      <source xml:lang="en">Property</source>
+      <target state="translated">属性</target>
+    </trans-unit>
+    <trans-unit id="value">
+      <source xml:lang="en">Value</source>
+      <target state="translated">值</target>
+    </trans-unit>
+    <trans-unit id="InsightsDialogTitle">
+      <source xml:lang="en">Insights</source>
+      <target state="translated">洞察</target>
+    </trans-unit>
+    <trans-unit id="insights.dialog.items">
+      <source xml:lang="en">Items</source>
+      <target state="translated">项目</target>
+    </trans-unit>
+    <trans-unit id="insights.dialog.itemDetails">
+      <source xml:lang="en">Item Details</source>
+      <target state="translated">项目详情</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountDialog/accountDialogController" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="accountDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+      <target state="translated">添加帐户时出错</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="firewallDialog.addAccountErrorTitle">
+      <source xml:lang="en">Error adding account</source>
+      <target state="translated">添加帐户时出错</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleError">
+      <source xml:lang="en">Firewall rule error</source>
+      <target state="translated">防火墙规则错误</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/dialog/profilerColumnEditorDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="eventSort">
+      <source xml:lang="en">Sort by event</source>
+      <target state="translated">按事件排序</target>
+    </trans-unit>
+    <trans-unit id="nameColumn">
+      <source xml:lang="en">Sort by column</source>
+      <target state="translated">按列排序</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.profiler">
+      <source xml:lang="en">Profiler</source>
+      <target state="translated">分析器</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="profilerColumnDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="oauthFlyoutIsAlreadyOpen">
+      <source xml:lang="en">Cannot start auto OAuth. An auto OAuth is already in progress.</source>
+      <target state="translated">无法启动自动 OAuth。自动 OAuth 已在进行中。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskHistoryRenderer" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="succeeded">
+      <source xml:lang="en">succeeded</source>
+      <target state="translated">成功</target>
+    </trans-unit>
+    <trans-unit id="failed">
+      <source xml:lang="en">failed</source>
+      <target state="translated">失败</target>
+    </trans-unit>
+    <trans-unit id="inProgress">
+      <source xml:lang="en">in progress</source>
+      <target state="translated">正在进行</target>
+    </trans-unit>
+    <trans-unit id="notStarted">
+      <source xml:lang="en">not started</source>
+      <target state="translated">未启动</target>
+    </trans-unit>
+    <trans-unit id="canceled">
+      <source xml:lang="en">canceled</source>
+      <target state="translated">已取消</target>
+    </trans-unit>
+    <trans-unit id="canceling">
+      <source xml:lang="en">canceling</source>
+      <target state="translated">取消中</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/treeCreationUtils" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="treeAriaLabel">
+      <source xml:lang="en">Recent Connections</source>
+      <target state="translated">最近的连接</target>
+    </trans-unit>
+    <trans-unit id="treeCreation.regTreeAriaLabel">
+      <source xml:lang="en">Servers</source>
+      <target state="translated">服务器</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/objectExplorerActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="ManageAction">
+      <source xml:lang="en">Manage</source>
+      <target state="translated">管理</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/views/queryOutput.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="results">
+      <source xml:lang="en">Results</source>
+      <target state="translated">结果集</target>
+    </trans-unit>
+    <trans-unit id="queryPlan">
+      <source xml:lang="en">Query Plan</source>
+      <target state="translated">查询计划</target>
+    </trans-unit>
+    <trans-unit id="topOperations">
+      <source xml:lang="en">Top Operations</source>
+      <target state="translated">顶部操作</target>
+    </trans-unit>
+    <trans-unit id="chartViewer">
+      <source xml:lang="en">Chart Viewer</source>
+      <target state="translated">图表查看器</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/editData/execution/editDataActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="editData.run">
+      <source xml:lang="en">Run</source>
+      <target state="translated">运行</target>
+    </trans-unit>
+    <trans-unit id="disposeEditFailure">
+      <source xml:lang="en">Dispose Edit Failed With Error: </source>
+      <target state="translated">处理编辑失败, 出现错误:</target>
+    </trans-unit>
+    <trans-unit id="editData.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">停止</target>
+    </trans-unit>
+    <trans-unit id="editData.showSql">
+      <source xml:lang="en">Show SQL Pane</source>
+      <target state="translated">显示 SQL 窗格</target>
+    </trans-unit>
+    <trans-unit id="editData.closeSql">
+      <source xml:lang="en">Close SQL Pane</source>
+      <target state="translated">关闭 SQL 窗格</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/execution/queryActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="runQueryLabel">
+      <source xml:lang="en">Run</source>
+      <target state="translated">运行</target>
+    </trans-unit>
+    <trans-unit id="cancelQueryLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="estimatedQueryPlan">
+      <source xml:lang="en">Explain</source>
+      <target state="translated">解释</target>
+    </trans-unit>
+    <trans-unit id="actualQueryPlan">
+      <source xml:lang="en">Actual</source>
+      <target state="translated">实际为</target>
+    </trans-unit>
+    <trans-unit id="disconnectDatabaseLabel">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">断开</target>
+    </trans-unit>
+    <trans-unit id="changeConnectionDatabaseLabel">
+      <source xml:lang="en">Change Connection</source>
+      <target state="translated">更改连接</target>
+    </trans-unit>
+    <trans-unit id="connectDatabaseLabel">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">连接</target>
+    </trans-unit>
+    <trans-unit id="selectDatabase">
+      <source xml:lang="en">Select Database</source>
+      <target state="translated">选择数据库</target>
+    </trans-unit>
+    <trans-unit id="listDatabases.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+      <target state="translated">选择数据库切换下拉列表</target>
+    </trans-unit>
+    <trans-unit id="changeDatabase.failed">
+      <source xml:lang="en">Failed to change database</source>
+      <target state="translated">更改数据库失败</target>
+    </trans-unit>
+    <trans-unit id="changeDatabase.failedWithError">
+      <source xml:lang="en">Failed to change database {0}</source>
+      <target state="translated">更改数据库 {0} 失败</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/platform/dialog/dialogTypes" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dialogModalDoneButtonLabel">
+      <source xml:lang="en">Done</source>
+      <target state="translated">已完成</target>
+    </trans-unit>
+    <trans-unit id="dialogModalCancelButtonLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/contrib/profilerActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="profilerAction.disconnect">
+      <source xml:lang="en">Disconnect</source>
+      <target state="translated">断开</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.connect">
+      <source xml:lang="en">Connect</source>
+      <target state="translated">连接</target>
+    </trans-unit>
+    <trans-unit id="start">
+      <source xml:lang="en">Start</source>
+      <target state="translated">开始</target>
+    </trans-unit>
+    <trans-unit id="create">
+      <source xml:lang="en">New Session</source>
+      <target state="translated">新会话</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.resumeCapture">
+      <source xml:lang="en">Resume</source>
+      <target state="translated">重新开始</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.pauseCapture">
+      <source xml:lang="en">Pause</source>
+      <target state="translated">暂停</target>
+    </trans-unit>
+    <trans-unit id="profilerStop.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">停止</target>
+    </trans-unit>
+    <trans-unit id="profiler.clear">
+      <source xml:lang="en">Clear Data</source>
+      <target state="translated">清除数据</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.autoscrollOn">
+      <source xml:lang="en">Auto Scroll: On</source>
+      <target state="translated">自动滚动：开</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.autoscrollOff">
+      <source xml:lang="en">Auto Scroll: Off</source>
+      <target state="translated">自动滚动: 关闭</target>
+    </trans-unit>
+    <trans-unit id="profiler.toggleCollapsePanel">
+      <source xml:lang="en">Toggle Collapsed Panel</source>
+      <target state="translated">切换折叠面板</target>
+    </trans-unit>
+    <trans-unit id="profiler.editColumns">
+      <source xml:lang="en">Edit Columns</source>
+      <target state="translated">编辑列</target>
+    </trans-unit>
+    <trans-unit id="profiler.findNext">
+      <source xml:lang="en">Find Next String</source>
+      <target state="translated">查找下一个字符串</target>
+    </trans-unit>
+    <trans-unit id="profiler.findPrevious">
+      <source xml:lang="en">Find Previous String</source>
+      <target state="translated">查找上一个字符串</target>
+    </trans-unit>
+    <trans-unit id="profilerAction.newProfiler">
+      <source xml:lang="en">Launch Profiler</source>
+      <target state="translated">启动分析器</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="alertErrorMessage">
+      <source xml:lang="en">Error: {0}</source>
+      <target state="translated">错误: {0}</target>
+    </trans-unit>
+    <trans-unit id="alertWarningMessage">
+      <source xml:lang="en">Warning: {0}</source>
+      <target state="translated">警告: {0}</target>
+    </trans-unit>
+    <trans-unit id="alertInfoMessage">
+      <source xml:lang="en">Info: {0}</source>
+      <target state="translated">信息: {0}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/profilerResourceEditor" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="profilerTextEditorAriaLabel">
+      <source xml:lang="en">Profiler editor for event text. Readonly</source>
+      <target state="translated">事件文本的分析器编辑器。只读</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/views/charts/chartInsight.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="chartErrorMessage">
+      <source xml:lang="en">Chart cannot be displayed with the given data</source>
+      <target state="translated">无法用给定的数据显示图表</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/editableDropdown/dropdown" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="editableDropdown.errorValidate">
+      <source xml:lang="en">Must be an option from the list</source>
+      <target state="translated">必须是列表中的选项</target>
+    </trans-unit>
+    <trans-unit id="dropdownAction.toggle">
+      <source xml:lang="en">Toggle dropdown</source>
+      <target state="translated">切换下拉列表</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/queryTextEditor" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="queryTextEditorAriaLabel">
+      <source xml:lang="en">modelview code editor for view model.</source>
+      <target state="translated">用于视图模型的模型视图代码编辑器。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserViewModel" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="allFiles">
+      <source xml:lang="en">All files</source>
+      <target state="translated">所有文件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/fileBrowser/fileBrowserTreeView" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="fileBrowser.regTreeAriaLabel">
+      <source xml:lang="en">File browser tree</source>
+      <target state="translated">文件浏览树</target>
+      <note>FileBrowserTree</note>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/webViewDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="webViewDialog.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="webViewDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">关闭</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/modal" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="infoAltText">
+      <source xml:lang="en">Info</source>
+      <target state="translated">信息</target>
+    </trans-unit>
+    <trans-unit id="warningAltText">
+      <source xml:lang="en">Warning</source>
+      <target state="translated">警告</target>
+    </trans-unit>
+    <trans-unit id="errorAltText">
+      <source xml:lang="en">Error</source>
+      <target state="translated">错误</target>
+    </trans-unit>
+    <trans-unit id="modalBack">
+      <source xml:lang="en">Back</source>
+      <target state="translated">上一步</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/advancedPropertiesController" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="connectionAdvancedProperties">
+      <source xml:lang="en">Advanced Properties</source>
+      <target state="translated">高级属性</target>
+    </trans-unit>
+    <trans-unit id="advancedProperties.discard">
+      <source xml:lang="en">Discard</source>
+      <target state="translated">放弃</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/connectionDialog/connectionWidget" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="defaultDatabaseOption">
+      <source xml:lang="en">&lt;Default&gt;</source>
+      <target state="translated">&lt;默认值&gt;</target>
+    </trans-unit>
+    <trans-unit id="loadingDatabaseOption">
+      <source xml:lang="en">Loading...</source>
+      <target state="translated">正在加载...</target>
+    </trans-unit>
+    <trans-unit id="defaultServerGroup">
+      <source xml:lang="en">&lt;Default&gt;</source>
+      <target state="translated">&lt;默认值&gt;</target>
+    </trans-unit>
+    <trans-unit id="addNewServerGroup">
+      <source xml:lang="en">Add new group...</source>
+      <target state="translated">添加新组..。</target>
+    </trans-unit>
+    <trans-unit id="noneServerGroup">
+      <source xml:lang="en">&lt;None&gt;</source>
+      <target state="translated">&lt;无&gt;</target>
+    </trans-unit>
+    <trans-unit id="connectionWidget.missingRequireField">
+      <source xml:lang="en">{0} is required.</source>
+      <target state="translated">{0} 是必需的。</target>
+    </trans-unit>
+    <trans-unit id="connectionWidget.fieldWillBeTrimmed">
+      <source xml:lang="en">{0} will be trimmed.</source>
+      <target state="translated">将修剪 {0}。</target>
+    </trans-unit>
+    <trans-unit id="rememberPassword">
+      <source xml:lang="en">Remember password</source>
+      <target state="translated">记住密码</target>
+    </trans-unit>
+    <trans-unit id="connectionWidget.toggleDatabaseNameDropdown">
+      <source xml:lang="en">Select Database Toggle Dropdown</source>
+      <target state="translated">选择数据库切换下拉列表</target>
+    </trans-unit>
+    <trans-unit id="serverGroup">
+      <source xml:lang="en">Server group</source>
+      <target state="translated">服务器组</target>
+    </trans-unit>
+    <trans-unit id="advanced">
+      <source xml:lang="en">Advanced...</source>
+      <target state="translated">高级选项...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/connectionConfig" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="invalidServerName">
+      <source xml:lang="en">A server group with the same name already exists.</source>
+      <target state="translated">已存在同名的服务器组。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/connection/common/localizedConstants" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="onDidConnectMessage">
+      <source xml:lang="en">Connected to</source>
+      <target state="translated">连接到</target>
+    </trans-unit>
+    <trans-unit id="onDidDisconnectMessage">
+      <source xml:lang="en">Disconnected</source>
+      <target state="translated">已断开连接</target>
+    </trans-unit>
+    <trans-unit id="unsavedGroupLabel">
+      <source xml:lang="en">Unsaved Connections</source>
+      <target state="translated">未保存的连接</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/query/common/resultSerializer" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="resultsSerializer.saveAsFileTitle">
+      <source xml:lang="en">Choose Results File</source>
+      <target state="translated">选择结果文件</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionCSVTitle">
+      <source xml:lang="en">CSV (Comma delimited)</source>
+      <target state="translated">CSV (逗号分隔)</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionJSONTitle">
+      <source xml:lang="en">JSON</source>
+      <target state="translated">JSON</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionExcelTitle">
+      <source xml:lang="en">Excel Workbook</source>
+      <target state="translated">Excel 工作簿</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionXMLTitle">
+      <source xml:lang="en">XML</source>
+      <target state="translated">XML</target>
+    </trans-unit>
+    <trans-unit id="resultsSerializer.saveAsFileExtensionTXTTitle">
+      <source xml:lang="en">Plain Text</source>
+      <target state="translated">纯文本</target>
+    </trans-unit>
+    <trans-unit id="openLocation">
+      <source xml:lang="en">Open file location</source>
+      <target state="translated">打开文件所在位置</target>
+    </trans-unit>
+    <trans-unit id="openFile">
+      <source xml:lang="en">Open file</source>
+      <target state="translated">打开文件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/modal/optionsDialogHelper" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="optionsDialog.missingRequireField">
+      <source xml:lang="en"> is required.</source>
+      <target state="translated">是必需的。</target>
+    </trans-unit>
+    <trans-unit id="optionsDialog.invalidInput">
+      <source xml:lang="en">Invalid input.  Numeric value expected.</source>
+      <target state="translated">输入无效。 期待输入的是数值。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/backup/constants" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="backup.filterBackupFiles">
+      <source xml:lang="en">Backup Files</source>
+      <target state="translated">备份文件</target>
+    </trans-unit>
+    <trans-unit id="backup.allFiles">
+      <source xml:lang="en">All Files</source>
+      <target state="translated">所有文件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="selectDeselectAll">
+      <source xml:lang="en">Select/Deselect All</source>
+      <target state="translated">选择/取消选中所有</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/disasterRecovery/backup/backup.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="backup.backupName">
+      <source xml:lang="en">Backup name</source>
+      <target state="translated">备份名称</target>
+    </trans-unit>
+    <trans-unit id="backup.recoveryModel">
+      <source xml:lang="en">Recovery model</source>
+      <target state="translated">恢复模型</target>
+    </trans-unit>
+    <trans-unit id="backup.backupType">
+      <source xml:lang="en">Backup type</source>
+      <target state="translated">备份类型</target>
+    </trans-unit>
+    <trans-unit id="backup.backupDevice">
+      <source xml:lang="en">Backup files</source>
+      <target state="translated">备份文件</target>
+    </trans-unit>
+    <trans-unit id="backup.algorithm">
+      <source xml:lang="en">Algorithm</source>
+      <target state="translated">算法</target>
+    </trans-unit>
+    <trans-unit id="backup.certificateOrAsymmetricKey">
+      <source xml:lang="en">Certificate or Asymmetric key</source>
+      <target state="translated">证书或非对称密钥</target>
+    </trans-unit>
+    <trans-unit id="backup.media">
+      <source xml:lang="en">Media</source>
+      <target state="translated">媒体</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaOption">
+      <source xml:lang="en">Backup to the existing media set</source>
+      <target state="translated">备份到已有的媒体集</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaOptionFormat">
+      <source xml:lang="en">Backup to a new media set</source>
+      <target state="translated">备份到新媒体集</target>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaAppend">
+      <source xml:lang="en">Append to the existing backup set</source>
+      <target state="translated">追加到现有备份集</target>
+    </trans-unit>
+    <trans-unit id="backup.existingMediaOverwrite">
+      <source xml:lang="en">Overwrite all existing backup sets</source>
+      <target state="translated">覆盖所有现有备份集</target>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetName">
+      <source xml:lang="en">New media set name</source>
+      <target state="translated">新媒体集名称</target>
+    </trans-unit>
+    <trans-unit id="backup.newMediaSetDescription">
+      <source xml:lang="en">New media set description</source>
+      <target state="translated">新建媒体集描述</target>
+    </trans-unit>
+    <trans-unit id="backup.checksumContainer">
+      <source xml:lang="en">Perform checksum before writing to media</source>
+      <target state="translated">在写入介质前执行和校验</target>
+    </trans-unit>
+    <trans-unit id="backup.verifyContainer">
+      <source xml:lang="en">Verify backup when finished</source>
+      <target state="translated">完成后验证备份</target>
+    </trans-unit>
+    <trans-unit id="backup.continueOnErrorContainer">
+      <source xml:lang="en">Continue on error</source>
+      <target state="translated">错误发生时继续</target>
+    </trans-unit>
+    <trans-unit id="backup.expiration">
+      <source xml:lang="en">Expiration</source>
+      <target state="translated">过期</target>
+    </trans-unit>
+    <trans-unit id="backup.setBackupRetainDays">
+      <source xml:lang="en">Set backup retain days</source>
+      <target state="translated">设置备份保留天数</target>
+    </trans-unit>
+    <trans-unit id="backup.copyOnly">
+      <source xml:lang="en">Copy-only backup</source>
+      <target state="translated">仅复制备份</target>
+    </trans-unit>
+    <trans-unit id="backup.advancedConfiguration">
+      <source xml:lang="en">Advanced Configuration</source>
+      <target state="translated">高级配置</target>
+    </trans-unit>
+    <trans-unit id="backup.compression">
+      <source xml:lang="en">Compression</source>
+      <target state="translated">压缩</target>
+    </trans-unit>
+    <trans-unit id="backup.setBackupCompression">
+      <source xml:lang="en">Set backup compression</source>
+      <target state="translated">设置备份压缩</target>
+    </trans-unit>
+    <trans-unit id="backup.encryption">
+      <source xml:lang="en">Encryption</source>
+      <target state="translated">加密</target>
+    </trans-unit>
+    <trans-unit id="backup.transactionLog">
+      <source xml:lang="en">Transaction log</source>
+      <target state="translated">事务日志</target>
+    </trans-unit>
+    <trans-unit id="backup.truncateTransactionLog">
+      <source xml:lang="en">Truncate the transaction log</source>
+      <target state="translated">截断事务日志</target>
+    </trans-unit>
+    <trans-unit id="backup.backupTail">
+      <source xml:lang="en">Backup the tail of the log</source>
+      <target state="translated">备份日志的尾部</target>
+    </trans-unit>
+    <trans-unit id="backup.reliability">
+      <source xml:lang="en">Reliability</source>
+      <target state="translated">可靠性</target>
+    </trans-unit>
+    <trans-unit id="backup.mediaNameRequired">
+      <source xml:lang="en">Media name is required</source>
+      <target state="translated">需要媒体名称</target>
+    </trans-unit>
+    <trans-unit id="backup.noEncryptorWarning">
+      <source xml:lang="en">No certificate or asymmetric key is available</source>
+      <target state="translated">没有可用的证书或非对称密钥</target>
+    </trans-unit>
+    <trans-unit id="addFile">
+      <source xml:lang="en">Add a file</source>
+      <target state="translated">添加文件</target>
+    </trans-unit>
+    <trans-unit id="removeFile">
+      <source xml:lang="en">Remove files</source>
+      <target state="translated">删除文件</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.invalidInput">
+      <source xml:lang="en">Invalid input. Value must be greater than or equal 0.</source>
+      <target state="translated">输入无效。值必须大于或等于0。</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">脚本</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.backup">
+      <source xml:lang="en">Backup</source>
+      <target state="translated">备份</target>
+    </trans-unit>
+    <trans-unit id="backupComponent.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="backup.containsBackupToUrlError">
+      <source xml:lang="en">Only backup to file is supported</source>
+      <target state="translated">只支持备份到文件</target>
+    </trans-unit>
+    <trans-unit id="backup.backupFileRequired">
+      <source xml:lang="en">Backup file path is required</source>
+      <target state="translated">备份文件路径是必须的</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/insights/common/insightDialogActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="workbench.action.insights.copySelection">
+      <source xml:lang="en">Copy Cell</source>
+      <target state="translated">复制单元格</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/accountDialog/accountDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="linkedAccounts">
+      <source xml:lang="en">Linked accounts</source>
+      <target state="translated">链接帐户</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.close">
+      <source xml:lang="en">Close</source>
+      <target state="translated">关闭</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.noAccountLabel">
+      <source xml:lang="en">There is no linked account. Please add an account.</source>
+      <target state="translated">没有链接帐户。请添加一个帐户。</target>
+    </trans-unit>
+    <trans-unit id="accountDialog.addConnection">
+      <source xml:lang="en">Add an account</source>
+      <target state="translated">添加一个账户</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="from">
+      <source xml:lang="en">From</source>
+      <target state="translated">从</target>
+    </trans-unit>
+    <trans-unit id="to">
+      <source xml:lang="en">To</source>
+      <target state="translated">到</target>
+    </trans-unit>
+    <trans-unit id="createNewFirewallRule">
+      <source xml:lang="en">Create new firewall rule</source>
+      <target state="translated">创建新的防火墙规则</target>
+    </trans-unit>
+    <trans-unit id="firewall.ok">
+      <source xml:lang="en">OK</source>
+      <target state="translated">确定</target>
+    </trans-unit>
+    <trans-unit id="firewall.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleDialogDescription">
+      <source xml:lang="en">Your client IP address does not have access to the server. Sign in to an Azure account and create a new firewall rule to enable access.</source>
+      <target state="translated">您的客户端 IP 无权访问服务器。请登录 Azure 帐户并新建一个防火墙规则以启用访问权限。</target>
+    </trans-unit>
+    <trans-unit id="firewallRuleHelpDescription">
+      <source xml:lang="en">Learn more about firewall settings</source>
+      <target state="translated">了解更多有关防火墙设置的信息</target>
+    </trans-unit>
+    <trans-unit id="azureAccount">
+      <source xml:lang="en">Azure account</source>
+      <target state="translated">Azure 帐户</target>
+    </trans-unit>
+    <trans-unit id="filewallRule">
+      <source xml:lang="en">Firewall rule</source>
+      <target state="translated">防火墙规则</target>
+    </trans-unit>
+    <trans-unit id="addIPAddressLabel">
+      <source xml:lang="en">Add my client IP </source>
+      <target state="translated">添加我的客户端 IP</target>
+    </trans-unit>
+    <trans-unit id="addIpRangeLabel">
+      <source xml:lang="en">Add my subnet IP range</source>
+      <target state="translated">添加我的子网 IP 范围</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="addAccount">
+      <source xml:lang="en">Add an account</source>
+      <target state="translated">添加一个账户</target>
+    </trans-unit>
+    <trans-unit id="removeAccount">
+      <source xml:lang="en">Remove account</source>
+      <target state="translated">删除帐户</target>
+    </trans-unit>
+    <trans-unit id="confirmRemoveUserAccountMessage">
+      <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
+      <target state="translated">确实要删除 "{0}" 吗？</target>
+    </trans-unit>
+    <trans-unit id="accountActions.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="accountActions.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+    <trans-unit id="removeAccountFailed">
+      <source xml:lang="en">Failed to remove account</source>
+      <target state="translated">未能删除帐户</target>
+    </trans-unit>
+    <trans-unit id="applyFilters">
+      <source xml:lang="en">Apply Filters</source>
+      <target state="translated">应用筛选器</target>
+    </trans-unit>
+    <trans-unit id="refreshAccount">
+      <source xml:lang="en">Reenter your credentials</source>
+      <target state="translated">重新输入您的凭据</target>
+    </trans-unit>
+    <trans-unit id="NoAccountToRefresh">
+      <source xml:lang="en">There is no account to refresh</source>
+      <target state="translated">没有要刷新的帐户</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="copyAndOpen">
+      <source xml:lang="en">Copy &amp; Open</source>
+      <target state="translated">复制并打开</target>
+    </trans-unit>
+    <trans-unit id="oauthDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="userCode">
+      <source xml:lang="en">User code</source>
+      <target state="translated">用户代码</target>
+    </trans-unit>
+    <trans-unit id="website">
+      <source xml:lang="en">Website</source>
+      <target state="translated">网站</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/accountManagement/common/accountListRenderer" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="refreshCredentials">
+      <source xml:lang="en">You need to refresh the credentials for this account.</source>
+      <target state="translated">您需要为此用户重新获取凭据。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/objectExplorer/viewlet/serverTreeRenderer" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="loading">
+      <source xml:lang="en">Loading...</source>
+      <target state="translated">正在加载...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/admin/database/create/createDatabase.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="createDatabase.databaseFiles">
+      <source xml:lang="en">Database files:</source>
+      <target state="translated">数据库文件:</target>
+    </trans-unit>
+    <trans-unit id="createDatabase.noRecordsFound">
+      <source xml:lang="en">No records found</source>
+      <target state="translated">未找到记录</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/taskHistory/viewlet/taskAction" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="cancelTask.cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="errorMsgFromCancelTask">
+      <source xml:lang="en">The task is failed to cancel.</source>
+      <target state="translated">任务取消失败。</target>
+    </trans-unit>
+    <trans-unit id="taskAction.script">
+      <source xml:lang="en">Script</source>
+      <target state="translated">脚本</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/common/theme/colors" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="tableHeaderBackground">
+      <source xml:lang="en">Table header background color</source>
+      <target state="translated">表头背景色</target>
+    </trans-unit>
+    <trans-unit id="tableHeaderForeground">
+      <source xml:lang="en">Table header foreground color</source>
+      <target state="translated">表头前景色</target>
+    </trans-unit>
+    <trans-unit id="disabledInputBoxBackground">
+      <source xml:lang="en">Disabled Input box background.</source>
+      <target state="translated">禁用输入框背景。</target>
+    </trans-unit>
+    <trans-unit id="disabledInputBoxForeground">
+      <source xml:lang="en">Disabled Input box foreground.</source>
+      <target state="translated">前台禁用输入框。</target>
+    </trans-unit>
+    <trans-unit id="buttonFocusOutline">
+      <source xml:lang="en">Button outline color when focused.</source>
+      <target state="translated">聚焦时按钮轮廓颜色。</target>
+    </trans-unit>
+    <trans-unit id="listFocusAndSelectionBackground">
+      <source xml:lang="en">List/Table background color for the selected and focus item when the list/table is active</source>
+      <target state="translated">当列表/表处于活动状态时所选和焦点项的列表/表背景色</target>
+    </trans-unit>
+    <trans-unit id="agentTableBackground">
+      <source xml:lang="en">SQL Agent Table background color.</source>
+      <target state="translated">SQL 代理表的背景色。</target>
+    </trans-unit>
+    <trans-unit id="agentCellBackground">
+      <source xml:lang="en">SQL Agent table cell background color.</source>
+      <target state="translated">SQL 代理表单元格的背景颜色。</target>
+    </trans-unit>
+    <trans-unit id="agentTableHoverBackground">
+      <source xml:lang="en">SQL Agent table hover background color.</source>
+      <target state="translated">SQL 代理表悬停背景颜色。</target>
+    </trans-unit>
+    <trans-unit id="agentJobsHeadingColor">
+      <source xml:lang="en">SQL Agent heading background color.</source>
+      <target state="translated">SQL 代理标题背景颜色。</target>
+    </trans-unit>
+    <trans-unit id="agentCellBorderColor">
+      <source xml:lang="en">SQL Agent table cell border color.</source>
+      <target state="translated">SQL 代理表的单元格边框颜色。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/queryPlan/topOperations.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="topOperations.operation">
+      <source xml:lang="en">Operation</source>
+      <target state="translated">操作</target>
+    </trans-unit>
+    <trans-unit id="topOperations.object">
+      <source xml:lang="en">Object</source>
+      <target state="translated">对象</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estCost">
+      <source xml:lang="en">Est Cost</source>
+      <target state="translated">预计消耗</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estSubtreeCost">
+      <source xml:lang="en">Est Subtree Cost</source>
+      <target state="translated">估计子树成本</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRows">
+      <source xml:lang="en">Actual Rows</source>
+      <target state="translated">实际行数</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRows">
+      <source xml:lang="en">Est Rows</source>
+      <target state="translated">估计行数</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualExecutions">
+      <source xml:lang="en">Actual Executions</source>
+      <target state="translated">实际执行</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estCPUCost">
+      <source xml:lang="en">Est CPU Cost</source>
+      <target state="translated">CPU 成本</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estIOCost">
+      <source xml:lang="en">Est IO Cost</source>
+      <target state="translated">预估IO成本</target>
+    </trans-unit>
+    <trans-unit id="topOperations.parallel">
+      <source xml:lang="en">Parallel</source>
+      <target state="translated">并行</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRebinds">
+      <source xml:lang="en">Actual Rebinds</source>
+      <target state="translated">实际的重新绑定</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRebinds">
+      <source xml:lang="en">Est Rebinds</source>
+      <target state="translated">评估重新绑定</target>
+    </trans-unit>
+    <trans-unit id="topOperations.actualRewinds">
+      <source xml:lang="en">Actual Rewinds</source>
+      <target state="translated">实际后退</target>
+    </trans-unit>
+    <trans-unit id="topOperations.estRewinds">
+      <source xml:lang="en">Est Rewinds</source>
+      <target state="translated">Est 后退</target>
+    </trans-unit>
+    <trans-unit id="topOperations.partitioned">
+      <source xml:lang="en">Partitioned</source>
+      <target state="translated">分区</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/query/chartViewer.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="chartTypeLabel">
+      <source xml:lang="en">Chart Type</source>
+      <target state="translated">图表类型</target>
+    </trans-unit>
+    <trans-unit id="dataDirectionLabel">
+      <source xml:lang="en">Data Direction</source>
+      <target state="translated">数据方向</target>
+    </trans-unit>
+    <trans-unit id="verticalLabel">
+      <source xml:lang="en">Vertical</source>
+      <target state="translated">垂直</target>
+    </trans-unit>
+    <trans-unit id="horizontalLabel">
+      <source xml:lang="en">Horizontal</source>
+      <target state="translated">水平</target>
+    </trans-unit>
+    <trans-unit id="dataTypeLabel">
+      <source xml:lang="en">Data Type</source>
+      <target state="translated">数据类型</target>
+    </trans-unit>
+    <trans-unit id="numberLabel">
+      <source xml:lang="en">Number</source>
+      <target state="translated">编号</target>
+    </trans-unit>
+    <trans-unit id="pointLabel">
+      <source xml:lang="en">Point</source>
+      <target state="translated">点</target>
+    </trans-unit>
+    <trans-unit id="labelFirstColumnLabel">
+      <source xml:lang="en">Use first column as row label</source>
+      <target state="translated">使用第一列作为行标签</target>
+    </trans-unit>
+    <trans-unit id="columnsAsLabelsLabel">
+      <source xml:lang="en">Use column names as labels</source>
+      <target state="translated">将列名用作标签</target>
+    </trans-unit>
+    <trans-unit id="legendLabel">
+      <source xml:lang="en">Legend Position</source>
+      <target state="translated">图例位置</target>
+    </trans-unit>
+    <trans-unit id="chartNotFound">
+      <source xml:lang="en">Could not find chart to save</source>
+      <target state="translated">找不到要保存的图表</target>
+    </trans-unit>
+    <trans-unit id="xAxisLabel">
+      <source xml:lang="en">X Axis Label</source>
+      <target state="translated">X 轴标签</target>
+    </trans-unit>
+    <trans-unit id="xAxisMinVal">
+      <source xml:lang="en">X Axis Minimum Value</source>
+      <target state="translated">X 轴最小值</target>
+    </trans-unit>
+    <trans-unit id="xAxisMaxVal">
+      <source xml:lang="en">X Axis Maximum Value</source>
+      <target state="translated">X 轴最大值</target>
+    </trans-unit>
+    <trans-unit id="yAxisLabel">
+      <source xml:lang="en">Y Axis Label</source>
+      <target state="translated">Y 轴标签</target>
+    </trans-unit>
+    <trans-unit id="yAxisMinVal">
+      <source xml:lang="en">Y Axis Minimum Value</source>
+      <target state="translated">Y 轴最小值</target>
+    </trans-unit>
+    <trans-unit id="yAxisMaxVal">
+      <source xml:lang="en">Y Axis Maximum Value</source>
+      <target state="translated">Y 轴最大值</target>
+    </trans-unit>
+    <trans-unit id="chartSaved">
+      <source xml:lang="en">Saved Chart to path: {0}</source>
+      <target state="translated">保存的图表到路径: {0}</target>
+    </trans-unit>
+    <trans-unit id="chartViewer.saveAsFileTitle">
+      <source xml:lang="en">Choose Results File</source>
+      <target state="translated">选择结果文件</target>
+    </trans-unit>
+    <trans-unit id="createInsightNoEditor">
+      <source xml:lang="en">Cannot create insight as the active editor is not a SQL Editor</source>
+      <target state="translated">无法创建Insight，因为活动编辑器不是SQL编辑器</target>
+    </trans-unit>
+    <trans-unit id="createInsightNoDataService">
+      <source xml:lang="en">Cannot create insight, backing data model not found</source>
+      <target state="translated">无法创建洞察, 未找到支持数据模型</target>
+    </trans-unit>
+    <trans-unit id="myWidgetName">
+      <source xml:lang="en">My-Widget</source>
+      <target state="translated">我的小部件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/services/breadcrumb.service" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="homeCrumb">
+      <source xml:lang="en">Home</source>
+      <target state="translated">主页</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/services/dashboardServiceInterface.service" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.changeDatabaseFailure">
+      <source xml:lang="en">Failed to change database</source>
+      <target state="translated">更改数据库失败</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/containers/dashboardErrorContainer.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboardNavSection_loadTabError">
+      <source xml:lang="en">The "{0}" section has invalid content. Please contact extension owner.</source>
+      <target state="translated">"{0}" 部分的内容无效。请与扩展所有者联系。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/agent/agentView.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="jobview.Jobs">
+      <source xml:lang="en">Jobs</source>
+      <target state="translated">作业</target>
+    </trans-unit>
+    <trans-unit id="jobview.Alerts">
+      <source xml:lang="en">Alerts</source>
+      <target state="translated">警报</target>
+    </trans-unit>
+    <trans-unit id="jobview.Proxies">
+      <source xml:lang="en">Proxies</source>
+      <target state="translated">代理</target>
+    </trans-unit>
+    <trans-unit id="jobview.Operators">
+      <source xml:lang="en">Operators</source>
+      <target state="translated">操作员</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/alertsView.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="jobAlertColumns.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">名称</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.lastOccurrenceDate">
+      <source xml:lang="en">Last Occurrence</source>
+      <target state="translated">最后一次发生</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">已启用</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.databaseName">
+      <source xml:lang="en">Database Name</source>
+      <target state="translated">数据库名称</target>
+    </trans-unit>
+    <trans-unit id="jobAlertColumns.categoryName">
+      <source xml:lang="en">Category Name</source>
+      <target state="translated">类别名称</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/operatorsView.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="jobOperatorsView.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">名称</target>
+    </trans-unit>
+    <trans-unit id="jobOperatorsView.emailAddress">
+      <source xml:lang="en">Email Address</source>
+      <target state="translated">电子邮件地址</target>
+    </trans-unit>
+    <trans-unit id="jobOperatorsView.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">已启用</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/jobsView.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="jobColumns.name">
+      <source xml:lang="en">Name</source>
+      <target state="translated">名称</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.lastRun">
+      <source xml:lang="en">Last Run</source>
+      <target state="translated">上次运行</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.nextRun">
+      <source xml:lang="en">Next Run</source>
+      <target state="translated">下次运行</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.enabled">
+      <source xml:lang="en">Enabled</source>
+      <target state="translated">已启用</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.status">
+      <source xml:lang="en">Status</source>
+      <target state="translated">状态</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.category">
+      <source xml:lang="en">Category</source>
+      <target state="translated">类别</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.runnable">
+      <source xml:lang="en">Runnable</source>
+      <target state="translated">可运行的</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.schedule">
+      <source xml:lang="en">Schedule</source>
+      <target state="translated">安排</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.lastRunOutcome">
+      <source xml:lang="en">Last Run Outcome</source>
+      <target state="translated">上次运行的结果</target>
+    </trans-unit>
+    <trans-unit id="jobColumns.previousRuns">
+      <source xml:lang="en">Previous Runs</source>
+      <target state="translated">之前的运行</target>
+    </trans-unit>
+    <trans-unit id="jobsView.noSteps">
+      <source xml:lang="en">No Steps available for this job.</source>
+      <target state="translated">没有可用于此作业的步骤。</target>
+    </trans-unit>
+    <trans-unit id="jobsView.error">
+      <source xml:lang="en">Error: </source>
+      <target state="translated">错误: </target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/serverDashboardPage.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="serverPageName">
+      <source xml:lang="en">SERVER DASHBOARD</source>
+      <target state="translated">服务器仪表板</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/pages/databaseDashboardPage.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="databasePageName">
+      <source xml:lang="en">DATABASE DASHBOARD</source>
+      <target state="translated">数据库仪表板</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/views/proxiesView.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="jobProxyToolbar-NewItem">
+      <source xml:lang="en">New Proxy</source>
+      <target state="translated">新代理</target>
+    </trans-unit>
+    <trans-unit id="jobProxyToolbar-Refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">刷新</target>
+    </trans-unit>
+    <trans-unit id="jobProxiesView.accountName">
+      <source xml:lang="en">Account Name</source>
+      <target state="translated">帐户名</target>
+    </trans-unit>
+    <trans-unit id="jobProxiesView.credentialName">
+      <source xml:lang="en">Credential Name</source>
+      <target state="translated">凭据名称</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/explorer/explorerWidget.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="seachObjects">
+      <source xml:lang="en">Search by name of type (a:, t:, v:, f:, or sp:)</source>
+      <target state="translated">按类型名称搜索 (a:, t:, v:, f:, 或 sp:)</target>
+    </trans-unit>
+    <trans-unit id="searchDatabases">
+      <source xml:lang="en">Search databases</source>
+      <target state="translated">搜索数据库</target>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.objectError">
+      <source xml:lang="en">Unable to load objects</source>
+      <target state="translated">无法加载对象</target>
+    </trans-unit>
+    <trans-unit id="dashboard.explorer.databaseError">
+      <source xml:lang="en">Unable to load databases</source>
+      <target state="translated">无法加载数据库</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/properties/propertiesWidget.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dashboard.properties.error">
+      <source xml:lang="en">Unable to load dashboard properties</source>
+      <target state="translated">无法加载仪表板属性</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/editData/editDataGridActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="deleteRow">
+      <source xml:lang="en">Delete Row</source>
+      <target state="translated">删除行</target>
+    </trans-unit>
+    <trans-unit id="revertRow">
+      <source xml:lang="en">Revert Current Row</source>
+      <target state="translated">还原当前行</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/actions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="editDashboard">
+      <source xml:lang="en">Edit</source>
+      <target state="translated">编辑</target>
+    </trans-unit>
+    <trans-unit id="editDashboardExit">
+      <source xml:lang="en">Exit</source>
+      <target state="translated">退出</target>
+    </trans-unit>
+    <trans-unit id="refreshWidget">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">刷新</target>
+    </trans-unit>
+    <trans-unit id="toggleMore">
+      <source xml:lang="en">Toggle More</source>
+      <target state="translated">切换更多</target>
+    </trans-unit>
+    <trans-unit id="deleteWidget">
+      <source xml:lang="en">Delete Widget</source>
+      <target state="translated">删除小部件</target>
+    </trans-unit>
+    <trans-unit id="clickToUnpin">
+      <source xml:lang="en">Click to unpin</source>
+      <target state="translated">单击以解除锁定</target>
+    </trans-unit>
+    <trans-unit id="clickToPin">
+      <source xml:lang="en">Click to pin</source>
+      <target state="translated">单击以锁定</target>
+    </trans-unit>
+    <trans-unit id="addFeatureAction.openInstalledFeatures">
+      <source xml:lang="en">Open installed features</source>
+      <target state="translated">打开已安装的功能</target>
+    </trans-unit>
+    <trans-unit id="collapseWidget">
+      <source xml:lang="en">Collapse</source>
+      <target state="translated">折叠</target>
+    </trans-unit>
+    <trans-unit id="expandWidget">
+      <source xml:lang="en">Expand</source>
+      <target state="translated">扩展</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/profiler/editor/controller/profilerFindWidget" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="label.find">
+      <source xml:lang="en">Find</source>
+      <target state="translated">查找</target>
+    </trans-unit>
+    <trans-unit id="placeholder.find">
+      <source xml:lang="en">Find</source>
+      <target state="translated">查找</target>
+    </trans-unit>
+    <trans-unit id="label.previousMatchButton">
+      <source xml:lang="en">Previous match</source>
+      <target state="translated">上一个匹配项</target>
+    </trans-unit>
+    <trans-unit id="label.nextMatchButton">
+      <source xml:lang="en">Next match</source>
+      <target state="translated">下一个匹配项</target>
+    </trans-unit>
+    <trans-unit id="label.closeButton">
+      <source xml:lang="en">Close</source>
+      <target state="translated">关闭</target>
+    </trans-unit>
+    <trans-unit id="title.matchesCountLimit">
+      <source xml:lang="en">Only the first 999 results are highlighted, but all find operations work on the entire text.</source>
+      <target state="translated">只突出显示前999个结果, 但所有查找操作都对整个文本起作用。</target>
+    </trans-unit>
+    <trans-unit id="label.matchesLocation">
+      <source xml:lang="en">{0} of {1}</source>
+      <target state="translated">{1} 中的 {0}</target>
+    </trans-unit>
+    <trans-unit id="label.noResults">
+      <source xml:lang="en">No Results</source>
+      <target state="translated">无结果</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelView" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="unknownComponentType">
+      <source xml:lang="en">Unkown component type. Must use ModelBuilder to create objects</source>
+      <target state="translated">未知的组件类型。必须使用ModelBuilder来创建对象</target>
+    </trans-unit>
+    <trans-unit id="unknownConfig">
+      <source xml:lang="en">Unkown component configuration, must use ModelBuilder to create a configuration object</source>
+      <target state="translated">未知组件配置, 必须使用模型构建器创建配置对象</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelViewDialog" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="dialogDoneLabel">
+      <source xml:lang="en">Done</source>
+      <target state="translated">已完成</target>
+    </trans-unit>
+    <trans-unit id="dialogCancelLabel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="generateScriptLabel">
+      <source xml:lang="en">Generate script</source>
+      <target state="translated">生成脚本</target>
+    </trans-unit>
+    <trans-unit id="dialogNextLabel">
+      <source xml:lang="en">Next</source>
+      <target state="translated">下一个</target>
+    </trans-unit>
+    <trans-unit id="dialogPreviousLabel">
+      <source xml:lang="en">Previous</source>
+      <target state="translated">上一个</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/api/node/extHostModelViewTree" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="treeView.notRegistered">
+      <source xml:lang="en">No tree view with id '{0}' registered.</source>
+      <target state="translated">没有注册 id 为 "{0}" 的树视图。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/insightsWidget.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="insights.lastUpdated">
+      <source xml:lang="en">Last Updated: {0} {1}</source>
+      <target state="translated">最近更新: {0} {1}</target>
+    </trans-unit>
+    <trans-unit id="noResults">
+      <source xml:lang="en">No results to show</source>
+      <target state="translated">没有要显示的结果</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/views/browser/views" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="viewToolbarAriaLabel">
+      <source xml:lang="en">{0} actions</source>
+      <target state="translated">{0}操作</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardHelper" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="unknownDashboardContainerError">
+      <source xml:lang="en">{0} is an unknown container.</source>
+      <target state="translated">{0} 是未知容器。</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/grid/views/query/chartViewerActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="chartContextRequired">
+      <source xml:lang="en">Chart View context is required to run this action</source>
+      <target state="translated">运行此操作需要图表视图上下文</target>
+    </trans-unit>
+    <trans-unit id="createInsightLabel">
+      <source xml:lang="en">Create Insight</source>
+      <target state="translated">创建洞察力</target>
+    </trans-unit>
+    <trans-unit id="copyChartLabel">
+      <source xml:lang="en">Copy as image</source>
+      <target state="translated">复制为图像</target>
+    </trans-unit>
+    <trans-unit id="saveImageLabel">
+      <source xml:lang="en">Save as image</source>
+      <target state="translated">另存为图像</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/table/plugins/rowdetailview" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="rowDetailView.loadError">
+      <source xml:lang="en">Loading Error...</source>
+      <target state="translated">加载错误...</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/modelComponents/viewBase" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="componentTypeNotRegistered">
+      <source xml:lang="en">Could not find component for type {0}</source>
+      <target state="translated">找不到类型 {0} 的组件</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="jobaction.refresh">
+      <source xml:lang="en">Refresh</source>
+      <target state="translated">刷新</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newJob">
+      <source xml:lang="en">New Job</source>
+      <target state="translated">新作业</target>
+    </trans-unit>
+    <trans-unit id="jobaction.run">
+      <source xml:lang="en">Run</source>
+      <target state="translated">运行</target>
+    </trans-unit>
+    <trans-unit id="jobSuccessfullyStarted">
+      <source xml:lang="en">: The job was successfully started.</source>
+      <target state="translated">: 作业已成功启动。</target>
+    </trans-unit>
+    <trans-unit id="jobaction.stop">
+      <source xml:lang="en">Stop</source>
+      <target state="translated">停止</target>
+    </trans-unit>
+    <trans-unit id="jobSuccessfullyStopped">
+      <source xml:lang="en">: The job was successfully stopped.</source>
+      <target state="translated">：作业已成功停止。</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editJob">
+      <source xml:lang="en">Edit Job</source>
+      <target state="translated">编辑作业</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteJob">
+      <source xml:lang="en">Delete Job</source>
+      <target state="translated">删除作业</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteJobConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the job '{0}'?</source>
+      <target state="translated">您确定要删除作业 "{0}" 吗？</target>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteJob">
+      <source xml:lang="en">Could not delete job '{0}'.
+Error: {1}</source>
+      <target state="translated">无法删除作业 "{0}"。
+错误: {1}</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newStep">
+      <source xml:lang="en">New Step</source>
+      <target state="translated">新步骤</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newAlert">
+      <source xml:lang="en">New Alert</source>
+      <target state="translated">新警报</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editAlert">
+      <source xml:lang="en">Edit Alert</source>
+      <target state="translated">编辑警报</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteAlert">
+      <source xml:lang="en">Delete Alert</source>
+      <target state="translated">删除警报</target>
+    </trans-unit>
+    <trans-unit id="jobaction.Cancel">
+      <source xml:lang="en">Cancel</source>
+      <target state="translated">取消</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteAlertConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the alert '{0}'?</source>
+      <target state="translated">您确定要删除警报 "{0}" 吗？</target>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteAlert">
+      <source xml:lang="en">Could not delete alert '{0}'.
+Error: {1}</source>
+      <target state="translated">无法删除警报 "{0}"。
+错误: {1}</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newOperator">
+      <source xml:lang="en">New Operator</source>
+      <target state="translated">新建操作符</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editOperator">
+      <source xml:lang="en">Edit Operator</source>
+      <target state="translated">编辑操作员</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteOperator">
+      <source xml:lang="en">Delete Operator</source>
+      <target state="translated">删除运算符</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteOperatorConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the operator '{0}'?</source>
+      <target state="translated">是否确实要删除操作员 "{0}"？</target>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteOperator">
+      <source xml:lang="en">Could not delete operator '{0}'.
+Error: {1}</source>
+      <target state="translated">无法删除操作员 "{0}"。
+错误: {1}</target>
+    </trans-unit>
+    <trans-unit id="jobaction.newProxy">
+      <source xml:lang="en">New Proxy</source>
+      <target state="translated">新代理</target>
+    </trans-unit>
+    <trans-unit id="jobaction.editProxy">
+      <source xml:lang="en">Edit Proxy</source>
+      <target state="translated">编辑代理服务器</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteProxy">
+      <source xml:lang="en">Delete Proxy</source>
+      <target state="translated">删除代理服务器</target>
+    </trans-unit>
+    <trans-unit id="jobaction.deleteProxyConfirm,">
+      <source xml:lang="en">Are you sure you'd like to delete the proxy '{0}'?</source>
+      <target state="translated">您确定要删除代理 "{0}" 吗？</target>
+    </trans-unit>
+    <trans-unit id="jobaction.failedToDeleteProxy">
+      <source xml:lang="en">Could not delete proxy '{0}'.
+Error: {1}</source>
+      <target state="translated">无法删除代理 "{0}"。
+错误: {1}</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/jobManagement/common/jobManagementUtilities" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="agentUtilities.failed">
+      <source xml:lang="en">Failed</source>
+      <target state="translated">失败</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.succeeded">
+      <source xml:lang="en">Succeeded</source>
+      <target state="translated">成功</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.canceled">
+      <source xml:lang="en">Canceled</source>
+      <target state="translated">已取消</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.statusUnknown">
+      <source xml:lang="en">Status Unknown</source>
+      <target state="translated">状态未知</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.executing">
+      <source xml:lang="en">Executing</source>
+      <target state="translated">正在执行</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.waitingForThread">
+      <source xml:lang="en">Waiting for Thread</source>
+      <target state="translated">等待线程</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.betweenRetries">
+      <source xml:lang="en">Between Retries</source>
+      <target state="translated">重试之间</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.idle">
+      <source xml:lang="en">Idle</source>
+      <target state="translated">空闲</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.suspended">
+      <source xml:lang="en">Suspended</source>
+      <target state="translated">暂停</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.obsolete">
+      <source xml:lang="en">[Obsolete]</source>
+      <target state="translated">[废弃]</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.performingCompletionActions">
+      <source xml:lang="en">PerformingCompletionActions</source>
+      <target state="translated">PerformingCompletionActions</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.yes">
+      <source xml:lang="en">Yes</source>
+      <target state="translated">是</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.no">
+      <source xml:lang="en">No</source>
+      <target state="translated">否</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.notScheduled">
+      <source xml:lang="en">Not Scheduled</source>
+      <target state="translated">未计划</target>
+    </trans-unit>
+    <trans-unit id="agentUtilities.neverRun">
+      <source xml:lang="en">Never Run</source>
+      <target state="translated">从不运行</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/common/dashboardPage.component" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="home">
+      <source xml:lang="en">Home</source>
+      <target state="translated">主页</target>
+    </trans-unit>
+    <trans-unit id="missingConnectionInfo">
+      <source xml:lang="en">No connection information could be found for this dashboard</source>
+      <target state="translated">无法找到此仪表板的连接信息</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/parts/dashboard/widgets/insights/actions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="insights.runQuery">
+      <source xml:lang="en">Run Query</source>
+      <target state="translated">运行查询</target>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/base/browser/ui/panel/tabActions" source-language="en" target-language="zh-Hans" datatype="plaintext"><body>
+    <trans-unit id="closeTab">
+      <source xml:lang="en">Close</source>
+      <target state="translated">关闭</target>
+    </trans-unit>
+  </body></file>
+</xliff>

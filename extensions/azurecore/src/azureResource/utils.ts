@@ -12,10 +12,9 @@ export function getErrorMessage(error: Error | string): string {
     return (error instanceof Error) ? error.message : error;
 }
 
-
 export class AzureResourceErrorMessageUtil {
 	public static getErrorMessage(error: Error | string): string {
-		return localize('azureResource.error', 'Error: {0}', getErrorMessage(error));
+		return localize('azure.resource.error', 'Error: {0}', getErrorMessage(error));
 	}
 }
 

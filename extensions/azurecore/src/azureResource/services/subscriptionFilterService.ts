@@ -8,11 +8,11 @@
 import { WorkspaceConfiguration, ConfigurationTarget } from 'vscode';
 import { Account } from 'sqlops';
 
+import { azureResource } from '../azure-resource';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceCacheService } from '../interfaces';
-import { AzureResourceSubscription } from '../models';
 
 interface AzureResourceSelectedSubscriptionsCache {
-	selectedSubscriptions: { [accountId: string]: AzureResourceSubscription[]};
+	selectedSubscriptions: { [accountId: string]: azureResource.AzureResourceSubscription[]};
 }
 
 export class AzureResourceSubscriptionFilterService implements IAzureResourceSubscriptionFilterService {
@@ -20,12 +20,14 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 		cacheService: IAzureResourceCacheService
 	) {
 		this._cacheService = cacheService;
+
+		this._cacheKey = this._cacheService.generateKey('selectedSubscriptions');
 	}
 
-	public async getSelectedSubscriptions(account: Account): Promise<AzureResourceSubscription[]> {
-		let selectedSubscriptions: AzureResourceSubscription[] = [];
+	public async getSelectedSubscriptions(account: Account): Promise<azureResource.AzureResourceSubscription[]> {
+		let selectedSubscriptions: azureResource.AzureResourceSubscription[] = [];
 
-		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(AzureResourceSubscriptionFilterService.CacheKey);
+		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(this._cacheKey);
 		if (cache) {
 			selectedSubscriptions = cache.selectedSubscriptions[account.key.accountId];
 		}
@@ -33,10 +35,10 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 		return selectedSubscriptions;
 	}
 
-	public async saveSelectedSubscriptions(account: Account, selectedSubscriptions: AzureResourceSubscription[]): Promise<void> {
-		let selectedSubscriptionsCache: { [accountId: string]: AzureResourceSubscription[]} = {};
+	public async saveSelectedSubscriptions(account: Account, selectedSubscriptions: azureResource.AzureResourceSubscription[]): Promise<void> {
+		let selectedSubscriptionsCache: { [accountId: string]: azureResource.AzureResourceSubscription[]} = {};
 
-		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(AzureResourceSubscriptionFilterService.CacheKey);
+		const cache = this._cacheService.get<AzureResourceSelectedSubscriptionsCache>(this._cacheKey);
 		if (cache) {
 			selectedSubscriptionsCache = cache.selectedSubscriptions;
 		}
@@ -47,14 +49,14 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 
 		selectedSubscriptionsCache[account.key.accountId] = selectedSubscriptions;
 
-		this._cacheService.update<AzureResourceSelectedSubscriptionsCache>(AzureResourceSubscriptionFilterService.CacheKey, { selectedSubscriptions: selectedSubscriptionsCache });
+		this._cacheService.update<AzureResourceSelectedSubscriptionsCache>(this._cacheKey, { selectedSubscriptions: selectedSubscriptionsCache });
 
 		const filters: string[] = [];
 		for (const accountId in selectedSubscriptionsCache) {
 			filters.push(...selectedSubscriptionsCache[accountId].map((subcription) => `${accountId}/${subcription.id}/${subcription.name}`));
 		}
 
-		const resourceFilterConfig = this._config.inspect<string[]>(AzureResourceSubscriptionFilterService.FilterConfigName);
+		const resourceFilterConfig = this._config.inspect<string[]>(AzureResourceSubscriptionFilterService.filterConfigName);
 		let configTarget = ConfigurationTarget.Global;
 		if (resourceFilterConfig) {
 			if (resourceFilterConfig.workspaceFolderValue) {
@@ -66,12 +68,12 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 			}
 		}
 
-		await this._config.update(AzureResourceSubscriptionFilterService.FilterConfigName, filters, configTarget);
+		await this._config.update(AzureResourceSubscriptionFilterService.filterConfigName, filters, configTarget);
 	}
 
 	private _config: WorkspaceConfiguration = undefined;
 	private _cacheService: IAzureResourceCacheService = undefined;
+	private _cacheKey: string = undefined;
 
-	private static readonly FilterConfigName = 'resourceFilter';
-	private static readonly CacheKey = 'azureResource.cache.selectedSubscriptions';
+	private static readonly filterConfigName = 'azure.resource.config.filter';
 }

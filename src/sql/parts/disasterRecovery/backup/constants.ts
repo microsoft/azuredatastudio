@@ -22,25 +22,25 @@ export const recoveryModelSimple = 'Simple';
 export const recoveryModelFull = 'Full';
 
 // Constants for UI strings
-export const labelDatabase = 'Database';
-export const labelFilegroup = 'Files and filegroups';
-export const labelFull = 'Full';
-export const labelDifferential = 'Differential';
-export const labelLog = 'Transaction Log';
-export const labelDisk = 'Disk';
-export const labelUrl = 'Url';
+export const labelDatabase = localize('backup.labelDatabase', 'Database');
+export const labelFilegroup = localize('backup.labelFilegroup', 'Files and filegroups');
+export const labelFull = localize('backup.labelFull', 'Full');
+export const labelDifferential = localize('backup.labelDifferential', 'Differential');
+export const labelLog = localize('backup.labelLog', 'Transaction Log');
+export const labelDisk = localize('backup.labelDisk', 'Disk');
+export const labelUrl = localize('backup.labelUrl', 'Url');
 
-export const defaultCompression = 'Use the default server setting';
-export const compressionOn = 'Compress backup';
-export const compressionOff = 'Do not compress backup';
+export const defaultCompression = localize('backup.defaultCompression', 'Use the default server setting');
+export const compressionOn = localize('backup.compressBackup', 'Compress backup');
+export const compressionOff = localize('backup.doNotCompress', 'Do not compress backup');
 
 export const aes128 = 'AES 128';
 export const aes192 = 'AES 192';
 export const aes256 = 'AES 256';
 export const tripleDES = 'Triple DES';
 
-export const serverCertificate = "Server Certificate";
-export const asymmetricKey = "Asymmetric Key";
+export const serverCertificate = localize('backup.serverCertificate', "Server Certificate");
+export const asymmetricKey = localize('backup.asymmetricKey', "Asymmetric Key");
 
 export const fileFiltersSet: {label: string, filters: string[]}[] = [
 	{ label: localize('backup.filterBackupFiles', "Backup Files"), filters: ['*.bak', '*.trn', '*.log'] },

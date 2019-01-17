@@ -24,7 +24,7 @@ export function resolveCommonProperties(commit: string, version: string, machine
 	result['sessionID'] = '';
 
 	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	result['commitHash'] = commit;
+	result['commitHash'] = '';
 	// __GDPR__COMMON__ "version" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['version'] = version;
 	// __GDPR__COMMON__ "common.platformVersion" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
