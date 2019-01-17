@@ -7,7 +7,6 @@
 
 import * as assert from 'assert';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 
 suite('TableDataView Tests', () => {
 	test('Data can be filtered and filter can be cleared', () => {
