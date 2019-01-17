@@ -8,7 +8,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
 import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
 import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import Severity from 'vs/base/common/severity';
 

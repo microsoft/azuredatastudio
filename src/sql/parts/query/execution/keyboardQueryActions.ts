@@ -13,12 +13,12 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import * as sqlops from 'sqlops';
 
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
-import * as ConnectionConstants from 'sql/parts/connection/common/constants';
+import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 

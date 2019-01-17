@@ -6,7 +6,7 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
 import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';

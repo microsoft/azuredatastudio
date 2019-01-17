@@ -5,16 +5,16 @@
 
 import { Router } from '@angular/router';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { MetadataType, IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { MetadataType, IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
 	BackupAction, ManageActionContext, BaseActionContext, ManageAction, RestoreAction
 } from 'sql/workbench/common/actions';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import * as Constants from 'sql/parts/connection/common/constants';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import * as Constants from 'sql/platform/connection/common/constants';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 

@@ -9,8 +9,8 @@ import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, V
 import { Router } from '@angular/router';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import * as Utils from 'sql/parts/connection/common/utils';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { RefreshWidgetAction, EditDashboardAction } from 'sql/parts/dashboard/common/actions';
 import { DashboardPage } from 'sql/parts/dashboard/common/dashboardPage.component';
 import { AngularDisposable } from 'sql/base/node/lifecycle';

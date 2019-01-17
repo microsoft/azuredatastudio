@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import * as Constants from 'sql/parts/connection/common/constants';
+import * as Constants from 'sql/platform/connection/common/constants';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';

@@ -12,7 +12,7 @@ import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
 import * as sqlops from 'sqlops';
-import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import {
 	ScriptSelectAction, EditDataAction, ScriptCreateAction,
@@ -25,10 +25,10 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import * as Constants from 'sql/parts/connection/common/constants';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 
 export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {

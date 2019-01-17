@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);

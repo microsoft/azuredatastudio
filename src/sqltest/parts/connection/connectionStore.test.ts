@@ -5,20 +5,20 @@
 'use strict';
 
 import * as TypeMoq from 'typemoq';
-import { ConnectionConfig } from 'sql/parts/connection/common/connectionConfig';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ConnectionConfig } from 'sql/platform/connection/common/connectionConfig';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
-import * as Constants from 'sql/parts/connection/common/constants';
+import * as Constants from 'sql/platform/connection/common/constants';
 import { StorageTestService } from 'sqltest/stubs/storageTestService';
-import { ConnectionStore } from 'sql/parts/connection/common/connectionStore';
+import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { CredentialsService } from 'sql/services/credentials/credentialsService';
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
-import { CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as sqlops from 'sqlops';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from '../../stubs/capabilitiesTestService';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';

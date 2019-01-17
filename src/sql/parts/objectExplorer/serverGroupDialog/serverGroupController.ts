@@ -7,12 +7,12 @@
 import {
 	IConnectionManagementService, IErrorMessageService,
 	IServerGroupController, IServerGroupDialogCallbacks
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { ServerGroupDialog } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog';
 import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

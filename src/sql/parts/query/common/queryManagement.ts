@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as sqlops from 'sqlops';

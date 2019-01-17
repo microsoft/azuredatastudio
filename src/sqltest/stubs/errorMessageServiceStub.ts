@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
 
 export class ErrorMessageServiceStub implements IErrorMessageService {

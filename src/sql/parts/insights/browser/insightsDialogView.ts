@@ -5,12 +5,12 @@
 import 'vs/css!sql/parts/insights/browser/media/insightsDialog';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler } from 'sql/common/theme/styler';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { TableCollapsibleView } from 'sql/base/browser/ui/table/tableView';
@@ -38,7 +38,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ExecuteCommandAction } from 'vs/platform/actions/common/actions';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 const labelDisplay = nls.localize("insights.item", "Item");

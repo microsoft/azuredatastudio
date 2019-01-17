@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/services/metadata/metadataService';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';

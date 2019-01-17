@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as sqlops from 'sqlops';
 import * as Constants from 'sql/common/constants';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -17,11 +17,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as ConnectionUtils from 'sql/parts/connection/common/utils';
-import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
+import * as ConnectionUtils from 'sql/platform/connection/common/utils';
+import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 
 export class BackupService implements IBackupService {
 

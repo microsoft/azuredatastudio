@@ -16,9 +16,9 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/services/notebook/notebookService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface IClientSessionOptions {

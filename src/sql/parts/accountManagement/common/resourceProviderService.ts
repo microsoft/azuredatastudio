@@ -7,7 +7,7 @@
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/parts/accountManagement/common/interfaces';
 import * as Constants from 'sql/common/constants';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';

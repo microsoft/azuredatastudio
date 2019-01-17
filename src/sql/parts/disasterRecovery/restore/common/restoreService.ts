@@ -9,7 +9,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import * as sqlops from 'sqlops';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export const SERVICE_ID = 'restoreService';
 export const IRestoreService = createDecorator<IRestoreService>(SERVICE_ID);

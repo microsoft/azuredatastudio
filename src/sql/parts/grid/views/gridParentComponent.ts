@@ -18,7 +18,7 @@ import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/parts/grid/common/interfaces';
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import * as actions from 'sql/parts/grid/views/gridActions';
 import * as Services from 'sql/parts/grid/services/sharedServices';

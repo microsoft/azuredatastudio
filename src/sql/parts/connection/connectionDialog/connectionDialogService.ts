@@ -8,14 +8,14 @@
 import {
 	IConnectionDialogService, IConnectionManagementService, IErrorMessageService,
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/parts/connection/connectionDialog/connectionDialogWidget';
 import { ConnectionController } from 'sql/parts/connection/connectionDialog/connectionController';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import * as Constants from 'sql/parts/connection/common/constants';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { localize } from 'vs/nls';
 import { entries } from 'sql/base/common/objects';
 

@@ -6,7 +6,7 @@
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryModelService } from '../execution/queryModel';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
-import { parseNumAsTimeString } from 'sql/parts/connection/common/utils';
+import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IDisposable, combinedDisposable, dispose } from 'vs/base/common/lifecycle';

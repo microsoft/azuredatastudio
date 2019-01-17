@@ -5,23 +5,18 @@
 
 'use strict';
 
-import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Event } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import Severity from 'vs/base/common/severity';
 import * as sqlops from 'sqlops';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
 
 export const VIEWLET_ID = 'workbench.view.connections';
-
-export interface IConnectionsViewlet extends IViewlet {
-	search(text: string): void;
-}
 
 /**
  * Options for the actions that could happen after connecting is complete

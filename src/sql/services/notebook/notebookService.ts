@@ -13,7 +13,7 @@ import URI from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';

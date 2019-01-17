@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as ConnectionConstants from 'sql/parts/connection/common/constants';
+import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';

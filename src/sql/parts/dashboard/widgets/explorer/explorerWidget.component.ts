@@ -14,8 +14,8 @@ import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from '
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ObjectMetadataWrapper, ExplorerModel } from './explorerTree';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';

@@ -20,9 +20,9 @@ import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParam
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class DashboardEditor extends BaseEditor {

@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import {
 	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate,
 	PROFILER_SETTINGS, IProfilerSettings
 } from './interfaces';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/parts/profiler/dialog/profilerColumnEditorDialog';
 

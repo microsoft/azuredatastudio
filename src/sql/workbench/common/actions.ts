@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import * as TaskUtilities from './taskUtilities';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';

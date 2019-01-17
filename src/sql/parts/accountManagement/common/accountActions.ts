@@ -13,7 +13,7 @@ import { Action } from 'vs/base/common/actions';
 
 import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';

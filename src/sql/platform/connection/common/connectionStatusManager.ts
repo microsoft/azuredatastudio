@@ -5,8 +5,8 @@
 'use strict';
 
 import { ConnectionManagementInfo } from './connectionManagementInfo';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from './interfaces';
 import * as Utils from './utils';
 import * as sqlops from 'sqlops';

@@ -4,23 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
 	IConnectionManagementService, IConnectionDialogService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
 	IConnectionParams, IConnectionResult, IServerGroupController, IServerGroupDialogCallbacks,
 	RunQueryOnConnectionMode
-} from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionStore } from 'sql/parts/connection/common/connectionStore';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import * as Utils from 'sql/parts/connection/common/utils';
-import * as Constants from 'sql/parts/connection/common/constants';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+} from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import * as Utils from 'sql/platform/connection/common/utils';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ICredentialsService } from 'sql/services/credentials/credentialsService';
 import * as ConnectionContracts from 'sql/parts/connection/common/connection';
-import { ConnectionStatusManager } from 'sql/parts/connection/common/connectionStatusManager';
+import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/parts/connection/common/connectionGlobalStatus';
 import { ConnectionStatusbarItem } from 'sql/parts/connection/common/connectionStatus';

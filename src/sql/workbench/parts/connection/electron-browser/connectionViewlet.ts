@@ -19,7 +19,7 @@ import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
-import { IConnectionsViewlet, IConnectionManagementService, VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -29,6 +29,7 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
+import { IConnectionsViewlet } from 'sql/workbench/parts/connection/common/connectionViewlet';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 

@@ -8,7 +8,7 @@
 import * as Constants from './constants';
 import * as ConnInfo from './connectionInfo';
 import { ConnectionProfile } from '../common/connectionProfile';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/services/credentials/credentialsService';
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionConfig } from './connectionConfig';
@@ -17,7 +17,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import * as sqlops from 'sqlops';

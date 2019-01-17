@@ -14,8 +14,8 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 
-import { VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
+import { VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 // Viewlet Action

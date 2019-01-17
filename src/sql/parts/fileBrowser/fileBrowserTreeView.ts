@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { FileBrowserDataSource } from 'sql/parts/fileBrowser/fileBrowserDataSource';
 import { FileBrowserController } from 'sql/parts/fileBrowser/fileBrowserController';
 import { FileBrowserRenderer } from 'sql/parts/fileBrowser/fileBrowserRenderer';

@@ -9,9 +9,9 @@ import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';

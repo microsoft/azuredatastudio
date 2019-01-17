@@ -6,7 +6,7 @@
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
 import { ProfilerState } from './profilerState';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';

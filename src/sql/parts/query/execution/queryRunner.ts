@@ -10,7 +10,7 @@ import * as sqlops from 'sqlops';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { echo, debounceEvent } from 'sql/base/common/event';
 import { Deferred } from 'sql/base/common/promise';

@@ -22,10 +22,10 @@ import {
 } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { NewQueryAction, BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';

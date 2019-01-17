@@ -5,9 +5,8 @@
 
 'use strict';
 
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/common/constants';
-import { Deferred } from 'sql/base/common/promise';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { toObject } from 'sql/base/common/map';
 
@@ -17,7 +16,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
 import { Memento } from 'vs/workbench/common/memento';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';

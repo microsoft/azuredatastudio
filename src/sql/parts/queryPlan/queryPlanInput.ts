@@ -6,8 +6,8 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 export class QueryPlanInput extends EditorInput {
 

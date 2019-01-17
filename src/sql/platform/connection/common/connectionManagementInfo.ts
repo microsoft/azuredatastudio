@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as sqlops from 'sqlops';
 import { StopWatch } from 'vs/base/common/stopwatch';
 

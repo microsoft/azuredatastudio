@@ -10,8 +10,8 @@ import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
 import * as sqlops from 'sqlops';
 import { IMetadataService } from 'sql/services/metadata/metadataService';

@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
 
 export class JobManagementService implements IJobManagementService {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as Constants from 'sql/common/constants';
@@ -13,15 +13,15 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/parts/disasterRecovery/restore/common/restoreService';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import { RestoreDialog } from 'sql/parts/disasterRecovery/restore/restoreDialog';
-import * as ConnectionConstants from 'sql/parts/connection/common/constants';
+import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import { MssqlRestoreInfo } from 'sql/parts/disasterRecovery/restore/mssqlRestoreInfo';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
-import * as Utils from 'sql/parts/connection/common/utils';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
 import { TaskStatus, TaskNode } from 'sql/parts/taskHistory/common/taskNode';

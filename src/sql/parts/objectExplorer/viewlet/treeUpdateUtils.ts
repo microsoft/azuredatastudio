@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import errors = require('vs/base/common/errors');
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class TreeUpdateUtils {
 

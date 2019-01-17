@@ -7,7 +7,7 @@
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import * as sqlops from 'sqlops';
 import { error } from 'sql/base/common/log';

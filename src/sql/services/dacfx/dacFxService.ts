@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { data } from 'vs/base/test/common/filters.perf.data';

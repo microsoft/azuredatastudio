@@ -7,12 +7,12 @@
 
 import { ConnectionProfileGroup } from './connectionProfileGroup';
 import * as sqlops from 'sqlops';
-import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
-import * as interfaces from 'sql/parts/connection/common/interfaces';
+import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
+import * as interfaces from 'sql/platform/connection/common/interfaces';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as objects from 'sql/base/common/objects';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isString } from 'vs/base/common/types';
 
 // Concrete implementation of the IConnectionProfile interface

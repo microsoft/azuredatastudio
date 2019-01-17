@@ -114,14 +114,14 @@ import { EditorService } from 'vs/workbench/services/editor/browser/editorServic
 import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/platform/url/electron-browser/inactiveExtensionUrlHandler';
 
 // {{SQL CARBON EDIT}}
-import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService, IServerGroupController } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
+import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService, IServerGroupController } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { ErrorMessageService } from 'sql/workbench/errorMessageDialog/errorMessageService';
 import { ServerGroupController } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupController';
 
 import { IAngularEventingService, AngularEventingService } from 'sql/services/angularEventing/angularEventingService';
-import { ICapabilitiesService, CapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ICredentialsService, CredentialsService } from 'sql/services/credentials/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/services/serialization/serializationService';
 import { IMetadataService, MetadataService } from 'sql/services/metadata/metadataService';

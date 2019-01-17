@@ -33,14 +33,14 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, notebookConstants, INotebookModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, SaveNotebookAction } from 'sql/parts/notebook/notebookActions';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';

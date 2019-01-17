@@ -22,7 +22,7 @@ import { IClientSession, ICellModel, INotebookModelOptions } from 'sql/parts/not
 import { ClientSession } from 'sql/parts/notebook/models/clientSession';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 

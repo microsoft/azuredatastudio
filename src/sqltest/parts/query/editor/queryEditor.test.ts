@@ -18,8 +18,8 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
-import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
+import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/parts/query/execution/queryActions';
 import { EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 

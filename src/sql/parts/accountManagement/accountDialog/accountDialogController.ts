@@ -7,7 +7,7 @@
 
 import Severity from 'vs/base/common/severity';
 import { AccountDialog } from 'sql/parts/accountManagement/accountDialog/accountDialog';
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 

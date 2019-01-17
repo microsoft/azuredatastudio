@@ -10,7 +10,7 @@ import { Event } from 'vs/base/common/event';
 import * as sqlops from 'sqlops';
 
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 
 export enum TaskExecutionMode {

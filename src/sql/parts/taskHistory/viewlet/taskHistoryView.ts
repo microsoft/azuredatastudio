@@ -22,7 +22,7 @@ import { TaskHistoryController } from 'sql/parts/taskHistory/viewlet/taskHistory
 import { TaskHistoryActionProvider } from 'sql/parts/taskHistory/viewlet/taskHistoryActionProvider';
 import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
 import { TaskNode, TaskStatus } from 'sql/parts/taskHistory/common/taskNode';
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 
 const $ = builder.$;
 

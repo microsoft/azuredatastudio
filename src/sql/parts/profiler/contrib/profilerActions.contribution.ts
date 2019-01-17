@@ -9,7 +9,7 @@ import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiati
 import * as nls from 'vs/nls';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -19,9 +19,9 @@ import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/co
 import { KeyCode, KeyMod } from 'vs/editor/editor.api';
 import { ProfilerEditor } from '../editor/profilerEditor';
 import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { mssqlProviderName } from 'sql/parts/connection/common/constants';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // Contribute Global Actions
 const category = nls.localize('profilerCategory', "Profiler");

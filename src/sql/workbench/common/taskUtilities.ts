@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import {
 	IConnectableInput, IConnectionManagementService,
 	IConnectionCompletionOptions, ConnectionType, IErrorMessageService,
 	RunQueryOnConnectionMode, IConnectionResult
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/services/scripting/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
@@ -18,12 +18,12 @@ import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/com
 import { IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import Severity from 'vs/base/common/severity';
 import * as sqlops from 'sqlops';
-import nls = require('vs/nls');
+import * as nls from 'vs/nls';
 import os = require('os');
-import path = require('path');
+import * as path from 'vs/base/common/paths';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';

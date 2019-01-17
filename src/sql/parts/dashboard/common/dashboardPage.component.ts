@@ -22,7 +22,7 @@ import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
-import * as Constants from 'sql/parts/connection/common/constants';
+import * as Constants from 'sql/platform/connection/common/constants';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';

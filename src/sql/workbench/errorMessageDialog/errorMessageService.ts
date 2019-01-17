@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { ErrorMessageDialog } from 'sql/workbench/errorMessageDialog/errorMessageDialog';
 import { IAction } from 'vs/base/common/actions';
 

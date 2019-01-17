@@ -13,7 +13,7 @@ import { ConfigurationEditingService, IConfigurationValue } from 'vs/workbench/s
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ConnectionProfile } from './connectionProfile';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
 

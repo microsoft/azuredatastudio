@@ -9,7 +9,7 @@ import { Subject } from 'rxjs/Subject';
 import { DashboardServiceInterface } from './dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { MenuItem, IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 import * as nls from 'vs/nls';
 

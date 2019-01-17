@@ -22,7 +22,7 @@ import {
 	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { INotificationService } from 'vs/platform/notification/common/notification';

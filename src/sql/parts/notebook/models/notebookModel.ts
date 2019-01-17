@@ -18,7 +18,7 @@ import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
 import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';

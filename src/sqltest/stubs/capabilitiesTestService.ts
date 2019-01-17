@@ -5,8 +5,8 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import { ICapabilitiesService, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { Event, Emitter } from 'vs/base/common/event';

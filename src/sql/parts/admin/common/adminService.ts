@@ -9,14 +9,14 @@ import { localize } from 'vs/nls';
 export const SERVICE_ID = 'adminService';
 
 import { IInstantiationService, createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CreateLoginInput } from 'sql/parts/admin/security/createLoginInput';
 import { TaskDialogInput } from 'sql/parts/tasks/dialog/taskDialogInput';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
 

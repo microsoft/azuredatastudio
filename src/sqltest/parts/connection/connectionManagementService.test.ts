@@ -6,20 +6,20 @@
 'use strict';
 
 import { ConnectionDialogTestService } from 'sqltest/stubs/connectionDialogTestService';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
-import { ConnectionStatusManager } from 'sql/parts/connection/common/connectionStatusManager';
-import { ConnectionStore } from 'sql/parts/connection/common/connectionStore';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
+import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import {
 	INewConnectionParams, ConnectionType,
 	IConnectionCompletionOptions, IConnectionResult,
 	RunQueryOnConnectionMode
-} from 'sql/parts/connection/common/connectionManagement';
-import * as Constants from 'sql/parts/connection/common/constants';
-import * as Utils from 'sql/parts/connection/common/utils';
+} from 'sql/platform/connection/common/connectionManagement';
+import * as Constants from 'sql/platform/connection/common/constants';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { IHandleFirewallRuleResult } from 'sql/parts/accountManagement/common/interfaces';
 
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { EditorGroupTestService } from 'sqltest/stubs/editorGroupService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProviderStub } from 'sqltest/stubs/connectionProviderStub';
@@ -32,8 +32,8 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 
 suite('SQL ConnectionManagementService tests', () => {

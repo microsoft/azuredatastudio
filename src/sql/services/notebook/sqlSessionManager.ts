@@ -8,13 +8,13 @@ import { nb, QueryExecuteSubsetResult, IDbColumn, DbCellValue } from 'sqlops';
 import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import Severity from 'vs/base/common/severity';
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { mssqlProviderName } from 'sql/parts/connection/common/constants';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");

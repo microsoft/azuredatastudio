@@ -15,8 +15,8 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 import { noKernel } from 'sql/services/notebook/sessionManager';
 

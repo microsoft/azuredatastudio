@@ -6,9 +6,9 @@
 import { InsightsDialogController } from 'sql/parts/insights/node/insightsDialogController';
 import { InsightsDialogModel } from 'sql/parts/insights/common/insightsDialogModel';
 import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
