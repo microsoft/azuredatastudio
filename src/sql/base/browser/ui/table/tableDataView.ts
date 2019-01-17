@@ -24,9 +24,11 @@ function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T
 
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
 	private _data: Array<T>;
+	private _allData: Array<T>;
 	private _findArray: Array<IFindPosition>;
 	private _findObs: Observable<IFindPosition>;
 	private _findIndex: number;
+	private _filterEnabled: boolean;
 
 	private _onRowCountChange = new Emitter<number>();
 	get onRowCountChange(): Event<number> { return this._onRowCountChange.event; }
@@ -34,10 +36,14 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 	private _onFindCountChange = new Emitter<number>();
 	get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
+	private _onFilterStateChange = new Emitter<void>();
+	get onFilterStateChange(): Event<void> { return this._onFilterStateChange.event; }
+
 	constructor(
 		data?: Array<T>,
 		private _findFn?: (val: T, exp: string) => Array<number>,
-		private _sortFn?: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>
+		private _sortFn?: (args: Slick.OnSortEventArgs<T>, data: Array<T>) => Array<T>,
+		private _filterFn?: (data: Array<T>) => Array<T>
 	) {
 		if (data) {
 			this._data = data;
@@ -47,6 +53,35 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 		if (!_sortFn) {
 			this._sortFn = defaultSort;
+		}
+
+		if (!_filterFn) {
+			this._filterFn = (dataToFilter) => dataToFilter;
+		}
+		this._filterEnabled = false;
+	}
+
+	public get filterEnabled(): boolean {
+		return this._filterEnabled;
+	}
+
+	public filter() {
+		if (!this.filterEnabled) {
+			this._allData = new Array(...this._data);
+			this._data = this._filterFn(this._allData);
+			this._filterEnabled = true;
+		}
+
+		this._data = this._filterFn(this._allData);
+		this._onFilterStateChange.fire();
+	}
+
+	public clearFilter() {
+		if (this._filterEnabled) {
+			this._data = this._allData;
+			this._allData = [];
+			this._filterEnabled = false;
+			this._onFilterStateChange.fire();
 		}
 	}
 
@@ -62,20 +97,39 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 		return this._data[index];
 	}
 
+	getLengthNonFiltered(): number {
+		return this.filterEnabled ? this._allData.length : this._data.length;
+	}
+
 	push(items: Array<T>);
 	push(item: T);
 	push(input: T | Array<T>) {
+		let inputArray = new Array();
 		if (Array.isArray(input)) {
-			this._data.push(...input);
+			inputArray.push(...input);
 		} else {
-			this._data.push(input);
+			inputArray.push(input);
 		}
-		this._onRowCountChange.fire();
+
+		if (this._filterEnabled) {
+			this._allData.push(...inputArray);
+			let filteredArray = this._filterFn(inputArray);
+			if (filteredArray.length !== 0) {
+				this._data.push(...filteredArray);
+			}
+		} else {
+			this._data.push(...inputArray);
+		}
+
+		this._onRowCountChange.fire(this.getLength());
 	}
 
 	clear() {
 		this._data = new Array<T>();
-		this._onRowCountChange.fire();
+		if (this._filterEnabled) {
+			this._allData = new Array<T>();
+		}
+		this._onRowCountChange.fire(this.getLength());
 	}
 
 	find(exp: string, maxMatches: number = 0): Thenable<IFindPosition> {
@@ -163,6 +217,7 @@ export class TableDataView<T extends Slick.SlickData> implements IDisposableData
 
 	dispose() {
 		this._data = undefined;
+		this._allData = undefined;
 		this._findArray = undefined;
 		this._findObs = undefined;
 	}
