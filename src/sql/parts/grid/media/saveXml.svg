@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g id="saveXml" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <polygon id="canvas" fill="#F6F6F6" fill-rule="nonzero" opacity="0" points="16 16 0 16 0 0 16 0"></polygon>
+        <polygon id="&lt;-&gt;" fill="#424242" points="14.3701172 10.7222222 9.41870773 15 9.41870773 12.3454861 12.9578306 9.5 9.41870773 6.6640625 9.41870773 4 14.3701172 8.296875"></polygon>
+        <polygon id="colorAction" fill="#00539C" fill-rule="nonzero" points="8 4 5 7 3 7 5 5 1 5 1 3 5 3 3 1 5 1"></polygon>
+        <path d="M2.32152009,8 L5.28619938,8 L3.4164898,9.5 L6.95140946,12.3454861 L6.95140946,15 L2,10.7222222 L2,8.27777778 L2.32152009,8 Z" id="Combined-Shape" fill="#424242"></path>
+    </g>
+</svg>

@@ -42,7 +42,7 @@ export class TopOperationsState {
 }
 
 export class TopOperationsTab implements IPanelTab {
-	public readonly title = localize('topOperationsTitle', 'Top Operation');
+	public readonly title = localize('topOperationsTitle', 'Top Operations');
 	public readonly identifier = 'TopOperationsTab';
 	public readonly view: TopOperationsView;
 

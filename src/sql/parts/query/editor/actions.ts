@@ -57,6 +57,10 @@ export class SaveResultAction extends Action {
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', 'Save As Excel');
 	public static SAVEEXCEL_ICON = 'saveExcel';
 
+	public static SAVEXML_ID = 'grid.saveAsXml';
+	public static SAVEXML_LABEL = localize('saveAsXml', 'Save As XML');
+	public static SAVEXML_ICON = 'saveXml';
+
 	constructor(
 		id: string,
 		label: string,

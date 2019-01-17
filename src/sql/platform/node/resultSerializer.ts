@@ -253,6 +253,24 @@ export class ResultSerializer {
 		return config;
 	}
 
+	private getConfigForXml(): SaveResultsRequestParams {
+		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.XML as string };
+
+		// get save results config from vscode config
+		let saveConfig = WorkbenchUtils.getSqlConfigSection(this._workspaceConfigurationService, Constants.configSaveAsXml);
+		// if user entered config, set options
+		if (saveConfig) {
+			if (saveConfig.formatted !== undefined) {
+				saveResultsParams.formatted = saveConfig.formatted;
+			}
+			if (saveConfig.encoding !== undefined) {
+				saveResultsParams.encoding = saveConfig.encoding;
+			}
+		}
+
+		return saveResultsParams;
+	}
+
 	private getParameters(filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams: SaveResultsRequestParams;
 		if (!paths.isAbsolute(filePath)) {
@@ -267,6 +285,8 @@ export class ResultSerializer {
 			saveResultsParams = this.getConfigForJson();
 		} else if (format === SaveFormat.EXCEL) {
 			saveResultsParams = this.getConfigForExcel();
+		} else if (format === SaveFormat.XML) {
+			saveResultsParams = this.getConfigForXml();
 		}
 
 		saveResultsParams.filePath = this._filePath;

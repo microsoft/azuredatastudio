@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ProfilerInput } from './profilerInput';
-
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
@@ -17,15 +16,8 @@ import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
 import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interfaces';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
-import * as DOM from 'vs/base/browser/dom';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { EditorOptions } from 'vs/workbench/common/editor';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
-import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
+
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
@@ -46,52 +38,70 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IView, SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
+import * as DOM from 'vs/base/browser/dom';
+import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { TPromise } from 'vs/base/common/winjs.base';
+import { EditorOptions } from 'vs/workbench/common/editor';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { Event, Emitter } from 'vs/base/common/event';
+import { clamp } from 'vs/base/common/numbers';
 
-class BasicView extends View {
-	private _previousSize: number;
-	private _collapsed: boolean;
-	public headerSize: number;
+class BasicView implements IView {
+	public get element(): HTMLElement {
+		return this._element;
+	}
+	private _onDidChange = new Emitter<number>();
+	public readonly onDidChange: Event<number> = this._onDidChange.event;
+
+	private _collapsed = false;
+	private size: number;
+	private previousSize: number;
+	private _minimumSize: number;
+	public get minimumSize(): number {
+		return this._minimumSize;
+	}
+
+	private _maximumSize: number;
+	public get maximumSize(): number {
+		return this._maximumSize;
+	}
 
 	constructor(
-		initialSize: number,
+		private _defaultMinimumSize: number,
+		private _defaultMaximumSize: number,
+		private _layout: (size: number) => void,
 		private _element: HTMLElement,
-		private _focus: () => void,
-		private _layout: (size: number, orientation: Orientation) => void,
-		opts: IViewOptions
+		private options: { headersize?: number } = {}
 	) {
-		super(initialSize, opts);
-		this._previousSize = initialSize;
+		this._minimumSize = _defaultMinimumSize;
+		this._maximumSize = _defaultMaximumSize;
 	}
 
-	render(container: HTMLElement, orientation: Orientation): void {
-		container.appendChild(this._element);
+	public layout(size: number): void {
+		this.size = size;
+		this._layout(size);
 	}
 
-	focus(): void {
-		this._focus();
-	}
-
-	layout(size: number, orientation: Orientation): void {
-		if (!this.collapsed) {
-			this._previousSize = size;
-		}
-		this._layout(size, orientation);
-	}
-
-	set collapsed(val: boolean) {
-		this._collapsed = val === false ? false : true;
-		if (this.collapsed) {
-			this._previousSize = this.size;
-			this.setFixed(this.headerSize);
-		} else {
-			// Enforce the min height for the view when user is doing expand operation,
-			// to make sure the view has a reasonable height.
-			const minHeight = 200;
-			this.setFlexible(Math.max(this._previousSize, minHeight));
+	public set collapsed(val: boolean) {
+		if (val !== this._collapsed && this.options.headersize) {
+			this._collapsed = val;
+			if (this.collapsed) {
+				this.previousSize = this.size;
+				this._minimumSize = this.options.headersize;
+				this._maximumSize = this.options.headersize;
+				this._onDidChange.fire();
+			} else {
+				this._maximumSize = this._defaultMaximumSize;
+				this._minimumSize = this._defaultMinimumSize;
+				this._onDidChange.fire(clamp(this.previousSize, this.minimumSize, this.maximumSize));
+			}
 		}
 	}
 
-	get collapsed(): boolean {
+	public get collapsed(): boolean {
 		return this._collapsed;
 	}
 }
@@ -146,14 +156,13 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService editorService: IEditorService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (_editorService) {
-			_editorService.overrideOpenEditor((editor, options, group) => {
+		if (editorService) {
+			editorService.overrideOpenEditor((editor, options, group) => {
 				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
 					this.saveEditorViewState();
 				}
@@ -178,21 +187,19 @@ export class ProfilerEditor extends BaseEditor {
 		let paneContainer = this._createProfilerPane();
 		this._splitView.addView(new BasicView(
 			300,
-			tableContainer,
-			() => this._profilerTableEditor.focus(),
+			Number.POSITIVE_INFINITY,
 			size => this._profilerTableEditor.layout(new DOM.Dimension(parseFloat(DOM.getComputedStyle(this._body).width), size)),
-			{}
-		));
+			tableContainer
+		), Sizing.Distribute);
 
 		this._panelView = new BasicView(
 			300,
-			paneContainer,
-			() => this._tabbedPanel.focus(),
+			Number.POSITIVE_INFINITY,
 			size => this._tabbedPanel.layout(new DOM.Dimension(DOM.getTotalWidth(this._body), size)),
-			{ minimumSize: 35 }
+			paneContainer,
+			{ headersize: 35 }
 		);
-		this._panelView.headerSize = 35;
-		this._splitView.addView(this._panelView);
+		this._splitView.addView(this._panelView, Sizing.Distribute);
 	}
 
 	private _createHeader(): void {
@@ -426,7 +433,6 @@ export class ProfilerEditor extends BaseEditor {
 				isPanelCollapsed: true
 			});
 			this._profilerTableEditor.updateState();
-			this._splitView.layout();
 			this._profilerTableEditor.focus();
 			if (savedViewState) {
 				this._profilerTableEditor.restoreViewState(savedViewState);
