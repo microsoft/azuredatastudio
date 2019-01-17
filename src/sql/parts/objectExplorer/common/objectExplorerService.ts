@@ -305,7 +305,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 				let serverInfo = this._connectionManagementService.getActiveConnectionServerInfo(this._sessions[session.sessionId].connection.id);
-				if (serverInfo && !serverInfo.options.isBigDataCluster) {
+				if (serverInfo && serverInfo.options && !serverInfo.options.isBigDataCluster) {
 					this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 						resolve(result);
 					}, error => {
@@ -317,7 +317,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							if (result) {
 								let pathes: string[] = [];
 								result.nodes.forEach(node => pathes.push(node.nodePath));
-								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, groupingId: 0,path: pathes, expanderObject: provider });
+								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, groupingId: 0, path: pathes, expanderObject: provider });
 
 								let expanders = this._expanders[providerId].sort(expander=> expander.groupingId);
 								if (expanders) {

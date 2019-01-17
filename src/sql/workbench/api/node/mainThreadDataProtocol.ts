@@ -257,7 +257,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._objectExplorerService.registerExpander(<sqlops.ObjectExplorerNodeExpander> {
 			supportedProviderId: providerId,
 			providerId: 'DataServices',
-			groupingId: 1,
+			groupingId: 2,
 			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},

@@ -22,6 +22,7 @@
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.11",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+    "stream-meter": "^1.0.4",
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "^0.0.15",
     "vscode-nls": "2.0.2",
