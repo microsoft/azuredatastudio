@@ -36,10 +36,6 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
         this.appContext.registerService<HadoopObjectExplorerNodeExpander>(constants.ObjectExplorerService, this);
     }
 
-    public createNewSession(connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
-		return Promise.resolve(undefined);
-    }
-
     expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
         return new Promise((resolve, reject) => {
             if (!nodeInfo) {
@@ -76,7 +72,7 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
 
                 let connection = new Connection(connInfo);
                 connection.saveUriWithPrefix(constants.objectExplorerPrefix);
-                session = new Session(connection, nodeInfo.sessionId);
+                session = new Session(connection, nodeInfo.sessionId, nodeInfo.connectionId);
                 session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), nodeInfo.nodePath);
                 this.sessionMap.set(nodeInfo.sessionId, session);
                 let expandResult: sqlops.ObjectExplorerExpandInfo = {
@@ -191,7 +187,8 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
                 let nodeInfo = node.getNodeInfo();
                 let expandInfo: sqlops.ExpandNodeInfo = {
                     nodePath: nodeInfo.nodePath,
-                    sessionId: session.uri
+                    sessionId: session.uri,
+                    connectionId: session.connection.connectionId
                 };
                 await this.refreshNode(expandInfo);
             }
@@ -246,7 +243,7 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
 
 export class Session {
     private _root: RootNode;
-    constructor(private _connection: Connection, private sessionId?: string) {
+    constructor(private _connection: Connection, private sessionId?: string, private _connectionId?: string) {
     }
 
     public get uri(): string {
@@ -263,6 +260,15 @@ export class Session {
 
     public get root(): RootNode {
         return this._root;
+    }
+
+    public get connectionId(): string {
+        if (this._connectionId) {
+            return this._connectionId;
+        }
+        else {
+            return undefined;
+        }
     }
 
 }

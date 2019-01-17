@@ -258,6 +258,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
+	getActiveConnectionConnectionId(profileId: string): string {
+		return undefined;
+	}
+
 	getConnectionString(connectionId: string): Thenable<string> {
 		return undefined;
 	}

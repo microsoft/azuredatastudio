@@ -287,7 +287,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				provider.createNewSession(connection.toConnectionInfo()).then(result => {
 					self._sessions[result.sessionId] = {
 						connection: connection,
-						nodes: {},
+						nodes: {}
 					};
 					resolve(result);
 				}, error => {
@@ -296,16 +296,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			} else {
 				reject(`Provider doesn't exist. id: ${providerId}`);
 			}
-		});
-	}
-
-	public expandNodeFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
-		return new Promise<sqlops.ObjectExplorerExpandInfo>((resolve, reject) => {
-			this.expandOrRefreshNode(provider, session, nodePath).then(result => {
-				resolve(result);
-			}, error => {
-				reject(error);
-			});
 		});
 	}
 
@@ -408,7 +398,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				if (newRequest) {
 					self.callExpandOrRefreshFromProvider(provider, {
 						sessionId: session.sessionId,
-						nodePath: nodePath
+						nodePath: nodePath,
+						connectionId: self._connectionManagementService.getActiveConnectionConnectionId(self._sessions[session.sessionId].connection.getConnectionInfoId())
 					}, refresh).then(result => {
 					}, error => {
 						reject(error);

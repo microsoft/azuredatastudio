@@ -86,14 +86,14 @@ suite('SQL Object Explorer Service tests', () => {
 				nodeStatus: '',
 				errorMessage: ''
 			},
-			errorMessage: '',
+			errorMessage: ''
 		};
 
 		objectExplorerFailedSession = {
 			success: false,
 			sessionId: failedSessionId,
 			rootNode: undefined,
-			errorMessage: 'Connection Failed',
+			errorMessage: 'Connection Failed'
 		};
 
 		objectExplorerCloseSessionResponse = {

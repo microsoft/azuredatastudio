@@ -1164,6 +1164,7 @@ declare module 'sqlops' {
 	export interface ExpandNodeInfo {
 		sessionId: string;
 		nodePath: string;
+		connectionId: string;
 	}
 
 	export interface FindNodesInfo {
