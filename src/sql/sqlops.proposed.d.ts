@@ -2326,9 +2326,4 @@ declare module 'sqlops' {
 		//#endregion
 
 	}
-
-	export namespace extensionManagement {
-		export function install(vsixPath: string): Thenable<string>;
-	}
-
 }

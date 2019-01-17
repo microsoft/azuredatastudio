@@ -123,11 +123,6 @@ declare module 'sqlops' {
 	export namespace objectexplorer {
 
 		/**
-		 * A testing hook
-		 */
-		export function getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
-
-		/**
 		 * Get an Object Explorer node corresponding to the given connection and path. If no path
 		 * is given, it returns the top-level node for the given connection. If there is no node at
 		 * the given path, it returns undefined.

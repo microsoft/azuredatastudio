@@ -20,8 +20,10 @@ export function activate(context: vscode.ExtensionContext) {
 		let extensionInstallersFolder = normalize(join(__dirname, '../extensionInstallers'));
 		let installers = fs.readdirSync(extensionInstallersFolder);
 		for (let i = 0; i < installers.length; i++) {
-			let installerFullPath = join(extensionInstallersFolder, installers[i]);
-			await sqlops.extensionManagement.install(installerFullPath);
+			if (installers[i].endsWith('.vsix')) {
+				let installerFullPath = join(extensionInstallersFolder, installers[i]);
+				await sqlops.extensionManagement.install(installerFullPath);
+			}
 		}
 		await setConfiguration('workbench.enablePreviewFeatures', true);
 		await setConfiguration('workbench.showConnectDialogOnStartup', false);
