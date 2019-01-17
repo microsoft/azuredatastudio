@@ -124,7 +124,7 @@ export class TreeUpdateUtils {
 				if (connectionManagementService.isProfileConnecting(connection)) {
 					resolve(undefined);
 
-				// else if we aren't connected or connecting then try to connect
+					// else if we aren't connected or connecting then try to connect
 				} else {
 					let callbacks: IConnectionCallbacks = undefined;
 					if (tree) {

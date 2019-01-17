@@ -19,10 +19,10 @@ export class JobManagementService implements IJobManagementService {
 	public readonly onDidChange: Event<void> = this._onDidChange.event;
 
 	private _providers: { [handle: string]: sqlops.AgentServicesProvider; } = Object.create(null);
-	private _jobCacheObjectMap : {[server: string]: JobCacheObject; } = {};
-	private _operatorsCacheObjectMap: {[server: string]: OperatorsCacheObject; } = {};
-	private _alertsCacheObject: {[server: string]: AlertsCacheObject; } = {};
-	private _proxiesCacheObjectMap: {[server: string]: ProxiesCacheObject; } = {};
+	private _jobCacheObjectMap: { [server: string]: JobCacheObject; } = {};
+	private _operatorsCacheObjectMap: { [server: string]: OperatorsCacheObject; } = {};
+	private _alertsCacheObject: { [server: string]: AlertsCacheObject; } = {};
+	private _proxiesCacheObjectMap: { [server: string]: ProxiesCacheObject; } = {};
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService
@@ -99,7 +99,7 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
-	public deleteProxy(connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus>  {
+	public deleteProxy(connectionUri: string, proxy: sqlops.AgentProxyInfo): Thenable<sqlops.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.deleteProxy(connectionUri, proxy);
 		});
@@ -129,19 +129,19 @@ export class JobManagementService implements IJobManagementService {
 		this._providers[providerId] = provider;
 	}
 
-	public get jobCacheObjectMap(): {[server: string]: JobCacheObject;} {
+	public get jobCacheObjectMap(): { [server: string]: JobCacheObject; } {
 		return this._jobCacheObjectMap;
 	}
 
-	public get alertsCacheObjectMap(): {[server: string]: AlertsCacheObject; } {
+	public get alertsCacheObjectMap(): { [server: string]: AlertsCacheObject; } {
 		return this._alertsCacheObject;
 	}
 
-	public get proxiesCacheObjectMap(): {[server: string]: ProxiesCacheObject; } {
+	public get proxiesCacheObjectMap(): { [server: string]: ProxiesCacheObject; } {
 		return this._proxiesCacheObjectMap;
 	}
 
-	public get operatorsCacheObjectMap(): {[server: string]: OperatorsCacheObject} {
+	public get operatorsCacheObjectMap(): { [server: string]: OperatorsCacheObject } {
 		return this._operatorsCacheObjectMap;
 	}
 
@@ -173,87 +173,87 @@ export class JobCacheObject {
 	private _serverName: string;
 	private _dataView: Slick.Data.DataView<any>;
 
-		/* Getters */
-		public get jobs(): sqlops.AgentJobInfo[] {
-			return this._jobs;
-		}
+	/* Getters */
+	public get jobs(): sqlops.AgentJobInfo[] {
+		return this._jobs;
+	}
 
-		public get jobHistories(): { [jobID: string]: sqlops.AgentJobHistoryInfo[] } {
-			return this._jobHistories;
-		}
+	public get jobHistories(): { [jobID: string]: sqlops.AgentJobHistoryInfo[] } {
+		return this._jobHistories;
+	}
 
-		public get prevJobID(): string {
-			return this._prevJobID;
-		}
+	public get prevJobID(): string {
+		return this._prevJobID;
+	}
 
-		public getJobHistory(jobID: string): sqlops.AgentJobHistoryInfo[] {
-			return this._jobHistories[jobID];
-		}
+	public getJobHistory(jobID: string): sqlops.AgentJobHistoryInfo[] {
+		return this._jobHistories[jobID];
+	}
 
-		public get serverName(): string {
-			return this._serverName;
-		}
+	public get serverName(): string {
+		return this._serverName;
+	}
 
-		public get dataView(): Slick.Data.DataView<any> {
-			return this._dataView;
-		}
+	public get dataView(): Slick.Data.DataView<any> {
+		return this._dataView;
+	}
 
-		public getRunChart(jobID: string): string[] {
-			return this._runCharts[jobID];
-		}
+	public getRunChart(jobID: string): string[] {
+		return this._runCharts[jobID];
+	}
 
-		public getJobSteps(jobID: string): sqlops.AgentJobStepInfo[] {
-			return this._jobSteps[jobID];
-		}
+	public getJobSteps(jobID: string): sqlops.AgentJobStepInfo[] {
+		return this._jobSteps[jobID];
+	}
 
-		public getJobAlerts(jobID: string): sqlops.AgentAlertInfo[] {
-			return this._jobAlerts[jobID];
-		}
+	public getJobAlerts(jobID: string): sqlops.AgentAlertInfo[] {
+		return this._jobAlerts[jobID];
+	}
 
-		public getJobSchedules(jobID: string): sqlops.AgentJobScheduleInfo[] {
-			return this._jobSchedules[jobID];
-		}
+	public getJobSchedules(jobID: string): sqlops.AgentJobScheduleInfo[] {
+		return this._jobSchedules[jobID];
+	}
 
-		/* Setters */
-		public set jobs(value: sqlops.AgentJobInfo[]) {
-			this._jobs = value;
-		}
+	/* Setters */
+	public set jobs(value: sqlops.AgentJobInfo[]) {
+		this._jobs = value;
+	}
 
-		public set jobHistories(value: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; }) {
-			this._jobHistories = value;
-		}
+	public set jobHistories(value: { [jobID: string]: sqlops.AgentJobHistoryInfo[]; }) {
+		this._jobHistories = value;
+	}
 
-		public set prevJobID(value: string) {
-			this._prevJobID = value;
-		}
+	public set prevJobID(value: string) {
+		this._prevJobID = value;
+	}
 
-		public setJobHistory(jobID:string, value: sqlops.AgentJobHistoryInfo[]) {
-			this._jobHistories[jobID] = value;
-		}
+	public setJobHistory(jobID: string, value: sqlops.AgentJobHistoryInfo[]) {
+		this._jobHistories[jobID] = value;
+	}
 
-		public setRunChart(jobID: string, value: string[]) {
-			this._runCharts[jobID] = value;
-		}
+	public setRunChart(jobID: string, value: string[]) {
+		this._runCharts[jobID] = value;
+	}
 
-		public set serverName(value: string) {
-			this._serverName = value;
-		}
+	public set serverName(value: string) {
+		this._serverName = value;
+	}
 
-		public set dataView(value: Slick.Data.DataView<any>) {
-			this._dataView = value;
-		}
+	public set dataView(value: Slick.Data.DataView<any>) {
+		this._dataView = value;
+	}
 
-		public setJobSteps(jobID: string, value: sqlops.AgentJobStepInfo[]) {
-			this._jobSteps[jobID] = value;
-		}
+	public setJobSteps(jobID: string, value: sqlops.AgentJobStepInfo[]) {
+		this._jobSteps[jobID] = value;
+	}
 
-		public setJobAlerts(jobID: string, value: sqlops.AgentAlertInfo[]) {
-			this._jobAlerts[jobID] = value;
-		}
+	public setJobAlerts(jobID: string, value: sqlops.AgentAlertInfo[]) {
+		this._jobAlerts[jobID] = value;
+	}
 
-		public setJobSchedules(jobID: string, value: sqlops.AgentJobScheduleInfo[]) {
-			this._jobSchedules[jobID] = value;
-		}
+	public setJobSchedules(jobID: string, value: sqlops.AgentJobScheduleInfo[]) {
+		this._jobSchedules[jobID] = value;
+	}
 }
 
 /**
@@ -297,12 +297,12 @@ export class OperatorsCacheObject {
 * Server level caching of job alerts and the alerts view
 */
 export class AlertsCacheObject {
-   _serviceBrand: any;
-   private _alerts: sqlops.AgentAlertInfo[];
-   private _dataView: Slick.Data.DataView<any>;
-   private _serverName: string;
+	_serviceBrand: any;
+	private _alerts: sqlops.AgentAlertInfo[];
+	private _dataView: Slick.Data.DataView<any>;
+	private _serverName: string;
 
-   	/** Getters */
+	/** Getters */
 	public get alerts(): sqlops.AgentAlertInfo[] {
 		return this._alerts;
 	}

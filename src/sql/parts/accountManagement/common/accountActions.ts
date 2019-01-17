@@ -107,15 +107,15 @@ export class RemoveAccountAction extends Action {
 				return new TPromise((resolve, reject) => {
 					self._accountManagementService.removeAccount(self._account.key)
 						.then(
-							(result) => { resolve(result); },
-							(err) => {
-								// Must handle here as this is an independent action
-								self._notificationService.notify({
-									severity: Severity.Error,
-									message: localize('removeAccountFailed', 'Failed to remove account')
-								});
-								resolve(false);
-							}
+						(result) => { resolve(result); },
+						(err) => {
+							// Must handle here as this is an independent action
+							self._notificationService.notify({
+								severity: Severity.Error,
+								message: localize('removeAccountFailed', 'Failed to remove account')
+							});
+							resolve(false);
+						}
 						);
 				});
 			}

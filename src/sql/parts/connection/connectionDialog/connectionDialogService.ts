@@ -87,14 +87,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) { }
-/**
- * Gets the default provider with the following actions
- * 	1. Checks if master provider(map) has data
- * 	2. If so, filters provider paramter against master map
- * 	3. Fetches the result array and extracts the first element
- * 	4. If none of the above data exists, returns 'MSSQL'
- * @returns: Default provider as string
- */
+	/**
+	 * Gets the default provider with the following actions
+	 * 	1. Checks if master provider(map) has data
+	 * 	2. If so, filters provider paramter against master map
+	 * 	3. Fetches the result array and extracts the first element
+	 * 	4. If none of the above data exists, returns 'MSSQL'
+	 * @returns: Default provider as string
+	 */
 	private getDefaultProviderName(): string {
 		let defaultProvider: string;
 		if (this._providerNameToDisplayNameMap) {

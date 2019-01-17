@@ -55,7 +55,7 @@ export class QueryPlanInput extends EditorInput {
 
 	public get hasInitialized(): boolean {
 		return !!this._uniqueSelector;
-    }
+	}
 
 	public get uniqueSelector(): string {
 		return this._uniqueSelector;

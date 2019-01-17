@@ -147,10 +147,10 @@ export class BackupUiService implements IBackupUiService {
 		let backupOptions = this.getOptions(this._currentProvider);
 		return new TPromise<void>((resolve) => {
 			let uri = this._connectionManagementService.getConnectionUri(connection)
-			+ ProviderConnectionInfo.idSeparator
-			+ ConnectionUtils.ConnectionUriBackupIdAttributeName
-			+ ProviderConnectionInfo.nameValueSeparator
-			+ BackupUiService._connectionUniqueId;
+				+ ProviderConnectionInfo.idSeparator
+				+ ConnectionUtils.ConnectionUriBackupIdAttributeName
+				+ ProviderConnectionInfo.nameValueSeparator
+				+ BackupUiService._connectionUniqueId;
 
 			this._connectionUri = uri;
 

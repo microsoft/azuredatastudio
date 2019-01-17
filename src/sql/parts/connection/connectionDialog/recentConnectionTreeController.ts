@@ -33,7 +33,7 @@ export class RecentConnectionActionsProvider extends ContributableActionProvider
 	private getRecentConnectionActions(tree: ITree, element: any): IAction[] {
 		let actions: IAction[] = [];
 		let clearSingleConnectionAction = this._instantiationService.createInstance(ClearSingleRecentConnectionAction, ClearSingleRecentConnectionAction.ID,
-			ClearSingleRecentConnectionAction.LABEL,<IConnectionProfile>element);
+			ClearSingleRecentConnectionAction.LABEL, <IConnectionProfile>element);
 		clearSingleConnectionAction.onRecentConnectionRemoved(() => this._onRecentConnectionRemoved.fire());
 		actions.push(clearSingleConnectionAction);
 		return actions;

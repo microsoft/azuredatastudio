@@ -155,7 +155,7 @@ export class SparkMagicContexts {
 
 		// Default to localhost in config file.
 		let creds: ICredentials = {
-		    'url': 'http://localhost:8088'
+			'url': 'http://localhost:8088'
 		};
 
 		let config: ISparkMagicConfig = Object.assign({}, configBase);

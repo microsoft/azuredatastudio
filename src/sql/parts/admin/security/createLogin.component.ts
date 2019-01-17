@@ -21,8 +21,8 @@ export class CreateLoginComponent {
 	public connection: ConnectionManagementInfo;
 
 	constructor(
-        @Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-        @Inject(IBootstrapParams) private _params: IDashboardComponentParams
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IBootstrapParams) private _params: IDashboardComponentParams
 	) {
 	}
 }

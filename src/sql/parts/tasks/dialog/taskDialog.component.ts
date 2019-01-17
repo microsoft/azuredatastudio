@@ -24,10 +24,10 @@ export class TaskDialogComponent {
 	public connection: ConnectionManagementInfo;
 
 	constructor(
-         @Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-         @Inject(IBootstrapParams) private _parameters: ITaskDialogComponentParams
-	 ) {
-        this.ownerUri = this._parameters.ownerUri;
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IBootstrapParams) private _parameters: ITaskDialogComponentParams
+	) {
+		this.ownerUri = this._parameters.ownerUri;
 
 	}
 

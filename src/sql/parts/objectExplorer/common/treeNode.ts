@@ -139,7 +139,7 @@ export class TreeNode {
 	}
 
 	public toNodeInfo(): sqlops.NodeInfo {
-		return <sqlops.NodeInfo> {
+		return <sqlops.NodeInfo>{
 			nodePath: this.nodePath,
 			nodeType: this.nodeTypeId,
 			nodeSubType: this.nodeSubType,
