@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as os from 'os';
+
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import {
 	IConnectableInput, IConnectionManagementService,
@@ -14,22 +16,23 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
+import { IBackupUiService } from 'sql/platform/backup/common/backupService';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import Severity from 'vs/base/common/severity';
-import * as sqlops from 'sqlops';
-import * as nls from 'vs/nls';
-import os = require('os');
-import * as path from 'vs/base/common/paths';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+
+import * as sqlops from 'sqlops';
+
+import Severity from 'vs/base/common/severity';
+import * as nls from 'vs/nls';
+import * as path from 'vs/base/common/paths';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {

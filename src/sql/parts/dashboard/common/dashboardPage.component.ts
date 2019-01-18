@@ -16,7 +16,7 @@ import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { AngularEventType, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';

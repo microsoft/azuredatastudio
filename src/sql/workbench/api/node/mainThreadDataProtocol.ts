@@ -19,8 +19,8 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { IBackupService } from 'sql/parts/disasterRecovery/backup/common/backupService';
-import { IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
+import { IBackupService } from 'sql/platform/backup/common/backupService';
+import { IRestoreService } from 'sql/platform/restore/common/restoreService';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';

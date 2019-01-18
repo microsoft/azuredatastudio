@@ -28,7 +28,7 @@ import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { warn } from 'sql/base/common/log';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
-import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';

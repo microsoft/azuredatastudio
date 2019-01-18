@@ -120,8 +120,8 @@ import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/c
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser/errorMessageService';
 import { ServerGroupController } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupController';
-
-import { IAngularEventingService, AngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
+import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
 import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
@@ -139,10 +139,11 @@ import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';
 import { IDacFxService, DacFxService } from 'sql/services/dacfx/dacFxService';
-import { IBackupService, IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
-import { BackupService, BackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupServiceImp';
-import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { RestoreService, RestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreServiceImpl';
+import { IBackupService, IBackupUiService } from 'sql/platform/backup/common/backupService';
+import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
+import { BackupUiService } from 'sql/workbench/parts/backup/browser/backupUiService';
+import { IRestoreDialogController, IRestoreService } from 'sql/platform/restore/common/restoreService';
+import { RestoreService, RestoreDialogController } from 'sql/platform/restore/common/restoreServiceImpl';
 import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { NewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialogService';
 import { IFileBrowserService, IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';

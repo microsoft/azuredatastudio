@@ -16,7 +16,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/common/theme/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
-import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import FileValidationConstants = require('sql/parts/fileBrowser/common/fileValidationServiceConstants');
 import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

@@ -4,27 +4,29 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import * as Constants from 'sql/common/constants';
-import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as types from 'vs/base/common/types';
+
+import * as sqlops from 'sqlops';
+
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/parts/disasterRecovery/restore/common/restoreService';
+import { IRestoreService, IRestoreDialogController, TaskExecutionMode } from 'sql/platform/restore/common/restoreService';
 import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
 import { RestoreDialog } from 'sql/parts/disasterRecovery/restore/restoreDialog';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import { MssqlRestoreInfo } from 'sql/parts/disasterRecovery/restore/mssqlRestoreInfo';
+import { MssqlRestoreInfo } from 'sql/platform/restore/common/mssqlRestoreInfo';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskStatus, TaskNode } from 'sql/parts/taskHistory/common/taskNode';
+import * as Constants from 'sql/common/constants';
+import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/common/telemetryUtilities';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 export class RestoreService implements IRestoreService {
 
@@ -128,7 +130,6 @@ export class RestoreService implements IRestoreService {
 		this._providers[providerId] = provider;
 	}
 }
-
 
 export class RestoreDialogController implements IRestoreDialogController {
 	_serviceBrand: any;

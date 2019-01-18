@@ -17,7 +17,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { ObjectMetadata } from 'sqlops';

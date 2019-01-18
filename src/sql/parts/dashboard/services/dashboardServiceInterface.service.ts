@@ -15,7 +15,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
-import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';

@@ -10,10 +10,10 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 import * as sqlops from 'sqlops';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+export { TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 
 export const SERVICE_ID = 'restoreService';
 export const IRestoreService = createDecorator<IRestoreService>(SERVICE_ID);
-export { TaskExecutionMode } from 'sql/parts/disasterRecovery/backup/common/backupService';
 
 export interface IRestoreService {
 	_serviceBrand: any;
