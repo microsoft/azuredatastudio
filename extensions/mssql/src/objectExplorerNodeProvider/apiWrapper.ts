@@ -23,8 +23,8 @@ export class ApiWrapper {
         return sqlops.dataprotocol.registerConnectionProvider(provider);
     }
 
-    public registerObjectExplorerNodeExpander(provider: sqlops.ObjectExplorerNodeExpander): vscode.Disposable {
-        return sqlops.dataprotocol.registerObjectExplorerNodeExpander(provider);
+    public registerObjectExplorerNodeProvider(provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable {
+        return sqlops.dataprotocol.registerObjectExplorerNodeProvider(provider);
     }
 
     public registerTaskServicesProvider(provider: sqlops.TaskServicesProvider): vscode.Disposable {

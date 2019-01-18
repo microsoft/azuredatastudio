@@ -20,7 +20,7 @@ import { IFileSource } from './fileSources';
 import { AppContext } from './appContext';
 import * as constants from './constants';
 
-export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sqlops.ObjectExplorerNodeExpander, ITreeChangeHandler {
+export class HadoopObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
     public readonly supportedProviderId: string = constants.mssqlProviderId;
     public readonly groupingId: number = constants.objectexplorerGroupingId;
     private sessionMap: Map<string, Session>;
@@ -33,7 +33,85 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
             throw new Error(localize('connectionProviderRequired', 'Connection provider is required'));
         }
         this.sessionMap = new Map();
-        this.appContext.registerService<HadoopObjectExplorerNodeExpander>(constants.ObjectExplorerService, this);
+        this.appContext.registerService<HadoopObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
+    }
+
+    createNodeProviderSession(parentSession: sqlops.ObjectExplorerSession, parentConnInfo: sqlops.ConnectionInfo, connectionProfileId: string): Thenable<sqlops.ObjectExplorerSessionResponse> {
+        return new Promise((resolve, reject) => {
+            try {
+                let response: sqlops.ObjectExplorerSessionResponse = {
+                    sessionId: parentSession.sessionId
+                };
+                setTimeout(() => {
+                    // This must run after resolving the session since we want to only send the
+                    // session created event after sending that the session request has been accepted.
+                    // To make this work, waiting 10ms which should ensure the promise gets resolved in all cases
+                    if (!this.sessionMap.has(parentSession.sessionId)) {
+                        this.doCreateSession(parentSession, parentConnInfo, connectionProfileId).then(session => {
+                            this.sendSessionCreated(session);
+                        }).catch(error => {
+                            let sessionInfo: sqlops.ObjectExplorerSession = {
+                                sessionId: parentSession.sessionId,
+                                success: false,
+                                errorMessage: utils.getErrorMessage(error),
+                                rootNode: undefined,
+                                providerId: this.providerId,
+                            };
+                            this.handleSessionFailed(sessionInfo);
+                        });
+                    }
+                }, 10);
+                resolve(response);
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
+    private async doCreateSession(parentSession: sqlops.ObjectExplorerSession, parentConnInfo: sqlops.ConnectionInfo, connectionProfileId: string): Promise<sqlops.ObjectExplorerSession> {
+        let credentials = await sqlops.connection.getCredentials(connectionProfileId);
+        let serverInfo = await sqlops.connection.getServerInfo(connectionProfileId);
+        let endpoints = serverInfo.options.bigDataClusterEndpoints;
+        let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+
+        let connInfo: sqlops.connection.Connection = {
+            options: {
+                'host': endpoints[index].ipAddress,
+                'groupId': parentConnInfo.options.groupId,
+                'knoxport': '',
+                'user': 'root', //parentConnInfo.options.userName cluster setup has to have the same user for master and big data cluster
+                'password': credentials.password,
+            },
+            providerName: constants.hadoopKnoxProviderName,
+            connectionId: UUID.generateUuid()
+        };
+
+        let connection = new Connection(connInfo);
+        connection.saveUriWithPrefix(constants.objectExplorerPrefix);
+        let session = new Session(connection, parentSession.sessionId);
+
+        session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), parentSession.rootNode.nodePath);
+        this.sessionMap.set(parentSession.sessionId, session);
+
+        // TODO #578 test connection is working?
+        let sessionInfo: sqlops.ObjectExplorerSession = {
+            sessionId: session.uri,
+            success: true,
+            rootNode: parentSession.rootNode,
+            errorMessage: undefined,
+            providerId: this.providerId,
+        };
+        return Promise.resolve(sessionInfo);
+    }
+
+    private handleSessionFailed(sessionInfo: sqlops.ObjectExplorerSession): void {
+        this.sessionMap.delete(sessionInfo.sessionId);
+        this.sendSessionCreated(sessionInfo);
+    }
+
+    private sendSessionCreated(sessionInfo: sqlops.ObjectExplorerSession): void {
+        this.sessionCreatedEmitter.fire(sessionInfo);
     }
 
     expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
@@ -49,63 +127,13 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
     private async doExpandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
         let session = this.sessionMap.get(nodeInfo.sessionId);
         if (!session) {
-            let parentConnection = await sqlops.connection.getCurrentConnection();
-            if (parentConnection && parentConnection.providerName === this.supportedProviderId) {
-                let credentials = await sqlops.connection.getCredentials(parentConnection.connectionId);
-                parentConnection.options = Object.assign(parentConnection.options, credentials);
-
-                let serverInfo = await sqlops.connection.getServerInfo(parentConnection.connectionId);
-                let endpoints = serverInfo.options.bigDataClusterEndpoints;
-                let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
-
-                let connInfo: sqlops.connection.Connection = {
-                    options: {
-                        'host': endpoints[index].ipAddress,
-                        'groupId': parentConnection.options.groupId,
-                        'knoxport': '',
-                        'user': 'root', //con.options.userName cluster setup has to have the same user for master and big data cluster
-                        'password': credentials.password,
-                    },
-                    providerName: constants.hadoopKnoxProviderName,
-                    connectionId: UUID.generateUuid()
-                };
-
-                let connection = new Connection(connInfo);
-                connection.saveUriWithPrefix(constants.objectExplorerPrefix);
-                session = new Session(connection, nodeInfo.sessionId, nodeInfo.connectionId);
-                session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), nodeInfo.nodePath);
-                this.sessionMap.set(nodeInfo.sessionId, session);
-                let expandResult: sqlops.ObjectExplorerExpandInfo = {
-                    sessionId: session.uri,
-                    nodePath: nodeInfo.nodePath,
-                    errorMessage: undefined,
-                    nodes: []
-                };
-                try {
-                    let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
-                    if (!node) {
-                        expandResult.errorMessage = localize('nodeNotFound', 'Cannot expand object explorer node. Couldn\t find node for path {0}', nodeInfo.nodePath);
-                    } else {
-                        expandResult.errorMessage = node.getNodeInfo().errorMessage;
-                        if (node.getNodeInfo().nodeType === 'hadoop:root') {
-                            expandResult.nodes = [node.getNodeInfo()];
-                        }
-                    }
-
-                } catch (error) {
-                    expandResult.errorMessage = utils.getErrorMessage(error);
-                }
-                this.expandCompleteEmitter.fire(expandResult);
-            }
-            else {
-                this.expandCompleteEmitter.fire({
-                    sessionId: nodeInfo.sessionId,
-                    nodePath: nodeInfo.nodePath,
-                    errorMessage: localize('sessionIdNotFound', 'Cannot expand object explorer node. Couldn\'t find session for uri {0}', nodeInfo.sessionId),
-                    nodes: undefined
-                });
-                return false;
-            }
+            this.expandCompleteEmitter.fire({
+                sessionId: nodeInfo.sessionId,
+                nodePath: nodeInfo.nodePath,
+                errorMessage: localize('sessionIdNotFound', 'Cannot expand object explorer node. Couldn\'t find session for uri {0}', nodeInfo.sessionId),
+                nodes: undefined
+            });
+            return false;
         } else {
             setTimeout(() => {
 
@@ -167,7 +195,6 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
     }
 
     registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
-        this.sessionCreatedEmitter.event(handler);
     }
 
     registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
@@ -188,7 +215,6 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
                 let expandInfo: sqlops.ExpandNodeInfo = {
                     nodePath: nodeInfo.nodePath,
                     sessionId: session.uri,
-                    connectionId: session.connection.connectionId
                 };
                 await this.refreshNode(expandInfo);
             }
@@ -243,7 +269,7 @@ export class HadoopObjectExplorerNodeExpander extends ProviderBase implements sq
 
 export class Session {
     private _root: RootNode;
-    constructor(private _connection: Connection, private sessionId?: string, private _connectionId?: string) {
+    constructor(private _connection: Connection, private sessionId?: string) {
     }
 
     public get uri(): string {
@@ -261,16 +287,6 @@ export class Session {
     public get root(): RootNode {
         return this._root;
     }
-
-    public get connectionId(): string {
-        if (this._connectionId) {
-            return this._connectionId;
-        }
-        else {
-            return undefined;
-        }
-    }
-
 }
 
 class RootNode extends TreeNode {

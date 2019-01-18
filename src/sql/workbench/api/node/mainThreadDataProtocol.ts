@@ -252,12 +252,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerObjectExplorerNodeExpander(providerId: string, handle: number): TPromise<any> {
+	public $registerObjectExplorerNodeProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
-		this._objectExplorerService.registerExpander(<sqlops.ObjectExplorerNodeExpander> {
+		this._objectExplorerService.registerNodeProvider(<sqlops.ObjectExplorerNodeProvider> {
 			supportedProviderId: providerId,
 			providerId: 'DataServices',
 			groupingId: 2,
+			createNodeProviderSession(session: sqlops.ObjectExplorerSession, connInfo: sqlops.ConnectionInfo, connectionProfileId: string) {
+				return self._proxy.$createObjectExplorerNodeProviderSession(handle, session, connInfo, connectionProfileId);
+			},
 			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},

@@ -288,7 +288,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
-	ObjectExplorerNodeExpander = 'ObjectExplorerNodeExpander',
+	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 }
 
 export enum DeclarativeDataType {

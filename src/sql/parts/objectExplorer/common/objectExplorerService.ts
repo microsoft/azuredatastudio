@@ -21,6 +21,7 @@ import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 import * as Utils from 'sql/parts/connection/common/utils';
+import { resolve } from 'path';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -52,7 +53,7 @@ export interface IObjectExplorerService {
 	 */
 	registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void;
 
-	registerExpander(expander: sqlops.ObjectExplorerNodeExpander): void;
+	registerNodeProvider(expander: sqlops.ObjectExplorerNodeProvider): void;
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
 
@@ -105,7 +106,7 @@ export interface TopLevelExpander {
 	supportedProviderId: string;
 	groupingId: number;
 	path: string[];
-	expanderObject: sqlops.ObjectExplorerNodeExpander | sqlops.ObjectExplorerProvider;
+	expanderObject: sqlops.ObjectExplorerNodeProvider | sqlops.ObjectExplorerProvider;
 }
 
 export class ObjectExplorerService implements IObjectExplorerService {
@@ -116,7 +117,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
 
-	private _expanders: { [handle: string]: sqlops.ObjectExplorerNodeExpander[]; } = Object.create(null);
+	private _expanders: { [handle: string]: sqlops.ObjectExplorerNodeProvider[]; } = Object.create(null);
 
 	private _topLevelChildrenPath: TopLevelExpander[] = Object.create(null);
 
@@ -180,7 +181,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when expanded node response is ready
 	 */
 	public onNodeExpanded(handle: number, expandResponse: sqlops.ObjectExplorerExpandInfo) {
-
 		if (expandResponse.errorMessage) {
 			error(expandResponse.errorMessage);
 		}
@@ -207,12 +207,25 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let errorMessage: string = undefined;
 		if (this._sessions[session.sessionId]) {
 			connection = this._sessions[session.sessionId].connection;
-
 			if (session && session.success && session.rootNode) {
 				let server = this.toTreeNode(session.rootNode, null);
 				server.connection = connection;
 				server.session = session;
 				this._activeObjectExplorerNodes[connection.id] = server;
+				let serverInfo = this._connectionManagementService.getActiveConnectionServerInfo(this._sessions[session.sessionId].connection.id);
+				if (serverInfo && serverInfo.options && serverInfo.options.isBigDataCluster && !session.providerId) {
+					let expanders = this._expanders[connection.providerName];
+					if (expanders) {
+						for (let expander of expanders) {
+							this.nodeProviderCreateSession(expander, session, connection.toConnectionInfo(), connection.id)
+								.then(result => { }, error => {
+									errorMessage = session && session.errorMessage ? session.errorMessage :
+										nls.localize('OeNodeSessionFailedError', 'Failed to create Object Explorer Node Provider Session');
+									error(errorMessage);
+								});
+						}
+					}
+				}
 			} else {
 				errorMessage = session && session.errorMessage ? session.errorMessage :
 					nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
@@ -224,6 +237,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		}
 
 		this.sendUpdateNodeEvent(connection, errorMessage);
+	}
+
+	private nodeProviderCreateSession(provider: sqlops.ObjectExplorerNodeProvider, session: sqlops.ObjectExplorerSession, connInfo: sqlops.ConnectionInfo, connectionProfileId: string): Promise<sqlops.ObjectExplorerSessionResponse> {
+		return new Promise<sqlops.ObjectExplorerSessionResponse>((resolve, reject) => {
+			provider.createNodeProviderSession(session, connInfo, connectionProfileId).then(result => {
+				resolve(result);
+			}, error => {
+				reject(error);
+			});
+		});
 	}
 
 	/**
@@ -305,28 +328,28 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 				let serverInfo = this._connectionManagementService.getActiveConnectionServerInfo(this._sessions[session.sessionId].connection.id);
-				if (serverInfo && serverInfo.options && !serverInfo.options.isBigDataCluster) {
+				if (serverInfo && (!serverInfo.options || !serverInfo.options.isBigDataCluster)) {
 					this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 						resolve(result);
 					}, error => {
 						reject(error);
 					});
 				} else {
-					if (this._topLevelChildrenPath.length === 0 ) {
+					if (this._topLevelChildrenPath.length === 0) {
 						this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 							if (result) {
 								let pathes: string[] = [];
 								result.nodes.forEach(node => pathes.push(node.nodePath));
 								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, groupingId: 0, path: pathes, expanderObject: provider });
 
-								let expanders = this._expanders[providerId].sort(expander=> expander.groupingId);
+								let expanders = this._expanders[providerId].sort(expander => expander.groupingId);
 								if (expanders) {
 									for (let expander of expanders) {
 										this.expandOrRefreshNode(expander, session, nodePath).then(result2 => {
 											if (result2) {
 												let pathes: string[] = [];
 												result2.nodes.forEach(node => pathes.push(node.nodePath));
-												this._topLevelChildrenPath.push({ providerId: expander.providerId, supportedProviderId: expander.supportedProviderId, groupingId: expander.groupingId,path: pathes, expanderObject: expander });
+												this._topLevelChildrenPath.push({ providerId: expander.providerId, supportedProviderId: expander.supportedProviderId, groupingId: expander.groupingId, path: pathes, expanderObject: expander });
 												result.nodes = result.nodes.concat(result2.nodes);
 												resolve(result);
 											}
@@ -361,7 +384,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
+	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -370,7 +393,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private expandOrRefreshNode(
-		provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeExpander,
+		provider: sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider,
 		session: sqlops.ObjectExplorerSession,
 		nodePath: string,
 		refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
@@ -398,8 +421,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				if (newRequest) {
 					self.callExpandOrRefreshFromProvider(provider, {
 						sessionId: session.sessionId,
-						nodePath: nodePath,
-						connectionId: self._connectionManagementService.getActiveConnectionConnectionId(self._sessions[session.sessionId].connection.getConnectionInfoId())
+						nodePath: nodePath
 					}, refresh).then(result => {
 					}, error => {
 						reject(error);
@@ -461,7 +483,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._providers[providerId] = provider;
 	}
 
-	public registerExpander(expander: sqlops.ObjectExplorerNodeExpander): void {
+	public registerNodeProvider(expander: sqlops.ObjectExplorerNodeProvider): void {
 		let expanders = this._expanders[expander.supportedProviderId] || [];
 		expanders.push(expander);
 		this._expanders[expander.supportedProviderId] = expanders;

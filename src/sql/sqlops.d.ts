@@ -21,7 +21,7 @@ declare module 'sqlops' {
 
 		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
 
-		export function registerObjectExplorerNodeExpander(provider: ObjectExplorerNodeExpander): vscode.Disposable;
+		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
 
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
@@ -1149,6 +1149,7 @@ declare module 'sqlops' {
 		sessionId: string;
 		rootNode: NodeInfo;
 		errorMessage: string;
+		providerId?: string;
 	}
 
 	export interface ObjectExplorerSessionResponse {
@@ -1165,7 +1166,6 @@ declare module 'sqlops' {
 	export interface ExpandNodeInfo {
 		sessionId: string;
 		nodePath: string;
-		connectionId: string;
 	}
 
 	export interface FindNodesInfo {
@@ -1208,13 +1208,15 @@ declare module 'sqlops' {
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
 
-	export interface ObjectExplorerNodeExpander extends ObjectExplorerProvider {
+	export interface ObjectExplorerNodeProvider extends ObjectExplorerProvider {
 		/**
 		 * The providerId for whichever type of ObjectExplorer connection this can add folders and objects to
 		 */
 		readonly supportedProviderId: string;
 
 		readonly groupingId?: number;
+
+		createNodeProviderSession?(session: ObjectExplorerSession, connInfo: ConnectionInfo, connectionProfileId: string): Thenable<ObjectExplorerSessionResponse>;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------

@@ -239,22 +239,22 @@ export function createApiFactory(
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
 			};
 
-			let registerObjectExplorerNodeExpander = (provider: sqlops.ObjectExplorerNodeExpander): vscode.Disposable => {
-				provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
-					extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
-				});
+			let registerObjectExplorerNodeProvider = (provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable => {
+				// provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
+				// 	extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
+				// });
 
-				if (provider.registerOnSessionDisconnected) {
-					provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
-						extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
-					});
-				}
+				// if (provider.registerOnSessionDisconnected) {
+				// 	provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
+				// 		extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
+				// 	});
+				// }
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
 				});
 
-				return extHostDataProvider.$registerObjectExplorerNodeExpander(provider);
+				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);
 			};
 
 			let registerTaskServicesProvider = (provider: sqlops.TaskServicesProvider): vscode.Disposable => {
@@ -348,7 +348,7 @@ export function createApiFactory(
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
-				registerObjectExplorerNodeExpander,
+				registerObjectExplorerNodeProvider,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,
