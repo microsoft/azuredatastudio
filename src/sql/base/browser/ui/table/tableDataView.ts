@@ -40,7 +40,9 @@ function defaultSort<T>(args: Slick.OnSortEventArgs<T>, data: Array<T>): Array<T
 }
 
 export class TableDataView<T extends Slick.SlickData> implements IDisposableDataProvider<T> {
+	//The data exposed publicly, when filter is enabled, _data holds the filtered data.
 	private _data: Array<T>;
+	//Used when filtering is enabled, _allData holds the complete set of data.
 	private _allData: Array<T>;
 	private _findArray: Array<IFindPosition>;
 	private _findObs: Observable<IFindPosition>;

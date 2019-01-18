@@ -31,9 +31,6 @@ import { PROFILER_MAX_MATCHES } from 'sql/parts/profiler/editor/controller/profi
 import { IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
 
-const RowCountStatusBarText: string = localize('ProfilerTableEditor.eventCount', 'Events:');
-const RowCountFilteredStatusBarText: string = localize('ProfilerTableEditor.eventCountFiltered', 'Events (Filtered):');
-
 export interface ProfilerTableViewState {
 	scrollTop: number;
 	scrollLeft: number;
@@ -265,7 +262,9 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 
 	private _updateRowCountStatus(): void {
 		if (this._showStatusBarItem) {
-			let message = this._input.data.filterEnabled ? `${RowCountFilteredStatusBarText} ${this._input.data.getLength()}/${this._input.data.getLengthNonFiltered()}` : `${RowCountStatusBarText} ${this._input.data.getLength()}`;
+			let message = this._input.data.filterEnabled ?
+				localize('ProfilerTableEditor.eventCountFiltered', 'Events (Filtered): {0}/{1}', this._input.data.getLength(), this._input.data.getLengthNonFiltered())
+				: localize('ProfilerTableEditor.eventCount', 'Events: {0}', this._input.data.getLength());
 
 			this._disposeStatusbarItem();
 			this._statusbarItem = this._statusbarService.addEntry({ text: message }, StatusbarAlignment.RIGHT);
