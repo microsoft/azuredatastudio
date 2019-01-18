@@ -9,7 +9,6 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as Constants from 'sql/common/constants';
 import * as sqlops from 'sqlops';
 
 export const SERVICE_ID = 'serializationService';
@@ -68,7 +67,7 @@ export class SerializationService implements ISerializationService {
 	}
 
 	public disabledSaveAs(): Thenable<sqlops.SaveResultRequestResult> {
-		return Promise.resolve({ messages: Constants.SerializationDisabled });
+		return Promise.resolve({ messages: 'Saving results into different format disabled for this data provider.' });
 
 	}
 

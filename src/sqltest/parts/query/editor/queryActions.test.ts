@@ -23,7 +23,7 @@ import {
 } from 'sql/parts/query/execution/queryActions';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
+import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 

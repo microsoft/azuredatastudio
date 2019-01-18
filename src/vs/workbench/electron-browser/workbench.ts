@@ -114,26 +114,27 @@ import { EditorService } from 'vs/workbench/services/editor/browser/editorServic
 import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/platform/url/electron-browser/inactiveExtensionUrlHandler';
 
 // {{SQL CARBON EDIT}}
-import { IConnectionManagementService, IConnectionDialogService, IErrorMessageService, IServerGroupController } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService, IServerGroupController } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
-import { ErrorMessageService } from 'sql/workbench/errorMessageDialog/errorMessageService';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser/errorMessageService';
 import { ServerGroupController } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupController';
 
 import { IAngularEventingService, AngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ICredentialsService, CredentialsService } from 'sql/services/credentials/credentialsService';
-import { ISerializationService, SerializationService } from 'sql/services/serialization/serializationService';
-import { IMetadataService, MetadataService } from 'sql/services/metadata/metadataService';
+import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
+import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
+import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { ITaskService, TaskService } from 'sql/parts/taskHistory/common/taskService';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
-import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
+import { ITaskService, TaskService } from 'sql/platform/taskHistory/common/taskService';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
-import { IQueryManagementService, QueryManagementService } from 'sql/parts/query/common/queryManagement';
+import { IQueryManagementService, QueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
-import { IScriptingService, ScriptingService } from 'sql/services/scripting/scriptingService';
+import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';

@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import QueryRunner, { EventType as QREvents } from 'sql/parts/query/execution/queryRunner';
+import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { error } from 'sql/base/common/log';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'sqlops';
 

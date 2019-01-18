@@ -9,14 +9,12 @@ import * as sqlops from 'sqlops';
 
 import * as Constants from 'sql/parts/query/common/constants';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
-import { echo, debounceEvent } from 'sql/base/common/event';
 import { Deferred } from 'sql/base/common/promise';
 
 import Severity from 'vs/base/common/severity';
-import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import * as nls from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import * as types from 'vs/base/common/types';
@@ -27,6 +25,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -112,7 +111,7 @@ export default class QueryRunner extends Disposable {
 		public uri: string,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@INotificationService private _notificationService: INotificationService,
-		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IInstantiationService private instantiationService: IInstantiationService
 	) {
@@ -597,7 +596,7 @@ export default class QueryRunner extends Disposable {
 	}
 
 	private getEolString(): string {
-		const { eol } = this._workspaceConfigurationService.getValue<{ eol: string }>('files');
+		const { eol } = this._configurationService.getValue<{ eol: string }>('files');
 		return eol;
 	}
 
@@ -607,13 +606,13 @@ export default class QueryRunner extends Disposable {
 			return includeHeaders;
 		}
 		// else get config option from vscode config
-		includeHeaders = WorkbenchUtils.getSqlConfigValue<boolean>(this._workspaceConfigurationService, Constants.copyIncludeHeaders);
+		includeHeaders = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.copyIncludeHeaders);
 		return !!includeHeaders;
 	}
 
 	private shouldRemoveNewLines(): boolean {
 		// get config copyRemoveNewLine option from vscode config
-		let removeNewLines: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._workspaceConfigurationService, Constants.configCopyRemoveNewLine);
+		let removeNewLines: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configCopyRemoveNewLine);
 		return !!removeNewLines;
 	}
 
@@ -644,7 +643,7 @@ export default class QueryRunner extends Disposable {
 
 	private sendBatchTimeMessage(batchId: number, executionTime: string): void {
 		// get config copyRemoveNewLine option from vscode config
-		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._workspaceConfigurationService, Constants.configShowBatchTime);
+		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configShowBatchTime);
 		if (showBatchTime) {
 			let message: sqlops.IResultMessage = {
 				batchId: batchId,

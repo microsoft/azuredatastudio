@@ -24,7 +24,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		let instantiationService = new TestInstantiationService();
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {});
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, undefined);
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined);
 		let tree = <Tree>{
 			clearSelection() { },
 			getSelection() { },

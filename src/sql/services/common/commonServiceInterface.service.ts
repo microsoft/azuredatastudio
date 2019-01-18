@@ -10,11 +10,11 @@ import { Observable } from 'rxjs/Observable';
 /* SQL imports */
 import { IDefaultComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { IMetadataService } from 'sql/services/metadata/metadataService';
+import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';

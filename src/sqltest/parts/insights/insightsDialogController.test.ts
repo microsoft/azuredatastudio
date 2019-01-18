@@ -5,7 +5,7 @@
 
 import { InsightsDialogController } from 'sql/parts/insights/node/insightsDialogController';
 import { InsightsDialogModel } from 'sql/parts/insights/common/insightsDialogModel';
-import QueryRunner, { EventType } from 'sql/parts/query/execution/queryRunner';
+import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

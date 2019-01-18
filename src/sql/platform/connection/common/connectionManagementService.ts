@@ -18,7 +18,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as ConnectionContracts from 'sql/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';

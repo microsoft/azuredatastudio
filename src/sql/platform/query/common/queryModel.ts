@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -18,7 +18,7 @@ import {
 	EditRevertCellResult,
 	ExecutionPlanOptions
 } from 'sqlops';
-import { QueryInfo } from 'sql/parts/query/execution/queryModelService';
+import { QueryInfo } from 'sql/platform/query/common/queryModelService';
 
 export const SERVICE_ID = 'queryModelService';
 

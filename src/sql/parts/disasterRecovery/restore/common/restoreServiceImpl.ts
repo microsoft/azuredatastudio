@@ -23,7 +23,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskStatus, TaskNode } from 'sql/parts/taskHistory/common/taskNode';
 
 export class RestoreService implements IRestoreService {

@@ -10,7 +10,7 @@ import {
 	SqlExtHostContext, ExtHostSerializationProviderShape,
 	MainThreadSerializationProviderShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ISerializationService } from 'sql/services/serialization/serializationService';
+import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';

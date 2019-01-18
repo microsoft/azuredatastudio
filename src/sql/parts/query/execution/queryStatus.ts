@@ -9,7 +9,7 @@ import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import LocalizedConstants = require('sql/parts/query/common/localizedConstants');
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';

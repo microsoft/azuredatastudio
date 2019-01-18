@@ -6,7 +6,7 @@
 import { Router } from '@angular/router';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { MetadataType, IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
+import { MetadataType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import {
 	NewQueryAction, ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction,
@@ -16,7 +16,9 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
+import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 import { ObjectMetadata } from 'sqlops';
 
@@ -32,7 +34,6 @@ import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IProgressService } from 'vs/platform/progress/common/progress';
-import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;

@@ -15,7 +15,7 @@ import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 
 import { ISelectionData, ExecutionPlanOptions } from 'sqlops';

@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
-import * as TaskUtilities from './taskUtilities';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';
 import { IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
 import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
@@ -18,6 +18,7 @@ import * as Constants from 'sql/common/constants';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 import { ObjectMetadata } from 'sqlops';
 

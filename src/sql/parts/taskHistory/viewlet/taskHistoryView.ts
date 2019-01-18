@@ -20,9 +20,9 @@ import { TaskHistoryRenderer } from 'sql/parts/taskHistory/viewlet/taskHistoryRe
 import { TaskHistoryDataSource } from 'sql/parts/taskHistory/viewlet/taskHistoryDataSource';
 import { TaskHistoryController } from 'sql/parts/taskHistory/viewlet/taskHistoryController';
 import { TaskHistoryActionProvider } from 'sql/parts/taskHistory/viewlet/taskHistoryActionProvider';
-import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskNode, TaskStatus } from 'sql/parts/taskHistory/common/taskNode';
-import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 const $ = builder.$;
 

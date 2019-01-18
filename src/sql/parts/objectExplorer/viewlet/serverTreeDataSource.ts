@@ -11,8 +11,9 @@ import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/com
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 /**
  * Implements the DataSource(that returns a parent/children of an element) for the server tree

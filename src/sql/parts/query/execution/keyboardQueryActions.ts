@@ -12,10 +12,10 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 
 import * as sqlops from 'sqlops';
 
-import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';

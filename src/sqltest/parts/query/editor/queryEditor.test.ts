@@ -16,7 +16,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
+import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';

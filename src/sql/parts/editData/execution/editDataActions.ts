@@ -6,7 +6,7 @@
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

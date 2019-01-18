@@ -9,7 +9,7 @@ import * as Constants from './constants';
 import * as ConnInfo from './connectionInfo';
 import { ConnectionProfile } from '../common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionConfig } from './connectionConfig';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';

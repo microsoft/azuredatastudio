@@ -13,7 +13,6 @@ import { Action } from 'vs/base/common/actions';
 
 import { error } from 'sql/base/common/log';
 import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
-import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
@@ -83,7 +82,6 @@ export class RemoveAccountAction extends Action {
 		private _account: sqlops.Account,
 		@IDialogService private _dialogService: IDialogService,
 		@INotificationService private _notificationService: INotificationService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
 		super(RemoveAccountAction.ID, RemoveAccountAction.LABEL, 'remove-account-action icon remove');

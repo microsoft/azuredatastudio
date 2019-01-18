@@ -6,7 +6,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditSessionReadyParams, ISelectionData } from 'sqlops';

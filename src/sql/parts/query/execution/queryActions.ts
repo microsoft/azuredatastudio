@@ -24,7 +24,7 @@ import {
 	RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';

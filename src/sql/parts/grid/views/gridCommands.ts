@@ -6,7 +6,7 @@
 'use strict';
 
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 

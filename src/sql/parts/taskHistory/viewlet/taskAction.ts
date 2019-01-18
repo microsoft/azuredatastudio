@@ -6,11 +6,11 @@
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
-import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
-import { IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import Severity from 'vs/base/common/severity';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 export class CancelAction extends Action {
 	public static ID = 'taskHistory.cancel';

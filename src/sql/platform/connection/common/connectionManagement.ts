@@ -303,12 +303,6 @@ export interface IServerGroupController {
 	showEditGroupDialog(connectionManagementService: IConnectionManagementService, group: ConnectionProfileGroup): TPromise<void>;
 }
 
-export const IErrorMessageService = createDecorator<IErrorMessageService>('errorMessageService');
-export interface IErrorMessageService {
-	_serviceBrand: any;
-	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void;
-}
-
 export enum RunQueryOnConnectionMode {
 	none = 0,
 	executeQuery = 1,

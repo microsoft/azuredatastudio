@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import { IQueryModelService } from '../execution/queryModel';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { parseNumAsTimeString } from 'sql/platform/connection/common/utils';
 
 import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';

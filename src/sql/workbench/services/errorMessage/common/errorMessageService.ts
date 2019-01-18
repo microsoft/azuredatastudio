@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import Severity from 'vs/base/common/severity';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
-export class ErrorMessageServiceStub implements IErrorMessageService {
+import Severity from 'vs/base/common/severity';
+import { IAction } from 'vs/base/common/actions';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+
+export const IErrorMessageService = createDecorator<IErrorMessageService>('errorMessageService');
+export interface IErrorMessageService {
 	_serviceBrand: any;
-	showDialog(severity: Severity, headerTitle: string, message: string): void {
-	}
+	showDialog(severity: Severity, headerTitle: string, message: string, messageDetails?: string, actions?: IAction[]): void;
 }

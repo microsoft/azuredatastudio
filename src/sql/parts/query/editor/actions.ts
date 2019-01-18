@@ -13,7 +13,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';

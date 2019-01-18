@@ -5,10 +5,9 @@
 
 'use strict';
 import {
-	IConnectionManagementService, IErrorMessageService,
+	IConnectionManagementService,
 	IServerGroupController, IServerGroupDialogCallbacks
 } from 'sql/platform/connection/common/connectionManagement';
-import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { ServerGroupDialog } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupDialog';
 import { ServerGroupViewModel } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupViewModel';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -17,6 +16,7 @@ import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from './serverGroup.contribution';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 export class ServerGroupController implements IServerGroupController {
 	_serviceBrand: any;
@@ -28,7 +28,6 @@ export class ServerGroupController implements IServerGroupController {
 	private _viewModel: ServerGroupViewModel;
 
 	constructor(
-		@IPartService private _partService: IPartService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConfigurationService private _configurationService: IConfigurationService

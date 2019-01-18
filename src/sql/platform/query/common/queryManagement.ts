@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';

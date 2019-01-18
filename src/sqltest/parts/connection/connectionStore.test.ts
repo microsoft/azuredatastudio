@@ -11,7 +11,7 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 import * as Constants from 'sql/platform/connection/common/constants';
 import { StorageTestService } from 'sqltest/stubs/storageTestService';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
-import { CredentialsService } from 'sql/services/credentials/credentialsService';
+import { CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';

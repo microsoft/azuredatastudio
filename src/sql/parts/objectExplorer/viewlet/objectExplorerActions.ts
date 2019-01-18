@@ -12,7 +12,7 @@ import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
 import * as sqlops from 'sqlops';
-import { IConnectionManagementService, IConnectionCompletionOptions, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import {
 	ScriptSelectAction, EditDataAction, ScriptCreateAction,
@@ -22,13 +22,14 @@ import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 
 export class ObjectExplorerActionsContext implements sqlops.ObjectExplorerContext {

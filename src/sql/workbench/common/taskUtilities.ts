@@ -7,11 +7,11 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import {
 	IConnectableInput, IConnectionManagementService,
-	IConnectionCompletionOptions, ConnectionType, IErrorMessageService,
+	IConnectionCompletionOptions, ConnectionType,
 	RunQueryOnConnectionMode, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { IAdminService } from 'sql/parts/admin/common/adminService';
 import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';
@@ -29,6 +29,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {

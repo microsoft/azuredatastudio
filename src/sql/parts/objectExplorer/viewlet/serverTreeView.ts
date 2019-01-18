@@ -13,24 +13,24 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 const $ = builder.$;
 
@@ -53,7 +53,6 @@ export class ServerTreeView {
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(

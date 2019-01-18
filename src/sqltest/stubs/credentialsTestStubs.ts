@@ -7,7 +7,7 @@
 
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { CredentialManagementEvents, ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { CredentialManagementEvents, ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class CredentialsTestProvider implements sqlops.CredentialProvider {

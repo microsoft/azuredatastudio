@@ -6,7 +6,7 @@
 'use strict';
 
 import {
-	IConnectionDialogService, IConnectionManagementService, IErrorMessageService,
+	IConnectionDialogService, IConnectionManagementService,
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/parts/connection/connectionDialog/connectionDialogWidget';
@@ -16,10 +16,9 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { localize } from 'vs/nls';
 import { entries } from 'sql/base/common/objects';
-
-import * as sqlops from 'sqlops';
+import { Deferred } from 'sql/base/common/promise';
+import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -28,12 +27,11 @@ import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { Action, IAction } from 'vs/base/common/actions';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
-import { Deferred } from 'sql/base/common/promise';
+import { localize } from 'vs/nls';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
