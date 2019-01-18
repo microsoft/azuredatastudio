@@ -15,7 +15,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 
 // Query execution status
-enum QueryExecutionStatus{
+enum QueryExecutionStatus {
 	Executing,
 	Completed
 }
@@ -43,8 +43,8 @@ export class QueryStatusbarItem implements IStatusbarItem {
 
 		this._toDispose = [];
 		this._toDispose.push(
-			this._queryModelService.onRunQueryStart((uri:string) => this._onRunQueryStart(uri)),
-			this._queryModelService.onRunQueryComplete((uri:string) => this._onRunQueryComplete(uri)),
+			this._queryModelService.onRunQueryStart((uri: string) => this._onRunQueryStart(uri)),
+			this._queryModelService.onRunQueryComplete((uri: string) => this._onRunQueryComplete(uri)),
 			this._editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()),
 			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
 		);
@@ -52,7 +52,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 		return combinedDisposable(this._toDispose);
 	}
 
-	private _onEditorClosed(event: IEditorCloseEvent): void{
+	private _onEditorClosed(event: IEditorCloseEvent): void {
 		let uri = WorkbenchUtils.getEditorUri(event.editor);
 		if (uri && uri in this._queryStatusEditors) {
 			// If active editor is being closed, hide the query status.
@@ -67,13 +67,13 @@ export class QueryStatusbarItem implements IStatusbarItem {
 		}
 	}
 
-	private _onEditorsChanged(): void{
+	private _onEditorsChanged(): void {
 		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
 
 			// Show active editor's query status
-			if (uri && uri in this._queryStatusEditors){
+			if (uri && uri in this._queryStatusEditors) {
 				this._showStatus(uri);
 			} else {
 				hide(this._queryElement);
@@ -92,7 +92,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 	}
 
 	// Update query status for the editor
-	private _updateStatus(uri: string, newStatus: QueryExecutionStatus){
+	private _updateStatus(uri: string, newStatus: QueryExecutionStatus) {
 		if (uri) {
 			this._queryStatusEditors[uri] = newStatus;
 			this._showStatus(uri);
@@ -100,12 +100,12 @@ export class QueryStatusbarItem implements IStatusbarItem {
 	}
 
 	// Show/hide query status for active editor
-	private _showStatus(uri: string): void{
+	private _showStatus(uri: string): void {
 		let activeEditor = this._editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (uri === currentUri) {
-				switch(this._queryStatusEditors[uri]){
+				switch (this._queryStatusEditors[uri]) {
 					case QueryExecutionStatus.Executing:
 						this._queryElement.textContent = LocalizedConstants.msgStatusRunQueryInProgress;
 						show(this._queryElement);
