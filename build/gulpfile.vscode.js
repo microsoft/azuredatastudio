@@ -65,6 +65,8 @@ const excludedExtensions = [
 	'vscode-colorize-tests',
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
+	// {{SQL CARBON EDIT}}
+	'integration-tests',
 ];
 
 // {{SQL CARBON EDIT}}
