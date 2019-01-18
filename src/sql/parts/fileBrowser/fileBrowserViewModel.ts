@@ -14,11 +14,11 @@ import { localize } from 'vs/nls';
 export class FileBrowserViewModel {
 	private _ownerUri: string;
 	private _expandPath: string;
-	private _fileFilters: [{label: string, filters: string[]}];
+	private _fileFilters: [{ label: string, filters: string[] }];
 	private _fileValidationServiceType: string;
 	public formattedFileFilters: string[];
 
-	constructor(@IFileBrowserService private _fileBrowserService: IFileBrowserService) {
+	constructor( @IFileBrowserService private _fileBrowserService: IFileBrowserService) {
 	}
 
 	public onAddFileTree(onAddFileTreeCallback) {
@@ -31,7 +31,7 @@ export class FileBrowserViewModel {
 
 	public initialize(ownerUri: string,
 		expandPath: string,
-		fileFilters: [ {label: string, filters: string[]} ],
+		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
 	) {
 		this._ownerUri = ownerUri;
@@ -39,7 +39,7 @@ export class FileBrowserViewModel {
 		this._fileValidationServiceType = fileValidationServiceType;
 
 		if (!fileFilters) {
-			this._fileFilters = [ {label: localize('allFiles', 'All files'), filters: ['*']} ];
+			this._fileFilters = [{ label: localize('allFiles', 'All files'), filters: ['*'] }];
 		} else {
 			this._fileFilters = fileFilters;
 		}
