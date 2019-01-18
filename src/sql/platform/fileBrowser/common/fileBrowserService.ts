@@ -9,9 +9,9 @@ import * as sqlops from 'sqlops';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import * as Constants from 'sql/common/constants';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';

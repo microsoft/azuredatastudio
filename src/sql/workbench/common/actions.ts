@@ -18,7 +18,7 @@ import * as Constants from 'sql/common/constants';
 import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { ObjectMetadata } from 'sqlops';
 

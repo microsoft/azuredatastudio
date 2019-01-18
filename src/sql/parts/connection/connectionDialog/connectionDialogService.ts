@@ -18,7 +18,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { entries } from 'sql/base/common/objects';
 import { Deferred } from 'sql/base/common/promise';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { TPromise } from 'vs/base/common/winjs.base';

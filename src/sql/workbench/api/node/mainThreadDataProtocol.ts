@@ -24,7 +24,7 @@ import { IRestoreService } from 'sql/parts/disasterRecovery/restore/common/resto
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IDacFxService } from 'sql/services/dacfx/dacFxService';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';

@@ -5,7 +5,7 @@
 
 'use strict';
 import Severity from 'vs/base/common/severity';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class ErrorMessageServiceStub implements IErrorMessageService {
 	_serviceBrand: any;

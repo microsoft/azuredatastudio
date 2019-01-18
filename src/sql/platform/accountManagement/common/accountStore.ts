@@ -6,8 +6,8 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { AccountAdditionResult } from 'sql/services/accountManagement/eventTypes';
-import { IAccountStore } from 'sql/services/accountManagement/interfaces';
+import { AccountAdditionResult } from 'sql/platform/accountManagement/common/eventTypes';
+import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces';
 
 export default class AccountStore implements IAccountStore {
 	// CONSTANTS ///////////////////////////////////////////////////////////

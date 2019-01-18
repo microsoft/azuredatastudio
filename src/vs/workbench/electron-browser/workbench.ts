@@ -117,7 +117,7 @@ import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/platform/url/elect
 import { IConnectionManagementService, IConnectionDialogService, IServerGroupController } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser/errorMessageService';
 import { ServerGroupController } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupController';
 
@@ -145,13 +145,13 @@ import { IRestoreDialogController, IRestoreService } from 'sql/parts/disasterRec
 import { RestoreService, RestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreServiceImpl';
 import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { NewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialogService';
-import { IFileBrowserService, IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
-import { FileBrowserService } from 'sql/parts/fileBrowser/common/fileBrowserService';
+import { IFileBrowserService, IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
+import { FileBrowserService } from 'sql/platform/fileBrowser/common/fileBrowserService';
 import { FileBrowserDialogController } from 'sql/parts/fileBrowser/fileBrowserDialogController';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { InsightsDialogService } from 'sql/parts/insights/insightsDialogService';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
-import { AccountManagementService } from 'sql/services/accountManagement/accountManagementService';
+import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
+import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
 import { ProfilerService } from 'sql/parts/profiler/service/profilerService';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';

@@ -10,7 +10,7 @@ import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/qu
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { error } from 'sql/base/common/log';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'sqlops';
 

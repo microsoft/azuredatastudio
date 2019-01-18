@@ -6,7 +6,7 @@
 import { FileBrowserDataSource } from 'sql/parts/fileBrowser/fileBrowserDataSource';
 import { FileBrowserController } from 'sql/parts/fileBrowser/fileBrowserController';
 import { FileBrowserRenderer } from 'sql/parts/fileBrowser/fileBrowserRenderer';
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
 import errors = require('vs/base/common/errors');
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';

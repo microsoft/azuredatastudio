@@ -10,7 +10,7 @@ import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { TaskNode } from 'sql/parts/taskHistory/common/taskNode';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import Severity from 'vs/base/common/severity';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class CancelAction extends Action {
 	public static ID = 'taskHistory.cancel';

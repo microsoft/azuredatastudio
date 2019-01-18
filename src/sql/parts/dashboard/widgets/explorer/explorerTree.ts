@@ -18,7 +18,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { ObjectMetadata } from 'sqlops';
 

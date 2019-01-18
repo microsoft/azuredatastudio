@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { localize } from 'vs/nls';
 
 /**

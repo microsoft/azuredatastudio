@@ -15,12 +15,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
 
-import AccountStore from 'sql/services/accountManagement/accountStore';
+import AccountStore from 'sql/platform/accountManagement/common/accountStore';
 import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
 import { AutoOAuthDialogController } from 'sql/parts/accountManagement/autoOAuthDialog/autoOAuthDialogController';
 import { AccountListStatusbarItem } from 'sql/parts/accountManagement/accountListStatusbar/accountListStatusbarItem';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 
 export class AccountManagementService implements IAccountManagementService {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileBrowserDialog } from 'sql/parts/fileBrowser/fileBrowserDialog';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

@@ -11,10 +11,10 @@ import * as sqlops from 'sqlops';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { FirewallRuleDialog } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog';
-import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
 import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class FirewallRuleDialogController {
 

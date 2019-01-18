@@ -15,8 +15,8 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/co
 import Severity from 'vs/base/common/severity';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from './serverGroup.contribution';
-import { IErrorMessageService } from 'sql/workbench/services/errorMessage/common/errorMessageService';
+import { SERVER_GROUP_CONFIG, SERVER_GROUP_COLORS_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class ServerGroupController implements IServerGroupController {
 	_serviceBrand: any;

@@ -15,7 +15,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
-import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
