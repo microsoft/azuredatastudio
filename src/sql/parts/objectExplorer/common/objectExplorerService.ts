@@ -78,6 +78,9 @@ export interface IObjectExplorerService {
 
 	refreshNodeInView(connectionId: string, nodePath: string): Thenable<TreeNode>;
 
+	/**
+	 * For Testing purpose only. Get the context menu actions for an object explorer node.
+	*/
 	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 }
 
@@ -524,6 +527,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		return Object.values(this._activeObjectExplorerNodes);
 	}
 
+	/**
+	 * For Testing purpose only. Get the context menu actions for an object explorer node
+	*/
 	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this.getTreeNode(connectionId, nodePath).then(node => {
 			return this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node)).then((actions) => {

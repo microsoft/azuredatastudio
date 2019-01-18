@@ -22,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 		for (let i = 0; i < installers.length; i++) {
 			if (installers[i].endsWith('.vsix')) {
 				let installerFullPath = join(extensionInstallersFolder, installers[i]);
-				await sqlops.extensionManagement.install(installerFullPath);
+				await sqlops.extensions.install(installerFullPath);
 			}
 		}
 		await setConfiguration('workbench.enablePreviewFeatures', true);

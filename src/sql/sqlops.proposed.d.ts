@@ -1349,6 +1349,13 @@ declare module 'sqlops' {
 
 	}
 
+	export interface ConnectionResult {
+		connected: boolean;
+		connectionId: string;
+		errorMessage: string;
+		errorCode: number;
+	}
+
 	export namespace connection {
 		/**
 		 * List the databases that can be accessed from the given connection
@@ -1373,8 +1380,7 @@ declare module 'sqlops' {
 		export function openConnectionDialog(providers?: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: IConnectionCompletionOptions): Thenable<connection.Connection>;
 
 		/**
-		 * Opens the connection and add it to object explorer and opens the dashboard. If connection was successful
-		 * returns the connection id otherwise returns undefined
+		 * Opens the connection and add it to object explorer and opens the dashboard and returns the ConnectionResult
 		 * @param connectionProfile connection profile
 		 */
 		export function connect(connectionProfile: IConnectionProfile): Thenable<ConnectionResult>;

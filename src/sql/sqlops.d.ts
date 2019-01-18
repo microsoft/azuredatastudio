@@ -121,7 +121,6 @@ declare module 'sqlops' {
 	 * Namespace for interacting with Object Explorer
 	*/
 	export namespace objectexplorer {
-
 		/**
 		 * Get an Object Explorer node corresponding to the given connection and path. If no path
 		 * is given, it returns the top-level node for the given connection. If there is no node at
@@ -302,13 +301,6 @@ declare module 'sqlops' {
 		 * user name
 		 */
 		userName: string;
-	}
-
-	export interface ConnectionResult {
-		connected: boolean;
-		connectionId: string;
-		errorMessage: string;
-		errorCode: number;
 	}
 
 	/**

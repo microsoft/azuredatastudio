@@ -429,7 +429,7 @@ export function createApiFactory(
 				}
 			};
 
-			const extensionManagement: typeof sqlops.extensionManagement = {
+			const extensions: typeof sqlops.extensions = {
 				install(vsixPath: string): Thenable<string> {
 					return extHostExtensionManagement.$install(vsixPath);
 				}
@@ -498,7 +498,7 @@ export function createApiFactory(
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
-				extensionManagement: extensionManagement,
+				extensions: extensions,
 			};
 		}
 	};

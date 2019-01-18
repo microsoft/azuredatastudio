@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// This is the place for API experiments and proposal.
+// This is the place for APIs used for testing
 
 import * as core from 'sqlops';
 import * as vscode from 'vscode';
 
 declare module 'sqlops' {
 
-	export namespace extensionManagement {
+	export namespace extensions {
 		export function install(vsixPath: string): Thenable<string>;
 	}
 
