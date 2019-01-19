@@ -80,7 +80,7 @@ export interface IObjectExplorerService {
 
 	refreshNodeInView(connectionId: string, nodePath: string): Thenable<TreeNode>;
 
-		/**
+	/**
 	 * For Testing purpose only. Get the context menu actions for an object explorer node.
 	*/
 	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
@@ -364,8 +364,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		});
 	}
-private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
-			if (refresh) {
+	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
+		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
 			return provider.expandNode(nodeInfo);
@@ -441,6 +441,7 @@ private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider,
 		let provider = this._providers[providerId];
 		if (provider) {
 			this._topLevelChildrenPath = [];
+
 			provider.closeSession({
 				sessionId: session ? session.sessionId : undefined
 			}).then(() => {
@@ -604,8 +605,8 @@ private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider,
 		return Object.values(this._activeObjectExplorerNodes);
 	}
 
-		/**
-	 * For Testing purpose only. Get the context menu actions for an object explorer node
+	/**
+	* For Testing purpose only. Get the context menu actions for an object explorer node
 	*/
 	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this.getTreeNode(connectionId, nodePath).then(node => {
