@@ -80,6 +80,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _onNotebookEditorRename = new Emitter<INotebookEditor>();
 	private _editors = new Map<string, INotebookEditor>();
 	private _fileToProviders = new Map<string, NotebookProviderRegistration[]>();
+	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
 
@@ -121,6 +122,9 @@ export class NotebookService extends Disposable implements INotebookService {
 				this.addFileProvider(registration.fileExtensions, registration);
 			}
 		}
+		if (registration.standardKernels) {
+			this.addStandardKernels(registration);
+		}
 	}
 
 	registerProvider(providerId: string, instance: INotebookProvider): void {
@@ -154,6 +158,22 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._fileToProviders.set(fileType.toUpperCase(), providers);
 	}
 
+	private addStandardKernels(provider: NotebookProviderRegistration) {
+		let providerUpperCase = provider.provider.toUpperCase();
+		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
+		if (!standardKernels) {
+			standardKernels = [];
+		}
+		if (Array.isArray(provider.standardKernels)) {
+			provider.standardKernels.forEach(kernel => {
+				standardKernels.push(kernel);
+			});
+		} else {
+			standardKernels.push(provider.standardKernels);
+		}
+		this._providerToStandardKernels.set(providerUpperCase, standardKernels);
+	}
+
 	getSupportedFileExtensions(): string[] {
 		return Array.from(this._fileToProviders.keys());
 	}
@@ -163,6 +183,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		let providers = this._fileToProviders.get(fileType);
 
 		return providers ? providers.map(provider => provider.provider) : undefined;
+	}
+
+	getStandardKernelsForProvider(provider: string): nb.IStandardKernel[] {
+		return this._providerToStandardKernels.get(provider.toUpperCase());
 	}
 
 	public shutdown(): void {
@@ -338,7 +362,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			notebookRegistry.registerNotebookProvider({
 				provider: sqlProvider.providerId,
 				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				standardKernels: ['SQL']
+				standardKernels: { name: 'SQL', connectionProviderIds: ['MSSQL'] }
 			});
 		}
 	}
@@ -445,5 +469,4 @@ export class SqlNotebookManager implements INotebookManager {
 	public get sessionManager(): nb.SessionManager {
 		return this._sessionManager;
 	}
-
 }

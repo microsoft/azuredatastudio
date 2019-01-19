@@ -105,11 +105,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			// use global connection if possible
 			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
-			if (profile && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
+			// Hmm, not sure if we need to do filtering at this level or not
+			if (profile && profile.providerName) {
 				this.profile = profile;
 			} else {
 				// if not, try 1st active connection that matches our filter
-				let profiles = this.connectionManagementService.getActiveConnections([notebookConstants.hadoopKnoxProviderName]);
+				let profiles = this.connectionManagementService.getActiveConnections();
 				if (profiles && profiles.length > 0) {
 					this.profile = profiles[0];
 				}
@@ -241,7 +242,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
-			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter' // this is tricky; really should also depend on the connection profile
+			standardKernels: this._notebookParams.input.standardKernels,
+			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
+			defaultKernel: this._notebookParams.input.defaultKernel
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);

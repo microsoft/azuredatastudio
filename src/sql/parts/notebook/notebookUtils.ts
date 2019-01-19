@@ -58,6 +58,10 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
+export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : nb.IStandardKernel[] {
+	return notebookService.getStandardKernelsForProvider(providerId);
+}
+
 // Private feature flag to enable Sql Notebook experience
 export function sqlNotebooksEnabled() {
 	return process.env['SQLOPS_SQL_NOTEBOOK'] !== undefined;

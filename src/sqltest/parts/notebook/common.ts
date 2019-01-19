@@ -56,6 +56,9 @@ export class NotebookModelStub implements INotebookModel {
     get providerId(): string {
         throw new Error('method not implemented.');
     }
+    get applicableConnectionProviderIds(): string[] {
+        throw new Error('method not implemented.');
+    }
     changeKernel(displayName: string): void {
         throw new Error('Method not implemented.');
     }
@@ -75,6 +78,9 @@ export class NotebookModelStub implements INotebookModel {
         throw new Error('Method not implemented.');
     }
     pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+        throw new Error('Method not implemented.');
+    }
+    getApplicableConnectionProviderIds(kernelName: string): string[] {
         throw new Error('Method not implemented.');
     }
 }

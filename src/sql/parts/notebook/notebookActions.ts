@@ -219,7 +219,7 @@ export class AttachToDropdown extends SelectBox {
 				});
 		}
 		this.onDidSelect(e => {
-			let connection = this.model.contexts.otherConnections.find((c) => c.options.host === e.selected);
+			let connection = this.model.contexts.otherConnections.find((c) => c.serverName === e.selected);
 			this.doChangeContext(connection);
 		});
 	}
@@ -228,51 +228,52 @@ export class AttachToDropdown extends SelectBox {
 		this.model = model;
 		model.contextsChanged(() => {
 			if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
-				let currentKernel = this.model.clientSession.kernel.name;
-				this.loadAttachToDropdown(this.model, currentKernel);
+				let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name === this.model.clientSession.kernel.name);
+				this.loadAttachToDropdown(this.model, currentKernelSpec.display_name);
 			}
 		});
 	}
 
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
 	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
-		if (currentKernel === notebookConstants.python3 || currentKernel === noKernel) {
+		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
+		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		}
 		else {
-			let hadoopConnections = this.getHadoopConnections(model);
+			let connections = this.getConnections(model);
 			this.enable();
-			if (hadoopConnections.length === 1 && hadoopConnections[0] === msgAddNewConnection) {
-				hadoopConnections.unshift(msgSelectConnection);
+			if (connections.length === 1 && connections[0] === msgAddNewConnection) {
+				connections.unshift(msgSelectConnection);
 				this.selectWithOptionName(msgSelectConnection);
 			}
 			else {
-				hadoopConnections.push(msgAddNewConnection);
+				connections.push(msgAddNewConnection);
 			}
-			this.setOptions(hadoopConnections);
+			this.setOptions(connections);
 		}
 
 	}
 
-	//Get hadoop connections from context
-	public getHadoopConnections(model: INotebookModel): string[] {
-		let otherHadoopConnections: IConnectionProfile[] = [];
-		model.contexts.otherConnections.forEach((conn) => { otherHadoopConnections.push(conn); });
-		this.selectWithOptionName(model.contexts.defaultConnection.options.host);
-		otherHadoopConnections = this.setHadoopConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-		let hadoopConnections = otherHadoopConnections.map((context) => context.options.host);
-		return hadoopConnections;
+	//Get connections from context
+	public getConnections(model: INotebookModel): string[] {
+		let otherConnections: IConnectionProfile[] = [];
+		model.contexts.otherConnections.forEach((conn) => { otherConnections.push(conn); });
+		this.selectWithOptionName(model.contexts.defaultConnection.serverName);
+		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
+		let connections = otherConnections.map((context) => context.serverName);
+		return connections;
 	}
 
-	private setHadoopConnectionsList(defaultHadoopConnection: IConnectionProfile, otherHadoopConnections: IConnectionProfile[]) {
-		if (defaultHadoopConnection.options.host !== msgSelectConnection) {
-			otherHadoopConnections = otherHadoopConnections.filter(conn => conn.options.host !== defaultHadoopConnection.options.host);
-			otherHadoopConnections.unshift(defaultHadoopConnection);
-			if (otherHadoopConnections.length > 1) {
-				otherHadoopConnections = otherHadoopConnections.filter(val => val.options.host !== msgSelectConnection);
+	private setConnectionsList(defaultConnection: IConnectionProfile, otherConnections: IConnectionProfile[]) {
+		if (defaultConnection.serverName !== msgSelectConnection) {
+			otherConnections = otherConnections.filter(conn => conn.serverName !== defaultConnection.serverName);
+			otherConnections.unshift(defaultConnection);
+			if (otherConnections.length > 1) {
+				otherConnections = otherConnections.filter(val => val.serverName !== msgSelectConnection);
 			}
 		}
-		return otherHadoopConnections;
+		return otherConnections;
 	}
 
 	public doChangeContext(connection?: IConnectionProfile): void {
@@ -291,15 +292,14 @@ export class AttachToDropdown extends SelectBox {
      **/
 	public async openConnectionDialog(): Promise<void> {
 		try {
-			//TODO: Figure out how to plumb through the correct provider here
-			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }).then(connection => {
+			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
 					return;
 				}
-				let connectedServer = connection.options[notebookConstants.hostPropName];
-				//Check to see if the same host is already there in dropdown. We only have host names in dropdown
+				let connectedServer = connection.serverName;
+				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
 					this.doChangeContext();

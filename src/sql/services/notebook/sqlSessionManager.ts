@@ -15,6 +15,8 @@ import * as Utils from 'sql/parts/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { mssqlProviderName } from 'sql/parts/connection/common/constants';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
@@ -62,6 +64,7 @@ export class SqlSessionManager implements nb.SessionManager {
 export class SqlSession implements nb.ISession {
 	private _kernel: SqlKernel;
 	private _defaultKernelLoaded = false;
+	private _currentConnection: IConnectionProfile;
 
 	public set defaultKernelLoaded(value) {
 		this._defaultKernelLoaded = value;
@@ -106,12 +109,25 @@ export class SqlSession implements nb.ISession {
 	changeKernel(kernelInfo: nb.IKernelSpec): Thenable<nb.IKernel> {
 		return Promise.resolve(this.kernel);
 	}
+
+	configureKernel(kernelInfo: nb.IKernelSpec): Thenable<void> {
+		return Promise.resolve();
+	}
+
+	configureConnection(connection: ConnectionProfile): Thenable<void> {
+		if (this._kernel) {
+			this._kernel.connection = connection;
+		}
+		return Promise.resolve();
+	}
 }
 
 class SqlKernel extends Disposable implements nb.IKernel {
 	private _queryRunner: QueryRunner;
 	private _columns: IDbColumn[];
 	private _rows: DbCellValue[][];
+	private _currentConnection: IConnectionProfile;
+	static kernelId: number = 0;
 
 	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 				@IInstantiationService private _instantiationService: IInstantiationService,
@@ -120,7 +136,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public get id(): string {
-		return '-1';
+		return (SqlKernel.kernelId++).toString();
 	}
 
 	public get name(): string {
@@ -158,6 +174,12 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 		return info;
 	}
+
+	public set connection(conn: IConnectionProfile) {
+		this._currentConnection = conn;
+		this._queryRunner = undefined;
+	}
+
 	getSpec(): Thenable<nb.IKernelSpec> {
 		return Promise.resolve(sqlKernelSpec);
 	}
@@ -166,11 +188,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		if (this._queryRunner) {
 			this._queryRunner.runQuery(content.code);
 		} else {
-			let connections = this._connectionManagementService.getActiveConnections();
-			let connectionProfile = connections.find(connection => connection.providerName === mssqlProviderName);
-			let connectionUri = Utils.generateUri(connectionProfile, 'notebook');
+			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri, undefined);
-			this._connectionManagementService.connect(connectionProfile, connectionUri).then((result) =>
+			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) =>
 			{
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(content.code);
@@ -186,7 +206,9 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	interrupt(): Thenable<void> {
-		return Promise.resolve(undefined);
+		// TODO: figure out what to do with the QueryCancelResult
+		return this._queryRunner.cancelQuery().then((cancelResult) => {
+		});
 	}
 
 	private addQueryEventListeners(queryRunner: QueryRunner): void {
@@ -234,7 +256,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	get inProgress(): boolean {
 		return !this._queryRunner.hasCompleted;
 	}
-
+	set inProgress(val: boolean) {
+		if (this._queryRunner && !val) {
+			this._queryRunner.cancelQuery();
+		}
+	}
 	get msg(): nb.IMessage {
 		return this._msg;
 	}

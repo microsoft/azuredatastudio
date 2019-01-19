@@ -9,6 +9,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { ExtensionsRegistry, IExtensionPointUser } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { localize } from 'vs/nls';
 import * as platform from 'vs/platform/registry/common/platform';
+import * as sqlops from 'sqlops';
 import { Event, Emitter } from 'vs/base/common/event';
 
 export const Extensions = {
@@ -18,7 +19,7 @@ export const Extensions = {
 export interface NotebookProviderRegistration {
 	provider: string;
 	fileExtensions: string | string[];
-	standardKernels: string | string[];
+	standardKernels: sqlops.nb.IStandardKernel | sqlops.nb.IStandardKernel[];
 }
 
 let notebookProviderType: IJSONSchema = {
@@ -44,11 +45,38 @@ let notebookProviderType: IJSONSchema = {
 		standardKernels: {
 			description: localize('carbon.extension.contributes.notebook.standardKernels', 'What kernels should be standard with this notebook provider'),
 			oneOf: [
-				{ type: 'string' },
+				{
+					type: 'object',
+					properties: {
+						name: {
+							type: 'string',
+						},
+						connectionProviderIds: {
+							type: 'array',
+							items: {
+								type: 'string'
+							}
+						}
+					}
+				},
 				{
 					type: 'array',
 					items: {
-						type: 'string'
+						type: 'object',
+						items: {
+							type: 'object',
+							properties: {
+								name: {
+									type: 'string',
+								},
+								connectionProviderIds: {
+									type: 'array',
+									items: {
+										type: 'string'
+									}
+								}
+							}
+						}
 					}
 				}
 			]

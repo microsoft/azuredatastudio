@@ -239,8 +239,8 @@ export class CellModel implements ICellModel {
 				let result = output as nb.IDisplayResult;
 				if (result && result.data && result.data['text/html']) {
 					let nbm = (this as CellModel).options.notebook as NotebookModel;
-					if (nbm.hadoopConnection) {
-						let host = nbm.hadoopConnection.host;
+					if (nbm.activeConnection) {
+						let host = nbm.activeConnection.serverName;
 						let html = result.data['text/html'];
 						html = html.replace(/(https?:\/\/mssql-master.*\/proxy)(.*)/g, function (a, b, c) {
 							let ret = '';

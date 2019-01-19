@@ -288,10 +288,29 @@ class SessionWrapper implements sqlops.nb.ISession {
 		return this.doChangeKernel(kernelInfo);
 	}
 
+	configureKernel(kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+		return this.doConfigureKernel(kernelInfo);
+	}
+
+	configureConnection(connection: sqlops.IConnectionProfile): Thenable<void> {
+		if (connection['capabilitiesService'] !== undefined) {
+			connection['capabilitiesService'] = undefined;
+		}
+		return this.doConfigureConnection(connection);
+	}
+
 	private async doChangeKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<sqlops.nb.IKernel> {
 		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
 		return this._kernel;
+	}
+
+	private async doConfigureKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<void> {
+		await this._proxy.ext.$configureKernel(this.sessionDetails.sessionId, kernelInfo);
+	}
+
+	private async doConfigureConnection(connection: sqlops.IConnectionProfile): Promise<void> {
+		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection);
 	}
 }
 

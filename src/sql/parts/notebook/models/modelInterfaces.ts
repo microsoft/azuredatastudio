@@ -17,9 +17,9 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -131,7 +131,7 @@ export interface IClientSession extends IDisposable {
 	 * This will optionally start a session if the kernel preferences
 	 * indicate this is desired
 	 */
-	initialize(connection?: NotebookConnection): Promise<void>;
+	initialize(connection?: IConnectionProfile): Promise<void>;
 
 	/**
 	 * Change the current kernel associated with the document.
@@ -139,6 +139,13 @@ export interface IClientSession extends IDisposable {
 	changeKernel(
 		options: nb.IKernelSpec
 	): Promise<nb.IKernel>;
+
+	/**
+	 * Configure the current kernel associated with the document.
+	 */
+	configureKernel(
+		options: nb.IKernelSpec
+	): Promise<void>;
 
 	/**
 	 * Kill the kernel and shutdown the session.
@@ -191,7 +198,7 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Updates the connection
 	 */
-	updateConnection(connection: NotebookConnection): void;
+	updateConnection(connection: IConnectionProfile): void;
 }
 
 export interface IDefaultConnection {
@@ -348,6 +355,8 @@ export interface INotebookModel {
 	 * @param edits The edit operations to perform
 	 */
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
+
+	getApplicableConnectionProviderIds(kernelName: string): string[];
 }
 
 export interface NotebookContentChange {
@@ -418,6 +427,8 @@ export interface INotebookModelOptions {
 
 	notebookManagers: INotebookManager[];
 	providerId: string;
+	standardKernels: nb.IStandardKernel[];
+	defaultKernel: nb.IKernelSpec;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
@@ -425,9 +436,5 @@ export interface INotebookModelOptions {
 
 // TODO would like to move most of these constants to an extension
 export namespace notebookConstants {
-	export const hadoopKnoxProviderName = 'HADOOP_KNOX';
-	export const python3 = 'python3';
-	export const python3DisplayName = 'Python 3';
-	export const defaultSparkKernel = 'pyspark3kernel';
-	export const hostPropName = 'host';
+	export const SQL = 'SQL';
 }
