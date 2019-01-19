@@ -105,7 +105,7 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 		this._proxy.$setDirty(this.handle, value);
 	}
 
-	registerSaveHandler(handler: () => Thenable<boolean>) {
+	registerSaveHandler(handler: () => Thenable<boolean>): void {
 		this._saveHandler = handler;
 	}
 
@@ -515,7 +515,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let handle = this.getHandle(dialog);
 		this.updateDialogContent(dialog);
 		dialog.dialogName ? this._proxy.$openDialog(handle, dialog.dialogName) :
-						   this._proxy.$openDialog(handle);
+			this._proxy.$openDialog(handle);
 	}
 
 	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {

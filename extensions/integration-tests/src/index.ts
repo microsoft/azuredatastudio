@@ -2,27 +2,18 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import * as vscode from 'vscode';
+import { context } from './testContext';
 
 const path = require('path');
-const Mocha = require('mocha');
-const minimist = require('minimist');
+const testRunner = require('vscode/lib/testrunner');
 
-const suite = 'Smoke Tests';
+const suite = 'Integration Tests';
 
-const [, , ...args] = process.argv;
-const opts = minimist(args, {
-	string: [
-		'f'
-	]
-});
-
-const options = {
+const options: any = {
+	ui: 'tdd',
 	useColors: true,
-	//{{SQL CARBON EDIT}}
-	timeout: 60000 * 2,
-	//{{END}}
-	slow: 30000,
-	grep: opts['f']
+	timeout: 600000
 };
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
@@ -36,6 +27,10 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-const mocha = new Mocha(options);
-mocha.addFile('out/main.js');
-mocha.run(failures => process.exit(failures ? -1 : 0));
+if (!vscode.workspace.getConfiguration('test')['testSetupCompleted']) {
+	context.RunTest = false;
+}
+
+testRunner.configure(options);
+
+export = testRunner;
