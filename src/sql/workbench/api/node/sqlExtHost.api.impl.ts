@@ -155,6 +155,9 @@ export function createApiFactory(
 				},
 				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
+				},
+				getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+					return extHostObjectExplorer.$getSessionConnectionProfile(sessionId);
 				}
 			};
 
@@ -240,16 +243,6 @@ export function createApiFactory(
 			};
 
 			let registerObjectExplorerNodeProvider = (provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable => {
-				// provider.registerOnSessionCreated((response: sqlops.ObjectExplorerSession) => {
-				// 	extHostDataProvider.$onObjectExplorerSessionCreated(provider.handle, response);
-				// });
-
-				// if (provider.registerOnSessionDisconnected) {
-				// 	provider.registerOnSessionDisconnected((response: sqlops.ObjectExplorerSession) => {
-				// 		extHostDataProvider.$onObjectExplorerSessionDisconnected(provider.handle, response);
-				// 	});
-				// }
-
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
 					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
 				});

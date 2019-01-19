@@ -160,6 +160,11 @@ declare module 'sqlops' {
 		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
 
 		/**
+		 * Get connectionProfile from sessionId
+		 */
+		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
+
+		/**
 		 * Interface for representing and interacting with items in Object Explorer
 		*/
 		export interface ObjectExplorerNode extends NodeInfo {
@@ -365,10 +370,10 @@ declare module 'sqlops' {
 
 	export interface ServerInfoOption {
 		isBigDataCluster: boolean;
-		bigDataClusterEndpoints: BigDataClusterEndpoint[];
+		clusterEndpoints: ClusterEndpoint[];
 	}
 
-	export interface BigDataClusterEndpoint {
+	export interface ClusterEndpoint {
 		serviceName: string;
 		ipAddress: string;
 		port: number;
@@ -1215,9 +1220,7 @@ declare module 'sqlops' {
 		readonly supportedProviderId: string;
 
 		readonly groupingId?: number;
-
-		createNodeProviderSession?(session: ObjectExplorerSession, connInfo: ConnectionInfo, connectionProfileId: string): Thenable<ObjectExplorerSessionResponse>;
-	}
+		}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {

@@ -707,6 +707,7 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 	$refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
+	$getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile>;
 }
 
 export interface ExtHostModelViewDialogShape {

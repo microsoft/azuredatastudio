@@ -258,9 +258,6 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			supportedProviderId: providerId,
 			providerId: 'DataServices',
 			groupingId: 2,
-			createNodeProviderSession(session: sqlops.ObjectExplorerSession, connInfo: sqlops.ConnectionInfo, connectionProfileId: string) {
-				return self._proxy.$createObjectExplorerNodeProviderSession(handle, session, connInfo, connectionProfileId);
-			},
 			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
 			},

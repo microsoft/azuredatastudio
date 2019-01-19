@@ -348,10 +348,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).createNewSession(connInfo);
 	}
 
-	public $createObjectExplorerNodeProviderSession(handle: number, session: sqlops.ObjectExplorerSession, connInfo: sqlops.ConnectionInfo, connectionProfileId: string): Thenable<sqlops.ObjectExplorerSessionResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerNodeProvider>(handle).createNodeProviderSession(session, connInfo, connectionProfileId);
-	}
-
 	public $expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider>(handle).expandNode(nodeInfo);
 	}

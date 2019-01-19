@@ -80,6 +80,8 @@ export interface IObjectExplorerService {
 	getTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
 
 	refreshNodeInView(connectionId: string, nodePath: string): Thenable<TreeNode>;
+
+	getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile;
 }
 
 interface SessionStatus {
@@ -212,20 +214,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				server.connection = connection;
 				server.session = session;
 				this._activeObjectExplorerNodes[connection.id] = server;
-				let serverInfo = this._connectionManagementService.getActiveConnectionServerInfo(this._sessions[session.sessionId].connection.id);
-				if (serverInfo && serverInfo.options && serverInfo.options.isBigDataCluster && !session.providerId) {
-					let expanders = this._expanders[connection.providerName];
-					if (expanders) {
-						for (let expander of expanders) {
-							this.nodeProviderCreateSession(expander, session, connection.toConnectionInfo(), connection.id)
-								.then(result => { }, error => {
-									errorMessage = session && session.errorMessage ? session.errorMessage :
-										nls.localize('OeNodeSessionFailedError', 'Failed to create Object Explorer Node Provider Session');
-									error(errorMessage);
-								});
-						}
-					}
-				}
 			} else {
 				errorMessage = session && session.errorMessage ? session.errorMessage :
 					nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
@@ -239,15 +227,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this.sendUpdateNodeEvent(connection, errorMessage);
 	}
 
-	private nodeProviderCreateSession(provider: sqlops.ObjectExplorerNodeProvider, session: sqlops.ObjectExplorerSession, connInfo: sqlops.ConnectionInfo, connectionProfileId: string): Promise<sqlops.ObjectExplorerSessionResponse> {
-		return new Promise<sqlops.ObjectExplorerSessionResponse>((resolve, reject) => {
-			provider.createNodeProviderSession(session, connInfo, connectionProfileId).then(result => {
-				resolve(result);
-			}, error => {
-				reject(error);
-			});
-		});
-	}
 
 	/**
 	 * Gets called when session is disconnected
@@ -636,6 +615,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			await treeNode.setExpandedState(TreeItemCollapsibleState.Expanded);
 		}
 		return treeNode;
+	}
+
+	public getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile {
+		return this._sessions[sessionId].connection.toIConnectionProfile();
 	}
 
 	private async setNodeExpandedState(treeNode: TreeNode, expandedState: TreeItemCollapsibleState): Promise<void> {
