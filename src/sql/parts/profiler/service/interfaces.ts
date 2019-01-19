@@ -125,6 +125,11 @@ export interface IProfilerService {
 	 * @param input input object that contains the necessary information which will be modified based on used input
 	 */
 	launchCreateSessionDialog(input: ProfilerInput): Thenable<void>;
+	/**
+	 * Launches the dialog for collecting the filter object
+	 * @param input input object
+	 */
+	launchFilterSessionDialog(input: ProfilerInput): void;
 }
 
 export interface IProfilerSettings {
@@ -146,4 +151,29 @@ export interface IProfilerSessionTemplate {
 	name: string;
 	defaultView: string;
 	createStatement: string;
+}
+
+export interface ProfilerFilter {
+	clauses: ProfilerFilterClause[];
+}
+
+export interface ProfilerFilterClause {
+	field: string;
+	operator: ProfilerFilterClauseOperator;
+	value: string;
+}
+
+export enum ProfilerFilterClauseOperator {
+	Equals,
+	NotEquals,
+	LessThan,
+	LessThanOrEquals,
+	GreaterThan,
+	GreaterThanOrEquals,
+	IsNull,
+	IsNotNull,
+	Contains,
+	NotContains,
+	StartsWith,
+	NotStartsWith
 }

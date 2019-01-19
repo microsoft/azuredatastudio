@@ -144,6 +144,8 @@ export class ProfilerEditor extends BaseEditor {
 	private _autoscrollAction: Actions.ProfilerAutoScroll;
 	private _createAction: Actions.ProfilerCreate;
 	private _collapsedPanelAction: Actions.ProfilerCollapsablePanelAction;
+	private _filterAction: Actions.ProfilerFilterSession;
+	private _clearFilterAction: Actions.ProfilerClearSessionFilter;
 
 	private _savedTableViewStates = new Map<ProfilerInput, ProfilerTableViewState>();
 
@@ -217,7 +219,10 @@ export class ProfilerEditor extends BaseEditor {
 		this._pauseAction.enabled = false;
 		this._connectAction = this._instantiationService.createInstance(Actions.ProfilerConnect, Actions.ProfilerConnect.ID, Actions.ProfilerConnect.LABEL);
 		this._autoscrollAction = this._instantiationService.createInstance(Actions.ProfilerAutoScroll, Actions.ProfilerAutoScroll.ID, Actions.ProfilerAutoScroll.LABEL);
-
+		this._filterAction = this._instantiationService.createInstance(Actions.ProfilerFilterSession, Actions.ProfilerFilterSession.ID, Actions.ProfilerFilterSession.LABEL);
+		this._filterAction.enabled = true;
+		this._clearFilterAction = this._instantiationService.createInstance(Actions.ProfilerClearSessionFilter, Actions.ProfilerClearSessionFilter.ID, Actions.ProfilerClearSessionFilter.LABEL);
+		this._clearFilterAction.enabled = true;
 		this._viewTemplates = this._profilerService.getViewTemplates();
 		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
 		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', 'Select View'));
@@ -256,6 +261,9 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._startAction },
 			{ action: this._stopAction },
 			{ action: this._pauseAction },
+			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: this._filterAction },
+			{ action: this._clearFilterAction },
 			{ element: Taskbar.createTaskbarSeparator() },
 			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
 			{ element: viewTemplateContainer },

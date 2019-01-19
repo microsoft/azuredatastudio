@@ -316,7 +316,7 @@ let registryProperties = {
 	'sql.results.streaming': {
 		'type': 'boolean',
 		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
-		'default': false
+		'default': true
 	},
 	'sql.saveAsXml.formatted': {
 		'type': 'string',

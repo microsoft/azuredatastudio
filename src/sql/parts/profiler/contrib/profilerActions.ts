@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!sql/parts/profiler/media/profiler';
-import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService, ProfilerFilter } from 'sql/parts/profiler/service/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { BaseActionContext } from 'sql/workbench/common/actions';
@@ -296,5 +296,38 @@ export class NewProfilerAction extends Task {
 
 			return TPromise.as(void 0);
 		});
+	}
+}
+
+export class ProfilerFilterSession extends Action {
+	public static ID = 'profiler.filter';
+	public static LABEL = nls.localize('profiler.filter', "Filter…");
+
+	constructor(
+		id: string, label: string,
+		@IProfilerService private _profilerService: IProfilerService
+	) {
+		super(id, label, 'filterLabel');
+	}
+
+	public run(input: ProfilerInput): TPromise<boolean> {
+		this._profilerService.launchFilterSessionDialog(input);
+		return TPromise.wrap(true);
+	}
+}
+
+export class ProfilerClearSessionFilter extends Action {
+	public static ID = 'profiler.clearFilter';
+	public static LABEL = nls.localize('profiler.clearFilter', "Clear Filter");
+
+	constructor(
+		id: string, label: string
+	) {
+		super(id, label);
+	}
+
+	public run(input: ProfilerInput): TPromise<boolean> {
+		input.clearFilter();
+		return TPromise.wrap(true);
 	}
 }

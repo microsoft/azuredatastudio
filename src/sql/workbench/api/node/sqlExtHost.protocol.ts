@@ -357,6 +357,11 @@ export abstract class ExtHostDataProtocolShape {
 	$getXEventSessions(handle: number, sessionId: string): Thenable<string[]> { throw ni(); }
 
 	/**
+	 * Disconnect a profiler session
+	 */
+	$disconnectSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
+	/**
 	 * Get Agent Job list
 	 */
 	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> { throw ni(); }
