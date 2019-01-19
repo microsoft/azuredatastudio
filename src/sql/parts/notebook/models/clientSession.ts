@@ -60,7 +60,6 @@ export class ClientSession implements IClientSession {
 
 	public async initialize(connection?: IConnectionProfile): Promise<void> {
 		try {
-			this._kernelConfigActions.push((kernelName: string) => { return this.runTasksBeforeSessionStart(kernelName); });
 			this._connection = connection;
 			this._serverLoadFinished = this.startServer();
 			await this._serverLoadFinished;
