@@ -33,32 +33,25 @@ import { IConnectionsViewlet } from 'sql/workbench/parts/connection/common/conne
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
-	private _searchDelayer: ThrottledDelayer<any>;
 	private _root: HTMLElement;
 	private _searchBox: InputBox;
 	private _toDisposeViewlet: IDisposable[] = [];
 	private _serverTreeView: ServerTreeView;
-	private _viewletContainer: Builder;
-	private _searchBoxContainer: Builder;
 	private _clearSearchAction: ClearSearchAction;
 	private _addServerAction: IAction;
 	private _addServerGroupAction: IAction;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
-	private _searchTerm: string;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService private _themeService: IThemeService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IViewletService private viewletService: IViewletService,
 		@INotificationService private _notificationService: INotificationService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
 		@IPartService partService: IPartService
 	) {
 
 		super(VIEWLET_ID, partService, telemetryService, _themeService);
-		this._searchDelayer = new ThrottledDelayer(500);
 
 		this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
 		this._addServerAction = this._instantiationService.createInstance(AddServerAction,
@@ -88,9 +81,7 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 			this._root = parent;
 			let parentBuilder = new Builder(parent);
 			parentBuilder.div({ class: 'server-explorer-viewlet' }, (viewletContainer) => {
-				this._viewletContainer = viewletContainer;
 				viewletContainer.div({ class: 'search-box' }, (searchBoxContainer) => {
-					this._searchBoxContainer = searchBoxContainer;
 					let searchServerString = localize('Search server names', 'Search server names');
 					this._searchBox = new InputBox(
 						searchBoxContainer.getHTMLElement(),
@@ -101,7 +92,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 							ariaLabel: searchServerString
 						}
 					);
-					this._searchTerm = '';
 
 					this._searchBox.onDidChange(() => {
 						this.search(this._searchBox.value);
@@ -160,7 +150,6 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 	}
 
 	public clearSearch() {
-		this._searchTerm = '';
 		this._serverTreeView.refreshTree();
 		this._searchBox.value = '';
 		this._clearSearchAction.enabled = false;

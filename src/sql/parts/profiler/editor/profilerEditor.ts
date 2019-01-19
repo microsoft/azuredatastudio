@@ -7,7 +7,7 @@ import { ProfilerInput } from './profilerInput';
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerService, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler } from 'sql/common/theme/styler';
 import { IProfilerStateChangedEvent } from './profilerState';

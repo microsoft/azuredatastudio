@@ -16,7 +16,7 @@ import { JobStepsViewController, JobStepsViewDataSource, JobStepsViewFilter,
 	JobStepsViewRenderer, JobStepsViewModel} from 'sql/parts/jobManagement/views/jobStepsViewTree';
 import { JobHistoryComponent } from 'sql/parts/jobManagement/views/jobHistory.component';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

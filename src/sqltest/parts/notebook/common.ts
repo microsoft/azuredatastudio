@@ -10,7 +10,7 @@ import { nb, IConnectionProfile } from 'sqlops';
 import { Event, Emitter } from 'vs/base/common/event';
 import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class NotebookModelStub implements INotebookModel {

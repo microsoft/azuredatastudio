@@ -13,7 +13,7 @@ import { IRestoreDialogController } from 'sql/platform/restore/common/restoreSer
 import { IBackupUiService } from 'sql/platform/backup/common/backupService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';

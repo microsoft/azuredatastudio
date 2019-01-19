@@ -17,16 +17,16 @@ import * as sqlops from 'sqlops';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { IRestoreService } from 'sql/platform/restore/common/restoreService';
 import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
-import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IDacFxService } from 'sql/services/dacfx/dacFxService';
+import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 /**

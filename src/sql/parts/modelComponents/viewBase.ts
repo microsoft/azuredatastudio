@@ -12,7 +12,7 @@ import nls = require('vs/nls');
 import * as sqlops from 'sqlops';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView, IModelViewEventArgs } from 'sql/services/model/modelViewService';
+import { IModelView, IModelViewEventArgs } from 'sql/platform/model/common/modelViewService';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';

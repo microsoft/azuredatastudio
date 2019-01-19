@@ -10,8 +10,8 @@ import * as nls from 'vs/nls';
 import { Component, Inject, forwardRef, ChangeDetectorRef, ViewChild, Injectable } from '@angular/core';
 import { AgentJobInfo } from 'sqlops';
 import { PanelComponent, IPanelOptions, NavigationBarLayout } from 'sql/base/browser/ui/panel/panel.component';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 
 
 export const DASHBOARD_SELECTOR: string = 'agentview-component';

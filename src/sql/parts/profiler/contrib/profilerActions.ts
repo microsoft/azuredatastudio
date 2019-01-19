@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!sql/parts/profiler/media/profiler';
-import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { Task } from 'sql/platform/tasks/common/tasks';

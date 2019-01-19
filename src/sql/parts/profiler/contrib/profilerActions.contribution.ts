@@ -6,15 +6,13 @@
 
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import * as nls from 'vs/nls';
-import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from '../../objectExplorer/common/objectExplorerService';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IProfilerService } from '../service/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/editor/editor.api';
 import { ProfilerEditor } from '../editor/profilerEditor';
@@ -22,15 +20,6 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-
-// Contribute Global Actions
-const category = nls.localize('profilerCategory', "Profiler");
-
-const newProfilerSchema: IJSONSchema = {
-	description: nls.localize('carbon.actions.newProfiler', 'Open up a new profiler window'),
-	type: 'null',
-	default: null
-};
 
 CommandsRegistry.registerCommand({
 	id: 'profiler.newProfiler',

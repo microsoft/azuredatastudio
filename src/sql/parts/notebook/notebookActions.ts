@@ -18,7 +18,7 @@ import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
-import { noKernel } from 'sql/services/notebook/sessionManager';
+import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');

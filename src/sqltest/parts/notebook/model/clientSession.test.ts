@@ -15,7 +15,7 @@ import { TestNotificationService } from 'vs/platform/notification/test/common/te
 import URI from 'vs/base/common/uri';
 
 import { ClientSession } from 'sql/parts/notebook/models/clientSession';
-import { SessionManager, EmptySession } from 'sql/services/notebook/sessionManager';
+import { SessionManager, EmptySession } from 'sql/workbench/services/notebook/common/sessionManager';
 import { NotebookManagerStub, ServerManagerStub } from 'sqltest/parts/notebook/common';
 
 describe('Client Session', function(): void {

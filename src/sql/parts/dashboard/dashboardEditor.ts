@@ -19,7 +19,7 @@ import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/parts/dashboard/dashboard.component';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

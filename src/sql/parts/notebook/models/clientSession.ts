@@ -18,7 +18,7 @@ import { Deferred } from 'sql/base/common/promise';
 
 import * as notebookUtils from '../notebookUtils';
 import * as sparkUtils from '../spark/sparkUtils';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 

@@ -6,15 +6,13 @@
 'use strict';
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Event } from 'vs/base/common/event';
-import { IAction } from 'vs/base/common/actions';
-import Severity from 'vs/base/common/severity';
 import * as sqlops from 'sqlops';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from './connectionManagementInfo';
+import { IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -290,17 +288,6 @@ export interface IConnectionDialogService {
 	 * @param connectionResult
 	 */
 	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
-}
-
-export interface IServerGroupDialogCallbacks {
-	onAddGroup(groupName: string): void;
-	onClose(): void;
-}
-export const IServerGroupController = createDecorator<IServerGroupController>('serverGroupController');
-export interface IServerGroupController {
-	_serviceBrand: any;
-	showCreateGroupDialog(connectionManagementService: IConnectionManagementService, callbacks?: IServerGroupDialogCallbacks): TPromise<void>;
-	showEditGroupDialog(connectionManagementService: IConnectionManagementService, group: ConnectionProfileGroup): TPromise<void>;
 }
 
 export enum RunQueryOnConnectionMode {

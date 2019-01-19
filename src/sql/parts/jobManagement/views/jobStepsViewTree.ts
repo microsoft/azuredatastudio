@@ -11,7 +11,6 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
-import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 
 export class JobStepsViewRow {
 	public stepId: string;

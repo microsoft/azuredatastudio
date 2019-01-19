@@ -8,7 +8,7 @@ import { NgForm } from '@angular/forms';
 
 import { ITaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { ITaskDialogComponent } from 'sql/parts/tasks/common/tasks';
 
 import * as sqlops from 'sqlops';

@@ -15,7 +15,7 @@ import URI from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

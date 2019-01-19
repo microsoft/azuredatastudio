@@ -12,9 +12,9 @@ import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { memoize } from 'vs/base/common/decorators';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IModelView } from 'sql/services/model/modelViewService';
+import { IModelView } from 'sql/platform/model/common/modelViewService';
 import { ViewBase } from 'sql/parts/modelComponents/viewBase';
-import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
+import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
 
 import * as sqlops from 'sqlops';
 

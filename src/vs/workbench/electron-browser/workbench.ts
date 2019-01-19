@@ -114,12 +114,13 @@ import { EditorService } from 'vs/workbench/services/editor/browser/editorServic
 import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/platform/url/electron-browser/inactiveExtensionUrlHandler';
 
 // {{SQL CARBON EDIT}}
-import { IConnectionManagementService, IConnectionDialogService, IServerGroupController } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser/errorMessageService';
-import { ServerGroupController } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroupController';
+import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
+import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
 import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -135,10 +136,10 @@ import { QueryEditorService } from 'sql/parts/query/services/queryEditorService'
 import { IQueryManagementService, QueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IAdminService, AdminService } from 'sql/parts/admin/common/adminService';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { JobManagementService } from 'sql/parts/jobManagement/common/jobManagementService';
-import { IDacFxService, DacFxService } from 'sql/services/dacfx/dacFxService';
+import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
+import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
 import { IBackupService, IBackupUiService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { BackupUiService } from 'sql/workbench/parts/backup/browser/backupUiService';
@@ -153,23 +154,26 @@ import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { InsightsDialogService } from 'sql/parts/insights/insightsDialogService';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
-import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
-import { ProfilerService } from 'sql/parts/profiler/service/profilerService';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { ProfilerService } from 'sql/workbench/services/profiler/common/profilerService';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
-import { IResourceProviderService, IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
-import { ResourceProviderService } from 'sql/parts/accountManagement/common/resourceProviderService';
-import { AccountPickerService } from 'sql/parts/accountManagement/accountPicker/accountPickerService';
-import { IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
-import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
-import { DashboardViewService } from 'sql/services/dashboard/common/dashboardViewServiceImpl';
-import { ModelViewService } from 'sql/services/modelComponents/modelViewServiceImpl';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
-import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
-import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
-import { INotebookService } from 'sql/services/notebook/notebookService';
+import { AccountPickerService } from 'sql/platform/accountManagement/browser/accountPickerService';
+import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
+import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
+import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
+import { IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
+import { DashboardViewService } from 'sql/platform/dashboard/common/dashboardViewServiceImpl';
+import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
+import { ModelViewService } from 'sql/platform/modelComponents/common/modelViewServiceImpl';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
+import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServiceImpl';
+import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
+import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -177,10 +181,6 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
-// {{SQL CARBON EDIT}}
-import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
-import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
-// {{SQL CARBON EDIT}}
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;

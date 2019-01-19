@@ -12,7 +12,7 @@ import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParam
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';

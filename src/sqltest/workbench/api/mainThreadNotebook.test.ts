@@ -14,10 +14,10 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 
 import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';
-import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
-import { INotebookProvider } from 'sql/services/notebook/notebookService';
+import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
+import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { LocalContentManager } from 'sql/services/notebook/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 
 suite('MainThreadNotebook Tests', () => {
 

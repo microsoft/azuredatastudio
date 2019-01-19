@@ -13,7 +13,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import URI from 'vs/base/common/uri';
 
-import { LocalContentManager } from 'sql/services/notebook/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import * as testUtils from '../../../utils/testUtils';
 import { NotebookManagerStub } from '../common';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';

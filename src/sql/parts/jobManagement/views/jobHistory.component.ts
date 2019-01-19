@@ -12,10 +12,10 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/common/jobActions';
-import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { RunJobAction, StopJobAction, NewStepAction } from 'sql/platform/jobManagement/common/jobActions';
+import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
@@ -27,7 +27,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';

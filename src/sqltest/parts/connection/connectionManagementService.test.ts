@@ -16,7 +16,7 @@ import {
 } from 'sql/platform/connection/common/connectionManagement';
 import * as Constants from 'sql/platform/connection/common/constants';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { IHandleFirewallRuleResult } from 'sql/parts/accountManagement/common/interfaces';
+import { IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

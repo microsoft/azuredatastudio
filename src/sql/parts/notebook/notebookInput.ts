@@ -14,7 +14,7 @@ import URI from 'vs/base/common/uri';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import * as resources from 'vs/base/common/resources';
 
-import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import Severity from 'vs/base/common/severity';
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate } from 'sql/workbench/services/profiler/common/interfaces';
 import { ProfilerState } from './profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 

@@ -9,8 +9,7 @@ import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
 	IConnectionManagementService, IConnectionDialogService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
-	IConnectionParams, IConnectionResult, IServerGroupController, IServerGroupDialogCallbacks,
-	RunQueryOnConnectionMode
+	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -27,7 +26,7 @@ import { ConnectionStatusbarItem } from 'sql/parts/connection/common/connectionS
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { warn } from 'sql/base/common/log';
-import { IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
+import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/parts/query/common/constants';
 import { Deferred } from 'sql/base/common/promise';
@@ -35,6 +34,7 @@ import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHost
 import { values } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
+import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 
 import * as sqlops from 'sqlops';
 

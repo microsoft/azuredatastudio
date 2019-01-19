@@ -4,33 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as Constants from 'sql/platform/connection/common/constants';
-import * as Utils from 'sql/platform/connection/common/utils';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import * as sqlops from 'sqlops';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
+import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
-import { CapabilitiesService, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import {
-	IConnectionManagementService, IConnectionDialogService, INewConnectionParams,
-	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
-	IConnectionParams, IConnectionResult, IServerGroupController, IServerGroupDialogCallbacks,
-	RunQueryOnConnectionMode
-} from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
-import { ICommandService, ICommandEvent, CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 
 class TestParsedArgs implements ParsedArgs {
@@ -117,8 +108,8 @@ suite('commandLineService tests', () => {
 		commandService?: ICommandService
 	): CommandLineService {
 		let service = new CommandLineService(
-			connectionManagementService,
 			capabilitiesService,
+			connectionManagementService,
 			environmentService,
 			undefined,
 			undefined,

@@ -12,9 +12,9 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 
-import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { LocalContentManager } from 'sql/services/notebook/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 
