@@ -52,7 +52,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public $getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
-		return Promise.resolve(this._connectionManagementService.getActiveConnectionServerInfo(connectionId));
+		return Promise.resolve(this._connectionManagementService.getConnectionServerInfo(connectionId));
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Promise<sqlops.connection.Connection> {

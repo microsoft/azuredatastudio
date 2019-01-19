@@ -15,6 +15,7 @@ import { ProviderBase } from './providerBase';
 import * as constants from './constants';
 import * as utils from './utils';
 import { IFileSource, HdfsFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
+import { ServerInfo } from 'dataprotocol-client/lib/types';
 
 function appendIfExists(uri: string, propName: string, propValue: string): string {
     if (propValue) {
@@ -221,7 +222,7 @@ export class Connection {
             isCloud: false,
             azureVersion: 0,
             osVersion: '',
-            options: { isBigDataCluster: false, bigDataClusterEndpoints: [] }
+            options: { isBigDataCluster: false, clusterEndpoints: []}
         };
         return info;
     }

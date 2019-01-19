@@ -268,7 +268,7 @@ export interface IConnectionManagementService {
 	 * @param {string} profileId The id of the connection profile to get the password for
 	 * @returns ServerInfo
 	 */
-	getActiveConnectionServerInfo(profileId: string): sqlops.ServerInfo;
+	getConnectionServerInfo(profileId: string): sqlops.ServerInfo;
 
 	/**
 	 * Get the connection string for the provided connection ID

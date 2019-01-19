@@ -323,10 +323,10 @@ export enum AzureResource {
 
 export interface ServerInfoOption {
 	isBigDataCluster: boolean;
-	bigDataClusterEndpoints: BigDataClusterEndpoint;
+	clusterEndpoints: ClusterEndpoint;
 }
 
-export interface BigDataClusterEndpoint {
+export interface ClusterEndpoint {
 	serviceName: string;
 	ipAddress: string;
 	port: number;

@@ -306,7 +306,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			let provider = this._providers[providerId];
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
-				let serverInfo = this._connectionManagementService.getActiveConnectionServerInfo(this._sessions[session.sessionId].connection.id);
+				let serverInfo = this._connectionManagementService.getConnectionServerInfo(this._sessions[session.sessionId].connection.id);
 				if (serverInfo && (!serverInfo.options || !serverInfo.options.isBigDataCluster)) {
 					this.expandOrRefreshNode(provider, session, nodePath).then(result => {
 						resolve(result);
