@@ -100,7 +100,7 @@ export class RunJobAction extends Action {
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
 					this.notificationService.notify({
 						severity: Severity.Info,
-						message: jobName+ startMsg
+						message: jobName + startMsg
 					});
 					resolve(true);
 				} else {
@@ -140,7 +140,7 @@ export class StopJobAction extends Action {
 					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
 					this.notificationService.notify({
 						severity: Severity.Info,
-						message: jobName+ stopMsg
+						message: jobName + stopMsg
 					});
 					resolve(true);
 				} else {
@@ -168,8 +168,8 @@ export class EditJobAction extends Action {
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openJobDialog',
-			 actionInfo.ownerUri,
-			 actionInfo.targetObject);
+			actionInfo.ownerUri,
+			actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }
@@ -230,7 +230,7 @@ export class NewStepAction extends Action {
 		let server = context.serverName;
 		let jobInfo = context.agentJobInfo;
 		return new TPromise<boolean>((resolve, reject) => {
-			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, server, jobInfo , null));
+			resolve(this._commandService.executeCommand('agent.openNewStepDialog', ownerUri, server, jobInfo, null));
 		});
 	}
 }
@@ -315,8 +315,8 @@ export class EditAlertAction extends Action {
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openAlertDialog',
-			 actionInfo.ownerUri,
-			 actionInfo.targetObject);
+			actionInfo.ownerUri,
+			actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }
@@ -397,8 +397,8 @@ export class EditOperatorAction extends Action {
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openOperatorDialog',
-			 actionInfo.ownerUri,
-			 actionInfo.targetObject);
+			actionInfo.ownerUri,
+			actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }
@@ -479,8 +479,8 @@ export class EditProxyAction extends Action {
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
 		this._commandService.executeCommand(
 			'agent.openProxyDialog',
-			 actionInfo.ownerUri,
-			 actionInfo.targetObject);
+			actionInfo.ownerUri,
+			actionInfo.targetObject);
 		return TPromise.as(true);
 	}
 }
@@ -511,7 +511,7 @@ export class DeleteProxyAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
 								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
-								self._notificationService.error(errorMessage);
+							self._notificationService.error(errorMessage);
 						}
 					});
 				}

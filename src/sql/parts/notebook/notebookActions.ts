@@ -284,11 +284,11 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	/**
-     * Open connection dialog
-     * Enter server details and connect to a server from the dialog
-     * Bind the server value to 'Attach To' drop down
-     * Connected server is displayed at the top of drop down
-     **/
+	 * Open connection dialog
+	 * Enter server details and connect to a server from the dialog
+	 * Bind the server value to 'Attach To' drop down
+	 * Connected server is displayed at the top of drop down
+	 **/
 	public async openConnectionDialog(): Promise<void> {
 		try {
 			//TODO: Figure out how to plumb through the correct provider here

@@ -83,7 +83,7 @@ class NotebookProviderRegistry implements INotebookProviderRegistry {
 		// Note: this method intentionally overrides default provider for a file type.
 		// This means that any built-in provider will be overridden by registered extensions
 		this.providerIdToRegistration.set(registration.provider, registration);
-		this._onNewRegistration.fire( { id: registration.provider, registration: registration });
+		this._onNewRegistration.fire({ id: registration.provider, registration: registration });
 	}
 
 	public get registrations(): NotebookProviderRegistration[] {

@@ -7,11 +7,9 @@
 
 import 'vs/css!./media/connectionViewlet';
 import * as DOM from 'vs/base/browser/dom';
-import { ThrottledDelayer } from 'vs/base/common/async';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Builder } from 'vs/base/browser/builder';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IAction } from 'vs/base/common/actions';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -19,7 +17,7 @@ import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
-import { IConnectionManagementService, VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
+import { VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';

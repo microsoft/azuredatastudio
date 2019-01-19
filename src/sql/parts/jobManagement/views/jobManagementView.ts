@@ -78,7 +78,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let actions = this.getTableActions();
 		if (actions) {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			let actionContext= {
+			let actionContext = {
 				ownerUri: ownerUri,
 				targetObject: targetObject
 			};

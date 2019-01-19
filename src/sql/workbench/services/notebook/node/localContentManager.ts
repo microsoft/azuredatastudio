@@ -235,14 +235,14 @@ namespace v3 {
 	const createOutput = (output: Output): nb.ICellOutput => {
 		switch (output.output_type) {
 			case 'pyout':
-				return <nb.IExecuteResult> {
+				return <nb.IExecuteResult>{
 					output_type: OutputTypes.ExecuteResult,
 					execution_count: output.prompt_number,
 					data: createMimeBundle(output),
 					metadata: output.metadata
 				};
 			case 'display_data':
-				return <nb.IDisplayData> {
+				return <nb.IDisplayData>{
 					output_type: OutputTypes.DisplayData,
 					data: createMimeBundle(output),
 					metadata: output.metadata
@@ -250,13 +250,13 @@ namespace v3 {
 			case 'stream':
 				// Default to stdout in all cases unless it's stderr
 				const name = output.stream === 'stderr' ? 'stderr' : 'stdout';
-				return <nb.IStreamResult> {
+				return <nb.IStreamResult>{
 					output_type: OutputTypes.Stream,
 					name: name,
 					text: v4.demultiline(output.text)
 				};
 			case 'pyerr':
-				return <nb.IErrorResult> {
+				return <nb.IErrorResult>{
 					output_type: OutputTypes.Error,
 					ename: output.ename,
 					evalue: output.evalue,
@@ -268,7 +268,7 @@ namespace v3 {
 	};
 
 	function createCodeCell(cell: CodeCell): nb.ICellContents {
-		return <nb.ICellContents> {
+		return <nb.ICellContents>{
 			cell_type: cell.cell_type,
 			source: v4.demultiline(cell.input),
 			outputs: cell.outputs.map(createOutput),
@@ -279,7 +279,7 @@ namespace v3 {
 
 	function createHeadingCell(cell: HeadingCell): nb.ICellContents {
 		// v3 heading cells are just markdown cells in v4+
-		return <nb.ICellContents> {
+		return <nb.ICellContents>{
 			cell_type: 'markdown',
 			source: Array.isArray(cell.source)
 				? v4.demultiline(
@@ -307,7 +307,7 @@ namespace v3 {
 		pdf: 'application/pdf'
 	};
 	type MimeTypeKey = keyof typeof VALID_MIMETYPES;
-	type MimePayload = { [P in MimeTypeKey]?: nb.MultilineString };
+	type MimePayload = {[P in MimeTypeKey]?: nb.MultilineString };
 
 	interface MimeOutput<T extends string = string> extends MimePayload {
 		output_type: T;

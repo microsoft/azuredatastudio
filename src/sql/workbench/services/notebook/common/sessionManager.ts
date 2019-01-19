@@ -141,7 +141,7 @@ class EmptyKernel implements nb.IKernel {
 	}
 
 	requestComplete(content: nb.ICompleteRequest): Thenable<nb.ICompleteReplyMsg> {
-		let response: Partial<nb.ICompleteReplyMsg> = { };
+		let response: Partial<nb.ICompleteReplyMsg> = {};
 		return Promise.resolve(response as nb.ICompleteReplyMsg);
 	}
 
@@ -192,11 +192,11 @@ export class EmptyFuture implements FutureInternal {
 			let msg: nb.IIOPubMessage = {
 				channel: 'iopub',
 				type: 'iopub',
-				header: <nb.IHeader> {
+				header: <nb.IHeader>{
 					msg_id: '0',
 					msg_type: 'error'
 				},
-				content: <nb.IErrorResult> {
+				content: <nb.IErrorResult>{
 					ename: localize('errorName', 'Error'),
 					evalue: runNotebookDisabled,
 					output_type: 'error'

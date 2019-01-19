@@ -91,7 +91,7 @@ suite('MainThreadNotebook Tests', () => {
 				hasServerManager: false
 			};
 			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
-			.returns(() => Promise.resolve(details));
+				.returns(() => Promise.resolve(details));
 
 			// When I get the notebook manager
 			let manager = await provider.getNotebookManager(notebookUri);
@@ -105,7 +105,7 @@ suite('MainThreadNotebook Tests', () => {
 		test('should return manager with a content & server manager if extension host has these', async () => {
 			// Given the extension provider doesn't have acontent or server manager
 			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
-			.returns(() => Promise.resolve(managerWithAllFeatures));
+				.returns(() => Promise.resolve(managerWithAllFeatures));
 
 			// When I get the notebook manager
 			let manager = await provider.getNotebookManager(notebookUri);

@@ -94,7 +94,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this.registerBuiltInProvider();
 
 		if (extensionService) {
-				extensionService.whenInstalledExtensionsRegistered().then(() => {
+			extensionService.whenInstalledExtensionsRegistered().then(() => {
 				this.cleanupProviders();
 				this._isRegistrationComplete = true;
 				this._registrationComplete.resolve();
@@ -232,8 +232,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void {
 		let oldUriKey = oldUri.toString();
-		if(this._editors.has(oldUriKey))
-		{
+		if (this._editors.has(oldUriKey)) {
 			this._editors.delete(oldUriKey);
 			currentEditor.notebookParams.notebookUri = newUri;
 			this._editors.set(newUri.toString(), currentEditor);

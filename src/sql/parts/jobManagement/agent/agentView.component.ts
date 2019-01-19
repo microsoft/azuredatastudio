@@ -51,7 +51,7 @@ export class AgentViewComponent {
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(IJobManagementService) jobManagementService: IJobManagementService,
-		@Inject(IDashboardService) dashboardService: IDashboardService,) {
+		@Inject(IDashboardService) dashboardService: IDashboardService, ) {
 		this._expanded = new Map<string, string>();
 
 		let self = this;

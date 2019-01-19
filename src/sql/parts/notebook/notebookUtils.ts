@@ -44,7 +44,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	let providers: string[];
 	// First try to get provider for actual file type
 	if (fileExt && fileExt.startsWith('.')) {
-		fileExt = fileExt.slice(1,fileExt.length);
+		fileExt = fileExt.slice(1, fileExt.length);
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)

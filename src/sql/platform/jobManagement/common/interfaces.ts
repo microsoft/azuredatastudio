@@ -40,9 +40,9 @@ export interface IJobManagementService {
 
 	jobAction(connectionUri: string, jobName: string, action: string): Thenable<sqlops.ResultStatus>;
 	addToCache(server: string, cache: JobCacheObject | OperatorsCacheObject);
-	jobCacheObjectMap:  { [server: string]: JobCacheObject; };
+	jobCacheObjectMap: { [server: string]: JobCacheObject; };
 	operatorsCacheObjectMap: { [server: string]: OperatorsCacheObject; };
 	alertsCacheObjectMap: { [server: string]: AlertsCacheObject; };
-	proxiesCacheObjectMap: {[server: string]: ProxiesCacheObject };
+	proxiesCacheObjectMap: { [server: string]: ProxiesCacheObject };
 	addToCache(server: string, cache: JobCacheObject | ProxiesCacheObject | AlertsCacheObject | OperatorsCacheObject);
 }

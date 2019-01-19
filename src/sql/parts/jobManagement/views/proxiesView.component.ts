@@ -56,8 +56,8 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 			id: 'accountName'
 		},
 		{ name: nls.localize('jobProxiesView.credentialName', 'Credential Name'), field: 'credentialName', width: 200, id: 'credentialName' },
-		{ name: nls.localize('jobProxiesView.description', 'Description'), field: 'description', width: 200, id: 'description'},
-		{ name: nls.localize('jobProxiesView.isEnabled', 'Enabled'), field: 'isEnabled', width: 200, id: 'isEnabled'}
+		{ name: nls.localize('jobProxiesView.description', 'Description'), field: 'description', width: 200, id: 'description' },
+		{ name: nls.localize('jobProxiesView.isEnabled', 'Enabled'), field: 'isEnabled', width: 200, id: 'isEnabled' }
 	];
 
 	private options: Slick.GridOptions<any> = {
@@ -87,7 +87,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
@@ -103,7 +103,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		}
 	}
 
-	ngOnInit(){
+	ngOnInit() {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
@@ -152,7 +152,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
+		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
 
 		this._register(this._table.onContextMenu(e => {
@@ -221,7 +221,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass = dataContext.isEnabled ? 'proxyview-proxynameindicatorenabled' :
 			'proxyview-proxynameindicatordisabled';
- 		return '<table class="proxyview-proxynametable"><tr class="proxyview-proxynamerow">' +
+		return '<table class="proxyview-proxynametable"><tr class="proxyview-proxynamerow">' +
 			'<td nowrap class=' + resultIndicatorClass + '></td>' +
 			'<td nowrap class="proxyview-proxynametext">' + dataContext.accountName + '</td>' +
 			'</tr></table>';

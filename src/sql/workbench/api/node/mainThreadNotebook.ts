@@ -348,11 +348,11 @@ class KernelWrapper implements sqlops.nb.IKernel {
 	requestExecute(content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): sqlops.nb.IFuture {
 		let future = new FutureWrapper(this._proxy);
 		this._proxy.ext.$requestExecute(this.kernelDetails.kernelId, content, disposeOnDone)
-		.then(details => {
-			future.setDetails(details);
-			// Save the future in the main thread notebook so extension can call through and reference it
-			this._proxy.main.addFuture(details.futureId, future);
-		}, error => future.setError(error));
+			.then(details => {
+				future.setDetails(details);
+				// Save the future in the main thread notebook so extension can call through and reference it
+				this._proxy.main.addFuture(details.futureId, future);
+			}, error => future.setError(error));
 		return future;
 	}
 
@@ -370,7 +370,7 @@ class FutureWrapper implements FutureInternal {
 	private _inProgress: boolean;
 
 	constructor(private _proxy: Proxies) {
-        this._inProgress = true;
+		this._inProgress = true;
 	}
 
 	public setDetails(details: INotebookFutureDetails): void {

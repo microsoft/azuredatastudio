@@ -14,26 +14,26 @@ export class JobManagementUtilities {
 	public static jobMessageLength: number = 110;
 
 	public static convertToStatusString(status: number): string {
-		switch(status) {
-			case(0): return nls.localize('agentUtilities.failed','Failed');
-			case(1): return nls.localize('agentUtilities.succeeded', 'Succeeded');
-			case(2): return nls.localize('agentUtilities.retry', 'Retry');
-			case(3): return nls.localize('agentUtilities.canceled', 'Cancelled');
-			case(4): return nls.localize('agentUtilities.inProgress', 'In Progress');
-			case(5): return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
+		switch (status) {
+			case (0): return nls.localize('agentUtilities.failed', 'Failed');
+			case (1): return nls.localize('agentUtilities.succeeded', 'Succeeded');
+			case (2): return nls.localize('agentUtilities.retry', 'Retry');
+			case (3): return nls.localize('agentUtilities.canceled', 'Cancelled');
+			case (4): return nls.localize('agentUtilities.inProgress', 'In Progress');
+			case (5): return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
 			default: return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
 		}
 	}
 
 	public static convertToExecutionStatusString(status: number): string {
-		switch(status) {
-			case(1): return nls.localize('agentUtilities.executing', 'Executing');
-			case(2): return nls.localize('agentUtilities.waitingForThread', 'Waiting for Thread');
-			case(3): return nls.localize('agentUtilities.betweenRetries', 'Between Retries');
-			case(4): return nls.localize('agentUtilities.idle', 'Idle');
-			case(5): return nls.localize('agentUtilities.suspended', 'Suspended');
-			case(6): return nls.localize('agentUtilities.obsolete', '[Obsolete]');
-			case(7): return 'PerformingCompletionActions';
+		switch (status) {
+			case (1): return nls.localize('agentUtilities.executing', 'Executing');
+			case (2): return nls.localize('agentUtilities.waitingForThread', 'Waiting for Thread');
+			case (3): return nls.localize('agentUtilities.betweenRetries', 'Between Retries');
+			case (4): return nls.localize('agentUtilities.idle', 'Idle');
+			case (5): return nls.localize('agentUtilities.suspended', 'Suspended');
+			case (6): return nls.localize('agentUtilities.obsolete', '[Obsolete]');
+			case (7): return 'PerformingCompletionActions';
 			default: return nls.localize('agentUtilities.statusUnknown', 'Status Unknown');
 		}
 	}
@@ -68,26 +68,26 @@ export class JobManagementUtilities {
 		this.setRunnable(startIcon, JobManagementUtilities.startIconClass.length);
 		this.setRunnable(stopIcon, JobManagementUtilities.stopIconClass.length);
 		switch (executionStatus) {
-			case(1): // executing
+			case (1): // executing
 				startIcon.className += ' non-runnable';
 				return;
-			case(2): // Waiting for thread
+			case (2): // Waiting for thread
 				startIcon.className += ' non-runnable';
 				return;
-			case(3): // Between retries
+			case (3): // Between retries
 				startIcon.className += ' non-runnable';
 				return;
-			case(4): //Idle
+			case (4): //Idle
 				stopIcon.className += ' non-runnable';
 				return;
-			case(5): // Suspended
+			case (5): // Suspended
 				stopIcon.className += ' non-runnable';
 				return;
-			case(6): //obsolete
+			case (6): //obsolete
 				startIcon.className += ' non-runnable';
 				stopIcon.className += ' non-runnable';
 				return;
-			case(7): //Performing Completion Actions
+			case (7): //Performing Completion Actions
 				startIcon.className += ' non-runnable';
 				return;
 			default:
@@ -102,48 +102,48 @@ export class JobManagementUtilities {
 	}
 
 	public static convertColFieldToName(colField: string) {
-		switch(colField) {
-			case('name'):
+		switch (colField) {
+			case ('name'):
 				return 'Name';
-			case('lastRun'):
+			case ('lastRun'):
 				return 'Last Run';
-			case('nextRun'):
+			case ('nextRun'):
 				return 'Next Run';
-			case('enabled'):
+			case ('enabled'):
 				return 'Enabled';
-			case('status'):
+			case ('status'):
 				return 'Status';
-			case('category'):
+			case ('category'):
 				return 'Category';
-			case('runnable'):
+			case ('runnable'):
 				return 'Runnable';
-			case('schedule'):
+			case ('schedule'):
 				return 'Schedule';
-			case('lastRunOutcome'):
+			case ('lastRunOutcome'):
 				return 'Last Run Outcome';
 		}
 		return '';
 	}
 
 	public static convertColNameToField(columnName: string) {
-		switch(columnName) {
-			case('Name'):
+		switch (columnName) {
+			case ('Name'):
 				return 'name';
-			case('Last Run'):
+			case ('Last Run'):
 				return 'lastRun';
-			case('Next Run'):
+			case ('Next Run'):
 				return 'nextRun';
-			case('Enabled'):
+			case ('Enabled'):
 				return 'enabled';
-			case('Status'):
+			case ('Status'):
 				return 'status';
-			case('Category'):
+			case ('Category'):
 				return 'category';
-			case('Runnable'):
+			case ('Runnable'):
 				return 'runnable';
-			case('Schedule'):
+			case ('Schedule'):
 				return 'schedule';
-			case('Last Run Outcome'):
+			case ('Last Run Outcome'):
 				return 'lastRunOutcome';
 		}
 		return '';

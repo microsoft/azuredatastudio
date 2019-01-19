@@ -84,7 +84,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._didTabChange = false;
@@ -100,7 +100,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		}
 	}
 
-	ngOnInit(){
+	ngOnInit() {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
@@ -148,7 +148,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
+		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
 		this._register(this._table.onContextMenu(e => {
 			self.openContextMenu(e);

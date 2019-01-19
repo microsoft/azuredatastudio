@@ -80,7 +80,7 @@ export class NotebookInputModel extends EditorModel {
 
 export class NotebookInputValidator {
 
-	constructor(@IContextKeyService private readonly _contextKeyService: IContextKeyService) {}
+	constructor( @IContextKeyService private readonly _contextKeyService: IContextKeyService) { }
 
 	public isNotebookEnabled(): boolean {
 		return this._contextKeyService.contextMatchesRules(notebooksEnabledCondition);
@@ -202,14 +202,12 @@ export class NotebookInput extends EditorInput {
 	save(): TPromise<boolean> {
 		let activeEditor: INotebookEditor;
 		for (const editor of this.notebookService.listNotebookEditors()) {
-			if(editor.isActive())
-			{
+			if (editor.isActive()) {
 				activeEditor = editor;
 			}
 		}
-		if(activeEditor)
-		{
-			return TPromise.wrap(activeEditor.save().then((val) => {return val;}));
+		if (activeEditor) {
+			return TPromise.wrap(activeEditor.save().then((val) => { return val; }));
 		}
 		return TPromise.wrap(false);
 	}

@@ -107,7 +107,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
@@ -592,7 +592,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		await Promise.all(jobs.map(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
+			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async (result) => {
 				if (result) {
 					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
 					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
