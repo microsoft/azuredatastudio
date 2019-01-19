@@ -1,8 +1,15 @@
+
+
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-/// <reference path='../../../../src/sql/sqlops.d.ts'/>
-/// <reference path='../../../../src/sql/sqlops.proposed.d.ts'/>
-/// <reference path='../../../../src/vs/vscode.d.ts'/>
+'use strict';
+
+import * as constants from './constants';
+
+export abstract class ProviderBase {
+    public readonly providerId: string = constants.hadoopKnoxProviderName;
+    public handle: number;
+}

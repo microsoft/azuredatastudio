@@ -82,4 +82,8 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 	public $getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this._objectExplorerService.getNodeActions(connectionId, nodePath);
 	}
+	
+	public $getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+		return Promise.resolve(this._objectExplorerService.getSessionConnectionProfile(sessionId));
+	}
 }

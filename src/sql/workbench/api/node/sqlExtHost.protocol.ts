@@ -501,6 +501,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerQueryProvider(providerId: string, handle: number): TPromise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): TPromise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any>;
+	$registerObjectExplorerNodeProvider(providerId: string, handle: number): TPromise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): TPromise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
@@ -542,6 +543,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+	$getServerInfo(connectedId: string): Thenable<sqlops.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
@@ -711,6 +713,7 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 	$refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
 	$getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
+	$getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile>;
 }
 
 export interface ExtHostModelViewDialogShape {

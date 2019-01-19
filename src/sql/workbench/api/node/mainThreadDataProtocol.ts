@@ -231,6 +231,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any> {
 		const self = this;
 		this._objectExplorerService.registerProvider(providerId, <sqlops.ObjectExplorerProvider>{
+			providerId: providerId,
 			createNewSession(connection: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> {
 				return self._proxy.$createObjectExplorerSession(handle, connection);
 			},
@@ -246,6 +247,29 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
 				return self._proxy.$findNodes(handle, findNodesInfo);
 			}
+		});
+
+		return undefined;
+	}
+
+	public $registerObjectExplorerNodeProvider(providerId: string, handle: number): TPromise<any> {
+		const self = this;
+		this._objectExplorerService.registerNodeProvider(<sqlops.ObjectExplorerNodeProvider> {
+			supportedProviderId: providerId,
+			providerId: 'DataServices',
+			groupingId: 2,
+			expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+				return self._proxy.$expandObjectExplorerNode(handle, nodeInfo);
+			},
+			refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+				return self._proxy.$refreshObjectExplorerNode(handle, nodeInfo);
+			},
+			findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+				return self._proxy.$findNodes(handle, findNodesInfo);
+			},
+			closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+				return self._proxy.$closeObjectExplorerSession(handle, closeSessionInfo);
+			},
 		});
 
 		return undefined;

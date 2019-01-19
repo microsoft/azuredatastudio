@@ -34,6 +34,10 @@ export class ExtHostObjectExplorer implements ExtHostObjectExplorerShape {
 	public $getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this._proxy.$getNodeActions(connectionId, nodePath);
 	}
+
+	public $getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+		return this._proxy.$getSessionConnectionProfile(sessionId);
+	}
 }
 
 class ExtHostObjectExplorerNode implements sqlops.objectexplorer.ObjectExplorerNode {

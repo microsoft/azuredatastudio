@@ -254,6 +254,11 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
+	getConnectionServerInfo(profileId: string): sqlops.ServerInfo {
+		return undefined;
+	}
+
+
 	getConnectionString(connectionId: string): Thenable<string> {
 		return undefined;
 	}

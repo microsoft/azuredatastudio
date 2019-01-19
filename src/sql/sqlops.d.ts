@@ -21,6 +21,8 @@ declare module 'sqlops' {
 
 		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
 
+		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
+
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
@@ -102,6 +104,13 @@ declare module 'sqlops' {
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
 		/**
+		 * Get the credentials for an active connection
+		 * @param {string} connectionId The id of the connection
+		 * @returns ServerInfo
+		 */
+		export function getServerInfo(connectionId: string): Thenable<ServerInfo>;
+
+		/**
 		 * Interface for representing a connection when working with connection APIs
 		*/
 		export interface Connection extends ConnectionInfo {
@@ -149,6 +158,11 @@ declare module 'sqlops' {
 		 * (for example when searching for a table's column, provide the name of its parent table for this argument)
 		 */
 		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
+
+		/**
+		 * Get connectionProfile from sessionId
+		 */
+		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
 
 		/**
 		 * Interface for representing and interacting with items in Object Explorer
@@ -347,6 +361,21 @@ declare module 'sqlops' {
 		 * The Operating System version string of the machine running the instance.
 		 */
 		osVersion: string;
+		/**
+		 * options for all new server properties.
+		 */
+		options: ServerInfoOption;
+	}
+
+	export interface ServerInfoOption {
+		isBigDataCluster: boolean;
+		clusterEndpoints: ClusterEndpoint[];
+	}
+
+	export interface ClusterEndpoint {
+		serviceName: string;
+		ipAddress: string;
+		port: number;
 	}
 
 	export interface DataProvider {
@@ -1164,7 +1193,7 @@ declare module 'sqlops' {
 	}
 
 	export interface ObjectExplorerProvider extends DataProvider {
-		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
+		createNewSession?(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
 
 		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
@@ -1174,12 +1203,21 @@ declare module 'sqlops' {
 
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
 
-		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
+		registerOnSessionCreated?(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
+
+	export interface ObjectExplorerNodeProvider extends ObjectExplorerProvider {
+		/**
+		 * The providerId for whichever type of ObjectExplorer connection this can add folders and objects to
+		 */
+		readonly supportedProviderId: string;
+
+		readonly groupingId?: number;
+		}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {
