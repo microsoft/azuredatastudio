@@ -103,12 +103,12 @@ export interface NodeInfoWithConnection {
 	nodeInfo: sqlops.NodeInfo;
 }
 
-export interface TopLevelExpander {
+export interface TopLevelChildrenPath {
 	providerId: string;
 	supportedProviderId: string;
 	groupingId: number;
 	path: string[];
-	expanderObject: sqlops.ObjectExplorerNodeProvider | sqlops.ObjectExplorerProvider;
+	providerObject: sqlops.ObjectExplorerNodeProvider | sqlops.ObjectExplorerProvider;
 }
 
 export class ObjectExplorerService implements IObjectExplorerService {
@@ -119,9 +119,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
 
-	private _expanders: { [handle: string]: sqlops.ObjectExplorerNodeProvider[]; } = Object.create(null);
+	private _nodeProviders: { [handle: string]: sqlops.ObjectExplorerNodeProvider[]; } = Object.create(null);
 
-	private _topLevelChildrenPath: TopLevelExpander[] = Object.create(null);
+	private _topLevelChildrenPath: TopLevelChildrenPath[] = Object.create(null);
 
 	private _activeObjectExplorerNodes: { [id: string]: TreeNode };
 
@@ -142,7 +142,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
-		this._expanders = {};
+		this._nodeProviders = {};
 		this._topLevelChildrenPath = [];
 
 		this._onSelectionOrFocusChange = new Emitter<void>();
@@ -183,6 +183,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 * Gets called when expanded node response is ready
 	 */
 	public onNodeExpanded(handle: number, expandResponse: sqlops.ObjectExplorerExpandInfo) {
+
 		if (expandResponse.errorMessage) {
 			error(expandResponse.errorMessage);
 		}
@@ -226,7 +227,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		this.sendUpdateNodeEvent(connection, errorMessage);
 	}
-
 
 	/**
 	 * Gets called when session is disconnected
@@ -319,16 +319,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							if (result) {
 								let pathes: string[] = [];
 								result.nodes.forEach(node => pathes.push(node.nodePath));
-								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, groupingId: 0, path: pathes, expanderObject: provider });
+								this._topLevelChildrenPath.push({ providerId: provider.providerId, supportedProviderId: provider.providerId, groupingId: 0, path: pathes, providerObject: provider });
 
-								let expanders = this._expanders[providerId].sort(expander => expander.groupingId);
-								if (expanders) {
-									for (let expander of expanders) {
-										this.expandOrRefreshNode(expander, session, nodePath).then(result2 => {
+								let nodeProviders = this._nodeProviders[providerId].sort(nodeProvider => nodeProvider.groupingId);
+								if (nodeProviders) {
+									for (let nodeProvider of nodeProviders) {
+										this.expandOrRefreshNode(nodeProvider, session, nodePath).then(result2 => {
 											if (result2) {
 												let pathes: string[] = [];
 												result2.nodes.forEach(node => pathes.push(node.nodePath));
-												this._topLevelChildrenPath.push({ providerId: expander.providerId, supportedProviderId: expander.supportedProviderId, groupingId: expander.groupingId, path: pathes, expanderObject: expander });
+												this._topLevelChildrenPath.push({ providerId: nodeProvider.providerId, supportedProviderId: nodeProvider.supportedProviderId, groupingId: nodeProvider.groupingId, path: pathes, providerObject: nodeProvider });
 												result.nodes = result.nodes.concat(result2.nodes);
 												resolve(result);
 											}
@@ -346,8 +346,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							for (let topLevelExpander of this._topLevelChildrenPath) {
 								if (topLevelExpander.supportedProviderId === providerId
 									&& topLevelExpander.path.some(p => nodePath.indexOf(p) >= 0)
-									&& topLevelExpander.expanderObject) {
-									this.expandOrRefreshNode(topLevelExpander.expanderObject, session, nodePath).then(result => {
+									&& topLevelExpander.providerObject) {
+									this.expandOrRefreshNode(topLevelExpander.providerObject, session, nodePath).then(result => {
 										resolve(result);
 									}, error => {
 										reject(error);
@@ -443,9 +443,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			provider.closeSession({
 				sessionId: session ? session.sessionId : undefined
 			}).then(() => {
-				let expanders = this._expanders[providerId];
-				for (let expander of expanders) {
-					expander.closeSession({
+				let nodeProviders = this._nodeProviders[providerId];
+				for (let nodeProvider of nodeProviders) {
+					nodeProvider.closeSession({
 						sessionId: session ? session.sessionId : undefined
 					});
 				}
@@ -462,10 +462,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._providers[providerId] = provider;
 	}
 
-	public registerNodeProvider(expander: sqlops.ObjectExplorerNodeProvider): void {
-		let expanders = this._expanders[expander.supportedProviderId] || [];
-		expanders.push(expander);
-		this._expanders[expander.supportedProviderId] = expanders;
+	public registerNodeProvider(nodeProvider: sqlops.ObjectExplorerNodeProvider): void {
+		let nodeProviders = this._nodeProviders[nodeProvider.supportedProviderId] || [];
+		nodeProviders.push(nodeProvider);
+		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
 	}
 
 	public dispose(): void {

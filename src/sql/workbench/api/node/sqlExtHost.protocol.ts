@@ -120,8 +120,6 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$createObjectExplorerSession(handle: number, connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> { throw ni(); }
 
-	$createObjectExplorerNodeProviderSession(handle: number, session: sqlops.ObjectExplorerSession, connInfo: sqlops.ConnectionInfo, connectionProfileId: string): Thenable<sqlops.ObjectExplorerSessionResponse> { throw ni(); }
-
 	$expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }
 
 	$refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> { throw ni(); }

@@ -498,7 +498,7 @@ export function createApiFactory(
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				nb: nb,
-				AzureResource: sqlExtHostTypes.AzureResource,
+				AzureResource: sqlExtHostTypes.AzureResource
 			};
 		}
 	};

@@ -91,8 +91,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		credentialsStore.start();
 		resourceProvider.start();
 		let connectionProvider = new HadoopConnectionProvider();
-		let expander = new HadoopObjectExplorerNodeProvider(connectionProvider, new AppContext(context, new ApiWrapper()));
-		sqlops.dataprotocol.registerObjectExplorerNodeProvider(expander);
+		let nodeProvder = new HadoopObjectExplorerNodeProvider(connectionProvider, new AppContext(context, new ApiWrapper()));
+		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvder);
 		sqlops.dataprotocol.registerConnectionProvider(connectionProvider);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
