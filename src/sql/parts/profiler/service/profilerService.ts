@@ -21,6 +21,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { Scope as MementoScope, Memento } from 'vs/workbench/common/memento';
+import { ProfilerFilterDialog } from 'sql/parts/profiler/dialog/profilerFilterDialog';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -232,5 +233,10 @@ export class ProfilerService implements IProfilerService {
 
 	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
 		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, input.providerType, this.getSessionTemplates());
+	}
+
+	public launchFilterSessionDialog(input: ProfilerInput): void {
+		let dialog = this._instantiationService.createInstance(ProfilerFilterDialog);
+		dialog.open(input);
 	}
 }

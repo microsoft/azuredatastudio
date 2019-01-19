@@ -549,6 +549,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Disconnect a profiler session
+	 */
+	public $disconnectSession(handle: number, sessionId: string): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ProfilerProvider>(handle).disconnectSession(sessionId);
+	}
+
+	/**
 	 * Get list of running XEvent sessions on the session's target server
 	 */
 	public $getXEventSessions(handle: number, sessionId: string): Thenable<string[]> {
