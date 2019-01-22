@@ -355,7 +355,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						if (stepData.jobId) {
 							agentService.deleteJobStep(this.ownerUri, stepData).then((result) => {
 								if (result && result.success) {
-									this.steps.splice(rowNumber, 1)
+									this.steps.splice(rowNumber, 1);
 									let data = this.convertStepsToData(this.steps);
 									this.stepsTable.data = data;
 									this.startStepDropdownValues = [];
@@ -366,7 +366,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 								}
 							});
 						} else {
-							this.steps.splice(rowNumber, 1)
+							this.steps.splice(rowNumber, 1);
 							let data = this.convertStepsToData(this.steps);
 							this.stepsTable.data = data;
 							this.startStepDropdownValues = [];

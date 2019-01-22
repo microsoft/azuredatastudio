@@ -7,6 +7,7 @@ import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
@@ -201,9 +202,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
 				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
-				self._stepRows[0].stepId = 'Step ID';
-				self._stepRows[0].stepName = 'Step Name';
-				self._stepRows[0].message = 'Message';
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID','Step ID');
+				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
+				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
 				this._showSteps = self._stepRows.length > 1;
 			} else {
 				self._showSteps = false;
