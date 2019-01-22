@@ -368,7 +368,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 		const self = this;
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
-			let nameWidth: number = data.grid.getColumnWidths()[1];
+			let nameWidth: number = data.grid.getColumns()[1].width;
 			// adjust job name when resized
 			$('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
 			// adjust error message when resized
@@ -377,8 +377,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			// generate job charts again
 			self.jobs.forEach(job => {
 				let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-				let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
-				self.createJobChart(job.jobId, previousRuns);
+				if (jobHistories) {
+					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+					self.createJobChart(job.jobId, previousRuns);
+				}
 			});
 		});
 
