@@ -143,9 +143,9 @@ export class SparkMagicContexts {
 			}
 		}
 		if (specs && connectionInfo) {
-			// set default kernel to default spark kernel if profile exists
+			// set default kernel to default kernel not saved previously
 			// otherwise, set default to kernel info loaded from existing file
-			defaultKernel = !foundSavedKernelInSpecs ? specs.kernels.find((spec) => spec.name === notebookConstants.SQL) : foundSavedKernelInSpecs;
+			defaultKernel = !foundSavedKernelInSpecs ? defaultKernel : foundSavedKernelInSpecs;
 		}
 
 		// If no default kernel specified (should never happen), default to SQL
