@@ -190,6 +190,7 @@ export default class QueryRunner extends Disposable {
 		this._hasCompleted = false;
 		this._queryStartTime = undefined;
 		this._queryEndTime = undefined;
+		this._messages = [];
 		if (types.isObject(input) || types.isUndefinedOrNull(input)) {
 			// Update internal state to show that we're executing the query
 			this._resultLineOffset = input ? input.startLine : 0;

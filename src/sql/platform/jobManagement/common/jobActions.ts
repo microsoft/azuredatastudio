@@ -19,16 +19,21 @@ import { ProxiesViewComponent } from 'sql/parts/jobManagement/views/proxiesView.
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+
+export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
+export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
 
 export enum JobActions {
 	Run = 'run',
 	Stop = 'stop'
 }
 
-export interface IJobActionInfo {
+export class IJobActionInfo {
 	ownerUri: string;
 	targetObject: any;
 	jobHistoryComponent?: JobHistoryComponent;
+	jobViewComponent?: JobsViewComponent;
 }
 
 // Job actions
@@ -42,10 +47,10 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public run(context: JobsViewComponent | JobHistoryComponent): TPromise<boolean> {
+	public run(context: IJobActionInfo): TPromise<boolean> {
 		return new TPromise<boolean>((resolve, reject) => {
 			if (context) {
-				context.refreshJobs();
+				context.jobHistoryComponent.refreshJobs();
 				resolve(true);
 			} else {
 				reject(false);
@@ -81,33 +86,28 @@ export class RunJobAction extends Action {
 
 	constructor(
 		@INotificationService private notificationService: INotificationService,
+		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private telemetryService: ITelemetryService
 	) {
-		super(RunJobAction.ID, RunJobAction.LABEL, 'runJobIcon');
+		super(RunJobAction.ID, RunJobAction.LABEL, 'start');
 	}
 
-	public run(context: JobHistoryComponent): TPromise<boolean> {
-		let jobName = context.agentJobInfo.name;
+	public run(context: IJobActionInfo): TPromise<boolean> {
+		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.RunAgentJob);
 		return new TPromise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(result => {
 				if (result.success) {
-					refreshAction.run(context);
 					var startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
-					this.notificationService.notify({
-						severity: Severity.Info,
-						message: jobName + startMsg
-					});
+					this.notificationService.info(jobName+startMsg);
+					refreshAction.run(context);
 					resolve(true);
 				} else {
-					this.notificationService.notify({
-						severity: Severity.Error,
-						message: result.errorMessage
-					});
+					this.errorMessageService.showDialog(Severity.Error, errorLabel, result.errorMessage);
 					resolve(false);
 				}
 			});
@@ -121,15 +121,16 @@ export class StopJobAction extends Action {
 
 	constructor(
 		@INotificationService private notificationService: INotificationService,
+		@IErrorMessageService private errorMessageService: IErrorMessageService,
 		@IJobManagementService private jobManagementService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private telemetryService: ITelemetryService
 	) {
-		super(StopJobAction.ID, StopJobAction.LABEL, 'stopJobIcon');
+		super(StopJobAction.ID, StopJobAction.LABEL, 'stop');
 	}
 
-	public run(context: JobHistoryComponent): TPromise<boolean> {
-		let jobName = context.agentJobInfo.name;
+	public run(context: IJobActionInfo): TPromise<boolean> {
+		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this.telemetryService.publicLog(TelemetryKeys.StopAgentJob);
@@ -138,16 +139,10 @@ export class StopJobAction extends Action {
 				if (result.success) {
 					refreshAction.run(context);
 					var stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
-					this.notificationService.notify({
-						severity: Severity.Info,
-						message: jobName + stopMsg
-					});
+					this.notificationService.info(jobName+stopMsg);
 					resolve(true);
 				} else {
-					this.notificationService.notify({
-						severity: Severity.Error,
-						message: result.errorMessage
-					});
+					this.errorMessageService.showDialog(Severity.Error, 'Error', result.errorMessage);
 					resolve(false);
 				}
 			});
@@ -162,7 +157,7 @@ export class EditJobAction extends Action {
 	constructor(
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(EditJobAction.ID, EditJobAction.LABEL);
+		super(EditJobAction.ID, EditJobAction.LABEL, 'edit');
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
@@ -180,6 +175,7 @@ export class DeleteJobAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
@@ -200,7 +196,10 @@ export class DeleteJobAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._notificationService.error(errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+						} else {
+							let successMessage = nls.localize('jobaction.deletedJob', 'The job was successfully deleted');
+							self._notificationService.info(successMessage);
 						}
 					});
 				}
@@ -241,6 +240,7 @@ export class DeleteStepAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private _telemetryService: ITelemetryService
@@ -261,11 +261,13 @@ export class DeleteStepAction extends Action {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJobStep);
 					self._jobService.deleteJobStep(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
-							let errorMessage = nls.localize("jobaction.failedToDeleteStep", "Could not delete step '{0}'.\nError: {1}",
+							let errorMessage = nls.localize('jobaction.failedToDeleteStep', "Could not delete step '{0}'.\nError: {1}",
 								step.stepName, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._notificationService.error(errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+							refreshAction.run(actionInfo);
 						} else {
-							refreshAction.run(actionInfo.jobHistoryComponent);
+							let successMessage = nls.localize('jobaction.deletedStep', 'The job step was successfully deleted');
+							self._notificationService.info(successMessage);
 						}
 					});
 				}
@@ -328,6 +330,7 @@ export class DeleteAlertAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
@@ -348,7 +351,10 @@ export class DeleteAlertAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteAlert", "Could not delete alert '{0}'.\nError: {1}",
 								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._notificationService.error(errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+						} else {
+							let successMessage = nls.localize('jobaction.deletedAlert', 'The alert was successfully deleted');
+							self._notificationService.info(successMessage);
 						}
 					});
 				}
@@ -409,6 +415,7 @@ export class DeleteOperatorAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
@@ -416,7 +423,7 @@ export class DeleteOperatorAction extends Action {
 	}
 
 	public run(actionInfo: IJobActionInfo): TPromise<boolean> {
-		let self = this;
+		const self = this;
 		let operator = actionInfo.targetObject as sqlops.AgentOperatorInfo;
 		self._notificationService.prompt(
 			Severity.Info,
@@ -424,12 +431,15 @@ export class DeleteOperatorAction extends Action {
 			[{
 				label: DeleteOperatorAction.LABEL,
 				run: () => {
-					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentOperator);
+					self._telemetryService.publicLog(TelemetryKeys.DeleteAgentOperator);
 					self._jobService.deleteOperator(actionInfo.ownerUri, actionInfo.targetObject).then(result => {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteOperator", "Could not delete operator '{0}'.\nError: {1}",
 								operator.name, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._notificationService.error(errorMessage);
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+						} else {
+							let successMessage = nls.localize('joaction.deletedOperator', 'The operator was deleted successfully');
+							self._notificationService.info(successMessage);
 						}
 					});
 				}
@@ -491,6 +501,7 @@ export class DeleteProxyAction extends Action {
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
 		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
@@ -511,7 +522,10 @@ export class DeleteProxyAction extends Action {
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteProxy", "Could not delete proxy '{0}'.\nError: {1}",
 								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
-							self._notificationService.error(errorMessage);
+								self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+						} else {
+							let successMessage = nls.localize('jobaction.deletedProxy', 'The proxy was deleted successfully');
+							self._notificationService.info(successMessage);
 						}
 					});
 				}

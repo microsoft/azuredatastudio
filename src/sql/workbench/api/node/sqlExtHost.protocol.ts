@@ -357,6 +357,11 @@ export abstract class ExtHostDataProtocolShape {
 	$getXEventSessions(handle: number, sessionId: string): Thenable<string[]> { throw ni(); }
 
 	/**
+	 * Disconnect a profiler session
+	 */
+	$disconnectSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
+	/**
 	 * Get Agent Job list
 	 */
 	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> { throw ni(); }
@@ -541,6 +546,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
+	$connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -575,8 +581,8 @@ export const SqlMainContext = {
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
-	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors')
-
+	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
 };
 
 export const SqlExtHostContext = {
@@ -597,7 +603,8 @@ export const SqlExtHostContext = {
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
-	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors')
+	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -703,6 +710,7 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 	$refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
+	$getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 }
 
 export interface ExtHostModelViewDialogShape {
@@ -832,4 +840,12 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
+}
+
+export interface ExtHostExtensionManagementShape {
+	$install(vsixPath: string): Thenable<string>;
+}
+
+export interface MainThreadExtensionManagementShape extends IDisposable {
+	$install(vsixPath: string): Thenable<string>;
 }

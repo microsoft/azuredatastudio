@@ -15,6 +15,7 @@ import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { warn } from 'sql/base/common/log';
 
@@ -30,7 +31,8 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@IWorkspaceConfigurationService private _configurationService: IWorkspaceConfigurationService
 	) {
 		let profile = null;
 		if (this._environmentService) {
@@ -76,16 +78,16 @@ export class CommandLineService implements ICommandLineProcessing {
 
 		let self = this;
 		return new Promise<void>((resolve, reject) => {
-
-			if (!self._commandName && !self._connectionProfile && !self._connectionManagementService.hasRegisteredServers()) {
+			let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
+			if (showConnectDialogOnStartup && !self._commandName && !self._connectionProfile && !self._connectionManagementService.hasRegisteredServers()) {
 				// prompt the user for a new connection on startup if no profiles are registered
 				self._connectionManagementService.showConnectionDialog()
 					.then(() => {
 						resolve();
 					},
-					error => {
-						reject(error);
-					});
+						error => {
+							reject(error);
+						});
 			} else if (self._connectionProfile) {
 				if (!self._commandName) {
 					self._connectionManagementService.connectIfNotConnected(self._connectionProfile, 'connection', true)

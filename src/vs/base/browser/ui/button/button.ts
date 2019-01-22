@@ -151,6 +151,9 @@ export class Button extends Disposable {
 			this.$el.addClass('monaco-text-button');
 		}
 		this.$el.text(value);
+		//{{SQL CARBON EDIT}}
+		this.$el.attr('aria-label', value);
+		//{{END}}
 		if (this.options.title) {
 			this.$el.title(value);
 		}

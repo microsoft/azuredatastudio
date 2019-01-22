@@ -318,7 +318,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 				return TPromise.as(true);
 			},
 			disconnectSession(sessionId: string): Thenable<boolean> {
-				return TPromise.as(true);
+				return self._proxy.$disconnectSession(handle, sessionId);
 			}
 		});
 

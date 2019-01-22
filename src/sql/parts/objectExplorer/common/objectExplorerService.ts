@@ -77,6 +77,11 @@ export interface IObjectExplorerService {
 	getTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
 
 	refreshNodeInView(connectionId: string, nodePath: string): Thenable<TreeNode>;
+
+	/**
+	 * For Testing purpose only. Get the context menu actions for an object explorer node.
+	*/
+	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 }
 
 interface SessionStatus {
@@ -520,6 +525,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public getActiveConnectionNodes(): TreeNode[] {
 		return Object.values(this._activeObjectExplorerNodes);
+	}
+
+	/**
+	 * For Testing purpose only. Get the context menu actions for an object explorer node
+	*/
+	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
+		return this.getTreeNode(connectionId, nodePath).then(node => {
+			return this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node)).then((actions) => {
+				return actions.filter(action => action.label).map(action => action.label);
+			});
+		});
 	}
 
 	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> {

@@ -15,6 +15,9 @@ import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { generateUuid } from 'vs/base/common/uuid';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -28,6 +31,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _workbenchEditorService: IEditorService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostConnectionManagement);
@@ -100,5 +104,24 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			options: profile.options
 		};
 		return connection;
+	}
+
+	public $connect(connectionProfile: IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+		let profile = new ConnectionProfile(this._capabilitiesService, connectionProfile);
+		profile.id = generateUuid();
+		return this._connectionManagementService.connectAndSaveProfile(profile, undefined, {
+			saveTheConnection: true,
+			showDashboard: true,
+			params: undefined,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		}).then((result) => {
+			return <sqlops.ConnectionResult>{
+				connected: result.connected,
+				connectionId: result.connected ? profile.id : undefined,
+				errorCode: result.errorCode,
+				errorMessage: result.errorMessage
+			};
+		});
 	}
 }

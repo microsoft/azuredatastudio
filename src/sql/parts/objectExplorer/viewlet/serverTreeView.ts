@@ -31,6 +31,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 
 const $ = builder.$;
 
@@ -46,7 +47,7 @@ export class ServerTreeView {
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
 	private _onSelectionOrFocusChange: Emitter<void>;
-
+	private _actionProvider: ServerTreeActionProvider;
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -62,6 +63,7 @@ export class ServerTreeView {
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
+		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
 	}
 
 	/**
@@ -76,6 +78,14 @@ export class ServerTreeView {
 	 */
 	public get onSelectionOrFocusChange(): Event<void> {
 		return this._onSelectionOrFocusChange.event;
+	}
+
+	public get treeActionProvider(): ServerTreeActionProvider {
+		return this._actionProvider;
+	}
+
+	public get tree(): ITree {
+		return this._tree;
 	}
 
 	/**
@@ -97,7 +107,6 @@ export class ServerTreeView {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-
 		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
 		//this._tree.setInput(undefined);
 		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
