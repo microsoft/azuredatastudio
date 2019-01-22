@@ -50,11 +50,12 @@ export class JobHistoryController extends TreeDefaults.DefaultController {
 		} else if (event.code === 'ArrowUp' || event.keyCode === 38) {
 			super.onUp(tree, event);
 			return super.onEnter(tree, event);
-		} else {
+		} else if (event.code !== 'Tab' && event.keyCode !== 2) {
 			event.preventDefault();
 			event.stopPropagation();
 			return true;
 		}
+		return false;
 	}
 }
 
@@ -95,6 +96,10 @@ export class JobHistoryDataSource implements tree.IDataSource {
 
 	public set data(data: JobHistoryRow[]) {
 		this._data = data;
+	}
+
+	public getFirstElement() {
+		return this._data[0];
 	}
 }
 
