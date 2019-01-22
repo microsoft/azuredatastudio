@@ -15,6 +15,7 @@ import * as resources from 'vs/base/common/resources';
 import * as sqlops from 'sqlops';
 
 import { INotebookService } from 'sql/services/notebook/notebookService';
+import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -25,7 +26,7 @@ export class NotebookInputModel extends EditorModel {
 	private dirty: boolean;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _providerId: string;
-	private _standardKernels: sqlops.nb.IStandardKernel[];
+	private _standardKernels: IStandardKernelWithProvider[];
 	private _defaultKernel: sqlops.nb.IKernelSpec;
 	constructor(public readonly notebookUri: URI, private readonly handle: number, private _isTrusted: boolean = false, private saveHandler?: ModeViewSaveHandler, provider?: string, private _providers?: string[]) {
 		super();
@@ -50,13 +51,17 @@ export class NotebookInputModel extends EditorModel {
 		this._providers = value;
 	}
 
-	public get standardKernels(): sqlops.nb.IStandardKernel[] {
+	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
 
-	public set standardKernels(value: sqlops.nb.IStandardKernel[]) {
+	public set standardKernels(value: IStandardKernelWithProvider[]) {
 		value.forEach(kernel => {
-			this._standardKernels.push(kernel);
+			this._standardKernels.push({
+				connectionProviderIds: kernel.connectionProviderIds,
+				name: kernel.name,
+				notebookProvider: kernel.notebookProvider
+			});
 		});
 	}
 
@@ -134,7 +139,7 @@ export class NotebookInput extends EditorInput {
 		return this._model.providers;
 	}
 
-	public get standardKernels(): sqlops.nb.IStandardKernel[] {
+	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._model.standardKernels;
 	}
 

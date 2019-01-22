@@ -103,17 +103,22 @@ export class SparkMagicContexts {
 			});
 			if (connections && connections.length > 0) {
 				defaultConnection = connections[0];
+				if (profile && profile.options) {
+					if (connections.find(connection => connection.serverName === profile.serverName)) {
+						defaultConnection = connections.find(connection => connection.serverName === profile.serverName);
+					}
+				}
 			}
 			activeConnections = [];
 			connections.forEach(connection => activeConnections.push(connection));
 		}
 		if (defaultConnection === SparkMagicContexts.DefaultContext.defaultConnection) {
-			defaultConnection = <IConnectionProfile><any>{
+			let newConnection = <IConnectionProfile><any>{
 				providerName: 'SQL',
 				id: '-2',
 				serverName: localize('addConnection', 'Add new connection')
 			};
-			activeConnections.push(defaultConnection);
+			activeConnections.push(newConnection);
 		}
 
 		return {
@@ -141,13 +146,6 @@ export class SparkMagicContexts {
 			// set default kernel to default spark kernel if profile exists
 			// otherwise, set default to kernel info loaded from existing file
 			defaultKernel = !foundSavedKernelInSpecs ? specs.kernels.find((spec) => spec.name === notebookConstants.SQL) : foundSavedKernelInSpecs;
-		} else {
-			// Handle kernels
-			// This needs to check if there's a valid connection provider associated with the notebook provider; if there is one and no connections
-			// then we should show the message
-			if (savedKernelInfo && savedKernelInfo.name.toLowerCase().indexOf('spark') > -1) {
-				notificationService.warn(localize('kernelRequiresConnection', 'Cannot use kernel {0} as no connection is active. The default kernel of {1} will be used instead.', savedKernelInfo.display_name, defaultKernel.display_name));
-			}
 		}
 
 		// If no default kernel specified (should never happen), default to SQL

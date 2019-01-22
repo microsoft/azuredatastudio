@@ -62,6 +62,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _providerId: string;
 	private _defaultKernel: nb.IKernelSpec;
 	private _kernelDisplayNameToConnectionProviderIds: Map<string, string[]> = new Map<string, string[]>();
+	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -75,6 +76,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._providerId = notebookOptions.providerId;
 		this.notebookOptions.standardKernels.forEach(kernel => {
 			this._kernelDisplayNameToConnectionProviderIds.set(kernel.name, kernel.connectionProviderIds);
+			this._kernelDisplayNameToNotebookProviderIds.set(kernel.name, kernel.notebookProvider);
 		});
 		this._defaultKernel = notebookOptions.defaultKernel;
 	}
@@ -232,6 +234,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (contents) {
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
+				this.setProviderIdForKernel(this._savedKernelInfo);
+				if (this._savedKernelInfo) {
+					this._defaultKernel = this._savedKernelInfo;
+				}
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
 				}
@@ -388,19 +394,22 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
-		this.findProviderIdForKernel(kernelSpec);
-		return this._activeClientSession.changeKernel(kernelSpec)
-			.then((kernel) => {
-				this.updateKernelInfo(kernel);
-				kernel.ready.then(() => {
-					if (kernel.info) {
-						this.updateLanguageInfo(kernel.info.language_info);
-					}
-				}, err => undefined);
-			}).catch((err) => {
-				this.notifyError(localize('changeKernelFailed', 'Failed to change kernel: {0}', notebookUtils.getErrorMessage(err)));
-				// TODO should revert kernels dropdown
-			});
+		this.setProviderIdForKernel(kernelSpec);
+		if (this._activeClientSession && this._activeClientSession.isReady) {
+			return this._activeClientSession.changeKernel(kernelSpec)
+				.then((kernel) => {
+					this.updateKernelInfo(kernel);
+					kernel.ready.then(() => {
+						if (kernel.info) {
+							this.updateLanguageInfo(kernel.info.language_info);
+						}
+					}, err => undefined);
+				}).catch((err) => {
+					this.notifyError(localize('changeKernelFailed', 'Failed to change kernel: {0}', notebookUtils.getErrorMessage(err)));
+					// TODO should revert kernels dropdown
+				});
+		}
+		return Promise.resolve();
 	}
 
 	public changeContext(server: string, newConnection?: IConnectionProfile): void {
@@ -512,6 +521,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async handleClosed(): Promise<void> {
 		try {
 			if (this._activeClientSession) {
+				await this._activeClientSession.ready;
 				await this._activeClientSession.shutdown();
 				this._clientSessions = undefined;
 				this._activeClientSession = undefined;
@@ -581,15 +591,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Set _providerId and _activeClientSession based on a kernelSpec representing new kernel
 	 * @param kernelSpec KernelSpec for new kernel
 	 */
-	private findProviderIdForKernel(kernelSpec: nb.IKernelSpec): void {
+	private setProviderIdForKernel(kernelSpec: nb.IKernelSpec): void {
+		let sessionManagerFound: boolean = false;
 		for (let i = 0; i < this.notebookManagers.length; i++) {
 			if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
 				let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
 				if (index >= 0) {
 					this._activeClientSession = this._clientSessions[i];
 					this._providerId = this.notebookManagers[i].providerId;
+					sessionManagerFound = true;
 					break;
 				}
+			}
+		}
+
+		// If no SessionManager exists, utilize passed in StandardKernels to see if we can intelligently set _providerId
+		if (!sessionManagerFound) {
+			let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
+			if (provider) {
+				this._providerId = provider;
 			}
 		}
 	}

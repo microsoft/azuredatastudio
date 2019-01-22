@@ -58,11 +58,25 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
-export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : nb.IStandardKernel[] {
-	return notebookService.getStandardKernelsForProvider(providerId);
+export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : IStandardKernelWithProvider[] {
+	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	standardKernels.forEach(kernel => {
+		Object.assign(<IStandardKernelWithProvider>kernel, {
+			name: kernel.name,
+			connectionProviderIds: kernel.connectionProviderIds,
+			notebookProvider: providerId
+		});
+	});
+	return <IStandardKernelWithProvider[]>(standardKernels);
 }
 
 // Private feature flag to enable Sql Notebook experience
 export function sqlNotebooksEnabled() {
 	return process.env['SQLOPS_SQL_NOTEBOOK'] !== undefined;
+}
+
+export interface IStandardKernelWithProvider {
+	readonly name: string;
+	readonly connectionProviderIds: string[];
+	readonly notebookProvider: string;
 }

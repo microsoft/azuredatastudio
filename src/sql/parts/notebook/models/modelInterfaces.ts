@@ -19,7 +19,7 @@ import { INotebookManager } from 'sql/services/notebook/notebookService';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -427,7 +427,7 @@ export interface INotebookModelOptions {
 
 	notebookManagers: INotebookManager[];
 	providerId: string;
-	standardKernels: nb.IStandardKernel[];
+	standardKernels: IStandardKernelWithProvider[];
 	defaultKernel: nb.IKernelSpec;
 
 	notificationService: INotificationService;
