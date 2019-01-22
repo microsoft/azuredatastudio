@@ -592,6 +592,8 @@ class GridTable<T> extends Disposable implements IView {
 
 		this.restoreScrollState();
 
+		this.rebuildActionBar();
+
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
 
