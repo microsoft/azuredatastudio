@@ -100,6 +100,14 @@ class MainThreadNotebookEditor extends Disposable {
 		// }
 		return true;
 	}
+
+	public runCell(cell: ICellModel): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+
+		return this.editor.runCell(cell);
+	}
 }
 
 function wait(timeMs: number): Promise<void> {
@@ -266,7 +274,6 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebookDocumentsAndEditors)
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
-
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
 	private _modelToDisposeMap = new Map<string, IDisposable>();
@@ -308,6 +315,22 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
 	}
+
+	$runCell(id: string, cellUri: UriComponents): TPromise<boolean, any> {
+		// Requires an editor and the matching cell in that editor
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
+		}
+		let uriString = URI.revive(cellUri).toString();
+		let cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+		if (!cell) {
+			return TPromise.wrapError<boolean>(disposed(`TextEditorCell(${uriString})`));
+		}
+
+		return TPromise.wrap(editor.runCell(cell));
+	}
+
 	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {

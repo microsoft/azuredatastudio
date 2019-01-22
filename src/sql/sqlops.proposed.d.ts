@@ -1557,6 +1557,15 @@ declare module 'sqlops' {
 			 * @return A promise that resolves with a value indicating if the edits could be applied.
 			 */
 			edit(callback: (editBuilder: NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean>;
+
+			/**
+			 * Kicks off execution of a cell. Thenable will resolve only once the full execution is completed.
+			 *
+			 *
+			 * @param cell A cell in this notebook which should be executed
+			 * @return A promise that resolves with a value indicating if the cell was run or not.
+			 */
+			runCell(cell: NotebookCell): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {

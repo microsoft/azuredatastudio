@@ -79,59 +79,59 @@ export class RunCellAction extends ToggleableAction {
 	}
 
 	public async runCellAction(context: CellContext): Promise<void> {
-        try {
+		try {
 			let model = context.model;
 			let cell = context.cell;
-            let kernel = await this.getOrStartKernel(model);
-            if (!kernel) {
-                return;
+			let kernel = await this.getOrStartKernel(model);
+			if (!kernel) {
+				return;
 			}
-            // If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
-            // This matches the same behavior as JupyterLab
-            if (cell.future && cell.future.inProgress) {
-                cell.future.inProgress = false;
-                await kernel.interrupt();
-            } else {
-                // TODO update source based on editor component contents
-                let content = cell.source;
-                if (content) {
-                    this.toggle(false);
-                    let future = await kernel.requestExecute({
-                        code: content,
-                        stop_on_error: true
-                    }, false);
-                    cell.setFuture(future as FutureInternal);
-                    // For now, await future completion. Later we should just track and handle cancellation based on model notifications
-                    let reply = await future.done;
-                }
-            }
-        } catch (error) {
-            let message = getErrorMessage(error);
-            this.notificationService.error(message);
-        } finally {
-            this.toggle(true);
+			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
+			// This matches the same behavior as JupyterLab
+			if (cell.future && cell.future.inProgress) {
+				cell.future.inProgress = false;
+				await kernel.interrupt();
+			} else {
+				// TODO update source based on editor component contents
+				let content = cell.source;
+				if (content) {
+					this.toggle(false);
+					let future = await kernel.requestExecute({
+						code: content,
+						stop_on_error: true
+					}, false);
+					cell.setFuture(future as FutureInternal);
+					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
+					let reply = await future.done;
+				}
+			}
+		} catch (error) {
+			let message = getErrorMessage(error);
+			this.notificationService.error(message);
+		} finally {
+			this.toggle(true);
 		}
-    }
+	}
 
-    private async getOrStartKernel(model: NotebookModel): Promise<nb.IKernel> {
-        let clientSession = model && model.clientSession;
-        if (!clientSession) {
-            this.notificationService.error(localize('notebookNotReady', 'The session for this notebook is not yet ready'));
-            return undefined;
-        } else if (!clientSession.isReady || clientSession.status === 'dead') {
-            this.notificationService.info(localize('sessionNotReady', 'The session for this notebook will start momentarily'));
-            await clientSession.kernelChangeCompleted;
-        }
-        if (!clientSession.kernel) {
-            let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
-            if (!defaultKernel) {
-                this.notificationService.error(localize('noDefaultKernel', 'No kernel is available for this notebook'));
-                return undefined;
-            }
-            await clientSession.changeKernel({
-                name: defaultKernel
-            });
-        }
-        return clientSession.kernel;
-    }
+	private async getOrStartKernel(model: NotebookModel): Promise<nb.IKernel> {
+		let clientSession = model && model.clientSession;
+		if (!clientSession) {
+			this.notificationService.error(localize('notebookNotReady', 'The session for this notebook is not yet ready'));
+			return undefined;
+		} else if (!clientSession.isReady || clientSession.status === 'dead') {
+			this.notificationService.info(localize('sessionNotReady', 'The session for this notebook will start momentarily'));
+			await clientSession.kernelChangeCompleted;
+		}
+		if (!clientSession.kernel) {
+			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
+			if (!defaultKernel) {
+				this.notificationService.error(localize('noDefaultKernel', 'No kernel is available for this notebook'));
+				return undefined;
+			}
+			await clientSession.changeKernel({
+				name: defaultKernel
+			});
+		}
+		return clientSession.kernel;
+	}
 }
