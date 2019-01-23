@@ -95,7 +95,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	public contextAction = NewJobAction;
 
 	private _didTabChange: boolean;
-	private _didDialogOpen: boolean;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -115,7 +114,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._didTabChange = false;
-		this._didDialogOpen = false;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -595,7 +593,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		for (let job of jobs) {
-			while (this._didDialogOpen){}
 			let result = await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name);
 			if (result) {
 				self.jobSteps[job.jobId] = result.steps ? result.steps : [];
@@ -952,10 +949,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	public openCreateJobDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._didDialogOpen = true;
-		this._commandService.executeCommand('agent.openJobDialog', ownerUri).then(() => {
-			this._didDialogOpen = false;
-		});
+		this._commandService.executeCommand('agent.openJobDialog', ownerUri);
 	}
 
 	public refreshJobs() {
