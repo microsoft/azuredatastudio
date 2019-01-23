@@ -105,7 +105,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			// use global connection if possible
 			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
-			// Hmm, not sure if we need to do filtering at this level or not
 			if (profile && profile.providerName) {
 				this.profile = profile;
 			} else {
