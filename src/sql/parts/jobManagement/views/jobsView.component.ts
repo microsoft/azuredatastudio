@@ -95,6 +95,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	public contextAction = NewJobAction;
 
 	private _didTabChange: boolean;
+	private _didDialogOpen: boolean;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -114,6 +115,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
 		this._didTabChange = false;
+		this._didDialogOpen = false;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -592,40 +594,40 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		await Promise.all(jobs.map(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
-				if (result) {
-					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
-					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
-					self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
-					self.jobHistories[job.jobId] = result.histories ? result.histories : [];
-					self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
-					self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
-					self._jobCacheObject.setJobAlerts(job.jobId, self.jobAlerts[job.jobId]);
-					self._jobCacheObject.setJobSchedules(job.jobId, self.jobSchedules[job.jobId]);
-					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-					let previousRuns: sqlops.AgentJobHistoryInfo[];
-					if (jobHistories.length >= 5) {
-						previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
-					} else {
-						previousRuns = jobHistories;
-					}
-					// dont create the charts if the tab changed
-					if (!self._didTabChange) {
-						self.createJobChart(job.jobId, previousRuns);
-					}
-					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let lastJobHistory = jobHistories[jobHistories.length - 1];
-						let item = self.dataView.getItemById(job.jobId + '.error');
-						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-						let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
-						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
-						self._agentViewComponent.setExpanded(job.jobId, item['name']);
-						self.dataView.updateItem(job.jobId + '.error', item);
-					}
+		for (let job of jobs) {
+			while (this._didDialogOpen){}
+			let result = await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name);
+			if (result) {
+				self.jobSteps[job.jobId] = result.steps ? result.steps : [];
+				self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
+				self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
+				self.jobHistories[job.jobId] = result.histories ? result.histories : [];
+				self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
+				self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
+				self._jobCacheObject.setJobAlerts(job.jobId, self.jobAlerts[job.jobId]);
+				self._jobCacheObject.setJobSchedules(job.jobId, self.jobSchedules[job.jobId]);
+				let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
+				let previousRuns: sqlops.AgentJobHistoryInfo[];
+				if (jobHistories.length >= 5) {
+					previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+				} else {
+					previousRuns = jobHistories;
 				}
-			});
-		}));
+				// dont create the charts if the tab changed
+				if (!self._didTabChange) {
+					self.createJobChart(job.jobId, previousRuns);
+				}
+				if (self._agentViewComponent.expanded.has(job.jobId)) {
+					let lastJobHistory = jobHistories[jobHistories.length - 1];
+					let item = self.dataView.getItemById(job.jobId + '.error');
+					let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
+					item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+					self._agentViewComponent.setExpanded(job.jobId, item['name']);
+					self.dataView.updateItem(job.jobId + '.error', item);
+				}
+			}
+		}
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
@@ -950,7 +952,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	public openCreateJobDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		this._commandService.executeCommand('agent.openJobDialog', ownerUri);
+		this._didDialogOpen = true;
+		this._commandService.executeCommand('agent.openJobDialog', ownerUri).then(() => {
+			this._didDialogOpen = false;
+		});
 	}
 
 	public refreshJobs() {
