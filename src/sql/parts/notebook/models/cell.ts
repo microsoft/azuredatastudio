@@ -20,8 +20,6 @@ let modelId = 0;
 
 
 export class CellModel implements ICellModel {
-	private static LanguageMapping: Map<string, string>;
-
 	private _cellType: nb.CellType;
 	private _source: string;
 	private _language: string;
@@ -37,7 +35,6 @@ export class CellModel implements ICellModel {
 
 	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
-		CellModel.CreateLanguageMappings();
 		if (cellData) {
 			// Read in contents if available
 			this.fromJSON(cellData);
@@ -321,18 +318,6 @@ export class CellModel implements ICellModel {
 	}
   }
 
-	private static CreateLanguageMappings(): void {
-		if (CellModel.LanguageMapping) {
-			return;
-		}
-		CellModel.LanguageMapping = new Map<string, string>();
-		CellModel.LanguageMapping['pyspark'] = 'python';
-		CellModel.LanguageMapping['pyspark3'] = 'python';
-		CellModel.LanguageMapping['python'] = 'python';
-		CellModel.LanguageMapping['scala'] = 'scala';
-		CellModel.LanguageMapping['sql'] = 'sql';
-	}
-
 	private get languageInfo(): nb.ILanguageInfo {
 		if (this._options && this._options.notebook && this._options.notebook.languageInfo) {
 			return this._options.notebook.languageInfo;
@@ -371,17 +356,15 @@ export class CellModel implements ICellModel {
 		// Otherwise, default to python as the language
 		let languageInfo = this.languageInfo;
 		if (languageInfo) {
-			if (languageInfo.name) {
-				// check the LanguageMapping to determine if a mapping is necessary (example 'pyspark' -> 'python')
-				if (CellModel.LanguageMapping[languageInfo.name]) {
-					this._language = CellModel.LanguageMapping[languageInfo.name];
+			if (languageInfo.codemirror_mode) {
+				let codeMirrorMode: nb.ICodeMirrorMode = <nb.ICodeMirrorMode>(languageInfo.codemirror_mode);
+				if (codeMirrorMode && codeMirrorMode.name) {
+					this._language = codeMirrorMode.name;
 				}
-				else {
-					this._language = languageInfo.name;
-				}
-			}
-			else if (languageInfo.mimetype) {
+			} else if (languageInfo.mimetype) {
 				this._language = languageInfo.mimetype;
+			} else if (languageInfo.name) {
+				this._language = languageInfo.name;
 			}
 		}
 

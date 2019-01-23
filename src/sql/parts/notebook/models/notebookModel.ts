@@ -17,7 +17,7 @@ import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contract
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
-import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts';
+import { NotebookContexts } from 'sql/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
@@ -456,7 +456,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let sessionManager = this.notebookManager.sessionManager;
 			if (sessionManager) {
 				if (!this._defaultKernel) {
-					this._defaultKernel = SparkMagicContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
+					this._defaultKernel = NotebookContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
 				}
 				this._clientSessions.forEach(clientSession => {
 					clientSession.statusChanged(async (session) => {
@@ -534,7 +534,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue.name);
-			this._activeContexts = await SparkMagicContexts.getContextsForKernel(this.notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
+			this._activeContexts = await NotebookContexts.getContextsForKernel(this.notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
 				this.changeContext(this.contexts.defaultConnection.serverName);

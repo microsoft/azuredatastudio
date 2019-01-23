@@ -13,7 +13,7 @@ import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sq
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
-export class SparkMagicContexts {
+export class NotebookContexts {
 
 	public static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: IConnectionProfile = <any>{
@@ -74,7 +74,7 @@ export class SparkMagicContexts {
 	 * @param profile current connection profile
 	 */
 	public static async getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
-		let defaultConnection: IConnectionProfile = SparkMagicContexts.DefaultContext.defaultConnection;
+		let defaultConnection: IConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
 		let activeConnections: IConnectionProfile[] = await connectionService.getActiveConnections();
 		// If no connections exist, only show 'n/a'
 		if (activeConnections && activeConnections.length > 0) {
@@ -82,9 +82,9 @@ export class SparkMagicContexts {
 		}
 		if (activeConnections.length === 0) {
 			if (connProviderIds.length === 0) {
-				return SparkMagicContexts.LocalContext;
+				return NotebookContexts.LocalContext;
 			}
-			return SparkMagicContexts.DefaultContext;
+			return NotebookContexts.DefaultContext;
 		}
 
 		// If launched from the right click or server dashboard, connection profile data exists, so use that as default
@@ -112,7 +112,7 @@ export class SparkMagicContexts {
 			activeConnections = [];
 			connections.forEach(connection => activeConnections.push(connection));
 		}
-		if (defaultConnection === SparkMagicContexts.DefaultContext.defaultConnection) {
+		if (defaultConnection === NotebookContexts.DefaultContext.defaultConnection) {
 			let newConnection = <IConnectionProfile><any>{
 				providerName: 'SQL',
 				id: '-2',
