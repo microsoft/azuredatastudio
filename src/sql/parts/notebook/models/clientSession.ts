@@ -47,7 +47,6 @@ export class ClientSession implements IClientSession {
 	private _session: nb.ISession;
 	private isServerStarted: boolean;
 	private notebookManager: INotebookManager;
-	private _connection: IConnectionProfile;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 
 	constructor(private options: IClientSessionOptions) {
@@ -58,9 +57,8 @@ export class ClientSession implements IClientSession {
 		this._kernelChangeCompleted = new Deferred<void>();
 	}
 
-	public async initialize(connection?: IConnectionProfile): Promise<void> {
+	public async initialize(): Promise<void> {
 		try {
-			this._connection = connection;
 			this._serverLoadFinished = this.startServer();
 			await this._serverLoadFinished;
 			await this.initializeSession();
@@ -253,7 +251,7 @@ export class ClientSession implements IClientSession {
 		return kernel;
 	}
 
-	async configureKernel(options: nb.IKernelSpec): Promise<void> {
+	public async configureKernel(options: nb.IKernelSpec): Promise<void> {
 		if (this._session) {
 			await this._session.configureKernel(options);
 		}

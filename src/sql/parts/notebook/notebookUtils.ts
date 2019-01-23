@@ -59,6 +59,9 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 }
 
 export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : IStandardKernelWithProvider[] {
+	if (!providerId || !notebookService) {
+		return [];
+	}
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
 	standardKernels.forEach(kernel => {
 		Object.assign(<IStandardKernelWithProvider>kernel, {

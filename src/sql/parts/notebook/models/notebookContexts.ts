@@ -14,10 +14,11 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 
 export class NotebookContexts {
+	private static MSSQL_PROVIDER = 'MSSQL';
 
-	public static get DefaultContext(): IDefaultConnection {
+	private static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: IConnectionProfile = <any>{
-			providerName: 'MSSQL',
+			providerName: NotebookContexts.MSSQL_PROVIDER,
 			id: '-1',
 			serverName: localize('selectConnection', 'Select connection')
 		};
@@ -29,9 +30,9 @@ export class NotebookContexts {
 		};
 	}
 
-	public static get LocalContext(): IDefaultConnection {
+	private static get LocalContext(): IDefaultConnection {
 		let localConnection: IConnectionProfile = <any>{
-			providerName: 'MSSQL',
+			providerName: NotebookContexts.MSSQL_PROVIDER,
 			id: '-1',
 			serverName: localize('localhost', 'Localhost')
 		};
@@ -58,10 +59,8 @@ export class NotebookContexts {
 				return connections;
 			}
 		}
-		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
-			if (connProviderIds !== []) {
-				connections = await this.getActiveContexts(connectionService, connProviderIds, profile);
-			}
+		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name && connProviderIds.length < 1) {
+			return connections;
 		} else {
 			connections = await this.getActiveContexts(connectionService, connProviderIds, profile);
 		}
@@ -134,18 +133,18 @@ export class NotebookContexts {
 	 * @param savedKernelInfo kernel info loaded from
 	 */
 	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo, notificationService: INotificationService): nb.IKernelSpec {
-		let foundSavedKernelInSpecs;
-		let defaultKernel;
+		let savedKernel: nb.IKernelSpec;
+		let defaultKernel: nb.IKernelSpec;
 		if (specs) {
 			defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
 			if (savedKernelInfo) {
-				foundSavedKernelInSpecs = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+				savedKernel = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
 			}
 		}
 		if (specs && connectionInfo) {
 			// set default kernel to default kernel not saved previously
 			// otherwise, set default to kernel info loaded from existing file
-			defaultKernel = !foundSavedKernelInSpecs ? defaultKernel : foundSavedKernelInSpecs;
+			defaultKernel = !savedKernel ? defaultKernel : savedKernel;
 		}
 
 		// If no default kernel specified (should never happen), default to SQL
