@@ -94,8 +94,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
 
-	private _didTabChange: boolean;
-
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
 	constructor(
@@ -113,7 +111,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
-		this._didTabChange = false;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -135,7 +132,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
-		this._didTabChange = true;
 	}
 
 	public layout() {
@@ -220,10 +216,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				}
 
 				this._showProgressWheel = false;
-				if (this.isVisible && !this._didTabChange) {
+				if (this.isVisible) {
 					this._cd.detectChanges();
-				} else if (this._didTabChange) {
-					return;
 				}
 			});
 		}
@@ -610,10 +604,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				} else {
 					previousRuns = jobHistories;
 				}
-				// dont create the charts if the tab changed
-				if (!self._didTabChange) {
-					self.createJobChart(job.jobId, previousRuns);
-				}
+				self.createJobChart(job.jobId, previousRuns);
 				if (self._agentViewComponent.expanded.has(job.jobId)) {
 					let lastJobHistory = jobHistories[jobHistories.length - 1];
 					let item = self.dataView.getItemById(job.jobId + '.error');
