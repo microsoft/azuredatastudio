@@ -1080,7 +1080,64 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				},
+				{
+					"extensionId": "30",
+					"extensionName": "sqlops-theme-onedark",
+					"displayName": "Atom One Dark Theme",
+					"shortDescription": "Azure Data Studio Theme based on Atom's One Dark theme",
+					"publisher": {
+						"displayName": "Michael Wolfenden",
+						"publisherId": "michael-wolfenden",
+						"publisherName": "michael-wolfenden"
+					},
+					"versions": [
+						{
+							"version": "1.0.0",
+							"lastUpdated": "01/11/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/michael-wolfenden/sqlops-theme-onedark/releases/tag/v1.0.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/michael-wolfenden/sqlops-theme-onedark/master/assets/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/michael-wolfenden/sqlops-theme-onedark/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/michael-wolfenden/sqlops-theme-onedark/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/michael-wolfenden/sqlops-theme-onedark/master/LICENSE.md"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/michael-wolfenden/sqlops-theme-onedark"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}				
 			],
 			"resultMetadata": [
 				{
