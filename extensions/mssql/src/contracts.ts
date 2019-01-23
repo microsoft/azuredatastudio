@@ -356,7 +356,7 @@ export namespace DeployRequest {
 }
 
 export namespace GenerateDeployScriptRequest {
-	export const type = new RequestType<GenerateDeployScriptParams, sqlops.DacFxResult, void, void>('dacfx/generateUgradeScript');
+	export const type = new RequestType<GenerateDeployScriptParams, sqlops.DacFxResult, void, void>('dacfx/generateDeploymentScript');
 }
 
 // ------------------------------- < DacFx > ------------------------------------
