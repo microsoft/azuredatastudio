@@ -7,12 +7,13 @@ import 'vs/css!./jobHistory';
 import 'vs/css!sql/media/icons/common-icons';
 
 import * as sqlops from 'sqlops';
+import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, NewStepAction } from 'sql/parts/jobManagement/common/jobActions';
+import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
 import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
@@ -103,6 +104,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._parentComponent = this._agentViewComponent;
 
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 		const self = this;
 		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
 			const payload = { origin: origin };
@@ -143,16 +145,25 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}, {verticalScrollMode: ScrollbarVisibility.Visible});
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
-		this.initActionBar();
 		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
+		this.initActionBar();
 	}
 
 	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let jobName = this._agentViewComponent.agentJobInfo.name;
-		this._jobManagementService.getJobHistory(ownerUri, this._agentViewComponent.jobId, jobName).then((result) => {
+		let jobId = this._agentViewComponent.jobId;
+		this._jobManagementService.getJobHistory(ownerUri, jobId, jobName).then((result) => {
 			if (result && result.histories) {
+				self._jobCacheObject.setJobHistory(jobId, result.histories);
+				self._jobCacheObject.setJobAlerts(jobId, result.alerts);
+				self._jobCacheObject.setJobSchedules(jobId, result.schedules);
+				self._jobCacheObject.setJobSteps(jobId, result.steps);
+				this._agentViewComponent.agentJobInfo.jobSteps = this._jobCacheObject.getJobSteps(jobId);
+				this._agentViewComponent.agentJobInfo.jobSchedules = this._jobCacheObject.getJobSchedules(jobId);
+				this._agentViewComponent.agentJobInfo.alerts = this._jobCacheObject.getJobAlerts(jobId);
+				this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 				if (result.histories.length > 0) {
 					self._showPreviousRuns = true;
 					self.buildHistoryTree(self, result.histories);
@@ -189,9 +200,14 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 					stepViewRow.stepId = step.stepDetails.id.toString();
 					return stepViewRow;
 				});
-				this._showSteps = self._stepRows.length > 0;
+				self._stepRows.unshift(new JobStepsViewRow());
+				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID','Step ID');
+				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
+				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
+				this._showSteps = self._stepRows.length > 1;
 			} else {
-				this._showSteps = false;
+				self._showSteps = false;
 			}
 			self._cd.detectChanges();
 		}
@@ -208,13 +224,19 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 
 	private buildHistoryTree(self: any, jobHistories: sqlops.AgentJobHistoryInfo[]) {
 		self._treeController.jobHistories = jobHistories;
-		self._jobCacheObject.setJobHistory(self._agentViewComponent.jobId, jobHistories);
 		let jobHistoryRows = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
 		self._treeDataSource.data = jobHistoryRows;
 		self._tree.setInput(new JobHistoryModel());
 		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
 		if (self.agentJobHistoryInfo) {
 			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
+		}
+		const payload = { origin: 'origin' };
+		let element = this._treeDataSource.getFirstElement();
+		this._tree.setFocus(element, payload);
+		this._tree.setSelection([element], payload);
+		if (element.rowID) {
+			self.setStepsTree(element);
 		}
 	}
 
@@ -249,17 +271,10 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		return this._showPreviousRuns !== true && this._noJobsAvailable === false;
 	}
 
-	private setActions(): void {
-		let startIcon: HTMLElement = $('.action-label.icon.runJobIcon').get(0);
-		let stopIcon: HTMLElement = $('.action-label.icon.stopJobIcon').get(0);
-		JobManagementUtilities.getActionIconClassName(startIcon, stopIcon, this.agentJobInfo.currentExecutionStatus);
-	}
-
 	public onFirstVisible() {
 		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 		if (!this.agentJobInfo) {
 			this.agentJobInfo = this._agentJobInfo;
-			this.setActions();
 		}
 
 		if (this.isRefreshing ) {
@@ -272,9 +287,12 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			const self = this;
 			if (this._jobCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
 				this._showPreviousRuns = true;
+				this._agentViewComponent.agentJobInfo.jobSteps = this._jobCacheObject.getJobSteps(this._agentJobInfo.jobId);
+				this._agentViewComponent.agentJobInfo.jobSchedules = this._jobCacheObject.getJobSchedules(this._agentJobInfo.jobId);
+				this._agentViewComponent.agentJobInfo.alerts = this._jobCacheObject.getJobAlerts(this._agentJobInfo.jobId);
+				this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 				this.buildHistoryTree(self, jobHistories);
-				$('jobhistory-component .history-details .prev-run-list .monaco-tree').attr('tabIndex', '-1');
-				$('jobhistory-component .history-details .prev-run-list .monaco-tree-row').attr('tabIndex', '0');
+				this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
 				this._cd.detectChanges();
 			}
 		} else if (jobHistories && jobHistories.length === 0 ){
@@ -316,14 +334,25 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 	protected initActionBar() {
 		let runJobAction = this.instantiationService.createInstance(RunJobAction);
 		let stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		let newStepAction = this.instantiationService.createInstance(NewStepAction);
+		switch(this._agentJobInfo.currentExecutionStatus) {
+			case(1):
+			case(2):
+			case(3):
+				stopJobAction.enabled = true;
+				break;
+			default:
+				stopJobAction.enabled = false;
+		}
+		let editJobAction = this.instantiationService.createInstance(EditJobAction);
+		let refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService);
-		this._actionBar.context = this;
+		this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
 		this._actionBar.setContent([
 			{ action: runJobAction },
 			{ action: stopJobAction },
-			{ action: newStepAction }
+			{ action: refreshAction },
+			{ action: editJobAction }
 		]);
 	}
 

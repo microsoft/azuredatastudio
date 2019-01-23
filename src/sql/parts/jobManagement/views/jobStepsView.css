@@ -21,14 +21,6 @@
 	user-select: initial;
 }
 
-.steps-tree .list-row .status-icon.step-unknown {
-	height: 10px;
-	width: 10px;
-	display: inline-block;
-	margin-top: 4px;
-	background: yellow;
-}
-
 .steps-tree .list-row {
 	display: inline-flex;
 	height: 20px
@@ -39,26 +31,31 @@
 	padding-top: 10px;
 }
 
-.step-columns .step-id-col, .steps-tree .tree-id-col {
+.steps-tree .tree-id-col {
 	padding-left: 10px;
 	white-space: normal;
-	text-align: center;
+	text-align: left;
 	width: 60px;
-
 }
 
-.step-columns .step-name-col, .steps-tree .tree-name-col  {
+.steps-tree .tree-name-col  {
 	padding-right: 10px;
 	white-space: normal;
-	text-align: center;
-	width: 350px;
+	text-align: left;
+	width: 300px;
 }
 
-.step-columns .step-message-col, .steps-tree .tree-message-col {
+.steps-tree .tree-message-col {
 	padding-right: 10px;
 	white-space: normal;
+	text-align: left;
+	width: 700px;
+}
+
+.steps-tree .step-column-heading {
+	font-weight: bold;
 	text-align: center;
-	width: 680px;
+	height: 40px;
 }
 
 .steps-header > .steps-icon {
@@ -87,4 +84,27 @@ jobstepsview-component {
 
 jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row {
 	width: 99.2%;
+}
+
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.vs-dark jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #444444 !important;
+}
+
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+.hc-black jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: none !important;
+}
+
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.selected,
+jobstepsview-component .steps-tree .monaco-tree-wrapper .monaco-tree-row.step-column-row.focused.selected {
+	background: #dcdcdc !important;
+	cursor: none;
+	padding-left: 0px;
 }

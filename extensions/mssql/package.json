@@ -18,7 +18,7 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "dependencies": {
-    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.11",
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
     "vscode-extension-telemetry": "^0.0.15"

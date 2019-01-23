@@ -109,7 +109,6 @@ suite('Account Management Service Tests:', () => {
 			provider: mockProvider.object,
 			metadata: hasAccountProvider
 		};
-
 		// If: I update an account that exists
 		state.accountManagementService.accountUpdated(account)
 			.then(() => {

@@ -296,7 +296,7 @@ suite('ExtHostAccountManagement', () => {
 
 		let mockAccountManagementService = getMockAccountManagementService(mockAccounts);
 		instantiationService.stub(IAccountManagementService, mockAccountManagementService.object);
-		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement);
+		let accountManagementService = instantiationService.createInstance(MainThreadAccountManagement, undefined);
 		threadService.set(SqlMainContext.MainThreadAccountManagement, accountManagementService);
 
 		// Setup: Create ext host account management with registered account provider

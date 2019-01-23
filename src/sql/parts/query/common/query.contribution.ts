@@ -234,6 +234,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_SAVEXML_ID,
+	weight: KeybindingWeight.EditorContrib,
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_X),
+	handler: gridCommands.saveAsXml
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_VIEWASCHART_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
@@ -308,7 +316,17 @@ let registryProperties = {
 	'sql.results.streaming': {
 		'type': 'boolean',
 		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
-		'default': false
+		'default': true
+	},
+	'sql.saveAsXml.formatted': {
+		'type': 'string',
+		'description': localize('sql.saveAsXml.formatted', '[Optional] When true, XML output will be formatted when saving results as XML'),
+		'default': true
+	},
+	'sql.saveAsXml.encoding': {
+		'type': 'string',
+		'description': localize('sql.saveAsXml.encoding', '[Optional] File encoding used when saving results as XML'),
+		'default': 'utf-8'
 	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',

@@ -20,6 +20,11 @@ import { Editors } from '../editor/editors';
 import { Code } from '../../vscode/code';
 import { Terminal } from '../terminal/terminal';
 
+// {{SQL CARBON EDIT}}
+import { ConnectionDialog } from '../../sql/connectionDialog/connectionDialog';
+import { Profiler } from '../../sql/profiler/profiler';
+// {{END}}
+
 export interface Commands {
 	runCommand(command: string): Promise<any>;
 }
@@ -42,6 +47,11 @@ export class Workbench {
 	readonly keybindingsEditor: KeybindingsEditor;
 	readonly terminal: Terminal;
 
+	// {{SQL CARBON EDIT}}
+	readonly connectionDialog: ConnectionDialog;
+	readonly profiler: Profiler;
+	// {{END}}
+
 	constructor(code: Code, userDataPath: string) {
 		this.editors = new Editors(code);
 		this.quickopen = new QuickOpen(code, this.editors);
@@ -58,6 +68,10 @@ export class Workbench {
 		this.settingsEditor = new SettingsEditor(code, userDataPath, this.editors, this.editor, this.quickopen);
 		this.keybindingsEditor = new KeybindingsEditor(code);
 		this.terminal = new Terminal(code);
+		// {{SQL CARBON EDIT}}
+		this.connectionDialog = new ConnectionDialog(code);
+		this.profiler = new Profiler(code, this.quickopen);
+		// {{END}}
 	}
 }
 

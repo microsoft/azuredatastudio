@@ -15,13 +15,14 @@ import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions a
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { warn } from 'sql/base/common/log';
 
 export class CommandLineService implements ICommandLineProcessing {
 	private _connectionProfile: ConnectionProfile;
 	private _showConnectionDialog: boolean;
-	private _commandName:string;
+	private _commandName: string;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -30,7 +31,8 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IEditorService private _editorService: IEditorService,
-		@ICommandService private _commandService: ICommandService
+		@ICommandService private _commandService: ICommandService,
+		@IWorkspaceConfigurationService private _configurationService: IWorkspaceConfigurationService
 	) {
 		let profile = null;
 		if (this._environmentService) {
@@ -57,11 +59,11 @@ export class CommandLineService implements ICommandLineProcessing {
 		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
 		// We can't connect to object explorer until the MSSQL connection provider is registered
 		if (sqlProvider) {
-			this.processCommandLine().catch(reason=>{warn('processCommandLine failed: ' + reason);});
+			this.processCommandLine().catch(reason => { warn('processCommandLine failed: ' + reason); });
 		} else {
 			registry.onNewProvider(e => {
 				if (e.id === Constants.mssqlProviderName) {
-					this.processCommandLine().catch(reason=>{warn('processCommandLine failed: ' + reason);});
+					this.processCommandLine().catch(reason => { warn('processCommandLine failed: ' + reason); });
 				}
 			});
 		}
@@ -76,13 +78,13 @@ export class CommandLineService implements ICommandLineProcessing {
 
 		let self = this;
 		return new Promise<void>((resolve, reject) => {
-
-			if (!self._commandName && !self._connectionProfile && !self._connectionManagementService.hasRegisteredServers()) {
+			let showConnectDialogOnStartup: boolean = this._configurationService.getValue('workbench.showConnectDialogOnStartup');
+			if (showConnectDialogOnStartup && !self._commandName && !self._connectionProfile && !self._connectionManagementService.hasRegisteredServers()) {
 				// prompt the user for a new connection on startup if no profiles are registered
 				self._connectionManagementService.showConnectionDialog()
 					.then(() => {
-							resolve();
-						},
+						resolve();
+					},
 						error => {
 							reject(error);
 						});
@@ -91,31 +93,31 @@ export class CommandLineService implements ICommandLineProcessing {
 					self._connectionManagementService.connectIfNotConnected(self._connectionProfile, 'connection', true)
 						.then(() => {
 							TaskUtilities.newQuery(self._connectionProfile,
-							self._connectionManagementService,
-							self._queryEditorService,
-							self._objectExplorerService,
-							self._editorService)
-							.then( () => {
-								resolve();
-							}, error => {
-								// ignore query editor failing to open.
-								// the tests don't mock this out
-								warn('unable to open query editor ' + error);
-								resolve();
-							});
+								self._connectionManagementService,
+								self._queryEditorService,
+								self._objectExplorerService,
+								self._editorService)
+								.then(() => {
+									resolve();
+								}, error => {
+									// ignore query editor failing to open.
+									// the tests don't mock this out
+									warn('unable to open query editor ' + error);
+									resolve();
+								});
 						}, error => {
 							reject(error);
 						});
 				} else {
 					self._connectionManagementService.connectIfNotConnected(self._connectionProfile, 'connection', true)
-					.then(() => {
-						self._commandService.executeCommand(self._commandName, self._connectionProfile).then(() => resolve(), error => reject(error));
-					}, error => {
-						reject(error);
-					});
+						.then(() => {
+							self._commandService.executeCommand(self._commandName, self._connectionProfile).then(() => resolve(), error => reject(error));
+						}, error => {
+							reject(error);
+						});
 				}
 			} else if (self._commandName) {
-						self._commandService.executeCommand(self._commandName).then(() => resolve(), error => reject(error));
+				self._commandService.executeCommand(self._commandName).then(() => resolve(), error => reject(error));
 			}
 			else {
 				resolve();

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 
-.all-jobs {
-	display: inline;
+jobhistory-component .all-jobs {
+	display: inline-block;
 	font-size: 15px;
 }
 
@@ -17,6 +17,7 @@
 .job-heading {
 	text-align: left;
 	padding-left: 13px;
+	font-size: 1.5vw;
 }
 
 .overview-container {
@@ -123,19 +124,6 @@ input#accordion:checked ~ .accordion-content {
 	content: url('../common/media/back_inverse.svg');
 }
 
-.vs .action-label.icon.runJobIcon,
-.vs-dark .action-label.icon.runJobIcon,
-.hc-black .action-label.icon.runJobIcon {
-	background-image: url('../common/media/start.svg');
-	padding-right: 5px;
-}
-
-.vs .action-label.icon.stopJobIcon,
-.vs-dark .action-label.icon.stopJobIcon,
-.hc-black .action-label.icon.stopJobIcon {
-	background-image: url('../common/media/stop.svg');
-}
-
 .vs .action-label.icon.newStepIcon {
 	background-image: url('../common/media/new.svg');
 }
@@ -143,6 +131,21 @@ input#accordion:checked ~ .accordion-content {
 .vs-dark .action-label.icon.newStepIcon,
 .hc-black .action-label.icon.newStepIcon {
 	background-image: url('../common/media/new_inverse.svg');
+}
+
+jobhistory-component .hc-black .icon.edit,
+jobhistory-component .vs-dark .icon.edit {
+	background-image: url('../../../media/icons/edit_inverse.svg');
+}
+
+jobhistory-component .vs .icon.edit {
+	background-image: url('../../../media/icons/edit.svg');
+}
+
+jobhistory-component .actions-container .icon.edit {
+	background-position: 0% 50%;
+	background-repeat: no-repeat;
+	background-size: 12px;
 }
 
 a.action-label.icon.runJobIcon.non-runnable {
@@ -197,8 +200,12 @@ table.step-list tr.step-row td {
 	border-left: 3px solid #2b56f2;
 }
 
-.history-details > .job-steps > .step-list {
+.history-details > .job-steps > table.step-list {
 	padding-bottom: 10px;
+	display: flex;
+	flex: 1 1;
+	overflow: scroll;
+	max-height: 200px;
 }
 
 .step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
@@ -255,7 +262,7 @@ jobhistory-component {
 }
 
 jobhistory-component > .jobhistory-heading-container {
-	display: flex;
+	display: inline-block;
 }
 
 jobhistory-component > .jobhistory-heading-container > .icon.in-progress {

@@ -12,7 +12,10 @@ import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
 import { Application, Quality } from './application';
-
+//{{SQL CARBON EDIT}}
+import { setup as runProfilerTests } from './sql/profiler/profiler.test';
+//Original
+/*
 import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataExplorerTests } from './areas/explorer/explorer.test';
@@ -27,6 +30,8 @@ import { setup as setupDataExtensionTests } from './areas/extensions/extensions.
 import { setup as setupTerminalTests } from './areas/terminal/terminal.test';
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
+*/
+//{{END}}
 import { MultiLogger, Logger, ConsoleLogger, FileLogger } from './logger';
 
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
@@ -250,14 +255,32 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
 });
 
+//{{SQL CARBON EDIT}}
+/*
 describe('Data Migration', () => {
 	setupDataMigrationTests(userDataDir, createApp);
 });
+*/
+//{{END}}
 
-describe('Test', () => {
+describe('Smoke Test', () => {
 	before(async function () {
 		const app = createApp(quality);
 		await app!.start();
+		//{{SQL CARBON EDIT}}
+		const testExtLoadedText = 'Test Extension Loaded';
+		const testSetupCompletedText = 'Test Setup Completed';
+		const allExtensionsLoadedText = 'All Extensions Loaded';
+		const setupTestCommand = 'Test: Setup Integration Test';
+		const waitForExtensionsCommand = 'Test: Wait For Extensions To Load';
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
+		await app.workbench.quickopen.runCommand(setupTestCommand);
+		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);
+		await app!.reload();
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
+		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
+		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
+		//{{END}}
 		this.app = app;
 	});
 
@@ -295,6 +318,10 @@ describe('Test', () => {
 		});
 	}
 
+	//{{SQL CARBON EDIT}}
+	runProfilerTests();
+	//Original
+	/*
 	setupDataLossTests();
 	setupDataExplorerTests();
 	setupDataPreferencesTests();
@@ -308,4 +335,6 @@ describe('Test', () => {
 	setupTerminalTests();
 	setupDataMultirootTests();
 	setupDataLocalizationTests();
+	*/
+	//{{END}}
 });

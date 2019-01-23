@@ -5,6 +5,7 @@
 
 'use strict';
 
+import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
@@ -14,8 +15,10 @@ import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/commo
 import * as resources from 'vs/base/common/resources';
 import * as sqlops from 'sqlops';
 
-import { INotebookService } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import Severity from 'vs/base/common/severity';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -121,7 +124,8 @@ export class NotebookInput extends EditorInput {
 
 	constructor(private _title: string,
 		private _model: NotebookInputModel,
-		@INotebookService private notebookService: INotebookService
+		@INotebookService private notebookService: INotebookService,
+		@IDialogService private dialogService: IDialogService
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
@@ -208,14 +212,41 @@ export class NotebookInput extends EditorInput {
 		// as we need to either integrate with textFileService (seems like this isn't viable)
 		// or register our own complimentary service that handles the lifecycle operations such
 		// as close all, auto save etc.
-		return TPromise.wrap(ConfirmResult.DONT_SAVE);
+		const message = nls.localize('saveChangesMessage', "Do you want to save the changes you made to {0}?", this.getTitle());
+		const buttons: string[] = [
+			nls.localize({ key: 'save', comment: ['&& denotes a mnemonic'] }, "&&Save"),
+			nls.localize({ key: 'dontSave', comment: ['&& denotes a mnemonic'] }, "Do&&n't Save"),
+			nls.localize('cancel', "Cancel")
+		];
+
+		return this.dialogService.show(Severity.Warning, message, buttons, {
+			cancelId: 2,
+			detail: nls.localize('saveChangesDetail', "Your changes will be lost if you don't save them.")
+		}).then(index => {
+			switch (index) {
+				case 0: return ConfirmResult.SAVE;
+				case 1: return ConfirmResult.DONT_SAVE;
+				default: return ConfirmResult.CANCEL;
+			}
+		});
 	}
 
 	/**
 	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
 	 */
 	save(): TPromise<boolean> {
-		return this._model.save();
+		let activeEditor: INotebookEditor;
+		for (const editor of this.notebookService.listNotebookEditors()) {
+			if(editor.isActive())
+			{
+				activeEditor = editor;
+			}
+		}
+		if(activeEditor)
+		{
+			return TPromise.wrap(activeEditor.save().then((val) => {return val;}));
+		}
+		return TPromise.wrap(false);
 	}
 
 	/**

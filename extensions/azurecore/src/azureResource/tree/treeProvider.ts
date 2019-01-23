@@ -32,7 +32,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 			return element.getChildren(true);
 		}
 
-		if (!this.isSystemInitialized) {
+		if (!this.isSystemInitialized && !this._loadingTimer) {
 			this._loadingTimer = setInterval(async () => {
 				try {
 					// Call sqlops.accounts.getAllAccounts() to determine whether the system has been initialized.
