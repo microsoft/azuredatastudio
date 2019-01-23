@@ -77,6 +77,9 @@ export class DacFxSummaryPage extends BasePage {
 		let sourceDatabase = localize('dacfx.sourceDatabaseName', 'Source Database');
 		let fileLocation = localize('dacfx.fileLocation', 'File Location');
 		let scriptLocation = localize('dacfx.scriptLocation', 'Deployment Script Location');
+		let action = localize('dacfx.action', 'Action');
+		let deploy = localize('dacfx.deploy', 'Deploy');
+		let generateScript = localize('dacfx.generateScript', 'Generate Deployment Script');
 
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
@@ -86,6 +89,10 @@ export class DacFxSummaryPage extends BasePage {
 					[targetDatabase, this.model.database]];
 				if (this.model.generateScriptAndDeploy) {
 					data[3] = [scriptLocation, this.model.scriptFilePath];
+					data[4] = [action, generateScript + ', ' + deploy];
+				}
+				else {
+					data[3] = [action, deploy];
 				}
 				break;
 			}
@@ -116,7 +123,8 @@ export class DacFxSummaryPage extends BasePage {
 					[targetServer, this.model.serverName],
 					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database],
-					[scriptLocation, this.model.scriptFilePath]];
+					[scriptLocation, this.model.scriptFilePath],
+					[action, generateScript]];
 				break;
 			}
 		}

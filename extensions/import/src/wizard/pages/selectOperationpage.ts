@@ -69,15 +69,14 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.deployRadioButton.onDidClick(() => {
-			// remove the previous page
-			this.instance.wizard.removePage(1);
+			this.removePages();
 
 			//add deploy pages
 			let configPage = this.instance.pages.get('deployConfig');
 			this.instance.wizard.addPage(configPage.wizardPage, 1);
-
 			let actionPage = this.instance.pages.get('deployAction');
 			this.instance.wizard.addPage(actionPage.wizardPage, 2);
+			this.addSummaryPage(3);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.deploy);
@@ -97,15 +96,12 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.extractRadioButton.onDidClick(() => {
-			//remove the previous pages
-			if (this.instance.wizard.pages.length === 4) {
-				this.instance.wizard.removePage(2);
-			}
-			this.instance.wizard.removePage(1);
+			this.removePages();
 
 			// add the extract page
 			let page = this.instance.pages.get('extractConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
+			this.addSummaryPage(2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.extract);
@@ -125,15 +121,12 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.importRadioButton.onDidClick(() => {
-			//remove the previous pages
-			if (this.instance.wizard.pages.length === 4) {
-				this.instance.wizard.removePage(2);
-			}
-			this.instance.wizard.removePage(1);
+			this.removePages();
 
 			// add the import page
 			let page = this.instance.pages.get('importConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
+			this.addSummaryPage(2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.import);
@@ -153,15 +146,12 @@ export class SelectOperationPage extends BasePage {
 			}).component();
 
 		this.exportRadioButton.onDidClick(() => {
-			//remove the previous pages
-			if (this.instance.wizard.pages.length === 4) {
-				this.instance.wizard.removePage(2);
-			}
-			this.instance.wizard.removePage(1);
+			this.removePages();
 
 			// add the export pages
 			let page = this.instance.pages.get('exportConfig');
 			this.instance.wizard.addPage(page.wizardPage, 1);
+			this.addSummaryPage(2);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.export);
@@ -171,6 +161,18 @@ export class SelectOperationPage extends BasePage {
 			component: this.exportRadioButton,
 			title: ''
 		};
+	}
+
+	private removePages() {
+		let numPages = this.instance.wizard.pages.length;
+		for (let i = numPages - 1; i > 0; --i) {
+			this.instance.wizard.removePage(i);
+		}
+	}
+
+	private addSummaryPage(index: number) {
+		let summaryPage = this.instance.pages.get('summary');
+		this.instance.wizard.addPage(summaryPage.wizardPage, index);
 	}
 
 	public setupNavigationValidator() {
