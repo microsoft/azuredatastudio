@@ -88,6 +88,7 @@ export class MessagePanel extends ViewletPanel {
 	private _state: MessagePanelState;
 
 	private tree: ITree;
+	private _selectAllMessages: boolean;
 
 	constructor(
 		options: IViewletPanelOptions,
@@ -116,6 +117,44 @@ export class MessagePanel extends ViewletPanel {
 				this.state.collapsed = !this.isExpanded();
 			}
 		});
+		this.controller.onContextMenu = (tree, element, event) => {
+			if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
+				return false; // allow context menu on input fields
+			}
+
+			// Prevent native context menu from showing up
+			if (event) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+
+			const selection = document.getSelection();
+			let selectAllMessages = [];
+			this.model.messages.map(msg => {
+				selectAllMessages.push(msg.message);
+			});
+
+			this.contextMenuService.showContextMenu({
+				getAnchor: () => {
+					return { x: event.posx, y: event.posy };
+				},
+				getActions: () => {
+					return TPromise.as([
+						instantiationService.createInstance(CopyMessagesAction, this),
+						instantiationService.createInstance(SelectAllMessagesAction, this)
+					]);
+				},
+				getActionsContext: () => {
+					return <IMessagesActionContext>{
+						selection,
+						tree,
+						selectAllMessages
+					};
+				}
+			});
+
+			return true;
+		};
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -210,6 +249,14 @@ export class MessagePanel extends ViewletPanel {
 	public dispose() {
 		dispose(this.queryRunnerDisposables);
 		super.dispose();
+	}
+
+	public get selectAllMessages(): boolean {
+		return this._selectAllMessages;
+	}
+
+	public set selectAllMessages(value: boolean) {
+		this._selectAllMessages = value;
 	}
 }
 
@@ -346,36 +393,6 @@ export class MessageController extends WorkbenchTreeController {
 	}
 
 	public onContextMenu(tree: ITree, element: any, event: ContextMenuEvent): boolean {
-		if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
-			return false; // allow context menu on input fields
-		}
-
-		// Prevent native context menu from showing up
-		if (event) {
-			event.preventDefault();
-			event.stopPropagation();
-		}
-
-		const selection = document.getSelection();
-
-		this.contextMenuService.showContextMenu({
-			getAnchor: () => {
-				return { x: event.posx, y: event.posy };
-			},
-			getActions: () => {
-				return TPromise.as([
-					this.instantiationService.createInstance(CopyMessagesAction),
-					new SelectAllMessagesAction()
-				]);
-			},
-			getActionsContext: () => {
-				return <IMessagesActionContext>{
-					selection,
-					tree
-				};
-			}
-		});
-
 		return true;
 	}
 }

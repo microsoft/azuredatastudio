@@ -19,6 +19,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { MessagePanel } from 'sql/parts/query/editor/messagePanel';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };
@@ -34,6 +35,7 @@ export interface IGridActionContext {
 export interface IMessagesActionContext {
 	selection: Selection;
 	tree: ITree;
+	selectAllMessages: string[];
 }
 
 function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
@@ -129,13 +131,18 @@ export class CopyMessagesAction extends Action {
 	public static LABEL = localize('copyMessages', 'Copy');
 
 	constructor(
+		private messagePanel: MessagePanel,
 		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(CopyMessagesAction.ID, CopyMessagesAction.LABEL);
 	}
 
 	public run(context: IMessagesActionContext): TPromise<boolean> {
-		this.clipboardService.writeText(context.selection.toString());
+		if (this.messagePanel.selectAllMessages) {
+			this.clipboardService.writeText(context.selectAllMessages.join('\n'));
+		} else {
+			this.clipboardService.writeText(context.selection.toString());
+		}
 		return TPromise.as(true);
 	}
 }
@@ -144,7 +151,7 @@ export class SelectAllMessagesAction extends Action {
 	public static ID = 'grid.messages.selectAll';
 	public static LABEL = localize('selectAll', 'Select All');
 
-	constructor() {
+	constructor(private messagePanel: MessagePanel) {
 		super(SelectAllMessagesAction.ID, SelectAllMessagesAction.LABEL);
 	}
 
@@ -154,6 +161,7 @@ export class SelectAllMessagesAction extends Action {
 		let sel = document.getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
+		this.messagePanel.selectAllMessages = true;
 		return TPromise.as(true);
 	}
 }
