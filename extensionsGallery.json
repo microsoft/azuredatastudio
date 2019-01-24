@@ -1161,15 +1161,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://github.com/wsr-publishing/azure-poor-formatter/blob/master/README.md"
+									"source": "https://raw.githubusercontent.com/wsr-publishing/azure-poor-formatter/master/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://github.com/wsr-publishing/azure-poor-formatter/blob/master/package.json"
+									"source": "https://raw.githubusercontent.com/wsr-publishing/azure-poor-formatter/master/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://github.com/wsr-publishing/azure-poor-formatter/blob/master/LICENSE"
+									"source": "https://raw.githubusercontent.com/wsr-publishing/azure-poor-formatter/master/LICENSE"
 								}
 							],
 							"properties": [
