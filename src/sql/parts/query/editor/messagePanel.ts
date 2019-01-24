@@ -120,7 +120,6 @@ export class MessagePanel extends ViewletPanel {
 			}
 		});
 		this.controller.onKeyDown = (tree, event) => {
-
 			if (event.ctrlKey) {
 				let context: IMessagesActionContext = {
 					selection: null,

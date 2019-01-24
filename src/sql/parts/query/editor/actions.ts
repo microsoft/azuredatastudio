@@ -140,6 +140,7 @@ export class CopyMessagesAction extends Action {
 	public run(context: IMessagesActionContext): TPromise<boolean> {
 		if (this.messagePanel.selectAllMessages) {
 			this.clipboardService.writeText(context.selectAllMessages.join('\n'));
+			this.messagePanel.selectAllMessages = false;
 		} else {
 			this.clipboardService.writeText(context.selection.toString());
 		}
