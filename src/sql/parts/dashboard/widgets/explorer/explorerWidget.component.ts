@@ -95,7 +95,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		}, { horizontalScrollMode: ScrollbarVisibility.Visible });
+		}, { horizontalScrollMode: ScrollbarVisibility.Auto });
 		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
