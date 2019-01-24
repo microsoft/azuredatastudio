@@ -339,7 +339,7 @@ export interface GenerateDeployScriptParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
-export interface UpgradePlanParams {
+export interface GenerateDeployPlanParams {
 	packageFilePath: string;
 	databaseName: string;
 	ownerUri: string;
@@ -366,7 +366,7 @@ export namespace GenerateDeployScriptRequest {
 	export const type = new RequestType<GenerateDeployScriptParams, sqlops.DacFxResult, void, void>('dacfx/generateDeploymentScript');
 }
 
-export namespace UpgradePlanRequest {
-	export const type = new RequestType<UpgradePlanParams, sqlops.UpgradePlanResult, void, void>('dacfx/upgradePlan');
+export namespace GenerateDeployPlanRequest {
+	export const type = new RequestType<GenerateDeployPlanParams, sqlops.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
 }
 // ------------------------------- < DacFx > ------------------------------------

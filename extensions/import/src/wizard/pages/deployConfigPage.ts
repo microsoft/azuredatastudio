@@ -122,6 +122,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.removeFormItem(this.databaseComponent);
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+
+			let deployPlanPage = this.instance.pages.get('deployPlan');
+			this.instance.wizard.addPage(deployPlanPage.wizardPage, 2);
+			let deployActionPage = this.instance.pages.get('deployAction');
+			this.instance.wizard.addPage(deployActionPage.wizardPage, 3);
 		});
 
 		newRadioButton.onDidClick(() => {
@@ -129,6 +134,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 			this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = this.databaseTextBox.value;
+
+			this.instance.wizard.removePage(3);
+			this.instance.wizard.removePage(2);
 		});
 
 		//Initialize with upgrade existing true
