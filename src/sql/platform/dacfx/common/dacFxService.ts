@@ -23,6 +23,7 @@ export interface IDacFxService {
 	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 	generateDeployScript(packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
+	upgradePlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): void;
 }
 
 export class DacFxService implements IDacFxService {
@@ -65,6 +66,12 @@ export class DacFxService implements IDacFxService {
 	generateDeployScript(packageFilePath: string, databaseName: string, generateDeployScript: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.generateDeployScript(packageFilePath, databaseName, generateDeployScript, ownerUri, taskExecutionMode);
+		});
+	}
+
+	upgradePlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.UpgradePlanResult> {
+		return this._runAction(ownerUri, (runner) => {
+			return runner.upgradePlan(packageFilePath, databaseName, ownerUri, taskExecutionMode);
 		});
 	}
 

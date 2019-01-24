@@ -1634,6 +1634,10 @@ declare module 'sqlops' {
 		operationId: string;
 	}
 
+	export interface UpgradePlanResult extends DacFxResult {
+		report: string;
+	}
+
 	export interface ExportParams {
 		databaseName: string;
 		packageFilePath: string;
@@ -1673,12 +1677,20 @@ declare module 'sqlops' {
 		taskExecutionMode: TaskExecutionMode;
 	}
 
+	export interface UpgradePlanParams {
+		packageFilePath: string;
+		databaseName: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
 	export interface DacFxServicesProvider extends DataProvider {
 		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		upgradePlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<UpgradePlanResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

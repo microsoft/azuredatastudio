@@ -113,7 +113,20 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					client.logFailedRequest(contracts.DeployRequest.type, e);
+					client.logFailedRequest(contracts.GenerateDeployScriptRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let upgradePlan = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.UpgradePlanResult> => {
+			let params: contracts.UpgradePlanParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.UpgradePlanRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.UpgradePlanRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
@@ -125,7 +138,8 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			importBacpac,
 			extractDacpac,
 			deployDacpac,
-			generateDeployScript
+			generateDeployScript,
+			upgradePlan
 		});
 	}
 }

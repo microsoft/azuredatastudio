@@ -339,6 +339,20 @@ export class DataTierApplicationWizard {
 			|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary;
 	}
 
+	public async upgradePlan(): Promise<string> {
+		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+
+		let result = await service.upgradePlan(this.model.filePath, this.model.database, ownerUri, sqlops.TaskExecutionMode.execute);
+
+		if (!result || !result.success) {
+			vscode.window.showErrorMessage(
+				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		}
+
+		return result.report;
+	}
+
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
 		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);
 		return service;
