@@ -148,35 +148,7 @@ export class DataTierApplicationWizard {
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.newPage;
-			let page: Page;
-
-			if (idx === 1) {
-				switch (this.selectedOperation) {
-					case Operation.deploy: {
-						page = this.pages.get('deployConfig');
-						break;
-					}
-					case Operation.extract: {
-						page = this.pages.get('extractConfig');
-						break;
-					}
-					case Operation.import: {
-						page = this.pages.get('importConfig');
-						break;
-					}
-					case Operation.export: {
-						page = this.pages.get('exportConfig');
-						break;
-					}
-				}
-			} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
-				page = this.pages.get('deployAction');
-			} else if (this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
-				|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
-				|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
-				|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary) {
-				page = this.pages.get('summary');
-			}
+			let page = this.getPage(idx);
 
 			if (page !== undefined) {
 				page.dacFxPage.setupNavigationValidator();
@@ -186,7 +158,7 @@ export class DataTierApplicationWizard {
 			//do onPageLeave for summary page so that GenerateScript button only shows up if upgrading database
 			let idxLast = event.lastPage;
 
-			if ((idxLast === 2 && this.wizard.pages.length !== 4) || idxLast === 3) {
+			if (this.isSummaryPage(idxLast)) {
 				let lastPage = this.pages.get('summary');
 				if (lastPage) {
 					lastPage.dacFxPage.onPageLeave();
@@ -327,6 +299,44 @@ export class DataTierApplicationWizard {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 		}
+	}
+
+	private getPage(idx: number): Page {
+		let page: Page;
+
+		if (idx === 1) {
+			switch (this.selectedOperation) {
+				case Operation.deploy: {
+					page = this.pages.get('deployConfig');
+					break;
+				}
+				case Operation.extract: {
+					page = this.pages.get('extractConfig');
+					break;
+				}
+				case Operation.import: {
+					page = this.pages.get('importConfig');
+					break;
+				}
+				case Operation.export: {
+					page = this.pages.get('exportConfig');
+					break;
+				}
+			}
+		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
+			page = this.pages.get('deployAction');
+		} else if (this.isSummaryPage(idx)) {
+			page = this.pages.get('summary');
+		}
+
+		return page;
+	}
+
+	private isSummaryPage(idx: number): boolean {
+		return this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
+			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
+			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
+			|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary;
 	}
 
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
