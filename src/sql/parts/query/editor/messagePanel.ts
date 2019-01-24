@@ -30,6 +30,7 @@ import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -96,7 +97,8 @@ export class MessagePanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
@@ -117,6 +119,32 @@ export class MessagePanel extends ViewletPanel {
 				this.state.collapsed = !this.isExpanded();
 			}
 		});
+		this.controller.onKeyDown = (tree, event) => {
+
+			if (event.ctrlKey) {
+				let context: IMessagesActionContext = {
+					selection: null,
+					tree: this.tree,
+					selectAllMessages: null
+				};
+				// Ctrl + A for select all
+				if (event.code === 'KeyA') {
+					let allMessages = this.copySelectAllMessagesText();
+					let selectAllAction = instantiationService.createInstance(SelectAllMessagesAction, this);
+					context.selectAllMessages = allMessages;
+					selectAllAction.run(context);
+				} else if (event.code === 'KeyC') {
+					// Ctrl + C for copy
+					let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService);
+					let allMessages = this.copySelectAllMessagesText();
+					context.selectAllMessages = allMessages;
+					copyMessageAction.run(context);
+				}
+			}
+			event.preventDefault();
+			event.stopPropagation();
+			return true;
+		};
 		this.controller.onContextMenu = (tree, element, event) => {
 			if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
 				return false; // allow context menu on input fields
@@ -129,10 +157,7 @@ export class MessagePanel extends ViewletPanel {
 			}
 
 			const selection = document.getSelection();
-			let selectAllMessages = [];
-			this.model.messages.map(msg => {
-				selectAllMessages.push(msg.message);
-			});
+			let selectAllMessages = this.copySelectAllMessagesText();
 
 			this.contextMenuService.showContextMenu({
 				getAnchor: () => {
@@ -140,7 +165,7 @@ export class MessagePanel extends ViewletPanel {
 				},
 				getActions: () => {
 					return TPromise.as([
-						instantiationService.createInstance(CopyMessagesAction, this),
+						instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService),
 						instantiationService.createInstance(SelectAllMessagesAction, this)
 					]);
 				},
@@ -228,6 +253,14 @@ export class MessagePanel extends ViewletPanel {
 		this.model.messages = [];
 		this.model.totalExecuteMessage = undefined;
 		this.tree.refresh(this.model);
+	}
+
+	private copySelectAllMessagesText(): string[] {
+		let selectAllMessages = [];
+		this.model.messages.map(msg => {
+			selectAllMessages.push(msg.message);
+		});
+		return selectAllMessages;
 	}
 
 	public set state(val: MessagePanelState) {
