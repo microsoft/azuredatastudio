@@ -346,3 +346,32 @@ export class RenderedJavaScript extends RenderedCommon {
 		});
 	}
 }
+
+/**
+ * A widget for displaying Data Resource schemas and data.
+ */
+export class RenderedDataResource extends RenderedCommon {
+	/**
+	 * Construct a new rendered data resource widget.
+	 *
+	 * @param options - The options for initializing the widget.
+	 */
+	constructor(options: IRenderMime.IRendererOptions) {
+		super(options);
+		this.addClass('jp-RenderedDataResource');
+	}
+
+	/**
+	 * Render a mime model.
+	 *
+	 * @param model - The mime model to render.
+	 *
+	 * @returns A promise which resolves when rendering is complete.
+	 */
+	render(model: IRenderMime.IMimeModel): Promise<void> {
+		return renderers.renderDataResource({
+			host: this.node,
+			source: String(model.data[this.mimeType])
+		});
+	}
+}

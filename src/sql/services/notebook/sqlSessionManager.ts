@@ -273,6 +273,15 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
 		this._register(this._queryRunner.onBatchEnd(batch => {
 			this._queryRunner.getQueryRows(0, batch.resultSetSummaries[0].rowCount, 0, 0).then(d => {
+				let columns = batch.resultSetSummaries[0].columnInfo.map(c => c.columnName);
+				let columnsResources: IDataResourceSchema[] = [];
+				columns.forEach(column => {
+					columnsResources.push({name: column});
+				});
+				let dataResource: IDataResource = {
+					schema: columnsResources,
+					data: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
+				};
 				let data:SQLData = {
 					columns: batch.resultSetSummaries[0].columnInfo.map(c => c.columnName),
 					rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
@@ -307,7 +316,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 						output_type: 'execute_result',
 						metadata: {},
 						execution_count: 0,
-						data: { 'text/html' : tableHtml},
+						data: { 'application/vnd.dataresource+json': JSON.stringify(dataResource), 'text/html': tableHtml},
 					},
 					metadata: undefined,
 					parent_header: undefined
@@ -322,4 +331,13 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		// no-op
 	}
+}
+
+export interface IDataResource {
+	schema: IDataResourceSchema[];
+	data: string[][];
+}
+
+export interface IDataResourceSchema {
+	name: string;
 }
