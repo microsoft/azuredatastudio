@@ -35,6 +35,31 @@ export enum Operation {
 	generateDeployScript
 }
 
+export enum DeployOperationPath {
+	selectOperation,
+	deployOptions,
+	deployAction,
+	summary
+}
+
+export enum ExtractOperationPath {
+	selectOperation,
+	options,
+	summary
+}
+
+export enum ImportOperationPath {
+	selectOperation,
+	options,
+	summary
+}
+
+export enum ExportOperationPath {
+	selectOperation,
+	options,
+	summary
+}
+
 export class DataTierApplicationWizard {
 	public wizard: sqlops.window.modelviewdialog.Wizard;
 	private connection: sqlops.connection.Connection;
@@ -144,11 +169,13 @@ export class DataTierApplicationWizard {
 						break;
 					}
 				}
-			//deploy path has 4 pages, not 3 pages like the other operations
-			} else if ((idx === 2 && this.wizard.pages.length !== 4) || idx === 3) {
-				page = this.pages.get('summary');
-			} else if (idx === 2 && this.wizard.pages.length === 4) {
+			} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
 				page = this.pages.get('deployAction');
+			} else if (this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
+				|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
+				|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
+				|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary) {
+				page = this.pages.get('summary');
 			}
 
 			if (page !== undefined) {
