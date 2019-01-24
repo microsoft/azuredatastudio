@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as sqlops from 'sqlops';
+
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
@@ -168,4 +170,16 @@ export function verifyPlatform(): Thenable<boolean> {
 	} else {
 		return Promise.resolve(true);
 	}
+}
+
+export function getErrorMessage(error: Error | string): string {
+	return (error instanceof Error) ? error.message : error;
+}
+
+export function isObjectExplorerContext(object: any): object is sqlops.ObjectExplorerContext {
+	return 'connectionProfile' in object && 'isConnectionNode' in object;
+}
+
+export function getUserHome(): string {
+	return process.env.HOME || process.env.USERPROFILE;
 }

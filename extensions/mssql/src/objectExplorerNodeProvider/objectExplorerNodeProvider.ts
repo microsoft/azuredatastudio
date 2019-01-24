@@ -12,298 +12,316 @@ const localize = nls.loadMessageBundle();
 
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { ProviderBase } from './providerBase';
-import { HadoopConnectionProvider, Connection } from './connectionProvider';
-import * as utils from './utils';
+import { Connection } from './connection';
+import * as utils from '../utils';
 import { TreeNode } from './treeNodes';
 import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvider';
 import { IFileSource } from './fileSources';
-import { AppContext } from './appContext';
-import * as constants from './constants';
+import { AppContext } from '../appContext';
+import * as constants from '../constants';
 
-export class HadoopObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
-    public readonly supportedProviderId: string = constants.mssqlProviderId;
-    public readonly groupingId: number = constants.objectexplorerGroupingId;
-    private sessionMap: Map<string, Session>;
-    private sessionCreatedEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerSession>();
-    private expandCompleteEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerExpandInfo>();
+const outputChannel = vscode.window.createOutputChannel(constants.providerId);
+interface IEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
+}
 
-    constructor(private connectionProvider: HadoopConnectionProvider, private appContext: AppContext) {
-        super();
-        if (!this.connectionProvider) {
-            throw new Error(localize('connectionProviderRequired', 'Connection provider is required'));
-        }
-        this.sessionMap = new Map();
-        this.appContext.registerService<HadoopObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
-    }
+export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
+	public readonly supportedProviderId: string = constants.providerId;
+	private sessionMap: Map<string, Session>;
+	private expandCompleteEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerExpandInfo>();
 
-    expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
-        return new Promise((resolve, reject) => {
-            if (!nodeInfo) {
-                reject('expandNode requires a nodeInfo object to be passed');
-            } else {
-                resolve(this.doExpandNode(nodeInfo, isRefresh));
-            }
-        });
-    }
+	constructor(private appContext: AppContext) {
+		super();
 
-    private async doExpandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
-        let session = this.sessionMap.get(nodeInfo.sessionId);
-        if (!session) {
-            let connectionProfile = await sqlops.objectexplorer.getSessionConnectionProfile(nodeInfo.sessionId);
-            if (connectionProfile) {
-                let credentials = await sqlops.connection.getCredentials(connectionProfile.id);
-                let serverInfo = await sqlops.connection.getServerInfo(connectionProfile.id);
-                let endpoints = serverInfo.options.clusterEndpoints;
-                let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+		this.sessionMap = new Map();
+		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
+	}
 
-                let connInfo: sqlops.connection.Connection = {
-                    options: {
-                        'host': endpoints[index].ipAddress,
-                        'groupId': connectionProfile.options.groupId,
-                        'knoxport': '',
-                        'user': 'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
-                        'password': credentials.password,
-                    },
-                    providerName: constants.hadoopKnoxProviderName,
-                    connectionId: UUID.generateUuid()
-                };
+	handleSessionOpen(session: sqlops.ObjectExplorerSession): Thenable<boolean> {
+		return new Promise((resolve, reject) => {
+			if (!session) {
+				reject('handleSessionOpen requires a session object to be passed');
+			} else {
+				resolve(this.doSessionOpen(session));
+			}
+		});
+	}
 
-                let connection = new Connection(connInfo);
-                connection.saveUriWithPrefix(constants.objectExplorerPrefix);
-                session = new Session(connection, nodeInfo.sessionId);
-                session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), nodeInfo.nodePath);
-                this.sessionMap.set(nodeInfo.sessionId, session);
-                let expandResult: sqlops.ObjectExplorerExpandInfo = {
-                    sessionId: session.uri,
-                    nodePath: nodeInfo.nodePath,
-                    errorMessage: undefined,
-                    nodes: []
-                };
-                try {
-                    let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
-                    if (!node) {
-                        expandResult.errorMessage = localize('nodeNotFound', 'Cannot expand object explorer node. Couldn\t find node for path {0}', nodeInfo.nodePath);
-                    } else {
-                        expandResult.errorMessage = node.getNodeInfo().errorMessage;
-                        if (node.getNodeInfo().nodeType === 'hadoop:root') {
-                            expandResult.nodes = [node.getNodeInfo()];
-                        }
-                    }
+	private async doSessionOpen(sessionInfo: sqlops.ObjectExplorerSession): Promise<boolean> {
+		return this.addSessionToMap(sessionInfo);
+	}
 
-                } catch (error) {
-                    expandResult.errorMessage = utils.getErrorMessage(error);
-                }
-                this.expandCompleteEmitter.fire(expandResult);
-            }
-            else {
-                this.expandCompleteEmitter.fire({
-                    sessionId: nodeInfo.sessionId,
-                    nodePath: nodeInfo.nodePath,
-                    errorMessage: localize('sessionIdNotFound', 'Cannot expand object explorer node. Couldn\'t find session for uri {0}', nodeInfo.sessionId),
-                    nodes: undefined
-                });
-                return false;
-            }
-        } else {
-            setTimeout(() => {
+	private async addSessionToMap(sessionInfo: sqlops.ObjectExplorerSession): Promise<boolean> {
+		let connectionProfile = await sqlops.objectexplorer.getSessionConnectionProfile(sessionInfo.sessionId);
+		if (connectionProfile) {
+			let credentials = await sqlops.connection.getCredentials(connectionProfile.id);
+			let serverInfo = await sqlops.connection.getServerInfo(connectionProfile.id);
+			if (!serverInfo) {
+				return false;
+			}
+			let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+			if (!endpoints) {
+				return;
+			}
+			let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+			if (!index) {
+				return false;
+			}
 
-                // Running after promise resolution as we need the Ops Studio-side map to have been updated
-                // Intentionally not awaiting or catching errors.
-                // Any failure in startExpansion should be emitted in the expand complete result
-                // We want this to be async and ideally return true before it completes
-                this.startExpansion(session, nodeInfo, isRefresh);
-            }, 10);
-        }
-        return true;
-    }
+			let connInfo: sqlops.connection.Connection = {
+				options: {
+					'host': endpoints[index].ipAddress,
+					'groupId': connectionProfile.options.groupId,
+					'knoxport': '',
+					'user': 'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
+					'password': credentials.password,
+				},
+				providerName: constants.mssqlClusterProviderName,
+				connectionId: UUID.generateUuid()
+			};
 
-    private async startExpansion(session: Session, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
-        let expandResult: sqlops.ObjectExplorerExpandInfo = {
-            sessionId: session.uri,
-            nodePath: nodeInfo.nodePath,
-            errorMessage: undefined,
-            nodes: []
-        };
-        try {
-            let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
-            if (!node) {
-                expandResult.errorMessage = localize('nodeNotFound', 'Cannot expand object explorer node. Couldn\t find node for path {0}', nodeInfo.nodePath);
-            } else {
-                expandResult.errorMessage = node.getNodeInfo().errorMessage;
-                let children = await node.getChildren(true);
-                if (children) {
-                    expandResult.nodes = children.map(c => c.getNodeInfo());
-                }
-            }
-        } catch (error) {
-            expandResult.errorMessage = utils.getErrorMessage(error);
-        }
-        this.expandCompleteEmitter.fire(expandResult);
-    }
+			let connection = new Connection(connInfo);
+			connection.saveUriWithPrefix(constants.objectExplorerPrefix);
+			let session = new Session(connection, sessionInfo.sessionId);
+			session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), sessionInfo.rootNode.nodePath);
+			this.sessionMap.set(sessionInfo.sessionId, session);
+			return true;
+		} else {
+			return false;
+		}
+	}
+	expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
+		return new Promise((resolve, reject) => {
+			if (!nodeInfo) {
+				reject('expandNode requires a nodeInfo object to be passed');
+			} else {
+				resolve(this.doExpandNode(nodeInfo, isRefresh));
+			}
+		});
+	}
 
-    refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-        // TODO #658 implement properly
-        return this.expandNode(nodeInfo, true);
-    }
+	private async doExpandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
+		let session = this.sessionMap.get(nodeInfo.sessionId);
+		let response = {
+			sessionId: nodeInfo.sessionId,
+			nodePath: nodeInfo.nodePath,
+			errorMessage: undefined,
+			nodes: undefined
+		};
 
-    closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
-        // TODO #583 cleanup any resources we've opened
-        let deleted = this.sessionMap.delete(closeSessionInfo.sessionId);
-        let response: sqlops.ObjectExplorerCloseSessionResponse = {
-            success: deleted,
-            sessionId: closeSessionInfo.sessionId
-        };
-        return Promise.resolve(response);
-    }
+		if (!session) {
+			response.errorMessage = localize('sessionIdNotFound', 'Cannot expand object explorer node. Couldn\'t find session for uri {0}', nodeInfo.sessionId);
+			this.expandCompleteEmitter.fire(response);
+			return false;
+		} else {
+			setTimeout(() => {
 
-    findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
-        // TODO #659 implement
-        let response: sqlops.ObjectExplorerFindNodesResponse = {
-            nodes: []
-        };
-        return Promise.resolve(response);
-    }
+				// Running after promise resolution as we need the Ops Studio-side map to have been updated
+				// Intentionally not awaiting or catching errors.
+				// Any failure in startExpansion should be emitted in the expand complete result
+				// We want this to be async and ideally return true before it completes
+				this.startExpansion(session, nodeInfo, isRefresh);
+			}, 10);
+		}
+		return true;
+	}
 
-    registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
-        this.sessionCreatedEmitter.event(handler);
-    }
+	private async startExpansion(session: Session, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
+		let expandResult: sqlops.ObjectExplorerExpandInfo = {
+			sessionId: session.uri,
+			nodePath: nodeInfo.nodePath,
+			errorMessage: undefined,
+			nodes: []
+		};
+		try {
+			let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
+			if (!node) {
+				expandResult.nodes = [];
+			} else {
+				expandResult.errorMessage = node.getNodeInfo().errorMessage;
 
-    registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
-        this.expandCompleteEmitter.event(handler);
-    }
+				if (!session.isExpanded) {
+					expandResult.nodes = [node.getNodeInfo()];
+					session.isExpanded = true;
+				} else {
+					let children = await node.getChildren(true);
+					if (children) {
+						expandResult.nodes = children.map(c => c.getNodeInfo());
+					}
+				}
+			}
+		} catch (error) {
+			expandResult.errorMessage = utils.getErrorMessage(error);
+		}
+		this.expandCompleteEmitter.fire(expandResult);
+	}
 
-    notifyNodeChanged(node: TreeNode): void {
-        this.notifyNodeChangesAsync(node);
-    }
+	refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		return this.expandNode(nodeInfo, true);
+	}
 
-    private async notifyNodeChangesAsync(node: TreeNode): Promise<void> {
-        try {
-            let session = this.getSessionForNode(node);
-            if (!session) {
-                this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
-            } else {
-                let nodeInfo = node.getNodeInfo();
-                let expandInfo: sqlops.ExpandNodeInfo = {
-                    nodePath: nodeInfo.nodePath,
-                    sessionId: session.uri
-                };
-                await this.refreshNode(expandInfo);
-            }
-        } catch (err) {
-            // TODO #667 log to output channel
-            // localize('notifyError', 'Error notifying of node change: {0}', error);
-        }
-    }
+	handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void> {
+		let deleted = this.sessionMap.delete(closeSessionInfo.sessionId);
+		let response: sqlops.ObjectExplorerCloseSessionResponse = {
+			success: deleted,
+			sessionId: closeSessionInfo.sessionId
+		};
+		return Promise.resolve();
+	}
 
-    private getSessionForNode(node: TreeNode): Session {
-        let rootNode: RootNode = undefined;
-        while (rootNode === undefined && node !== undefined) {
-            if (node instanceof RootNode) {
-                rootNode = node;
-                break;
-            } else {
-                node = node.parent;
-            }
-        }
-        if (rootNode) {
-            return rootNode.session;
-        }
-        // Not found
-        return undefined;
-    }
+	findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+		// TODO #659 implement
+		let response: sqlops.ObjectExplorerFindNodesResponse = {
+			nodes: []
+		};
+		return Promise.resolve(response);
+	}
 
-    async findNodeForContext<T extends TreeNode>(explorerContext: sqlops.ObjectExplorerContext): Promise<T> {
-        let node: T = undefined;
-        let session = this.findSessionForConnection(explorerContext.connectionProfile);
-        if (session) {
-            if (explorerContext.isConnectionNode) {
-                // Note: ideally fix so we verify T matches RootNode and go from there
-                node = <T><any>session.root;
-            } else {
-                // Find the node under the session
-                node = <T><any>await session.root.findNodeByPath(explorerContext.nodeInfo.nodePath, true);
-            }
-        }
-        return node;
-    }
+	registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
+		this.expandCompleteEmitter.event(handler);
+	}
 
-    private findSessionForConnection(connectionProfile: sqlops.IConnectionProfile): Session {
-        for (let session of this.sessionMap.values()) {
-            // This is likely wrong but suffices for now.
-            if (session.connection && session.connection.isMatch(connectionProfile)) {
-                return session;
-            }
-        }
-        return undefined;
-    }
+	notifyNodeChanged(node: TreeNode): void {
+		this.notifyNodeChangesAsync(node);
+	}
+
+	private async notifyNodeChangesAsync(node: TreeNode): Promise<void> {
+		try {
+			let session = this.getSessionForNode(node);
+			if (!session) {
+				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
+			} else {
+				let nodeInfo = node.getNodeInfo();
+				let expandInfo: sqlops.ExpandNodeInfo = {
+					nodePath: nodeInfo.nodePath,
+					sessionId: session.uri
+				};
+				await this.refreshNode(expandInfo);
+			}
+		} catch (err) {
+			outputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
+		}
+	}
+
+	private getSessionForNode(node: TreeNode): Session {
+		let rootNode: RootNode = undefined;
+		while (rootNode === undefined && node !== undefined) {
+			if (node instanceof RootNode) {
+				rootNode = node;
+				break;
+			} else {
+				node = node.parent;
+			}
+		}
+		if (rootNode) {
+			return rootNode.session;
+		}
+		// Not found
+		return undefined;
+	}
+
+	async findNodeForContext<T extends TreeNode>(explorerContext: sqlops.ObjectExplorerContext): Promise<T> {
+		let node: T = undefined;
+		let session = this.findSessionForConnection(explorerContext.connectionProfile);
+		if (session) {
+			if (explorerContext.isConnectionNode) {
+				// Note: ideally fix so we verify T matches RootNode and go from there
+				node = <T><any>session.root;
+			} else {
+				// Find the node under the session
+				node = <T><any>await session.root.findNodeByPath(explorerContext.nodeInfo.nodePath, true);
+			}
+		}
+		return node;
+	}
+
+	private findSessionForConnection(connectionProfile: sqlops.IConnectionProfile): Session {
+		for (let session of this.sessionMap.values()) {
+			if (session.connection && session.connection.isMatch(connectionProfile)) {
+				return session;
+			}
+		}
+		return undefined;
+	}
 }
 
 export class Session {
-    private _root: RootNode;
-    constructor(private _connection: Connection, private sessionId?: string) {
-    }
+	private _root: RootNode;
+	private _isExpanded: boolean = false;
+	constructor(private _connection: Connection, private sessionId?: string) {
+	}
 
-    public get uri(): string {
-        return this.sessionId || this._connection.uri;
-    }
+	public get uri(): string {
+		return this.sessionId || this._connection.uri;
+	}
 
-    public get connection(): Connection {
-        return this._connection;
-    }
+	public get connection(): Connection {
+		return this._connection;
+	}
 
-    public set root(node: RootNode) {
-        this._root = node;
-    }
+	public set root(node: RootNode) {
+		this._root = node;
+	}
 
-    public get root(): RootNode {
-        return this._root;
-    }
+	public get root(): RootNode {
+		return this._root;
+	}
+
+	public set isExpanded(isExpanded: boolean) {
+		this._isExpanded = isExpanded;
+	}
+
+	public get isExpanded(): boolean {
+		return this._isExpanded;
+	}
 }
 
 class RootNode extends TreeNode {
-    private children: TreeNode[];
-    constructor(private _session: Session, private context: TreeDataContext, private nodePath: string) {
-        super();
-    }
+	private children: TreeNode[];
+	constructor(private _session: Session, private context: TreeDataContext, private nodePath: string) {
+		super();
+	}
 
-    public get session(): Session {
-        return this._session;
-    }
+	public get session(): Session {
+		return this._session;
+	}
 
-    public get nodePathValue(): string {
-        return this.nodePath + '/' + constants.dataService;
-    }
+	public get nodePathValue(): string {
+		return this.nodePath + '/' + constants.dataService;
+	}
 
-    public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
-        if (refreshChildren || !this.children) {
-            this.children = [];
-            let hdfsNode = new ConnectionNode(this.context, localize('hdfsFolder', 'HDFS'), this.createHdfsFileSource());
-            hdfsNode.parent = this;
-            this.children.push(hdfsNode);
-        }
-        return this.children;
-    }
+	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
+		if (refreshChildren || !this.children) {
+			this.children = [];
+			let hdfsNode = new ConnectionNode(this.context, localize('hdfsFolder', 'HDFS'), this.createHdfsFileSource());
+			hdfsNode.parent = this;
+			this.children.push(hdfsNode);
+		}
+		return this.children;
+	}
 
-    private createHdfsFileSource(): IFileSource {
-        return this.session.connection.createHdfsFileSource();
-    }
+	private createHdfsFileSource(): IFileSource {
+		return this.session.connection.createHdfsFileSource();
+	}
 
-    getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
-        throw new Error('Not intended for use in a file explorer view.');
-    }
+	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
+		throw new Error('Not intended for use in a file explorer view.');
+	}
 
-    getNodeInfo(): sqlops.NodeInfo {
-        let nodeInfo: sqlops.NodeInfo = {
-            label: localize('dataServicesLabel', 'Data Services'),
-            isLeaf: false,
-            errorMessage: undefined,
-            metadata: undefined,
-            nodePath: this.generateNodePath(),
-            nodeStatus: undefined,
-            nodeType: 'hadoop:root',
-            nodeSubType: undefined,
-            iconType: 'folder'
-        };
-        return nodeInfo;
-    }
+	getNodeInfo(): sqlops.NodeInfo {
+		let nodeInfo: sqlops.NodeInfo = {
+			label: localize('dataServicesLabel', 'Data Services'),
+			isLeaf: false,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			nodeStatus: undefined,
+			nodeType: 'hadoop:root',
+			nodeSubType: undefined,
+			iconType: 'folder'
+		};
+		return nodeInfo;
+	}
 }

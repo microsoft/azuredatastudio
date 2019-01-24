@@ -8,7 +8,7 @@ import { ObjectExplorerProviderTestService } from 'sqltest/stubs/objectExplorerP
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { ObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/objectExplorer/common/treeNode';
 
@@ -32,12 +32,13 @@ suite('SQL Object Explorer Service tests', () => {
 	let objectExplorerSession: sqlops.ObjectExplorerSession;
 	let objectExplorerFailedSession: sqlops.ObjectExplorerSession;
 	let objectExplorerCloseSessionResponse: sqlops.ObjectExplorerCloseSessionResponse;
-	let objectExplorerExpandInfo: sqlops.ObjectExplorerExpandInfo;
-	let objectExplorerExpandInfoRefresh: sqlops.ObjectExplorerExpandInfo;
+	let objectExplorerExpandInfo: NodeExpandInfoWithProviderId;
+	let objectExplorerExpandInfoRefresh: NodeExpandInfoWithProviderId;
 	let sessionId = '1234';
 	let failedSessionId = '12345';
 	let numberOfFailedSession: number = 0;
 	let serverTreeView: TypeMoq.Mock<ServerTreeView>;
+	const providerId = 'MSSQL';
 
 	setup(() => {
 
@@ -105,14 +106,16 @@ suite('SQL Object Explorer Service tests', () => {
 			sessionId: sessionId,
 			nodes: [NodeInfoTable1, NodeInfoTable2],
 			errorMessage: '',
-			nodePath: objectExplorerSession.rootNode.nodePath
+			nodePath: objectExplorerSession.rootNode.nodePath,
+			providerId: providerId
 		};
 
 		objectExplorerExpandInfoRefresh = {
 			sessionId: sessionId,
 			nodes: [NodeInfoTable1, NodeInfoTable3],
 			errorMessage: '',
-			nodePath: objectExplorerSession.rootNode.nodePath
+			nodePath: objectExplorerSession.rootNode.nodePath,
+			providerId: providerId
 		};
 		let response: sqlops.ObjectExplorerSessionResponse = {
 			sessionId: objectExplorerSession.sessionId
@@ -126,9 +129,8 @@ suite('SQL Object Explorer Service tests', () => {
 		sqlOEProvider.callBase = true;
 
 		let onCapabilitiesRegistered = new Emitter<string>();
-
 		let sqlProvider = {
-			providerId: 'MSSQL',
+			providerId: providerId,
 			displayName: 'MSSQL',
 			connectionOptions: [
 				{
@@ -279,10 +281,10 @@ suite('SQL Object Explorer Service tests', () => {
 			resolve(failedResponse);
 		}));
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
-			objectExplorerService.onNodeExpanded(1, objectExplorerExpandInfo);
+			objectExplorerService.onNodeExpanded(objectExplorerExpandInfo);
 		}).returns(() => TPromise.as(true));
 		sqlOEProvider.setup(x => x.refreshNode(TypeMoq.It.isAny())).callback(() => {
-			objectExplorerService.onNodeExpanded(1, objectExplorerExpandInfoRefresh);
+			objectExplorerService.onNodeExpanded(objectExplorerExpandInfoRefresh);
 		}).returns(() => TPromise.as(true));
 		sqlOEProvider.setup(x => x.closeSession(TypeMoq.It.isAny())).returns(() => TPromise.as(objectExplorerCloseSessionResponse));
 
@@ -539,7 +541,8 @@ suite('SQL Object Explorer Service tests', () => {
 			sessionId: sessionId,
 			nodes: [],
 			errorMessage: '',
-			nodePath: table1NodePath
+			nodePath: table1NodePath,
+			providerId: providerId
 		};
 		serverTreeView.setup(x => x.isExpanded(TypeMoq.It.isAny())).returns(treeNode => {
 			return treeNode === connection || treeNode.nodePath === table1NodePath;
@@ -549,7 +552,7 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
 			objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(childNodes => {
 				sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
-					objectExplorerService.onNodeExpanded(1, tableExpandInfo);
+					objectExplorerService.onNodeExpanded(tableExpandInfo);
 				}).returns(() => TPromise.as(true));
 				let tableNode = childNodes.find(node => node.nodePath === table1NodePath);
 				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, tableNode).then(() => {
@@ -596,7 +599,8 @@ suite('SQL Object Explorer Service tests', () => {
 			sessionId: sessionId,
 			nodes: [],
 			errorMessage: '',
-			nodePath: table1NodePath
+			nodePath: table1NodePath,
+			providerId: providerId
 		};
 		serverTreeView.setup(x => x.isExpanded(TypeMoq.It.isAny())).returns(treeNode => {
 			return treeNode.nodePath === table1NodePath;
@@ -606,7 +610,7 @@ suite('SQL Object Explorer Service tests', () => {
 			objectExplorerService.onSessionCreated(1, objectExplorerSession);
 			objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, objectExplorerService.getObjectExplorerNode(connection)).then(childNodes => {
 				sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.isAny())).callback(() => {
-					objectExplorerService.onNodeExpanded(1, tableExpandInfo);
+					objectExplorerService.onNodeExpanded(tableExpandInfo);
 				}).returns(() => TPromise.as(true));
 				objectExplorerService.resolveTreeNodeChildren(objectExplorerSession, childNodes.find(node => node.nodePath === table1NodePath)).then(() => {
 					// If I check whether the table is expanded, the answer should be yes
@@ -630,11 +634,12 @@ suite('SQL Object Explorer Service tests', () => {
 			sessionId: sessionId,
 			nodes: [],
 			errorMessage: '',
-			nodePath: table1NodePath
+			nodePath: table1NodePath,
+			providerId: providerId
 		};
 		// Set up the OE provider so that the second expand call expands the table
 		sqlOEProvider.setup(x => x.expandNode(TypeMoq.It.is(nodeInfo => nodeInfo.nodePath === table1NodePath))).callback(() => {
-			objectExplorerService.onNodeExpanded(1, tableExpandInfo);
+			objectExplorerService.onNodeExpanded(tableExpandInfo);
 		}).returns(() => TPromise.as(true));
 		serverTreeView.setup(x => x.setExpandedState(TypeMoq.It.isAny(), TypeMoq.It.is(state => state === TreeItemCollapsibleState.Expanded))).returns(treeNode => {
 			if (treeNode instanceof ConnectionProfile) {

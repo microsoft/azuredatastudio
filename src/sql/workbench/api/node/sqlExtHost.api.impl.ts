@@ -244,7 +244,7 @@ export function createApiFactory(
 				}
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
-					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
@@ -252,7 +252,7 @@ export function createApiFactory(
 
 			let registerObjectExplorerNodeProvider = (provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable => {
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
-					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);

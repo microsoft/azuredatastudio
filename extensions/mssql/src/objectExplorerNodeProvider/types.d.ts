@@ -6,48 +6,6 @@
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
-// /**
-//  * The API provided by this extension
-//  *
-//  * @export
-//  * @interface IExtensionApi
-//  */
-// export interface IExtensionApi {
-//     openNotebook(documentUri: vscode.Uri, isTrusted: boolean, connection: sqlops.ConnectionInfo): Promise<void>;
-//     getDefaultConnection(): Promise<sqlops.ConnectionInfo>;
-//     /**
-//      * Internal for testing use only
-//      *
-//      * @memberof IExtensionApi
-//      */
-//     getJupterController();
-
-//     /**
-//      * Gets the object explorer API that supports querying over the connections supported by this extension
-//      *
-//      * @returns {IObjectExplorerBrowser}
-//      * @memberof IExtensionApi
-//      */
-//     getObjectExplorerBrowser(): IObjectExplorerBrowser;
-// }
-
-// /**
-//  * A browser supporting actions over the object explorer connections provided by this extension.
-//  * Currently this is the
-//  *
-//  * @export
-//  * @interface IObjectExplorerBrowser
-//  */
-// export interface IObjectExplorerBrowser {
-//     /**
-//      * Gets the matching node given a context object, e.g. one from a right-click on a node in Object Explorer
-//      *
-//      * @param {sqlops.ObjectExplorerContext} objectExplorerContext
-//      * @returns {Promise<T>}
-//      */
-//     getNode<T extends ITreeNode>(objectExplorerContext: sqlops.ObjectExplorerContext): Promise<T>;
-// }
-
 /**
  * A tree node in the object explorer tree
  *
@@ -55,8 +13,8 @@ import * as sqlops from 'sqlops';
  * @interface ITreeNode
  */
 export interface ITreeNode {
-    getNodeInfo(): sqlops.NodeInfo;
-    getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
+	getNodeInfo(): sqlops.NodeInfo;
+	getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
 }
 
 /**
@@ -68,5 +26,5 @@ export interface ITreeNode {
  * @extends {ITreeNode}
  */
 export interface IFileNode extends ITreeNode {
-    getFileContentsAsString(maxBytes?: number): Promise<string>;
+	getFileContentsAsString(maxBytes?: number): Promise<string>;
 }

@@ -134,7 +134,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$registerObjectExplorerNodeProvider(provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.ObjectExplorerNodeProvider);
-		this._proxy.$registerObjectExplorerNodeProvider(provider.supportedProviderId, provider.handle);
+		this._proxy.$registerObjectExplorerNodeProvider(provider.providerId, provider.supportedProviderId, provider.group, provider.handle);
 		return rt;
 	}
 
@@ -348,20 +348,28 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).createNewSession(connInfo);
 	}
 
+	public $createObjectExplorerNodeProviderSession(handle: number, session: sqlops.ObjectExplorerSession): Thenable<boolean> {
+		return this._resolveProvider<sqlops.ObjectExplorerNodeProvider>(handle).handleSessionOpen(session);
+	}
+
 	public $expandObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider>(handle).expandNode(nodeInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProviderBase> (handle).expandNode(nodeInfo);
 	}
 
 	public $refreshObjectExplorerNode(handle: number, nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider>(handle).refreshNode(nodeInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProviderBase> (handle).refreshNode(nodeInfo);
 	}
 
 	public $closeObjectExplorerSession(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider>(handle).closeSession(closeSessionInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).closeSession(closeSessionInfo);
+	}
+
+	public $handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void> {
+		return this._resolveProvider<sqlops.ObjectExplorerNodeProvider>(handle).handleSessionClose(closeSessionInfo);
 	}
 
 	public $findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
-		return this._resolveProvider<sqlops.ObjectExplorerProvider | sqlops.ObjectExplorerNodeProvider>(handle).findNodes(findNodesInfo);
+		return this._resolveProvider<sqlops.ObjectExplorerProviderBase>(handle).findNodes(findNodesInfo);
 	}
 
 	public $onObjectExplorerSessionCreated(handle: number, response: sqlops.ObjectExplorerSession): void {
@@ -372,8 +380,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		this._proxy.$onObjectExplorerSessionDisconnected(handle, response);
 	}
 
-	public $onObjectExplorerNodeExpanded(handle: number, response: sqlops.ObjectExplorerExpandInfo): void {
-		this._proxy.$onObjectExplorerNodeExpanded(handle, response);
+	public $onObjectExplorerNodeExpanded(providerId: string, response: sqlops.ObjectExplorerExpandInfo): void {
+		this._proxy.$onObjectExplorerNodeExpanded(providerId, response);
 	}
 
 	// Task Service

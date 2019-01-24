@@ -104,7 +104,7 @@ declare module 'sqlops' {
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
 		/**
-		 * Get the credentials for an active connection
+		 * Get ServerInfo for a connectionId
 		 * @param {string} connectionId The id of the connection
 		 * @returns ServerInfo
 		 */
@@ -364,18 +364,7 @@ declare module 'sqlops' {
 		/**
 		 * options for all new server properties.
 		 */
-		options: ServerInfoOption;
-	}
-
-	export interface ServerInfoOption {
-		isBigDataCluster: boolean;
-		clusterEndpoints: ClusterEndpoint[];
-	}
-
-	export interface ClusterEndpoint {
-		serviceName: string;
-		ipAddress: string;
-		port: number;
+		options: {};
 	}
 
 	export interface DataProvider {
@@ -1192,32 +1181,42 @@ declare module 'sqlops' {
 		nodes: NodeInfo[];
 	}
 
-	export interface ObjectExplorerProvider extends DataProvider {
-		createNewSession?(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
-
+	export interface ObjectExplorerProviderBase extends DataProvider {
 		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
 		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
-		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
-
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
-
-		registerOnSessionCreated?(handler: (response: ObjectExplorerSession) => any): void;
-
-		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
 	}
 
-	export interface ObjectExplorerNodeProvider extends ObjectExplorerProvider {
+	export interface ObjectExplorerProvider extends ObjectExplorerProviderBase {
+		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
+
+		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
+
+		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
+
+		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
+	}
+
+	export interface ObjectExplorerNodeProvider extends ObjectExplorerProviderBase {
 		/**
 		 * The providerId for whichever type of ObjectExplorer connection this can add folders and objects to
 		 */
 		readonly supportedProviderId: string;
 
-		readonly groupingId?: number;
-		}
+		/**
+		 * Optional group name used to sort nodes in the tree. If not defined, the node order will be added in order based on provider ID, with
+		 * nodes from the main ObjectExplorerProvider for this provider type added first
+		 */
+		readonly group?: string;
+
+		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
+
+		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<void>;
+	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
 	export interface DatabaseInfo {
