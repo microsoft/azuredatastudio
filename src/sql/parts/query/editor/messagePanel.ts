@@ -5,7 +5,7 @@
 'use strict';
 
 import 'vs/css!./media/messagePanel';
-import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
+import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
@@ -122,21 +122,12 @@ export class MessagePanel extends ViewletPanel {
 		this.controller.onKeyDown = (tree, event) => {
 			if (event.ctrlKey) {
 				let context: IMessagesActionContext = {
-					selection: null,
+					selection: document.getSelection(),
 					tree: this.tree,
-					selectAllMessages: null
 				};
-				// Ctrl + A for select all
-				if (event.code === 'KeyA') {
-					let allMessages = this.copySelectAllMessagesText();
-					let selectAllAction = instantiationService.createInstance(SelectAllMessagesAction, this);
-					context.selectAllMessages = allMessages;
-					selectAllAction.run(context);
-				} else if (event.code === 'KeyC') {
-					// Ctrl + C for copy
+				// Ctrl + C for copy
+				if (event.code === 'KeyC') {
 					let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService);
-					let allMessages = this.copySelectAllMessagesText();
-					context.selectAllMessages = allMessages;
 					copyMessageAction.run(context);
 				}
 			}
@@ -156,7 +147,6 @@ export class MessagePanel extends ViewletPanel {
 			}
 
 			const selection = document.getSelection();
-			let selectAllMessages = this.copySelectAllMessagesText();
 
 			this.contextMenuService.showContextMenu({
 				getAnchor: () => {
@@ -165,14 +155,13 @@ export class MessagePanel extends ViewletPanel {
 				getActions: () => {
 					return TPromise.as([
 						instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService),
-						instantiationService.createInstance(SelectAllMessagesAction, this)
+						instantiationService.createInstance(CopyAllMessagesAction, this.tree, this.clipboardService)
 					]);
 				},
 				getActionsContext: () => {
 					return <IMessagesActionContext>{
 						selection,
-						tree,
-						selectAllMessages
+						tree
 					};
 				}
 			});
@@ -254,14 +243,6 @@ export class MessagePanel extends ViewletPanel {
 		this.tree.refresh(this.model);
 	}
 
-	private copySelectAllMessagesText(): string[] {
-		let selectAllMessages = [];
-		this.model.messages.map(msg => {
-			selectAllMessages.push(msg.message);
-		});
-		return selectAllMessages;
-	}
-
 	public set state(val: MessagePanelState) {
 		this._state = val;
 		if (this.state.scrollPosition) {
@@ -281,14 +262,6 @@ export class MessagePanel extends ViewletPanel {
 	public dispose() {
 		dispose(this.queryRunnerDisposables);
 		super.dispose();
-	}
-
-	public get selectAllMessages(): boolean {
-		return this._selectAllMessages;
-	}
-
-	public set selectAllMessages(value: boolean) {
-		this._selectAllMessages = value;
 	}
 }
 
