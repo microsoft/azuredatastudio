@@ -49,6 +49,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -92,7 +93,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IWindowService) private windowService: IWindowService,
 		@Inject(IViewletService) private viewletService: IViewletService,
 		@Inject(IUntitledEditorService) private untitledEditorService: IUntitledEditorService,
-		@Inject(IEditorGroupsService) private editorGroupService: IEditorGroupsService
+		@Inject(IEditorGroupsService) private editorGroupService: IEditorGroupsService,
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		this.updateProfile();
@@ -243,7 +245,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			notebookManagers: this.notebookManagers,
 			standardKernels: this._notebookParams.input.standardKernels,
 			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
-			defaultKernel: this._notebookParams.input.defaultKernel
+			defaultKernel: this._notebookParams.input.defaultKernel,
+			capabilitiesService: this.capabilitiesService
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
@@ -330,7 +333,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let attachToContainer = document.createElement('div');
 		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService);
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachTodropdwon.render(attachToContainer);
 		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 

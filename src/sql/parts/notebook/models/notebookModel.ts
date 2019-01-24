@@ -23,6 +23,7 @@ import { INotification, Severity } from 'vs/platform/notification/common/notific
 import { Schemas } from 'vs/base/common/network';
 import URI from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -57,7 +58,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _savedKernelInfo: nb.IKernelInfo;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
-	private _activeConnection: IConnectionProfile;
+	private _activeConnection: ConnectionProfile;
 	private _activeCell: ICellModel;
 	private _providerId: string;
 	private _defaultKernel: nb.IKernelSpec;
@@ -350,7 +351,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!this._activeClientSession) {
 				this._activeClientSession = clientSession;
 			}
-			let profile = this.connectionProfile as IConnectionProfile;
+			let profile = new ConnectionProfile(this.notebookOptions.capabilitiesService, this.connectionProfile);
 
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
@@ -420,8 +421,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!newConnection && (this._activeContexts.defaultConnection.serverName === server)) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			this._activeConnection = newConnection;
-			this.refreshConnections(newConnection);
+			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
+			this._activeConnection = newConnectionProfile;
+			this.refreshConnections(newConnectionProfile);
 			this._activeClientSession.updateConnection(this._activeConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
@@ -429,7 +431,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private refreshConnections(newConnection: IConnectionProfile) {
+	private refreshConnections(newConnection: ConnectionProfile) {
 		if (this.isValidConnection(newConnection) &&
 			this._activeConnection.id !== '-1' &&
 			this._activeConnection.id !== this._activeContexts.defaultConnection.id) {

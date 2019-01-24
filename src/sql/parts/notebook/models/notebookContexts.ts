@@ -12,12 +12,13 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';
 
 	private static get DefaultContext(): IDefaultConnection {
-		let defaultConnection: IConnectionProfile = <any>{
+		let defaultConnection: ConnectionProfile = <any>{
 			providerName: NotebookContexts.MSSQL_PROVIDER,
 			id: '-1',
 			serverName: localize('selectConnection', 'Select connection')
@@ -31,7 +32,7 @@ export class NotebookContexts {
 	}
 
 	private static get LocalContext(): IDefaultConnection {
-		let localConnection: IConnectionProfile = <any>{
+		let localConnection: ConnectionProfile = <any>{
 			providerName: NotebookContexts.MSSQL_PROVIDER,
 			id: '-1',
 			serverName: localize('localhost', 'Localhost')
@@ -73,8 +74,8 @@ export class NotebookContexts {
 	 * @param profile current connection profile
 	 */
 	public static async getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
-		let defaultConnection: IConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
-		let activeConnections: IConnectionProfile[] = await connectionService.getActiveConnections();
+		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
+		let activeConnections: ConnectionProfile[] = await connectionService.getActiveConnections();
 		// If no connections exist, only show 'n/a'
 		if (activeConnections && activeConnections.length > 0) {
 			activeConnections = activeConnections.filter(conn => conn.id !== '-1');
@@ -85,18 +86,7 @@ export class NotebookContexts {
 			}
 			return NotebookContexts.DefaultContext;
 		}
-
-		// If launched from the right click or server dashboard, connection profile data exists, so use that as default
-		// if (profile && profile.options) {
-		// 	let profileConnection = activeConnections.filter(conn => conn.serverName === profile.serverName);
-		// 	if (profileConnection) {
-		// 		let connections = profileConnection.filter(connection => connection.providerName in connProviderIds);
-		// 		if (connections && connections.length > 0) {
-		// 			defaultConnection = connections[0];
-		// 		}
-		// 	}
-		// } else {
-		if (activeConnections.length > 0) {
+		else if (activeConnections.length > 0) {
 			let connections = activeConnections.filter(connection => {
 				return connProviderIds.includes(connection.providerName);
 			});
@@ -112,7 +102,7 @@ export class NotebookContexts {
 			connections.forEach(connection => activeConnections.push(connection));
 		}
 		if (defaultConnection === NotebookContexts.DefaultContext.defaultConnection) {
-			let newConnection = <IConnectionProfile><any>{
+			let newConnection = <ConnectionProfile><any>{
 				providerName: 'SQL',
 				id: '-2',
 				serverName: localize('addConnection', 'Add new connection')

@@ -25,6 +25,8 @@ import { Deferred } from 'sql/base/common/promise';
 import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
 import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 let expectedNotebookContent: nb.INotebookContents = {
     cells: [{
@@ -71,6 +73,7 @@ let mockClientSession: TypeMoq.Mock<IClientSession>;
 let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
+let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
 
 describe('notebook model', function(): void {
     let notebookManagers = [new NotebookManagerStub()];
@@ -80,6 +83,7 @@ describe('notebook model', function(): void {
     beforeEach(() => {
         sessionReady = new Deferred<void>();
         notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
+        capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
         memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
         memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
         queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined);
@@ -92,7 +96,8 @@ describe('notebook model', function(): void {
             connectionService: queryConnectionService.object,
             providerId: 'SQL',
             standardKernels: [{ name: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
-            defaultKernel: undefined
+            defaultKernel: undefined,
+            capabilitiesService: capabilitiesService.object
         };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
         mockClientSession.setup(c => c.initialize(TypeMoq.It.isAny())).returns(() => {

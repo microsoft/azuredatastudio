@@ -20,6 +20,8 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -202,8 +204,8 @@ export interface IClientSession extends IDisposable {
 }
 
 export interface IDefaultConnection {
-	defaultConnection: IConnectionProfile;
-	otherConnections: IConnectionProfile[];
+	defaultConnection: ConnectionProfile;
+	otherConnections: ConnectionProfile[];
 }
 
 /**
@@ -432,6 +434,7 @@ export interface INotebookModelOptions {
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
+	capabilitiesService: ICapabilitiesService;
 }
 
 // TODO would like to move most of these constants to an extension

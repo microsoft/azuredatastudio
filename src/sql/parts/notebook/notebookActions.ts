@@ -15,10 +15,11 @@ import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selec
 import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 import { noKernel } from 'sql/services/notebook/sessionManager';
+import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -209,7 +210,8 @@ export class AttachToDropdown extends SelectBox {
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
-		@INotificationService private _notificationService: INotificationService) {
+		@INotificationService private _notificationService: INotificationService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
@@ -220,7 +222,7 @@ export class AttachToDropdown extends SelectBox {
 		}
 		this.onDidSelect(e => {
 			let connection = this.model.contexts.otherConnections.find((c) => c.serverName === e.selected);
-			this.doChangeContext(connection);
+			this.doChangeContext(new ConnectionProfile(this._capabilitiesService, connection));
 		});
 	}
 
@@ -257,7 +259,7 @@ export class AttachToDropdown extends SelectBox {
 
 	//Get connections from context
 	public getConnections(model: INotebookModel): string[] {
-		let otherConnections: IConnectionProfile[] = [];
+		let otherConnections: ConnectionProfile[] = [];
 		model.contexts.otherConnections.forEach((conn) => { otherConnections.push(conn); });
 		this.selectWithOptionName(model.contexts.defaultConnection.serverName);
 		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
@@ -265,7 +267,7 @@ export class AttachToDropdown extends SelectBox {
 		return connections;
 	}
 
-	private setConnectionsList(defaultConnection: IConnectionProfile, otherConnections: IConnectionProfile[]) {
+	private setConnectionsList(defaultConnection: ConnectionProfile, otherConnections: ConnectionProfile[]) {
 		if (defaultConnection.serverName !== msgSelectConnection) {
 			otherConnections = otherConnections.filter(conn => conn.serverName !== defaultConnection.serverName);
 			otherConnections.unshift(defaultConnection);
@@ -276,7 +278,7 @@ export class AttachToDropdown extends SelectBox {
 		return otherConnections;
 	}
 
-	public doChangeContext(connection?: IConnectionProfile): void {
+	public doChangeContext(connection?: ConnectionProfile): void {
 		if (this.value === msgAddNewConnection) {
 			this.openConnectionDialog();
 		} else {
@@ -298,7 +300,8 @@ export class AttachToDropdown extends SelectBox {
 					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
 					return;
 				}
-				let connectedServer = connection.serverName;
+				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+				let connectedServer = connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
 					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
@@ -320,7 +323,7 @@ export class AttachToDropdown extends SelectBox {
 				this.select(index);
 
 				// Call doChangeContext to set the newly chosen connection in the model
-				this.doChangeContext(connection);
+				this.doChangeContext(connectionProfile);
 			});
 		}
 		catch (error) {
