@@ -25,6 +25,7 @@ import { AzureResourceTenantService } from '../azureResource/services/tenantServ
 
 import { registerAzureResourceDatabaseServerCommands } from '../azureResource/providers/databaseServer/commands';
 import { registerAzureResourceDatabaseCommands } from '../azureResource/providers/database/commands';
+import { equals } from '../azureResource/utils';
 
 export default class AzureResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {
@@ -37,7 +38,16 @@ export default class AzureResourceController extends ControllerBase {
 		const azureResourceTree = new AzureResourceTreeProvider(this.appContext);
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('azureResourceExplorer', azureResourceTree));
 
-		this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).onDidChangeAccounts((e: DidChangeAccountsParams) => { azureResourceTree.notifyNodeChanged(undefined); });
+		let previousAccounts = undefined;
+		this.appContext.getService<IAzureResourceAccountService>(AzureResourceServiceNames.accountService).onDidChangeAccounts((e: DidChangeAccountsParams) => {
+			// the onDidChangeAccounts event will trigger in many cases where the accounts didn't actually change
+			// the notifyNodeChanged event triggers a refresh which triggers a getChildren which can trigger this callback
+			// this below check short-circuits the infinite callback loop
+			if (!equals(e.accounts, previousAccounts)) {
+				azureResourceTree.notifyNodeChanged(undefined);
+			}
+			previousAccounts = e.accounts;
+		});
 
 		registerAzureResourceCommands(this.appContext, azureResourceTree);
 

@@ -49,18 +49,18 @@
 	display: none;
 }
 
-.account-view .provider-view .list-row {
+.account-view .list-row {
 	padding: 12px;
 }
 
-.account-view .provider-view .list-row .icon {
+.account-view .list-row .icon {
 	flex: 0 0 50px;
 	height: 50px;
 	width: 50px;
 	background-size: 50px;
 }
 
-.account-view .provider-view .list-row .icon .badge {
+.account-view .list-row .icon .badge {
 	position: absolute;
 	top: 43px;
 	left: 43px;
@@ -69,17 +69,17 @@
 	height: 22px;
 }
 
-.account-view .provider-view .list-row .icon .badge .badge-content {
+.account-view .list-row .icon .badge .badge-content {
 	width: 22px;
 	height: 22px;
 	background-size: 22px;
 }
 
-.account-view .provider-view .list-row .actions-container {
+.account-view .list-row .actions-container {
 	flex: 0 0 50px;
 }
 
-.account-view .provider-view .list-row .actions-container .action-item .action-label {
+.account-view .list-row .actions-container .action-item .action-label {
 	width: 16px;
 	margin-left: 20px;
 	margin-right: 10px;
@@ -88,16 +88,16 @@
 	background-repeat: no-repeat;
 }
 
-.account-view .provider-view .list-row .actions-container .action-item .action-label.icon.remove {
+.account-view .list-row .actions-container .action-item .action-label.icon.remove {
 	background-size: 14px !important;
 }
 
-.account-view .provider-view .list-row .actions-container {
+.account-view .list-row .actions-container {
 	display: none;
 }
 
-.account-view .provider-view .monaco-list .monaco-list-row:hover .list-row .actions-container,
-.account-view .provider-view .monaco-list .monaco-list-row.selected .list-row .actions-container,
-.account-view .provider-view .monaco-list .monaco-list-row.focused .list-row .actions-container{
+.account-view .monaco-list .monaco-list-row:hover .list-row .actions-container,
+.account-view .monaco-list .monaco-list-row.selected .list-row .actions-container,
+.account-view .monaco-list .monaco-list-row.focused .list-row .actions-container{
 	display: block;
 }

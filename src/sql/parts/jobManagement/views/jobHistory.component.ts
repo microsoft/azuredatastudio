@@ -177,7 +177,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			} else {
 				self._showPreviousRuns = false;
 				self._showSteps = false;
-				self._cd.detectChanges();
+				if (self._agentViewComponent.showHistory) {
+					self._cd.detectChanges();
+				}
 			}
 		});
 	}
@@ -209,7 +211,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			} else {
 				self._showSteps = false;
 			}
-			self._cd.detectChanges();
+			if (self._agentViewComponent.showHistory) {
+				self._cd.detectChanges();
+			}
 		}
 	}
 
