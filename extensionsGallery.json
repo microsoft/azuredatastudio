@@ -1137,7 +1137,60 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}				
+				},
+				{
+					"extensionId": "31",
+					"extensionName": "poor-sql-formatter",
+					"displayName": "Poor SQL Formatter",
+					"shortDescription": "T-SQL Formatter & Beautifier.",
+					"publisher": {
+						"displayName": "WSR Publishing, Inc.",
+						"publisherId": "WSRPublishing",
+						"publisherName": "WSRPublishing"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "01/23/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/wsr-publishing/azure-poor-formatter/releases/tag/v0.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://github.com/wsr-publishing/azure-poor-formatter/blob/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://github.com/wsr-publishing/azure-poor-formatter/blob/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://github.com/wsr-publishing/azure-poor-formatter/blob/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/wsr-publishing/azure-poor-formatter"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}
 			],
 			"resultMetadata": [
 				{
