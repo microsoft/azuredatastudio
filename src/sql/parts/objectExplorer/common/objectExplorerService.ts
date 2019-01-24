@@ -365,37 +365,29 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					let resultMap: Map<string, sqlops.ObjectExplorerExpandInfo> = new Map<string, sqlops.ObjectExplorerExpandInfo>();
 					let allProviders: sqlops.ObjectExplorerProviderBase[] = [provider];
 
-					let nodeProvidersOrdered = this._nodeProviders[providerId];
-					if (nodeProvidersOrdered) {
-						nodeProvidersOrdered = nodeProvidersOrdered.sort((a, b) => a.group.toLowerCase().localeCompare(b.group.toLowerCase()));
-						allProviders.push(...nodeProvidersOrdered);
+					let nodeProviders = this._nodeProviders[providerId];
+					if (nodeProviders) {
+						nodeProviders = nodeProviders.sort((a, b) => a.group.toLowerCase().localeCompare(b.group.toLowerCase()));
+						allProviders.push(...nodeProviders);
 					}
-
-					self._sessions[session.sessionId].expandNodeTimer = setTimeout(function () {
-						resolve (self.mergeResults(allProviders, resultMap));
-					}, 5000);
 
 					self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
 						if (expandResult) {
 							if (expandResult.providerId) {
-								if (resultMap.has(expandResult.providerId)) {
-									this.clearExpandNodeTimer(session.sessionId);
-									reject(`Got mulitiple expandResults from provider: ${expandResult.providerId}`);
-								}
 								resultMap.set(expandResult.providerId, expandResult);
 							} else {
-								this.clearExpandNodeTimer(session.sessionId);
 								reject(expandResult.errorMessage ? expandResult.errorMessage : 'ProviderId is undefined in expandResult');
 							}
 						}
 						else {
-							this.clearExpandNodeTimer(session.sessionId);
 							reject(expandResult ? expandResult.errorMessage : undefined);
 						}
-						if (resultMap.size === allProviders.length) {
-							this.clearExpandNodeTimer(session.sessionId);
-							resolve (self.mergeResults(allProviders, resultMap));
 
+						// When get all responses from all providers, merge results
+						if (resultMap.size === allProviders.length) {
+							resolve(self.mergeResults(allProviders, resultMap));
+
+							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
 							if (newRequest) {
 								delete self._sessions[session.sessionId].nodes[nodePath];
 							}
@@ -406,14 +398,24 @@ export class ObjectExplorerService implements IObjectExplorerService {
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId,
 								nodePath: nodePath
-							}, refresh).then(result => {
+							}, refresh).then(isExpanding => {
+								if (!isExpanding) {
+									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
+									let emptyResult: sqlops.ObjectExplorerExpandInfo = {
+										errorMessage: undefined,
+										nodePath: nodePath,
+										nodes: [],
+										sessionId: session.sessionId
+									};
+									resultMap.set(provider.providerId, emptyResult);
+								}
 							}, error => {
 								reject(error);
 							}));
 					}
-				} else {
-					reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${nodePath}`);
 				}
+			} else {
+				reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${nodePath}`);
 			}
 		});
 	}
@@ -434,12 +436,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			finalResult.nodes = allNodes;
 		}
 		return finalResult;
-	}
-
-	private clearExpandNodeTimer(sessionId: string): void {
-		if (this._sessions[sessionId].expandNodeTimer) {
-			clearTimeout(this._sessions[sessionId].expandNodeTimer);
-		}
 	}
 
 	public refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
@@ -471,12 +467,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let provider = this._providers[providerId];
 		if (provider) {
 			let nodeProviders = this._nodeProviders[providerId];
-			for (let nodeProvider of nodeProviders) {
-				nodeProvider.handleSessionClose({
-					sessionId: session ? session.sessionId : undefined
-				});
+			if (nodeProviders) {
+				for (let nodeProvider of nodeProviders) {
+					nodeProvider.handleSessionClose({
+						sessionId: session ? session.sessionId : undefined
+					});
+				}
 			}
-
 			return provider.closeSession({
 				sessionId: session ? session.sessionId : undefined
 			});

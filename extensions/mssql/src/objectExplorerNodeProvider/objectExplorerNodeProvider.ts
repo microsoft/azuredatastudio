@@ -50,20 +50,18 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 	}
 
 	private async doSessionOpen(sessionInfo: sqlops.ObjectExplorerSession): Promise<boolean> {
-		return this.addSessionToMap(sessionInfo);
-	}
-
-	private async addSessionToMap(sessionInfo: sqlops.ObjectExplorerSession): Promise<boolean> {
 		let connectionProfile = await sqlops.objectexplorer.getSessionConnectionProfile(sessionInfo.sessionId);
-		if (connectionProfile) {
+		if (!connectionProfile) {
+			return false;
+		} else {
 			let credentials = await sqlops.connection.getCredentials(connectionProfile.id);
 			let serverInfo = await sqlops.connection.getServerInfo(connectionProfile.id);
-			if (!serverInfo) {
+			if (!serverInfo || !credentials || !serverInfo.options) {
 				return false;
 			}
 			let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 			if (!endpoints) {
-				return;
+				return false;
 			}
 			let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
 			if (!index) {
@@ -74,7 +72,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 				options: {
 					'host': endpoints[index].ipAddress,
 					'groupId': connectionProfile.options.groupId,
-					'knoxport': '',
+					'knoxport': endpoints[index].port,
 					'user': 'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
 					'password': credentials.password,
 				},
@@ -88,10 +86,9 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 			session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), sessionInfo.rootNode.nodePath);
 			this.sessionMap.set(sessionInfo.sessionId, session);
 			return true;
-		} else {
-			return false;
 		}
 	}
+
 	expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
 		return new Promise((resolve, reject) => {
 			if (!nodeInfo) {
@@ -108,11 +105,11 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 			sessionId: nodeInfo.sessionId,
 			nodePath: nodeInfo.nodePath,
 			errorMessage: undefined,
-			nodes: undefined
+			nodes: []
 		};
 
 		if (!session) {
-			response.errorMessage = localize('sessionIdNotFound', 'Cannot expand object explorer node. Couldn\'t find session for uri {0}', nodeInfo.sessionId);
+			// This is not an error case. Just fire reponse with empty nodes for example: request from standalone SQL instance
 			this.expandCompleteEmitter.fire(response);
 			return false;
 		} else {
@@ -137,19 +134,11 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		};
 		try {
 			let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
-			if (!node) {
-				expandResult.nodes = [];
-			} else {
+			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
-
-				if (!session.isExpanded) {
-					expandResult.nodes = [node.getNodeInfo()];
-					session.isExpanded = true;
-				} else {
-					let children = await node.getChildren(true);
-					if (children) {
-						expandResult.nodes = children.map(c => c.getNodeInfo());
-					}
+				let children = await node.getChildren(true);
+				if (children) {
+					expandResult.nodes = children.map(c => c.getNodeInfo());
 				}
 			}
 		} catch (error) {
@@ -159,20 +148,17 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 	}
 
 	refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		// TODO #3815 implement properly
 		return this.expandNode(nodeInfo, true);
 	}
 
 	handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void> {
-		let deleted = this.sessionMap.delete(closeSessionInfo.sessionId);
-		let response: sqlops.ObjectExplorerCloseSessionResponse = {
-			success: deleted,
-			sessionId: closeSessionInfo.sessionId
-		};
+		this.sessionMap.delete(closeSessionInfo.sessionId);
 		return Promise.resolve();
 	}
 
 	findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
-		// TODO #659 implement
+		// TODO #3814 implement
 		let response: sqlops.ObjectExplorerFindNodesResponse = {
 			nodes: []
 		};
@@ -206,9 +192,9 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 	}
 
 	private getSessionForNode(node: TreeNode): Session {
-		let rootNode: RootNode = undefined;
+		let rootNode: DataServicesNode = undefined;
 		while (rootNode === undefined && node !== undefined) {
-			if (node instanceof RootNode) {
+			if (node instanceof DataServicesNode) {
 				rootNode = node;
 				break;
 			} else {
@@ -249,7 +235,6 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 
 export class Session {
 	private _root: RootNode;
-	private _isExpanded: boolean = false;
 	constructor(private _connection: Connection, private sessionId?: string) {
 	}
 
@@ -268,14 +253,6 @@ export class Session {
 	public get root(): RootNode {
 		return this._root;
 	}
-
-	public set isExpanded(isExpanded: boolean) {
-		this._isExpanded = isExpanded;
-	}
-
-	public get isExpanded(): boolean {
-		return this._isExpanded;
-	}
 }
 
 class RootNode extends TreeNode {
@@ -289,7 +266,51 @@ class RootNode extends TreeNode {
 	}
 
 	public get nodePathValue(): string {
-		return this.nodePath + '/' + constants.dataService;
+		return this.nodePath;
+	}
+
+	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
+		if (refreshChildren || !this.children) {
+			this.children = [];
+			let dataServicesNode = new DataServicesNode(this._session, this.context, this.nodePath);
+			dataServicesNode.parent = this;
+			this.children.push(dataServicesNode);
+		}
+		return this.children;
+	}
+
+	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
+		throw new Error('Not intended for use in a file explorer view.');
+	}
+
+	getNodeInfo(): sqlops.NodeInfo {
+		let nodeInfo: sqlops.NodeInfo = {
+			label: localize('rootLabel', 'Root'),
+			isLeaf: false,
+			errorMessage: undefined,
+			metadata: undefined,
+			nodePath: this.generateNodePath(),
+			nodeStatus: undefined,
+			nodeType: 'sqlCluster:root',
+			nodeSubType: undefined,
+			iconType: 'folder'
+		};
+		return nodeInfo;
+	}
+}
+
+class DataServicesNode extends TreeNode {
+	private children: TreeNode[];
+	constructor(private _session: Session, private context: TreeDataContext, private nodePath: string) {
+		super();
+	}
+
+	public get session(): Session {
+		return this._session;
+	}
+
+	public get nodePathValue(): string {
+		return this.nodePath;
 	}
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {

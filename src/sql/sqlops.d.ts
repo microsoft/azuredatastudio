@@ -161,6 +161,8 @@ declare module 'sqlops' {
 
 		/**
 		 * Get connectionProfile from sessionId
+		 * *@param {string} sessionId The id of the session that the node exists on
+		 * @returns {IConnectionProfile} The IConnecitonProfile for the session
 		 */
 		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
 
