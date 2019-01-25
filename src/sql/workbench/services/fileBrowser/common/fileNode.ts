@@ -11,51 +11,51 @@ import { generateUuid } from 'vs/base/common/uuid';
  */
 export class FileNode {
 	/**
-     * Node id
-     */
+	* Node id
+	*/
 	public id: string;
 
 	/**
-     * Connection uri
-     */
+	* Connection uri
+	*/
 	public ownerUri: string;
 
 	/**
-     * File or folder name
-     */
+	* File or folder name
+	*/
 	public name: string;
 
 	/**
-     * Full path of file or folder
-     */
+	* Full path of file or folder
+	*/
 	public fullPath: string;
 
 	/**
-     * Parent node
-     */
+	* Parent node
+	*/
 	public parent: FileNode;
 
 	/**
-     * Children nodes
-     */
+	* Children nodes
+	*/
 	public children: FileNode[];
 
 	/**
-     * Is the node expanded
-     */
+	* Is the node expanded
+	*/
 	public isExpanded: boolean;
 
 	/**
-     * Is the node file or folder
-     */
+	* Is the node file or folder
+	*/
 	public isFile: boolean;
 
 	/**
-     * Does this node have children
-     */
+	* Does this node have children
+	*/
 	public hasChildren: boolean;
 
-	constructor(id: string, name: string, fullPath: string, isFile: boolean, isExpanded: boolean, ownerUri: string, parent:FileNode) {
+	constructor(id: string, name: string, fullPath: string, isFile: boolean, isExpanded: boolean, ownerUri: string, parent: FileNode) {
 		if (id) {
 			this.id = id;
 		} else {

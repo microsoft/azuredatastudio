@@ -28,4 +28,4 @@ export class EditorDescriptorService implements IEditorDescriptorService {
 
 export const SERVICE_ID = 'editorDescriptorService';
 
-export const IEditorDescriptorService  = createDecorator<IEditorDescriptorService >(SERVICE_ID);
+export const IEditorDescriptorService = createDecorator<IEditorDescriptorService>(SERVICE_ID);
