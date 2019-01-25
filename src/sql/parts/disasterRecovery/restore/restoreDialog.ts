@@ -18,7 +18,6 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { localize } from 'vs/nls';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { mixin } from 'vs/base/common/objects';
-import * as DOM from 'vs/base/browser/dom';
 import * as strings from 'vs/base/common/strings';
 
 import * as sqlops from 'sqlops';
@@ -37,12 +36,12 @@ import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachI
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/parts/disasterRecovery/restore/restoreViewModel';
-import * as FileValidationConstants from 'sql/parts/fileBrowser/common/fileValidationServiceConstants';
+import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 
 interface FileListElement {
 	logicalFileName: string;

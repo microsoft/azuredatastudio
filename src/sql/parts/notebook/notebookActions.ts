@@ -16,9 +16,10 @@ import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/mod
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -292,7 +293,7 @@ export class AttachToDropdown extends SelectBox {
 	public async openConnectionDialog(): Promise<void> {
 		try {
 			//TODO: Figure out how to plumb through the correct provider here
-			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }).then(connection => {
+			await this._connectionDialogService.openDialogAndWait({ connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);

@@ -8,7 +8,7 @@ import { ObjectExplorerProviderTestService } from 'sqltest/stubs/objectExplorerP
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/objectExplorer/common/treeNode';
 

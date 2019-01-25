@@ -15,9 +15,9 @@ import { EnvironmentService } from 'vs/platform/environment/node/environmentServ
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
+import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';

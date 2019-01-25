@@ -3,8 +3,8 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { InsightsDialogController } from 'sql/parts/insights/node/insightsDialogController';
-import { InsightsDialogModel } from 'sql/parts/insights/common/insightsDialogModel';
+import { InsightsDialogController } from 'sql/workbench/services/insights/node/insightsDialogController';
+import { InsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogModel';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';

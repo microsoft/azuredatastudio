@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

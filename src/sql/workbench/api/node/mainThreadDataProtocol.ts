@@ -15,7 +15,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as sqlops from 'sqlops';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';

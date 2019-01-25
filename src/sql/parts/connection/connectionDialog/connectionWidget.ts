@@ -12,7 +12,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
-import { IConnectionComponentCallbacks } from 'sql/parts/connection/connectionDialog/connectionDialogService';
+import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as Constants from 'sql/platform/connection/common/constants';

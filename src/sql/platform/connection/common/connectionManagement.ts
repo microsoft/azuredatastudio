@@ -267,29 +267,6 @@ export interface IConnectionManagementService {
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
 }
 
-export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
-export interface IConnectionDialogService {
-	_serviceBrand: any;
-	/**
-	 * Opens the connection dialog and returns the promise for successfully opening the dialog
-	 * @param connectionManagementService
-	 * @param params
-	 * @param model
-	 * @param connectionResult
-	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<void>;
-
-	/**
-	 * Opens the connection dialog and returns the promise when connection is made
-	 * or dialog is closed
-	 * @param connectionManagementService
-	 * @param params
-	 * @param model
-	 * @param connectionResult
-	 */
-	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
-}
-
 export enum RunQueryOnConnectionMode {
 	none = 0,
 	executeQuery = 1,

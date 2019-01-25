@@ -16,11 +16,12 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/common/theme/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
-import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
-import FileValidationConstants = require('sql/parts/fileBrowser/common/fileValidationServiceConstants');
-import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
+import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
+import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
+import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as lifecycle from 'vs/base/common/lifecycle';

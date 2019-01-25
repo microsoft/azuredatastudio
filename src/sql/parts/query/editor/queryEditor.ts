@@ -43,7 +43,7 @@ import {
 	ActualQueryPlanAction
 } from 'sql/parts/query/execution/queryActions';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
+import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CancellationToken } from 'vs/base/common/cancellation';

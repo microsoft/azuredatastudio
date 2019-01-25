@@ -5,8 +5,8 @@
 
 'use strict';
 
-import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
-import { ConnectionDialogWidget } from 'sql/parts/connection/connectionDialog/connectionDialogWidget';
+import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
+import { ConnectionDialogWidget } from 'sql/workbench/services/connection/browser/connectionDialogWidget';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { ConnectionType, IConnectableInput, IConnectionResult, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
@@ -22,7 +22,7 @@ suite('ConnectionDialogService tests', () => {
 
 	setup(() => {
 		let errorMessageService = getMockErrorMessageService();
-		connectionDialogService = new ConnectionDialogService(undefined, undefined, undefined, errorMessageService.object,
+		connectionDialogService = new ConnectionDialogService(undefined, undefined, undefined, undefined, errorMessageService.object,
 			undefined, undefined, undefined);
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {});
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;
