@@ -149,6 +149,15 @@
 	background-image: url("filter_inverse.svg");
 }
 
+.vs .icon.clear-filter {
+	background-image: url("clearfilter.svg");
+}
+
+.vs-dark .icon.clear-filter,
+.hc-black .icon.clear-filter {
+	background-image: url("clearfilter_inverse.svg");
+}
+
 .vs .icon.warning-badge,
 .vs-dark .icon.warning-badge,
 .hc-black .icon.warning-badge {
