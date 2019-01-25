@@ -278,9 +278,22 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				columns.forEach(column => {
 					columnsResources.push({name: column});
 				});
+				let columnsFields: IDataResourceFields = { fields: undefined };
+				columnsFields.fields = columnsResources;
 				let dataResource: IDataResource = {
-					schema: columnsResources,
-					data: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
+					schema: columnsFields,
+					data: d.resultSubset.rows.map(row => {
+						let o = {};
+						let colNum = 0;
+						row.forEach(val => {
+							Object.defineProperty(o, columnsFields.fields[colNum].name, {
+								value: val.displayValue,
+								writable: true
+							  });
+							colNum++;
+						});
+						return o;
+					})
 				};
 				let data:SQLData = {
 					columns: batch.resultSetSummaries[0].columnInfo.map(c => c.columnName),
@@ -334,10 +347,15 @@ export class SQLFuture extends Disposable implements FutureInternal {
 }
 
 export interface IDataResource {
-	schema: IDataResourceSchema[];
-	data: string[][];
+	schema: IDataResourceFields;
+	data: any[];
+}
+
+export interface IDataResourceFields {
+	fields: IDataResourceSchema[];
 }
 
 export interface IDataResourceSchema {
 	name: string;
+	type?: string;
 }

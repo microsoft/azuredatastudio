@@ -298,7 +298,7 @@ export function renderDataResource(
 	const ROW_HEIGHT = 29;
 	const BOTTOM_PADDING_AND_SCROLLBAR = 14;
 	let tableResultsData = new TableDataView();
-	let columns: string[] = sourceObject.schema.map(val => val.name);
+	let columns: string[] = sourceObject.schema.fields.map(val => val.name);
 	// Table object requires passed in columns to be of datatype Slick.Column
 	let columnsTransformed = transformColumns(columns);
 
@@ -332,10 +332,10 @@ export function renderDataResource(
 }
 
 // SlickGrid requires columns and data to be in a very specific format; this code originally comes from tableInsight.component.ts
-function transformData(rows: string[][], columns: string[]): { [key: string]: string }[] {
+function transformData(rows: any[], columns: string[]): { [key: string]: string }[] {
 	return rows.map(row => {
 		let object: { [key: string]: string } = {};
-		row.forEach((val, index) => {
+		row.keys.forEach((val, index) => {
 			object[columns[index]] = val;
 		});
 		return object;

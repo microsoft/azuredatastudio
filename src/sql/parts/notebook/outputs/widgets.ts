@@ -371,7 +371,7 @@ export class RenderedDataResource extends RenderedCommon {
 	render(model: IRenderMime.IMimeModel): Promise<void> {
 		return renderers.renderDataResource({
 			host: this.node,
-			source: String(model.data[this.mimeType])
+			source: JSON.stringify(model.data[this.mimeType])
 		});
 	}
 }
