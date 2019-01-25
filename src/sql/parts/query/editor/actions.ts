@@ -19,6 +19,9 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/parts/query/editor/gridPanel';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { MessagePanel } from 'sql/parts/query/editor/messagePanel';
+import { isWindows } from 'vs/base/common/platform';
+import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };
@@ -129,6 +132,7 @@ export class CopyMessagesAction extends Action {
 	public static LABEL = localize('copyMessages', 'Copy');
 
 	constructor(
+		private messagePanel: MessagePanel,
 		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(CopyMessagesAction.ID, CopyMessagesAction.LABEL);
@@ -140,21 +144,31 @@ export class CopyMessagesAction extends Action {
 	}
 }
 
-export class SelectAllMessagesAction extends Action {
-	public static ID = 'grid.messages.selectAll';
-	public static LABEL = localize('selectAll', 'Select All');
+const lineDelimiter = isWindows ? '\r\n' : '\n';
+export class CopyAllMessagesAction extends Action {
+	public static ID = 'grid.messages.copyAll';
+	public static LABEL = localize('copyAll', "Copy All");
 
-	constructor() {
-		super(SelectAllMessagesAction.ID, SelectAllMessagesAction.LABEL);
+	constructor(
+		private tree: ITree,
+		@IClipboardService private clipboardService: IClipboardService)
+	{
+		super(CopyAllMessagesAction.ID, CopyAllMessagesAction.LABEL);
 	}
 
-	public run(context: IMessagesActionContext): TPromise<boolean> {
-		let range = document.createRange();
-		range.selectNodeContents(context.tree.getHTMLElement());
-		let sel = document.getSelection();
-		sel.removeAllRanges();
-		sel.addRange(range);
-		return TPromise.as(true);
+	public run(): TPromise<any> {
+		let text = '';
+		const navigator = this.tree.getNavigator();
+		// skip first navigator element - the root node
+		while (navigator.next()) {
+			if (text) {
+				text += lineDelimiter;
+			}
+			text += (navigator.current()).message;
+		}
+
+		this.clipboardService.writeText(removeAnsiEscapeCodes(text));
+		return TPromise.as(null);
 	}
 }
 
