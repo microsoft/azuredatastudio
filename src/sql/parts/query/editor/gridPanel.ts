@@ -592,6 +592,8 @@ class GridTable<T> extends Disposable implements IView {
 
 		this.restoreScrollState();
 
+		this.rebuildActionBar();
+
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
 
@@ -651,7 +653,6 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
 		this._onDidChange.fire();
 	}
 

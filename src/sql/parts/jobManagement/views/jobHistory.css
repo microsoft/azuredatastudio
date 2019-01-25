@@ -262,7 +262,7 @@ jobhistory-component {
 }
 
 jobhistory-component > .jobhistory-heading-container {
-	display: inline-block;
+	display: flex;
 }
 
 jobhistory-component > .jobhistory-heading-container > .icon.in-progress {

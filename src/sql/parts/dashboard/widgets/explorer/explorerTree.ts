@@ -289,6 +289,7 @@ export class ExplorerRenderer implements tree.IRenderer {
 		} else {
 			templateData.label.innerText = element.databaseName;
 		}
+		templateData.label.title = templateData.label.innerText;
 	}
 
 	public disposeTemplate(tree: tree.ITree, templateId: string, templateData: IListTemplate): void {

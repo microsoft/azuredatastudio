@@ -27,6 +27,7 @@ import { IContextViewService, IContextMenuService } from 'vs/platform/contextvie
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IProgressService } from 'vs/platform/progress/common/progress';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 @Component({
 	selector: 'explorer-widget',
@@ -92,7 +93,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		});
+		}, { horizontalScrollMode: ScrollbarVisibility.Auto });
 		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));
