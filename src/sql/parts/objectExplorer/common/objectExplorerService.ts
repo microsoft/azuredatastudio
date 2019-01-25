@@ -394,7 +394,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						}
 					});
 					if (newRequest) {
-						allProviders.forEach(provider =>
+						allProviders.forEach(provider => {
+							TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId,
 								nodePath: nodePath
@@ -411,7 +412,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 								}
 							}, error => {
 								reject(error);
-							}));
+							});
+						});
 					}
 				}
 			} else {

@@ -58,7 +58,7 @@ suite('Dashboard Properties Widget Tests', () => {
 			serverEdition: undefined,
 			azureVersion: undefined,
 			osVersion: undefined,
-			options: { isBigDataCluster: false, clusterEndpoints: [] },
+			options: {},
 		};
 
 		let databaseInfo = {
