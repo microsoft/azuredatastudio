@@ -437,7 +437,6 @@ export interface INotebookModelOptions {
 	capabilitiesService: ICapabilitiesService;
 }
 
-// TODO would like to move most of these constants to an extension
 export namespace notebookConstants {
 	export const SQL = 'SQL';
 }

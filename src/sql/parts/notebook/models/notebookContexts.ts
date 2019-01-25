@@ -35,7 +35,7 @@ export class NotebookContexts {
 		let localConnection: ConnectionProfile = <any>{
 			providerName: NotebookContexts.MSSQL_PROVIDER,
 			id: '-1',
-			serverName: localize('localhost', 'Localhost')
+			serverName: localize('localhost', 'localhost')
 		};
 
 		return {
@@ -47,7 +47,8 @@ export class NotebookContexts {
 
 	/**
 	 * Get all of the applicable contexts for a given kernel
-	 * @param apiWrapper ApiWrapper
+	 * @param connectionService connection management service
+	 * @param connProviderIds array of connection provider ids applicable for a kernel
 	 * @param kernelChangedArgs kernel changed args (both old and new kernel info)
 	 * @param profile current connection profile
 	 */
@@ -76,16 +77,18 @@ export class NotebookContexts {
 	public static async getActiveContexts(connectionService: IConnectionManagementService, connProviderIds: string[], profile: IConnectionProfile): Promise<IDefaultConnection> {
 		let defaultConnection: ConnectionProfile = NotebookContexts.DefaultContext.defaultConnection;
 		let activeConnections: ConnectionProfile[] = await connectionService.getActiveConnections();
-		// If no connections exist, only show 'n/a'
 		if (activeConnections && activeConnections.length > 0) {
 			activeConnections = activeConnections.filter(conn => conn.id !== '-1');
 		}
+		// If no connection provider ids exist for a given kernel, the attach to should show localhost
+		if (connProviderIds.length === 0) {
+			return NotebookContexts.LocalContext;
+		}
+		// If no active connections exist, show "Select connection" as the default value
 		if (activeConnections.length === 0) {
-			if (connProviderIds.length === 0) {
-				return NotebookContexts.LocalContext;
-			}
 			return NotebookContexts.DefaultContext;
 		}
+		// Filter active connections by their provider ids to match kernel's supported connection providers
 		else if (activeConnections.length > 0) {
 			let connections = activeConnections.filter(connection => {
 				return connProviderIds.includes(connection.providerName);
@@ -122,19 +125,20 @@ export class NotebookContexts {
 	 * @param connectionInfo connection profile
 	 * @param savedKernelInfo kernel info loaded from
 	 */
-	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo, notificationService: INotificationService): nb.IKernelSpec {
-		let savedKernel: nb.IKernelSpec;
+	public static getDefaultKernel(specs: nb.IAllKernels, connectionInfo: IConnectionProfile, savedKernelInfo: nb.IKernelInfo): nb.IKernelSpec {
 		let defaultKernel: nb.IKernelSpec;
 		if (specs) {
-			defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+			// find the saved kernel (if it exists)
 			if (savedKernelInfo) {
-				savedKernel = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
+				defaultKernel = specs.kernels.find((kernel) => kernel.name === savedKernelInfo.name);
 			}
-		}
-		if (specs && connectionInfo) {
-			// set default kernel to default kernel not saved previously
-			// otherwise, set default to kernel info loaded from existing file
-			defaultKernel = !savedKernel ? defaultKernel : savedKernel;
+			// if no saved kernel exists, use the default KernelSpec
+			if (!defaultKernel) {
+				defaultKernel = specs.kernels.find((kernel) => kernel.name === specs.defaultKernel);
+			}
+			if (defaultKernel) {
+				return defaultKernel;
+			}
 		}
 
 		// If no default kernel specified (should never happen), default to SQL
@@ -146,9 +150,4 @@ export class NotebookContexts {
 		}
 		return defaultKernel;
 	}
-}
-
-export interface IKernelJupyterID {
-	id: string;
-	jupyterId: string;
 }

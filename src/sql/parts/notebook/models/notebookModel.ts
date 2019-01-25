@@ -410,6 +410,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					// TODO should revert kernels dropdown
 				});
 		}
+		this.notifyError(localize('noActiveClientSessionFound', 'No active client session was found.'));
 		return Promise.resolve();
 	}
 
@@ -458,7 +459,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let sessionManager = this.notebookManager.sessionManager;
 			if (sessionManager) {
 				if (!this._defaultKernel) {
-					this._defaultKernel = NotebookContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo, this.notebookOptions.notificationService);
+					this._defaultKernel = NotebookContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo);
 				}
 				this._clientSessions.forEach(clientSession => {
 					clientSession.statusChanged(async (session) => {
@@ -523,7 +524,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async handleClosed(): Promise<void> {
 		try {
 			if (this._activeClientSession) {
-				await this._activeClientSession.ready;
+				try {
+					await this._activeClientSession.ready;
+				} catch(err) {
+					this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
+				}
 				await this._activeClientSession.shutdown();
 				this._clientSessions = undefined;
 				this._activeClientSession = undefined;
