@@ -6,20 +6,19 @@
 'use strict';
 
 import {
-	IConnectionDialogService, IConnectionManagementService, IErrorMessageService,
+	IConnectionDialogService, IConnectionManagementService,
 	ConnectionType, INewConnectionParams, IConnectionCompletionOptions, IConnectionResult
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogWidget, OnShowUIResponse } from 'sql/parts/connection/connectionDialog/connectionDialogWidget';
 import { ConnectionController } from 'sql/parts/connection/connectionDialog/connectionController';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
-import * as Constants from 'sql/parts/connection/common/constants';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { localize } from 'vs/nls';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { entries } from 'sql/base/common/objects';
-
-import * as sqlops from 'sqlops';
+import { Deferred } from 'sql/base/common/promise';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -28,12 +27,11 @@ import * as platform from 'vs/base/common/platform';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { Action, IAction } from 'vs/base/common/actions';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as types from 'vs/base/common/types';
 import { trim } from 'vs/base/common/strings';
-import { Deferred } from 'sql/base/common/promise';
+import { localize } from 'vs/nls';
 
 export interface IConnectionValidateResult {
 	isValid: boolean;
@@ -87,14 +85,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) { }
-/**
- * Gets the default provider with the following actions
- * 	1. Checks if master provider(map) has data
- * 	2. If so, filters provider paramter against master map
- * 	3. Fetches the result array and extracts the first element
- * 	4. If none of the above data exists, returns 'MSSQL'
- * @returns: Default provider as string
- */
+	/**
+	 * Gets the default provider with the following actions
+	 * 	1. Checks if master provider(map) has data
+	 * 	2. If so, filters provider paramter against master map
+	 * 	3. Fetches the result array and extracts the first element
+	 * 	4. If none of the above data exists, returns 'MSSQL'
+	 * @returns: Default provider as string
+	 */
 	private getDefaultProviderName(): string {
 		let defaultProvider: string;
 		if (this._providerNameToDisplayNameMap) {

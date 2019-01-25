@@ -7,11 +7,11 @@
 
 import * as assert from 'assert';
 import * as sqlops from 'sqlops';
-import { ConnectionStatusManager } from 'sql/parts/connection/common/connectionStatusManager';
-import * as Utils from 'sql/parts/connection/common/utils';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
+import * as Utils from 'sql/platform/connection/common/utils';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 let connections: ConnectionStatusManager;
 let capabilitiesService: CapabilitiesTestService;

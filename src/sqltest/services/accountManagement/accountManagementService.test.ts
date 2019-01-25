@@ -8,11 +8,11 @@
 import * as assert from 'assert';
 import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
-import AccountStore from 'sql/services/accountManagement/accountStore';
+import AccountStore from 'sql/platform/accountManagement/common/accountStore';
 import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
-import { AccountManagementService } from 'sql/services/accountManagement/accountManagementService';
-import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
-import { IAccountStore } from 'sql/services/accountManagement/interfaces';
+import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
+import { AccountAdditionResult, AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
+import { IAccountStore } from 'sql/platform/accountManagement/common/interfaces';
 import { AccountProviderStub } from 'sqltest/stubs/accountManagementStubs';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';

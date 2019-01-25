@@ -13,12 +13,12 @@ import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants, NotebookContentChange } from './modelInterfaces';
-import { NotebookChangeType, CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
+import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { SparkMagicContexts } from 'sql/parts/notebook/models/sparkMagicContexts';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
@@ -88,10 +88,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.notebookManagers.find(manager => manager.providerId === this._providerId);
 	}
 
-	public get notebookUri() : URI {
+	public get notebookUri(): URI {
 		return this.notebookOptions.notebookUri;
 	}
-	public set notebookUri(value : URI) {
+	public set notebookUri(value: URI) {
 		this.notebookOptions.notebookUri = value;
 	}
 

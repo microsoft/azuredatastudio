@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as sqlops from 'sqlops';
-import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/parts/accountManagement/common/interfaces';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class ResourceProviderStub implements IResourceProviderService {
 	_serviceBrand: any;

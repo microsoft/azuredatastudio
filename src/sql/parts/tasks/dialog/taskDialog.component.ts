@@ -3,7 +3,7 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ITaskDialogComponent } from 'sql/parts/tasks/common/tasks';
 import { ITaskDialogComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { ElementRef, Component, Inject, forwardRef } from '@angular/core';
@@ -24,10 +24,10 @@ export class TaskDialogComponent {
 	public connection: ConnectionManagementInfo;
 
 	constructor(
-         @Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-         @Inject(IBootstrapParams) private _parameters: ITaskDialogComponentParams
-	 ) {
-        this.ownerUri = this._parameters.ownerUri;
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IBootstrapParams) private _parameters: ITaskDialogComponentParams
+	) {
+		this.ownerUri = this._parameters.ownerUri;
 
 	}
 

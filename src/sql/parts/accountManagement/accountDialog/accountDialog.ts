@@ -33,7 +33,7 @@ import { attachModalDialogStyler, attachButtonStyler, attachPanelStyler } from '
 import { AccountViewModel } from 'sql/parts/accountManagement/accountDialog/accountViewModel';
 import { AddAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
-import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
+import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 

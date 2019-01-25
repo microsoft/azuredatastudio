@@ -8,7 +8,7 @@
 
 import { localize } from 'vs/nls';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export namespace constants {
 	export const hostPropName = 'host';

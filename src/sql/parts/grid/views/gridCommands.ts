@@ -6,14 +6,14 @@
 'use strict';
 
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { EditDataEditor } from 'sql/parts/editData/editor/editDataEditor';
 
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
-function runActionOnActiveResultsEditor	(accessor: ServicesAccessor, eventName: string): void {
+function runActionOnActiveResultsEditor(accessor: ServicesAccessor, eventName: string): void {
 	let editorService = accessor.get(IEditorService);
 	const candidates = [editorService.activeControl, ...editorService.visibleControls].filter(e => {
 		if (e) {
@@ -28,7 +28,7 @@ function runActionOnActiveResultsEditor	(accessor: ServicesAccessor, eventName: 
 
 	if (candidates.length > 0) {
 		let queryModelService: IQueryModelService = accessor.get(IQueryModelService);
-		let uri = (<any> candidates[0].input).uri;
+		let uri = (<any>candidates[0].input).uri;
 		queryModelService.sendGridContentEvent(uri, eventName);
 	}
 }

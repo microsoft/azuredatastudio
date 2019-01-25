@@ -10,11 +10,11 @@ import { nb } from 'sqlops';
 
 import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
 import * as notebookUtils from '../notebookUtils';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 const configBase = {
 	'kernel_python_credentials': {
@@ -155,7 +155,7 @@ export class SparkMagicContexts {
 
 		// Default to localhost in config file.
 		let creds: ICredentials = {
-		    'url': 'http://localhost:8088'
+			'url': 'http://localhost:8088'
 		};
 
 		let config: ISparkMagicConfig = Object.assign({}, configBase);

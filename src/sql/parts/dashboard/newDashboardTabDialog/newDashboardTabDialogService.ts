@@ -7,7 +7,7 @@
 import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { NewDashboardTabDialog } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

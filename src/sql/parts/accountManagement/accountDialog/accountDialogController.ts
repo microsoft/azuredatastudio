@@ -7,9 +7,9 @@
 
 import Severity from 'vs/base/common/severity';
 import { AccountDialog } from 'sql/parts/accountManagement/accountDialog/accountDialog';
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class AccountDialogController {
 

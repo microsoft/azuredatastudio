@@ -18,8 +18,8 @@ import { Deferred } from 'sql/base/common/promise';
 
 import * as notebookUtils from '../notebookUtils';
 import * as sparkUtils from '../spark/sparkUtils';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 
 /**
@@ -266,7 +266,7 @@ export class ClientSession implements IClientSession {
 
 			let server = URI.parse(sparkUtils.getLivyUrl(this._connection.host, this._connection.knoxport)).toString();
 			let doNotCallChangeEndpointParams =
-			`%_do_not_call_change_endpoint --username=${this._connection.user} --password=${this._connection.password} --server=${server} --auth=Basic_Access`;
+				`%_do_not_call_change_endpoint --username=${this._connection.user} --password=${this._connection.password} --server=${server} --auth=Basic_Access`;
 			let future = this._session.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
 			}, true);

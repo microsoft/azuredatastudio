@@ -5,7 +5,7 @@
 
 'use strict';
 import { ITelemetryService, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { warn } from 'sql/base/common/log';
 
 export interface IConnectionTelemetryData extends ITelemetryData {

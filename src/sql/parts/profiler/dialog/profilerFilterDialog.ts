@@ -18,7 +18,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { ProfilerFilter, ProfilerFilterClauseOperator, ProfilerFilterClause } from 'sql/parts/profiler/service/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -27,6 +26,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator } from 'sql/workbench/services/profiler/common/interfaces';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', 'Clear All');

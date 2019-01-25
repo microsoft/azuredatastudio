@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator } from 'sql/parts/profiler/service/interfaces';
+import { ProfilerFilterClause, ProfilerFilter, ProfilerFilterClauseOperator } from 'sql/workbench/services/profiler/common/interfaces';
+
 
 export function FilterData(filter: ProfilerFilter, data: any[]): any[] {
 	if (!data || !filter) {

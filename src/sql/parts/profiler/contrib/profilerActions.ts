@@ -5,14 +5,13 @@
 
 'use strict';
 import 'vs/css!sql/parts/profiler/media/profiler';
-import { IProfilerService, ProfilerFilter } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import { BaseActionContext } from 'sql/workbench/common/actions';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
