@@ -323,7 +323,7 @@ export class ProfilerClearSessionFilter extends Action {
 	constructor(
 		id: string, label: string
 	) {
-		super(id, label);
+		super(id, label, 'clear-filter');
 	}
 
 	public run(input: ProfilerInput): TPromise<boolean> {
