@@ -4,9 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import {
-	INewConnectionParams, IConnectionResult
-} from 'sql/platform/connection/common/connectionManagement';
+import { INewConnectionParams, IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
