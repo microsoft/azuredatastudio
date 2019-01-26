@@ -11,13 +11,12 @@ import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {

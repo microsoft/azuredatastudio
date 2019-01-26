@@ -18,8 +18,8 @@ import * as sqlops from 'sqlops';
 import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/parts/jobManagement/common/jobActions';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
@@ -29,8 +29,8 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
-import { OperatorsCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
+import { OperatorsCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
 
 export const VIEW_SELECTOR: string = 'joboperatorsview-component';
@@ -83,7 +83,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
@@ -99,7 +99,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	ngOnInit(){
+	ngOnInit() {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
@@ -149,7 +149,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, {columns}, this.options);
+		this._table = new Table(this._gridEl.nativeElement, { columns }, this.options);
 		this._table.grid.setData(this.dataView, true);
 
 		this._register(this._table.onContextMenu(e => {
@@ -217,7 +217,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass = dataContext.enabled ? 'operatorview-operatornameindicatorenabled' :
 			'operatorview-operatornameindicatordisabled';
- 		return '<table class="operatorview-operatornametable"><tr class="operatorview-operatornamerow">' +
+		return '<table class="operatorview-operatornametable"><tr class="operatorview-operatornamerow">' +
 			'<td nowrap class=' + resultIndicatorClass + '></td>' +
 			'<td nowrap class="operatorview-operatornametext">' + dataContext.name + '</td>' +
 			'</tr></table>';

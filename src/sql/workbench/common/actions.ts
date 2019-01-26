@@ -3,21 +3,21 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import * as TaskUtilities from './taskUtilities';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
-import { IRestoreDialogController } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { IBackupUiService } from 'sql/parts/disasterRecovery/backup/common/backupService';
-import { IAngularEventingService, AngularEventType } from 'sql/services/angularEventing/angularEventingService';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
+import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
+import { IBackupUiService } from 'sql/platform/backup/common/backupService';
+import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
-import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { ObjectMetadata } from 'sqlops';
 
@@ -132,7 +132,7 @@ export class ScriptExecuteAction extends Action {
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService,
-				ScriptOperation.Execute,
+				TaskUtilities.ScriptOperation.Execute,
 				this._errorMessageService
 			).then(
 				result => {
@@ -168,7 +168,7 @@ export class ScriptAlterAction extends Action {
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService,
-				ScriptOperation.Alter,
+				TaskUtilities.ScriptOperation.Alter,
 				this._errorMessageService
 			).then(
 				result => {
@@ -237,7 +237,7 @@ export class ScriptCreateAction extends Action {
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService,
-				ScriptOperation.Create,
+				TaskUtilities.ScriptOperation.Create,
 				this._errorMessageService
 			).then(
 				result => {
@@ -273,7 +273,7 @@ export class ScriptDeleteAction extends Action {
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._scriptingService,
-				ScriptOperation.Delete,
+				TaskUtilities.ScriptOperation.Delete,
 				this._errorMessageService
 			).then(
 				result => {

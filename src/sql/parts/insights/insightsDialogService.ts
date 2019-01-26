@@ -6,7 +6,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { InsightsDialogController } from 'sql/parts/insights/node/insightsDialogController';
 import { InsightsDialogView } from 'sql/parts/insights/browser/insightsDialogView';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IInsightsDialogModel, IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
 import { InsightsDialogModel } from 'sql/parts/insights/common/insightsDialogModel';

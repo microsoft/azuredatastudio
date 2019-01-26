@@ -22,17 +22,17 @@ import {
 } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { NewQueryAction, BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { TreeNodeContextKey } from './treeNodeContextKey';
-import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
+import { TreeNodeContextKey } from 'sql/parts/objectExplorer/viewlet/treeNodeContextKey';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import * as constants from 'sql/common/constants';
 
 /**

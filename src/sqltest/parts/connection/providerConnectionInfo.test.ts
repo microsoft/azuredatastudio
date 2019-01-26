@@ -6,12 +6,12 @@
 'use strict';
 
 
-import { ProviderConnectionInfo } from 'sql/parts/connection/common/providerConnectionInfo';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL ProviderConnectionInfo tests', () => {

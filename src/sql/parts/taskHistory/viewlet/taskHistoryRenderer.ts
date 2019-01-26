@@ -10,7 +10,7 @@ import { ITaskHistoryTemplateData } from 'sql/parts/taskHistory/viewlet/template
 import { TaskNode, TaskStatus } from 'sql/parts/taskHistory/common/taskNode';
 import dom = require('vs/base/browser/dom');
 import { localize } from 'vs/nls';
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Utils from 'sql/platform/connection/common/utils';
 
 /**
  * Renders the tree items.

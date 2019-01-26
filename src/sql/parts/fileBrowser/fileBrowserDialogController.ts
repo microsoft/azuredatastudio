@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileBrowserDialog } from 'sql/parts/fileBrowser/fileBrowserDialog';
 import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -23,7 +23,7 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 
 	public showDialog(ownerUri: string,
 		expandPath: string,
-		fileFilters: [{label: string, filters: string[]}],
+		fileFilters: [{ label: string, filters: string[] }],
 		fileValidationServiceType: string,
 		isWide: boolean,
 		handleOnOk: (path: string) => void
@@ -35,6 +35,6 @@ export class FileBrowserDialogController implements IFileBrowserDialogController
 
 		this._fileBrowserDialog.setWide(isWide);
 		this._fileBrowserDialog.onOk((filepath) => handleOnOk(filepath));
-		this._fileBrowserDialog.open(ownerUri, expandPath, fileFilters,	fileValidationServiceType);
+		this._fileBrowserDialog.open(ownerUri, expandPath, fileFilters, fileValidationServiceType);
 	}
 }

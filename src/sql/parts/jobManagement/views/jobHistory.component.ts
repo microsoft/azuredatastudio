@@ -13,10 +13,10 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
-import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/common/jobActions';
+import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobHistoryController, JobHistoryDataSource,
 	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow } from 'sql/parts/jobManagement/views/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/parts/jobManagement/views/jobStepsViewTree';
@@ -28,7 +28,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
@@ -77,7 +77,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IJobManagementService) private _jobManagementService: IJobManagementService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
@@ -85,7 +85,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		this._treeController = new JobHistoryController();
 		this._treeDataSource = new JobHistoryDataSource();
 		this._treeRenderer = new JobHistoryRenderer();
-		this._treeFilter =  new JobHistoryFilter();
+		this._treeFilter = new JobHistoryFilter();
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let jobCache = jobCacheObjectMap[this._serverName];
@@ -142,7 +142,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		}, {verticalScrollMode: ScrollbarVisibility.Visible});
+		}, { verticalScrollMode: ScrollbarVisibility.Visible });
 		this._register(attachListStyler(this._tree, this.themeService));
 		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
@@ -281,7 +281,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 			this.agentJobInfo = this._agentJobInfo;
 		}
 
-		if (this.isRefreshing ) {
+		if (this.isRefreshing) {
 			this.loadHistory();
 			return;
 		}
@@ -299,7 +299,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				this._actionBar.context = { targetObject: this._agentJobInfo, ownerUri: this.ownerUri, jobHistoryComponent: this };
 				this._cd.detectChanges();
 			}
-		} else if (jobHistories && jobHistories.length === 0 ){
+		} else if (jobHistories && jobHistories.length === 0) {
 			this._showPreviousRuns = false;
 			this._showSteps = false;
 			this._noJobsAvailable = true;

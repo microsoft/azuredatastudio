@@ -6,7 +6,7 @@
 
 import * as sqlops from 'sqlops';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IAccountManagementService } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import {
 	ExtHostAccountManagementShape,
@@ -16,7 +16,7 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
-import { UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
+import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadAccountManagement)
 export class MainThreadAccountManagement implements MainThreadAccountManagementShape {

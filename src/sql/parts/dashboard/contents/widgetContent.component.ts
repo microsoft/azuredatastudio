@@ -12,9 +12,9 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
-import { subscriptionToDisposable, AngularDisposable } from 'sql/base/common/lifecycle';
+import { subscriptionToDisposable, AngularDisposable } from 'sql/base/node/lifecycle';
 
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';

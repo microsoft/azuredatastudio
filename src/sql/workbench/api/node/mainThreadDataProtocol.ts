@@ -10,23 +10,23 @@ import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as sqlops from 'sqlops';
-import { IMetadataService } from 'sql/services/metadata/metadataService';
+import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IScriptingService } from 'sql/services/scripting/scriptingService';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
-import { IBackupService } from 'sql/parts/disasterRecovery/backup/common/backupService';
-import { IRestoreService } from 'sql/parts/disasterRecovery/restore/common/restoreService';
-import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
-import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
-import { ISerializationService } from 'sql/services/serialization/serializationService';
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
+import { IBackupService } from 'sql/platform/backup/common/backupService';
+import { IRestoreService } from 'sql/platform/restore/common/restoreService';
+import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
-import { IDacFxService } from 'sql/services/dacfx/dacFxService';
+import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 /**

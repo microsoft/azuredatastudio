@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import * as sqlops from 'sqlops';
-import AccountStore from 'sql/services/accountManagement/accountStore';
+import AccountStore from 'sql/platform/accountManagement/common/accountStore';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 
 suite('Account Store Tests', () => {
