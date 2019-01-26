@@ -7,12 +7,12 @@ import { default as AnsiUp } from 'ansi_up';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { URLExt } from './common/url';
 import URI from 'vs/base/common/uri';
-import { IDataResource } from 'sql/services/notebook/sqlSessionManager';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { IDataResource } from 'sql/workbench/services/notebook/common/sqlSessionManager';
 
 
 /**
