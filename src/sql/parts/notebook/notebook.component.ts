@@ -17,7 +17,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IAction, Action, IActionItem } from 'vs/base/common/actions';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { Schemas } from 'vs/base/common/network';
@@ -70,6 +70,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _modelRegisteredDeferred = new Deferred<NotebookModel>();
 	private profile: IConnectionProfile;
 	private _trustedAction: TrustedAction;
+	private _providerRelatedActions: IAction[] = [];
 
 
 	constructor(
@@ -231,6 +232,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
+		let providerId = notebookUtils.sqlNotebooksEnabled() ? 'sql' : this._notebookParams.providers.find(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER); // this is tricky; really should also depend on the connection profile
+		this.setContextKeyServiceWithProviderId(providerId);
+		this.fillInActionsForCurrentContext();
 		for (let providerId of this._notebookParams.providers) {
 			let notebookManager = await this.notebookService.getOrCreateNotebookManager(providerId, this._notebookParams.notebookUri);
 			this.notebookManagers.push(notebookManager);
@@ -249,6 +253,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
+		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
@@ -310,6 +315,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._changeRef.detectChanges();
 	}
 
+	private handleProviderIdChanged(providerId: string) {
+		// If there are any actions that were related to the previous provider,
+		// disable them in the actionBar
+		this._providerRelatedActions.forEach(action => {
+			action.enabled = false;
+		});
+		this.setContextKeyServiceWithProviderId(providerId);
+		this.fillInActionsForCurrentContext();
+	}
+
 	findCellIndex(cellModel: ICellModel): number {
 		return this._model.cells.findIndex((cell) => cell.id === cellModel.id);
 	}
@@ -345,17 +360,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let saveNotebookButton = this.instantiationService.createInstance(SaveNotebookAction, 'notebook.SaveNotebook', localize('save', 'Save'), 'notebook-button icon-save');
 
-		// Get all of the menu contributions that use the ID 'notebook/toolbar'.
-		// Then, find all groups (currently we don't leverage the contributed
-		// groups functionality for the notebook toolbar), and fill in the 'primary'
-		// array with items that don't list a group. Finally, add any actions from
-		// the primary array to the end of the toolbar.
-		const notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
-		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		let primary: IAction[] = [];
-		let secondary: IAction[] = [];
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
-
 		let taskbar = <HTMLElement>this.toolbar.nativeElement;
 		this._actionBar = new Taskbar(taskbar, this.contextMenuService, { actionItemProvider: action => this.actionItemProvider(action as Action) });
 		this._actionBar.context = this;
@@ -368,11 +372,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ action: this._trustedAction }
 		]);
 
-		// Primary actions are categorized as those that are added to the 'horizontal' group.
-		// For the vertical toolbar, we can do the same thing and instead use the 'vertical' group.
-		for (let action of primary) {
-			this._actionBar.addAction(action);
-		}
 	}
 
 	// Gets file path from recent workspace in local
@@ -471,6 +470,40 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService, 'notebook-button');
 		}
 		return undefined;
+	}
+
+	/**
+	 * Get all of the menu contributions that use the ID 'notebook/toolbar'.
+	 * Then, find all groups (currently we don't leverage the contributed
+	 * groups functionality for the notebook toolbar), and fill in the 'primary'
+	 * array with items that don't list a group. Finally, add any actions from
+	 * the primary array to the end of the toolbar.
+	 */
+	private fillInActionsForCurrentContext(): void {
+		let primary: IAction[] = [];
+		let	secondary: IAction[] = [];
+		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
+		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
+		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+		this.addPrimaryContributedActions(primary);
+	}
+
+	private addPrimaryContributedActions(primary: IAction[]) {
+		for (let action of primary) {
+			// Need to ensure that we don't add the same action multiple times
+			let foundIndex = this._providerRelatedActions.findIndex(act => act.id === action.id);
+			if (foundIndex < 0) {
+				this._actionBar.addAction(action);
+				this._providerRelatedActions.push(action);
+			} else {
+				this._providerRelatedActions[foundIndex].enabled = true;
+			}
+		}
+	}
+
+	private setContextKeyServiceWithProviderId(providerId: string) {
+		let provider = new RawContextKey<string>('providerId', providerId);
+		provider.bindTo(this.contextKeyService);
 	}
 
 	public get notebookParams(): INotebookParams {

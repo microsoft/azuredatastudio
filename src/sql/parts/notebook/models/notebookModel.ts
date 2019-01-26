@@ -49,6 +49,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _activeClientSession: IClientSession;
 	private _sessionLoadFinished: Promise<void>;
 	private _onClientSessionReady = new Emitter<IClientSession>();
+	private _onProviderIdChanged = new Emitter<string>();
 	private _activeContexts: IDefaultConnection;
 	private _trustedMode: boolean;
 
@@ -75,6 +76,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		this._trustedMode = false;
 		this._providerId = notebookOptions.providerId;
+		this._onProviderIdChanged.fire(this._providerId);
 		this.notebookOptions.standardKernels.forEach(kernel => {
 			this._kernelDisplayNameToConnectionProviderIds.set(kernel.name, kernel.connectionProviderIds);
 			this._kernelDisplayNameToNotebookProviderIds.set(kernel.name, kernel.notebookProvider);
@@ -207,6 +209,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 */
 	public get onClientSessionReady(): Event<IClientSession> {
 		return this._onClientSessionReady.event;
+	}
+
+	public get onProviderIdChange(): Event<string> {
+		return this._onProviderIdChanged.event;
 	}
 
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
@@ -605,7 +611,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
 				if (index >= 0) {
 					this._activeClientSession = this._clientSessions[i];
-					this._providerId = this.notebookManagers[i].providerId;
+					if (this.notebookManagers[i].providerId !== this._providerId) {
+						this._providerId = this.notebookManagers[i].providerId;
+						this._onProviderIdChanged.fire(this._providerId);
+					}
 					sessionManagerFound = true;
 					break;
 				}
@@ -617,6 +626,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
 			if (provider) {
 				this._providerId = provider;
+				this._onProviderIdChanged.fire(this._providerId);
 			}
 		}
 	}
