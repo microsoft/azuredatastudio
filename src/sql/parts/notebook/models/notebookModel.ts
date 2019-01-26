@@ -76,6 +76,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 		this._trustedMode = false;
 		this._providerId = notebookOptions.providerId;
+		this._onProviderIdChanged.fire(this._providerId);
 		this.notebookOptions.standardKernels.forEach(kernel => {
 			this._kernelDisplayNameToConnectionProviderIds.set(kernel.name, kernel.connectionProviderIds);
 			this._kernelDisplayNameToNotebookProviderIds.set(kernel.name, kernel.notebookProvider);
@@ -625,6 +626,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
 			if (provider) {
 				this._providerId = provider;
+				this._onProviderIdChanged.fire(this._providerId);
 			}
 		}
 	}
