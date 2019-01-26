@@ -9,7 +9,7 @@ import 'vs/css!./chartView';
 
 import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Insight } from './insights/insight';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';

@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { FirewallRuleDialog } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialog';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
 import { FirewallRuleDialogController } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleDialogController';

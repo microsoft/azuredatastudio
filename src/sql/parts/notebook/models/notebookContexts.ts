@@ -8,11 +8,10 @@
 import { nb } from 'sqlops';
 
 import { localize } from 'vs/nls';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfile } from 'sqlops';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';

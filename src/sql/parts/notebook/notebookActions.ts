@@ -12,14 +12,14 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/parts/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
-import { noKernel } from 'sql/services/notebook/sessionManager';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -287,11 +287,11 @@ export class AttachToDropdown extends SelectBox {
 	}
 
 	/**
-     * Open connection dialog
-     * Enter server details and connect to a server from the dialog
-     * Bind the server value to 'Attach To' drop down
-     * Connected server is displayed at the top of drop down
-     **/
+	 * Open connection dialog
+	 * Enter server details and connect to a server from the dialog
+	 * Bind the server value to 'Attach To' drop down
+	 * Connected server is displayed at the top of drop down
+	 **/
 	public async openConnectionDialog(): Promise<void> {
 		try {
 			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }).then(connection => {

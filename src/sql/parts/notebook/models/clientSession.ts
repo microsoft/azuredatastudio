@@ -17,8 +17,8 @@ import { IClientSession, IKernelPreference, IClientSessionOptions } from './mode
 import { Deferred } from 'sql/base/common/promise';
 
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 /**
  * Implementation of a client session. This is a model over session operations,

@@ -72,7 +72,7 @@ export class PlanNode {
 	indexObject: IndexObject;
 
 	public addChildren(children: PlanNode[]): void {
-		if(children) {
+		if (children) {
 			children.forEach(element => {
 				element.parent = this;
 			});
@@ -198,7 +198,7 @@ export class PlanXmlParser {
 			return undefined;
 		}
 
-		for (var index = 0; index < element.childNodes.length; index++) {
+		for (let index = 0; index < element.childNodes.length; index++) {
 			if (element.childNodes[index].nodeName.toLocaleLowerCase() === elementName.toLocaleLowerCase()) {
 				elements = elements.concat(element.children[index]);
 			}
@@ -206,13 +206,13 @@ export class PlanXmlParser {
 		if (elements.length > 0) {
 			return elements;
 		}
-		for (var index = 0; index < element.childNodes.length; index++) {
+		for (let index = 0; index < element.childNodes.length; index++) {
 			if (untilNode && element.childNodes[index].nodeName === untilNode) {
 				continue;
 			}
 			let result = this.findChildren(element.children[index], elementName, untilNode);
 			if (result !== undefined) {
-				 	return result;
+				return result;
 			}
 		}
 
@@ -224,7 +224,7 @@ export class PlanXmlParser {
 
 		let children = this.findChildren(element, elementName);
 		if (children) {
-			for (var index = 0; index < children.length; index++) {
+			for (let index = 0; index < children.length; index++) {
 				let childNode = children[index];
 
 				let planNode = this.convertToPlanNode(childNode);
@@ -285,8 +285,8 @@ export class PlanXmlParser {
 	}
 
 	private findAttribute(attributes: NamedNodeMap, attName: string): any {
-		for (var index = 0; index < attributes.length; index++) {
-			var attribute = attributes[index];
+		for (let index = 0; index < attributes.length; index++) {
+			let attribute = attributes[index];
 			if (attribute.name === attName) {
 				return attribute.value;
 			}

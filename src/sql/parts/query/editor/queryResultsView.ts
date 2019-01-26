@@ -6,8 +6,8 @@
 
 import { QueryResultsInput, ResultsViewState } from 'sql/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IQueryModelService } from '../execution/queryModel';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel } from './messagePanel';
 import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';

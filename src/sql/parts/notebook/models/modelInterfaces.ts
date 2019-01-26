@@ -15,13 +15,13 @@ import URI from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;

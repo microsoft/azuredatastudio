@@ -157,7 +157,7 @@ import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 import 'sql/parts/tasks/common/tasks.contribution';
 import 'sql/parts/objectExplorer/common/registeredServer.contribution';
-import 'sql/parts/objectExplorer/viewlet/connectionViewlet';
+import 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/parts/connection/common/connection.contribution';
 import 'sql/parts/query/common/query.contribution';

@@ -15,7 +15,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IRPCProtocol } from 'vs/workbench/services/extensions/node/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
-import { IAccountManagementService, AzureResource } from 'sql/services/accountManagement/interfaces';
+import { IAccountManagementService, AzureResource } from 'sql/platform/accountManagement/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 const IRPCProtocol = createDecorator<IRPCProtocol>('rpcProtocol');
@@ -365,9 +365,9 @@ suite('ExtHostAccountManagement', () => {
 
 		extHost.$getAllAccounts()
 			.then((accounts) => {
-		    		// If: I get security token it will not throw
-					return extHost.$getSecurityToken(mockAccount1, AzureResource.ResourceManagement);
-				}
+				// If: I get security token it will not throw
+				return extHost.$getSecurityToken(mockAccount1, AzureResource.ResourceManagement);
+			}
 			).then(() => done(), (err) => done(new Error(err)));
 	});
 
@@ -416,15 +416,15 @@ suite('ExtHostAccountManagement', () => {
 		};
 
 		extHost.$getAllAccounts()
-		.then(accounts => {
-			return extHost.$getSecurityToken(mockAccount2, AzureResource.ResourceManagement);
-		})
-		.then((noError) => {
-			done(new Error('Expected getSecurityToken to throw'));
-		}, (err) => {
-			// Expected error caught
-			done();
-		});
+			.then(accounts => {
+				return extHost.$getSecurityToken(mockAccount2, AzureResource.ResourceManagement);
+			})
+			.then((noError) => {
+				done(new Error('Expected getSecurityToken to throw'));
+			}, (err) => {
+				// Expected error caught
+				done();
+			});
 	});
 });
 
@@ -448,9 +448,9 @@ function getMockAccountManagementService(accounts: sqlops.Account[]): TypeMoq.Mo
 	mockAccountManagementService.setup(x => x.getAccountsForProvider(TypeMoq.It.isAny()))
 		.returns(() => Promise.resolve(accounts));
 	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isValue(accounts[0]), TypeMoq.It.isAny()))
-	    .returns(() => Promise.resolve({}));
+		.returns(() => Promise.resolve({}));
 	mockAccountManagementService.setup(x => x.updateAccountListEvent)
-	    .returns(() => () => { return undefined; } );
+		.returns(() => () => { return undefined; });
 
 	return mockAccountManagementService;
 }

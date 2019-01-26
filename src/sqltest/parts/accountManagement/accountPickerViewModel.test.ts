@@ -9,8 +9,8 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountPickerViewModel } from 'sql/parts/accountManagement/accountPicker/accountPickerViewModel';
-import { UpdateAccountListEventParams } from 'sql/services/accountManagement/eventTypes';
+import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';
+import { UpdateAccountListEventParams } from 'sql/platform/accountManagement/common/eventTypes';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
 
 // SUITE STATE /////////////////////////////////////////////////////////////

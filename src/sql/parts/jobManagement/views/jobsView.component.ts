@@ -20,11 +20,11 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowdetailview';
-import { JobCacheObject } from 'sql/parts/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/parts/jobManagement/common/jobActions';
-import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
+import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
+import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
-import { IJobManagementService } from 'sql/parts/jobManagement/common/interfaces';
+import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementView } from 'sql/parts/jobManagement/views/jobManagementView';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -33,7 +33,7 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
@@ -94,8 +94,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private jobSchedules: { [jobId: string]: sqlops.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewJobAction;
 
-	private _didTabChange: boolean;
-
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
 	constructor(
@@ -108,12 +106,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IInstantiationService) instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) contextMenuService: IContextMenuService,
-		@Inject(IKeybindingService)  keybindingService: IKeybindingService,
+		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) _dashboardService: IDashboardService,
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService);
-		this._didTabChange = false;
 		let jobCacheObjectMap = this._jobManagementService.jobCacheObjectMap;
 		let jobCache = jobCacheObjectMap[this._serverName];
 		if (jobCache) {
@@ -126,7 +123,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._isCloud = commonService.connectionManagementService.connectionInfo.serverInfo.isCloud;
 	}
 
-	ngOnInit(){
+	ngOnInit() {
 		// set base class elements
 		this._visibilityElement = this._gridEl;
 		this._parentComponent = this._agentViewComponent;
@@ -135,7 +132,6 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
-		this._didTabChange = true;
 	}
 
 	public layout() {
@@ -189,7 +185,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		$(this._gridEl.nativeElement).empty();
 		$(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, {columns}, options);
+		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let job = self.getJob(args);
@@ -220,10 +216,8 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				}
 
 				this._showProgressWheel = false;
-				if (this.isVisible && !this._didTabChange) {
+				if (this.isVisible) {
 					this._cd.detectChanges();
-				} else if (this._didTabChange) {
-					return;
 				}
 			});
 		}
@@ -513,11 +507,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td>${runChart[0] ? runChart[0] : '<div></div>' }</td>
-					<td>${runChart[1] ? runChart[1] : '<div></div>' }</td>
-					<td>${runChart[2] ? runChart[2] : '<div></div>' }</td>
-					<td>${runChart[3] ? runChart[3] : '<div></div>' }</td>
-					<td>${runChart[4] ? runChart[4] : '<div></div>' }</td>
+					<td>${runChart[0] ? runChart[0] : '<div></div>'}</td>
+					<td>${runChart[1] ? runChart[1] : '<div></div>'}</td>
+					<td>${runChart[2] ? runChart[2] : '<div></div>'}</td>
+					<td>${runChart[3] ? runChart[3] : '<div></div>'}</td>
+					<td>${runChart[4] ? runChart[4] : '<div></div>'}</td>
 				</tr>
 			</table>`;
 		} else {
@@ -594,40 +588,36 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private async curateJobHistory(jobs: sqlops.AgentJobInfo[], ownerUri: string) {
 		const self = this;
-		await Promise.all(jobs.map(async (job) => {
-			await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name).then(async(result) => {
-				if (result) {
-					self.jobSteps[job.jobId] = result.steps ? result.steps : [];
-					self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
-					self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
-					self.jobHistories[job.jobId] = result.histories ? result.histories : [];
-					self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
-					self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
-					self._jobCacheObject.setJobAlerts(job.jobId, self.jobAlerts[job.jobId]);
-					self._jobCacheObject.setJobSchedules(job.jobId, self.jobSchedules[job.jobId]);
-					let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
-					let previousRuns: sqlops.AgentJobHistoryInfo[];
-					if (jobHistories.length >= 5) {
-						previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
-					} else {
-						previousRuns = jobHistories;
-					}
-					// dont create the charts if the tab changed
-					if (!self._didTabChange) {
-						self.createJobChart(job.jobId, previousRuns);
-					}
-					if (self._agentViewComponent.expanded.has(job.jobId)) {
-						let lastJobHistory = jobHistories[jobHistories.length - 1];
-						let item = self.dataView.getItemById(job.jobId + '.error');
-						let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
-						let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
-						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
-						self._agentViewComponent.setExpanded(job.jobId, item['name']);
-						self.dataView.updateItem(job.jobId + '.error', item);
-					}
+		for (let job of jobs) {
+			let result = await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name);
+			if (result) {
+				self.jobSteps[job.jobId] = result.steps ? result.steps : [];
+				self.jobAlerts[job.jobId] = result.alerts ? result.alerts : [];
+				self.jobSchedules[job.jobId] = result.schedules ? result.schedules : [];
+				self.jobHistories[job.jobId] = result.histories ? result.histories : [];
+				self._jobCacheObject.setJobSteps(job.jobId, self.jobSteps[job.jobId]);
+				self._jobCacheObject.setJobHistory(job.jobId, self.jobHistories[job.jobId]);
+				self._jobCacheObject.setJobAlerts(job.jobId, self.jobAlerts[job.jobId]);
+				self._jobCacheObject.setJobSchedules(job.jobId, self.jobSchedules[job.jobId]);
+				let jobHistories = self._jobCacheObject.getJobHistory(job.jobId);
+				let previousRuns: sqlops.AgentJobHistoryInfo[];
+				if (jobHistories.length >= 5) {
+					previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
+				} else {
+					previousRuns = jobHistories;
 				}
-			});
-		}));
+				self.createJobChart(job.jobId, previousRuns);
+				if (self._agentViewComponent.expanded.has(job.jobId)) {
+					let lastJobHistory = jobHistories[jobHistories.length - 1];
+					let item = self.dataView.getItemById(job.jobId + '.error');
+					let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
+					item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+					self._agentViewComponent.setExpanded(job.jobId, item['name']);
+					self.dataView.updateItem(job.jobId + '.error', item);
+				}
+			}
+		}
 	}
 
 	private createJobChart(jobId: string, jobHistories: sqlops.AgentJobHistoryInfo[]): void {
@@ -916,7 +906,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 			return undefined;
 		}
 
-		let jobId =  data.getItem(rowIndex).jobId;
+		let jobId = data.getItem(rowIndex).jobId;
 		if (!jobId) {
 			// if we couldn't find the ID, check if it's an
 			// error row

@@ -16,14 +16,14 @@ import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptio
 import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/parts/notebook/models/notebookContexts';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 import URI from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -94,10 +94,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this.notebookManagers.find(manager => manager.providerId === this._providerId);
 	}
 
-	public get notebookUri() : URI {
+	public get notebookUri(): URI {
 		return this.notebookOptions.notebookUri;
 	}
-	public set notebookUri(value : URI) {
+	public set notebookUri(value: URI) {
 		this.notebookOptions.notebookUri = value;
 	}
 

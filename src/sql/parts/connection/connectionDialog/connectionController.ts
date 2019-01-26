@@ -5,15 +5,15 @@
 
 'use strict';
 
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionComponentCallbacks, IConnectionComponentController, IConnectionValidateResult } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import { ConnectionWidget } from 'sql/parts/connection/connectionDialog/connectionWidget';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import * as Constants from 'sql/parts/connection/common/constants';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import * as Constants from 'sql/platform/connection/common/constants';
 import * as sqlops from 'sqlops';
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';

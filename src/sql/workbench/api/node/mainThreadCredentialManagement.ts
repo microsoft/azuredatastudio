@@ -10,7 +10,7 @@ import {
 	SqlExtHostContext, ExtHostCredentialManagementShape,
 	MainThreadCredentialManagementShape, SqlMainContext
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ICredentialsService } from 'sql/services/credentials/credentialsService';
+import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as sqlops from 'sqlops';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';

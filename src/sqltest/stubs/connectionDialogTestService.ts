@@ -6,9 +6,9 @@
 
 import {
 	IConnectionDialogService, IConnectionManagementService, INewConnectionParams, IConnectionResult
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class ConnectionDialogTestService implements IConnectionDialogService {
 	_serviceBrand: any;

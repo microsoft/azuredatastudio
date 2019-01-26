@@ -6,7 +6,7 @@
 import 'vs/css!sql/parts/dashboard/common/dashboardPage';
 import 'sql/parts/dashboard/common/dashboardPanelStyles';
 
-import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, forwardRef, ViewChild, ElementRef, ViewChildren, QueryList, ChangeDetectorRef } from '@angular/core';
 
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
@@ -16,13 +16,13 @@ import { PanelComponent } from 'sql/base/browser/ui/panel/panel.component';
 import { IDashboardRegistry, Extensions as DashboardExtensions, IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { PinUnpinTabAction, AddFeatureTabAction } from './actions';
 import { TabComponent, TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { AngularEventType, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { DashboardTab, IConfigModifierCollection } from 'sql/parts/dashboard/common/interfaces';
 import * as dashboardHelper from 'sql/parts/dashboard/common/dashboardHelper';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
-import * as Constants from 'sql/parts/connection/common/constants';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
+import * as Constants from 'sql/platform/connection/common/constants';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as types from 'vs/base/common/types';
