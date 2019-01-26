@@ -158,6 +158,10 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._fileToProviders.set(fileType.toUpperCase(), providers);
 	}
 
+	// Standard kernels are contributed where a list of kernels are defined that can be shown
+	// in the kernels dropdown list before a SessionManager has been started; this way,
+	// every NotebookProvider doesn't need to have an active SessionManager in order to contribute
+	// kernels to the dropdown
 	private addStandardKernels(provider: NotebookProviderRegistration) {
 		let providerUpperCase = provider.provider.toUpperCase();
 		let standardKernels = this._providerToStandardKernels.get(providerUpperCase);
