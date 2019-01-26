@@ -16,7 +16,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import * as types from 'vs/base/common/types';
 
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { BareResultsGridInfo } from 'sql/parts/query/editor/queryResultsEditor';
 import { IEditDataComponentParams } from 'sql/services/bootstrap/bootstrapParams';

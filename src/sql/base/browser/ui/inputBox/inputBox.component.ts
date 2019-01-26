@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 
 import { InputBox as vsInputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';

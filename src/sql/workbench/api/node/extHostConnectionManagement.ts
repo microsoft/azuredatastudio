@@ -47,4 +47,8 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	public $getUriForConnection(connectionId: string): Thenable<string> {
 		return this._proxy.$getUriForConnection(connectionId);
 	}
+
+	public $connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+		return this._proxy.$connect(connectionProfile);
+	}
 }

@@ -41,6 +41,7 @@ export const Accounts = 'Accounts';
 export const FireWallRule = 'FirewallRule';
 export const AutoOAuth = 'AutoOAuth';
 export const AddNewDashboardTab = 'AddNewDashboardTab';
+export const ProfilerFilter = 'ProfilerFilter';
 
 // SQL Agent Events:
 

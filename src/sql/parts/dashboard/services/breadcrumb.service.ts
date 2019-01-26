@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Injectable, forwardRef, Inject, OnDestroy } from '@angular/core';
+import { Injectable, forwardRef, Inject } from '@angular/core';
 import { Subject } from 'rxjs/Subject';
 
 import { DashboardServiceInterface } from './dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { MenuItem, IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 
 export enum BreadcrumbClass {
@@ -24,11 +23,9 @@ export class BreadcrumbService implements IBreadcrumbService {
 	public breadcrumbItem: Subject<MenuItem[]>;
 	private itemBreadcrums: MenuItem[];
 	private _currentPage: BreadcrumbClass;
-	private _bootstrap: DashboardServiceInterface;
 
-	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private commonService: CommonServiceInterface) {
-		this._bootstrap = commonService as DashboardServiceInterface;
-		this._bootstrap.onUpdatePage(() => {
+	constructor( @Inject(forwardRef(() => CommonServiceInterface)) private commonService: DashboardServiceInterface) {
+		this.commonService.onUpdatePage(() => {
 			this.setBreadcrumbs(this._currentPage);
 		});
 		this.breadcrumbItem = new Subject<MenuItem[]>();
@@ -43,7 +40,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 
 	private getBreadcrumbsLink(page: BreadcrumbClass): MenuItem[] {
 		this.itemBreadcrums = [];
-		let profile = this._bootstrap.connectionManagementService.connectionInfo.connectionProfile;
+		let profile = this.commonService.connectionManagementService.connectionInfo.connectionProfile;
 		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home') });
 		switch (page) {
 			case BreadcrumbClass.DatabasePage:

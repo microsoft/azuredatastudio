@@ -8,10 +8,9 @@
 
 import { localize } from 'vs/nls';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export namespace constants {
-	export const hostPropName = 'host';
 	export const userPropName = 'user';
 	export const knoxPortPropName = 'knoxport';
 	export const clusterPropName = 'clustername';
@@ -52,7 +51,7 @@ export class NotebookConnection {
 	 * preference to the built in port.
 	 */
 	private ensureHostAndPort(): void {
-		this._host = this.connectionProfile.options[constants.hostPropName];
+		this._host = this.connectionProfile.serverName;
 		this._knoxPort = NotebookConnection.getKnoxPortOrDefault(this.connectionProfile);
 		// determine whether the host has either a ',' or ':' in it
 		this.setHostAndPort(',');

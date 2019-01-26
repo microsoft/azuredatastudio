@@ -7,7 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
@@ -128,7 +128,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
-		this._editor.focus();
+		this.setFocusAndScroll();
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);
@@ -194,4 +194,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		moreActionsEl.style.borderRightColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
 	}
 
+	private setFocusAndScroll(): void {
+		if (this.cellModel.id === this._activeCellId) {
+			this._editor.focus();
+			this._editor.getContainer().scrollIntoView();
+		}
+	}
 }

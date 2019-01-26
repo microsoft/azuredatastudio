@@ -5,14 +5,13 @@
 
 'use strict';
 import 'vs/css!sql/parts/profiler/media/profiler';
-import { IProfilerService } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { IProfilerController } from 'sql/parts/profiler/editor/controller/interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
-import { BaseActionContext } from 'sql/workbench/common/actions';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
@@ -296,5 +295,38 @@ export class NewProfilerAction extends Task {
 
 			return TPromise.as(void 0);
 		});
+	}
+}
+
+export class ProfilerFilterSession extends Action {
+	public static ID = 'profiler.filter';
+	public static LABEL = nls.localize('profiler.filter', "Filter…");
+
+	constructor(
+		id: string, label: string,
+		@IProfilerService private _profilerService: IProfilerService
+	) {
+		super(id, label, 'filterLabel');
+	}
+
+	public run(input: ProfilerInput): TPromise<boolean> {
+		this._profilerService.launchFilterSessionDialog(input);
+		return TPromise.wrap(true);
+	}
+}
+
+export class ProfilerClearSessionFilter extends Action {
+	public static ID = 'profiler.clearFilter';
+	public static LABEL = nls.localize('profiler.clearFilter', "Clear Filter");
+
+	constructor(
+		id: string, label: string
+	) {
+		super(id, label, 'clear-filter');
+	}
+
+	public run(input: ProfilerInput): TPromise<boolean> {
+		input.clearFilter();
+		return TPromise.wrap(true);
 	}
 }

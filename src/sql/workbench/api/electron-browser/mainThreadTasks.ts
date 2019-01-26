@@ -20,7 +20,7 @@ import {
 
 import { IConnectionProfile } from 'sqlops';
 
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
 export class MainThreadTasks implements MainThreadTasksShape {

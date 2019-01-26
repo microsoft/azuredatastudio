@@ -11,7 +11,7 @@ import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/commo
 import { error } from 'sql/base/common/log';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { WIDGETS_CONTAINER } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/parts/dashboard/containers/dashboardGridContainer.contribution';
@@ -21,7 +21,7 @@ import { CONTROLHOST_CONTAINER } from 'sql/parts/dashboard/containers/dashboardC
 import { NAV_SECTION } from 'sql/parts/dashboard/containers/dashboardNavSection.contribution';
 import { IDashboardContainerRegistry, Extensions as DashboardContainerExtensions } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
 import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
-import * as Constants from 'sql/parts/connection/common/constants';
+import * as Constants from 'sql/platform/connection/common/constants';
 
 const dashboardcontainerRegistry = Registry.as<IDashboardContainerRegistry>(DashboardContainerExtensions.dashboardContainerContributions);
 const containerTypes = [

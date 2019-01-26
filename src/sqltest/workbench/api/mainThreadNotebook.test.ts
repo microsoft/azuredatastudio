@@ -14,10 +14,10 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 
 import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';
-import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
-import { INotebookProvider } from 'sql/services/notebook/notebookService';
+import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
+import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { LocalContentManager } from 'sql/services/notebook/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -91,7 +91,7 @@ suite('MainThreadNotebook Tests', () => {
 				hasServerManager: false
 			};
 			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
-			.returns(() => Promise.resolve(details));
+				.returns(() => Promise.resolve(details));
 
 			// When I get the notebook manager
 			let manager = await provider.getNotebookManager(notebookUri);
@@ -105,7 +105,7 @@ suite('MainThreadNotebook Tests', () => {
 		test('should return manager with a content & server manager if extension host has these', async () => {
 			// Given the extension provider doesn't have acontent or server manager
 			mockProxy.setup(p => p.$getNotebookManager(TypeMoq.It.isAnyNumber(), TypeMoq.It.isValue(notebookUri)))
-			.returns(() => Promise.resolve(managerWithAllFeatures));
+				.returns(() => Promise.resolve(managerWithAllFeatures));
 
 			// When I get the notebook manager
 			let manager = await provider.getNotebookManager(notebookUri);
@@ -147,6 +147,12 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 		throw new Error('Method not implemented.');
 	}
 	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
+		throw new Error('Method not implemented.');
+	}
+	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$configureConnection(sessionId: number, conneection: sqlops.IConnectionProfile): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {

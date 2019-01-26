@@ -23,9 +23,9 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
+import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
@@ -321,20 +321,22 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
 		let providerId = options.providerId;
 		let providers: string[] = undefined;
-		if (!providerId)
-		{
-			// Ensure there is always a sensible provider ID for this file type
-			providers = getProvidersForFileName(uri.fsPath, this._notebookService);
-			// Try to use a non-builtin provider first
-			if (providers) {
-				providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
-				if (!providerId) {
-					providerId = model.providerId;
-				}
+		// Ensure there is always a sensible provider ID for this file type
+		providers = getProvidersForFileName(uri.fsPath, this._notebookService);
+		// Try to use a non-builtin provider first
+		if (providers) {
+			providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
+			if (!providerId) {
+				providerId = model.providerId;
 			}
 		}
 		model.providers = providers;
 		model.providerId = providerId;
+		model.defaultKernel = options && options.defaultKernel;
+		model.providers.forEach(provider => {
+			let standardKernels = getStandardKernelsForProvider(provider, this._notebookService);
+			model.standardKernels = standardKernels;
+		});
 		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));

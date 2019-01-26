@@ -6,11 +6,11 @@
 
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
@@ -19,8 +19,8 @@ import * as TelemetryUtils from 'sql/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
-import * as Utils from 'sql/parts/connection/common/utils';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import * as Utils from 'sql/platform/connection/common/utils';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -77,6 +77,11 @@ export interface IObjectExplorerService {
 	getTreeNode(connectionId: string, nodePath: string): Thenable<TreeNode>;
 
 	refreshNodeInView(connectionId: string, nodePath: string): Thenable<TreeNode>;
+
+	/**
+	 * For Testing purpose only. Get the context menu actions for an object explorer node.
+	*/
+	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 }
 
 interface SessionStatus {
@@ -520,6 +525,17 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	public getActiveConnectionNodes(): TreeNode[] {
 		return Object.values(this._activeObjectExplorerNodes);
+	}
+
+	/**
+	 * For Testing purpose only. Get the context menu actions for an object explorer node
+	*/
+	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
+		return this.getTreeNode(connectionId, nodePath).then(node => {
+			return this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node)).then((actions) => {
+				return actions.filter(action => action.label).map(action => action.label);
+			});
+		});
 	}
 
 	public async refreshNodeInView(connectionId: string, nodePath: string): Promise<TreeNode> {

@@ -6,7 +6,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class CreateLoginInput extends EditorInput {
 

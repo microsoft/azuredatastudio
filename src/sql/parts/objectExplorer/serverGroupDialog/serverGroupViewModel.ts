@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { IConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 
 import * as TypeChecker from 'vs/base/common/types';
 import { localize } from 'vs/nls';

@@ -5,8 +5,8 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import { ICapabilitiesService, clientCapabilities, ProviderFeatures } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { ICapabilitiesService, ProviderFeatures } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { Event, Emitter } from 'vs/base/common/event';
@@ -15,8 +15,6 @@ import { Action } from 'vs/base/common/actions';
 export class CapabilitiesTestService implements ICapabilitiesService {
 
 	public _serviceBrand: any;
-
-	private _providers: sqlops.CapabilitiesProvider[] = [];
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
 

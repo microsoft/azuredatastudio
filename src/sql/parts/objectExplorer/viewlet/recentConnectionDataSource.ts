@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TPromise } from 'vs/base/common/winjs.base';
 

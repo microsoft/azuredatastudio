@@ -7,10 +7,10 @@
 import * as pretty from 'pretty-data';
 
 import { attachTableStyler } from 'sql/common/theme/styler';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/parts/grid/common/interfaces';
@@ -34,7 +34,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
-import { Orientation, IView } from 'vs/base/browser/ui/splitview/splitview';
+import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { $ } from 'vs/base/browser/builder';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -90,6 +90,7 @@ export class GridTableState extends Disposable {
 	/* The top row of the current scroll */
 	public scrollPositionY = 0;
 	public scrollPositionX = 0;
+	public columnSizes: number[] = undefined;
 	public selection: Slick.Range[];
 	public activeCell: Slick.Cell;
 
@@ -287,8 +288,7 @@ export class GridPanel extends ViewletPanel {
 					this._state.tableStates.push(tableState);
 				}
 			}
-			let table = this.instantiationService.createInstance(GridTable, this.runner, set);
-			table.state = tableState;
+			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
 			this.tableDisposable.push(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
@@ -418,6 +418,7 @@ class GridTable<T> extends Disposable implements IView {
 	constructor(
 		private runner: QueryRunner,
 		private _resultSet: sqlops.ResultSetSummary,
+		state: GridTableState,
 		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IEditorService private editorService: IEditorService,
@@ -425,6 +426,7 @@ class GridTable<T> extends Disposable implements IView {
 		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
+		this.state = state;
 		this.container.style.width = '100%';
 		this.container.style.height = '100%';
 		this.container.className = 'grid-panel';
@@ -438,7 +440,8 @@ class GridTable<T> extends Disposable implements IView {
 					? 'XML Showplan'
 					: escape(c.columnName),
 				field: i.toString(),
-				formatter: isLinked ? hyperLinkFormatter : textFormatter
+				formatter: isLinked ? hyperLinkFormatter : textFormatter,
+				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
 	}
@@ -473,10 +476,6 @@ class GridTable<T> extends Disposable implements IView {
 		this.scrolled = false;
 	}
 
-	public render(container: HTMLElement, orientation: Orientation): void {
-		container.appendChild(this.container);
-	}
-
 	private build(): void {
 		let tableContainer = document.createElement('div');
 		tableContainer.style.display = 'inline-block';
@@ -509,7 +508,7 @@ class GridTable<T> extends Disposable implements IView {
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -565,6 +564,12 @@ class GridTable<T> extends Disposable implements IView {
 			}
 		});
 
+		// we need to remove the first column since this is the row number
+		this.table.onColumnResize(() => {
+			let columnSizes = this.table.grid.getColumns().slice(1).map(v => v.width);
+			this.state.columnSizes = columnSizes;
+		});
+
 		this.table.grid.onActiveCellChanged.subscribe(e => {
 			if (this.state) {
 				this.state.activeCell = this.table.grid.getActiveCell();
@@ -586,6 +591,8 @@ class GridTable<T> extends Disposable implements IView {
 		this._register(this.state.onCanBeMaximizedChange(this.rebuildActionBar, this));
 
 		this.restoreScrollState();
+
+		this.rebuildActionBar();
 
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
@@ -646,7 +653,6 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
 		this._onDidChange.fire();
 	}
 
@@ -686,6 +692,7 @@ class GridTable<T> extends Disposable implements IView {
 			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(ChartDataAction)
 		);
 
@@ -744,6 +751,7 @@ class GridTable<T> extends Disposable implements IView {
 					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
 					new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 					new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+					new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 					new Separator(),
 					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
