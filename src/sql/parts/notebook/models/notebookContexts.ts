@@ -11,7 +11,7 @@ import { localize } from 'vs/nls';
 import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IConnectionProfile } from 'sqlops';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class NotebookContexts {
 	private static MSSQL_PROVIDER = 'MSSQL';
