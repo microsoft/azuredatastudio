@@ -149,6 +149,12 @@ class ExtHostNotebookStub implements ExtHostNotebookShape {
 	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails> {
 		throw new Error('Method not implemented.');
 	}
+	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
+	$configureConnection(sessionId: number, conneection: sqlops.IConnectionProfile): Thenable<void> {
+		throw new Error('Method not implemented.');
+	}
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {
 		throw new Error('Method not implemented.');
 	}

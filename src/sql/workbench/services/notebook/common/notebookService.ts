@@ -48,6 +48,8 @@ export interface INotebookService {
 
 	getProvidersForFileType(fileType: string): string[];
 
+	getStandardKernelsForProvider(provider: string): sqlops.nb.IStandardKernel[];
+
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
 	 * run cells in a notebook.

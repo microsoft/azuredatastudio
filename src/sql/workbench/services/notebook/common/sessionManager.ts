@@ -7,6 +7,7 @@
 import { nb } from 'sqlops';
 import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export const noKernel: string = localize('noKernel', 'No Kernel');
 const runNotebookDisabled = localize('runNotebookDisabled', 'Cannot run cells as no kernel has been configured');
@@ -90,6 +91,15 @@ export class EmptySession implements nb.ISession {
 
 	changeKernel(kernelInfo: nb.IKernelSpec): Thenable<nb.IKernel> {
 		return Promise.resolve(this.kernel);
+	}
+
+	// No kernel config necessary for empty session
+	configureKernel(kernelInfo: nb.IKernelSpec): Thenable<void> {
+		return Promise.resolve();
+	}
+
+	configureConnection(connection: ConnectionProfile): Thenable<void> {
+		return Promise.resolve();
 	}
 }
 

@@ -1594,6 +1594,11 @@ declare module 'sqlops' {
 			 * Optional ID indicating the initial connection to use for this editor
 			 */
 			connectionId?: string;
+
+			/**
+			 * Default kernel for notebook
+			 */
+			defaultKernel?: nb.IKernelSpec;
 		}
 
 		/**
@@ -1666,9 +1671,14 @@ declare module 'sqlops' {
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
+		export interface IStandardKernel {
+			readonly name: string;
+			readonly connectionProviderIds: string[];
+		}
+
 		export interface NotebookProvider {
 			readonly providerId: string;
-			readonly standardKernels: string[];
+			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
@@ -1945,6 +1955,10 @@ declare module 'sqlops' {
 			defaultKernelLoaded?: boolean;
 
 			changeKernel(kernelInfo: IKernelSpec): Thenable<IKernel>;
+
+			configureKernel(kernelInfo: IKernelSpec): Thenable<void>;
+
+			configureConnection(connection: IConnectionProfile): Thenable<void>;
 		}
 
 		export interface ISessionOptions {

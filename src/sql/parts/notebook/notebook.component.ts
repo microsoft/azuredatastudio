@@ -49,6 +49,7 @@ import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHos
 import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -92,7 +93,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(IWindowService) private windowService: IWindowService,
 		@Inject(IViewletService) private viewletService: IViewletService,
 		@Inject(IUntitledEditorService) private untitledEditorService: IUntitledEditorService,
-		@Inject(IEditorGroupsService) private editorGroupService: IEditorGroupsService
+		@Inject(IEditorGroupsService) private editorGroupService: IEditorGroupsService,
+		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		this.updateProfile();
@@ -105,11 +107,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			// use global connection if possible
 			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
-			if (profile && profile.providerName === notebookConstants.hadoopKnoxProviderName) {
+			if (profile && profile.providerName) {
 				this.profile = profile;
 			} else {
 				// if not, try 1st active connection that matches our filter
-				let profiles = this.connectionManagementService.getActiveConnections([notebookConstants.hadoopKnoxProviderName]);
+				let profiles = this.connectionManagementService.getActiveConnections();
 				if (profiles && profiles.length > 0) {
 					this.profile = profiles[0];
 				}
@@ -239,7 +241,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			connectionService: this.connectionManagementService,
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
-			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter' // this is tricky; really should also depend on the connection profile
+			standardKernels: this._notebookParams.input.standardKernels,
+			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
+			defaultKernel: this._notebookParams.input.defaultKernel,
+			capabilitiesService: this.capabilitiesService
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		await model.requestModelLoad(this._notebookParams.isTrusted);
@@ -324,7 +329,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 		let attachToContainer = document.createElement('div');
 		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
-			this.connectionManagementService, this.connectionDialogService, this.notificationService);
+			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
 		attachTodropdwon.render(attachToContainer);
 		attachSelectBoxStyler(attachTodropdwon, this.themeService);
 
