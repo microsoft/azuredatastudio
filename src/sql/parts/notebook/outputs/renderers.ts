@@ -331,12 +331,12 @@ export function renderDataResource(
 	return Promise.resolve(undefined);
 }
 
-// SlickGrid requires columns and data to be in a very specific format; this code originally comes from tableInsight.component.ts
+// SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
 function transformData(rows: any[], columns: string[]): { [key: string]: string }[] {
 	return rows.map(row => {
 		let object: { [key: string]: string } = {};
-		row.keys.forEach((val, index) => {
-			object[columns[index]] = val;
+		Object.keys(row).forEach((val, index) => {
+			object[columns[index]] = String(Object.values(row)[index]);
 		});
 		return object;
 	});

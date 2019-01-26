@@ -283,16 +283,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 				let dataResource: IDataResource = {
 					schema: columnsFields,
 					data: d.resultSubset.rows.map(row => {
-						let o = {};
-						let colNum = 0;
-						row.forEach(val => {
-							Object.defineProperty(o, columnsFields.fields[colNum].name, {
-								value: val.displayValue,
-								writable: true
-							  });
-							colNum++;
+						let rowObject: { [key: string]: any; } = {};
+						row.forEach((val, index) => {
+							rowObject[columnsFields.fields[index].name] = val.displayValue;
 						});
-						return o;
+						return rowObject;
 					})
 				};
 				let data:SQLData = {
@@ -329,7 +324,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 						output_type: 'execute_result',
 						metadata: {},
 						execution_count: 0,
-						data: { 'application/vnd.dataresource+json': JSON.stringify(dataResource), 'text/html': tableHtml},
+						data: { 'application/vnd.dataresource+json': dataResource, 'text/html': tableHtml},
 					},
 					metadata: undefined,
 					parent_header: undefined
