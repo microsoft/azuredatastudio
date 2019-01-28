@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DataService } from 'sql/parts/grid/services/dataService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionContextKey } from 'sql/parts/connection/common/connectionContextKey';
 import { IBootstrapParams } from './bootstrapService';

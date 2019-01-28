@@ -11,12 +11,11 @@ import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, El
 import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ObjectMetadataWrapper, ExplorerModel } from './explorerTree';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 import { InputBox, IInputOptions } from 'vs/base/browser/ui/inputbox/inputBox';
 import { attachInputBoxStyler, attachListStyler } from 'vs/platform/theme/common/styler';
@@ -28,7 +27,7 @@ import { IContextViewService, IContextMenuService } from 'vs/platform/contextvie
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IProgressService } from 'vs/platform/progress/common/progress';
-import * as types from 'vs/base/common/types';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 @Component({
 	selector: 'explorer-widget',
@@ -94,7 +93,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 			dataSource: this._treeDataSource,
 			filter: this._treeFilter,
 			renderer: this._treeRenderer
-		});
+		}, { horizontalScrollMode: ScrollbarVisibility.Auto });
 		this._tree.layout(getContentHeight(this._tableContainer.nativeElement));
 		this._register(this._input);
 		this._register(attachInputBoxStyler(this._input, this.themeService));

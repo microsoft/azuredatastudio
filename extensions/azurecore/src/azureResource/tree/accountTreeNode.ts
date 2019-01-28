@@ -90,12 +90,9 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			}
 		} catch (error) {
 			if (error instanceof AzureResourceCredentialError) {
-				this.appContext.apiWrapper.showErrorMessage(error.message);
-
 				this.appContext.apiWrapper.executeCommand('azure.resource.signin');
-			} else {
-				return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 			}
+			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
 		}
 	}
 

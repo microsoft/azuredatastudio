@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
 import { ProfilerState } from './profilerState';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
@@ -18,11 +18,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 import URI from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
+import { FilterData } from 'sql/parts/profiler/service/profilerFilter';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -40,6 +41,8 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	private _onColumnsChanged = new Emitter<Slick.Column<Slick.SlickData>[]>();
 	public onColumnsChanged: Event<Slick.Column<Slick.SlickData>[]> = this._onColumnsChanged.event;
+
+	private _filter: ProfilerFilter = { clauses: [] };
 
 	constructor(
 		public connection: IConnectionProfile,
@@ -73,7 +76,12 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			}
 			return ret;
 		};
-		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn);
+
+		let filterFn = (data: Array<Slick.SlickData>): Array<Slick.SlickData> => {
+			return FilterData(this._filter, data);
+		};
+
+		this._data = new TableDataView<Slick.SlickData>(undefined, searchFn, undefined, filterFn);
 	}
 
 	public get providerType(): string {
@@ -187,6 +195,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._state;
 	}
 
+	public get filter(): ProfilerFilter {
+		return this._filter;
+	}
+
 	public onSessionStopped(notification: sqlops.ProfilerSessionStoppedParams) {
 		this._notificationService.error(nls.localize("profiler.sessionStopped", "XEvent Profiler Session stopped unexpectedly on the server {0}.", this.connection.serverName));
 
@@ -232,6 +244,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			this._notificationService.warn(nls.localize("profiler.eventsLost", "The XEvent Profiler session for {0} has lost events.", this.connection.serverName));
 		}
 
+		let newEvents = [];
 		for (let i: number = 0; i < eventMessage.events.length && i < 500; ++i) {
 			let e: sqlops.ProfilerEvent = eventMessage.events[i];
 			let data = {};
@@ -249,9 +262,26 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					data[columnName] = escape(value);
 				}
 			}
-			this._data.push(data);
+			newEvents.push(data);
 		}
 
+		if (newEvents.length > 0) {
+			this._data.push(newEvents);
+		}
+	}
+
+	filterSession(filter: ProfilerFilter) {
+		this._filter = filter;
+		if (this._filter.clauses.length !== 0) {
+			this.data.filter();
+		} else {
+			this.data.clearFilter();
+		}
+	}
+
+	clearFilter() {
+		this._filter = { clauses: [] };
+		this.data.clearFilter();
 	}
 
 	confirmSave(): TPromise<ConfirmResult> {
@@ -279,5 +309,10 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 
 	isDirty(): boolean {
 		return this.state.isRunning || this.state.isPaused;
+	}
+
+	dispose() {
+		super.dispose();
+		this._profilerService.disconnectSession(this.id);
 	}
 }

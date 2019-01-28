@@ -11,7 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { NgGridModule } from 'angular2-grid';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 
-import CustomUrlSerializer from 'sql/common/urlSerializer';
+import CustomUrlSerializer from 'sql/base/node/urlSerializer';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { Extensions as ComponentExtensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { IBootstrapParams, ISelector, providerIterator } from 'sql/services/bootstrap/bootstrapService';

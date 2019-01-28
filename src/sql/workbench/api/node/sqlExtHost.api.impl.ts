@@ -39,6 +39,7 @@ import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
+import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
@@ -77,6 +78,7 @@ export function createApiFactory(
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
+	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 
 
 	return {
@@ -129,6 +131,9 @@ export function createApiFactory(
 				},
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
+				},
+				connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile);
 				}
 			};
 
@@ -152,6 +157,9 @@ export function createApiFactory(
 				},
 				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
+				},
+				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
+					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
 				}
 			};
 
@@ -421,6 +429,12 @@ export function createApiFactory(
 				}
 			};
 
+			const extensions: typeof sqlops.extensions = {
+				install(vsixPath: string): Thenable<string> {
+					return extHostExtensionManagement.$install(vsixPath);
+				}
+			};
+
 			const nb = {
 				get notebookDocuments() {
 					return extHostNotebookDocumentsAndEditors.getAllDocuments().map(doc => doc.document);
@@ -483,7 +497,8 @@ export function createApiFactory(
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				nb: nb,
-				AzureResource: sqlExtHostTypes.AzureResource
+				AzureResource: sqlExtHostTypes.AzureResource,
+				extensions: extensions,
 			};
 		}
 	};

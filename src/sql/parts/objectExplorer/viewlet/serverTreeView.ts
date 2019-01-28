@@ -13,24 +13,25 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import * as ConnectionUtils from 'sql/parts/connection/common/utils';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/common/theme/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { ServerTreeActionProvider } from 'sql/parts/objectExplorer/viewlet/serverTreeActionProvider';
 
 const $ = builder.$;
 
@@ -46,14 +47,13 @@ export class ServerTreeView {
 	private _tree: ITree;
 	private _toDispose: IDisposable[] = [];
 	private _onSelectionOrFocusChange: Emitter<void>;
-
+	private _actionProvider: ServerTreeActionProvider;
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
@@ -63,6 +63,7 @@ export class ServerTreeView {
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
+		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
 	}
 
 	/**
@@ -77,6 +78,14 @@ export class ServerTreeView {
 	 */
 	public get onSelectionOrFocusChange(): Event<void> {
 		return this._onSelectionOrFocusChange.event;
+	}
+
+	public get treeActionProvider(): ServerTreeActionProvider {
+		return this._actionProvider;
+	}
+
+	public get tree(): ITree {
+		return this._tree;
 	}
 
 	/**
@@ -98,7 +107,6 @@ export class ServerTreeView {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-
 		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
 		//this._tree.setInput(undefined);
 		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));

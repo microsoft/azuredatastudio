@@ -7,7 +7,7 @@ import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { InsightActionContext } from 'sql/workbench/common/actions';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';

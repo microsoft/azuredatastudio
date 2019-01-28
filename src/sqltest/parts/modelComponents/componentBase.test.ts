@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as assert from 'assert';
-import { Mock, It, Times, MockBehavior } from 'typemoq';
 import { ComponentBase, ContainerBase, ItemDescriptor } from 'sql/parts/modelComponents/componentBase';
 import { IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { ModelStore } from 'sql/parts/modelComponents/modelStore';
 import { ChangeDetectorRef } from '@angular/core';
 
-'use strict';
 
 class TestComponent extends ComponentBase {
 	public descriptor: IComponentDescriptor;

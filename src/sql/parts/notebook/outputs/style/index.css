@@ -325,7 +325,7 @@ output-component .jp-RenderedHTMLCommon table {
   border: none;
   color: var(--jp-ui-font-color1);
   font-size: 12px;
-  table-layout: fixed;
+  table-layout: auto;
   margin-left: auto;
   margin-right: auto;
 }
@@ -338,7 +338,7 @@ output-component .jp-RenderedHTMLCommon thead {
 output-component .jp-RenderedHTMLCommon td,
 output-component .jp-RenderedHTMLCommon th,
 output-component .jp-RenderedHTMLCommon tr {
-  text-align: right;
+  text-align: left;
   vertical-align: middle;
   padding: 0.5em 0.5em;
   line-height: normal;
@@ -370,6 +370,7 @@ output-component .jp-RenderedHTMLCommon tbody tr:hover {
 
 output-component .jp-RenderedHTMLCommon table {
   margin-bottom: 1em;
+  display: table-row;
 }
 
 output-component .jp-RenderedHTMLCommon p {

@@ -41,7 +41,7 @@ import * as FileValidationConstants from 'sql/parts/fileBrowser/common/fileValid
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 interface FileListElement {

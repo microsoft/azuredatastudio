@@ -13,7 +13,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IDashboardWebview, IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
+import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 
 import * as sqlops from 'sqlops';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

@@ -13,13 +13,14 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { localize } from 'vs/nls';
 import { buttonBackground } from 'vs/platform/theme/common/colorRegistry';
-import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import * as sqlops from 'sqlops';
 import { Button } from 'sql/base/browser/ui/button/button';
@@ -27,9 +28,8 @@ import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { IAccountPickerService } from 'sql/parts/accountManagement/common/interfaces';
+import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -65,7 +65,7 @@ export class FirewallRuleDialog extends Modal {
 	constructor(
 		@IAccountPickerService private _accountPickerService: IAccountPickerService,
 		@IPartService partService: IPartService,
-		@IWorkbenchThemeService private _workbenchThemeService: IWorkbenchThemeService,
+		@IThemeService themeService: IThemeService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -79,7 +79,7 @@ export class FirewallRuleDialog extends Modal {
 			partService,
 			telemetryService,
 			clipboardService,
-			_workbenchThemeService,
+			themeService,
 			contextKeyService,
 			{
 				isFlyout: true,
@@ -206,8 +206,8 @@ export class FirewallRuleDialog extends Modal {
 			builder.append(firewallRuleSection);
 		});
 
-		this._register(this._workbenchThemeService.onDidColorThemeChange(e => this.updateTheme(e)));
-		this.updateTheme(this._workbenchThemeService.getColorTheme());
+		this._register(this._themeService.onThemeChange(e => this.updateTheme(e)));
+		this.updateTheme(this._themeService.getTheme());
 
 		$(this._IPAddressInput).on(DOM.EventType.CLICK, () => {
 			this.onFirewallRuleOptionSelected(true);
@@ -243,7 +243,7 @@ export class FirewallRuleDialog extends Modal {
 	}
 
 	// Update theming that is specific to firewall rule flyout body
-	private updateTheme(theme: IColorTheme): void {
+	private updateTheme(theme: ITheme): void {
 		let linkColor = theme.getColor(buttonBackground);
 		let link = linkColor ? linkColor.toString() : null;
 		if (this._helpLink) {

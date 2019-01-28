@@ -152,6 +152,16 @@
 			"args": [
 				"--extensionDevelopmentPath=${workspaceRoot}/extensions/debug-auto-launch"
 			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch Smoke Test",
+			"program": "${workspaceFolder}/test/smoke/test/index.js",
+			"cwd": "${workspaceFolder}/test/smoke",
+			"env": {
+				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
+			}
 		}
 	],
 	"compounds": [

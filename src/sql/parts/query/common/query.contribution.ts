@@ -150,7 +150,7 @@ actionRegistry.registerWorkbenchAction(
 		FocusOnCurrentQueryKeyboardAction,
 		FocusOnCurrentQueryKeyboardAction.ID,
 		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_O }
 	),
 	FocusOnCurrentQueryKeyboardAction.LABEL
 );
@@ -261,7 +261,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLERESULTS_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_R,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_R,
 	handler: gridCommands.toggleResultsPane
 });
 
@@ -269,7 +269,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLEMESSAGES_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Y,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Y,
 	handler: gridCommands.toggleMessagePane
 });
 
@@ -277,7 +277,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_P,
 	handler: gridCommands.goToNextQueryOutputTab
 });
 
@@ -316,7 +316,7 @@ let registryProperties = {
 	'sql.results.streaming': {
 		'type': 'boolean',
 		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
-		'default': false
+		'default': true
 	},
 	'sql.saveAsXml.formatted': {
 		'type': 'string',

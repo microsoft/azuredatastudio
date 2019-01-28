@@ -21,6 +21,11 @@
 					"type": "boolean",
 					"default": true,
 					"description": "%notebook.enabled.description%"
+				},
+				"notebook.pythonPath": {
+					"type": "string",
+					"default": "",
+					"description": "%notebook.pythonPath.description%"
 				}
 			}
 		},

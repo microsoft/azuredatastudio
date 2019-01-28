@@ -6,7 +6,7 @@
 import { ElementRef, Component, Inject, forwardRef } from '@angular/core';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 export const CREATELOGIN_SELECTOR: string = 'createlogin-component';
 
@@ -21,8 +21,8 @@ export class CreateLoginComponent {
 	public connection: ConnectionManagementInfo;
 
 	constructor(
-        @Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-        @Inject(IBootstrapParams) private _params: IDashboardComponentParams
+		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
+		@Inject(IBootstrapParams) private _params: IDashboardComponentParams
 	) {
 	}
 }
