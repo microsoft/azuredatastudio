@@ -236,7 +236,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public findCellIndex(cellModel: CellModel): number {
+	public findCellIndex(cellModel: ICellModel): number {
 		return this._cells.findIndex((cell) => cell.equals(cellModel));
 	}
 

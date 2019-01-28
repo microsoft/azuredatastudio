@@ -89,7 +89,6 @@
     "@types/keytar": "4.0.1",
     "@types/minimist": "1.2.0",
     "@types/mocha": "2.2.39",
-    "@types/node": "8.0.33",
     "@types/sanitize-html": "^1.18.2",
     "@types/semver": "5.3.30",
     "@types/should": "^13.0.0",

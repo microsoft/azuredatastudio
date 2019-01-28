@@ -815,6 +815,7 @@ export interface INotebookModelChangedData {
 	providers: string[];
 	isDirty: boolean;
 	cells: sqlops.nb.NotebookCell[];
+	kernelSpec: sqlops.nb.IKernelSpec;
 }
 
 export interface INotebookEditorAddData {

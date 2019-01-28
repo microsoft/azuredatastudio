@@ -28,7 +28,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -38,6 +39,12 @@ class MainThreadNotebookEditor extends Disposable {
 		super();
 		editor.modelReady.then(model => {
 			this._register(model.contentChanged((e) => this._contentChangedEmitter.fire(e)));
+			this._register(model.kernelChanged((e) => {
+				let changeEvent: NotebookContentChange = {
+					changeType: NotebookChangeType.KernelChanged
+				};
+				this._contentChangedEmitter.fire(changeEvent);
+			}));
 		});
 	}
 
@@ -63,6 +70,10 @@ class MainThreadNotebookEditor extends Disposable {
 
 	public get cells(): ICellModel[] {
 		return this.editor.cells;
+	}
+
+	public get model(): INotebookModel | null {
+		return this.editor.model;
 	}
 
 	public save(): Thenable<boolean> {
@@ -498,9 +509,15 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			isDirty: e.isDirty,
 			providerId: editor.providerId,
 			providers: editor.providers,
-			uri: editor.uri
+			uri: editor.uri,
+			kernelSpec: this.getKernelSpec(editor)
 		};
 		return changeData;
+	}
+
+	private getKernelSpec(editor: MainThreadNotebookEditor): sqlops.nb.IKernelSpec {
+		let spec = editor && editor.model && editor.model.clientSession ? editor.model.clientSession.cachedKernelSpec : undefined;
+		return spec;
 	}
 
 	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): sqlops.nb.NotebookCell[] {
@@ -515,8 +532,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						metadata: {
 							language: cell.language
 						},
-						source: undefined
-
+						source: undefined,
+						outputs: [...cell.outputs]
 					}
 				});
 			}

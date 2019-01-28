@@ -43,6 +43,7 @@ export class ClientSession implements IClientSession {
 	private _kernelPreference: IKernelPreference;
 	private _kernelDisplayName: string;
 	private _errorMessage: string;
+	private _cachedKernelSpec: nb.IKernelSpec;
 	//#endregion
 
 	private _serverLoadFinished: Promise<void>;
@@ -67,6 +68,7 @@ export class ClientSession implements IClientSession {
 			this._serverLoadFinished = this.startServer();
 			await this._serverLoadFinished;
 			await this.initializeSession();
+			await this.updateCachedKernelSpec();
 		} catch (err) {
 			this._errorMessage = notebookUtils.getErrorMessage(err);
 		}
@@ -209,6 +211,10 @@ export class ClientSession implements IClientSession {
 	public get isInErrorState(): boolean {
 		return !!this._errorMessage;
 	}
+
+	public get cachedKernelSpec(): nb.IKernelSpec {
+		return this._cachedKernelSpec;
+	}
 	//#endregion
 
 	//#region Not Yet Implemented
@@ -232,6 +238,7 @@ export class ClientSession implements IClientSession {
 		}
 		newKernel = this._session ? kernel : this._session.kernel;
 		this._isReady = kernel.isReady;
+		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
 		this._kernelChangeCompleted.resolve();
 		this._kernelChangedEmitter.fire({
@@ -239,6 +246,14 @@ export class ClientSession implements IClientSession {
 			newValue: newKernel
 		});
 		return kernel;
+	}
+
+	private async updateCachedKernelSpec(): Promise<void> {
+		this._cachedKernelSpec = undefined;
+		let kernel = this.kernel;
+		if (kernel && kernel.isReady) {
+			this._cachedKernelSpec = await this.kernel.getSpec();
+		}
 	}
 
 	/**

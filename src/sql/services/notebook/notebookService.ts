@@ -98,6 +98,7 @@ export interface INotebookEditor {
 	readonly id: string;
 	readonly cells?: ICellModel[];
 	readonly modelReady: Promise<INotebookModel>;
+	readonly model: INotebookModel | null;
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;

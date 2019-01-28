@@ -19,6 +19,7 @@ import { CellRange } from 'sql/workbench/api/common/sqlExtHostTypes';
 export class ExtHostNotebookDocumentData implements IDisposable {
 	private _document: sqlops.nb.NotebookDocument;
 	private _isDisposed: boolean = false;
+	private _kernelSpec: sqlops.nb.IKernelSpec;
 
 	constructor(private readonly _proxy: MainThreadNotebookDocumentsAndEditorsShape,
 		private readonly _uri: URI,
@@ -49,6 +50,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 				get isClosed() { return data._isDisposed; },
 				get isDirty() { return data._isDirty; },
 				get cells() { return data._cells; },
+				get kernelSpec() { return data._kernelSpec; },
 				save() { return data._save(); },
 				validateCellRange(range) { return data._validateRange(range); },
 			};
@@ -69,6 +71,7 @@ export class ExtHostNotebookDocumentData implements IDisposable {
 			this._isDirty = data.isDirty;
 			this._cells = data.cells;
 			this._providerId = data.providerId;
+			this._kernelSpec = data.kernelSpec;
 		}
 	}
 

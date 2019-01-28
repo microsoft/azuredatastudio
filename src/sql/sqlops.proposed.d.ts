@@ -1488,6 +1488,12 @@ declare module 'sqlops' {
 			readonly cells: NotebookCell[];
 
 			/**
+			 * The spec for current kernel, if applicable. This will be undefined
+			 * until a kernel has been started
+			 */
+			readonly kernelSpec: IKernelSpec;
+
+			/**
 			 * Save the underlying file.
 			 *
 			 * @return A promise that will resolve to true when the file
@@ -1677,7 +1683,7 @@ declare module 'sqlops' {
 
 		export interface NotebookProvider {
 			readonly providerId: string;
-			readonly standardKernels: string[];
+			readonly standardKernels?: string[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
@@ -1799,7 +1805,7 @@ declare module 'sqlops' {
 		export interface ICellContents {
 			cell_type: CellType;
 			source: string | string[];
-			metadata: {
+			metadata?: {
 				language?: string;
 			};
 			execution_count?: number;
@@ -2183,7 +2189,6 @@ declare module 'sqlops' {
 			handle(message: T): void | Thenable<void>;
 		}
 
-
 		/**
 		 * A Future interface for responses from the kernel.
 		 *
@@ -2277,6 +2282,20 @@ declare module 'sqlops' {
 			 * Send an `input_reply` message.
 			 */
 			sendInputReply(content: IInputReply): void;
+		}
+
+		export interface IExecuteReplyMsg extends IShellMessage {
+			content: IExecuteReply;
+		}
+
+		/**
+		 * The content of an `execute-reply` message.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#execution-results).
+		 */
+		export interface IExecuteReply {
+			status: 'ok' | 'error' | 'abort';
+			execution_count: number | null;
 		}
 
 		/**

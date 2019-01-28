@@ -85,11 +85,6 @@
   version "4.2.22"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-4.2.22.tgz#cf488a0f6b4a9c245d09927f4f757ca278b9c8ce"
 
-"@types/node@8.0.33":
-  version "8.0.33"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.33.tgz#1126e94374014e54478092830704f6ea89df04cd"
-  integrity sha512-vmCdO8Bm1ExT+FWfC9sd9r4jwqM7o97gGy2WBshkkXbf/2nLAJQUrZfIhw27yVOtLUev6kSZc4cav/46KbDd8A==
-
 "@types/sanitize-html@^1.18.2":
   version "1.18.2"
   resolved "https://registry.yarnpkg.com/@types/sanitize-html/-/sanitize-html-1.18.2.tgz#14e9971064d0f29aa4feaa8421122ced9e8346d9"

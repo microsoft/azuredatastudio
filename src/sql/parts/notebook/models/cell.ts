@@ -17,7 +17,7 @@ import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
-
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 let modelId = 0;
 
 
@@ -32,6 +32,7 @@ export class CellModel implements ICellModel {
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<ReadonlyArray<nb.ICellOutput>>();
 	private _onCellModeChanged = new Emitter<boolean>();
+	private _onExecutionStateChanged = new Emitter<boolean>();
 	public id: string;
 	private _isTrusted: boolean;
 	private _active: boolean;
@@ -136,17 +137,24 @@ export class CellModel implements ICellModel {
 		this._language = newLanguage;
 	}
 
+	public get onExecutionStateChange(): Event<boolean> {
+		return this._onExecutionStateChanged.event;
+	}
 
-	public async runCell(): Promise<nb.IExecuteResult> {
+	public get isRunning(): boolean {
+		return !!(this._future && this._future.inProgress);
+	}
+
+	public async runCell(notificationService?: INotificationService): Promise<boolean> {
 		try {
 			if (this.cellType !== CellTypes.Code) {
 				// TODO should change hidden state to false if we add support
 				// for this property
-				return Promise.resolve({ output_type: 'execute_result', });
+				return false;
 			}
-			let kernel = await this.getOrStartKernel();
+			let kernel = await this.getOrStartKernel(notificationService);
 			if (!kernel) {
-				return undefined;
+				return false;
 			}
 			// If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
 			// This matches the same behavior as JupyterLab
@@ -157,40 +165,46 @@ export class CellModel implements ICellModel {
 				// TODO update source based on editor component contents
 				let content = this.source;
 				if (content) {
-					this.toggle(false);
+					this._onExecutionStateChanged.fire(true);
 					let future = await kernel.requestExecute({
 						code: content,
 						stop_on_error: true
 					}, false);
 					this.setFuture(future as FutureInternal);
 					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
-					let result: nb.IExecuteResult = <nb.IExecuteResult><any> await future.done;
-					return result;
+					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any> await future.done;
+					return result && result.content.status === 'ok' ? true : false;
 				}
 			}
 		} catch (error) {
-			let message = utils.getErrorMessage(error);
-			this.notificationService.error(message);
+			if (error.message === 'Canceled') {
+				// swallow the error
+			}
+			let message = notebookUtils.getErrorMessage(error);
+			this.sendNotification(notificationService, Severity.Error, message);
 			throw error;
 		} finally {
-			this.toggle(true);
+			this._onExecutionStateChanged.fire(false);
 		}
+
+		return true;
 	}
 
-	private async getOrStartKernel(): Promise<nb.IKernel> {
+	private async getOrStartKernel(notificationService: INotificationService): Promise<nb.IKernel> {
 		let model = this.options.notebook;
 		let clientSession = model && model.clientSession;
 		if (!clientSession) {
-			this.notificationService.error(localize('notebookNotReady', 'The session for this notebook is not yet ready'));
+			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', 'The session for this notebook is not yet ready'));
 			return undefined;
 		} else if (!clientSession.isReady || clientSession.status === 'dead') {
-			this.notificationService.info(localize('sessionNotReady', 'The session for this notebook will start momentarily'));
+
+			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', 'The session for this notebook will start momentarily'));
 			await clientSession.kernelChangeCompleted;
 		}
 		if (!clientSession.kernel) {
 			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
 			if (!defaultKernel) {
-				this.notificationService.error(localize('noDefaultKernel', 'No kernel is available for this notebook'));
+				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', 'No kernel is available for this notebook'));
 				return undefined;
 			}
 			await clientSession.changeKernel({
@@ -198,6 +212,12 @@ export class CellModel implements ICellModel {
 			});
 		}
 		return clientSession.kernel;
+	}
+
+	private sendNotification(notificationService: INotificationService, severity: Severity, message: string): void {
+		if (notificationService) {
+			notificationService.notify({ severity: severity, message: message});
+		}
 	}
 
 	/**
@@ -247,6 +267,11 @@ export class CellModel implements ICellModel {
 		// TODO #931 we should process this. There can be a payload attached which should be added to outputs.
 		// In all other cases, it is a no-op
 		let output: nb.ICellOutput = msg.content as nb.ICellOutput;
+
+		if (!this._future.inProgress) {
+			this._future.dispose();
+			this._future = undefined;
+		}
 	}
 
 	private handleIOPub(msg: nb.IIOPubMessage): void {
@@ -291,9 +316,6 @@ export class CellModel implements ICellModel {
 			delete output['transient'];
 			this._outputs.push(this.rewriteOutputUrls(output));
 			this.fireOutputsChanged();
-		}
-		if (!this._future.inProgress) {
-			this._future.dispose();
 		}
 	}
 

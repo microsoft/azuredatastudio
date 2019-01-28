@@ -125,6 +125,8 @@ export interface IClientSession extends IDisposable {
 	 */
 	readonly kernelDisplayName: string;
 
+	readonly cachedKernelSpec: nb.IKernelSpec;
+
 	/**
 	 * Initializes the ClientSession, by starting the server and
 	 * connecting to the SessionManager.
@@ -389,7 +391,10 @@ export interface ICellModel {
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	readonly onExecutionStateChange: Event<boolean>;
 	setFuture(future: FutureInternal): void;
+	readonly isRunning: boolean;
+	runCell(notificationService?: INotificationService): Promise<boolean>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 }
