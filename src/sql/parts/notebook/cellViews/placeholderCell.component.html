@@ -7,7 +7,7 @@
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div class="placeholder-cell-component" style="flex: 0 0 auto;">
 		<div class="placeholder-cell-component text">
-			<p>{{clickOn}} <a href="#" (click)="addCell('code')">{{plusCode}}</a> {{or}} <a href="#" (click)="addCell('markdown')">{{plusText}}</a> {{toAddCell}}</p>
+			<p>{{clickOn}} <a href="#" (click)="addCell('code', $event)">{{plusCode}}</a> {{or}} <a href="#" (click)="addCell('markdown', $event)">{{plusText}}</a> {{toAddCell}}</p>
 		</div>
 	</div>
 </div>
