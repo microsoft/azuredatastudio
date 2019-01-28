@@ -7,7 +7,7 @@
 
 import { IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { ChartView } from './chartView';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 
 import { localize } from 'vs/nls';
 import { generateUuid } from 'vs/base/common/uuid';

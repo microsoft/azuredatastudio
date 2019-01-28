@@ -7,7 +7,7 @@
 
 import * as assert from 'assert';
 import { FilterData } from 'sql/parts/profiler/service/profilerFilter';
-import { ProfilerFilterClauseOperator, ProfilerFilter } from 'sql/parts/profiler/service/interfaces';
+import { ProfilerFilterClauseOperator, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
 
 const property1 = 'property1';
 const property2 = 'property2';

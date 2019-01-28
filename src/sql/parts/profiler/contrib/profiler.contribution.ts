@@ -13,7 +13,7 @@ import * as nls from 'vs/nls';
 
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { ProfilerEditor } from 'sql/parts/profiler/editor/profilerEditor';
-import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate } from 'sql/parts/profiler/service/interfaces';
+import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate } from 'sql/workbench/services/profiler/common/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
 	ProfilerEditor,

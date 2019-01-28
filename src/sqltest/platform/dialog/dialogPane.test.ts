@@ -3,15 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as assert from 'assert';
-import { Mock, It, Times, GlobalMock } from 'typemoq';
 import { Dialog, DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { DialogComponentParams } from 'sql/platform/dialog/dialogContainer.component';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 
-'use strict';
 
 interface BootstrapAngular {
 	(collection, moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule): void;

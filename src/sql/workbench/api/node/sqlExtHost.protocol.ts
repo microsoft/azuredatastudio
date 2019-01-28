@@ -780,6 +780,8 @@ export interface ExtHostNotebookShape {
 
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
+	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void>;
+	$configureConnection(sessionId: number, connection: sqlops.IConnectionProfile): Thenable<void>;
 
 	// Kernel APIs
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
@@ -836,6 +838,7 @@ export interface INotebookShowOptions {
 	preview?: boolean;
 	providerId?: string;
 	connectionId?: string;
+	defaultKernel?: sqlops.nb.IKernelSpec;
 }
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {

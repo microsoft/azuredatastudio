@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./webviewContent';
 
-import { Component, forwardRef, Input, OnInit, Inject, ChangeDetectorRef, ElementRef } from '@angular/core';
+import { Component, forwardRef, Input, OnInit, Inject, ElementRef } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Parts, IPartService } from 'vs/workbench/services/part/common/partService';
@@ -17,8 +17,8 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { IDashboardWebview, IDashboardViewService } from 'sql/services/dashboard/common/dashboardViewService';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import * as sqlops from 'sqlops';

@@ -219,7 +219,7 @@ export class RowDetailView {
 	public subscribeToOnAsyncResponse() {
 		this.onAsyncResponse.subscribe((e, args) => {
 			if (!args || !args.itemDetail) {
-				throw 'Slick.RowDetailView plugin requires the onAsyncResponse() to supply "args.itemDetail" property.';
+				throw new Error('Slick.RowDetailView plugin requires the onAsyncResponse() to supply "args.itemDetail" property.');
 			}
 
 			// If we just want to load in a view directly we can use detailView property to do so
@@ -278,7 +278,7 @@ export class RowDetailView {
 		item._isPadding = false;
 		item._parent = parent;
 		item._offset = offset;
-		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError','Loading Error...');
+		item.name = parent.message ? parent.message : nls.localize('rowDetailView.loadError', 'Loading Error...');
 		parent._child = item;
 		return item;
 	}
@@ -349,15 +349,13 @@ export class RowDetailView {
 			//slick-cell to escape the cell overflow clipping.
 
 			//sneaky extra </div> inserted here-----------------v
-			/* tslint:disable:no-unexternalized-strings */
-			html.push("<div class='detailView-toggle collapse'></div></div>");
+			html.push('<div class="detailView-toggle collapse"></div></div>');
 
-			html.push("<div id='cellDetailView_", dataContext.id, "' class='dynamic-cell-detail' ");   //apply custom css to detail
-			html.push("style='height:", dataContext._height, "px;"); //set total height of padding
-			html.push("top:", rowHeight, "px'>");             //shift detail below 1st row
-			html.push("<div id='detailViewContainer_", dataContext.id, "'  class='detail-container' style='max-height:" + (dataContext._height - rowHeight + bottomMargin) + "px'>"); //sub ctr for custom styling
-			html.push("<div id='innerDetailView_", dataContext.id, "'>", escape(dataContext._detailContent), "</div></div>");
-			/* tslint:enable:no-unexternalized-strings */
+			html.push(`<div id='cellDetailView_${dataContext.id}' class='dynamic-cell-detail' `);   //apply custom css to detail
+			html.push(`style=\'height:${dataContext._height}px;`); //set total height of padding
+			html.push(`top:${rowHeight}px'>`);             //shift detail below 1st row
+			html.push(`<div id='detailViewContainer_${dataContext.id}"'  class='detail-container' style='max-height:${(dataContext._height - rowHeight + bottomMargin)}px'>`); //sub ctr for custom styling
+			html.push(`<div id='innerDetailView_${dataContext.id}'>${escape(dataContext._detailContent)}</div></div>`);
 			//&omit a final closing detail container </div> that would come next
 
 			return html.join('');
@@ -401,9 +399,9 @@ export class RowDetailView {
 			this._grid.getOptions().minRowBuffer = item._sizePadding + 3;
 		}
 
-		mainContainer.setAttribute('style', 'max-height: ' + item._height + 'px');
+		mainContainer.setAttribute('style', `max-height: ${item._height}px`);
 		if (cellItem) {
-			cellItem.setAttribute('style', 'height: ' + item._height + 'px;top:' + rowHeight + 'px');
+			cellItem.setAttribute('style', `height: ${item._height}px;top:${rowHeight}px`);
 		}
 
 		let idxParent = this._dataView.getIdxById(item.id);

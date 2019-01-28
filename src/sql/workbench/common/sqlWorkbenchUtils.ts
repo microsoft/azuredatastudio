@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import ConnectionConstants = require('sql/parts/connection/common/constants');
+import ConnectionConstants = require('sql/platform/connection/common/constants');
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';

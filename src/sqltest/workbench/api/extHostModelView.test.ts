@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+'use strict';
+
 import * as assert from 'assert';
 import { Mock, It, Times, MockBehavior } from 'typemoq';
 import * as sqlops from 'sqlops';
 import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
 import { MainThreadModelViewShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
-import { Deferred } from 'sql/base/common/promise';
 import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs, ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TitledFormItemLayout } from 'sql/parts/modelComponents/formContainer.component';
 
-'use strict';
 interface InternalItemConfig {
 	toIItemConfig(): IItemConfig;
 }

@@ -10,12 +10,12 @@ import { Router } from '@angular/router';
 /* SQL imports */
 import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { IMetadataService } from 'sql/services/metadata/metadataService';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { IAdminService } from 'sql/parts/admin/common/adminService';
-import { IQueryManagementService } from 'sql/parts/query/common/queryManagement';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
-import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
+import { AngularEventType, IAngularEvent, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { TabSettingConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';

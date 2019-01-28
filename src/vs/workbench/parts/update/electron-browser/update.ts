@@ -424,9 +424,11 @@ export class UpdateContribution implements IGlobalActivity {
 		let clazz: string | undefined;
 
 		if (state.type === StateType.AvailableForDownload || state.type === StateType.Downloaded || state.type === StateType.Ready) {
-			badge = new NumberBadge(1, () => nls.localize('updateIsReady', "New {0} update available.", product.nameShort));
+			// {{SQL CARBON EDIT}}
+			badge = new NumberBadge(1, () => nls.localize('updateIsReady', "New {0} update available.", product.nameLong));
 		} else if (state.type === StateType.CheckingForUpdates || state.type === StateType.Downloading || state.type === StateType.Updating) {
-			badge = new ProgressBadge(() => nls.localize('updateIsReady', "New {0} update available.", product.nameShort));
+			// {{SQL CARBON EDIT}}
+			badge = new ProgressBadge(() => nls.localize('updateIsReady', "New {0} update available.", product.nameLong));
 			clazz = 'progress-badge';
 		}
 

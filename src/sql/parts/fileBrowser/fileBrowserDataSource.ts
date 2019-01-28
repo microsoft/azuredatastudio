@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';

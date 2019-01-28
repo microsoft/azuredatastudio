@@ -8,7 +8,7 @@ import 'vs/css!./media/breadcrumb';
 import { Component, Inject, forwardRef, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { IBreadcrumbService, MenuItem } from './interfaces';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
