@@ -26,6 +26,11 @@
 					"type": "string",
 					"default": "",
 					"description": "%notebook.pythonPath.description%"
+				},
+				"notebook.sqlKernelEnabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "%notebook.sqlKernelEnabled.description%"
 				}
 			}
 		},
