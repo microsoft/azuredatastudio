@@ -45,4 +45,6 @@ export interface DacFxDataModel extends BaseDataModel {
 	filePath: string;
 	version: string;
 	upgradeExisting: boolean;
+	scriptFilePath: string;
+	generateScriptAndDeploy: boolean;
 }

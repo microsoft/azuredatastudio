@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
+import { DeployActionPage } from './pages/deployActionPage';
 import { DacFxSummaryPage } from './pages/dacFxSummaryPage';
 import { ExportConfigPage } from './pages/exportConfigPage';
 import { ExtractConfigPage } from './pages/extractConfigPage';
@@ -30,7 +31,33 @@ export enum Operation {
 	deploy,
 	extract,
 	import,
-	export
+	export,
+	generateDeployScript
+}
+
+export enum DeployOperationPath {
+	selectOperation,
+	deployOptions,
+	deployAction,
+	summary
+}
+
+export enum ExtractOperationPath {
+	selectOperation,
+	options,
+	summary
+}
+
+export enum ImportOperationPath {
+	selectOperation,
+	options,
+	summary
+}
+
+export enum ExportOperationPath {
+	selectOperation,
+	options,
+	summary
 }
 
 export class DataTierApplicationWizard {
@@ -60,6 +87,7 @@ export class DataTierApplicationWizard {
 		this.wizard = sqlops.window.modelviewdialog.createWizard('Data-tier Application Wizard');
 		let selectOperationWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
 		let deployConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
+		let deployActionWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.deployActionPageName', 'Select Action'));
 		let summaryWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
 		let extractConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
 		let importConfigWizardPage = sqlops.window.modelviewdialog.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
@@ -67,6 +95,7 @@ export class DataTierApplicationWizard {
 
 		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
 		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
+		this.pages.set('deployAction', new Page(deployActionWizardPage));
 		this.pages.set('extractConfig', new Page(extractConfigWizardPage));
 		this.pages.set('importConfig', new Page(importConfigWizardPage));
 		this.pages.set('exportConfig', new Page(exportConfigWizardPage));
@@ -85,6 +114,12 @@ export class DataTierApplicationWizard {
 			let deployConfigDacFxPage = new DeployConfigPage(this, deployConfigWizardPage, this.model, view);
 			this.pages.get('deployConfig').dacFxPage = deployConfigDacFxPage;
 			await deployConfigDacFxPage.start();
+		});
+
+		deployActionWizardPage.registerContent(async (view) => {
+			let deployActionDacFxPage = new DeployActionPage(this, deployActionWizardPage, this.model, view);
+			this.pages.get('deployAction').dacFxPage = deployActionDacFxPage;
+			await deployActionDacFxPage.start();
 		});
 
 		extractConfigWizardPage.registerContent(async (view) => {
@@ -113,39 +148,27 @@ export class DataTierApplicationWizard {
 
 		this.wizard.onPageChanged(async (event) => {
 			let idx = event.newPage;
-			let page: Page;
-
-			if (idx === 1) {
-				switch (this.selectedOperation) {
-					case Operation.deploy: {
-						page = this.pages.get('deployConfig');
-						break;
-					}
-					case Operation.extract: {
-						page = this.pages.get('extractConfig');
-						break;
-					}
-					case Operation.import: {
-						page = this.pages.get('importConfig');
-						break;
-					}
-					case Operation.export: {
-						page = this.pages.get('exportConfig');
-						break;
-					}
-				}
-			} else if (idx === 2) {
-				page = this.pages.get('summary');
-			}
+			let page = this.getPage(idx);
 
 			if (page !== undefined) {
 				page.dacFxPage.setupNavigationValidator();
 				page.dacFxPage.onPageEnter();
 			}
+
+			//do onPageLeave for summary page so that GenerateScript button only shows up if upgrading database
+			let idxLast = event.lastPage;
+
+			if (this.isSummaryPage(idxLast)) {
+				let lastPage = this.pages.get('summary');
+				if (lastPage) {
+					lastPage.dacFxPage.onPageLeave();
+				}
+			}
 		});
 
-		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, summaryWizardPage];
+		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployActionWizardPage, summaryWizardPage];
 		this.wizard.generateScriptButton.hidden = true;
+		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
 		this.wizard.doneButton.onClick(async () => await this.executeOperation());
 
 		this.wizard.open();
@@ -177,6 +200,15 @@ export class DataTierApplicationWizard {
 				this.selectedOperation = Operation.export;
 				break;
 			}
+			case Operation.generateDeployScript: {
+				this.wizard.doneButton.label = localize('dacFx.generateScriptButton', 'Generate Script');
+				this.selectedOperation = Operation.generateDeployScript;
+				break;
+			}
+		}
+
+		if (operation !== Operation.deploy && operation !== Operation.generateDeployScript) {
+			this.model.upgradeExisting = false;
 		}
 	}
 
@@ -196,6 +228,10 @@ export class DataTierApplicationWizard {
 			}
 			case Operation.export: {
 				await this.export();
+				break;
+			}
+			case Operation.generateDeployScript: {
+				await this.generateDeployScript();
 				break;
 			}
 		}
@@ -243,6 +279,64 @@ export class DataTierApplicationWizard {
 			vscode.window.showErrorMessage(
 				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 		}
+	}
+
+	private async generateDeployScript() {
+		if (!this.model.scriptFilePath) {
+			return;
+		}
+
+		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let ownerUri = await sqlops.connection.getUriForConnection(this.model.server.connectionId);
+		this.wizard.message = {
+			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Task History once the wizard is closed'),
+			level: sqlops.window.modelviewdialog.MessageLevel.Information,
+			description: ''
+		};
+
+		let result = await service.generateDeployScript(this.model.filePath, this.model.database, this.model.scriptFilePath, ownerUri, sqlops.TaskExecutionMode.execute);
+		if (!result || !result.success) {
+			vscode.window.showErrorMessage(
+				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+		}
+	}
+
+	private getPage(idx: number): Page {
+		let page: Page;
+
+		if (idx === 1) {
+			switch (this.selectedOperation) {
+				case Operation.deploy: {
+					page = this.pages.get('deployConfig');
+					break;
+				}
+				case Operation.extract: {
+					page = this.pages.get('extractConfig');
+					break;
+				}
+				case Operation.import: {
+					page = this.pages.get('importConfig');
+					break;
+				}
+				case Operation.export: {
+					page = this.pages.get('exportConfig');
+					break;
+				}
+			}
+		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
+			page = this.pages.get('deployAction');
+		} else if (this.isSummaryPage(idx)) {
+			page = this.pages.get('summary');
+		}
+
+		return page;
+	}
+
+	private isSummaryPage(idx: number): boolean {
+		return this.selectedOperation === Operation.import && idx === ImportOperationPath.summary
+			|| this.selectedOperation === Operation.export && idx === ExportOperationPath.summary
+			|| this.selectedOperation === Operation.extract && idx === ExtractOperationPath.summary
+			|| (this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.summary;
 	}
 
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
