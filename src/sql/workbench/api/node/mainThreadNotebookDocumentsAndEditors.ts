@@ -23,9 +23,9 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
+import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
@@ -366,6 +366,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		model.providers = providers;
 		model.providerId = providerId;
+		model.defaultKernel = options && options.defaultKernel;
+		model.providers.forEach(provider => {
+			let standardKernels = getStandardKernelsForProvider(provider, this._notebookService);
+			model.standardKernels = standardKernels;
+		});
 		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));

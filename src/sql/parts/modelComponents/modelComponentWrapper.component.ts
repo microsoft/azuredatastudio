@@ -5,29 +5,24 @@
 import 'vs/css!sql/media/icons/common-icons';
 
 import {
-	Component, Input, Inject, forwardRef, ComponentFactoryResolver, AfterContentInit, ViewChild,
-	ElementRef, OnInit, ChangeDetectorRef, OnDestroy, ReflectiveInjector, Injector, Type, ComponentRef
+	Component, Input, Inject, forwardRef, ComponentFactoryResolver, ViewChild,
+	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, ComponentRef
 } from '@angular/core';
 
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { error } from 'sql/base/common/log';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
 
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
-import { Action } from 'vs/base/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
-import { Event, Emitter } from 'vs/base/common/event';
-import * as nls from 'vs/nls';
+import { Event } from 'vs/base/common/event';
 import { LayoutRequestParams } from 'sql/platform/dialog/dialogContainer.component';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);

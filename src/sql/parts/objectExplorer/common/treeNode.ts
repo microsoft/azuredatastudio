@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { NodeType, SqlThemeIcon } from 'sql/parts/objectExplorer/common/nodeType';
 import * as sqlops from 'sqlops';
 
@@ -139,7 +139,7 @@ export class TreeNode {
 	}
 
 	public toNodeInfo(): sqlops.NodeInfo {
-		return <sqlops.NodeInfo> {
+		return <sqlops.NodeInfo>{
 			nodePath: this.nodePath,
 			nodeType: this.nodeTypeId,
 			nodeSubType: this.nodeSubType,

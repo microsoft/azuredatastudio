@@ -5,9 +5,9 @@
 
 'use strict';
 
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
@@ -24,7 +24,7 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 		let instantiationService = new TestInstantiationService();
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {});
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
-		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, undefined);
+		serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined);
 		let tree = <Tree>{
 			clearSelection() { },
 			getSelection() { },

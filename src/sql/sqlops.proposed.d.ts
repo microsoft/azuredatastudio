@@ -19,7 +19,7 @@ declare module 'sqlops' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
-		dom(): ComponentBuilder<DomComponent>
+		dom(): ComponentBuilder<DomComponent>;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
 		checkBox(): ComponentBuilder<CheckBoxComponent>;
@@ -47,8 +47,8 @@ declare module 'sqlops' {
 	}
 
 	export interface NodeCheckedEventParameters<T> {
-		element: T,
-		checked: boolean
+		element: T;
+		checked: boolean;
 	}
 
 	export interface TreeComponentView<T> extends vscode.Disposable {
@@ -922,13 +922,13 @@ declare module 'sqlops' {
 				/**
 				 * The title of the dialog
 				 */
-				title: string,
+				title: string;
 
 				/**
 				 * The content of the dialog. If multiple tabs are given they will be displayed with tabs
 				 * If a string is given, it should be the ID of the dialog's model view content
 				 */
-				content: string | DialogTab[],
+				content: string | DialogTab[];
 
 				/**
 				 * The ok button
@@ -1011,12 +1011,12 @@ declare module 'sqlops' {
 				/**
 				 * The page number that the wizard changed from
 				 */
-				lastPage: number,
+				lastPage: number;
 
 				/**
 				 * The new page number or undefined if the user is closing the wizard
 				 */
-				newPage: number
+				newPage: number;
 			}
 
 			export interface WizardPage extends ModelViewPanel {
@@ -1153,7 +1153,7 @@ declare module 'sqlops' {
 				 * Set the informational message shown in the wizard. Hidden when the message is
 				 * undefined or the text is empty or undefined. The default level is error.
 				 */
-				message: DialogMessage
+				message: DialogMessage;
 
 				/**
 				 * Register an operation to run in the background when the wizard is done
@@ -1240,6 +1240,7 @@ declare module 'sqlops' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
+		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	}
 
 	export namespace dataprotocol {
@@ -1337,7 +1338,7 @@ declare module 'sqlops' {
 		/**
 		 * The actual operation to execute
 		 */
-		operation: (operation: BackgroundOperation) => void
+		operation: (operation: BackgroundOperation) => void;
 	}
 
 	namespace tasks {
@@ -1609,6 +1610,11 @@ declare module 'sqlops' {
 			 * Optional ID indicating the initial connection to use for this editor
 			 */
 			connectionId?: string;
+
+			/**
+			 * Default kernel for notebook
+			 */
+			defaultKernel?: nb.IKernelSpec;
 		}
 
 		/**
@@ -1681,9 +1687,14 @@ declare module 'sqlops' {
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
+		export interface IStandardKernel {
+			readonly name: string;
+			readonly connectionProviderIds: string[];
+		}
+
 		export interface NotebookProvider {
 			readonly providerId: string;
-			readonly standardKernels?: string[];
+			readonly standardKernels: IStandardKernel[];
 			getNotebookManager(notebookUri: vscode.Uri): Thenable<NotebookManager>;
 			handleNotebookClosed(notebookUri: vscode.Uri): void;
 		}
@@ -1960,6 +1971,10 @@ declare module 'sqlops' {
 			defaultKernelLoaded?: boolean;
 
 			changeKernel(kernelInfo: IKernelSpec): Thenable<IKernel>;
+
+			configureKernel(kernelInfo: IKernelSpec): Thenable<void>;
+
+			configureConnection(connection: IConnectionProfile): Thenable<void>;
 		}
 
 		export interface ISessionOptions {

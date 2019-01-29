@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
-
 import { EditorInput, IEditorInput } from 'vs/workbench/common/editor';
 import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -16,8 +14,8 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
 import { NotebookInput, NotebookInputModel, NotebookInputValidator } from 'sql/parts/notebook/notebookInput';
-import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/services/notebook/notebookService';
-import { getProvidersForFileName } from 'sql/parts/notebook/notebookUtils';
+import { DEFAULT_NOTEBOOK_PROVIDER, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 
 const fs = require('fs');
@@ -71,6 +69,10 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 				let notebookInputModel = new NotebookInputModel(uri, undefined, false, undefined);
 				notebookInputModel.providerId = providerIds.filter(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER)[0];
 				notebookInputModel.providers = providerIds;
+				notebookInputModel.providers.forEach(provider => {
+					let standardKernels = getStandardKernelsForProvider(provider, notebookService);
+					notebookInputModel.standardKernels = standardKernels;
+				});
 				let notebookInput: NotebookInput = instantiationService.createInstance(NotebookInput, fileName, notebookInputModel);
 				return notebookInput;
 			});

@@ -12,7 +12,7 @@ import './panelStyles';
 
 import { TabComponent } from './tab.component';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
-import { subscriptionToDisposable } from 'sql/base/common/lifecycle';
+import { subscriptionToDisposable } from 'sql/base/node/lifecycle';
 
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';

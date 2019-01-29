@@ -21,6 +21,8 @@ declare module 'sqlops' {
 
 		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
 
+		export function registerObjectExplorerNodeProvider(provider: ObjectExplorerNodeProvider): vscode.Disposable;
+
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
@@ -102,6 +104,13 @@ declare module 'sqlops' {
 		export function getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 
 		/**
+		 * Get ServerInfo for a connectionId
+		 * @param {string} connectionId The id of the connection
+		 * @returns ServerInfo
+		 */
+		export function getServerInfo(connectionId: string): Thenable<ServerInfo>;
+
+		/**
 		 * Interface for representing a connection when working with connection APIs
 		*/
 		export interface Connection extends ConnectionInfo {
@@ -149,6 +158,13 @@ declare module 'sqlops' {
 		 * (for example when searching for a table's column, provide the name of its parent table for this argument)
 		 */
 		export function findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<ObjectExplorerNode[]>;
+
+		/**
+		 * Get connectionProfile from sessionId
+		 * *@param {string} sessionId The id of the session that the node exists on
+		 * @returns {IConnectionProfile} The IConnecitonProfile for the session
+		 */
+		export function getSessionConnectionProfile(sessionId: string): Thenable<IConnectionProfile>;
 
 		/**
 		 * Interface for representing and interacting with items in Object Explorer
@@ -347,6 +363,10 @@ declare module 'sqlops' {
 		 * The Operating System version string of the machine running the instance.
 		 */
 		osVersion: string;
+		/**
+		 * options for all new server properties.
+		 */
+		options: {};
 	}
 
 	export interface DataProvider {
@@ -1163,22 +1183,41 @@ declare module 'sqlops' {
 		nodes: NodeInfo[];
 	}
 
-	export interface ObjectExplorerProvider extends DataProvider {
-		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
-
+	export interface ObjectExplorerProviderBase extends DataProvider {
 		expandNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
 		refreshNode(nodeInfo: ExpandNodeInfo): Thenable<boolean>;
 
-		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
-
 		findNodes(findNodesInfo: FindNodesInfo): Thenable<ObjectExplorerFindNodesResponse>;
+
+		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
+	}
+
+	export interface ObjectExplorerProvider extends ObjectExplorerProviderBase {
+		createNewSession(connInfo: ConnectionInfo): Thenable<ObjectExplorerSessionResponse>;
+
+		closeSession(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<ObjectExplorerCloseSessionResponse>;
 
 		registerOnSessionCreated(handler: (response: ObjectExplorerSession) => any): void;
 
 		registerOnSessionDisconnected?(handler: (response: ObjectExplorerSession) => any): void;
+	}
 
-		registerOnExpandCompleted(handler: (response: ObjectExplorerExpandInfo) => any): void;
+	export interface ObjectExplorerNodeProvider extends ObjectExplorerProviderBase {
+		/**
+		 * The providerId for whichever type of ObjectExplorer connection this can add folders and objects to
+		 */
+		readonly supportedProviderId: string;
+
+		/**
+		 * Optional group name used to sort nodes in the tree. If not defined, the node order will be added in order based on provider ID, with
+		 * nodes from the main ObjectExplorerProvider for this provider type added first
+		 */
+		readonly group?: string;
+
+		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
+
+		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): void;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------
@@ -1626,11 +1665,20 @@ declare module 'sqlops' {
 		taskExecutionMode: TaskExecutionMode;
 	}
 
+	export interface GenerateDeployScriptParams {
+		packageFilePath: string;
+		databaseName: string;
+		scriptFilePath: string;
+		ownerUri: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
 	export interface DacFxServicesProvider extends DataProvider {
 		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

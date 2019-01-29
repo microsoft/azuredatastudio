@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ObjectMetadataWrapper } from 'sql/parts/dashboard/widgets/explorer/explorerTree';
-import { MetadataType } from 'sql/parts/connection/common/connectionManagement';
+import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 
 import * as assert from 'assert';
 

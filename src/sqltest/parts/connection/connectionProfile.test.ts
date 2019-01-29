@@ -6,8 +6,8 @@
 'use strict';
 
 
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import * as sqlops from 'sqlops';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';

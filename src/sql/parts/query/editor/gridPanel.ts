@@ -7,7 +7,7 @@
 import * as pretty from 'pretty-data';
 
 import { attachTableStyler } from 'sql/common/theme/styler';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
@@ -592,6 +592,8 @@ class GridTable<T> extends Disposable implements IView {
 
 		this.restoreScrollState();
 
+		this.rebuildActionBar();
+
 		// Setting the active cell resets the selection so save it here
 		let savedSelection = this.state.selection;
 
@@ -651,7 +653,6 @@ class GridTable<T> extends Disposable implements IView {
 			this.dataProvider.length = resultSet.rowCount;
 			this.table.updateRowCount();
 		}
-		this.rowNumberColumn.updateRowCount(resultSet.rowCount);
 		this._onDidChange.fire();
 	}
 

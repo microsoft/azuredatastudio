@@ -45,14 +45,14 @@ export class QueryPlanView implements IPanelView {
 	private _state: QueryPlanState;
 
 	public render(container: HTMLElement): void {
+		container.appendChild(this.container);
+		this.container.style.overflow = 'scroll';
 		if (!this.qp) {
 			this.qp = new QueryPlan(this.container);
 			if (this.xml) {
 				this.qp.xml = this.xml;
 			}
 		}
-		container.appendChild(this.container);
-		this.container.style.overflow = 'scroll';
 	}
 
 	dispose() {

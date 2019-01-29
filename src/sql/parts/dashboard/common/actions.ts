@@ -8,12 +8,12 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { Event } from 'vs/base/common/event';
 
-import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/services/angularEventing/angularEventingService';
+import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/common/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
+
 export class EditDashboardAction extends Action {
 
 	private static readonly ID = 'editDashboard';

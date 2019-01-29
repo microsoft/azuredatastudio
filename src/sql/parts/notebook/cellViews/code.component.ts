@@ -7,7 +7,7 @@ import 'vs/css!./code';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';

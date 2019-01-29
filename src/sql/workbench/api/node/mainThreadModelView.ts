@@ -10,9 +10,9 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 
-import { IModelViewService } from 'sql/services/modelComponents/modelViewService';
+import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
 import { IItemConfig, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { IModelView } from 'sql/services/model/modelViewService';
+import { IModelView } from 'sql/platform/model/common/modelViewService';
 
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelView)

@@ -120,6 +120,9 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
+				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
+					return extHostConnectionManagement.$getServerInfo(connectionId);
+				},
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
@@ -160,6 +163,9 @@ export function createApiFactory(
 				},
 				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
+				},
+				getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+					return extHostObjectExplorer.$getSessionConnectionProfile(sessionId);
 				}
 			};
 
@@ -238,10 +244,18 @@ export function createApiFactory(
 				}
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
-					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
+			};
+
+			let registerObjectExplorerNodeProvider = (provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable => {
+				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
+				});
+
+				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);
 			};
 
 			let registerTaskServicesProvider = (provider: sqlops.TaskServicesProvider): vscode.Disposable => {
@@ -335,6 +349,7 @@ export function createApiFactory(
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
+				registerObjectExplorerNodeProvider,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,

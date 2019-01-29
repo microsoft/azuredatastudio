@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/parts/profiler/service/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
 import { ProfilerState } from './profilerState';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as sqlops from 'sqlops';
 import * as nls from 'vs/nls';
@@ -18,7 +18,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
 import URI from 'vs/base/common/uri';

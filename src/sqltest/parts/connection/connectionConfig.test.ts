@@ -7,17 +7,17 @@
 
 
 import * as TypeMoq from 'typemoq';
-import { ConnectionConfig, ISaveGroupResult } from 'sql/parts/connection/common/connectionConfig';
-import { IConnectionProfile, IConnectionProfileStore } from 'sql/parts/connection/common/interfaces';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionConfig, ISaveGroupResult } from 'sql/platform/connection/common/connectionConfig';
+import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfigurationTestService';
 import { IConfigurationValue, ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
-import * as Constants from 'sql/parts/connection/common/constants';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import * as Constants from 'sql/platform/connection/common/constants';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as assert from 'assert';
-import { ProviderFeatures, ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ProviderFeatures, ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as sqlops from 'sqlops';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';

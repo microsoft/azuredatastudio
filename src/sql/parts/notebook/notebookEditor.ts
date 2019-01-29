@@ -16,7 +16,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { NotebookModule } from 'sql/parts/notebook/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/parts/notebook/notebook.component';
-import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 
 export class NotebookEditor extends BaseEditor {
 
