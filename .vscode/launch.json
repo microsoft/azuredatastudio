@@ -68,31 +68,7 @@
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
 			"port": 9222
-		},  {
-			"type": "chrome",
-			"request": "launch",
-			"name": "Launch with extension",
-			"windows": {
-			"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
-			},
-			"osx": {
-			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"linux": {
-			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
-			},
-			"urlFilter": "*index.html*",
-			"runtimeArgs": [
-			"--inspect=5875",
-			"--extensionDevelopmentPath=/Users/kevcunnane/projects/SqlOpsStudioExtensions/extensions/aris"
-			],
-			"skipFiles": [
-			"**/winjs*.js"
-			],
-			"webRoot": "${workspaceFolder}",
-			"timeout": 25000
-
-			},
+		},
 		{
 			"type": "chrome",
 			"request": "launch",
