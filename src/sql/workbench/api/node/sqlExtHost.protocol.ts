@@ -130,7 +130,7 @@ export abstract class ExtHostDataProtocolShape {
 
 	$createObjectExplorerNodeProviderSession(handle: number, sessionInfo: sqlops.ObjectExplorerSession): Thenable<boolean> { throw ni(); }
 
-	$handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void>{ throw ni(); }
+	$handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void { throw ni(); }
 
 	/**
 	 * Tasks

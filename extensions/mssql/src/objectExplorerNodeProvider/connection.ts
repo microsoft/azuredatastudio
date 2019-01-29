@@ -53,14 +53,6 @@ export class Connection {
 		return this.connectionUri;
 	}
 
-	public validateParams(): IValidationResult {
-		// TODO verify required params?
-		return {
-			isValid: true,
-			errors: undefined
-		};
-	}
-
 	public async tryConnect(factory?: FileSourceFactory): Promise<sqlops.ConnectionInfoSummary> {
 		let fileSource = this.createHdfsFileSource(factory, {
 			timeout: this.connecttimeout

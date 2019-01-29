@@ -372,20 +372,15 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					}
 
 					self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
-						if (expandResult) {
-							if (expandResult.providerId) {
-								resultMap.set(expandResult.providerId, expandResult);
-							} else {
-								reject(expandResult.errorMessage ? expandResult.errorMessage : 'ProviderId is undefined in expandResult');
-							}
-						}
-						else {
-							reject(expandResult ? expandResult.errorMessage : undefined);
+						if (expandResult && expandResult.providerId) {
+							resultMap.set(expandResult.providerId, expandResult);
+						} else {
+							console.log('OE provider returns empty result or providerId');
 						}
 
 						// When get all responses from all providers, merge results
 						if (resultMap.size === allProviders.length) {
-							resolve(self.mergeResults(allProviders, resultMap));
+							resolve(self.mergeResults(allProviders, resultMap, nodePath));
 
 							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
 							if (newRequest) {
@@ -422,19 +417,38 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
-	private mergeResults(allProviders: sqlops.ObjectExplorerProviderBase[], resultMap: Map<string, sqlops.ObjectExplorerExpandInfo>): sqlops.ObjectExplorerExpandInfo {
+	private mergeResults(allProviders: sqlops.ObjectExplorerProviderBase[], resultMap: Map<string, sqlops.ObjectExplorerExpandInfo>, nodePath: string): sqlops.ObjectExplorerExpandInfo {
 		let finalResult: sqlops.ObjectExplorerExpandInfo;
 		let allNodes: sqlops.NodeInfo[] = [];
+		let errorNode: sqlops.NodeInfo = {
+			nodePath: nodePath,
+			label: 'Error',
+			errorMessage: '',
+			nodeType: 'folder',
+			isLeaf: true,
+			nodeSubType: '',
+			nodeStatus: '',
+			metadata: null
+		};
+
 		for (let provider of allProviders) {
 			if (resultMap.has(provider.providerId)) {
 				let result = resultMap.get(provider.providerId);
-				if (result && !result.errorMessage) {
-					finalResult = result;
-					allNodes = allNodes.concat(result.nodes);
+				if (result) {
+					if (!result.errorMessage) {
+						finalResult = result;
+						allNodes = allNodes.concat(result.nodes);
+					} else {
+						errorNode.errorMessage += provider.providerId + 'returns ' + result.errorMessage + ' ';
+					}
 				}
 			}
 		}
 		if (finalResult) {
+			if (errorNode.errorMessage && errorNode.errorMessage.length > 0) {
+				allNodes = allNodes.concat([errorNode]);
+			}
+
 			finalResult.nodes = allNodes;
 		}
 		return finalResult;

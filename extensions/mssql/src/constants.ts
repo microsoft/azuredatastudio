@@ -29,8 +29,6 @@ export const hdfsHost = 'host';
 export const hdfsUser = 'user';
 export const UNTITLED_SCHEMA = 'untitled';
 
-export const mssqlProviderId = 'MSSQL';
-
 export const hadoopConnectionTimeoutSeconds = 15;
 export const hdfsRootPath = '/';
 

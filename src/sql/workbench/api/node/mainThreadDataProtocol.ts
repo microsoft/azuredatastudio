@@ -270,7 +270,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			handleSessionOpen(session: sqlops.ObjectExplorerSession): Thenable<boolean> {
 				return self._proxy.$createObjectExplorerNodeProviderSession(handle, session);
 			},
-			handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void> {
+			handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void {
 				return self._proxy.$handleSessionClose(handle, closeSessionInfo);
 			}
 		});

@@ -364,7 +364,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<sqlops.ObjectExplorerProvider>(handle).closeSession(closeSessionInfo);
 	}
 
-	public $handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void> {
+	public $handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void {
 		return this._resolveProvider<sqlops.ObjectExplorerNodeProvider>(handle).handleSessionClose(closeSessionInfo);
 	}
 

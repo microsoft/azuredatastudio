@@ -1217,7 +1217,7 @@ declare module 'sqlops' {
 
 		handleSessionOpen(session: ObjectExplorerSession): Thenable<boolean>;
 
-		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): Thenable<void>;
+		handleSessionClose(closeSessionInfo: ObjectExplorerCloseSessionInfo): void;
 	}
 
 	// Admin Services interfaces  -----------------------------------------------------------------------

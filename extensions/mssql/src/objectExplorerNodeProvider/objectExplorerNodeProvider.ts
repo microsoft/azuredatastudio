@@ -60,11 +60,11 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 				return false;
 			}
 			let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
-			if (!endpoints) {
+			if (!endpoints || endpoints.length === 0) {
 				return false;
 			}
 			let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
-			if (!index) {
+			if (index === -1) {
 				return false;
 			}
 
@@ -339,7 +339,7 @@ class DataServicesNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: 'hadoop:root',
+			nodeType: 'dataservices',
 			nodeSubType: undefined,
 			iconType: 'folder'
 		};
