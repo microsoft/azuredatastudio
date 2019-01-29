@@ -1367,6 +1367,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return credentials;
 	}
 
+	public getServerInfo(profileId: string): sqlops.ServerInfo {
+		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
+		if (!profile) {
+			return undefined;
+		}
+
+		let serverInfo = profile.serverInfo;
+
+		return serverInfo;
+	}
+
 	/**
 	 * Get the connection string for the provided connection ID
 	 */

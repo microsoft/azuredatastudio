@@ -5,6 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
@@ -17,6 +18,9 @@ import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
+import { AppContext } from './appContext';
+import { ApiWrapper } from './apiWrapper';
+import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -85,6 +89,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		languageClient.start();
 		credentialsStore.start();
 		resourceProvider.start();
+		let nodeProvider = new MssqlObjectExplorerNodeProvider(new AppContext(context, new ApiWrapper()));
+		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 		vscode.window.showErrorMessage('Failed to start Sql tools service');

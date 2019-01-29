@@ -18,10 +18,15 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "dependencies": {
+    "clipboardy": "^1.2.3",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
-    "vscode-extension-telemetry": "^0.0.15"
+    "stream-meter": "^1.0.4",
+    "uri-js": "^4.2.2",
+    "vscode-extension-telemetry": "^0.0.15",
+    "vscode-nls": "2.0.2",
+    "webhdfs": "^1.1.1"
   },
   "devDependencies": {
   },
