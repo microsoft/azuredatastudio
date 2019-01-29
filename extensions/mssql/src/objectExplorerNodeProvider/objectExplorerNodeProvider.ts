@@ -152,9 +152,8 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return this.expandNode(nodeInfo, true);
 	}
 
-	handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<void> {
+	handleSessionClose(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void {
 		this.sessionMap.delete(closeSessionInfo.sessionId);
-		return Promise.resolve();
 	}
 
 	findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {

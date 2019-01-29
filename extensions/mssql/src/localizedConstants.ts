@@ -10,3 +10,4 @@ const localize = nls.loadMessageBundle();
 
 // HDFS Constants //////////////////////////////////////////////////////////
 export const msgMissingNodeContext = localize('msgMissingNodeContext', 'Node Command called without any node passed');
+export const msgTimeout = localize('connectionTimeout', 'connection timed out. Host name or port may be incorrect');

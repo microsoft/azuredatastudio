@@ -11,6 +11,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import * as constants from '../constants';
+import * as LocalizedConstants from '../localizedConstants';
 import * as utils from '../utils';
 import { IFileSource, HdfsFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
 
@@ -90,9 +91,9 @@ export class Connection {
 	private getConnectError(error: string | Error): string {
 		let errorMsg = utils.getErrorMessage(error);
 		if (errorMsg.indexOf('ETIMEDOUT') > -1) {
-			errorMsg = localize('connectionTimeout', 'connection timed out. Host name or port may be incorrect');
+			errorMsg = LocalizedConstants.msgTimeout;
 		} else if (errorMsg.indexOf('ENOTFOUND') > -1) {
-			errorMsg = localize('connectionTimeout', 'Host name or port may be incorrect');
+			errorMsg = LocalizedConstants.msgTimeout;
 		}
 		return localize('connectError', 'Connection failed with error: {0}', errorMsg);
 	}
