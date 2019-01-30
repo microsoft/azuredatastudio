@@ -52,7 +52,6 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	private registerViews(): void {
 		let viewDescriptors = [];
 		viewDescriptors.push(this.createObjectExplorerViewDescriptor());
-		viewDescriptors.push(this.createObjectExplorerViewDescriptor2());
 		ViewsRegistry.registerViews(viewDescriptors);
 	}
 
@@ -67,17 +66,6 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 			order: 1
 		};
 	}
-
-	private createObjectExplorerViewDescriptor2(): IViewDescriptor {
-		return {
-			id: 'dataExplorer.objectExplorer2',
-			name: localize('objectExplorer2', "Object Explorer2"),
-			container: VIEW_CONTAINER,
-			ctor: ExtensionsListView,
-			weight: 100,
-			order: 2
-		};
-	}
 }
 
 export class DataExplorerViewlet extends ViewContainerViewlet  {
@@ -90,11 +78,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 	constructor(
 		@IPartService partService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IProgressService private progressService: IProgressService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IEditorGroupsService private editorGroupService: IEditorGroupsService,
-		@IExtensionManagementService private extensionManagementService: IExtensionManagementService,
-		@INotificationService private notificationService: INotificationService,
 		@IViewletService private viewletService: IViewletService,
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService private configurationService: IConfigurationService,
