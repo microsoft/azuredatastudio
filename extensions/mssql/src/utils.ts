@@ -185,9 +185,7 @@ export function getUserHome(): string {
 
 export async function getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
 
-	let serverInfo: sqlops.ServerInfo = undefined;
-	serverInfo = await sqlops.connection.getServerInfo(profileId)
-
+	let serverInfo: sqlops.ServerInfo = await sqlops.connection.getServerInfo(profileId);
 	if (!serverInfo || !serverInfo.options) {
 		return undefined;
 	}

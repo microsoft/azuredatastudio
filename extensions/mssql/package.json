@@ -44,28 +44,28 @@
     ],
     "commands": [
       {
-        "command": "hdfs.uploadFiles",
-        "title": "%hdfs.uploadFiles%"
+        "command": "bdc.uploadFiles",
+        "title": "%bdc.uploadFiles%"
       },
       {
-        "command": "hdfs.mkdir",
-        "title": "%hdfs.mkdir%"
+        "command": "bdc.mkdir",
+        "title": "%bdc.mkdir%"
       },
       {
-        "command": "hdfs.deleteFiles",
-        "title": "%hdfs.deleteFiles%"
+        "command": "bdc.deleteFiles",
+        "title": "%bdc.deleteFiles%"
       },
       {
-        "command": "hdfs.previewFile",
-        "title": "%hdfs.previewFile%"
+        "command": "bdc.previewFile",
+        "title": "%bdc.previewFile%"
       },
       {
-        "command": "hdfs.saveFile",
-        "title": "%hdfs.saveFile%"
+        "command": "bdc.saveFile",
+        "title": "%bdc.saveFile%"
       },
       {
-        "command": "hdfs.copyPath",
-        "title": "%hdfs.copyPath%"
+        "command": "bdc.copyPath",
+        "title": "%bdc.copyPath%"
       }
     ],
     "outputChannels": [
@@ -160,60 +160,60 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "hdfs.uploadFiles",
+          "command": "bdc.uploadFiles",
           "when": "false"
         },
         {
-          "command": "hdfs.mkdir",
+          "command": "bdc.mkdir",
           "when": "false"
         },
         {
-          "command": "hdfs.deleteFiles",
+          "command": "bdc.deleteFiles",
           "when": "false"
         },
         {
-          "command": "hdfs.previewFile",
+          "command": "bdc.previewFile",
           "when": "false"
         },
         {
-          "command": "hdfs.saveFile",
+          "command": "bdc.saveFile",
           "when": "false"
         },
         {
-          "command": "hdfs.copyPath",
+          "command": "bdc.copyPath",
           "when": "false"
         }
       ],
       "objectExplorer/item/context": [
         {
-          "command": "hdfs.uploadFiles",
-          "when": "nodeType=~/^hdfs/ && nodeType != hdfs:message && nodeType != hdfs:file",
-          "group": "1hdfs@1"
+          "command": "bdc.uploadFiles",
+          "when": "nodeType=~/^bdc/ && nodeType != bdc:message && nodeType != bdc:file",
+          "group": "1bdc@1"
         },
         {
-          "command": "hdfs.mkdir",
-          "when": "nodeType=~/^hdfs/ && nodeType != hdfs:message && nodeType != hdfs:file",
-          "group": "1hdfs@1"
+          "command": "bdc.mkdir",
+          "when": "nodeType=~/^bdc/ && nodeType != bdc:message && nodeType != bdc:file",
+          "group": "1bdc@1"
         },
         {
-          "command": "hdfs.saveFile",
-          "when": "nodeType == hdfs:file",
-          "group": "1hdfs@1"
+          "command": "bdc.saveFile",
+          "when": "nodeType == bdc:file",
+          "group": "1bdc@1"
         },
         {
-          "command": "hdfs.previewFile",
-          "when": "nodeType == hdfs:file",
-          "group": "1hdfs@2"
+          "command": "bdc.previewFile",
+          "when": "nodeType == bdc:file",
+          "group": "1bdc@2"
         },
         {
-          "command": "hdfs.copyPath",
-          "when": "nodeType=~/^hdfs/ && nodeType != hdfs:connection && nodeType != hdfs:message",
-          "group": "1hdfs@3"
+          "command": "bdc.copyPath",
+          "when": "nodeType=~/^bdc/ && nodeType != bdc:connection && nodeType != bdc:message",
+          "group": "1bdc@3"
         },
         {
-          "command": "hdfs.deleteFiles",
-          "when": "nodeType=~/^hdfs/ && viewItem != hdfs:connection && nodeType != hdfs:message",
-          "group": "1hdfs@4"
+          "command": "bdc.deleteFiles",
+          "when": "nodeType=~/^bdc/ && viewItem != bdc:connection && nodeType != bdc:message",
+          "group": "1bdc@4"
         }
       ]
     },
