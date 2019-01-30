@@ -42,6 +42,32 @@
         ]
       }
     ],
+    "commands": [
+      {
+        "command": "hdfs.uploadFiles",
+        "title": "%hdfs.uploadFiles%"
+      },
+      {
+        "command": "hdfs.mkdir",
+        "title": "%hdfs.mkdir%"
+      },
+      {
+        "command": "hdfs.deleteFiles",
+        "title": "%hdfs.deleteFiles%"
+      },
+      {
+        "command": "hdfs.previewFile",
+        "title": "%hdfs.previewFile%"
+      },
+      {
+        "command": "hdfs.saveFile",
+        "title": "%hdfs.saveFile%"
+      },
+      {
+        "command": "hdfs.copyPath",
+        "title": "%hdfs.copyPath%"
+      }
+    ],
     "outputChannels": [
       "MSSQL"
     ],
@@ -130,6 +156,66 @@
           "default": false
         }
       }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "hdfs.uploadFiles",
+          "when": "false"
+        },
+        {
+          "command": "hdfs.mkdir",
+          "when": "false"
+        },
+        {
+          "command": "hdfs.deleteFiles",
+          "when": "false"
+        },
+        {
+          "command": "hdfs.previewFile",
+          "when": "false"
+        },
+        {
+          "command": "hdfs.saveFile",
+          "when": "false"
+        },
+        {
+          "command": "hdfs.copyPath",
+          "when": "false"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "hdfs.uploadFiles",
+          "when": "nodeType=~/^hdfs/ && nodeType != hdfs:message && nodeType != hdfs:file",
+          "group": "1hdfs@1"
+        },
+        {
+          "command": "hdfs.mkdir",
+          "when": "nodeType=~/^hdfs/ && nodeType != hdfs:message && nodeType != hdfs:file",
+          "group": "1hdfs@1"
+        },
+        {
+          "command": "hdfs.saveFile",
+          "when": "nodeType == hdfs:file",
+          "group": "1hdfs@1"
+        },
+        {
+          "command": "hdfs.previewFile",
+          "when": "nodeType == hdfs:file",
+          "group": "1hdfs@2"
+        },
+        {
+          "command": "hdfs.copyPath",
+          "when": "nodeType=~/^hdfs/ && nodeType != hdfs:connection && nodeType != hdfs:message",
+          "group": "1hdfs@3"
+        },
+        {
+          "command": "hdfs.deleteFiles",
+          "when": "nodeType=~/^hdfs/ && viewItem != hdfs:connection && nodeType != hdfs:message",
+          "group": "1hdfs@4"
+        }
+      ]
     },
     "dashboard": {
       "provider": "MSSQL",

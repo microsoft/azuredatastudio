@@ -13,7 +13,8 @@ const localize = nls.loadMessageBundle();
 import * as constants from '../constants';
 import * as LocalizedConstants from '../localizedConstants';
 import * as utils from '../utils';
-import { IFileSource, HdfsFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
+import { IFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
+import { IEndpoint } from './objectExplorerNodeProvider';
 
 function appendIfExists(uri: string, propName: string, propValue: string): string {
 	if (propValue) {
@@ -110,7 +111,7 @@ export class Connection {
 			isCloud: false,
 			azureVersion: 0,
 			osVersion: '',
-			options: { isBigDataCluster: false, clusterEndpoints: []}
+			options: {}
 		};
 		return info;
 	}
@@ -188,15 +189,23 @@ export class Connection {
 		return this.connectionInfo.options[constants.groupIdName];
 	}
 
-	public isMatch(connectionInfo: sqlops.ConnectionInfo): boolean {
+	public async isMatch(connectionInfo: sqlops.ConnectionInfo): Promise<boolean> {
 		if (!connectionInfo) {
 			return false;
 		}
-		let otherConnection = new Connection(connectionInfo);
-		return otherConnection.groupId === this.groupId
-			&& otherConnection.host === this.host
-			&& otherConnection.knoxport === this.knoxport
-			&& otherConnection.user === this.user;
+		let profile = connectionInfo as sqlops.IConnectionProfile;
+		if (profile) {
+			let result: IEndpoint = await utils.getClusterEndpoint(profile.id, 'Knox');
+			if (result === undefined || !result.ipAddress || !result.port) {
+				return false;
+			}
+			return connectionInfo.options.groupId === this.groupId
+				&& result.ipAddress === this.host
+				&& String(result.port).startsWith(this.knoxport)
+				&& String(result.port).endsWith(this.knoxport);
+				// TODO: enable the user check when the unified user is used
+				//&& connectionInfo.options.user === this.user;
+		}
 	}
 
 	public createHdfsFileSource(factory?: FileSourceFactory, additionalRequestParams?: IRequestParams): IFileSource {
