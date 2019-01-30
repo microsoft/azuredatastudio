@@ -94,7 +94,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 					let container = this.getViewContainer(entry.key);
 					if (!container) {
-						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Explorer'.", entry.key));
+						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Data Explorer'.", entry.key));
 						container = this.viewContainersRegistry.get(VIEWLET_ID);
 					}
 					const registeredViews = ViewsRegistry.getViews(container);

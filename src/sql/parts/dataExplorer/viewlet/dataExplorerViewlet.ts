@@ -16,24 +16,16 @@ import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IExtensionManagementService, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IProgressService } from 'vs/platform/progress/common/progress';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
 import { ViewContainerViewlet, IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { IModelService } from 'vs/editor/common/services/modelService';
 import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
-import { ExtensionsListView } from 'vs/workbench/parts/extensions/electron-browser/extensionsViews';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/viewlet/connectionViewletPanel';
 
 interface SearchInputEvent extends Event {
@@ -43,9 +35,7 @@ interface SearchInputEvent extends Event {
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
-	constructor(
-		@IExtensionManagementServerService private extensionManagementServerService: IExtensionManagementServerService
-	) {
+	constructor() {
 		this.registerViews();
 	}
 
@@ -81,13 +71,10 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewletService private viewletService: IViewletService,
 		@IThemeService themeService: IThemeService,
-		@IConfigurationService private configurationService: IConfigurationService,
 		@IStorageService storageService: IStorageService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
-		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IExtensionService extensionService: IExtensionService,
-		@IModelService private modelService: IModelService,
 	) {
 		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, partService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 		this.disposables.push(this.viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
