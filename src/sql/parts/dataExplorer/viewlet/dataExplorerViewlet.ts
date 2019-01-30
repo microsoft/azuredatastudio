@@ -5,59 +5,34 @@
 
 'use strict';
 
-// import 'vs/css!./media/extensionsViewlet';
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { isPromiseCanceledError, onUnexpectedError, create as createError } from 'vs/base/common/errors';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { Event as EventOf, Emitter, chain } from 'vs/base/common/event';
 import { IAction } from 'vs/base/common/actions';
-import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import { IViewlet } from 'vs/workbench/common/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { append, $, addClass, removeClass, toggleClass, Dimension } from 'vs/base/browser/dom';
+import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { LocalExtensionType, IExtensionManagementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/platform/extensionManagement/common/extensionManagement';
-
-import { OpenGlobalSettingsAction } from 'vs/workbench/parts/preferences/browser/preferencesActions';
+import { IExtensionManagementService, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
-import Severity from 'vs/base/common/severity';
-import { IActivityService, ProgressBadge, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { inputForeground, inputBackground, inputBorder, inputPlaceholderForeground } from 'vs/platform/theme/common/colorRegistry';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
 import { ViewContainerViewlet, IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { IContextKeyService, ContextKeyExpr, RawContextKey, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { Query } from 'vs/workbench/parts/extensions/common/extensionQuery';
-import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { Range } from 'vs/editor/common/core/range';
-import { Position } from 'vs/editor/common/core/position';
-import { ITextModel } from 'vs/editor/common/model';
-import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
-import { getSimpleEditorOptions } from 'vs/workbench/parts/codeEditor/electron-browser/simpleEditorOptions';
-import { SuggestController } from 'vs/editor/contrib/suggest/suggestController';
-import { ContextMenuController } from 'vs/editor/contrib/contextmenu/contextmenu';
-import { MenuPreventer } from 'vs/workbench/parts/codeEditor/electron-browser/menuPreventer';
-import { SnippetController2 } from 'vs/editor/contrib/snippet/snippetController2';
-import { isMacintosh } from 'vs/base/common/platform';
-import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
-import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorer';
-import { ViewletDescriptor, Viewlet } from 'vs/workbench/browser/viewlet';
+import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
 import { ExtensionsListView } from 'vs/workbench/parts/extensions/electron-browser/extensionsViews';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/viewlet/connectionViewletPanel';
 
@@ -158,7 +133,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 	}
 
 	focus(): void {
-
 	}
 
 	layout(dimension: Dimension): void {
@@ -182,21 +156,9 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 		return [];
 	}
 
-	search(value: string): void {
-		const event = new Event('input', { bubbles: true }) as SearchInputEvent;
-		event.immediate = true;
-	}
-
-	private triggerSearch(immediate = false): void {
-	}
-
-	private normalizedQuery(): string {
-		return '';
-	}
-
 	protected onDidAddViews(added: IAddedViewDescriptorRef[]): ViewletPanel[] {
 		const addedViews = super.onDidAddViews(added);
-		TPromise.join(addedViews.map(addedView => (<ExtensionsListView>addedView).show(this.normalizedQuery())));
+		TPromise.join(addedViews);
 		return addedViews;
 	}
 
@@ -205,10 +167,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 
 		}
 		return this.instantiationService.createInstance(viewDescriptor.ctor, options) as ViewletPanel;
-	}
-
-	private count(): number {
-		return this.panels.reduce((count, view) => (<ExtensionsListView>view).count() + count, 0);
 	}
 
 	private onViewletOpen(viewlet: IViewlet): void {

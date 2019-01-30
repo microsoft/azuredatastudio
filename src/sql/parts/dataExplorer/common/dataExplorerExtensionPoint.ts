@@ -2,24 +2,28 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { localize } from 'vs/nls';
 import { forEach } from 'vs/base/common/collections';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
-import { ExtensionMessageCollector, ExtensionsRegistry, IExtensionPoint } from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { ViewContainer, ViewsRegistry, ICustomViewDescriptor, IViewContainersRegistry, Extensions as ViewContainerExtensions } from 'vs/workbench/common/views';
-import { CustomTreeViewPanel, CustomTreeViewer } from 'vs/workbench/browser/parts/views/customView';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { coalesce, } from 'vs/base/common/arrays';
-import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ICustomViewDescriptor, ViewsRegistry } from 'vs/workbench/common/views';
+import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { VIEWLET_ID as EXPLORER } from 'vs/workbench/parts/files/common/files';
-import { VIEWLET_ID as SCM } from 'vs/workbench/parts/scm/common/scm';
-import { VIEWLET_ID as DEBUG } from 'vs/workbench/parts/debug/common/debug';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { CustomTreeViewPanel, CustomTreeViewer } from 'vs/workbench/browser/parts/views/customView';
+import { coalesce } from 'vs/base/common/arrays';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
+
+export const DataExplorerViewlet = {
+	DataExplorer: 'dataExplorer'
+};
+export const VIEWLET_ID = 'workbench.view.dataExplorer';
+export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
+
+
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -45,37 +49,19 @@ const viewDescriptor: IJSONSchema = {
 	}
 };
 
-const viewsContribution: IJSONSchema = {
-	description: localize('vscode.extension.contributes.views', "Contributes views to the editor"),
+const dataExplorerContribution: IJSONSchema = {
+	description: localize('extension.contributes.dataExplorer', "Contributes views to the editor"),
 	type: 'object',
 	properties: {
-		'explorer': {
-			description: localize('views.explorer', "Contributes views to Explorer container in the Activity bar"),
-			type: 'array',
-			items: viewDescriptor,
-			default: []
-		},
-		'debug': {
-			description: localize('views.debug', "Contributes views to Debug container in the Activity bar"),
-			type: 'array',
-			items: viewDescriptor,
-			default: []
-		},
-		'scm': {
-			description: localize('views.scm', "Contributes views to SCM container in the Activity bar"),
-			type: 'array',
-			items: viewDescriptor,
-			default: []
-		},
-		'test': {
-			description: localize('views.test', "Contributes views to Test container in the Activity bar"),
+		'dataExplorer': {
+			description: localize('extension.dataExplorer', "Contributes views to Data Explorer container in the Activity bar"),
 			type: 'array',
 			items: viewDescriptor,
 			default: []
 		}
 	},
 	additionalProperties: {
-		description: localize('views.contributed', "Contributes views to contributed views container"),
+		description: localize('dataExplorer.contributed', "Contributes views to contributed views container"),
 		type: 'array',
 		items: viewDescriptor,
 		default: []
@@ -83,9 +69,9 @@ const viewsContribution: IJSONSchema = {
 };
 
 
-const viewsExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>('views', [viewsContainersExtensionPoint], viewsContribution);
+const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>('dataExplorer', [viewsContainersExtensionPoint], dataExplorerContribution);
 
-class ViewsContainersExtensionHandler implements IWorkbenchContribution {
+class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 	private viewContainersRegistry: IViewContainersRegistry;
 
@@ -97,7 +83,7 @@ class ViewsContainersExtensionHandler implements IWorkbenchContribution {
 	}
 
 	private handleAndRegisterCustomViews() {
-		viewsExtensionPoint.setHandler(extensions => {
+		dataExplorerExtensionPoint.setHandler(extensions => {
 			for (let extension of extensions) {
 				const { value, collector } = extension;
 
@@ -108,8 +94,8 @@ class ViewsContainersExtensionHandler implements IWorkbenchContribution {
 
 					let container = this.getViewContainer(entry.key);
 					if (!container) {
-						collector.warn(localize('ViewContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Data Explorer'.", entry.key));
-						container = this.viewContainersRegistry.get(EXPLORER);
+						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Explorer'.", entry.key));
+						container = this.viewContainersRegistry.get(VIEWLET_ID);
 					}
 					const registeredViews = ViewsRegistry.getViews(container);
 					const viewIds = [];
@@ -171,23 +157,15 @@ class ViewsContainersExtensionHandler implements IWorkbenchContribution {
 
 	private getViewContainer(value: string): ViewContainer {
 		switch (value) {
-			case 'explorer': return this.viewContainersRegistry.get(EXPLORER);
-			case 'debug': return this.viewContainersRegistry.get(DEBUG);
-			case 'scm': return this.viewContainersRegistry.get(SCM);
+			case 'azureResource': return this.viewContainersRegistry.get(VIEWLET_ID);
 			default: return this.viewContainersRegistry.get(`workbench.view.extension.${value}`);
 		}
 	}
 
 	private showCollapsed(container: ViewContainer): boolean {
-		switch (container.id) {
-			case EXPLORER:
-			case SCM:
-			case DEBUG:
-				return true;
-		}
 		return false;
 	}
 }
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
-workbenchRegistry.registerWorkbenchContribution(ViewsContainersExtensionHandler, LifecyclePhase.Starting);
+workbenchRegistry.registerWorkbenchContribution(DataExplorerContainerExtensionHandler, LifecyclePhase.Starting);

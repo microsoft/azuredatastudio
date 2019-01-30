@@ -4,16 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ToggleViewletAction } from 'vs/workbench/browser/viewlet';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
-import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
-import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
-import { VIEWLET_ID , VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorer';
+import { VIEWLET_ID } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
 import { DataExplorerViewlet, DataExplorerViewletViewsContribution } from 'sql/parts/dataExplorer/viewlet/dataExplorerViewlet';
-import { ExtensionsViewlet } from 'vs/workbench/parts/extensions/electron-browser/extensionsViewlet';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
