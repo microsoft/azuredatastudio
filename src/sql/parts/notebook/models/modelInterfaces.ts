@@ -202,7 +202,13 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Updates the connection
 	 */
-	updateConnection(connection: IConnectionProfile): void;
+	updateConnection(connection: IConnectionProfile): Promise<void>;
+
+	/**
+	 * Supports registering a handler to run during kernel change and implement any calls needed to configure
+	 * the kernel before actions such as run should be allowed
+	 */
+	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
 }
 
 export interface IDefaultConnection {
@@ -324,7 +330,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile): void;
+	changeContext(host: string, connection?: IConnectionProfile): Promise<void>;
 
 	/**
 	 * Find a cell's index given its model

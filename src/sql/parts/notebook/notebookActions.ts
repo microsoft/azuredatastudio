@@ -283,7 +283,7 @@ export class AttachToDropdown extends SelectBox {
 		if (this.value === msgAddNewConnection) {
 			this.openConnectionDialog();
 		} else {
-			this.model.changeContext(this.value, connection);
+			this.model.changeContext(this.value, connection).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
 		}
 	}
 
