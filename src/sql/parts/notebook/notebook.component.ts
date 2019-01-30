@@ -542,13 +542,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public async runCell(cell: ICellModel): Promise<boolean> {
-		// TODO should ensure this cell is part of this notebook's model
 		await this.modelReady;
 		let uriString = cell.cellUri.toString();
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			return cell.runCell(this.notificationService);
 		} else {
-			// For now, just return false if it's not a cell for this model. Should we reject the promise instead?
 			return Promise.reject<boolean>(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}
 	}
