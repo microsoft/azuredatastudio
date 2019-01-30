@@ -470,6 +470,7 @@ export enum FutureMessageType {
 export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
+	message: nb.IShellMessage;
 }
 
 export interface ICellRange {

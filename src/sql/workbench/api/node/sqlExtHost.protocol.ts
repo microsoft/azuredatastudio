@@ -830,6 +830,7 @@ export interface INotebookModelChangedData {
 	providers: string[];
 	isDirty: boolean;
 	cells: sqlops.nb.NotebookCell[];
+	kernelSpec: sqlops.nb.IKernelSpec;
 }
 
 export interface INotebookEditorAddData {
@@ -856,6 +857,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
+	$runCell(id: string, cellUri: UriComponents): TPromise<boolean>;
 }
 
 export interface ExtHostExtensionManagementShape {

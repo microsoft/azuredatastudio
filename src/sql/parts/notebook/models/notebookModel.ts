@@ -255,7 +255,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public findCellIndex(cellModel: CellModel): number {
+	public findCellIndex(cellModel: ICellModel): number {
 		return this._cells.findIndex((cell) => cell.equals(cellModel));
 	}
 
@@ -420,7 +420,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return Promise.resolve();
 	}
 
-	public changeContext(server: string, newConnection?: IConnectionProfile): void {
+	public async changeContext(server: string, newConnection?: IConnectionProfile): Promise<void> {
 		try {
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
@@ -431,7 +431,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
-			this._activeClientSession.updateConnection(this._activeConnection);
+			await this._activeClientSession.updateConnection(this._activeConnection);
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
@@ -454,7 +454,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private loadKernelInfo(): void {
 		this._clientSessions.forEach(clientSession => {
-			clientSession.kernelChanged(async (e) => {
+			clientSession.onKernelChanging(async (e) => {
 				await this.loadActiveContexts(e);
 			});
 		});
@@ -550,7 +550,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._activeContexts = await NotebookContexts.getContextsForKernel(this.notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
-				this.changeContext(this.contexts.defaultConnection.serverName);
+				await this.changeContext(this.contexts.defaultConnection.serverName);
 			}
 		}
 	}

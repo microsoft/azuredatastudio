@@ -415,7 +415,7 @@ class FutureWrapper implements FutureInternal {
 	public onDone(done: INotebookFutureDone): void {
 		this._inProgress = false;
 		if (done.succeeded) {
-			this._done.resolve();
+			this._done.resolve(done.message);
 		} else {
 			this._done.reject(new Error(done.rejectReason));
 		}

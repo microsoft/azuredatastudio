@@ -123,7 +123,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
 	}
@@ -135,7 +134,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public get model(): NotebookModel {
+	public get model(): NotebookModel | null {
 		return this._model;
 	}
 
@@ -222,6 +221,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
 			this.setLoading(false);
 			this._modelReadyDeferred.reject(error);
+		} finally {
+			// Always add the editor for now to close loop, even if loading contents failed
+			this.notebookService.addNotebookEditor(this);
 		}
 	}
 
@@ -538,4 +540,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.pushEditOperations(edits);
 		return true;
 	}
+
+	public async runCell(cell: ICellModel): Promise<boolean> {
+		await this.modelReady;
+		let uriString = cell.cellUri.toString();
+		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+			return cell.runCell(this.notificationService);
+		} else {
+			return Promise.reject<boolean>(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+		}
+	}
+
 }
