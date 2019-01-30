@@ -8,15 +8,25 @@
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
+
 const localize = nls.loadMessageBundle();
 
 let counter = 0;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', () => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', ( connectionId? : string) => {
+
 		let title = `Untitled-${counter++}`;
 		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
-		sqlops.nb.showNotebookDocument(untitledUri).then(success => {
+        let options: sqlops.nb.NotebookShowOptions =  connectionId? {
+			viewColumn : null,
+			preserveFocus : true,
+			preview: null,
+            providerId : null,
+			connectionId : connectionId,
+			defaultKernel : null
+		} : null;
+		sqlops.nb.showNotebookDocument(untitledUri, options).then(success => {
 
 		}, (err: Error) => {
 			vscode.window.showErrorMessage(err.message);
