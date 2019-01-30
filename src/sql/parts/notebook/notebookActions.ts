@@ -230,7 +230,8 @@ export class AttachToDropdown extends SelectBox {
 		this.model = model;
 		model.contextsChanged(() => {
 			if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
-				let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name === this.model.clientSession.kernel.name);
+				let nameLower = this.model.clientSession.kernel.name.toLowerCase();
+				let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === nameLower);
 				this.loadAttachToDropdown(this.model, currentKernelSpec.display_name);
 			}
 		});
