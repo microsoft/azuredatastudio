@@ -195,7 +195,7 @@ export class Connection {
 		}
 		let profile = connectionInfo as sqlops.IConnectionProfile;
 		if (profile) {
-			let result: IEndpoint = await utils.getClusterEndpoint(profile.id, 'Knox');
+			let result: IEndpoint = await utils.getClusterEndpoint(profile.id, constants.hadoopKnoxEndpointName);
 			if (result === undefined || !result.ipAddress || !result.port) {
 				return false;
 			}
