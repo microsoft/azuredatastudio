@@ -8,7 +8,7 @@ import { IInsight, InsightType } from './interfaces';
 import { IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 
 import { $ } from 'vs/base/browser/dom';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 
 export class CountInsight implements IInsight {
 	public options;

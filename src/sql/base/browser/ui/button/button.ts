@@ -7,6 +7,7 @@
 import { Button as vsButton, IButtonOptions, IButtonStyles as vsIButtonStyles } from 'vs/base/browser/ui/button/button';
 import * as DOM from 'vs/base/browser/dom';
 import { Color } from 'vs/base/common/color';
+import { Builder } from 'sql/base/browser/builder';
 
 export interface IButtonStyles extends vsIButtonStyles {
 	buttonFocusOutline?: Color;
@@ -14,10 +15,12 @@ export interface IButtonStyles extends vsIButtonStyles {
 
 export class Button extends vsButton {
 	private buttonFocusOutline: Color;
+	private $el: Builder;
 
 	constructor(container: any, options?: IButtonOptions) {
 		super(container, options);
 		this.buttonFocusOutline = null;
+		this.$el = new Builder(this.element);
 
 		this.$el.on(DOM.EventType.FOCUS, (e) => {
 			this.$el.style('outline-color', this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null);

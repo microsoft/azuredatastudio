@@ -23,7 +23,7 @@ import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
@@ -179,9 +179,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
-			this._modeService.getOrCreateMode(this.cellModel.language).then((modeValue) => {
-				this._modelService.setMode(this._editorModel, modeValue);
-			});
+			let modeValue = this._modeService.create(this.cellModel.language);
+			this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
 

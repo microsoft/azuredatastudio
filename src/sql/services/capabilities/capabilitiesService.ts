@@ -18,7 +18,7 @@ import { IAction } from 'vs/base/common/actions';
 import { Memento } from 'vs/workbench/common/memento';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -95,7 +95,7 @@ export interface ICapabilitiesService {
 export class CapabilitiesService extends Disposable implements ICapabilitiesService {
 	_serviceBrand: any;
 
-	private _momento = new Memento('capabilities');
+	private _momento: Memento;
 	private _providers = new Map<string, ProviderFeatures>();
 	private _featureUpdateEvents = new Map<string, Emitter<ProviderFeatures>>();
 	private _legacyProviders = new Map<string, sqlops.DataProtocolServerCapabilities>();
@@ -109,6 +109,8 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		@IExtensionManagementService extentionManagementService: IExtensionManagementService
 	) {
 		super();
+
+		this._momento = new Memento('capabilities', this._storageService);
 
 		if (!this.capabilities.connectionProviderCache) {
 			this.capabilities.connectionProviderCache = {};
@@ -187,7 +189,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	}
 
 	private get capabilities(): CapabilitiesMomento {
-		return this._momento.getMemento(this._storageService) as CapabilitiesMomento;
+		return this._momento.getMemento(StorageScope.GLOBAL) as CapabilitiesMomento;
 	}
 
 	/**

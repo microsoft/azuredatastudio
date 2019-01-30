@@ -88,13 +88,13 @@ export class ToggleMoreWidgetAction extends Action {
 		super(ToggleMoreWidgetAction.ID, ToggleMoreWidgetAction.LABEL, ToggleMoreWidgetAction.ICON);
 	}
 
-	run(context: StandardKeyboardEvent): TPromise<boolean> {
+	run(context: StandardKeyboardEvent): Promise<boolean> {
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => context.target,
-			getActions: () => TPromise.as(this._actions),
+			getActions: () => this._actions,
 			getActionsContext: () => this._context
 		});
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 }
 

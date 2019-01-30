@@ -146,9 +146,9 @@ export class QueryComponent extends GridParentComponent implements OnInit, OnDes
 	private dataSets: IGridDataSet[] = [];
 	private messages: IMessage[] = [];
 	private messageStore: IMessage[] = [];
-	private messageTimeout: number;
+	private messageTimeout: NodeJS.Timer;
 	private lastMessageHandleTime: number = 0;
-	private scrollTimeOut: number;
+	private scrollTimeOut: NodeJS.Timer;
 	private resizing = false;
 	private resizeHandleTop: string = '0';
 	private scrollEnabled = true;

@@ -25,7 +25,8 @@ import { ExtHostClipboard } from 'vs/workbench/api/node/extHostClipboard';
 import { ExtHostCommands } from 'vs/workbench/api/node/extHostCommands';
 import { ExtHostComments } from 'vs/workbench/api/node/extHostComments';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
-import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
+// {{SQL CARBON EDIT}} - Remove ExtHostDebugService
+// import { ExtHostDebugService } from 'vs/workbench/api/node/extHostDebugService';
 import { ExtHostDecorations } from 'vs/workbench/api/node/extHostDecorations';
 import { ExtHostDiagnostics } from 'vs/workbench/api/node/extHostDiagnostics';
 import { ExtHostDialogs } from 'vs/workbench/api/node/extHostDialogs';

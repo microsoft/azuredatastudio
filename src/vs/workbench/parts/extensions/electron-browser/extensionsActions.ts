@@ -2580,7 +2580,7 @@ export class InstallVSIXAction extends Action {
 		// {{SQL CARBON EDIT}} - Replace run body
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (extensionPolicy === ExtensionsPolicy.allowAll) {
-			return this.windowService.showOpenDialog({
+			return Promise.resolve(this.windowService.showOpenDialog({
 				title: localize('installFromVSIX', "Install from VSIX"),
 				filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
 				properties: ['openFile'],
@@ -2590,7 +2590,7 @@ export class InstallVSIXAction extends Action {
 					return Promise.resolve(null);
 				}
 				return Promise.all(result.map(vsix => {
-					if (!this.storageService.getBoolean(vsix)) {
+					if (!this.storageService.getBoolean(vsix, StorageScope.GLOBAL)) {
 						this.notificationService.prompt(
 							Severity.Warning,
 							localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
@@ -2613,14 +2613,14 @@ export class InstallVSIXAction extends Action {
 								},
 								{
 									label: localize('thirdPartyExt.no', 'No'),
-									run: () => { return TPromise.as(null); }
+									run: () => { return Promise.resolve(null); }
 								},
 								{
 									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
 									isSecondary: true,
 									run: () => {
-										this.storageService.store(vsix, true);
-										return TPromise.as(null);
+										this.storageService.store(vsix, true, StorageScope.GLOBAL);
+										return Promise.resolve(null);
 									}
 								}
 							],
@@ -2640,10 +2640,10 @@ export class InstallVSIXAction extends Action {
 						});
 					}
 				}));
-			});
+			}));
 		} else {
 			this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.'));
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 		// {{SQL CARBON EDIT}} - End
 	}

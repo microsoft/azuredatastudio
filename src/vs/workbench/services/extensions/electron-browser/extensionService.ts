@@ -99,15 +99,6 @@ export class ExtensionService extends Disposable implements IExtensionService {
 		}
 	}
 
-	// {{SQL CARBON EDIT}}
-	public getExtenstionHostProcessId(): number {
-		if (this._extensionHostProcessManagers.length !== 1)
-		{
-			this._logOrShowMessage(Severity.Warning, 'Exactly one Extension Host Process Manager was expected');
-		}
-		return this._extensionHostProcessManagers[0].getExtenstionHostProcessWorker().getExtenstionHostProcess().pid;
-	}
-
 	private _startDelayed(lifecycleService: ILifecycleService): void {
 		// delay extension host creation and extension scanning
 		// until the workbench is running. we cannot defer the

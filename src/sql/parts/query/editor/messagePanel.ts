@@ -8,6 +8,7 @@ import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
 import QueryRunner from 'sql/parts/query/execution/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { $ } from 'sql/base/browser/builder';
 
 import { IResultMessage, ISelectionData } from 'sqlops';
 
@@ -25,7 +26,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
-import { $ } from 'vs/base/browser/builder';
 import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -362,10 +362,10 @@ export class MessageController extends WorkbenchTreeController {
 				return { x: event.posx, y: event.posy };
 			},
 			getActions: () => {
-				return TPromise.as([
+				return [
 					this.instantiationService.createInstance(CopyMessagesAction),
 					new SelectAllMessagesAction()
-				]);
+				];
 			},
 			getActionsContext: () => {
 				return <IMessagesActionContext>{

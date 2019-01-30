@@ -12,7 +12,7 @@ import { nb } from 'sqlops';
 
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import { ClientSession } from 'sql/parts/notebook/models/clientSession';
 import { SessionManager, EmptySession } from 'sql/services/notebook/sessionManager';

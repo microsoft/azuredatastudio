@@ -25,6 +25,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
+import { IWindowService } from 'vs/platform/windows/common/windows';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -45,11 +46,12 @@ export class QueryTextEditor extends BaseTextEditor {
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
+		@IWindowService windowService: IWindowService,
 
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, textFileService, editorService, editorGroupService);
+			configurationService, themeService, textFileService, editorService, editorGroupService, windowService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {

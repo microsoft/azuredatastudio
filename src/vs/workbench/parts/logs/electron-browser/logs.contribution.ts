@@ -28,9 +28,7 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 	constructor(
 		@IWindowService windowService: IWindowService,
 		@IEnvironmentService environmentService: IEnvironmentService,
-		@ILogService logService: ILogService,
-		// {{SQL CARBON EDIT}}
-		@IExtensionService private extensionService: ExtensionService
+		@ILogService logService: ILogService
 	) {
 		super();
 		let outputChannelRegistry = Registry.as<IOutputChannelRegistry>(OutputExt.OutputChannels);
@@ -39,9 +37,7 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		outputChannelRegistry.registerChannel({ id: Constants.rendererLogChannelId, label: nls.localize('rendererLog', "Window"), file: URI.file(join(environmentService.logsPath, `renderer${windowService.getCurrentWindowId()}.log`)), log: true });
 
 		// {{SQL CARBON EDIT}}
-		let extHostPid : number = extensionService.getExtenstionHostProcessId();
-		console.log(`extensionHost process id is ${extHostPid}`);
-		let toolsServiceLogFile : string = join(environmentService.logsPath, '..', '..', 'mssql', `sqltools_${extHostPid}.log`);
+		let toolsServiceLogFile : string = join(environmentService.logsPath, '..', '..', 'mssql', `sqltools_${Date.now()}.log`);
 		console.log(`SqlTools Log file is: ${toolsServiceLogFile}`);
 		outputChannelRegistry.registerChannel({ id: Constants.sqlToolsLogChannellId, label: nls.localize('sqlToolsLog', "Log (SqlTools)"), file: URI.file(toolsServiceLogFile), log: true });
 		// {{SQL CARBON EDIT}} - End

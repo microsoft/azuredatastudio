@@ -7,7 +7,7 @@
 
 import { nb } from 'sqlops';
 import { localize } from 'vs/nls';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
@@ -21,7 +21,7 @@ import { SessionManager } from 'sql/services/notebook/sessionManager';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/services/notebook/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -67,7 +67,7 @@ class ProviderDescriptor {
 export class NotebookService extends Disposable implements INotebookService {
 	_serviceBrand: any;
 
-	private _memento = new Memento('notebookProviders');
+	private _memento: Memento;
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
 	private _managers: Map<string, INotebookManager> = new Map();
@@ -86,6 +86,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService
 	) {
 		super();
+		this._memento = new Memento('notebookProviders', this._storageService);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerDefaultProvider();
 
@@ -289,7 +290,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private get providersMemento(): NotebookProvidersMemento {
-		return this._memento.getMemento(this._storageService) as NotebookProvidersMemento;
+		return this._memento.getMemento(StorageScope.GLOBAL) as NotebookProvidersMemento;
 	}
 
 	private cleanupProviders(): void {

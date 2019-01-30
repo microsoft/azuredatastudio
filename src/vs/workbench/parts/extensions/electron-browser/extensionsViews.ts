@@ -534,7 +534,7 @@ export class ExtensionsListView extends ViewletPanel {
 	}
 
 	// {{SQL CARBON EDIT}}
-	private getAllMarketplaceModel(query: Query, options: IQueryOptions): TPromise<IPagedModel<IExtension>> {
+	private getAllMarketplaceModel(query: Query, options: IQueryOptions): Promise<IPagedModel<IExtension>> {
 		const value = query.value.trim().toLowerCase();
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === LocalExtensionType.User))
@@ -542,7 +542,7 @@ export class ExtensionsListView extends ViewletPanel {
 				return this.tipsService.getOtherRecommendations().then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
 					options = assign(options, { text: value, source: 'searchText' });
-					return TPromise.as(this.extensionsWorkbenchService.queryGallery(options).then((pager) => {
+					return this.extensionsWorkbenchService.queryGallery(options).then((pager) => {
 						// filter out installed extensions
 						pager.firstPage = pager.firstPage.filter((p) => {
 							return installedExtensions.indexOf(`${p.publisher}.${p.name}`) === -1;
@@ -564,7 +564,7 @@ export class ExtensionsListView extends ViewletPanel {
 						pager.total = pager.firstPage.length;
 						pager.pageSize = pager.firstPage.length;
 						return new PagedModel(pager || []);
-					}));
+					});
 				});
 			});
 	}

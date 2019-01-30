@@ -8,10 +8,10 @@
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { IEditorDescriptor } from 'vs/workbench/browser/editor';
 import { TPromise } from 'vs/base/common/winjs.base';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 import { Memento } from 'vs/workbench/common/memento';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
@@ -59,7 +59,8 @@ suite('SQL QueryEditor Tests', () => {
 			editorDescriptorService.object,
 			undefined,
 			undefined,
-			configurationService.object);
+			configurationService.object,
+			undefined);
 	};
 
 	setup(() => {

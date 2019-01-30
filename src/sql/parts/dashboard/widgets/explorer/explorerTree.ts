@@ -22,7 +22,6 @@ import { ObjectMetadata } from 'sqlops';
 
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
-import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
@@ -158,7 +157,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => { return { x: event.posx, y: event.posy }; },
-			getActions: () => GetExplorerActions(element, this._instantiationService, this._capabilitiesService, this._connectionService.connectionInfo),
+			getActions: () => getExplorerActions(element, this._instantiationService, this._capabilitiesService, this._connectionService.connectionInfo),
 			getActionsContext: () => context
 		});
 
@@ -166,9 +165,9 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 	}
 
 	private handleItemDoubleClick(element: IConnectionProfile): void {
-		this._progressService.showWhile(TPromise.wrap(this._connectionService.changeDatabase(element.databaseName).then(result => {
+		this._progressService.showWhile(this._connectionService.changeDatabase(element.databaseName).then(result => {
 			this._router.navigate(['database-dashboard']);
-		})));
+		}));
 	}
 
 	protected onEnter(tree: tree.ITree, event: IKeyboardEvent): boolean {
@@ -206,19 +205,19 @@ export class ExplorerDataSource implements tree.IDataSource {
 		}
 	}
 
-	public getChildren(tree: tree.ITree, element: TreeResource | ExplorerModel): Promise {
+	public getChildren(tree: tree.ITree, element: TreeResource | ExplorerModel): Promise<TreeResource[]> {
 		if (element instanceof ExplorerModel) {
-			return TPromise.as(this._data);
+			return Promise.resolve(this._data);
 		} else {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 	}
 
-	public getParent(tree: tree.ITree, element: TreeResource | ExplorerModel): Promise {
+	public getParent(tree: tree.ITree, element: TreeResource | ExplorerModel): Promise<ExplorerModel> {
 		if (element instanceof ExplorerModel) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		} else {
-			return TPromise.as(new ExplorerModel());
+			return Promise.resolve(new ExplorerModel());
 		}
 	}
 
@@ -369,7 +368,7 @@ export class ExplorerFilter implements tree.IFilter {
 	}
 }
 
-function GetExplorerActions(element: TreeResource, instantiationService: IInstantiationService, capabilitiesService: ICapabilitiesService, info: ConnectionManagementInfo): TPromise<IAction[]> {
+function getExplorerActions(element: TreeResource, instantiationService: IInstantiationService, capabilitiesService: ICapabilitiesService, info: ConnectionManagementInfo): IAction[] {
 	let actions: IAction[] = [];
 
 	if (element instanceof ObjectMetadataWrapper) {
@@ -403,16 +402,16 @@ function GetExplorerActions(element: TreeResource, instantiationService: IInstan
 		}
 
 		actions.push(instantiationService.createInstance(ExplorerManageAction, ManageAction.ID, ManageAction.LABEL));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	actions.push(instantiationService.createInstance(ExplorerScriptCreateAction, ScriptCreateAction.ID, ScriptCreateAction.LABEL));
 
-	return TPromise.as(actions);
+	return actions;
 }
 
 class CustomExecuteCommandAction extends ExecuteCommandAction {
-	run(context: ManageActionContext): TPromise<any> {
+	run(context: ManageActionContext): Promise<any> {
 		return super.run(context.profile);
 	}
 }
@@ -428,7 +427,7 @@ class ExplorerScriptSelectAction extends ScriptSelectAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
 		let promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
@@ -447,7 +446,7 @@ class ExplorerScriptCreateAction extends ScriptCreateAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
 		let promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
@@ -466,7 +465,7 @@ class ExplorerScriptAlterAction extends ScriptAlterAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
 		let promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
@@ -485,7 +484,7 @@ class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public run(actionContext: BaseActionContext): TPromise<boolean> {
+	public run(actionContext: BaseActionContext): Promise<boolean> {
 		let promise = super.run(actionContext);
 		this.progressService.showWhile(promise);
 		return promise;
@@ -502,7 +501,7 @@ class ExplorerManageAction extends ManageAction {
 		super(id, label, connectionManagementService, angularEventingService);
 	}
 
-	public run(actionContext: ManageActionContext): TPromise<boolean> {
+	public run(actionContext: ManageActionContext): Promise<boolean> {
 		let promise = super.run(actionContext);
 		this._progressService.showWhile(promise);
 		return promise;

@@ -2,7 +2,7 @@
 // Distributed under the terms of the Modified BSD License.
 
 import { JSONObject } from './jsonext';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 /**
  * The namespace for URL-related functions.

@@ -39,6 +39,8 @@ import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/fle
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageLegacyService } from 'vs/platform/storage/common/storageLegacyService';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -83,9 +85,10 @@ export class EditDataEditor extends BaseEditor {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IStorageLegacyService storageService: IStorageService
 	) {
-		super(EditDataEditor.ID, _telemetryService, themeService);
+		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
 		if (contextKeyService) {
 			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);

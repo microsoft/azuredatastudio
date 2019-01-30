@@ -6,6 +6,7 @@
 import 'vs/css!./media/table';
 import { TableDataView } from './tableDataView';
 import { IDisposableDataProvider, ITableSorter, ITableMouseEvent, ITableConfiguration, ITableStyles } from 'sql/base/browser/ui/table/interfaces';
+import { $ } from 'sql/base/browser/builder';
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as DOM from 'vs/base/browser/dom';
@@ -16,7 +17,6 @@ import { Widget } from 'vs/base/browser/ui/widget';
 import { isArray, isBoolean } from 'vs/base/common/types';
 import { Event, Emitter } from 'vs/base/common/event';
 import { range } from 'vs/base/common/arrays';
-import { $ } from 'vs/base/browser/builder';
 
 function getDefaultOptions<T>(): Slick.GridOptions<T> {
 	return <Slick.GridOptions<T>>{
@@ -38,7 +38,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IThemabl
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
-	private _classChangeTimeout: number;
+	private _classChangeTimeout: NodeJS.Timer;
 
 	private _onContextMenu = new Emitter<ITableMouseEvent>();
 	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;

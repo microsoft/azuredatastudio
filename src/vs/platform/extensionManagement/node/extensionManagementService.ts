@@ -218,7 +218,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 												return this.installExtension({ zipPath, id: identifier.id, metadata: null }, type, token)
 												.then(
 													local => this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install }),
-													error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return TPromise.wrapError(error); }
+													error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
 												);
 												// return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
 												// 	.then(
@@ -377,9 +377,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			});
 	}
 
-	// private getOperation(extensionToInstall: IGalleryExtension, installed: ILocalExtension[]): Operation {
-	// 	return installed.some(i => areSameExtensions({ id: getGalleryExtensionIdFromLocal(i), uuid: i.identifier.uuid }, extensionToInstall.identifier)) ? Operation.Update : Operation.Install;
-	// }
+	private getOperation(extensionToInstall: IExtensionIdentifier, installed: ILocalExtension[]): InstallOperation {
+		return installed.some(i => areSameExtensions({ id: getGalleryExtensionIdFromLocal(i), uuid: i.identifier.uuid }, extensionToInstall)) ? InstallOperation.Update : InstallOperation.Install;
+	}
 
 	private getTelemetryEvent(operation: InstallOperation): string {
 		return operation === InstallOperation.Update ? 'extensionGallery:update' : 'extensionGallery:install';

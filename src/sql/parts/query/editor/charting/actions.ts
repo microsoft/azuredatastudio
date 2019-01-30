@@ -19,7 +19,7 @@ import { join, normalize } from 'vs/base/common/paths';
 import { writeFile } from 'vs/base/node/pfs';
 import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';

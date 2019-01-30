@@ -37,7 +37,8 @@ class NoStandaloneEditorRuleWalker extends Lint.RuleWalker {
             this._validateImport(path.getText(), node);
         }
     }
-    _validateImport(path, node) {
+    // {{SQL CARBON EDIT}} - Rename node argument to _node to prevent errors since it is not used
+    _validateImport(path, _node) {
         // remove quotes
         path = path.slice(1, -1);
         // resolve relative paths

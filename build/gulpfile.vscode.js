@@ -429,7 +429,7 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('emmet', ['node_modules/**'], undefined))
 			.pipe(util.cleanNodeModule('pty.js', ['build/**'], ['build/Release/**']))
 			.pipe(util.cleanNodeModule('jquery-ui', ['external/**', 'demos/**'], undefined))
-			.pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
+			// .pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
 			.pipe(util.cleanNodeModule('slickgrid', ['node_modules/**', 'examples/**'], undefined))
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
 			.pipe(util.cleanNodeModule('vscode-nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))

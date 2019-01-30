@@ -7,12 +7,12 @@
 import * as extHostApi from 'vs/workbench/api/node/extHost.api.impl';
 import { TrieMap } from 'sql/base/common/map';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IInitData, IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
+import { IInitData, IExtHostContext, IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostExtensionService } from 'vs/workbench/api/node/extHostExtensionService';
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { realpath } from 'fs';
 import * as extHostTypes from 'vs/workbench/api/node/extHostTypes';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -39,9 +39,11 @@ import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
 import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
+import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
+import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
 
 export interface ISqlExtensionApiFactory {
-	vsCodeFactory(extension: IExtensionDescription): typeof vscode;
+	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry): typeof vscode;
 	sqlopsFactory(extension: IExtensionDescription): typeof sqlops;
 }
 
@@ -50,13 +52,14 @@ export interface ISqlExtensionApiFactory {
  */
 export function createApiFactory(
 	initData: IInitData,
-	rpcProtocol: IExtHostContext,
+	rpcProtocol: IMainContext,
 	extHostWorkspace: ExtHostWorkspace,
 	extHostConfiguration: ExtHostConfiguration,
 	extensionService: ExtHostExtensionService,
-	logService: ExtHostLogService
+	logService: ExtHostLogService,
+	extHostStorage: ExtHostStorage
 ): ISqlExtensionApiFactory {
-	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService);
+	let vsCodeFactory = extHostApi.createApiFactory(initData, rpcProtocol, extHostWorkspace, extHostConfiguration, extensionService, logService, extHostStorage);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -349,10 +352,10 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
-					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
+					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
+					return extHostModelViewDialog.createTab(title, extension);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
 					return extHostModelViewDialog.createButton(label);
@@ -393,7 +396,7 @@ export function createApiFactory(
 				onDidOpenDashboard: extHostDashboard.onDidOpenDashboard,
 				onDidChangeToDashboard: extHostDashboard.onDidChangeToDashboard,
 				createModelViewEditor(title: string, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-					return extHostModelViewDialog.createModelViewEditor(title, extension.extensionLocation, options);
+					return extHostModelViewDialog.createModelViewEditor(title, extension, options);
 				}
 			};
 
@@ -405,7 +408,7 @@ export function createApiFactory(
 
 			const ui = {
 				registerModelViewProvider(modelViewId: string, handler: (view: sqlops.ModelView) => void): void {
-					extHostModelView.$registerProvider(modelViewId, handler, extension.extensionLocation);
+					extHostModelView.$registerProvider(modelViewId, handler, extension);
 				}
 			};
 
@@ -489,15 +492,15 @@ export function createApiFactory(
 	};
 }
 
-export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory): TPromise<void> {
-	return createExtensionPathIndex(extensionService).then(trie => defineAPI(apiFactory, trie));
+export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry): TPromise<void> {
+	return createExtensionPathIndex(extensionService).then(trie => defineAPI(apiFactory, trie, extensionRegistry));
 }
 
-function createExtensionPathIndex(extensionService: ExtHostExtensionService): TPromise<TrieMap<IExtensionDescription>> {
+async function createExtensionPathIndex(extensionService: ExtHostExtensionService): Promise<TrieMap<IExtensionDescription>> {
 
 	// create trie to enable fast 'filename -> extension id' look up
 	const trie = new TrieMap<IExtensionDescription>(TrieMap.PathSplitter);
-	const extensions = extensionService.getAllExtensionDescriptions().map(ext => {
+	const extensions = (await extensionService.getExtensionRegistry()).getAllExtensionDescriptions().map(ext => {
 		if (!ext.main) {
 			return undefined;
 		}
@@ -516,7 +519,7 @@ function createExtensionPathIndex(extensionService: ExtHostExtensionService): TP
 	return TPromise.join(extensions).then(() => trie);
 }
 
-function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>): void {
+function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry): void {
 	type ApiImpl = typeof vscode | typeof sqlops;
 
 	// each extension is meant to get its own api implementation
@@ -558,7 +561,7 @@ function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IEx
 	// TODO look into de-duplicating this code
 	node_module._load = function load(request, parent, isMain) {
 		if (request === 'vscode') {
-			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext),
+			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext, extensionRegistry),
 				defaultApiImpl,
 				(impl) => defaultApiImpl = <typeof vscode>impl,
 				parent);

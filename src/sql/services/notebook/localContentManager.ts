@@ -9,7 +9,7 @@ import { nb } from 'sqlops';
 
 import * as json from 'vs/base/common/json';
 import * as pfs from 'vs/base/node/pfs';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import ContentManager = nb.ContentManager;
 

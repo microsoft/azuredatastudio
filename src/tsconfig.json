@@ -1,8 +1,11 @@
 {
-	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
+		"module": "amd",
+		"moduleResolution": "classic",
+		"noImplicitAny": false,
 		"removeComments": false,
 		"preserveConstEnums": true,
+		"target": "es5",
 		"sourceMap": false,
 		"experimentalDecorators": true,
 		"declaration": true,
@@ -14,13 +17,14 @@
 		"outDir": "../out",
 		"typeRoots": [
 			"typings"
+		],
+		"types": [
+			"mocha"
 		]
 	},
-	"include": [
-		"./typings",
-		"./vs"
-	],
 	"exclude": [
-		"./typings/require-monaco.d.ts"
+		"../out",
+		"../out-build",
+		"../out-vscode"
 	]
 }

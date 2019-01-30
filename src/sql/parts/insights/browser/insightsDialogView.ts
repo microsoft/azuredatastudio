@@ -219,7 +219,7 @@ export class InsightsDialogView extends Modal {
 		this._register(this._bottomTable.onContextMenu(e => {
 			this._contextMenuService.showContextMenu({
 				getAnchor: () => e.anchor,
-				getActions: () => TPromise.as([this._instantiationService.createInstance(CopyInsightDialogSelectionAction, CopyInsightDialogSelectionAction.ID, CopyInsightDialogSelectionAction.LABEL)]),
+				getActions: () => [this._instantiationService.createInstance(CopyInsightDialogSelectionAction, CopyInsightDialogSelectionAction.ID, CopyInsightDialogSelectionAction.LABEL)],
 				getActionsContext: () => this.bottomInsightContext(this._bottomTableData.getItem(e.cell.row), e.cell)
 			});
 		}));
@@ -356,7 +356,7 @@ export class InsightsDialogView extends Modal {
 			&& this._insight.actions.types.length > 0);
 	}
 
-	private get insightActions(): TPromise<IAction[]> {
+	private get insightActions(): IAction[] {
 		let tasks = TaskRegistry.getTasks();
 		let actions = this._insight.actions.types;
 		let returnActions: IAction[] = [];
@@ -367,7 +367,7 @@ export class InsightsDialogView extends Modal {
 				returnActions.push(this._instantiationService.createInstance(ExecuteCommandAction, commandAction.id, commandAction.title));
 			}
 		}
-		return TPromise.as(returnActions);
+		return returnActions;
 	}
 
 	/**

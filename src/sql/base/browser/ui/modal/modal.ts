@@ -10,7 +10,7 @@ import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { mixin } from 'vs/base/common/objects';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -394,7 +394,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected show() {
 		this._modalShowingContext.get().push(this._staticKey);
-		this._builder.appendTo(document.getElementById(this._partService.getWorkbenchElementId()));
+		this._builder.appendTo(this._partService.getWorkbenchElement());
 
 		this.setFocusableElements();
 

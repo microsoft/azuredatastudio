@@ -7,7 +7,6 @@ import * as nls from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import * as errors from 'vs/base/common/errors';
-import { $ } from 'vs/base/browser/builder';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { IAction, IActionRunner } from 'vs/base/common/actions';
 import { IActionItem, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -18,6 +17,7 @@ import { ToolBar } from 'vs/base/browser/ui/toolbar/toolbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { AbstractCollapsibleView, CollapsibleState, IView as IBaseView, SplitView, ViewSizing } from 'sql/base/browser/ui/splitview/splitview';
+import { $ } from 'sql/base/browser/builder';
 
 export interface IViewOptions {
 
@@ -276,7 +276,7 @@ export abstract class CollapsibleView extends AbstractCollapsibleView implements
 		// Make sure the current selected element is revealed
 		const selection = this.tree.getSelection();
 		if (selection.length > 0) {
-			this.reveal(selection[0], 0.5).done(null, errors.onUnexpectedError);
+			this.reveal(selection[0], 0.5).then(null, errors.onUnexpectedError);
 		}
 
 		// Pass Focus to Viewer

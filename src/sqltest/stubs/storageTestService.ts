@@ -10,6 +10,22 @@ export class StorageTestService implements IStorageService {
 	_serviceBrand: any;
 
 	/**
+	 * Emitted whenever data is updated or deleted.
+	 */
+	readonly onDidChangeStorage: any; // TODO mairvine
+
+	/**
+	 * Emitted when the storage is about to persist. This is the right time
+	 * to persist data to ensure it is stored before the application shuts
+	 * down.
+	 *
+	 * The will save state event allows to optionally ask for the reason of
+	 * saving the state, e.g. to find out if the state is saved due to a
+	 * shutdown.
+	 */
+	readonly onWillSaveState: any; // TODO mairvine
+
+	/**
 	 * Store a string value under the given key to local storage.
 	 *
 	 * The optional scope argument allows to define the scope of the operation.

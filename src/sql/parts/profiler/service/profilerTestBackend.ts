@@ -33,7 +33,7 @@ const columns = [
 export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 	public readonly providerId = 'MSSQL';
 	private index = 0;
-	private timeOutMap = new Map<string, number>();
+	private timeOutMap = new Map<string, NodeJS.Timer>();
 	private testData: Array<Array<string>> = new Array<Array<string>>();
 
 	constructor(
@@ -60,7 +60,7 @@ export class ProfilerTestBackend implements sqlops.ProfilerProvider {
 		return;
 	}
 
-	private intervalFn(guid: string): number {
+	private intervalFn(guid: string): NodeJS.Timer {
 		return setTimeout(() => {
 			let data = this.testData[this.index++];
 			let formattedData = {

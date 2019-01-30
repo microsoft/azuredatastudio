@@ -23,7 +23,7 @@ import { Dimension, $, getContentHeight, getContentWidth } from 'vs/base/browser
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';

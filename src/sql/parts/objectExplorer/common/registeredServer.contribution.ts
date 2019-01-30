@@ -7,7 +7,7 @@ import 'vs/css!sql/media/actionBarLabel';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ToggleViewletAction } from 'vs/workbench/browser/viewlet';
+import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -17,6 +17,8 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 import { VIEWLET_ID } from 'sql/parts/connection/common/connectionManagement';
 import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
+import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
 
 // Viewlet Action
 export class OpenConnectionsViewletAction extends ToggleViewletAction {
@@ -27,9 +29,9 @@ export class OpenConnectionsViewletAction extends ToggleViewletAction {
 		id: string,
 		label: string,
 		@IViewletService viewletService: IViewletService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService
+		@IPartService partService: IPartService
 	) {
-		super(id, label, VIEWLET_ID, viewletService, editorGroupService);
+		super(viewletDescriptor, partService, viewletService);
 	}
 }
 

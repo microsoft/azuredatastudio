@@ -10,7 +10,6 @@ import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
-import { IQuickOpenService, IPickOpenEntry } from 'vs/platform/quickOpen/common/quickOpen';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
 import errors = require('vs/base/common/errors');
@@ -25,8 +24,9 @@ import { DidChangeLanguageFlavorParams } from 'sqlops';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
+import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 
-export interface ISqlProviderEntry extends IPickOpenEntry {
+export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
 }
 
@@ -71,7 +71,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IEditorService private _editorService: EditorServiceImpl,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IQuickOpenService private _quickOpenService: IQuickOpenService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		this._sqlStatusEditors = {};
@@ -96,7 +96,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 	private _onSelectionClick() {
 		const action = this._instantiationService.createInstance(ChangeFlavorAction, ChangeFlavorAction.ID, ChangeFlavorAction.LABEL);
 
-		action.run().done(null, errors.onUnexpectedError);
+		action.run().then(null, errors.onUnexpectedError);
 		action.dispose();
 	}
 
@@ -173,7 +173,7 @@ export class ChangeFlavorAction extends Action {
 		actionId: string,
 		actionLabel: string,
 		@IEditorService private _editorService: IEditorService,
-		@IQuickOpenService private _quickOpenService: IQuickOpenService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
 		@INotificationService private _notificationService: INotificationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
@@ -200,7 +200,7 @@ export class ChangeFlavorAction extends Action {
 		];
 
 		// TODO: select the current language flavor
-		return this._quickOpenService.pick(ProviderOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider"), autoFocus: { autoFocusIndex: 0 } }).then(provider => {
+		return this._quickInputService.pick(ProviderOptions, { placeHolder: nls.localize('pickSqlProvider', "Select SQL Language Provider") }).then(provider => {
 			if (provider) {
 				activeEditor = this._editorService.activeControl;
 				const editorWidget = getCodeEditor(activeEditor);

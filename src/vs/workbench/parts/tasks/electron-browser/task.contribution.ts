@@ -2513,6 +2513,8 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
 	order: 1
 });
 
+// {{SQL CARBON EDIT}} - Removing all gulp task runner commands
+/*
 MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
 	group: '2_run',
 	command: {

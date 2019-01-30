@@ -41,6 +41,7 @@ import { CloseOneEditorAction } from 'vs/workbench/browser/parts/editor/editorAc
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IFileService } from 'vs/platform/files/common/files';
+
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
@@ -48,6 +49,8 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { GlobalNewUntitledFileAction } from 'vs/workbench/parts/files/electron-browser/fileActions';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import * as QueryConstants from 'sql/parts/query/common/constants';
+import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 // {{SQL CARBON EDIT}} -- End
 
 interface IEditorInputLabel {
@@ -189,7 +192,7 @@ export class TabsTitleControl extends TitleControl {
 			if (e.target === this.tabsContainer) {
 				EventHelper.stop(e);
 				// {{SQL CARBON EDIT}}
-				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).done(undefined, err => this.notificationService.warn(err));
+				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).then(undefined, err => this.notificationService.warn(err));
 			}
 		}));
 
@@ -875,7 +878,6 @@ export class TabsTitleControl extends TitleControl {
 		this.redrawEditorActiveAndDirty(this.accessor.activeGroup === this.group, editor, tabContainer, tabLabelWidget);
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
 		this.setEditorTabColor(editor, tabContainer, this.group.isActive(editor));
->>>>>>> vscode/release/1.30
 	}
 
 	private redrawLabel(editor: IEditorInput, tabContainer: HTMLElement, tabLabelWidget: ResourceLabel, tabLabel: IEditorInputLabel): void {

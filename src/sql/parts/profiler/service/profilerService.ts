@@ -19,8 +19,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IStorageService } from 'vs/platform/storage/common/storage';
-import { Scope as MementoScope, Memento } from 'vs/workbench/common/memento';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { Memento } from 'vs/workbench/common/memento';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -65,8 +65,8 @@ export class ProfilerService implements IProfilerService {
 		@ICommandService private _commandService: ICommandService,
 		@IStorageService private _storageService: IStorageService
 	) {
-		this._context = new Memento('ProfilerEditor');
-		this._memento = this._context.getMemento(this._storageService, MementoScope.GLOBAL);
+		this._context = new Memento('ProfilerEditor', this._storageService);
+		this._memento = this._context.getMemento(StorageScope.GLOBAL);
 	}
 
 	public registerProvider(providerId: string, provider: sqlops.ProfilerProvider): void {

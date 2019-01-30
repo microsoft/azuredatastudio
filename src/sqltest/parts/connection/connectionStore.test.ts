@@ -94,9 +94,9 @@ suite('SQL ConnectionStore tests', () => {
 			id: undefined
 		});
 
-		let momento = new Memento('ConnectionManagement');
+		let momento = new Memento('ConnectionManagement', storageServiceMock.object);
 		context = TypeMoq.Mock.ofInstance(momento);
-		context.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => mementoArray);
+		context.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => mementoArray);
 
 		credentialStore = TypeMoq.Mock.ofType(CredentialsService);
 		connectionConfig = TypeMoq.Mock.ofType(ConnectionConfig);
@@ -239,7 +239,7 @@ suite('SQL ConnectionStore tests', () => {
 		// Expect all of them to be saved even if size is limited to 3
 		let connectionStore = new ConnectionStore(storageServiceMock.object, context.object, undefined, workspaceConfigurationServiceMock.object,
 			credentialStore.object, capabilitiesService, connectionConfig.object);
-		let promise = Promise.resolve();
+		let promise = Promise.resolve<void>();
 		for (let i = 0; i < numCreds; i++) {
 			let cred = Object.assign({}, defaultNamedProfile, { serverName: defaultNamedProfile.serverName + i });
 			let connectionProfile = new ConnectionProfile(capabilitiesService, cred);

@@ -312,6 +312,7 @@ export interface ToolbarLayout {
 }
 
 export class TreeComponentItem extends TreeItem {
+	label?: string;
 	checked?: boolean;
 }
 

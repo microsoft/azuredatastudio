@@ -10,7 +10,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/base/browser/ui/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -41,17 +41,12 @@ export class WebViewDialog extends Modal {
 	private contentDisposables: IDisposable[] = [];
 	private _onMessage = new Emitter<any>();
 
-	protected contextKey: IContextKey<boolean>;
-	protected findInputFocusContextKey: IContextKey<boolean>;
-
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
 		@IPartService private _webViewPartService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextViewService private _contextViewService: IContextViewService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
@@ -97,8 +92,6 @@ export class WebViewDialog extends Modal {
 
 			this._webview = this._instantiationService.createInstance(WebviewElement,
 				this._webViewPartService.getContainer(Parts.EDITOR_PART),
-				this.contextKey,
-				this.findInputFocusContextKey,
 				{
 					enableWrappedPostMessage: true,
 					allowScripts: true

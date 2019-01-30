@@ -10,7 +10,7 @@ import * as TypeMoq from 'typemoq';
 import * as path from 'path';
 import { nb } from 'sqlops';
 
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';
 import { LocalContentManager } from 'sql/services/notebook/localContentManager';
 import * as testUtils from '../../../utils/testUtils';

@@ -10,7 +10,7 @@ import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IAction, ActionRunner } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { $ } from 'vs/base/browser/builder';
+import { $ } from 'sql/base/browser/builder';
 import { CountBadge } from 'vs/base/browser/ui/countBadge/countBadge';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';

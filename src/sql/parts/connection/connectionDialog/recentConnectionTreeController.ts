@@ -46,11 +46,11 @@ export class RecentConnectionActionsProvider extends ContributableActionProvider
 	/**
 	 * Return actions given an element in the tree
 	 */
-	public getActions(tree: ITree, element: any): TPromise<IAction[]> {
+	public getActions(tree: ITree, element: any): IAction[] {
 		if (element instanceof ConnectionProfile) {
-			return TPromise.as(this.getRecentConnectionActions(tree, element));
+			return this.getRecentConnectionActions(tree, element);
 		}
-		return TPromise.as([]);
+		return [];
 	}
 }
 

@@ -18,8 +18,8 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
 import { mixin } from 'vs/base/common/objects';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
 
 export interface IPanelOptions {
 	/**

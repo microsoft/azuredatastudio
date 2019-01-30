@@ -251,7 +251,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			if (this.isEmpty()) {
 				EventHelper.stop(e);
 				// {{SQL CARBON EDIT}}
-				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).done(undefined, err => this.notificationService.warn(err));
+				this.commandService.executeCommand(GlobalNewUntitledFileAction.ID).then(undefined, err => this.notificationService.warn(err));
 			}
 		}));
 

@@ -724,7 +724,7 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 					if (ext.publisherDisplayName === 'Microsoft') {
 						return this.downloadOrBrowse(ext).then(() => this.checkAndEnableDisabledDependencies(gallery.identifier));
 					} else {
-						return TPromise.as(null);
+						return Promise.resolve(null);
 					}
 				}
 				return this.downloadOrBrowse(ext).then(() => this.checkAndEnableDisabledDependencies(gallery.identifier));

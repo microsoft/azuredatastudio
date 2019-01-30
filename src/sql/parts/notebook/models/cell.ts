@@ -7,7 +7,7 @@
 'use strict';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import { nb } from 'sqlops';
 import { ICellModelOptions, IModelFactory, FutureInternal } from './modelInterfaces';

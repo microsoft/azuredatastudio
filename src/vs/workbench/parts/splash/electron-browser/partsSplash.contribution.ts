@@ -95,12 +95,6 @@ class PartsSplash {
 		return !isFullscreen() && !this._envService.isExtensionDevelopment;
 	}
 
-	private _getThemeColor(id: ColorIdentifier): string {
-		const theme = this._themeService.getTheme();
-		const color = theme.getColor(id);
-		return color ? color.toString() : undefined;
-	}
-
 	private _removePartsSplash(): void {
 		let element = document.getElementById(PartsSplash._splashElementId);
 		if (element) {

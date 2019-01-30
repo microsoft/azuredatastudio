@@ -7,6 +7,8 @@ import * as uuid from 'vs/base/common/uuid';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
 
+export const lastSessionDateStorageKey = 'telemetry.lastSessionDate';
+
 // {{ SQL CARBON EDIT }}
 import product from 'vs/platform/node/product';
 import * as Utils from 'sql/common/telemetryUtilities';
@@ -77,15 +79,15 @@ function getOrCreateFirstSessionDate(storageService: IStorageService): string {
 function setUsageDates(storageService: IStorageService): void {
 	// daily last usage date
 	const appStartDate = new Date('January 1, 2000');
-	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate') || appStartDate;
-	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate);
+	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL) || appStartDate;
+	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate, StorageScope.GLOBAL);
 
 	// weekly last usage date
-	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate') || appStartDate;
-	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate);
+	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL) || appStartDate;
+	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate, StorageScope.GLOBAL);
 
 	// monthly last usage date
-	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate') || appStartDate;
-	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate);
+	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL) || appStartDate;
+	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate, StorageScope.GLOBAL);
 
 }

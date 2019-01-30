@@ -201,11 +201,11 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): TPromise<IAction[]> {
+	protected getTableActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditOperatorAction));
 		actions.push(this._instantiationService.createInstance(DeleteOperatorAction));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

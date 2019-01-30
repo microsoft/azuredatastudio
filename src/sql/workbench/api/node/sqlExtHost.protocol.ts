@@ -9,7 +9,7 @@ import {
 	createExtHostContextProxyIdentifier as createExtId,
 	ProxyIdentifier, IRPCProtocol
 } from 'vs/workbench/services/extensions/node/proxyIdentifier';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { UriComponents } from 'vs/base/common/uri';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -25,6 +25,7 @@ import {
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { EditorViewColumn } from 'vs/workbench/api/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/node/extHost.protocol';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 
 export abstract class ExtHostAccountManagementShape {
 	$autoOAuthCancelled(handle: number): Thenable<void> { throw ni(); }
@@ -647,7 +648,7 @@ export interface MainThreadDashboardWebviewShape extends IDisposable {
 }
 
 export interface ExtHostModelViewShape {
-	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extensionLocation: UriComponents): void;
+	$registerProvider(widgetId: string, handler: (webview: sqlops.ModelView) => void, extension: IExtensionDescription): void;
 	$onClosed(handle: number): void;
 	$registerWidget(handle: number, id: string, connection: sqlops.connection.Connection, serverInfo: sqlops.ServerInfo): void;
 	$handleEvent(handle: number, id: string, eventArgs: any);
@@ -656,7 +657,7 @@ export interface ExtHostModelViewShape {
 
 export interface ExtHostModelViewTreeViewsShape {
 	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<ITreeComponentItem[]>;
-	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }): sqlops.TreeComponentView<any>;
+	$createTreeView(handle: number, componentId: string, options: { treeDataProvider: vscode.TreeDataProvider<any> }, extension: IExtensionDescription): sqlops.TreeComponentView<any>;
 	$onNodeCheckedChanged(treeViewId: string, treeItemHandle?: string, checked?: boolean): void;
 	$onNodeSelected(treeViewId: string, nodes: string[]): void;
 

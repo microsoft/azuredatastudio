@@ -267,6 +267,7 @@ export class ContextAwareMenuItemActionItem extends MenuItemActionItem {
 	}
 }
 
+// {{SQL CARBON EDIT}} - This is here to use the 'ids' generator above
 // Always show label for action items, instead of whether they don't have
 // an icon/CSS class. Useful for some toolbar scenarios in particular with
 // contributed actions from other extensions
@@ -283,7 +284,7 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 		super(_action, _labeledkeybindingService, _notificationService, _labeledcontextMenuService);
 	}
 	_updateLabel(): void {
-		this.$e.text(this._commandAction.label);
+		this.element.innerText = this._commandAction.label;
 	}
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
@@ -306,12 +307,12 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 				MenuItemActionItem.ICON_PATH_TO_CSS_RULES.set(iconPathMapKey, iconClass);
 			}
 
-			this.$e.getHTMLElement().classList.add('icon', iconClass);
-			this.$e.getHTMLElement().classList.add(this._defaultCSSClassToAdd);
+			this.element.classList.add('icon', iconClass);
+			this.element.classList.add(this._defaultCSSClassToAdd);
 			this._labeledItemClassDispose = {
 				dispose: () => {
-					this.$e.getHTMLElement().classList.remove('icon', iconClass);
-					this.$e.getHTMLElement().classList.remove(this._defaultCSSClassToAdd);
+					this.element.classList.remove('icon', iconClass);
+					this.element.classList.remove(this._defaultCSSClassToAdd);
 				}
 			};
 		}
@@ -326,3 +327,4 @@ export class LabeledMenuItemActionItem extends MenuItemActionItem {
 		super.dispose();
 	}
 }
+// {{SQL CARBON EDIT}} - End

@@ -43,21 +43,14 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 	public readonly onMessage: Event<string> = this._onMessage.event;
 	private _onMessageDisposable: IDisposable;
 
-	protected contextKey: IContextKey<boolean>;
-	protected findInputFocusContextKey: IContextKey<boolean>;
-
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
 		@Inject(IPartService) private partService: IPartService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextKeyService) contextKeyService: IContextKeyService
 	) {
 		super();
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
@@ -116,8 +109,6 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.contextKey,
-			this.findInputFocusContextKey,
 			{
 				allowScripts: true,
 				enableWrappedPostMessage: true

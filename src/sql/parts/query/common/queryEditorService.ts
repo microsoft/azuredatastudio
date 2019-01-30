@@ -8,7 +8,7 @@ import { IConnectableInput } from 'sql/parts/connection/common/connectionManagem
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
 
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 export interface IQueryEditorOptions extends IEditorOptions {
 

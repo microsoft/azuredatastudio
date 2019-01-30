@@ -276,9 +276,9 @@ export class WorkbenchShell extends Disposable {
 
 	// {{SQL CARBON EDIT}}
 	private sendUsageEvents(): void {
-		const dailyLastUseDate = Date.parse(this.storageService.get('telemetry.dailyLastUseDate'));
-		const weeklyLastUseDate = Date.parse(this.storageService.get('telemetry.weeklyLastUseDate'));
-		const monthlyLastUseDate = Date.parse(this.storageService.get('telemetry.monthlyLastUseDate'));
+		const dailyLastUseDate = Date.parse(this.storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, '0'));
+		const weeklyLastUseDate = Date.parse(this.storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
+		const monthlyLastUseDate = Date.parse(this.storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
 
 		let today = new Date().toUTCString();
 
@@ -286,20 +286,20 @@ export class WorkbenchShell extends Disposable {
 		if (this.diffInDays(Date.parse(today), dailyLastUseDate) >= 1) {
 			// daily first use
 			this.telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
-			this.storageService.store('telemetry.dailyLastUseDate', today);
+			this.storageService.store('telemetry.dailyLastUseDate', today, StorageScope.GLOBAL);
 		}
 
 		// weekly user event
 		if (this.diffInDays(Date.parse(today), weeklyLastUseDate) >= 7) {
 			// weekly first use
 			this.telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
-			this.storageService.store('telemetry.weeklyLastUseDate', today);
+			this.storageService.store('telemetry.weeklyLastUseDate', today, StorageScope.GLOBAL);
 		}
 
 		// monthly user events
 		if (this.diffInDays(Date.parse(today), monthlyLastUseDate) >= 30) {
 			this.telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
-			this.storageService.store('telemetry.monthlyLastUseDate', today);
+			this.storageService.store('telemetry.monthlyLastUseDate', today, StorageScope.GLOBAL);
 		}
 	}
 

@@ -5,13 +5,12 @@
 
 
 import * as DOM from 'vs/base/browser/dom';
-import { $ } from 'vs/base/browser/builder';
 import * as tree from 'vs/base/parts/tree/browser/tree';
 import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { generateUuid } from 'vs/base/common/uuid';
-import { JobManagementUtilities } from 'sql/parts/jobManagement/common/jobManagementUtilities';
+import { $ } from 'sql/base/browser/builder';
 
 export class JobStepsViewRow {
 	public stepId: string;

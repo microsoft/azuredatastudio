@@ -13,7 +13,7 @@ import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagem
 import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
 import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 

@@ -10,7 +10,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';

@@ -44,7 +44,7 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 
-		tree.setInput(treeInput).done(() => {
+		tree.setInput(treeInput).then(() => {
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
 				tree.expandAll(targetsToExpand);

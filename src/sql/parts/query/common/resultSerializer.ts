@@ -18,7 +18,7 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { Schemas } from 'vs/base/common/network';
 import * as paths from 'vs/base/common/paths';
@@ -128,7 +128,11 @@ export class ResultSerializer {
 
 	private ensureOutputChannelExists(): void {
 		Registry.as<IOutputChannelRegistry>(OutputExtensions.OutputChannels)
-			.registerChannel(ConnectionConstants.outputChannelName, ConnectionConstants.outputChannelName);
+			.registerChannel({
+				id: ConnectionConstants.outputChannelName,
+				label: ConnectionConstants.outputChannelName,
+				log: true
+			});
 	}
 
 	private get outputChannel(): IOutputChannel {

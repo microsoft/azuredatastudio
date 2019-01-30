@@ -16,12 +16,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Color } from 'vs/base/common/color';
-import { SashState } from 'vs/base/browser/ui/sash/sash';
-
-export enum Orientation {
-	VERTICAL,
-	HORIZONTAL
-}
+import { SashState, Orientation } from 'vs/base/browser/ui/sash/sash';
 
 export enum ViewSizing {
 	Flexible,

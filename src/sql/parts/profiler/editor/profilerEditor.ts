@@ -25,12 +25,12 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
-import { SplitView, View, Orientation, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
+import { SplitView, View, IViewOptions } from 'sql/base/browser/ui/splitview/splitview';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -46,6 +46,8 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 class BasicView extends View {
 	private _previousSize: number;
@@ -146,14 +148,14 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@IEditorService private _editorService: IEditorService
+		@IEditorService editorService: IEditorService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(ProfilerEditor.ID, telemetryService, themeService);
+		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (_editorService) {
-			_editorService.overrideOpenEditor((editor, options, group) => {
+		if (editorService) {
+			editorService.overrideOpenEditor((editor, options, group) => {
 				if (this.isVisible() && (editor !== this.input || group !== this.group)) {
 					this.saveEditorViewState();
 				}
@@ -448,7 +450,8 @@ export class ProfilerEditor extends BaseEditor {
 					seedSearchStringFromGlobalClipboard: false,
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
 					shouldFocus: FindStartFocusAction.FocusFindInput,
-					shouldAnimate: true
+					shouldAnimate: true,
+					updateSearchScope: false
 				});
 			}
 		} else {

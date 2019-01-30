@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import * as path from 'path';
 // {{SQL CARBON EDIT}}
-import { createApiFactory, initializeExtensionApi } from 'sql/workbench/api/node/sqlExtHost.api.impl';
+import { createApiFactory, initializeExtensionApi, ISqlExtensionApiFactory } from 'sql/workbench/api/node/sqlExtHost.api.impl';
 import { Barrier } from 'vs/base/common/async';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { TernarySearchTree } from 'vs/base/common/map';
@@ -14,7 +14,7 @@ import Severity from 'vs/base/common/severity';
 import { URI } from 'vs/base/common/uri';
 import * as pfs from 'vs/base/node/pfs';
 import { ILogService } from 'vs/platform/log/common/log';
-import { createApiFactory, initializeExtensionApi, IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
+// {{SQL CARBON EDIT}} - Remove createApiFactory initializeExtensionApi, and IExtensionApiFactory imports
 import { ExtHostExtensionServiceShape, IEnvironment, IInitData, IMainContext, IWorkspaceData, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape } from 'vs/workbench/api/node/extHost.protocol';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { ActivatedExtension, EmptyExtension, ExtensionActivatedByAPI, ExtensionActivatedByEvent, ExtensionActivationReason, ExtensionActivationTimes, ExtensionActivationTimesBuilder, ExtensionsActivator, IExtensionAPI, IExtensionContext, IExtensionMemento, IExtensionModule } from 'vs/workbench/api/node/extHostExtensionActivator';
@@ -166,7 +166,8 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 	private readonly _storagePath: ExtensionStoragePath;
 	private readonly _activator: ExtensionsActivator;
 	private _extensionPathIndex: Promise<TernarySearchTree<IExtensionDescription>>;
-	private readonly _extensionApiFactory: IExtensionApiFactory;
+	// {{SQL CARBON EDIT}}
+	private readonly _extensionApiFactory: ISqlExtensionApiFactory;
 
 	private _started: boolean;
 

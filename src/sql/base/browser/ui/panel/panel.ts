@@ -6,7 +6,7 @@
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Dimension, EventType, $, addDisposableListener } from 'vs/base/browser/dom';
-import { $ as qb } from 'vs/base/browser/builder';
+import { $ as qb } from 'sql/base/browser/builder';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';

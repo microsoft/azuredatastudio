@@ -6,7 +6,8 @@
 import 'vs/css!./media/workbench';
 
 import { localize } from 'vs/nls';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+// {{SQL CARBON EDIT}} - Import toDisposable
+import { IDisposable, dispose, Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter, once } from 'vs/base/common/event';
 import * as DOM from 'vs/base/browser/dom';
 import { RunOnceScheduler, runWhenIdle } from 'vs/base/common/async';
@@ -19,7 +20,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { isWindows, isLinux, isMacintosh } from 'vs/base/common/platform';
 import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
-import { IEditorInputFactoryRegistry, Extensions as EditorExtensions, TextCompareEditorVisibleContext, TEXT_DIFF_EDITOR_ID, EditorsVisibleContext, InEditorZenModeContext, ActiveEditorGroupEmptyContext, MultipleEditorGroupsContext, IUntitledResourceInput, IResourceDiffInput, SplitEditorsVertically, TextCompareEditorActiveContext, ActiveEditorContext } from 'vs/workbench/common/editor';
+// {{SQL CARBON EDIT}} - Import IEditor
+import { IEditorInputFactoryRegistry, Extensions as EditorExtensions, TextCompareEditorVisibleContext, TEXT_DIFF_EDITOR_ID, EditorsVisibleContext, InEditorZenModeContext, ActiveEditorGroupEmptyContext, MultipleEditorGroupsContext, IUntitledResourceInput, IResourceDiffInput, SplitEditorsVertically, TextCompareEditorActiveContext, ActiveEditorContext, IEditor } from 'vs/workbench/common/editor';
 import { HistoryService } from 'vs/workbench/services/history/electron-browser/history';
 import { ActivitybarPart } from 'vs/workbench/browser/parts/activitybar/activitybarPart';
 import { SidebarPart } from 'vs/workbench/browser/parts/sidebar/sidebarPart';
@@ -163,14 +165,13 @@ import { IDashboardService } from 'sql/services/dashboard/common/dashboardServic
 import { DashboardService } from 'sql/services/dashboard/common/dashboardServiceImpl';
 import { NotebookService } from 'sql/services/notebook/notebookServiceImpl';
 import { INotebookService } from 'sql/services/notebook/notebookService';
-// {{SQL CARBON EDIT}} - End
-
-import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
-import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-// {{SQL CARBON EDIT}}
 import { ICommandLineProcessing } from 'sql/parts/commandLine/common/commandLine';
 import { CommandLineService } from 'sql/parts/commandLine/common/commandLineService';
 // {{SQL CARBON EDIT}} - End
+import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/workbench/services/extensions/electron-browser/inactiveExtensionUrlHandler';
+import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
+import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { FileDialogService } from 'vs/workbench/services/dialogs/electron-browser/dialogService';
 import { LogStorageAction } from 'vs/platform/storage/node/storageService';
@@ -572,15 +573,14 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(INotebookService, notebookService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
-		// {{SQL CARBON EDIT}}
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
-		// {{SQL CARBON EDIT}}
 		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));
 		this._register(toDisposable(() => notebookService.shutdown()));
 		this._register(toDisposable(() => capabilitiesService.shutdown()));
+		// {{SQL CARBON EDIT}} - End
 	}
 
 	//#region event handling
@@ -827,7 +827,8 @@ export class Workbench extends Disposable implements IPartService {
 					return editorService.openEditors(editors);
 				}
 
-				return Promise.resolve();
+				// {{SQL CARBON EDIT}} - Fix build break caused by no type
+				return Promise.resolve<ReadonlyArray<IEditor>>(undefined);
 			}
 
 			const editorsToOpen = this.resolveEditorsToOpen();

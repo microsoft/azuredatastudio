@@ -20,7 +20,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IVirtualDelegate, IRenderer } from 'vs/base/browser/ui/list/list';
+import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 
@@ -29,12 +29,12 @@ import { Modal } from 'sql/base/browser/ui/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
 import { FixedListView } from 'sql/platform/views/fixedListView';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { Orientation } from 'sql/base/browser/ui/splitview/splitview';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { Orientation } from 'vs/base/browser/ui/sash/sash';
 
-class ExtensionListDelegate implements IVirtualDelegate<IDashboardUITab> {
+class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
 	constructor(
 		private _height: number
@@ -58,7 +58,7 @@ interface ExtensionListTemplate {
 	publisher: HTMLElement;
 }
 
-class ExtensionListRenderer implements IRenderer<IDashboardUITab, ExtensionListTemplate> {
+class ExtensionListRenderer implements IListRenderer<IDashboardUITab, ExtensionListTemplate> {
 	public static TEMPLATE_ID = 'extensionListRenderer';
 	private static readonly OPENED_TAB_CLASS = 'success';
 	private static readonly ICON_CLASS = 'extension-status-icon icon';

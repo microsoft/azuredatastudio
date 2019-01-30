@@ -44,8 +44,8 @@
     "angular2-grid": "2.0.6",
     "angular2-slickgrid": "github:Microsoft/angular2-slickgrid#1.4.6",
     "ansi_up": "^3.0.0",
-    "chart.js": "^2.6.0",
     "applicationinsights": "1.0.6",
+    "chart.js": "^2.6.0",
     "fast-plist": "0.1.2",
     "find-remove": "1.2.1",
     "fs-extra": "^3.0.1",
@@ -192,6 +192,7 @@
   },
   "resolutions": {
     "rc": "1.2.8",
-    "event-stream": "3.3.4"
+    "event-stream": "3.3.4",
+    "@types/node": "8.10.34"
   }
 }

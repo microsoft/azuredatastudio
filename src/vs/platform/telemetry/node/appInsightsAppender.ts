@@ -11,7 +11,6 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 function getClient(aiKey: string): appInsights.TelemetryClient {
 
-	appInsights.defaultClient.config.
 	let client: appInsights.TelemetryClient;
 	if (appInsights.defaultClient) {
 		client = new appInsights.TelemetryClient(aiKey);

@@ -727,14 +727,6 @@ export class CodeApplication extends Disposable {
 			}
 		}
 
-		// TODO@sbatten: Remove when switching back to dynamic menu
-		// Install Menu
-		const instantiationService = accessor.get(IInstantiationService);
-		const configurationService = accessor.get(IConfigurationService);
-		if (platform.isMacintosh || configurationService.getValue<string>('window.titleBarStyle') !== 'custom') {
-			instantiationService.createInstance(CodeMenu);
-		}
-
 		// Jump List
 		this.historyMainService.updateWindowsJumpList();
 		this.historyMainService.onRecentlyOpenedChange(() => this.historyMainService.updateWindowsJumpList());

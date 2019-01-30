@@ -5,12 +5,13 @@
 
 import { Table } from './table';
 import { TableDataView } from './tableDataView';
-import { View, Orientation, AbstractCollapsibleView, HeaderView, ICollapsibleViewOptions, IViewOptions, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
-import { $ } from 'vs/base/browser/builder';
+import { View, AbstractCollapsibleView, HeaderView, ICollapsibleViewOptions, IViewOptions, CollapsibleState } from 'sql/base/browser/ui/splitview/splitview';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import * as lifecycle from 'vs/base/common/lifecycle';
+import { Orientation } from 'vs/base/browser/ui/sash/sash';
+import { $ } from 'sql/base/browser/builder';
 
 export class TableBasicView<T> extends View {
 	private _table: Table<T>;

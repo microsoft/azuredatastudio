@@ -356,28 +356,6 @@ export class ElectronWindow extends Themable {
 		}
 	}
 
-	private resolveKeybindings(actionIds: string[]): TPromise<{ id: string; label: string, isNative: boolean; }[]> {
-		return TPromise.join([this.lifecycleService.when(LifecyclePhase.Running), this.extensionService.whenInstalledExtensionsRegistered()]).then(() => {
-			return arrays.coalesce(actionIds.map(id => {
-				const binding = this.keybindingService.lookupKeybinding(id);
-				if (!binding) {
-					return null;
-				}
-				// first try to resolve a native accelerator
-				const electronAccelerator = binding.getElectronAccelerator();
-				if (electronAccelerator) {
-					return { id, label: electronAccelerator, isNative: true };
-				}
-				// we need this fallback to support keybindings that cannot show in electron menus (e.g. chords)
-				const acceleratorLabel = binding.getLabel();
-				if (acceleratorLabel) {
-					return { id, label: acceleratorLabel, isNative: false };
-				}
-				return null;
-			}));
-		});
-	}
-
 	private onAddFoldersRequest(request: IAddFoldersRequest): void {
 
 		// Buffer all pending requests

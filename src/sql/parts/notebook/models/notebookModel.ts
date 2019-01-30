@@ -22,7 +22,7 @@ import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
 import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 /*

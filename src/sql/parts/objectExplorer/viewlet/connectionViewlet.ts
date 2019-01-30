@@ -9,7 +9,7 @@ import 'vs/css!./media/connectionViewlet';
 import * as DOM from 'vs/base/browser/dom';
 import { ThrottledDelayer } from 'vs/base/common/async';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IAction } from 'vs/base/common/actions';
@@ -29,6 +29,8 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 
@@ -48,15 +50,15 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService private _themeService: IThemeService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IViewletService private viewletService: IViewletService,
 		@INotificationService private _notificationService: INotificationService,
 		@IObjectExplorerService private objectExplorerService: IObjectExplorerService,
-		@IPartService partService: IPartService
+		@IPartService partService: IPartService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IStorageService storageService: IStorageService
 	) {
 
-		super(VIEWLET_ID, partService, telemetryService, _themeService);
+		super(VIEWLET_ID, configurationService, partService, telemetryService, _themeService, storageService);
 		this._searchDelayer = new ThrottledDelayer(500);
 
 		this._clearSearchAction = this._instantiationService.createInstance(ClearSearchAction, ClearSearchAction.ID, ClearSearchAction.LABEL, this);
@@ -131,10 +133,9 @@ export class ConnectionViewlet extends Viewlet implements IConnectionsViewlet {
 		}
 	}
 
-	public setVisible(visible: boolean): TPromise<void> {
-		return super.setVisible(visible).then(() => {
-			this._serverTreeView.setVisible(visible);
-		});
+	public setVisible(visible: boolean): void {
+		super.setVisible(visible);
+		this._serverTreeView.setVisible(visible);
 	}
 
 	/**

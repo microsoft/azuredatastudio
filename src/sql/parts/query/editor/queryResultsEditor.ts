@@ -22,6 +22,7 @@ import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
 import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export const RESULTS_GRID_DEFAULTS = {
 	cellPadding: [6, 10, 5],
@@ -99,9 +100,10 @@ export class QueryResultsEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(QueryResultsEditor.ID, telemetryService, themeService);
+		super(QueryResultsEditor.ID, telemetryService, themeService, storageService);
 		this._rawOptions = BareResultsGridInfo.createFromRawSettings(this._configurationService.getValue('resultsGrid'), getZoomLevel());
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('resultsGrid')) {

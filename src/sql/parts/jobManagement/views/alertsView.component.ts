@@ -201,11 +201,11 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): TPromise<IAction[]> {
+	protected getTableActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditAlertAction));
 		actions.push(this._instantiationService.createInstance(DeleteAlertAction));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {
