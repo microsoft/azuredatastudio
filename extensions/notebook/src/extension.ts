@@ -8,14 +8,12 @@
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
-
 const localize = nls.loadMessageBundle();
 
 let counter = 0;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', ( connectionId? : string) => {
-
 		let title = `Untitled-${counter++}`;
 		let untitledUri = vscode.Uri.parse(`untitled:${title}`);
         let options: sqlops.nb.NotebookShowOptions =  connectionId? {
