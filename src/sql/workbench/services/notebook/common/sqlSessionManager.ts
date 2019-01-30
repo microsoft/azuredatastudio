@@ -17,6 +17,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { escape } from 'sql/base/common/strings';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
@@ -299,45 +300,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
 		this._register(this._queryRunner.onBatchEnd(batch => {
 			this._queryRunner.getQueryRows(0, batch.resultSetSummaries[0].rowCount, 0, 0).then(d => {
-				let columns = batch.resultSetSummaries[0].columnInfo.map(c => c.columnName);
-				let columnsResources: IDataResourceSchema[] = [];
-				columns.forEach(column => {
-					columnsResources.push({name: column});
-				});
-				let columnsFields: IDataResourceFields = { fields: undefined };
-				columnsFields.fields = columnsResources;
-				let dataResource: IDataResource = {
-					schema: columnsFields,
-					data: d.resultSubset.rows.map(row => {
-						let rowObject: { [key: string]: any; } = {};
-						row.forEach((val, index) => {
-							rowObject[columnsFields.fields[index].name] = val.displayValue;
-						});
-						return rowObject;
-					})
-				};
-				let data:SQLData = {
-					columns: batch.resultSetSummaries[0].columnInfo.map(c => c.columnName),
-					rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-				};
-				let table: HTMLTableElement = document.createElement('table');
-				table.createTHead();
-				table.createTBody();
-				let hrow = <HTMLTableRowElement>table.insertRow();
-				// headers
-				for (let column of data.columns) {
-					let cell = hrow.insertCell();
-					cell.innerHTML = column;
-				}
-
-				for (let row in data.rows) {
-					let hrow = <HTMLTableRowElement>table.insertRow();
-					for (let column in data.columns) {
-						let cell = hrow.insertCell();
-						cell.innerHTML = data.rows[row][column];
-					}
-				}
-				let tableHtml = '<table>' + table.innerHTML + '</table>';
+				let columns = batch.resultSetSummaries[0].columnInfo;
 
 				let msg: nb.IIOPubMessage = {
 					channel: 'iopub',
@@ -350,7 +313,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 						output_type: 'execute_result',
 						metadata: {},
 						execution_count: 0,
-						data: { 'application/vnd.dataresource+json': dataResource, 'text/html': tableHtml},
+						data: { 'application/vnd.dataresource+json': this.convertToDataResource(columns, d), 'text/html': this.convertToHtmlTable(columns, d) }
 					},
 					metadata: undefined,
 					parent_header: undefined
@@ -364,6 +327,51 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		// no-op
+	}
+
+	private convertToDataResource(columns: IDbColumn[], d: QueryExecuteSubsetResult): IDataResource {
+		let columnsResources: IDataResourceSchema[] = [];
+		columns.forEach(column => {
+			columnsResources.push({name: escape(column.columnName)});
+		});
+		let columnsFields: IDataResourceFields = { fields: undefined };
+		columnsFields.fields = columnsResources;
+		return {
+			schema: columnsFields,
+			data: d.resultSubset.rows.map(row => {
+				let rowObject: { [key: string]: any; } = {};
+				row.forEach((val, index) => {
+					rowObject[index] = val.displayValue;
+				});
+				return rowObject;
+			})
+		};
+	}
+
+	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
+		let data: SQLData = {
+			columns: columns.map(c => escape(c.columnName)),
+			rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
+		};
+		let table: HTMLTableElement = document.createElement('table');
+		table.createTHead();
+		table.createTBody();
+		let hrow = <HTMLTableRowElement>table.insertRow();
+		// headers
+		for (let column of data.columns) {
+			let cell = hrow.insertCell();
+			cell.innerHTML = column;
+		}
+
+		for (let row in data.rows) {
+			let hrow = <HTMLTableRowElement>table.insertRow();
+			for (let column in data.columns) {
+				let cell = hrow.insertCell();
+				cell.innerHTML = escape(data.rows[row][column]);
+			}
+		}
+		let tableHtml = '<table>' + table.innerHTML + '</table>';
+		return tableHtml;
 	}
 }
 

@@ -7,6 +7,7 @@
 import * as renderers from './renderers';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../models/jsonext';
+import * as tableRenderers from 'sql/parts/notebook/outputs/tableRenderers';
 
 /**
  * A common base class for mime renderers.
@@ -369,7 +370,7 @@ export class RenderedDataResource extends RenderedCommon {
 	 * @returns A promise which resolves when rendering is complete.
 	 */
 	render(model: IRenderMime.IMimeModel): Promise<void> {
-		return renderers.renderDataResource({
+		return tableRenderers.renderDataResource({
 			host: this.node,
 			source: JSON.stringify(model.data[this.mimeType])
 		});
