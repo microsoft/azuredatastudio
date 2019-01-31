@@ -82,6 +82,8 @@ export interface IObjectExplorerService {
 	 * For Testing purpose only. Get the context menu actions for an object explorer node.
 	*/
 	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
+
+	getSession(sessionId: string): sqlops.ObjectExplorerSession;
 }
 
 interface SessionStatus {
@@ -130,6 +132,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._sessions = {};
 		this._providers = {};
 		this._onSelectionOrFocusChange = new Emitter<void>();
+	}
+
+	public getSession(sessionId: string): sqlops.ObjectExplorerSession {
+		return this._activeObjectExplorerNodes[this._sessions[sessionId].connection.id].getSession();
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
