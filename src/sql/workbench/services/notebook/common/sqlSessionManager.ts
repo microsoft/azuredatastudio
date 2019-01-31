@@ -21,6 +21,7 @@ import { escape } from 'sql/base/common/strings';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
+export const MAX_ROWS = 2000;
 
 let sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
@@ -304,7 +305,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
 		if (this._queryRunner) {
 			this._register(this._queryRunner.onBatchEnd(batch => {
-				this._queryRunner.getQueryRows(0, batch.resultSetSummaries[0].rowCount, 0, 0).then(d => {
+				let rowCount = batch.resultSetSummaries[0].rowCount > MAX_ROWS ? MAX_ROWS : batch.resultSetSummaries[0].rowCount;
+				this._queryRunner.getQueryRows(0, rowCount, 0, 0).then(d => {
 					let columns = batch.resultSetSummaries[0].columnInfo;
 
 					let msg: nb.IIOPubMessage = {
