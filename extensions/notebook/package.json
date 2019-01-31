@@ -45,17 +45,17 @@
 		"menus": {
 			"commandPalette": [
 				{
-					"command": "notebook.command.new",
+					"command": "notebook.command.new"
 				},
 				{
-					"command": "notebook.command.open",
+					"command": "notebook.command.open"
 				}
 			]
 		},
 		"keybindings": [
 			{
 				"command": "notebook.command.new",
-				"key": "Ctrl+Shift+N",
+				"key": "Ctrl+Shift+N"
 			}
 		]
 	},
