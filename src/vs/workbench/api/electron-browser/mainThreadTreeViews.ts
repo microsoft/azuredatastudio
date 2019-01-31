@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 // {{SQL CARBON EDIT}}
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import  * as sqlops from 'sqlops';
+import * as sqlops from 'sqlops';
 import { Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
 
