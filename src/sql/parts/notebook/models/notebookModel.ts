@@ -396,7 +396,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public changeKernel(displayName: string): void {
-		let spec = this.getSpecNameFromDisplayName(displayName);
+		let spec = this.getKernelSpecFromDisplayName(displayName);
 		this.doChangeKernel(spec);
 	}
 
@@ -416,7 +416,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					// TODO should revert kernels dropdown
 				});
 		}
-		this.notifyError(localize('noActiveClientSessionFound', 'No active client session was found.'));
 		return Promise.resolve();
 	}
 
@@ -472,6 +471,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						this._kernelsChangedEmitter.fire(session.kernel);
 					});
 				});
+				let spec = this.getKernelSpecFromDisplayName(this._defaultKernel.display_name);
+				if (spec) {
+					this._defaultKernel = spec;
+				}
 				this.doChangeKernel(this._defaultKernel);
 			}
 		} catch (err) {
@@ -495,7 +498,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return notebook!.metadata!.kernelspec;
 	}
 
-	private getSpecNameFromDisplayName(displayName: string): nb.IKernelSpec {
+	private getKernelSpecFromDisplayName(displayName: string): nb.IKernelSpec {
 		displayName = this.sanitizeDisplayName(displayName);
 		let kernel: nb.IKernelSpec = this.specs.kernels.find(k => k.display_name.toLowerCase() === displayName.toLowerCase());
 		if (!kernel) {
