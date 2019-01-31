@@ -21,7 +21,7 @@ import { AppContext } from '../appContext';
 import * as constants from '../constants';
 
 const outputChannel = vscode.window.createOutputChannel(constants.providerId);
-interface IEndpoint {
+export interface IEndpoint {
 	serviceName: string;
 	ipAddress: string;
 	port: number;
@@ -209,7 +209,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 
 	async findNodeForContext<T extends TreeNode>(explorerContext: sqlops.ObjectExplorerContext): Promise<T> {
 		let node: T = undefined;
-		let session = this.findSessionForConnection(explorerContext.connectionProfile);
+		let session = await this.findSessionForConnection(explorerContext.connectionProfile);
 		if (session) {
 			if (explorerContext.isConnectionNode) {
 				// Note: ideally fix so we verify T matches RootNode and go from there
@@ -222,9 +222,9 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return node;
 	}
 
-	private findSessionForConnection(connectionProfile: sqlops.IConnectionProfile): Session {
+	private async findSessionForConnection(connectionProfile: sqlops.IConnectionProfile): Promise<Session> {
 		for (let session of this.sessionMap.values()) {
-			if (session.connection && session.connection.isMatch(connectionProfile)) {
+			if (session.connection && await session.connection.isMatch(connectionProfile)) {
 				return session;
 			}
 		}

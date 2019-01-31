@@ -63,7 +63,7 @@ export async function getNode<T extends TreeNode>(context: ICommandViewContext |
 export class UploadFilesCommand extends ProgressCommand {
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('hdfs.uploadFiles', prompter, appContext);
+		super('mssqlCluster.uploadFiles', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -131,7 +131,7 @@ export class UploadFilesCommand extends ProgressCommand {
 export class MkDirCommand extends ProgressCommand {
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('hdfs.mkdir', prompter, appContext);
+		super('mssqlCluster.mkdir', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -177,7 +177,7 @@ export class MkDirCommand extends ProgressCommand {
 export class DeleteFilesCommand extends Command {
 
 	constructor(private prompter: IPrompter, appContext: AppContext) {
-		super('hdfs.deleteFiles', appContext);
+		super('mssqlCluster.deleteFiles', appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -197,10 +197,10 @@ export class DeleteFilesCommand extends Command {
 					oeNodeToRefresh = await oeNodeToDelete.getParent();
 				}
 				switch (treeItem.contextValue) {
-					case constants.HdfsItems.Folder:
+					case constants.MssqlClusterItems.Folder:
 						await this.deleteFolder(<FolderNode>node);
 						break;
-					case constants.HdfsItems.File:
+					case constants.MssqlClusterItems.File:
 						await this.deleteFile(<FileNode>node);
 						break;
 					default:
@@ -248,7 +248,7 @@ export class DeleteFilesCommand extends Command {
 export class SaveFileCommand extends ProgressCommand {
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('hdfs.saveFile', prompter, appContext);
+		super('mssqlCluster.saveFile', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -286,7 +286,7 @@ export class PreviewFileCommand extends ProgressCommand {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
 	constructor(prompter: IPrompter, appContext: AppContext) {
-		super('hdfs.previewFile', prompter, appContext);
+		super('mssqlCluster.previewFile', prompter, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -338,7 +338,7 @@ export class CopyPathCommand extends Command {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
 	constructor(appContext: AppContext) {
-		super('hdfs.copyPath', appContext);
+		super('mssqlCluster.copyPath', appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
