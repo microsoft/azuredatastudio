@@ -18,6 +18,7 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "dependencies": {
+    "bytes": "^3.1.0",
     "clipboardy": "^1.2.3",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
     "opener": "^1.4.3",
@@ -28,8 +29,7 @@
     "vscode-nls": "2.0.2",
     "webhdfs": "^1.1.1"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "contributes": {
     "languages": [
       {
