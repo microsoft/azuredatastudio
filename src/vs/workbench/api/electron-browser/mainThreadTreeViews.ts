@@ -12,6 +12,12 @@ import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostC
 import { distinct } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
+// {{SQL CARBON EDIT}}
+import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import  * as sqlops from 'sqlops';
+import { Emitter } from 'vs/base/common/event';
+import { generateUuid } from 'vs/base/common/uuid';
+
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)
 export class MainThreadTreeViews extends Disposable implements MainThreadTreeViewsShape {
 
@@ -21,7 +27,9 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	constructor(
 		extHostContext: IExtHostContext,
 		@IViewsService private viewsService: IViewsService,
-		@INotificationService private notificationService: INotificationService
+		@INotificationService private notificationService: INotificationService,
+		// {{SQL CARBON EDIT}}
+		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
 	) {
 		super();
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostTreeViews);
@@ -30,6 +38,10 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	$registerTreeViewDataProvider(treeViewId: string): void {
 		const dataProvider = new TreeViewDataProvider(treeViewId, this._proxy, this.notificationService);
 		this._dataProviders.set(treeViewId, dataProvider);
+		// {{SQL CARBON EDIT}}
+		if (this.checkForDataExplorer(treeViewId)) {
+			return;
+		}
 		const viewer = this.getTreeViewer(treeViewId);
 		if (viewer) {
 			viewer.dataProvider = dataProvider;
@@ -68,6 +80,16 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	private getTreeViewer(treeViewId: string): ITreeViewer {
 		const viewDescriptor: ICustomViewDescriptor = <ICustomViewDescriptor>ViewsRegistry.getView(treeViewId);
 		return viewDescriptor ? viewDescriptor.treeViewer : null;
+	}
+
+	// {{SQL CARBON EDIT}}
+	private checkForDataExplorer(treeViewId: string): boolean {
+		const viewDescriptor: ICustomViewDescriptor = <ICustomViewDescriptor>ViewsRegistry.getView(treeViewId);
+		if (viewDescriptor.container.id === 'dataExplorer') {
+			const dataProvider = new OETreeViewDataProvider(treeViewId, this._proxy);
+			this.objectExplorerService.registerProvider(treeViewId, dataProvider);
+		}
+		return false;
 	}
 
 	dispose(): void {
@@ -156,5 +178,75 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 				current[property] = treeItem[property];
 			}
 		}
+	}
+}
+
+// {{SQL CARBON EDIT}}
+export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
+
+	protected itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
+	private onExpandComplete = new Emitter<sqlops.ObjectExplorerExpandInfo>();
+
+	private sessionId: string;
+
+	handle: number;
+	readonly providerId = this.treeViewId;
+
+	constructor(protected treeViewId: string,
+		protected _proxy: ExtHostTreeViewsShape
+	) {
+	}
+
+	public createNewSession(connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> {
+		// no op
+		this.sessionId = generateUuid();
+		return TPromise.as({ sessionId: this.sessionId });
+	}
+
+	public expandNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		this._proxy.$getChildren(this.treeViewId, nodeInfo.nodePath).then(e => {
+			this.onExpandComplete.fire({
+				errorMessage: undefined,
+				nodePath: nodeInfo.nodePath,
+				nodes: e.map(e => {
+					return <sqlops.NodeInfo>{
+						nodePath: e.handle,
+						label: e.label
+					};
+				}),
+				sessionId: this.sessionId
+			});
+		});
+		return TPromise.as(true);
+	}
+
+	public refreshNode(nodeInfo: sqlops.ExpandNodeInfo): Thenable<boolean> {
+		// no op
+		return TPromise.as(true);
+	}
+
+	public closeSession(closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): Thenable<sqlops.ObjectExplorerCloseSessionResponse> {
+		// no op
+		return TPromise.as({ sessionId: undefined, success: true });
+	}
+
+	public findNodes(findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> {
+		// no op
+		return TPromise.as({ nodes: [] });
+	}
+
+	public registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
+		// no op
+		return;
+	}
+
+	public registerOnSessionDisconnected?(handler: (response: sqlops.ObjectExplorerSession) => any): void {
+		// no op
+		return;
+	}
+
+	public registerOnExpandCompleted(handler: (response: sqlops.ObjectExplorerExpandInfo) => any): void {
+		this.onExpandComplete.event(handler);
+		return;
 	}
 }

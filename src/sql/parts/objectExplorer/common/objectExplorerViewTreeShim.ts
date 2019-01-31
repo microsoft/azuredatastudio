@@ -6,21 +6,20 @@
 
 import { ITreeItem } from 'sql/workbench/common/views';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { TPromise } from 'vs/base/common/winjs.base';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
 	createSession(providerId: string, node: ITreeItem): TPromise<string>;
-	getChildren(sessionId: string, node: ITreeItem): TPromise<ITreeItem[]>;
+	getChildren(sessionId: string, nodePath: string): TPromise<ITreeItem[]>;
 	providerExists(providerId: string): boolean;
 }
 
@@ -37,8 +36,8 @@ export class OEShimService implements IOEShimService {
 		return TPromise.wrap(this.oe.createNewSession(providerId, connProfile).then(e => e.sessionId));
 	}
 
-	public getChildren(sessionId: string, node: ITreeItem): TPromise<ITreeItem[]> {
-		let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
+	public getChildren(sessionId: string, nodePath: string): TPromise<ITreeItem[]> {
+		let treeNode = new TreeNode(undefined, undefined, undefined, nodePath, undefined, undefined, undefined, undefined, undefined, undefined);
 		return TPromise.wrap(this.oe.resolveTreeNodeChildren(this.oe.getSession(sessionId), treeNode).then(e => {
 			return e.map(n => {
 				return <ITreeItem>{

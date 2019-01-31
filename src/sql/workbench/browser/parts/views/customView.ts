@@ -37,7 +37,7 @@ class TreeDataSource implements IDataSource {
 					this.sessionMap.set(node.providerHandle, resp);
 				}
 				let sessId = this.sessionMap.get(node.providerHandle);
-				return this.objectExplorerService.getChildren(sessId, node);
+				return this.objectExplorerService.getChildren(sessId, node.handle);
 			}));
 		}
 		return TPromise.as([]);
