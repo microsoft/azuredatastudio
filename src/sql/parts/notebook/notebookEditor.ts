@@ -22,7 +22,6 @@ export class NotebookEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
 	private _notebookContainer: HTMLElement;
-	protected _input: NotebookInput;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -32,8 +31,8 @@ export class NotebookEditor extends BaseEditor {
 		super(NotebookEditor.ID, telemetryService, themeService);
 	}
 
-	public get input(): NotebookInput {
-		return this._input;
+	public get notebookInput(): NotebookInput {
+		return this.input as NotebookInput;
 	}
 
 	/**
@@ -53,6 +52,9 @@ export class NotebookEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
+		if (this.notebookInput) {
+			this.notebookInput.doChangeLayout();
+		}
 	}
 
 	public setInput(input: NotebookInput, options: EditorOptions): TPromise<void> {
@@ -70,10 +72,11 @@ export class NotebookEditor extends BaseEditor {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
 			container.style.height = '100%';
 			this._notebookContainer = DOM.append(parentElement, container);
-			this.input.container = this._notebookContainer;
+			input.container = this._notebookContainer;
 			return TPromise.wrap<void>(this.bootstrapAngular(input));
 		} else {
-			this._notebookContainer = DOM.append(parentElement, this.input.container);
+			this._notebookContainer = DOM.append(parentElement, input.container);
+			input.doChangeLayout();
 			return TPromise.wrap<void>(null);
 		}
 	}

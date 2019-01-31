@@ -250,6 +250,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			standardKernels: this._notebookParams.input.standardKernels,
 			providerId: notebookUtils.sqlNotebooksEnabled(this.contextKeyService) ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
 			defaultKernel: this._notebookParams.input.defaultKernel,
+			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));

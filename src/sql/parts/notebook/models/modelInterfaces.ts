@@ -277,6 +277,11 @@ export interface INotebookModel {
 	readonly kernelChanged: Event<nb.IKernelChangedArgs>;
 
 	/**
+	 * Fired on notifications that notebook components should be re-laid out.
+	 */
+	readonly layoutChanged: Event<void>;
+
+	/**
 	 * Event fired on first initialization of the kernels and
 	 * on subsequent change events
 	 */
@@ -442,6 +447,8 @@ export interface INotebookModelOptions {
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];
 	defaultKernel: nb.IKernelSpec;
+
+	layoutChanged: Event<void>;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
