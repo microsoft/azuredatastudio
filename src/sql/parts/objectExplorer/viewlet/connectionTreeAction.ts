@@ -23,6 +23,7 @@ import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/viewlet/connectionViewletPanel';
 
 export class RefreshAction extends Action {
 
@@ -389,7 +390,7 @@ export class ClearSearchAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _viewlet: ConnectionViewlet,
+		private _viewlet: ConnectionViewlet | ConnectionViewletPanel,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);

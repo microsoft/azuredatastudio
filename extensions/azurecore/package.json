@@ -114,7 +114,7 @@
 				}
 			]
 		},
-		"views": {
+		"dataExplorer": {
 			"azureResource": [
 				{
 					"id": "azureResourceExplorer",
