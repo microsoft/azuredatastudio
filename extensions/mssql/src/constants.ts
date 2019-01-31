@@ -48,13 +48,13 @@ export enum CommandContext {
 	WizardServiceEnabled = 'wizardservice:enabled'
 }
 
-export enum BdcItems {
-	Connection = 'bdc:connection',
-	Folder = 'bdc:folder',
-	File = 'bdc:file',
-	Message = 'bdc:message'
+export enum MssqlClusterItems {
+	Connection = 'mssqlCluster:connection',
+	Folder = 'mssqlCluster:folder',
+	File = 'mssqlCluster:file',
+	Message = 'mssqlCluster:message'
 }
 
-export enum BdcItemsSubType {
-	Spark = 'bdc:spark'
+export enum MssqlClusterItemsSubType {
+	Spark = 'mssqlCluster:spark'
 }

@@ -44,28 +44,28 @@
     ],
     "commands": [
       {
-        "command": "bdc.uploadFiles",
-        "title": "%bdc.uploadFiles%"
+        "command": "mssqlCluster.uploadFiles",
+        "title": "%mssqlCluster.uploadFiles%"
       },
       {
-        "command": "bdc.mkdir",
-        "title": "%bdc.mkdir%"
+        "command": "mssqlCluster.mkdir",
+        "title": "%mssqlCluster.mkdir%"
       },
       {
-        "command": "bdc.deleteFiles",
-        "title": "%bdc.deleteFiles%"
+        "command": "mssqlCluster.deleteFiles",
+        "title": "%mssqlCluster.deleteFiles%"
       },
       {
-        "command": "bdc.previewFile",
-        "title": "%bdc.previewFile%"
+        "command": "mssqlCluster.previewFile",
+        "title": "%mssqlCluster.previewFile%"
       },
       {
-        "command": "bdc.saveFile",
-        "title": "%bdc.saveFile%"
+        "command": "mssqlCluster.saveFile",
+        "title": "%mssqlCluster.saveFile%"
       },
       {
-        "command": "bdc.copyPath",
-        "title": "%bdc.copyPath%"
+        "command": "mssqlCluster.copyPath",
+        "title": "%mssqlCluster.copyPath%"
       }
     ],
     "outputChannels": [
@@ -160,60 +160,60 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "bdc.uploadFiles",
+          "command": "mssqlCluster.uploadFiles",
           "when": "false"
         },
         {
-          "command": "bdc.mkdir",
+          "command": "mssqlCluster.mkdir",
           "when": "false"
         },
         {
-          "command": "bdc.deleteFiles",
+          "command": "mssqlCluster.deleteFiles",
           "when": "false"
         },
         {
-          "command": "bdc.previewFile",
+          "command": "mssqlCluster.previewFile",
           "when": "false"
         },
         {
-          "command": "bdc.saveFile",
+          "command": "mssqlCluster.saveFile",
           "when": "false"
         },
         {
-          "command": "bdc.copyPath",
+          "command": "mssqlCluster.copyPath",
           "when": "false"
         }
       ],
       "objectExplorer/item/context": [
         {
-          "command": "bdc.uploadFiles",
-          "when": "nodeType=~/^bdc/ && nodeType != bdc:message && nodeType != bdc:file",
-          "group": "1bdc@1"
+          "command": "mssqlCluster.uploadFiles",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "group": "1mssqlCluster@1"
         },
         {
-          "command": "bdc.mkdir",
-          "when": "nodeType=~/^bdc/ && nodeType != bdc:message && nodeType != bdc:file",
-          "group": "1bdc@1"
+          "command": "mssqlCluster.mkdir",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "group": "1mssqlCluster@1"
         },
         {
-          "command": "bdc.saveFile",
-          "when": "nodeType == bdc:file",
-          "group": "1bdc@1"
+          "command": "mssqlCluster.saveFile",
+          "when": "nodeType == mssqlCluster:file",
+          "group": "1mssqlCluster@1"
         },
         {
-          "command": "bdc.previewFile",
-          "when": "nodeType == bdc:file",
-          "group": "1bdc@2"
+          "command": "mssqlCluster.previewFile",
+          "when": "nodeType == mssqlCluster:file",
+          "group": "1mssqlCluster@2"
         },
         {
-          "command": "bdc.copyPath",
-          "when": "nodeType=~/^bdc/ && nodeType != bdc:connection && nodeType != bdc:message",
-          "group": "1bdc@3"
+          "command": "mssqlCluster.copyPath",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "group": "1mssqlCluster@3"
         },
         {
-          "command": "bdc.deleteFiles",
-          "when": "nodeType=~/^bdc/ && viewItem != bdc:connection && nodeType != bdc:message",
-          "group": "1bdc@4"
+          "command": "mssqlCluster.deleteFiles",
+          "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "group": "1mssqlCluster@4"
         }
       ]
     },
