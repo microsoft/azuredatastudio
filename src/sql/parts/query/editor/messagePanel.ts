@@ -326,11 +326,11 @@ class MessageRenderer implements IRenderer {
 
 		if (templateId === TemplateIds.MESSAGE) {
 			$('div.time-stamp').appendTo(container);
-			const message = $('div.message').appendTo(container).getHTMLElement();
+			const message = $('div.message').style('white-space', 'pre').appendTo(container).getHTMLElement();
 			return { message };
 		} else if (templateId === TemplateIds.BATCH) {
 			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
-			const message = $('div.batch-start').appendTo(container).getHTMLElement();
+			const message = $('div.batch-start').style('white-space', 'pre').appendTo(container).getHTMLElement();
 			return { message, timeStamp };
 		} else if (templateId === TemplateIds.ERROR) {
 			$('div.time-stamp').appendTo(container);
