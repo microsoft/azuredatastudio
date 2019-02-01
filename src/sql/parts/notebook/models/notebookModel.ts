@@ -44,6 +44,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _contextsChangedEmitter = new Emitter<void>();
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	private _kernelsChangedEmitter = new Emitter<nb.IKernelSpec>();
+	private _layoutChanged = new Emitter<void>();
 	private _inErrorState: boolean = false;
 	private _clientSessions: IClientSession[] = [];
 	private _activeClientSession: IClientSession;
@@ -55,7 +56,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
-	private onErrorEmitter = new Emitter<INotification>();
+	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
@@ -81,6 +82,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._kernelDisplayNameToConnectionProviderIds.set(kernel.name, kernel.connectionProviderIds);
 			this._kernelDisplayNameToNotebookProviderIds.set(kernel.name, kernel.notebookProvider);
 		});
+		if (this.notebookOptions.layoutChanged) {
+			this.notebookOptions.layoutChanged(() => this._layoutChanged.fire());
+		}
 		this._defaultKernel = notebookOptions.defaultKernel;
 	}
 
@@ -139,6 +143,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._kernelsChangedEmitter.event;
 	}
 
+	public get layoutChanged(): Event<void> {
+		return this._layoutChanged.event;
+	}
+
 	public get defaultKernel(): nb.IKernelSpec {
 		return this._defaultKernel;
 	}
@@ -178,7 +186,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public get onError(): Event<INotification> {
-		return this.onErrorEmitter.event;
+		return this._onErrorEmitter.event;
 	}
 
 	public get trustedMode(): boolean {
@@ -348,7 +356,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private notifyError(error: string): void {
-		this.onErrorEmitter.fire({ message: error, severity: Severity.Error });
+		this._onErrorEmitter.fire({ message: error, severity: Severity.Error });
 	}
 
 	public backgroundStartSession(): void {
