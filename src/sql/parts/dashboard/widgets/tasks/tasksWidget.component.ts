@@ -71,6 +71,8 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 		let tasksConfig = this._config.widget[selector] as Array<string | ITask>;
 		let tasks = TaskRegistry.getTasks();
 
+		// disable filter temporarily in order to show all tasks registered.
+		/*
 		if (types.isArray(tasksConfig) && tasksConfig.length > 0) {
 			tasks = tasksConfig.map(i => {
 				if (types.isString(i)) {
@@ -85,6 +87,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 				return undefined;
 			}).filter(i => !!i);
 		}
+		*/
 
 		this._tasks = tasks.map(i => MenuRegistry.getCommand(i)).filter(v => !!v);
 	}

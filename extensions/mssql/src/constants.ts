@@ -16,6 +16,7 @@ export const mssqlClusterProviderName = 'mssqlCluster';
 export const hadoopKnoxEndpointName = 'Knox';
 export const protocolVersion = '1.0';
 export const hostPropName = 'host';
+export const SERVER = 'server';
 export const userPropName = 'user';
 export const knoxPortPropName = 'knoxport';
 export const passwordPropName = 'password';
@@ -58,3 +59,28 @@ export enum MssqlClusterItems {
 export enum MssqlClusterItemsSubType {
 	Spark = 'mssqlCluster:spark'
 }
+
+export enum HdfsItemsSubType {
+    Spark = 'hdfs:spark'
+}
+
+// CONFIG VALUES ///////////////////////////////////////////////////////////
+export const extensionOutputChannel = 'SQL Server 2019 Preview';
+export const configLogDebugInfo = 'logDebugInfo';
+
+// DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
+export const hadoopKnoxProviderName = 'HADOOP_KNOX';
+export const clusterPropName = 'clustername';
+export const outputChannelName = 'dataManagement';
+
+// SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
+export const livySubmitSparkJobCommand = 'livy.cmd.submitSparkJob';
+export const livySubmitSparkJobFromFileCommand = 'livy.cmd.submitFileToSparkJob';
+export const livySubmitSparkJobTask = 'livy.task.submitSparkJob';
+export const livyOpenSparkHistory = 'livy.task.openSparkHistory';
+export const livyOpenYarnHistory = 'livy.task.openYarnHistory';
+export const livySubmitPath = '/gateway/default/livy/v1/batches';
+export const livyTimeInMSForCheckYarnApp = 1000;
+export const livyRetryTimesForCheckYarnApp = 20;
+export const sparkJobFileSelectorButtonWidth = '30px';
+export const sparkJobFileSelectorButtonHeight = '30px';

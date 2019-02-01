@@ -80,7 +80,7 @@ let defaultVal = [
 			'tasks-widget': [{ name: 'restore', when: '!mssql:iscloud' }, 'configureDashboard', 'newQuery']
 		},
 		gridItemConfig: {
-			sizex: 1,
+			sizex: 3,
 			sizey: 1
 		}
 	},

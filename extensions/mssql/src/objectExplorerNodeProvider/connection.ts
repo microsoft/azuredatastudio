@@ -14,7 +14,6 @@ import * as constants from '../constants';
 import * as LocalizedConstants from '../localizedConstants';
 import * as utils from '../utils';
 import { IFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
-import { IEndpoint } from './objectExplorerNodeProvider';
 
 function appendIfExists(uri: string, propName: string, propValue: string): string {
 	if (propValue) {
@@ -23,12 +22,7 @@ function appendIfExists(uri: string, propName: string, propValue: string): strin
 	return uri;
 }
 
-interface IValidationResult {
-	isValid: boolean;
-	errors: string;
-}
-
-export class Connection {
+export class SqlClusterConnection {
 	private _host: string;
 	private _knoxPort: string;
 
@@ -57,7 +51,7 @@ export class Connection {
 
 	public async tryConnect(factory?: FileSourceFactory): Promise<sqlops.ConnectionInfoSummary> {
 		let fileSource = this.createHdfsFileSource(factory, {
-			timeout: this.connecttimeout
+			timeout: this.connectTimeout
 		});
 		let summary: sqlops.ConnectionInfoSummary = undefined;
 		try {
@@ -133,7 +127,7 @@ export class Connection {
 	 */
 	private ensureHostAndPort(): void {
 		this._host = this.connectionInfo.options[constants.hostPropName];
-		this._knoxPort = Connection.getKnoxPortOrDefault(this.connectionInfo);
+		this._knoxPort = SqlClusterConnection.getKnoxPortOrDefault(this.connectionInfo);
 		// determine whether the host has either a ',' or ':' in it
 		this.setHostAndPort(',');
 		this.setHostAndPort(':');
@@ -172,7 +166,7 @@ export class Connection {
 		return port;
 	}
 
-	public get connecttimeout(): number {
+	public get connectTimeout(): number {
 		let timeoutSeconds: number = this.connectionInfo.options['connecttimeout'];
 		if (!timeoutSeconds) {
 			timeoutSeconds = constants.hadoopConnectionTimeoutSeconds;
@@ -189,23 +183,15 @@ export class Connection {
 		return this.connectionInfo.options[constants.groupIdName];
 	}
 
-	public async isMatch(connectionInfo: sqlops.ConnectionInfo): Promise<boolean> {
+	public isMatch(connectionInfo: sqlops.ConnectionInfo): boolean {
 		if (!connectionInfo) {
 			return false;
 		}
-		let profile = connectionInfo as sqlops.IConnectionProfile;
-		if (profile) {
-			let result: IEndpoint = await utils.getClusterEndpoint(profile.id, constants.hadoopKnoxEndpointName);
-			if (result === undefined || !result.ipAddress || !result.port) {
-				return false;
-			}
-			return connectionInfo.options.groupId === this.groupId
-				&& result.ipAddress === this.host
-				&& String(result.port).startsWith(this.knoxport)
-				&& String(result.port).endsWith(this.knoxport);
-				// TODO: enable the user check when the unified user is used
-				//&& connectionInfo.options.user === this.user;
-		}
+		let otherConnection = new SqlClusterConnection(connectionInfo);
+		return otherConnection.groupId === this.groupId
+			&& otherConnection.host === this.host
+			&& otherConnection.knoxport === `${this.knoxport}`
+			&& otherConnection.user === this.user;
 	}
 
 	public createHdfsFileSource(factory?: FileSourceFactory, additionalRequestParams?: IRequestParams): IFileSource {
@@ -228,4 +214,19 @@ export class Connection {
 		}
 		return factory.createHdfsFileSource(options);
 	}
+
+	public async getCredential(): Promise<void> {
+        try {
+            let credentials = await sqlops.connection.getCredentials(this.connectionId);
+            if (credentials) {
+                this.connectionInfo.options = Object.assign(this.connectionInfo.options, credentials);
+            } else {
+                // TODO should pop the connectionDialog like click Manage contextmenu.
+            }
+        } catch (error) {
+            let another = error;
+            // swallow this as either it was integrated auth or we will fail later with login failed,
+            // which is a good error that makes sense to the user
+        }
+    }
 }

@@ -29,7 +29,8 @@
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "^0.0.15",
     "vscode-nls": "^4.0.0",
-    "webhdfs": "^1.1.1"
+    "webhdfs": "^1.1.1",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {},
   "contributes": {
@@ -68,6 +69,38 @@
       {
         "command": "mssqlCluster.copyPath",
         "title": "%mssqlCluster.copyPath%"
+      },
+      {
+        "command": "livy.cmd.submitSparkJob",
+        "title": "%title.submitSparkJob%"
+      },
+      {
+        "command": "livy.task.submitSparkJob",
+        "title": "%title.newSparkJob%",
+        "icon": {
+          "dark": "resources/dark/new_spark_job_inverse.svg",
+          "light": "resources/light/new_spark_job.svg"
+        }
+      },
+      {
+        "command": "livy.task.openSparkHistory",
+        "title": "%title.openSparkHistory%",
+        "icon": {
+          "dark": "resources/dark/new_spark_job_inverse.svg",
+          "light": "resources/light/new_spark_job.svg"
+        }
+      },
+      {
+        "command": "livy.task.openYarnHistory",
+        "title": "%title.openYarnHistory%",
+        "icon": {
+          "dark": "resources/light/hadoop.svg",
+          "light": "resources/light/hadoop.svg"
+        }
+      },
+      {
+        "command": "livy.cmd.submitFileToSparkJob",
+        "title": "%title.submitSparkJob%"
       }
     ],
     "outputChannels": [
@@ -184,6 +217,14 @@
         {
           "command": "mssqlCluster.copyPath",
           "when": "false"
+        },
+        {
+          "command": "livy.cmd.submitFileToSparkJob",
+          "when": "false"
+        },
+        {
+            "command": "livy.task.submitSparkJob",
+            "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -216,6 +257,16 @@
           "command": "mssqlCluster.deleteFiles",
           "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
           "group": "1mssqlCluster@4"
+        },
+        {
+          "command": "livy.cmd.submitSparkJob",
+          "when": "nodeType && nodeType == mssqlCluster:connection",
+          "group": "1mssqlCluster@5"
+        },
+        {
+          "command": "livy.cmd.submitFileToSparkJob",
+          "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
+          "group": "1mssqlCluster@6"
         }
       ]
     },

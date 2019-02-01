@@ -21,7 +21,7 @@ import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
 import * as LocalizedConstants from '../localizedConstants';
 import * as utils from '../utils';
-import { Connection } from './connection';
+import { SqlClusterConnection } from './connection';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
@@ -376,7 +376,7 @@ export class ConnectTask {
 	}
 
 	private createFromProfile(profile: sqlops.IConnectionProfile): Promise<void> {
-		let connection = new Connection(profile);
+		let connection = new SqlClusterConnection(profile);
 		if (profile.providerName === constants.mssqlClusterProviderName && connection.host) {
 			// TODO need to get the actual port and auth to be used since this will be non-default
 			// in future versions
