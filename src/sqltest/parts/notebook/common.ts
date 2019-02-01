@@ -38,7 +38,11 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	get kernelsChanged(): Event<nb.IKernelSpec> {
 		throw new Error('method not implemented.');
-	} get defaultKernel(): nb.IKernelSpec {
+	}
+	get layoutChanged(): Event<void> {
+		throw new Error('method not implemented.');
+	}
+	get defaultKernel(): nb.IKernelSpec {
 		throw new Error('method not implemented.');
 	}
 	get contextsChanged(): Event<void> {

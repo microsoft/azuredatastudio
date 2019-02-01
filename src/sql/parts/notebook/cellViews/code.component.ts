@@ -142,6 +142,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
 		}));
+		this._register(this.model.layoutChanged(this.layout, this));
 		this.layout();
 	}
 
