@@ -26,6 +26,10 @@ export const SERVICE_ID = 'ObjectExplorerService';
 
 export const IObjectExplorerService = createDecorator<IObjectExplorerService>(SERVICE_ID);
 
+export interface NodeExpandInfoWithProviderId extends sqlops.ObjectExplorerExpandInfo {
+	providerId: string;
+}
+
 export interface IObjectExplorerService {
 	_serviceBrand: any;
 
@@ -45,12 +49,14 @@ export interface IObjectExplorerService {
 
 	onSessionDisconnected(handle: number, sessionResponse: sqlops.ObjectExplorerSession);
 
-	onNodeExpanded(handle: number, sessionResponse: sqlops.ObjectExplorerExpandInfo);
+	onNodeExpanded(sessionResponse: NodeExpandInfoWithProviderId);
 
 	/**
 	 * Register a ObjectExplorer provider
 	 */
 	registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void;
+
+	registerNodeProvider(expander: sqlops.ObjectExplorerNodeProvider): void;
 
 	getObjectExplorerNode(connection: IConnectionProfile): TreeNode;
 
@@ -83,6 +89,8 @@ export interface IObjectExplorerService {
 	*/
 	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 
+	getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile;
+
 	getSession(sessionId: string): sqlops.ObjectExplorerSession;
 
 	providerRegistered(providerId: string): boolean;
@@ -91,10 +99,11 @@ export interface IObjectExplorerService {
 interface SessionStatus {
 	nodes: { [nodePath: string]: NodeStatus };
 	connection: ConnectionProfile;
+	expandNodeTimer?: number;
 }
 
 interface NodeStatus {
-	expandEmitter: Emitter<sqlops.ObjectExplorerExpandInfo>;
+	expandEmitter: Emitter<NodeExpandInfoWithProviderId>;
 }
 
 export interface ObjectExplorerNodeEventArgs {
@@ -107,6 +116,14 @@ export interface NodeInfoWithConnection {
 	nodeInfo: sqlops.NodeInfo;
 }
 
+export interface TopLevelChildrenPath {
+	providerId: string;
+	supportedProviderId: string;
+	groupingId: number;
+	path: string[];
+	providerObject: sqlops.ObjectExplorerNodeProvider | sqlops.ObjectExplorerProvider;
+}
+
 export class ObjectExplorerService implements IObjectExplorerService {
 
 	public _serviceBrand: any;
@@ -114,6 +131,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private _disposables: IDisposable[] = [];
 
 	private _providers: { [handle: string]: sqlops.ObjectExplorerProvider; } = Object.create(null);
+
+	private _nodeProviders: { [handle: string]: sqlops.ObjectExplorerNodeProvider[]; } = Object.create(null);
 
 	private _activeObjectExplorerNodes: { [id: string]: TreeNode };
 	private _sessions: { [sessionId: string]: SessionStatus };
@@ -133,6 +152,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._activeObjectExplorerNodes = {};
 		this._sessions = {};
 		this._providers = {};
+		this._nodeProviders = {};
 		this._onSelectionOrFocusChange = new Emitter<void>();
 	}
 
@@ -179,7 +199,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when expanded node response is ready
 	 */
-	public onNodeExpanded(handle: number, expandResponse: sqlops.ObjectExplorerExpandInfo) {
+	public onNodeExpanded(expandResponse: NodeExpandInfoWithProviderId) {
 
 		if (expandResponse.errorMessage) {
 			error(expandResponse.errorMessage);
@@ -202,28 +222,43 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	/**
 	 * Gets called when session is created
 	 */
-	public onSessionCreated(handle: number, session: sqlops.ObjectExplorerSession) {
-		let connection: ConnectionProfile = undefined;
-		let errorMessage: string = undefined;
-		if (this._sessions[session.sessionId]) {
-			connection = this._sessions[session.sessionId].connection;
+	public onSessionCreated(handle: number, session: sqlops.ObjectExplorerSession): void {
+		this.handleSessionCreated(session);
+	}
 
-			if (session && session.success && session.rootNode) {
-				let server = this.toTreeNode(session.rootNode, null);
-				server.connection = connection;
-				server.session = session;
-				this._activeObjectExplorerNodes[connection.id] = server;
-			} else {
-				errorMessage = session && session.errorMessage ? session.errorMessage :
-					nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
-				error(errorMessage);
+	private async handleSessionCreated(session: sqlops.ObjectExplorerSession): Promise<void> {
+		try {
+			let connection: ConnectionProfile = undefined;
+			let errorMessage: string = undefined;
+			if (this._sessions[session.sessionId]) {
+				connection = this._sessions[session.sessionId].connection;
+
+				if (session && session.success && session.rootNode) {
+					let server = this.toTreeNode(session.rootNode, null);
+					server.connection = connection;
+					server.session = session;
+					this._activeObjectExplorerNodes[connection.id] = server;
+				}
+				else {
+					errorMessage = session && session.errorMessage ? session.errorMessage :
+						nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
+					error(errorMessage);
+				}
+				// Send on session created about the session to all node providers so they can prepare for node expansion
+				let nodeProviders = this._nodeProviders[connection.providerName];
+				if (nodeProviders) {
+					let promises: Thenable<boolean>[] = nodeProviders.map(p => p.handleSessionOpen(session));
+					await Promise.all(promises);
+				}
+			}
+			else {
+				warn(`cannot find session ${session.sessionId}`);
 			}
 
-		} else {
-			warn(`cannot find session ${session.sessionId}`);
+			this.sendUpdateNodeEvent(connection, errorMessage);
+		} catch (error) {
+			warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
 		}
-
-		this.sendUpdateNodeEvent(connection, errorMessage);
 	}
 
 	/**
@@ -304,7 +339,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			let provider = this._providers[providerId];
 			if (provider) {
 				TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
-				this.expandOrRefreshNode(provider, session, nodePath).then(result => {
+				this.expandOrRefreshNode(providerId, session, nodePath).then(result => {
 					resolve(result);
 				}, error => {
 					reject(error);
@@ -314,7 +349,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		});
 	}
-	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProvider, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
+
+	private callExpandOrRefreshFromProvider(provider: sqlops.ObjectExplorerProviderBase, nodeInfo: sqlops.ExpandNodeInfo, refresh: boolean = false) {
 		if (refresh) {
 			return provider.refreshNode(nodeInfo);
 		} else {
@@ -323,7 +359,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	private expandOrRefreshNode(
-		provider: sqlops.ObjectExplorerProvider,
+		providerId: string,
 		session: sqlops.ObjectExplorerSession,
 		nodePath: string,
 		refresh: boolean = false): Thenable<sqlops.ObjectExplorerExpandInfo> {
@@ -333,29 +369,60 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				let newRequest = false;
 				if (!self._sessions[session.sessionId].nodes[nodePath]) {
 					self._sessions[session.sessionId].nodes[nodePath] = {
-						expandEmitter: new Emitter<sqlops.ObjectExplorerExpandInfo>()
+						expandEmitter: new Emitter<NodeExpandInfoWithProviderId>()
 					};
 					newRequest = true;
 				}
-				self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event(((expandResult) => {
-					if (expandResult && !expandResult.errorMessage) {
-						resolve(expandResult);
+				let provider = this._providers[providerId];
+				if (provider) {
+					let resultMap: Map<string, sqlops.ObjectExplorerExpandInfo> = new Map<string, sqlops.ObjectExplorerExpandInfo>();
+					let allProviders: sqlops.ObjectExplorerProviderBase[] = [provider];
+
+					let nodeProviders = this._nodeProviders[providerId];
+					if (nodeProviders) {
+						nodeProviders = nodeProviders.sort((a, b) => a.group.toLowerCase().localeCompare(b.group.toLowerCase()));
+						allProviders.push(...nodeProviders);
 					}
-					else {
-						reject(expandResult ? expandResult.errorMessage : undefined);
-					}
-					if (newRequest) {
-						delete self._sessions[session.sessionId].nodes[nodePath];
-					}
-				}));
-				if (newRequest) {
-					self.callExpandOrRefreshFromProvider(provider, {
-						sessionId: session.sessionId,
-						nodePath: nodePath
-					}, refresh).then(result => {
-					}, error => {
-						reject(error);
+
+					self._sessions[session.sessionId].nodes[nodePath].expandEmitter.event((expandResult) => {
+						if (expandResult && expandResult.providerId) {
+							resultMap.set(expandResult.providerId, expandResult);
+						} else {
+							console.log('OE provider returns empty result or providerId');
+						}
+
+						// When get all responses from all providers, merge results
+						if (resultMap.size === allProviders.length) {
+							resolve(self.mergeResults(allProviders, resultMap, nodePath));
+
+							// Have to delete it after get all reponses otherwise couldn't find session for not the first response
+							if (newRequest) {
+								delete self._sessions[session.sessionId].nodes[nodePath];
+							}
+						}
 					});
+					if (newRequest) {
+						allProviders.forEach(provider => {
+							TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
+							self.callExpandOrRefreshFromProvider(provider, {
+								sessionId: session.sessionId,
+								nodePath: nodePath
+							}, refresh).then(isExpanding => {
+								if (!isExpanding) {
+									// The provider stated it's not going to expand the node, therefore do not need to track when merging results
+									let emptyResult: sqlops.ObjectExplorerExpandInfo = {
+										errorMessage: undefined,
+										nodePath: nodePath,
+										nodes: [],
+										sessionId: session.sessionId
+									};
+									resultMap.set(provider.providerId, emptyResult);
+								}
+							}, error => {
+								reject(error);
+							});
+						});
+					}
 				}
 			} else {
 				reject(`session cannot find to expand node. id: ${session.sessionId} nodePath: ${nodePath}`);
@@ -363,11 +430,48 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		});
 	}
 
+	private mergeResults(allProviders: sqlops.ObjectExplorerProviderBase[], resultMap: Map<string, sqlops.ObjectExplorerExpandInfo>, nodePath: string): sqlops.ObjectExplorerExpandInfo {
+		let finalResult: sqlops.ObjectExplorerExpandInfo;
+		let allNodes: sqlops.NodeInfo[] = [];
+		let errorNode: sqlops.NodeInfo = {
+			nodePath: nodePath,
+			label: 'Error',
+			errorMessage: '',
+			nodeType: 'folder',
+			isLeaf: true,
+			nodeSubType: '',
+			nodeStatus: '',
+			metadata: null
+		};
+
+		for (let provider of allProviders) {
+			if (resultMap.has(provider.providerId)) {
+				let result = resultMap.get(provider.providerId);
+				if (result) {
+					if (!result.errorMessage) {
+						finalResult = result;
+						allNodes = allNodes.concat(result.nodes);
+					} else {
+						errorNode.errorMessage += provider.providerId + 'returns ' + result.errorMessage + ' ';
+					}
+				}
+			}
+		}
+		if (finalResult) {
+			if (errorNode.errorMessage && errorNode.errorMessage.length > 0) {
+				allNodes = allNodes.concat([errorNode]);
+			}
+
+			finalResult.nodes = allNodes;
+		}
+		return finalResult;
+	}
+
 	public refreshNode(providerId: string, session: sqlops.ObjectExplorerSession, nodePath: string): Thenable<sqlops.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
 			TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
-			return this.expandOrRefreshNode(provider, session, nodePath, true);
+			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}
 		return Promise.resolve(undefined);
 	}
@@ -382,7 +486,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						sessionId: session.sessionId,
 						nodes: [],
 						nodePath: nodePath,
-						errorMessage: undefined
+						errorMessage: undefined,
+						providerId: providerId
 					});
 				}
 			});
@@ -390,6 +495,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		let provider = this._providers[providerId];
 		if (provider) {
+			let nodeProviders = this._nodeProviders[providerId];
+			if (nodeProviders) {
+				for (let nodeProvider of nodeProviders) {
+					nodeProvider.handleSessionClose({
+						sessionId: session ? session.sessionId : undefined
+					});
+				}
+			}
 			return provider.closeSession({
 				sessionId: session ? session.sessionId : undefined
 			});
@@ -403,6 +516,12 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 */
 	public registerProvider(providerId: string, provider: sqlops.ObjectExplorerProvider): void {
 		this._providers[providerId] = provider;
+	}
+
+	public registerNodeProvider(nodeProvider: sqlops.ObjectExplorerNodeProvider): void {
+		let nodeProviders = this._nodeProviders[nodeProvider.supportedProviderId] || [];
+		nodeProviders.push(nodeProvider);
+		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
 	}
 
 	public dispose(): void {
@@ -544,7 +663,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	/**
-	 * For Testing purpose only. Get the context menu actions for an object explorer node
+	* For Testing purpose only. Get the context menu actions for an object explorer node
 	*/
 	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this.getTreeNode(connectionId, nodePath).then(node => {
@@ -566,6 +685,10 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			await treeNode.setExpandedState(TreeItemCollapsibleState.Expanded);
 		}
 		return treeNode;
+	}
+
+	public getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile {
+		return this._sessions[sessionId].connection.toIConnectionProfile();
 	}
 
 	private async setNodeExpandedState(treeNode: TreeNode, expandedState: TreeItemCollapsibleState): Promise<void> {

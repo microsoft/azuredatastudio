@@ -4,11 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as sqlops from 'sqlops';
+
 import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
-import {workspace, WorkspaceConfiguration} from 'vscode';
+import { workspace, WorkspaceConfiguration } from 'vscode';
 import * as findRemoveSync from 'find-remove';
+import { IEndpoint } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import * as constants from './constants';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -27,56 +31,53 @@ export function getAppDataPath() {
 	}
 }
 
-export function removeOldLogFiles(prefix: string) : JSON {
-	return findRemoveSync(getDefaultLogDir(), {prefix: `${prefix}_`,  age: {seconds: getConfigLogRetentionSeconds()}, limit: getConfigLogFilesRemovalLimit()});
+export function removeOldLogFiles(prefix: string): JSON {
+	return findRemoveSync(getDefaultLogDir(), { prefix: `${prefix}_`, age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
-export function getConfiguration(config: string = extensionConfigSectionName) : WorkspaceConfiguration {
+export function getConfiguration(config: string = extensionConfigSectionName): WorkspaceConfiguration {
 	return workspace.getConfiguration(extensionConfigSectionName);
 }
 
-export function getConfigLogFilesRemovalLimit() : number {
+export function getConfigLogFilesRemovalLimit(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogFilesRemovalLimit]).toFixed(0));
 	}
-	else
-	{
+	else {
 		return undefined;
 	}
 }
 
-export function getConfigLogRetentionSeconds() : number {
+export function getConfigLogRetentionSeconds(): number {
 	let config = getConfiguration();
 	if (config) {
 		return Number((config[configLogRetentionMinutes] * 60).toFixed(0));
 	}
-	else
-	{
+	else {
 		return undefined;
 	}
 }
 
-export function getConfigTracingLevel() : string {
+export function getConfigTracingLevel(): string {
 	let config = getConfiguration();
 	if (config) {
 		return config[configTracingLevel];
 	}
-	else
-	{
+	else {
 		return undefined;
 	}
 }
 
-export function getDefaultLogDir() : string {
-	return path.join(process.env['VSCODE_LOGS'], '..', '..','mssql');
+export function getDefaultLogDir(): string {
+	return path.join(process.env['VSCODE_LOGS'], '..', '..', 'mssql');
 }
 
-export function getDefaultLogFile(prefix: string, pid: number) : string {
+export function getDefaultLogFile(prefix: string, pid: number): string {
 	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
 }
 
-export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string) : string [] {
+export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string): string[] {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
 	let logFile = getDefaultLogFile(prefix, process.pid);
@@ -168,4 +169,38 @@ export function verifyPlatform(): Thenable<boolean> {
 	} else {
 		return Promise.resolve(true);
 	}
+}
+
+export function getErrorMessage(error: Error | string): string {
+	return (error instanceof Error) ? error.message : error;
+}
+
+export function isObjectExplorerContext(object: any): object is sqlops.ObjectExplorerContext {
+	return 'connectionProfile' in object && 'isConnectionNode' in object;
+}
+
+export function getUserHome(): string {
+	return process.env.HOME || process.env.USERPROFILE;
+}
+
+export async function getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
+
+	let serverInfo: sqlops.ServerInfo = await sqlops.connection.getServerInfo(profileId);
+	if (!serverInfo || !serverInfo.options) {
+		return undefined;
+	}
+	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) {
+		return undefined;
+	}
+	let index = endpoints.findIndex(ep => ep.serviceName === serviceName);
+	if (index === -1) {
+		return undefined;
+	}
+	let clusterEndpoint: IEndpoint = {
+		serviceName: endpoints[index].serviceName,
+		ipAddress: endpoints[index].ipAddress,
+		port: endpoints[index].port
+	};
+	return clusterEndpoint;
 }

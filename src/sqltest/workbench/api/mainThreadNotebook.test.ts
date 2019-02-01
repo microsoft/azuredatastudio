@@ -18,6 +18,7 @@ import { NotebookService } from 'sql/workbench/services/notebook/common/notebook
 import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -31,7 +32,7 @@ suite('MainThreadNotebook Tests', () => {
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService);
+		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, undefined, undefined, undefined, undefined, new ContextKeyServiceStub());
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
 		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object);
 	});

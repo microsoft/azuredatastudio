@@ -31,6 +31,12 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				border-width: 1px;
 			}
 		`);
+		// toolbar
+		collector.addRule(`
+			code-component .toolbar {
+				background-color: ${inactiveBorder};
+			}
+		`);
 	}
 
 	// Styling with Outline color (e.g. high contrast theme)

@@ -10,7 +10,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { BaseTextEditor, IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -35,6 +35,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _dimension: DOM.Dimension;
 	private _config: editorCommon.IConfiguration;
 	private _minHeight: number;
+	private _selected: boolean;
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -62,8 +63,6 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.inDiffEditor = true;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
-			options.renderWhitespace = 'none';
-			options.wordWrap = 'on';
 			options.renderIndentGuides = false;
 			options.rulers = [];
 			options.glyphMargin = true;
@@ -73,6 +72,9 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.overviewRulerLanes = 0;
 			options.overviewRulerBorder = false;
 			options.hideCursorInOverviewRuler = true;
+			if (!this._selected) {
+				options.renderLineHighlight = 'none';
+			}
 		}
 		return options;
 	}
@@ -139,5 +141,20 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public setMinimumHeight(height: number) : void {
 		this._minHeight = height;
+	}
+
+	public toggleEditorSelected(selected: boolean): void {
+		this._selected = selected;
+		this.refreshEditorConfguration();
+	}
+
+	private refreshEditorConfguration(configuration = this.configurationService.getValue<IEditorConfiguration>(this.getResource())): void {
+		if (!this.getControl()) {
+			return;
+		}
+
+		const editorConfiguration = this.computeConfiguration(configuration);
+		let editorSettingsToApply = editorConfiguration;
+		this.getControl().updateOptions(editorSettingsToApply);
 	}
 }

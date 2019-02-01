@@ -18,13 +18,20 @@
     "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-mssql syntaxes/SQL.plist ./syntaxes/sql.tmLanguage.json"
   },
   "dependencies": {
+    "bytes": "^3.1.0",
+    "clipboardy": "^1.2.3",
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.2.15",
+    "error-ex": "^1.3.2",
+    "figures": "^2.0.0",
     "opener": "^1.4.3",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
-    "vscode-extension-telemetry": "^0.0.15"
+    "stream-meter": "^1.0.4",
+    "uri-js": "^4.2.2",
+    "vscode-extension-telemetry": "^0.0.15",
+    "vscode-nls": "^4.0.0",
+    "webhdfs": "^1.1.1"
   },
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "contributes": {
     "languages": [
       {
@@ -35,6 +42,32 @@
         "aliases": [
           "SQL"
         ]
+      }
+    ],
+    "commands": [
+      {
+        "command": "mssqlCluster.uploadFiles",
+        "title": "%mssqlCluster.uploadFiles%"
+      },
+      {
+        "command": "mssqlCluster.mkdir",
+        "title": "%mssqlCluster.mkdir%"
+      },
+      {
+        "command": "mssqlCluster.deleteFiles",
+        "title": "%mssqlCluster.deleteFiles%"
+      },
+      {
+        "command": "mssqlCluster.previewFile",
+        "title": "%mssqlCluster.previewFile%"
+      },
+      {
+        "command": "mssqlCluster.saveFile",
+        "title": "%mssqlCluster.saveFile%"
+      },
+      {
+        "command": "mssqlCluster.copyPath",
+        "title": "%mssqlCluster.copyPath%"
       }
     ],
     "outputChannels": [
@@ -125,6 +158,66 @@
           "default": false
         }
       }
+    },
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "mssqlCluster.uploadFiles",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.mkdir",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.deleteFiles",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.previewFile",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.saveFile",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.copyPath",
+          "when": "false"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "mssqlCluster.uploadFiles",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "group": "1mssqlCluster@1"
+        },
+        {
+          "command": "mssqlCluster.mkdir",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:message && nodeType != mssqlCluster:file",
+          "group": "1mssqlCluster@1"
+        },
+        {
+          "command": "mssqlCluster.saveFile",
+          "when": "nodeType == mssqlCluster:file",
+          "group": "1mssqlCluster@1"
+        },
+        {
+          "command": "mssqlCluster.previewFile",
+          "when": "nodeType == mssqlCluster:file",
+          "group": "1mssqlCluster@2"
+        },
+        {
+          "command": "mssqlCluster.copyPath",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "group": "1mssqlCluster@3"
+        },
+        {
+          "command": "mssqlCluster.deleteFiles",
+          "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "group": "1mssqlCluster@4"
+        }
+      ]
     },
     "dashboard": {
       "provider": "MSSQL",

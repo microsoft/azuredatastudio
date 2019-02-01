@@ -7,6 +7,7 @@
 import * as renderers from './renderers';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../models/jsonext';
+import * as tableRenderers from 'sql/parts/notebook/outputs/tableRenderers';
 
 /**
  * A common base class for mime renderers.
@@ -343,6 +344,35 @@ export class RenderedJavaScript extends RenderedCommon {
 		return renderers.renderText({
 			host: this.node,
 			source: 'JavaScript output is disabled in Notebooks'
+		});
+	}
+}
+
+/**
+ * A widget for displaying Data Resource schemas and data.
+ */
+export class RenderedDataResource extends RenderedCommon {
+	/**
+	 * Construct a new rendered data resource widget.
+	 *
+	 * @param options - The options for initializing the widget.
+	 */
+	constructor(options: IRenderMime.IRendererOptions) {
+		super(options);
+		this.addClass('jp-RenderedDataResource');
+	}
+
+	/**
+	 * Render a mime model.
+	 *
+	 * @param model - The mime model to render.
+	 *
+	 * @returns A promise which resolves when rendering is complete.
+	 */
+	render(model: IRenderMime.IMimeModel): Promise<void> {
+		return tableRenderers.renderDataResource({
+			host: this.node,
+			source: JSON.stringify(model.data[this.mimeType])
 		});
 	}
 }

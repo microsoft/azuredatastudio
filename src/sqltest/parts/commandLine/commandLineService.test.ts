@@ -246,7 +246,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.connectIfNotConnected(TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver'), 'connection', true))
 			.returns(() => new Promise<string>((resolve, reject) => { resolve('unused'); }))
 			.verifiable(TypeMoq.Times.once());
-		commandService.setup(c => c.executeCommand('mycommand', TypeMoq.It.is<ConnectionProfile>(p => p.serverName === 'myserver')))
+		commandService.setup(c => c.executeCommand('mycommand', TypeMoq.It.isAnyString()))
 			.returns(() => TPromise.wrap(1))
 			.verifiable(TypeMoq.Times.once());
 		const configurationService = getConfigurationServiceMock(true);

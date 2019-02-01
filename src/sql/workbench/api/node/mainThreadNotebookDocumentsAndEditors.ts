@@ -28,7 +28,8 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -38,6 +39,12 @@ class MainThreadNotebookEditor extends Disposable {
 		super();
 		editor.modelReady.then(model => {
 			this._register(model.contentChanged((e) => this._contentChangedEmitter.fire(e)));
+			this._register(model.kernelChanged((e) => {
+				let changeEvent: NotebookContentChange = {
+					changeType: NotebookChangeType.KernelChanged
+				};
+				this._contentChangedEmitter.fire(changeEvent);
+			}));
 		});
 	}
 
@@ -63,6 +70,10 @@ class MainThreadNotebookEditor extends Disposable {
 
 	public get cells(): ICellModel[] {
 		return this.editor.cells;
+	}
+
+	public get model(): INotebookModel | null {
+		return this.editor.model;
 	}
 
 	public save(): Thenable<boolean> {
@@ -99,6 +110,14 @@ class MainThreadNotebookEditor extends Disposable {
 		// 	this._codeEditor.pushUndoStop();
 		// }
 		return true;
+	}
+
+	public runCell(cell: ICellModel): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+
+		return this.editor.runCell(cell);
 	}
 }
 
@@ -266,7 +285,6 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebookDocumentsAndEditors)
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
-
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
 	private _modelToDisposeMap = new Map<string, IDisposable>();
@@ -308,6 +326,22 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
 	}
+
+	$runCell(id: string, cellUri: UriComponents): TPromise<boolean, any> {
+		// Requires an editor and the matching cell in that editor
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
+		}
+		let uriString = URI.revive(cellUri).toString();
+		let cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+		if (!cell) {
+			return TPromise.wrapError<boolean>(disposed(`TextEditorCell(${uriString})`));
+		}
+
+		return TPromise.wrap(editor.runCell(cell));
+	}
+
 	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
@@ -480,9 +514,15 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			isDirty: e.isDirty,
 			providerId: editor.providerId,
 			providers: editor.providers,
-			uri: editor.uri
+			uri: editor.uri,
+			kernelSpec: this.getKernelSpec(editor)
 		};
 		return changeData;
+	}
+
+	private getKernelSpec(editor: MainThreadNotebookEditor): sqlops.nb.IKernelSpec {
+		let spec = editor && editor.model && editor.model.clientSession ? editor.model.clientSession.cachedKernelSpec : undefined;
+		return spec;
 	}
 
 	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): sqlops.nb.NotebookCell[] {
@@ -497,8 +537,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						metadata: {
 							language: cell.language
 						},
-						source: undefined
-
+						source: undefined,
+						outputs: [...cell.outputs]
 					}
 				});
 			}

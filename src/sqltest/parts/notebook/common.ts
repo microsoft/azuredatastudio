@@ -38,7 +38,11 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	get kernelsChanged(): Event<nb.IKernelSpec> {
 		throw new Error('method not implemented.');
-	} get defaultKernel(): nb.IKernelSpec {
+	}
+	get layoutChanged(): Event<void> {
+		throw new Error('method not implemented.');
+	}
+	get defaultKernel(): nb.IKernelSpec {
 		throw new Error('method not implemented.');
 	}
 	get contextsChanged(): Event<void> {
@@ -62,7 +66,7 @@ export class NotebookModelStub implements INotebookModel {
     changeKernel(displayName: string): void {
         throw new Error('Method not implemented.');
     }
-    changeContext(host: string, connection?: IConnectionProfile): void {
+    changeContext(host: string, connection?: IConnectionProfile): Promise<void> {
         throw new Error('Method not implemented.');
     }
     findCellIndex(cellModel: ICellModel): number {

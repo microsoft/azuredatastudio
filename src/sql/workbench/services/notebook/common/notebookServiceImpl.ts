@@ -17,7 +17,7 @@ import {
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
-import { SessionManager } from 'sql/workbench/services/notebook/common/sessionManager';
+import { SessionManager, noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -30,6 +30,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { SqlSessionManager } from 'sql/workbench/services/notebook/common/sqlSessionManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { sqlNotebooksEnabled } from 'sql/parts/notebook/notebookUtils';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -88,7 +89,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IContextKeyService private _contextKeyService: IContextKeyService
 	) {
 		super();
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
@@ -351,13 +353,13 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private registerBuiltInProvider() {
-		if (!sqlNotebooksEnabled()) {
+		if (!sqlNotebooksEnabled(this._contextKeyService)) {
 			let defaultProvider = new BuiltinProvider();
 			this.registerProvider(defaultProvider.providerId, defaultProvider);
 			notebookRegistry.registerNotebookProvider({
 				provider: defaultProvider.providerId,
 				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				standardKernels: []
+				standardKernels: { name: noKernel, connectionProviderIds: [] }
 			});
 		} else {
 			let sqlProvider = new SqlNotebookProvider(this._instantiationService);
