@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITreeViewDataProvider, ITreeItem as vsITreeItem } from 'vs/workbench/common/views';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionProfile } from 'sqlops';
 
 export interface ITreeComponentItem extends vsITreeItem {
 	checked?: boolean;
@@ -18,6 +18,6 @@ export interface IModelViewTreeViewDataProvider extends ITreeViewDataProvider {
 }
 
 export interface ITreeItem extends vsITreeItem {
-	providerHandle: string;
-	payload: IConnectionProfile; // its possible we will want this to be more generic
+	providerHandle?: string;
+	payload?: IConnectionProfile; // its possible we will want this to be more generic
 }

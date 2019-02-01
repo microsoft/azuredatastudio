@@ -16,6 +16,7 @@ import { IAzureResourceDatabaseService, IAzureResourceDatabaseNode } from './int
 import { AzureResourceDatabase } from './models';
 import { AzureResourceItemType } from '../../../azureResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
+import { generateGuid } from '../../utils';
 
 export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzureResourceTreeDataProvider {
 	public constructor(
@@ -54,8 +55,24 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
 				},
-				collapsibleState: TreeItemCollapsibleState.None,
-				contextValue: AzureResourceItemType.database
+				collapsibleState: TreeItemCollapsibleState.Collapsed,
+				contextValue: AzureResourceItemType.database,
+				payload: {
+					id: generateGuid(),
+					connectionName: undefined,
+					serverName: database.serverFullName,
+					databaseName: database.name,
+					userName: database.loginName,
+					password: '',
+					authenticationType: 'SqlLogin',
+					savePassword: true,
+					groupFullName: '',
+					groupId: '',
+					providerName: 'MSSQL',
+					saveProfile: true,
+					options: {}
+				},
+				providerHandle: 'MSSQL'
 			}
 		});
 	}

@@ -26,6 +26,14 @@ export interface ObjectExplorerCallbacks {
 
 export class TreeNode {
 	/**
+	 * USED BY NEW OE VIEWLET
+	 */
+	public providerHandle: string;
+	/**
+	 * USED BY NEW OE VIEWLET
+	 */
+	public payload: any;
+	/**
 	 * id for TreeNode
 	 */
 	public id: string;

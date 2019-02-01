@@ -499,6 +499,7 @@ export function createApiFactory(
 				nb: nb,
 				AzureResource: sqlExtHostTypes.AzureResource,
 				extensions: extensions,
+				TreeItem: sqlExtHostTypes.TreeItem,
 			};
 		}
 	};

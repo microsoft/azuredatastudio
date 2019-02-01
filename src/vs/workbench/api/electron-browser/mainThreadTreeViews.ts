@@ -7,7 +7,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ExtHostContext, MainThreadTreeViewsShape, ExtHostTreeViewsShape, MainContext, IExtHostContext } from '../node/extHost.protocol';
-import { ITreeViewDataProvider, ITreeItem, IViewsService, ITreeViewer, ViewsRegistry, ICustomViewDescriptor } from 'vs/workbench/common/views';
+import { ITreeViewDataProvider, ITreeItem, IViewsService, ITreeViewer, ViewsRegistry, ICustomViewDescriptor, TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { distinct } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -85,9 +85,10 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 	// {{SQL CARBON EDIT}}
 	private checkForDataExplorer(treeViewId: string): boolean {
 		const viewDescriptor: ICustomViewDescriptor = <ICustomViewDescriptor>ViewsRegistry.getView(treeViewId);
-		if (viewDescriptor.container.id === 'dataExplorer') {
+		if (viewDescriptor.container.id === 'workbench.view.dataExplorer') {
 			const dataProvider = new OETreeViewDataProvider(treeViewId, this._proxy);
 			this.objectExplorerService.registerProvider(treeViewId, dataProvider);
+			dataProvider.registerOnExpandCompleted(e => this.objectExplorerService.onNodeExpanded(undefined, e));
 		}
 		return false;
 	}
@@ -186,6 +187,7 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 
 	protected itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
 	private onExpandComplete = new Emitter<sqlops.ObjectExplorerExpandInfo>();
+	private onSessionCreated = new Emitter<sqlops.ObjectExplorerSession>();
 
 	private sessionId: string;
 
@@ -211,7 +213,11 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 				nodes: e.map(e => {
 					return <sqlops.NodeInfo>{
 						nodePath: e.handle,
-						label: e.label
+						label: e.label,
+						iconType: e.icon,
+						isLeaf: e.collapsibleState === TreeItemCollapsibleState.None,
+						provider: e.providerHandle,
+						payload: e.payload
 					};
 				}),
 				sessionId: this.sessionId

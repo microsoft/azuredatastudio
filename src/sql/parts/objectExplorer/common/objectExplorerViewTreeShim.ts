@@ -13,17 +13,20 @@ import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { IConnectionProfile } from 'sqlops';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
+	_serviceBrand: any;
 	createSession(providerId: string, node: ITreeItem): TPromise<string>;
-	getChildren(sessionId: string, nodePath: string): TPromise<ITreeItem[]>;
+	getChildren(sessionId: string, nodePath: ITreeItem): TPromise<ITreeItem[]>;
 	providerExists(providerId: string): boolean;
 }
 
 export class OEShimService implements IOEShimService {
+	_serviceBrand: any;
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -36,20 +39,46 @@ export class OEShimService implements IOEShimService {
 		return TPromise.wrap(this.oe.createNewSession(providerId, connProfile).then(e => e.sessionId));
 	}
 
-	public getChildren(sessionId: string, nodePath: string): TPromise<ITreeItem[]> {
-		let treeNode = new TreeNode(undefined, undefined, undefined, nodePath, undefined, undefined, undefined, undefined, undefined, undefined);
-		return TPromise.wrap(this.oe.resolveTreeNodeChildren(this.oe.getSession(sessionId), treeNode).then(e => {
+	public getChildren(sessionId: string, node: ITreeItem): TPromise<ITreeItem[]> {
+		let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
+		let profile: IConnectionProfile = node.payload || {
+			providerName: node.providerHandle,
+			authenticationType: undefined,
+			azureTenantId: undefined,
+			connectionName: undefined,
+			databaseName: undefined,
+			groupFullName: undefined,
+			groupId: undefined,
+			id: undefined,
+			options: undefined,
+			password: undefined,
+			savePassword: undefined,
+			saveProfile: undefined,
+			serverName: undefined,
+			userName: undefined,
+		};
+		treeNode.connection = new ConnectionProfile(this.capabilities, profile);
+		return TPromise.wrap(this.oe.resolveTreeNodeChildren({
+			success: undefined,
+			sessionId,
+			rootNode: undefined,
+			errorMessage: undefined
+		}, treeNode).then(e => {
 			return e.map(n => {
 				return <ITreeItem>{
 					parentHandle: n.parent.id,
-					handle: n.id,
-					collapsibleState: n.isExpanded() ? TreeItemCollapsibleState.Expanded : TreeItemCollapsibleState.Collapsed
+					handle: n.nodePath,
+					collapsibleState: n.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+					label: n.label,
+					icon: n.iconType,
+					providerHandle: n.providerHandle || n.getConnectionProfile().providerName,
+					payload: n.payload
 				};
 			});
 		}));
 	}
 
 	public providerExists(providerId: string): boolean {
-		return true;
+		return this.oe.providerRegistered(providerId);
 	}
 }

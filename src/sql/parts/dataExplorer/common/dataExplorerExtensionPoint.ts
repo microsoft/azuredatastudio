@@ -12,18 +12,18 @@ import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from '
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { CustomTreeViewPanel, CustomTreeViewer } from 'vs/workbench/browser/parts/views/customView';
+import { CustomTreeViewPanel/*, CustomTreeViewer*/ } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
+
+import { CustomTreeViewer } from 'sql/workbench/browser/parts/views/customView';
 
 export const DataExplorerViewlet = {
 	DataExplorer: 'dataExplorer'
 };
 export const VIEWLET_ID = 'workbench.view.dataExplorer';
 export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
-
-
 
 interface IUserFriendlyViewDescriptor {
 	id: string;

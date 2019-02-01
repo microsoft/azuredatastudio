@@ -1012,6 +1012,14 @@ declare module 'sqlops' {
 		 * will be used instead.
 		 */
 		iconType?: string | SqlThemeIcon;
+		/**
+		 * USED BY NEW OE VIEWLET
+		 */
+		provider?: string;
+		/**
+		 * USED BY NEW OE VIEWLET
+		 */
+		payload?: any;
 	}
 
 	/**
@@ -2314,6 +2322,11 @@ declare module 'sqlops' {
 	export interface DashboardDocument {
 		profile: IConnectionProfile;
 		serverInfo: ServerInfo;
+	}
+
+	export class TreeItem extends vscode.TreeItem {
+		payload?: IConnectionProfile;
+		providerHandle?: string;
 	}
 
 	export namespace tasks {

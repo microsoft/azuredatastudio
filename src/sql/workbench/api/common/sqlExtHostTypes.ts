@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb } from 'sqlops';
-import { TreeItem } from 'vs/workbench/api/node/extHostTypes';
+import { nb, IConnectionProfile } from 'sqlops';
+import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -311,13 +311,18 @@ export interface ToolbarLayout {
 	orientation: Orientation;
 }
 
-export class TreeComponentItem extends TreeItem {
+export class TreeComponentItem extends vsExtTypes.TreeItem {
 	checked?: boolean;
 }
 
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1
+}
+
+export class TreeItem extends vsExtTypes.TreeItem {
+	payload: IConnectionProfile;
+	providerHandle: string;
 }
 
 export class SqlThemeIcon {
