@@ -19,93 +19,93 @@ import * as Utils from '../utils';
 
 class FireWallFeature extends SqlOpsFeature<any> {
 
-	private static readonly messagesTypes: RPCMessageType[] = [
-		CreateFirewallRuleRequest.type,
-		HandleFirewallRuleRequest.type
-	];
+    private static readonly messagesTypes: RPCMessageType[] = [
+        CreateFirewallRuleRequest.type,
+        HandleFirewallRuleRequest.type
+    ];
 
-	constructor(client: SqlOpsDataClient) {
-		super(client, FireWallFeature.messagesTypes);
-	}
+    constructor(client: SqlOpsDataClient) {
+        super(client, FireWallFeature.messagesTypes);
+    }
 
-	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		Utils.ensure(Utils.ensure(capabilities, 'firewall')!, 'firwall')!.dynamicRegistration = true;
-	}
+    fillClientCapabilities(capabilities: ClientCapabilities): void {
+        Utils.ensure(Utils.ensure(capabilities, 'firewall')!, 'firwall')!.dynamicRegistration = true;
+    }
 
-	initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-	}
+    initialize(capabilities: ServerCapabilities): void {
+        this.register(this.messages, {
+            id: UUID.generateUuid(),
+            registerOptions: undefined
+        });
+    }
 
-	protected registerProvider(options: any): Disposable {
-		const client = this._client;
+    protected registerProvider(options: any): Disposable {
+        const client = this._client;
 
-		let createFirewallRule = (account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> => {
-			return client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
-		};
+        let createFirewallRule = (account: sqlops.Account, firewallruleInfo: sqlops.FirewallRuleInfo): Thenable<sqlops.CreateFirewallRuleResponse> => {
+            return client.sendRequest(CreateFirewallRuleRequest.type, asCreateFirewallRuleParams(account, firewallruleInfo));
+        };
 
-		let handleFirewallRule = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> => {
-			let params: HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
-			return client.sendRequest(HandleFirewallRuleRequest.type, params);
-		};
+        let handleFirewallRule = (errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<sqlops.HandleFirewallRuleResponse> => {
+            let params: HandleFirewallRuleParams = { errorCode: errorCode, errorMessage: errorMessage, connectionTypeId: connectionTypeId };
+            return client.sendRequest(HandleFirewallRuleRequest.type, params);
+        };
 
-		return sqlops.resources.registerResourceProvider({
-			displayName: 'Azure SQL Resource Provider', // TODO Localize
-			id: 'Microsoft.Azure.SQL.ResourceProvider',
-			settings: {
+        return sqlops.resources.registerResourceProvider({
+            displayName: 'Azure SQL Resource Provider', // TODO Localize
+            id: 'Microsoft.Azure.SQL.ResourceProvider',
+            settings: {
 
-			}
-		}, {
-				handleFirewallRule,
-				createFirewallRule
-			});
-	}
+            }
+        }, {
+                handleFirewallRule,
+                createFirewallRule
+            });
+    }
 }
 
 function asCreateFirewallRuleParams(account: sqlops.Account, params: sqlops.FirewallRuleInfo): CreateFirewallRuleParams {
-	return {
-		account: account,
-		serverName: params.serverName,
-		startIpAddress: params.startIpAddress,
-		endIpAddress: params.endIpAddress,
-		securityTokenMappings: params.securityTokenMappings
-	};
+    return {
+        account: account,
+        serverName: params.serverName,
+        startIpAddress: params.startIpAddress,
+        endIpAddress: params.endIpAddress,
+        securityTokenMappings: params.securityTokenMappings
+    };
 }
 
 export class AzureResourceProvider {
-	private _client: SqlOpsDataClient;
-	private _config: IConfig;
+    private _client: SqlOpsDataClient;
+    private _config: IConfig;
 
-	constructor(baseConfig: IConfig) {
-		if (baseConfig) {
-			this._config = JSON.parse(JSON.stringify(baseConfig));
-			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
-		}
-	}
+    constructor(baseConfig: IConfig) {
+        if (baseConfig) {
+            this._config = JSON.parse(JSON.stringify(baseConfig));
+            this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
+        }
+    }
 
-	public start() {
-		let serverdownloader = new ServerProvider(this._config);
-		let clientOptions: ClientOptions = {
-			providerId: Constants.providerId,
-			features: [FireWallFeature]
-		};
-		serverdownloader.getOrDownloadServer().then(e => {
-			let serverOptions = this.generateServerOptions(e);
-			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
-			this._client.start();
-		});
-	}
+    public start() {
+        let serverdownloader = new ServerProvider(this._config);
+        let clientOptions: ClientOptions = {
+            providerId: Constants.providerId,
+            features: [FireWallFeature]
+        };
+        serverdownloader.getOrDownloadServer().then(e => {
+            let serverOptions = this.generateServerOptions(e);
+            this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+            this._client.start();
+        });
+    }
 
-	public dispose() {
-		if (this._client) {
-			this._client.stop();
-		}
-	}
+    public dispose() {
+        if (this._client) {
+            this._client.stop();
+        }
+    }
 
-	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('resourceprovider', executablePath);
-		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
-	}
+    private generateServerOptions(executablePath: string): ServerOptions {
+        let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('resourceprovider', executablePath);
+        return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
+    }
 }

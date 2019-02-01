@@ -13,8 +13,8 @@ import * as sqlops from 'sqlops';
  * @interface ITreeNode
  */
 export interface ITreeNode {
-	getNodeInfo(): sqlops.NodeInfo;
-	getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
+    getNodeInfo(): sqlops.NodeInfo;
+    getChildren(refreshChildren: boolean): ITreeNode[] | Promise<ITreeNode[]>;
 }
 
 /**
@@ -26,5 +26,5 @@ export interface ITreeNode {
  * @extends {ITreeNode}
  */
 export interface IFileNode extends ITreeNode {
-	getFileContentsAsString(maxBytes?: number): Promise<string>;
+    getFileContentsAsString(maxBytes?: number): Promise<string>;
 }

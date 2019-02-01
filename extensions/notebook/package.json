@@ -1,73 +1,73 @@
 {
-	"name": "notebook",
-	"displayName": "%displayName%",
-	"description": "%description%",
-	"version": "0.1.0",
-	"publisher": "Microsoft",
-	"engines": {
-		"vscode": "*",
-		"sqlops": "*"
-	},
-	"main": "./out/extension",
-	"activationEvents": [
-		"*"
-	],
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "%notebook.configuration.title%",
-			"properties": {
-				"notebook.pythonPath": {
-					"type": "string",
-					"default": "",
-					"description": "%notebook.pythonPath.description%"
-				},
-				"notebook.sqlKernelEnabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "%notebook.sqlKernelEnabled.description%"
-				}
-			}
-		},
-		"commands": [
-			{
-				"command": "notebook.command.new",
-				"title": "%notebook.command.new%",
-				"icon": {
-					"dark": "resources/dark/new_notebook_inverse.svg",
-					"light": "resources/light/new_notebook.svg"
-				}
-			},
-			{
-				"command": "notebook.command.open",
-				"title": "%notebook.command.open%",
-				"icon": {
-					"dark": "resources/dark/open_notebook_inverse.svg",
-					"light": "resources/light/open_notebook.svg"
-				}
-			}
-		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "notebook.command.new"
-				},
-				{
-					"command": "notebook.command.open"
-				}
-			]
-		},
-		"keybindings": [
-			{
-				"command": "notebook.command.new",
-				"key": "Ctrl+Shift+N"
-			}
-		]
-	},
-	"dependencies": {
-		"vscode-nls": "^4.0.0"
-	},
-	"devDependencies": {
-		"@types/node": "8.0.33"
-	}
+    "name": "notebook",
+    "displayName": "%displayName%",
+    "description": "%description%",
+    "version": "0.1.0",
+    "publisher": "Microsoft",
+    "engines": {
+        "vscode": "*",
+        "sqlops": "*"
+    },
+    "main": "./out/extension",
+    "activationEvents": [
+        "*"
+    ],
+    "contributes": {
+        "configuration": {
+            "type": "object",
+            "title": "%notebook.configuration.title%",
+            "properties": {
+                "notebook.pythonPath": {
+                    "type": "string",
+                    "default": "",
+                    "description": "%notebook.pythonPath.description%"
+                },
+                "notebook.sqlKernelEnabled": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "%notebook.sqlKernelEnabled.description%"
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "notebook.command.new",
+                "title": "%notebook.command.new%",
+                "icon": {
+                    "dark": "resources/dark/new_notebook_inverse.svg",
+                    "light": "resources/light/new_notebook.svg"
+                }
+            },
+            {
+                "command": "notebook.command.open",
+                "title": "%notebook.command.open%",
+                "icon": {
+                    "dark": "resources/dark/open_notebook_inverse.svg",
+                    "light": "resources/light/open_notebook.svg"
+                }
+            }
+        ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "notebook.command.new"
+                },
+                {
+                    "command": "notebook.command.open"
+                }
+            ]
+        },
+        "keybindings": [
+            {
+                "command": "notebook.command.new",
+                "key": "Ctrl+Shift+N"
+            }
+        ]
+    },
+    "dependencies": {
+        "vscode-nls": "^4.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "8.0.33"
+    }
 }

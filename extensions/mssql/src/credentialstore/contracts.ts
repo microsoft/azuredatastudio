@@ -11,7 +11,7 @@ import { Credential } from 'sqlops';
 
 // Read Credential request message callback declaration
 export namespace ReadCredentialRequest {
-	export const type = new RequestType<Credential, Credential, void, void>('credential/read');
+    export const type = new RequestType<Credential, Credential, void, void>('credential/read');
 }
 
 // --------------------------------- </ Read Credential Request > -------------------------------------------------
@@ -20,7 +20,7 @@ export namespace ReadCredentialRequest {
 
 // Save Credential request message callback declaration
 export namespace SaveCredentialRequest {
-	export const type = new RequestType<Credential, boolean, void, void>('credential/save');
+    export const type = new RequestType<Credential, boolean, void, void>('credential/save');
 }
 // --------------------------------- </ Save Credential Request > -------------------------------------------------
 
@@ -29,6 +29,6 @@ export namespace SaveCredentialRequest {
 
 // Delete Credential request message callback declaration
 export namespace DeleteCredentialRequest {
-	export const type = new RequestType<Credential, boolean, void, void>('credential/delete');
+    export const type = new RequestType<Credential, boolean, void, void>('credential/delete');
 }
 // --------------------------------- </ Delete Credential Request > -------------------------------------------------

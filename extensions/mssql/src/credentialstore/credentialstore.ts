@@ -18,49 +18,49 @@ import * as Utils from '../utils';
 
 class CredentialsFeature extends SqlOpsFeature<any> {
 
-	private static readonly messagesTypes: RPCMessageType[] = [
-		Contracts.DeleteCredentialRequest.type,
-		Contracts.SaveCredentialRequest.type,
-		Contracts.ReadCredentialRequest.type
-	];
+    private static readonly messagesTypes: RPCMessageType[] = [
+        Contracts.DeleteCredentialRequest.type,
+        Contracts.SaveCredentialRequest.type,
+        Contracts.ReadCredentialRequest.type
+    ];
 
-	constructor(client: SqlOpsDataClient) {
-		super(client, CredentialsFeature.messagesTypes);
-	}
+    constructor(client: SqlOpsDataClient) {
+        super(client, CredentialsFeature.messagesTypes);
+    }
 
-	fillClientCapabilities(capabilities: ClientCapabilities): void {
-		Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
-	}
+    fillClientCapabilities(capabilities: ClientCapabilities): void {
+        Utils.ensure(Utils.ensure(capabilities, 'credentials')!, 'credentials')!.dynamicRegistration = true;
+    }
 
-	initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-	}
+    initialize(capabilities: ServerCapabilities): void {
+        this.register(this.messages, {
+            id: UUID.generateUuid(),
+            registerOptions: undefined
+        });
+    }
 
-	protected registerProvider(options: any): Disposable {
-		const client = this._client;
+    protected registerProvider(options: any): Disposable {
+        const client = this._client;
 
-		let readCredential = (credentialId: string): Thenable<sqlops.Credential> => {
-			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId });
-		};
+        let readCredential = (credentialId: string): Thenable<sqlops.Credential> => {
+            return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId });
+        };
 
-		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
-			return client.sendRequest(Contracts.SaveCredentialRequest.type, { credentialId, password });
-		};
+        let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
+            return client.sendRequest(Contracts.SaveCredentialRequest.type, { credentialId, password });
+        };
 
-		let deleteCredential = (credentialId: string): Thenable<boolean> => {
-			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId });
-		};
+        let deleteCredential = (credentialId: string): Thenable<boolean> => {
+            return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId });
+        };
 
-		return sqlops.credentials.registerProvider({
-			deleteCredential,
-			readCredential,
-			saveCredential,
-			handle: 0
-		});
-	}
+        return sqlops.credentials.registerProvider({
+            deleteCredential,
+            readCredential,
+            saveCredential,
+            handle: 0
+        });
+    }
 }
 
 /**
@@ -69,37 +69,37 @@ class CredentialsFeature extends SqlOpsFeature<any> {
  * Allows a single credential to be stored per service (that is, one username per service);
  */
 export class CredentialStore {
-	private _client: SqlOpsDataClient;
-	private _config: IConfig;
+    private _client: SqlOpsDataClient;
+    private _config: IConfig;
 
-	constructor(baseConfig: IConfig) {
-		if (baseConfig) {
-			this._config = JSON.parse(JSON.stringify(baseConfig));
-			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
-		}
-	}
+    constructor(baseConfig: IConfig) {
+        if (baseConfig) {
+            this._config = JSON.parse(JSON.stringify(baseConfig));
+            this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
+        }
+    }
 
-	public start() {
-		let serverdownloader = new ServerProvider(this._config);
-		let clientOptions: ClientOptions = {
-			providerId: Constants.providerId,
-			features: [CredentialsFeature]
-		};
-		serverdownloader.getOrDownloadServer().then(e => {
-			let serverOptions = this.generateServerOptions(e);
-			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
-			this._client.start();
-		});
-	}
+    public start() {
+        let serverdownloader = new ServerProvider(this._config);
+        let clientOptions: ClientOptions = {
+            providerId: Constants.providerId,
+            features: [CredentialsFeature]
+        };
+        serverdownloader.getOrDownloadServer().then(e => {
+            let serverOptions = this.generateServerOptions(e);
+            this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+            this._client.start();
+        });
+    }
 
-	dispose() {
-		if (this._client) {
-			this._client.stop();
-		}
-	}
+    dispose() {
+        if (this._client) {
+            this._client.stop();
+        }
+    }
 
-	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('credentialstore', executablePath);
-		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
-	}
+    private generateServerOptions(executablePath: string): ServerOptions {
+        let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('credentialstore', executablePath);
+        return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
+    }
 }

@@ -10,6 +10,6 @@
 import * as constants from '../constants';
 
 export abstract class ProviderBase {
-	public readonly providerId: string = constants.mssqlClusterProviderName;
-	public handle: number;
+    public readonly providerId: string = constants.mssqlClusterProviderName;
+    public handle: number;
 }

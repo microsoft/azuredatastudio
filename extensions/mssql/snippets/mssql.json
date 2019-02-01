@@ -1,332 +1,332 @@
 {
-	"Create a new Database": {
-		"prefix": "sqlCreateDatabase",
-		"body": [
-			"-- Create a new database called '${1:DatabaseName}'",
-			"-- Connect to the 'master' database to run this snippet",
-			"USE master",
-			"GO",
-			"-- Create the new database if it does not exist already",
-			"IF NOT EXISTS (",
-			"\tSELECT [name]",
-			"\t\tFROM sys.databases",
-			"\t\tWHERE [name] = N'${1:DatabaseName}'",
-			")",
-			"CREATE DATABASE ${1:DatabaseName}",
-			"GO"
-		],
-		"description": "Create a new Database"
-	},
+    "Create a new Database": {
+        "prefix": "sqlCreateDatabase",
+        "body": [
+            "-- Create a new database called '${1:DatabaseName}'",
+            "-- Connect to the 'master' database to run this snippet",
+            "USE master",
+            "GO",
+            "-- Create the new database if it does not exist already",
+            "IF NOT EXISTS (",
+            "\tSELECT [name]",
+            "\t\tFROM sys.databases",
+            "\t\tWHERE [name] = N'${1:DatabaseName}'",
+            ")",
+            "CREATE DATABASE ${1:DatabaseName}",
+            "GO"
+        ],
+        "description": "Create a new Database"
+    },
 
-	"Drop a Database": {
-		"prefix": "sqlDropDatabase",
-		"body": [
-			"-- Drop the database '${1:DatabaseName}'",
-			"-- Connect to the 'master' database to run this snippet",
-			"USE master",
-			"GO",
-			"-- Uncomment the ALTER DATABASE statement below to set the database to SINGLE_USER mode if the drop database command fails because the database is in use.",
-			"-- ALTER DATABASE ${1:DatabaseName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;",
-			"-- Drop the database if it exists",
-			"IF EXISTS (",
-			"  SELECT [name]",
-			"   FROM sys.databases",
-			"   WHERE [name] = N'${1:DatabaseName}'",
-			")",
-			"DROP DATABASE ${1:DatabaseName}",
-			"GO"
-		],
-		"description": "Drop a Database"
-	},
+    "Drop a Database": {
+        "prefix": "sqlDropDatabase",
+        "body": [
+            "-- Drop the database '${1:DatabaseName}'",
+            "-- Connect to the 'master' database to run this snippet",
+            "USE master",
+            "GO",
+            "-- Uncomment the ALTER DATABASE statement below to set the database to SINGLE_USER mode if the drop database command fails because the database is in use.",
+            "-- ALTER DATABASE ${1:DatabaseName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;",
+            "-- Drop the database if it exists",
+            "IF EXISTS (",
+            "  SELECT [name]",
+            "   FROM sys.databases",
+            "   WHERE [name] = N'${1:DatabaseName}'",
+            ")",
+            "DROP DATABASE ${1:DatabaseName}",
+            "GO"
+        ],
+        "description": "Drop a Database"
+    },
 
-	"Create a new Table": {
-		"prefix": "sqlCreateTable",
-		"body": [
-			"-- Create a new table called '[${1:TableName}]' in schema '[${2:dbo}]'",
-			"-- Drop the table if it already exists",
-			"IF OBJECT_ID('[${2:dbo}].[${1:TableName}]', 'U') IS NOT NULL",
-			"DROP TABLE [${2:dbo}].[${1:TableName}]",
-			"GO",
-			"-- Create the table in the specified schema",
-			"CREATE TABLE [${2:dbo}].[${1:TableName}]",
-			"(",
-			"\t[${3:Id}] INT NOT NULL PRIMARY KEY, -- Primary Key column",
-			"\t[${4:ColumnName2}] ${5:NVARCHAR(50)} NOT NULL,",
-			"\t[${6:ColumnName3}] ${7:NVARCHAR(50)} NOT NULL",
-			"\t$0-- Specify more columns here",
-			");",
-			"GO"
-		],
-		"description": "Create a new Table"
-	},
+    "Create a new Table": {
+        "prefix": "sqlCreateTable",
+        "body": [
+            "-- Create a new table called '[${1:TableName}]' in schema '[${2:dbo}]'",
+            "-- Drop the table if it already exists",
+            "IF OBJECT_ID('[${2:dbo}].[${1:TableName}]', 'U') IS NOT NULL",
+            "DROP TABLE [${2:dbo}].[${1:TableName}]",
+            "GO",
+            "-- Create the table in the specified schema",
+            "CREATE TABLE [${2:dbo}].[${1:TableName}]",
+            "(",
+            "\t[${3:Id}] INT NOT NULL PRIMARY KEY, -- Primary Key column",
+            "\t[${4:ColumnName2}] ${5:NVARCHAR(50)} NOT NULL,",
+            "\t[${6:ColumnName3}] ${7:NVARCHAR(50)} NOT NULL",
+            "\t$0-- Specify more columns here",
+            ");",
+            "GO"
+        ],
+        "description": "Create a new Table"
+    },
 
 
-	"Drop a Table": {
-		"prefix": "sqlDropTable",
-		"body": [
-				"-- Drop a table called '${1:TableName}' in schema '${2:dbo}'",
-				"-- Drop the table if it already exists",
-				"IF OBJECT_ID('[${2:dbo}].[${1:TableName}]', 'U') IS NOT NULL",
-				"DROP TABLE [${2:dbo}].[${1:TableName}]",
-				"GO"
-		],
-		"description": "Drop a Table"
-	},
+    "Drop a Table": {
+        "prefix": "sqlDropTable",
+        "body": [
+                "-- Drop a table called '${1:TableName}' in schema '${2:dbo}'",
+                "-- Drop the table if it already exists",
+                "IF OBJECT_ID('[${2:dbo}].[${1:TableName}]', 'U') IS NOT NULL",
+                "DROP TABLE [${2:dbo}].[${1:TableName}]",
+                "GO"
+        ],
+        "description": "Drop a Table"
+    },
 
-	"Add a new column to a Table": {
-		"prefix": "sqlAddColumn",
-		"body": [
-			"-- Add a new column '[${1:NewColumnName}]' to table '[${2:TableName}]' in schema '[${3:dbo}]'",
-			"ALTER TABLE [${3:dbo}].[${2:TableName}]",
-			"\tADD [${1:NewColumnName}] /*new_column_name*/ ${4:int} /*new_column_datatype*/ ${5:NULL} /*new_column_nullability*/",
-			"GO"
-		],
-		"description": "Add a new column to a Table"
-	},
+    "Add a new column to a Table": {
+        "prefix": "sqlAddColumn",
+        "body": [
+            "-- Add a new column '[${1:NewColumnName}]' to table '[${2:TableName}]' in schema '[${3:dbo}]'",
+            "ALTER TABLE [${3:dbo}].[${2:TableName}]",
+            "\tADD [${1:NewColumnName}] /*new_column_name*/ ${4:int} /*new_column_datatype*/ ${5:NULL} /*new_column_nullability*/",
+            "GO"
+        ],
+        "description": "Add a new column to a Table"
+    },
 
-	"Drop a column from a Table": {
-		"prefix": "sqlDropColumn",
-		"body": [
-			"-- Drop '[${1:ColumnName}]' from table '[${2:TableName}]' in schema '[${3:dbo}]'",
-			"ALTER TABLE [${3:dbo}].[${2:TableName}]",
-			"\tDROP COLUMN [${1:ColumnName}]",
-			"GO"
-		],
-		"description": "Add a new column to a Table"
-	},
+    "Drop a column from a Table": {
+        "prefix": "sqlDropColumn",
+        "body": [
+            "-- Drop '[${1:ColumnName}]' from table '[${2:TableName}]' in schema '[${3:dbo}]'",
+            "ALTER TABLE [${3:dbo}].[${2:TableName}]",
+            "\tDROP COLUMN [${1:ColumnName}]",
+            "GO"
+        ],
+        "description": "Add a new column to a Table"
+    },
 
-	"Select rows from a Table or a View": {
-		"prefix": "sqlSelect",
-		"body": [
-			"-- Select rows from a Table or View '[${1:TableOrViewName}]' in schema '[${2:dbo}]'",
-			"SELECT * FROM [${2:dbo}].[${1:TableOrViewName}]",
-			"WHERE ${3:/* add search conditions here */}",
-			"GO"
-		],
-		"description": "Select rows from a Table or a View"
-	},
+    "Select rows from a Table or a View": {
+        "prefix": "sqlSelect",
+        "body": [
+            "-- Select rows from a Table or View '[${1:TableOrViewName}]' in schema '[${2:dbo}]'",
+            "SELECT * FROM [${2:dbo}].[${1:TableOrViewName}]",
+            "WHERE ${3:/* add search conditions here */}",
+            "GO"
+        ],
+        "description": "Select rows from a Table or a View"
+    },
 
-	"Insert rows into a Table": {
-		"prefix": "sqlInsertRows",
-		"body": [
-			"-- Insert rows into table '${1:TableName}' in schema '[${2:dbo}]'",
-			"INSERT INTO [${2:dbo}].[${1:TableName}]",
-			"( -- Columns to insert data into",
-			" ${3:[ColumnName1], [ColumnName2], [ColumnName3]}",
-			")",
-			"VALUES",
-			"( -- First row: values for the columns in the list above",
-			" ${4:ColumnValue1, ColumnValue2, ColumnValue3}",
-			"),",
-			"( -- Second row: values for the columns in the list above",
-			" ${5:ColumnValue1, ColumnValue2, ColumnValue3}",
-			")",
-			"-- Add more rows here",
-			"GO"
-		],
-		"description": "Insert rows into a Table"
-	},
+    "Insert rows into a Table": {
+        "prefix": "sqlInsertRows",
+        "body": [
+            "-- Insert rows into table '${1:TableName}' in schema '[${2:dbo}]'",
+            "INSERT INTO [${2:dbo}].[${1:TableName}]",
+            "( -- Columns to insert data into",
+            " ${3:[ColumnName1], [ColumnName2], [ColumnName3]}",
+            ")",
+            "VALUES",
+            "( -- First row: values for the columns in the list above",
+            " ${4:ColumnValue1, ColumnValue2, ColumnValue3}",
+            "),",
+            "( -- Second row: values for the columns in the list above",
+            " ${5:ColumnValue1, ColumnValue2, ColumnValue3}",
+            ")",
+            "-- Add more rows here",
+            "GO"
+        ],
+        "description": "Insert rows into a Table"
+    },
 
-	"Delete rows from a Table": {
-		"prefix": "sqlDeleteRows",
-		"body": [
-			"-- Delete rows from table '[${1:TableName}]' in schema '[${2:dbo}]'",
-			"DELETE FROM [${2:dbo}].[${1:TableName}]",
-			"WHERE ${3:/* add search conditions here */}",
-			"GO"
-		],
-		"description": "Delete rows from a Table"
-	},
+    "Delete rows from a Table": {
+        "prefix": "sqlDeleteRows",
+        "body": [
+            "-- Delete rows from table '[${1:TableName}]' in schema '[${2:dbo}]'",
+            "DELETE FROM [${2:dbo}].[${1:TableName}]",
+            "WHERE ${3:/* add search conditions here */}",
+            "GO"
+        ],
+        "description": "Delete rows from a Table"
+    },
 
-	"Update rows in a Table": {
-		"prefix": "sqlUpdateRows",
-		"body": [
-			"-- Update rows in table '[${1:TableName}]' in schema '[${2:dbo}]'",
-			"UPDATE [${2:dbo}].[${1:TableName}]",
-			"SET",
-			"\t[${3:ColumnName1}] = ${4:ColumnValue1},",
-			"\t[${5:ColumnName2}] = ${6:ColumnValue2}",
-			"\t-- Add more columns and values here",
-			"WHERE ${7:/* add search conditions here */}",
-			"GO"
-		],
-		"description": "Update rows in a Table"
-	},
+    "Update rows in a Table": {
+        "prefix": "sqlUpdateRows",
+        "body": [
+            "-- Update rows in table '[${1:TableName}]' in schema '[${2:dbo}]'",
+            "UPDATE [${2:dbo}].[${1:TableName}]",
+            "SET",
+            "\t[${3:ColumnName1}] = ${4:ColumnValue1},",
+            "\t[${5:ColumnName2}] = ${6:ColumnValue2}",
+            "\t-- Add more columns and values here",
+            "WHERE ${7:/* add search conditions here */}",
+            "GO"
+        ],
+        "description": "Update rows in a Table"
+    },
 
-	"Create a stored procedure": {
-		"prefix": "sqlCreateStoredProc",
-		"body": [
-			"-- Create a new stored procedure called '${1:StoredProcedureName}' in schema '${2:dbo}'",
-			"-- Drop the stored procedure if it already exists",
-			"IF EXISTS (",
-			"SELECT *",
-			"\tFROM INFORMATION_SCHEMA.ROUTINES",
-			"WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
-			"\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
-			"\tAND ROUTINE_TYPE = N'PROCEDURE'"
-			")",
-			"DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
-			"GO",
-			"-- Create the stored procedure in the specified schema",
-			"CREATE PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
-			"\t$3@param1 /*parameter name*/ $4int /*datatype_for_param1*/ = 0, /*default_value_for_param1*/",
-			"\t$5@param2 /*parameter name*/ $6int /*datatype_for_param1*/ = 0 /*default_value_for_param2*/",
-			"-- add more stored procedure parameters here",
-			"AS",
-			"\t-- body of the stored procedure",
-			"\tSELECT @param1, @param2",
-			"GO",
-			"-- example to execute the stored procedure we just created",
-			"EXECUTE ${2:dbo}.${1:StoredProcedureName} 1 /*value_for_param1*/, 2 /*value_for_param2*/",
-			"GO"
-		],
-		"description": "Create a stored procedure"
-	},
+    "Create a stored procedure": {
+        "prefix": "sqlCreateStoredProc",
+        "body": [
+            "-- Create a new stored procedure called '${1:StoredProcedureName}' in schema '${2:dbo}'",
+            "-- Drop the stored procedure if it already exists",
+            "IF EXISTS (",
+            "SELECT *",
+            "\tFROM INFORMATION_SCHEMA.ROUTINES",
+            "WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
+            "\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
+            "\tAND ROUTINE_TYPE = N'PROCEDURE'"
+            ")",
+            "DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
+            "GO",
+            "-- Create the stored procedure in the specified schema",
+            "CREATE PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
+            "\t$3@param1 /*parameter name*/ $4int /*datatype_for_param1*/ = 0, /*default_value_for_param1*/",
+            "\t$5@param2 /*parameter name*/ $6int /*datatype_for_param1*/ = 0 /*default_value_for_param2*/",
+            "-- add more stored procedure parameters here",
+            "AS",
+            "\t-- body of the stored procedure",
+            "\tSELECT @param1, @param2",
+            "GO",
+            "-- example to execute the stored procedure we just created",
+            "EXECUTE ${2:dbo}.${1:StoredProcedureName} 1 /*value_for_param1*/, 2 /*value_for_param2*/",
+            "GO"
+        ],
+        "description": "Create a stored procedure"
+    },
 
-	"Drop a stored procedure": {
-		"prefix": "sqlDropStoredProc",
-		"body": [
-			"-- Drop the stored procedure called '${1:StoredProcedureName}' in schema '${2:dbo}'",
-			"IF EXISTS (",
-			"SELECT *",
-			"\tFROM INFORMATION_SCHEMA.ROUTINES",
-			"WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
-			"\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
-			")",
-			"DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
-			"GO"
-		],
-		"description": "Drop a stored procedure"
-	},
+    "Drop a stored procedure": {
+        "prefix": "sqlDropStoredProc",
+        "body": [
+            "-- Drop the stored procedure called '${1:StoredProcedureName}' in schema '${2:dbo}'",
+            "IF EXISTS (",
+            "SELECT *",
+            "\tFROM INFORMATION_SCHEMA.ROUTINES",
+            "WHERE SPECIFIC_SCHEMA = N'${2:dbo}'",
+            "\tAND SPECIFIC_NAME = N'${1:StoredProcedureName}'",
+            ")",
+            "DROP PROCEDURE ${2:dbo}.${1:StoredProcedureName}",
+            "GO"
+        ],
+        "description": "Drop a stored procedure"
+    },
 
-	"List tables": {
-		"prefix": "sqlListTablesAndViews",
-		"body": [
-			"-- Get a list of tables and views in the current database",
-			"SELECT table_catalog [database], table_schema [schema], table_name [name], table_type [type]",
-			"FROM INFORMATION_SCHEMA.TABLES",
-			"GO"
-		],
-		"description": "List tables and vies in the current database"
-	},
+    "List tables": {
+        "prefix": "sqlListTablesAndViews",
+        "body": [
+            "-- Get a list of tables and views in the current database",
+            "SELECT table_catalog [database], table_schema [schema], table_name [name], table_type [type]",
+            "FROM INFORMATION_SCHEMA.TABLES",
+            "GO"
+        ],
+        "description": "List tables and vies in the current database"
+    },
 
-	"List databases": {
-		"prefix": "sqlListDatabases",
-		"body": [
-			"-- Get a list of databases",
-			"SELECT [name] FROM sys.databases",
-			"GO"
-		],
-		"description": "List databases"
-	},
+    "List databases": {
+        "prefix": "sqlListDatabases",
+        "body": [
+            "-- Get a list of databases",
+            "SELECT [name] FROM sys.databases",
+            "GO"
+        ],
+        "description": "List databases"
+    },
 
-	"List columns": {
-		"prefix": "sqlListColumns",
-		"body": [
-			"-- List columns in all tables whose name is like '${1:TableName}'",
-			"SELECT ",
-			"\tTableName = tbl.table_schema + '.' + tbl.table_name, ",
-			"\tColumnName = col.column_name, ",
-			"\tColumnDataType = col.data_type",
-			"FROM INFORMATION_SCHEMA.TABLES tbl",
-			"INNER JOIN INFORMATION_SCHEMA.COLUMNS col ",
-			"\tON col.table_name = tbl.table_name",
-			"\tAND col.table_schema = tbl.table_schema",
-			"",
-			"WHERE tbl.table_type = 'base table' and tbl.table_name like '%${1:TableName}%'",
-			"GO"
-		],
-		"description": "Lists all the columns and their types for tables matching a LIKE statement"
-	},
+    "List columns": {
+        "prefix": "sqlListColumns",
+        "body": [
+            "-- List columns in all tables whose name is like '${1:TableName}'",
+            "SELECT ",
+            "\tTableName = tbl.table_schema + '.' + tbl.table_name, ",
+            "\tColumnName = col.column_name, ",
+            "\tColumnDataType = col.data_type",
+            "FROM INFORMATION_SCHEMA.TABLES tbl",
+            "INNER JOIN INFORMATION_SCHEMA.COLUMNS col ",
+            "\tON col.table_name = tbl.table_name",
+            "\tAND col.table_schema = tbl.table_schema",
+            "",
+            "WHERE tbl.table_type = 'base table' and tbl.table_name like '%${1:TableName}%'",
+            "GO"
+        ],
+        "description": "Lists all the columns and their types for tables matching a LIKE statement"
+    },
 
-	"Declare a cursor": {
-		"prefix": "sqlCursor",
-		"body": [
-			"-- Declare a cursor for a Table or a View '${1:TableOrViewName}' in schema '${2:dbo}'",
-			"DECLARE @ColumnName1 NVARCHAR(50), @ColumnName2 NVARCHAR(50)",
-			"",
-			"DECLARE db_cursor CURSOR FOR",
-			"SELECT ColumnName1, Column2",
-			"FROM $2.$1",
-			"",
-			"OPEN db_cursor",
-			"FETCH NEXT FROM db_cursor INTO @ColumnName1, @ColumnName2",
-			"",
-			"WHILE @@FETCH_STATUS = 0",
-			"BEGIN",
-			"\t-- add instructions to be executed for every row",
-			"\t$3",
-			"\tFETCH NEXT FROM db_cursor INTO @ColumnName1, @ColumnName2",
-			"END",
-			"",
-			"CLOSE db_cursor",
-			"DEALLOCATE db_cursor",
-			"GO"
-		],
-		"description": "Declare a cursor"
-	},
+    "Declare a cursor": {
+        "prefix": "sqlCursor",
+        "body": [
+            "-- Declare a cursor for a Table or a View '${1:TableOrViewName}' in schema '${2:dbo}'",
+            "DECLARE @ColumnName1 NVARCHAR(50), @ColumnName2 NVARCHAR(50)",
+            "",
+            "DECLARE db_cursor CURSOR FOR",
+            "SELECT ColumnName1, Column2",
+            "FROM $2.$1",
+            "",
+            "OPEN db_cursor",
+            "FETCH NEXT FROM db_cursor INTO @ColumnName1, @ColumnName2",
+            "",
+            "WHILE @@FETCH_STATUS = 0",
+            "BEGIN",
+            "\t-- add instructions to be executed for every row",
+            "\t$3",
+            "\tFETCH NEXT FROM db_cursor INTO @ColumnName1, @ColumnName2",
+            "END",
+            "",
+            "CLOSE db_cursor",
+            "DEALLOCATE db_cursor",
+            "GO"
+        ],
+        "description": "Declare a cursor"
+    },
 
-	"Show space used by tables": {
-		"prefix": "sqlGetSpaceUsed",
-		"body": [
-			"-- Get the space used by table ${1:TableName}",
-			"SELECT TABL.name AS table_name,",
-			"INDX.name AS index_name,",
-			"SUM(PART.rows) AS rows_count,",
-			"SUM(ALOC.total_pages) AS total_pages,",
-			"SUM(ALOC.used_pages) AS used_pages,",
-			"SUM(ALOC.data_pages) AS data_pages,",
-			"(SUM(ALOC.total_pages)*8/1024) AS total_space_MB,",
-			"(SUM(ALOC.used_pages)*8/1024) AS used_space_MB,",
-			"(SUM(ALOC.data_pages)*8/1024) AS data_space_MB",
-			"FROM sys.tables AS TABL",
-			"INNER JOIN sys.indexes AS INDX",
-			"ON TABL.object_id = INDX.object_id",
-			"INNER JOIN sys.partitions AS PART",
-			"ON INDX.object_id = PART.object_id",
-			"AND INDX.index_id = PART.index_id",
-			"INNER JOIN sys.allocation_units AS ALOC",
-			"ON PART.partition_id = ALOC.container_id",
-			"WHERE TABL.name LIKE '%${1:TableName}%'",
-			"AND INDX.object_id > 255",
-			"AND INDX.index_id <= 1",
-			"GROUP BY TABL.name, ",
-			"INDX.object_id,",
-			"INDX.index_id,",
-			"INDX.name",
-			"ORDER BY Object_Name(INDX.object_id),",
-			"(SUM(ALOC.total_pages)*8/1024) DESC",
-			"GO"
-		],
-		"description": "Get Space Used by Tables"
-	},
+    "Show space used by tables": {
+        "prefix": "sqlGetSpaceUsed",
+        "body": [
+            "-- Get the space used by table ${1:TableName}",
+            "SELECT TABL.name AS table_name,",
+            "INDX.name AS index_name,",
+            "SUM(PART.rows) AS rows_count,",
+            "SUM(ALOC.total_pages) AS total_pages,",
+            "SUM(ALOC.used_pages) AS used_pages,",
+            "SUM(ALOC.data_pages) AS data_pages,",
+            "(SUM(ALOC.total_pages)*8/1024) AS total_space_MB,",
+            "(SUM(ALOC.used_pages)*8/1024) AS used_space_MB,",
+            "(SUM(ALOC.data_pages)*8/1024) AS data_space_MB",
+            "FROM sys.tables AS TABL",
+            "INNER JOIN sys.indexes AS INDX",
+            "ON TABL.object_id = INDX.object_id",
+            "INNER JOIN sys.partitions AS PART",
+            "ON INDX.object_id = PART.object_id",
+            "AND INDX.index_id = PART.index_id",
+            "INNER JOIN sys.allocation_units AS ALOC",
+            "ON PART.partition_id = ALOC.container_id",
+            "WHERE TABL.name LIKE '%${1:TableName}%'",
+            "AND INDX.object_id > 255",
+            "AND INDX.index_id <= 1",
+            "GROUP BY TABL.name, ",
+            "INDX.object_id,",
+            "INDX.index_id,",
+            "INDX.name",
+            "ORDER BY Object_Name(INDX.object_id),",
+            "(SUM(ALOC.total_pages)*8/1024) DESC",
+            "GO"
+        ],
+        "description": "Get Space Used by Tables"
+    },
 
-	"Create a new Index": {
-		"prefix": "sqlCreateIndex",
-		"body": [
-			"-- Create a nonclustered index with or without a unique constraint",
-			"-- Or create a clustered index on table '[${1:TableName}]' in schema '[${2:dbo}]' in database '[${3:DatabaseName}]'",
-			"CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:dbo}].[${1:TableName}] ([${6:ColumnName1}] DESC /*Change sort order as needed*/",
-			"GO"
-		],
-		"description": "Create a new Index"
-	},
+    "Create a new Index": {
+        "prefix": "sqlCreateIndex",
+        "body": [
+            "-- Create a nonclustered index with or without a unique constraint",
+            "-- Or create a clustered index on table '[${1:TableName}]' in schema '[${2:dbo}]' in database '[${3:DatabaseName}]'",
+            "CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:dbo}].[${1:TableName}] ([${6:ColumnName1}] DESC /*Change sort order as needed*/",
+            "GO"
+        ],
+        "description": "Create a new Index"
+    },
 
-	"Create a new Temporary Table": {
-		"prefix": "sqlCreateTempTable",
-		"body": [
-			"-- Drop a temporary table called '#${1:TableName}'",
-			"-- Drop the table if it already exists",
-			"IF OBJECT_ID('tempDB..#${1:TableName}', 'U') IS NOT NULL",
-			"DROP TABLE #${1:TableName}",
-			"GO",
-			"-- Create the temporary table from a physical table called '${4:TableName}' in schema '${3:dbo}' in database '${2:DatabaseName}'",
-			"SELECT *",
-			"INTO #${1:TableName}",
-			"FROM [${2:DatabaseName}].[${3:[dbo}].[${4:TableName}]",
-			"WHERE ${5:/* add search conditions here */}"
-		],
-		"description": "Create a new Temporary Table"
-	}
+    "Create a new Temporary Table": {
+        "prefix": "sqlCreateTempTable",
+        "body": [
+            "-- Drop a temporary table called '#${1:TableName}'",
+            "-- Drop the table if it already exists",
+            "IF OBJECT_ID('tempDB..#${1:TableName}', 'U') IS NOT NULL",
+            "DROP TABLE #${1:TableName}",
+            "GO",
+            "-- Create the temporary table from a physical table called '${4:TableName}' in schema '${3:dbo}' in database '${2:DatabaseName}'",
+            "SELECT *",
+            "INTO #${1:TableName}",
+            "FROM [${2:DatabaseName}].[${3:[dbo}].[${4:TableName}]",
+            "WHERE ${5:/* add search conditions here */}"
+        ],
+        "description": "Create a new Temporary Table"
+    }
 
 }

@@ -5,23 +5,23 @@
 'use strict';
 
 const _typeof = {
-	number: 'number',
-	string: 'string',
-	undefined: 'undefined',
-	object: 'object',
-	function: 'function'
+    number: 'number',
+    string: 'string',
+    undefined: 'undefined',
+    object: 'object',
+    function: 'function'
 };
 
 /**
  * @returns whether the provided parameter is undefined or null.
  */
 export function isUndefinedOrNull(obj: any): boolean {
-	return isUndefined(obj) || obj === null;
+    return isUndefined(obj) || obj === null;
 }
 
 /**
  * @returns whether the provided parameter is undefined.
  */
 export function isUndefined(obj: any): boolean {
-	return typeof (obj) === _typeof.undefined;
+    return typeof (obj) === _typeof.undefined;
 }

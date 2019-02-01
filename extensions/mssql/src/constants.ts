@@ -41,20 +41,20 @@ export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 
 export enum BuiltInCommands {
-	SetContext = 'setContext'
+    SetContext = 'setContext'
 }
 
 export enum CommandContext {
-	WizardServiceEnabled = 'wizardservice:enabled'
+    WizardServiceEnabled = 'wizardservice:enabled'
 }
 
 export enum MssqlClusterItems {
-	Connection = 'mssqlCluster:connection',
-	Folder = 'mssqlCluster:folder',
-	File = 'mssqlCluster:file',
-	Message = 'mssqlCluster:message'
+    Connection = 'mssqlCluster:connection',
+    Folder = 'mssqlCluster:folder',
+    File = 'mssqlCluster:file',
+    Message = 'mssqlCluster:message'
 }
 
 export enum MssqlClusterItemsSubType {
-	Spark = 'mssqlCluster:spark'
+    Spark = 'mssqlCluster:spark'
 }
