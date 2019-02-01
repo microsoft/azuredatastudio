@@ -21,6 +21,7 @@ import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
+import { localize } from 'vs/nls.mock';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -424,13 +425,13 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			nodePath: nodePath,
 			label: 'Error',
 			errorMessage: '',
-			nodeType: 'folder',
+			nodeType: 'error',
 			isLeaf: true,
 			nodeSubType: '',
 			nodeStatus: '',
 			metadata: null
 		};
-
+		let errorMessages: string[] = [];
 		for (let provider of allProviders) {
 			if (resultMap.has(provider.providerId)) {
 				let result = resultMap.get(provider.providerId);
@@ -439,14 +440,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						finalResult = result;
 						allNodes = allNodes.concat(result.nodes);
 					} else {
-						errorNode.errorMessage += provider.providerId + 'returns ' + result.errorMessage + ' ';
+						errorMessages.push(result.errorMessage);
 					}
 				}
 			}
 		}
 		if (finalResult) {
-			if (errorNode.errorMessage && errorNode.errorMessage.length > 0) {
-				allNodes = allNodes.concat([errorNode]);
+			if (errorMessages.length > 0) {
+				errorMessages.unshift(localize('nodeExpansionError', 'Mulitiple errors:'));
+				errorNode.errorMessage = errorMessages.join('\n');
+				allNodes = [errorNode].concat(allNodes);
 			}
 
 			finalResult.nodes = allNodes;

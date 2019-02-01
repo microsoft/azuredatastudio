@@ -15,7 +15,7 @@ import { ProviderBase } from './providerBase';
 import { Connection } from './connection';
 import * as utils from '../utils';
 import { TreeNode } from './treeNodes';
-import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvider';
+import { ConnectionNode, TreeDataContext, ITreeChangeHandler, MessageNode } from './hdfsProvider';
 import { IFileSource } from './fileSources';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
@@ -73,7 +73,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 					'host': endpoints[index].ipAddress,
 					'groupId': connectionProfile.options.groupId,
 					'knoxport': endpoints[index].port,
-					'user': 'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
+					'user': 'sa', //'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
 					'password': credentials.password,
 				},
 				providerName: constants.mssqlClusterProviderName,
@@ -139,6 +139,13 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 				let children = await node.getChildren(true);
 				if (children) {
 					expandResult.nodes = children.map(c => c.getNodeInfo());
+					if (children.length === 1) {
+						let child = children[0].getNodeInfo();
+						if (child && child.nodeType === constants.MssqlClusterItems.Message) {
+							expandResult.errorMessage = child.label;
+							expandResult.nodes = [];
+						}
+					}
 				}
 			}
 		} catch (error) {

@@ -30,6 +30,12 @@
 	background: url("database_inverse.svg") center center no-repeat;
 }
 
+.vs .icon.error,
+.vs-dark .icon.error,
+.hc-black .icon.error {
+	    background: url("globalerror.svg") center center no-repeat;
+}
+
 .vs .icon.file {
 	background: url("file.svg") center center no-repeat;
 }
