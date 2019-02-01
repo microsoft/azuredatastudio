@@ -73,7 +73,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 					'host': endpoints[index].ipAddress,
 					'groupId': connectionProfile.options.groupId,
 					'knoxport': endpoints[index].port,
-					'user': 'sa', //'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
+					'user': 'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
 					'password': credentials.password,
 				},
 				providerName: constants.mssqlClusterProviderName,

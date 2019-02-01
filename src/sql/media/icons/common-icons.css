@@ -33,7 +33,7 @@
 .vs .icon.error,
 .vs-dark .icon.error,
 .hc-black .icon.error {
-	    background: url("globalerror.svg") center center no-repeat;
+	    background: url("globalerror_red.svg") center center no-repeat;
 }
 
 .vs .icon.file {
