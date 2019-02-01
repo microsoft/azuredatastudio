@@ -143,7 +143,6 @@ export class NotebookInput extends EditorInput {
 		return this._layoutChanged.event;
 	}
 
-
 	doChangeLayout(): any {
 		this._layoutChanged.fire();
 	}
