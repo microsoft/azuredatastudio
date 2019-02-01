@@ -5,7 +5,7 @@
 
 'use strict';
 
-import 'sql/css!./builder';
+import 'vs/css!sql/base/browser/builder';
 import * as types from 'vs/base/common/types';
 import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import * as strings from 'vs/base/common/strings';

@@ -371,7 +371,7 @@ function packageTask(platform, arch, opts) {
 			version += '-' + quality;
 		}
 
-		c// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		const name = (platform === 'darwin') ? 'Azure Data Studio' : product.nameShort;
 		const packageJsonUpdates = { name, version };
 
@@ -429,7 +429,7 @@ function packageTask(platform, arch, opts) {
 			.pipe(util.cleanNodeModule('emmet', ['node_modules/**'], undefined))
 			.pipe(util.cleanNodeModule('pty.js', ['build/**'], ['build/Release/**']))
 			.pipe(util.cleanNodeModule('jquery-ui', ['external/**', 'demos/**'], undefined))
-			// .pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
+			.pipe(util.cleanNodeModule('core-js', ['**/**'], undefined))
 			.pipe(util.cleanNodeModule('slickgrid', ['node_modules/**', 'examples/**'], undefined))
 			.pipe(util.cleanNodeModule('nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
 			.pipe(util.cleanNodeModule('vscode-nsfw', ['binding.gyp', 'build/**', 'src/**', 'openpa/**', 'includes/**'], ['**/*.node', '**/*.a']))
@@ -444,7 +444,7 @@ function packageTask(platform, arch, opts) {
 			'node_modules/slickgrid/**/*.*',
 			'node_modules/underscore/**/*.*',
 			'node_modules/zone.js/**/*.*',
-			'node_modules/chart.js/**/*.*'
+			'node_modules/chart.js/**/*.*',
 		], { base: '.', dot: true });
 
 		let all = es.merge(
@@ -772,4 +772,3 @@ function installService() {
 gulp.task('install-sqltoolsservice', () => {
     return installService();
 });
-

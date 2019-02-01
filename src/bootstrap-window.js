@@ -58,6 +58,31 @@ exports.load = function (modulePaths, resultCallback, options) {
 		webFrame.setZoomLevel(zoomLevel);
 	}
 
+	// {{SQL CARBON EDIT}} - Todo mairvine - Check if we still need this
+	// Load the loader and start loading the workbench
+	function createScript(src, onload) {
+		const script = document.createElement('script');
+		script.src = src;
+		script.addEventListener('load', onload);
+
+		const head = document.getElementsByTagName('head')[0];
+		head.insertBefore(script, head.lastChild);
+	}
+
+	function uriFromPath(_path) {
+		var pathName = path.resolve(_path).replace(/\\/g, '/');
+		if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+			pathName = '/' + pathName;
+		}
+
+		return encodeURI('file://' + pathName);
+	}
+
+	const appRoot = uriFromPath(configuration.appRoot);
+
+	createScript(appRoot + '/node_modules/chart.js/dist/Chart.js', undefined);
+	// {{SQL CARBON EDIT}} - End
+
 	if (options && typeof options.canModifyDOM === 'function') {
 		options.canModifyDOM(configuration);
 	}
@@ -93,6 +118,28 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'vs/nls': nlsConfig,
 		nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
 	};
+
+	// {{SQL CARBON EDIT}}
+	require('reflect-metadata');
+	loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
+		'@angular/common',
+		'@angular/core',
+		'@angular/forms',
+		'@angular/platform-browser',
+		'@angular/platform-browser-dynamic',
+		'@angular/router',
+		'angular2-grid',
+		'ansi_up',
+		'pretty-data',
+		'html-query-plan',
+		'ng2-charts/ng2-charts',
+		'rxjs/Observable',
+		'rxjs/Subject',
+		'rxjs/Observer',
+		'htmlparser2',
+		'sanitize'
+	]);
+	// {{SQL CARBON EDIT}} - End
 
 	// cached data config
 	if (configuration.nodeCachedDataDir) {

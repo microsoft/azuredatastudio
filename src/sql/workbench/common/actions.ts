@@ -46,7 +46,7 @@ export interface ManageActionContext extends BaseActionContext {
 export class NewQueryAction extends Task {
 	public static ID = 'newQuery';
 	public static LABEL = nls.localize('newQueryAction.newQuery', 'New Query');
-	public static ICON = 'new-query';
+	public static ICON = 'file://' + 'new-query';
 
 	constructor() {
 		super({
@@ -289,7 +289,7 @@ export class ScriptDeleteAction extends Action {
 export class BackupAction extends Task {
 	public static readonly ID = Constants.BackupFeatureName;
 	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
-	public static readonly ICON = Constants.BackupFeatureName;
+	public static readonly ICON = 'file://' + Constants.BackupFeatureName;
 
 	constructor() {
 		super({
@@ -334,7 +334,7 @@ export class BackupAction extends Task {
 export class RestoreAction extends Task {
 	public static readonly ID = Constants.RestoreFeatureName;
 	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
-	public static readonly ICON = Constants.RestoreFeatureName;
+	public static readonly ICON = 'file://' + Constants.RestoreFeatureName;
 
 	constructor() {
 		super({
@@ -441,7 +441,7 @@ export class NewDatabaseAction extends Action {
 export class ConfigureDashboardAction extends Task {
 	public static readonly ID = 'configureDashboard';
 	public static readonly LABEL = nls.localize('configureDashboard', 'Learn How To Configure The Dashboard');
-	public static readonly ICON = 'configure-dashboard';
+	public static readonly ICON = 'file://' + 'configure-dashboard';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 
 	constructor() {
