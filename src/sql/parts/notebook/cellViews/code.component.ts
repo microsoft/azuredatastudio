@@ -93,11 +93,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		for (let propName in changes) {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
-				if (this.cellModel.id === changedProp.currentValue) {
-					this._cellToggleMoreActions.toggle(true, this.moreActionsElementRef, this.model, this.cellModel);
-				}
-				else {
-					this._cellToggleMoreActions.toggle(false, this.moreActionsElementRef, this.model, this.cellModel);
+				let isActive = this.cellModel.id === changedProp.currentValue;
+				this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
+				if (this._editor) {
+					this._editor.toggleEditorSelected(isActive);
 				}
 				break;
 			}
@@ -133,6 +132,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editorModel = model.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);
 		});
+		let isActive = this.cellModel.id === this._activeCellId;
+		this._editor.toggleEditorSelected(isActive);
 
 		this._register(this._editor);
 		this._register(this._editorInput);
