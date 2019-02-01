@@ -187,7 +187,6 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 
 	protected itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
 	private onExpandComplete = new Emitter<sqlops.ObjectExplorerExpandInfo>();
-	private onSessionCreated = new Emitter<sqlops.ObjectExplorerSession>();
 
 	private sessionId: string;
 
@@ -217,7 +216,8 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 						iconType: e.icon,
 						isLeaf: e.collapsibleState === TreeItemCollapsibleState.None,
 						provider: e.providerHandle,
-						payload: e.payload
+						payload: e.payload,
+						nodeType: e.contextValue
 					};
 				}),
 				sessionId: this.sessionId

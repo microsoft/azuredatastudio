@@ -46,10 +46,10 @@ export class OEShimService implements IOEShimService {
 
 	private async connectAndCreateSession(providerId: string, node: ITreeItem): TPromise<string> {
 		// check if we need to connect first
-		if (this.cm.providerRegistered(providerId)) {
-			let connProfile = new ConnectionProfile(this.capabilities, node.payload);
-			await this.cm.connectIfNotConnected(connProfile);
-		}
+		// if (this.cm.providerRegistered(providerId)) {
+		// 	let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+		// 	await this.cm.connectIfNotConnected(connProfile);
+		// }
 		return this.createSession(providerId, node);
 	}
 
@@ -93,7 +93,8 @@ export class OEShimService implements IOEShimService {
 					label: n.label,
 					icon: n.iconType,
 					providerHandle: n.providerHandle || n.getConnectionProfile().providerName,
-					payload: n.payload
+					payload: n.payload,
+					contextValue: n.nodeTypeId
 				};
 			});
 		}));
