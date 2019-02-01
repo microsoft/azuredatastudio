@@ -292,8 +292,6 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 
 class TreeDataSource implements IDataSource {
 
-	private sessionMap = new Map<string, string>();
-
 	constructor(
 		private container: ViewContainer,
 		@IProgressService2 private progressService: IProgressService2,
@@ -311,17 +309,15 @@ class TreeDataSource implements IDataSource {
 
 	getChildren(tree: ITree, node: ITreeItem): TPromise<any[]> {
 		if (this.objectExplorerService.providerExists(node.providerHandle)) {
-			return TPromise.wrap(this.progressService.withProgress({ location: this.container }, async () => {
-				if (!this.sessionMap.has(node.providerHandle)) {
-					let resp = await this.objectExplorerService.createSession(node.providerHandle, node);
-					this.sessionMap.set(node.providerHandle, resp);
-				}
-				let sessId = this.sessionMap.get(node.providerHandle);
+			return TPromise.wrap(this.progressService.withProgress({ location: this.container }, () => {
+				// this is replicating what vscode does when calling initial children
 				if (node instanceof Root) {
 					node = deepClone(node);
 					node.handle = undefined;
 				}
-				return this.objectExplorerService.getChildren(sessId, node);
+				// we need to pass this as a parameter mainly to maintain sessions
+				// hopefully we don't need anything like this when we remove the shim
+				return this.objectExplorerService.getChildren(node, this);
 			}));
 		}
 		return TPromise.as([]);

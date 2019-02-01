@@ -9,37 +9,58 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+
+import { IConnectionProfile } from 'sqlops';
 
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IConnectionProfile } from 'sqlops';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
 	_serviceBrand: any;
-	createSession(providerId: string, node: ITreeItem): TPromise<string>;
-	getChildren(sessionId: string, nodePath: ITreeItem): TPromise<ITreeItem[]>;
+	getChildren(node: ITreeItem, identifier: any): TPromise<ITreeItem[]>;
 	providerExists(providerId: string): boolean;
 }
 
 export class OEShimService implements IOEShimService {
 	_serviceBrand: any;
 
+	// maps a datasource to a provider handle to a session
+	private sessionMap = new Map<any, Map<string, string>>();
+
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
+		@IConnectionManagementService private cm: IConnectionManagementService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService
 	) {
 	}
 
-	public createSession(providerId: string, node: ITreeItem): TPromise<string> {
+	private createSession(providerId: string, node: ITreeItem): TPromise<string> {
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		return TPromise.wrap(this.oe.createNewSession(providerId, connProfile).then(e => e.sessionId));
 	}
 
-	public getChildren(sessionId: string, node: ITreeItem): TPromise<ITreeItem[]> {
+	private async connectAndCreateSession(providerId: string, node: ITreeItem): TPromise<string> {
+		// check if we need to connect first
+		if (this.cm.providerRegistered(providerId)) {
+			let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+			await this.cm.connectIfNotConnected(connProfile);
+		}
+		return this.createSession(providerId, node);
+	}
+
+	public async getChildren(node: ITreeItem, identifier: any): TPromise<ITreeItem[]> {
+		if (!this.sessionMap.has(identifier)) {
+			this.sessionMap.set(identifier, new Map<string, string>());
+		}
+		if (!this.sessionMap.get(identifier).has(node.providerHandle)) {
+			this.sessionMap.get(identifier).set(node.providerHandle, await this.connectAndCreateSession(node.providerHandle, node));
+		}
+		let sessionId = this.sessionMap.get(identifier).get(node.providerHandle);
 		let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
 		let profile: IConnectionProfile = node.payload || {
 			providerName: node.providerHandle,

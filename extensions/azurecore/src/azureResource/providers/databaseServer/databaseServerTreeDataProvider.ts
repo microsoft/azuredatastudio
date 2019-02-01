@@ -63,7 +63,7 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					serverName: databaseServer.fullName,
 					databaseName: databaseServer.defaultDatabaseName,
 					userName: databaseServer.loginName,
-					password: '',
+					password: undefined,
 					authenticationType: 'SqlLogin',
 					savePassword: true,
 					groupFullName: '',

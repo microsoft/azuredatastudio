@@ -265,6 +265,8 @@ export interface IConnectionManagementService {
 	 * Serialize connection string with optional provider
 	 */
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
+
+	providerRegistered(providerId: string): boolean;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');
