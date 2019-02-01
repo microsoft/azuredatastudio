@@ -80,6 +80,16 @@ export const javaScriptRendererFactory: IRenderMime.IRendererFactory = {
 	createRenderer: options => new widgets.RenderedJavaScript(options)
 };
 
+export const dataResourceRendererFactory: IRenderMime.IRendererFactory = {
+	safe: true,
+	mimeTypes: [
+		'application/vnd.dataresource+json',
+		'application/vnd.dataresource'
+	],
+	defaultRank: 40,
+	createRenderer: options => new widgets.RenderedDataResource(options)
+};
+
 /**
  * The standard factories provided by the rendermime package.
  */
@@ -90,5 +100,6 @@ export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFacto
 	svgRendererFactory,
 	imageRendererFactory,
 	javaScriptRendererFactory,
-	textRendererFactory
+	textRendererFactory,
+	dataResourceRendererFactory
 ];

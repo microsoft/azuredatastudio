@@ -21,6 +21,9 @@ import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
+import { IPrompter } from './prompts/question';
+import CodeAdapter from './prompts/adapter';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -65,6 +68,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		outputChannel: new CustomOutputChannel()
 	};
 
+	let prompter: IPrompter = new CodeAdapter();
+	let appContext = new AppContext(context, new ApiWrapper());
+
 	const installationStart = Date.now();
 	serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
@@ -89,7 +95,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		languageClient.start();
 		credentialsStore.start();
 		resourceProvider.start();
-		let nodeProvider = new MssqlObjectExplorerNodeProvider(new AppContext(context, new ApiWrapper()));
+		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
 		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
@@ -100,6 +106,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(contextProvider);
 	context.subscriptions.push(credentialsStore);
 	context.subscriptions.push(resourceProvider);
+	context.subscriptions.push(new UploadFilesCommand(prompter, appContext));
+	context.subscriptions.push(new MkDirCommand(prompter, appContext));
+	context.subscriptions.push(new SaveFileCommand(prompter, appContext));
+	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
+	context.subscriptions.push(new CopyPathCommand(appContext));
+	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
 }
 

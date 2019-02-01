@@ -61,7 +61,7 @@ export class AddCellFromContextAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	runCellAction(context: CellContext): Promise<void> {
+	doRun(context: CellContext): Promise<void> {
 		try {
 			let model = context.model;
 			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
@@ -88,7 +88,7 @@ export class DeleteCellAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	runCellAction(context: CellContext): Promise<void> {
+	doRun(context: CellContext): Promise<void> {
 		try {
 			context.model.deleteCell(context.cell);
 		} catch (error) {
@@ -110,7 +110,7 @@ export class ClearCellOutputAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	runCellAction(context: CellContext): Promise<void> {
+	doRun(context: CellContext): Promise<void> {
 		try {
 			(context.model.activeCell as CellModel).clearOutputs();
 		} catch (error) {

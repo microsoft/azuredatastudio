@@ -14,6 +14,8 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
+type SettableProperty = 'serverName' | 'authenticationType' | 'databaseName' | 'password' | 'connectionName' | 'userName';
+
 export class ProviderConnectionInfo extends Disposable implements sqlops.ConnectionInfo {
 
 	options: { [name: string]: any } = {};
@@ -39,13 +41,27 @@ export class ProviderConnectionInfo extends Disposable implements sqlops.Connect
 						this.options[option.name] = value;
 					});
 				}
-				this.serverName = model.serverName;
-				this.authenticationType = model.authenticationType;
-				this.databaseName = model.databaseName;
-				this.password = model.password;
-				this.userName = model.userName;
-				this.connectionName = model.connectionName;
+
+				this.updateSpecialValueType('serverName', model);
+				this.updateSpecialValueType('authenticationType', model);
+				this.updateSpecialValueType('databaseName', model);
+				this.updateSpecialValueType('password', model);
+				this.updateSpecialValueType('userName', model);
+				this.updateSpecialValueType('connectionName', model);
 			}
+		}
+	}
+
+
+	/**
+	 * Updates one of the special value types (serverName, authenticationType, etc.) if this doesn't already
+	 * have a value in the options map.
+	 *
+	 * This handles the case where someone hasn't passed in a valid property bag, but doesn't cause errors when
+	 */
+	private updateSpecialValueType(typeName: SettableProperty, model: sqlops.IConnectionProfile): void {
+		if (!this[typeName]) {
+			this[typeName] = model[typeName];
 		}
 	}
 

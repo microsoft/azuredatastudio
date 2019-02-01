@@ -108,7 +108,7 @@ export class FolderNode extends HdfsFileSourceNode {
 	protected _nodeType: string;
 	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string) {
 		super(context, path, fileSource);
-		this._nodeType = nodeType ? nodeType : Constants.HdfsItems.Folder;
+		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
 	}
 
 	private ensureChildrenExist(): void {
@@ -209,7 +209,7 @@ export class FolderNode extends HdfsFileSourceNode {
 export class ConnectionNode extends FolderNode {
 
 	constructor(context: TreeDataContext, private displayName: string, fileSource: IFileSource) {
-		super(context, '/', fileSource, Constants.HdfsItems.Connection);
+		super(context, '/', fileSource, Constants.MssqlClusterItems.Connection);
 	}
 
 	getDisplayName(): string {
@@ -247,7 +247,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			dark: this.context.extensionContext.asAbsolutePath('resources/dark/file_inverse.svg'),
 			light: this.context.extensionContext.asAbsolutePath('resources/light/file.svg')
 		};
-		item.contextValue = Constants.HdfsItems.File;
+		item.contextValue = Constants.MssqlClusterItems.File;
 		return item;
 	}
 
@@ -261,7 +261,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: Constants.HdfsItems.File,
+			nodeType: Constants.MssqlClusterItems.File,
 			nodeSubType: this.getSubType(),
 			iconType: 'FileGroupFile'
 		};
@@ -306,7 +306,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 
 	private getSubType(): string {
 		if (this.getDisplayName().toLowerCase().endsWith('.jar') || this.getDisplayName().toLowerCase().endsWith('.py')) {
-			return Constants.HdfsItemsSubType.Spark;
+			return Constants.MssqlClusterItemsSubType.Spark;
 		}
 
 		return undefined;
@@ -344,7 +344,7 @@ export class MessageNode extends TreeNode {
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
 		let item = new vscode.TreeItem(this.message, vscode.TreeItemCollapsibleState.None);
-		item.contextValue = Constants.HdfsItems.Message;
+		item.contextValue = Constants.MssqlClusterItems.Message;
 		return item;
 	}
 
@@ -357,7 +357,7 @@ export class MessageNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: Constants.HdfsItems.Message,
+			nodeType: Constants.MssqlClusterItems.Message,
 			nodeSubType: undefined,
 			iconType: 'MessageType'
 		};

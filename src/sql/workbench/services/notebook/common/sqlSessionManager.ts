@@ -17,9 +17,11 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { escape } from 'sql/base/common/strings';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
+export const MAX_ROWS = 2000;
 
 let sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
@@ -187,7 +189,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	requestExecute(content: nb.IExecuteRequest, disposeOnDone?: boolean): nb.IFuture {
 		if (this._queryRunner) {
 			this._queryRunner.runQuery(content.code);
-		} else {
+		} else if (this._currentConnection) {
 			let connectionUri = Utils.generateUri(this._currentConnection, 'notebook');
 			this._queryRunner = this._instantiationService.createInstance(QueryRunner, connectionUri, undefined);
 			this._connectionManagementService.connect(this._currentConnection, connectionUri).then((result) =>
@@ -254,7 +256,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		super();
 	}
 	get inProgress(): boolean {
-		return !this._queryRunner.hasCompleted;
+		return this._queryRunner && !this._queryRunner.hasCompleted;
 	}
 	set inProgress(val: boolean) {
 		if (this._queryRunner && !val) {
@@ -268,18 +270,22 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	get done(): Thenable<nb.IShellMessage> {
 		let deferred = new Deferred<nb.IShellMessage>();
 		try {
-			this._register(this._queryRunner.onBatchEnd(e => {
-				let msg: nb.IShellMessage = {
-					channel: 'shell',
-					type: 'execute_reply',
-					content: { status: 'ok' },
-					header: undefined,
-					metadata: {},
-					parent_header: undefined
-				};
-				this._msg = msg;
-				deferred.resolve(msg);
-			}));
+			if (this._queryRunner) {
+				this._register(this._queryRunner.onBatchEnd(e => {
+					let msg: nb.IShellMessage = {
+						channel: 'shell',
+						type: 'execute_reply',
+						content: { status: 'ok' },
+						header: undefined,
+						metadata: {},
+						parent_header: undefined
+					};
+					this._msg = msg;
+					deferred.resolve(msg);
+				}));
+			} else {
+				deferred.resolve();
+			}
 		} catch {
 			return Promise.resolve(undefined);
 		}
@@ -297,50 +303,32 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {
-		this._register(this._queryRunner.onBatchEnd(batch => {
-			this._queryRunner.getQueryRows(0, batch.resultSetSummaries[0].rowCount, 0, 0).then(d => {
-				let data: SQLData = {
-					columns: batch.resultSetSummaries[0].columnInfo.map(c => c.columnName),
-					rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-				};
-				let table: HTMLTableElement = document.createElement('table');
-				table.createTHead();
-				table.createTBody();
-				let hrow = <HTMLTableRowElement>table.insertRow();
-				// headers
-				for (let column of data.columns) {
-					let cell = hrow.insertCell();
-					cell.innerHTML = column;
-				}
+		if (this._queryRunner) {
+			this._register(this._queryRunner.onBatchEnd(batch => {
+				let rowCount = batch.resultSetSummaries[0].rowCount > MAX_ROWS ? MAX_ROWS : batch.resultSetSummaries[0].rowCount;
+				this._queryRunner.getQueryRows(0, rowCount, 0, 0).then(d => {
+					let columns = batch.resultSetSummaries[0].columnInfo;
 
-				for (let row in data.rows) {
-					let hrow = <HTMLTableRowElement>table.insertRow();
-					for (let column in data.columns) {
-						let cell = hrow.insertCell();
-						cell.innerHTML = data.rows[row][column];
-					}
-				}
-				let tableHtml = '<table>' + table.innerHTML + '</table>';
-
-				let msg: nb.IIOPubMessage = {
-					channel: 'iopub',
-					type: 'iopub',
-					header: <nb.IHeader>{
-						msg_id: undefined,
-						msg_type: 'execute_result'
-					},
-					content: <nb.IExecuteResult>{
-						output_type: 'execute_result',
-						metadata: {},
-						execution_count: 0,
-						data: { 'text/html': tableHtml },
-					},
-					metadata: undefined,
-					parent_header: undefined
-				};
-				handler.handle(msg);
-			});
-		}));
+					let msg: nb.IIOPubMessage = {
+						channel: 'iopub',
+						type: 'iopub',
+						header: <nb.IHeader>{
+							msg_id: undefined,
+							msg_type: 'execute_result'
+						},
+						content: <nb.IExecuteResult>{
+							output_type: 'execute_result',
+							metadata: {},
+							execution_count: 0,
+							data: { 'application/vnd.dataresource+json': this.convertToDataResource(columns, d), 'text/html': this.convertToHtmlTable(columns, d) }
+						},
+						metadata: undefined,
+						parent_header: undefined
+					};
+					handler.handle(msg);
+				});
+			}));
+		}
 	}
 	registerMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		// no-op
@@ -348,4 +336,63 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	removeMessageHook(hook: (msg: nb.IIOPubMessage) => boolean | Thenable<boolean>): void {
 		// no-op
 	}
+
+	private convertToDataResource(columns: IDbColumn[], d: QueryExecuteSubsetResult): IDataResource {
+		let columnsResources: IDataResourceSchema[] = [];
+		columns.forEach(column => {
+			columnsResources.push({name: escape(column.columnName)});
+		});
+		let columnsFields: IDataResourceFields = { fields: undefined };
+		columnsFields.fields = columnsResources;
+		return {
+			schema: columnsFields,
+			data: d.resultSubset.rows.map(row => {
+				let rowObject: { [key: string]: any; } = {};
+				row.forEach((val, index) => {
+					rowObject[index] = val.displayValue;
+				});
+				return rowObject;
+			})
+		};
+	}
+
+	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
+		let data: SQLData = {
+			columns: columns.map(c => escape(c.columnName)),
+			rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
+		};
+		let table: HTMLTableElement = document.createElement('table');
+		table.createTHead();
+		table.createTBody();
+		let hrow = <HTMLTableRowElement>table.insertRow();
+		// headers
+		for (let column of data.columns) {
+			let cell = hrow.insertCell();
+			cell.innerHTML = column;
+		}
+
+		for (let row in data.rows) {
+			let hrow = <HTMLTableRowElement>table.insertRow();
+			for (let column in data.columns) {
+				let cell = hrow.insertCell();
+				cell.innerHTML = escape(data.rows[row][column]);
+			}
+		}
+		let tableHtml = '<table>' + table.innerHTML + '</table>';
+		return tableHtml;
+	}
+}
+
+export interface IDataResource {
+	schema: IDataResourceFields;
+	data: any[];
+}
+
+export interface IDataResourceFields {
+	fields: IDataResourceSchema[];
+}
+
+export interface IDataResourceSchema {
+	name: string;
+	type?: string;
 }

@@ -152,7 +152,11 @@ export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposa
 		return this._id;
 	}
 
-	edit(callback: (editBuilder: sqlops.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
+	public runCell(cell: sqlops.nb.NotebookCell): Thenable<boolean> {
+		return this._proxy.$runCell(this._id, cell.uri);
+	}
+
+	public edit(callback: (editBuilder: sqlops.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
 			return TPromise.wrapError<boolean>(new Error('NotebookEditor#edit not possible on closed editors'));
 		}
