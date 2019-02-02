@@ -9,7 +9,7 @@ import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectEx
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionDialogService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { Deferred } from 'sql/base/common/promise';
 
 import { IConnectionProfile } from 'sqlops';
@@ -18,6 +18,8 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
+import { connectIfNotAlreadyConnected } from 'sql/workbench/common/taskUtilities';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -37,6 +39,7 @@ export class OEShimService implements IOEShimService {
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
+		@IConnectionDialogService private cd: IConnectionDialogService,
 		@ICapabilitiesService private capabilities: ICapabilitiesService
 	) {
 	}
@@ -44,6 +47,10 @@ export class OEShimService implements IOEShimService {
 	private async createSession(providerId: string, node: ITreeItem): TPromise<string> {
 		let deferred = new Deferred<string>();
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
+		connProfile.saveProfile = false;
+		if (this.cm.providerRegistered(providerId)) {
+			connProfile = await this.cd.openDialogAndWait(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile) as ConnectionProfile;
+		}
 		let sessionResp = await this.oe.createNewSession(providerId, connProfile);
 		let disp = this.oe.onUpdateObjectExplorerNodes(e => {
 			if (e.connection.id === connProfile.id) {
@@ -59,17 +66,12 @@ export class OEShimService implements IOEShimService {
 		return TPromise.wrap(deferred.promise);
 	}
 
-	private async connectAndCreateSession(providerId: string, node: ITreeItem): TPromise<string> {
-		// check if we need to connect first
-		return this.createSession(providerId, node);
-	}
-
 	public async getChildren(node: ITreeItem, identifier: any): TPromise<ITreeItem[]> {
 		if (!this.sessionMap.has(identifier)) {
 			this.sessionMap.set(identifier, new Map<string, string>());
 		}
 		if (!this.sessionMap.get(identifier).has(node.childProvider)) {
-			this.sessionMap.get(identifier).set(node.childProvider, await this.connectAndCreateSession(node.childProvider, node));
+			this.sessionMap.get(identifier).set(node.childProvider, await this.createSession(node.childProvider, node));
 		}
 		let sessionId = this.sessionMap.get(identifier).get(node.childProvider);
 		let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
