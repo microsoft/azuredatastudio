@@ -461,7 +461,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
-			await this._activeClientSession.updateConnection(this._activeConnection);
+			await this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile());
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
