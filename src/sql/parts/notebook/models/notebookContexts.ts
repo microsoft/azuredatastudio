@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb } from 'sqlops';
+import { nb, ServerInfo } from 'sqlops';
 
 import { localize } from 'vs/nls';
 import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
@@ -54,7 +54,7 @@ export class NotebookContexts {
 	public static async getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
-			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
+		if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
 				(kernelChangedArgs.oldValue && kernelChangedArgs.newValue.id === kernelChangedArgs.oldValue.id)) {
 				// nothing to do, kernels are the same or new kernel is undefined
 				return connections;
@@ -151,4 +151,26 @@ export class NotebookContexts {
 		}
 		return defaultKernel;
 	}
+
+	//Retrieves cluster endpoint based on service name.
+	//This will be changed as Utility method going forward
+	public static async getClusterEndpoint(connectionService: IConnectionManagementService, profileId: string, serviceName: string): Promise<IEndpoint> {
+		let serverInfo: ServerInfo = await connectionService.getServerInfo(profileId);
+		if (!serverInfo || !serverInfo.options) {
+			return undefined;
+		}
+		let endpoints: IEndpoint[] = serverInfo.options['clusterEndpoints'];
+		if (!endpoints || endpoints.length === 0) {
+			return undefined;
+		}
+		return endpoints.find(ep => ep.serviceName.toLowerCase() === serviceName.toLowerCase());
+	}
+
 }
+
+interface IEndpoint
+	{
+		serviceName: string;
+		ipAddress: string;
+		port: number;
+	}

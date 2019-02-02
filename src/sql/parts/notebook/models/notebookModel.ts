@@ -24,6 +24,7 @@ import { Schemas } from 'vs/base/common/network';
 import URI from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { mssqlProviderName, hadoopKnoxEndpointName } from 'sql/platform/connection/common/constants';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -399,6 +400,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
 
+	//Check if it's an invalid unified connection only when we have connection providers both 'MSSQL' and 'HADOOP_KNOX'
+	public async validateUnifiedConnection(connectionProfile?: IConnectionProfile): Promise<void> {
+		let kernelDisplayName = this.getDisplayNameFromSpecName(this.clientSession.kernel.name);
+		if (kernelDisplayName) {
+			let kernelProviders: string[] = this.getApplicableConnectionProviderIds(kernelDisplayName);
+			if (kernelProviders.length > 1 && connectionProfile && connectionProfile.providerName === mssqlProviderName) {
+				//It's a big data cluster
+				let endpoint = await NotebookContexts.getClusterEndpoint(this.notebookOptions.connectionService, connectionProfile.id, hadoopKnoxEndpointName);
+				if (!endpoint) {
+					this.notifyError(localize('connectionNotValid', 'Connection is not valid for the kernel: {0}. Choose a different one', kernelDisplayName));
+				}
+			}
+		}
+	}
+
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._defaultLanguageInfo;
 	}
@@ -435,6 +451,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async changeContext(server: string, newConnection?: IConnectionProfile): Promise<void> {
 		try {
+			await this.validateUnifiedConnection(newConnection);
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
 			}
@@ -549,7 +566,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._activeClientSession) {
 				try {
 					await this._activeClientSession.ready;
-				} catch(err) {
+				} catch (err) {
 					this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
 				}
 				await this._activeClientSession.shutdown();

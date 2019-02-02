@@ -23,6 +23,7 @@ export const configMaxRecentConnections = 'maxRecentConnections';
 export const mssqlProviderName = 'MSSQL';
 export const anyProviderName = '*';
 export const connectionProviderContextKey = 'connectionProvider';
+export const hadoopKnoxEndpointName = 'Knox';
 
 export const applicationName = 'sqlops';
 
