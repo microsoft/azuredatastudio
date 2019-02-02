@@ -18,8 +18,6 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
-import { connectIfNotAlreadyConnected } from 'sql/workbench/common/taskUtilities';
-import { generateUuid } from 'vs/base/common/uuid';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
