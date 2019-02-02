@@ -31,6 +31,10 @@
 		},
 		"commands": [
 			{
+				"command": "notebook.command.analyzeNotebook",
+				"title": "%notebook.analyzeJupyterNotebook%"
+			},
+			{
 				"command": "notebook.command.new",
 				"title": "%notebook.command.new%",
 				"icon": {
@@ -50,10 +54,20 @@
 		"menus": {
 			"commandPalette": [
 				{
+					"command": "notebook.command.analyzeNotebook"
+				},
+				{
 					"command": "notebook.command.new"
 				},
 				{
 					"command": "notebook.command.open"
+				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "notebook.command.analyzeNotebook",
+					"when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
+					"group": "1notebook@1"
 				}
 			]
 		},
