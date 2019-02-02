@@ -31,7 +31,7 @@ registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 				border-width: 1px;
 			}
 		`);
-		// toolbar
+		// toolbar color set only when active
 		collector.addRule(`
 			code-component .toolbar {
 				background-color: ${inactiveBorder};

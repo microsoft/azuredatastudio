@@ -45,6 +45,18 @@
 					"dark": "resources/dark/open_notebook_inverse.svg",
 					"light": "resources/light/open_notebook.svg"
 				}
+			},
+			{
+				"command": "notebook.command.runactivecell",
+				"title": "%notebook.command.runactivecell%"
+			},
+			{
+				"command": "notebook.command.addcode",
+				"title": "%notebook.command.addcode%"
+			},
+			{
+				"command": "notebook.command.addtext",
+				"title": "%notebook.command.addtext%"
 			}
 		],
 		"menus": {
@@ -54,6 +66,18 @@
 				},
 				{
 					"command": "notebook.command.open"
+				},
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addcode",
+					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addtext",
+					"when": "notebookEditorVisible"
 				}
 			]
 		},
@@ -61,6 +85,21 @@
 			{
 				"command": "notebook.command.new",
 				"key": "Ctrl+Shift+N"
+			},
+			{
+				"command": "notebook.command.runactivecell",
+				"key": "F5",
+				"when": "notebookEditorVisible"
+			},
+			{
+				"command": "notebook.command.addcode",
+				"key": "Ctrl+Shift+C",
+				"when": "notebookEditorVisible"
+			},
+			{
+				"command": "notebook.command.addtext",
+				"key": "Ctrl+Shift+T",
+				"when": "notebookEditorVisible"
 			}
 		]
 	},

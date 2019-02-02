@@ -5,5 +5,8 @@
 	"notebook.pythonPath.description": "Local path to python installation used by Notebooks.",
 	"notebook.sqlKernelEnabled.description": "Enable SQL kernel in notebook editor (Preview). Requires reloading this window to take effect",
 	"notebook.command.new": "New Notebook",
-	"notebook.command.open": "Open Notebook"
+	"notebook.command.open": "Open Notebook",
+	"notebook.command.runactivecell": "Run Cell",
+	"notebook.command.addcode": "Add Code Cell",
+	"notebook.command.addtext": "Add Text Cell"
 }
