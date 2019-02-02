@@ -28,7 +28,7 @@ export class TreeNode {
 	/**
 	 * USED BY NEW OE VIEWLET
 	 */
-	public providerHandle: string;
+	public childProvider: string;
 	/**
 	 * USED BY NEW OE VIEWLET
 	 */

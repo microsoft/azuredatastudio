@@ -88,7 +88,15 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		if (viewDescriptor.container.id === 'workbench.view.dataExplorer') {
 			const dataProvider = new OETreeViewDataProvider(treeViewId, this._proxy);
 			this.objectExplorerService.registerProvider(treeViewId, dataProvider);
-			dataProvider.registerOnExpandCompleted(e => this.objectExplorerService.onNodeExpanded(undefined, e));
+			dataProvider.registerOnExpandCompleted(e => this.objectExplorerService.onNodeExpanded({
+				errorMessage: e.errorMessage,
+				nodePath: e.nodePath,
+				nodes: e.nodes,
+				sessionId: e.sessionId,
+				providerId: treeViewId
+			}));
+			dataProvider.registerOnSessionCreated(e => this.objectExplorerService.onSessionCreated(undefined, e));
+			viewDescriptor.treeViewer.refresh();
 		}
 		return false;
 	}
@@ -187,6 +195,7 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 
 	protected itemsMap: Map<TreeItemHandle, ITreeItem> = new Map<TreeItemHandle, ITreeItem>();
 	private onExpandComplete = new Emitter<sqlops.ObjectExplorerExpandInfo>();
+	private onSessionCreated = new Emitter<sqlops.ObjectExplorerSession>();
 
 	private sessionId: string;
 
@@ -201,6 +210,24 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 	public createNewSession(connInfo: sqlops.ConnectionInfo): Thenable<sqlops.ObjectExplorerSessionResponse> {
 		// no op
 		this.sessionId = generateUuid();
+		setTimeout(() => {
+			this.onSessionCreated.fire({
+				sessionId: this.sessionId,
+				errorMessage: undefined,
+				rootNode: {
+					errorMessage: undefined,
+					iconType: undefined,
+					isLeaf: undefined,
+					label: undefined,
+					metadata: undefined,
+					nodePath: undefined,
+					nodeStatus: undefined,
+					nodeSubType: undefined,
+					nodeType: undefined
+				},
+				success: true
+			});
+		});
 		return TPromise.as({ sessionId: this.sessionId });
 	}
 
@@ -214,8 +241,10 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 						nodePath: e.handle,
 						label: e.label,
 						iconType: e.icon,
+						// this is just needed since we don't have this
+						nodeSubType: e.iconDark,
 						isLeaf: e.collapsibleState === TreeItemCollapsibleState.None,
-						provider: e.providerHandle,
+						childProvider: e.childProvider,
 						payload: e.payload,
 						nodeType: e.contextValue
 					};
@@ -243,6 +272,7 @@ export class OETreeViewDataProvider implements sqlops.ObjectExplorerProvider {
 
 	public registerOnSessionCreated(handler: (response: sqlops.ObjectExplorerSession) => any): void {
 		// no op
+		this.onSessionCreated.event(handler);
 		return;
 	}
 

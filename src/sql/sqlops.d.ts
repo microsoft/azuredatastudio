@@ -1035,7 +1035,7 @@ declare module 'sqlops' {
 		/**
 		 * USED BY NEW OE VIEWLET
 		 */
-		provider?: string;
+		childProvider?: string;
 		/**
 		 * USED BY NEW OE VIEWLET
 		 */
@@ -2365,7 +2365,7 @@ declare module 'sqlops' {
 
 	export class TreeItem extends vscode.TreeItem {
 		payload?: IConnectionProfile;
-		providerHandle?: string;
+		childProvider?: string;
 	}
 
 	export namespace tasks {

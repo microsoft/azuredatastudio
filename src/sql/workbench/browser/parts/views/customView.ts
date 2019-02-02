@@ -33,34 +33,18 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
 import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { deepClone } from 'vs/base/common/objects';
+import { equalsIgnoreCase } from 'vs/base/common/strings';
 
 import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { ITreeItem } from 'sql/workbench/common/views';
-import { IConnectionProfile } from 'sqlops';
 
 class Root implements ITreeItem {
-	constructor(public readonly providerHandle: string) { }
+	constructor(public readonly childProvider: string) { }
 	label = 'root';
 	handle = '0';
 	parentHandle = null;
 	collapsibleState = TreeItemCollapsibleState.Expanded;
 	children = void 0;
-	payload = <IConnectionProfile>{
-		providerName: this.providerHandle,
-		authenticationType: undefined,
-		azureTenantId: undefined,
-		connectionName: undefined,
-		databaseName: undefined,
-		groupFullName: undefined,
-		groupId: undefined,
-		id: undefined,
-		options: undefined,
-		password: undefined,
-		savePassword: undefined,
-		saveProfile: undefined,
-		serverName: undefined,
-		userName: undefined
-	};
 }
 
 export class CustomTreeViewer extends Disposable implements ITreeViewer {
@@ -304,11 +288,11 @@ class TreeDataSource implements IDataSource {
 	}
 
 	hasChildren(tree: ITree, node: ITreeItem): boolean {
-		return this.objectExplorerService.providerExists(node.providerHandle) && node.collapsibleState !== TreeItemCollapsibleState.None;
+		return this.objectExplorerService.providerExists(node.childProvider) && node.collapsibleState !== TreeItemCollapsibleState.None;
 	}
 
 	getChildren(tree: ITree, node: ITreeItem): TPromise<any[]> {
-		if (this.objectExplorerService.providerExists(node.providerHandle)) {
+		if (this.objectExplorerService.providerExists(node.childProvider)) {
 			return TPromise.wrap(this.progressService.withProgress({ location: this.container }, () => {
 				// this is replicating what vscode does when calling initial children
 				if (node instanceof Root) {
@@ -343,6 +327,7 @@ class TreeRenderer implements IRenderer {
 
 	private static readonly ITEM_HEIGHT = 22;
 	private static readonly TREE_TEMPLATE_ID = 'treeExplorer';
+	private static readonly MSSQL_TREE_TEMPLATE_ID = 'mssqltreeExplorer';
 
 	constructor(
 		private treeViewId: string,
@@ -358,8 +343,8 @@ class TreeRenderer implements IRenderer {
 		return TreeRenderer.ITEM_HEIGHT;
 	}
 
-	getTemplateId(tree: ITree, element: any): string {
-		return TreeRenderer.TREE_TEMPLATE_ID;
+	getTemplateId(tree: ITree, element: ITreeItem): string {
+		return equalsIgnoreCase(element.providerHandle, 'mssql') ? TreeRenderer.MSSQL_TREE_TEMPLATE_ID : TreeRenderer.TREE_TEMPLATE_ID;
 	}
 
 	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): ITreeExplorerTemplateData {
@@ -380,7 +365,7 @@ class TreeRenderer implements IRenderer {
 	renderElement(tree: ITree, node: ITreeItem, templateId: string, templateData: ITreeExplorerTemplateData): void {
 		const resource = node.resourceUri ? URI.revive(node.resourceUri) : null;
 		const label = node.label ? node.label : resource ? basename(resource.path) : '';
-		const icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
+		let icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
 		const title = node.tooltip ? node.tooltip : resource ? void 0 : label;
 
 		// reset
@@ -394,7 +379,12 @@ class TreeRenderer implements IRenderer {
 			templateData.resourceLabel.setLabel({ name: label }, { title, hideIcon: true, extraClasses: ['custom-view-tree-node-item-resourceLabel'] });
 		}
 
-		templateData.icon.style.backgroundImage = icon ? `url('${icon}')` : '';
+		if (templateId === TreeRenderer.TREE_TEMPLATE_ID) {
+			templateData.icon.style.backgroundImage = icon ? `url('${icon}')` : '';
+		} else {
+			DOM.addClass(templateData.icon, 'icon');
+			DOM.addClass(templateData.icon, icon);
+		}
 		DOM.toggleClass(templateData.icon, 'custom-view-tree-node-item-icon', !!icon);
 		templateData.actionBar.context = (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle });
 		templateData.actionBar.push(this.menus.getResourceActions(node), { icon: true, label: false });

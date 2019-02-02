@@ -411,7 +411,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			themeIcon: extensionTreeItem.iconPath instanceof ThemeIcon ? { id: extensionTreeItem.iconPath.id } : void 0,
 			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState,
 			payload: extensionTreeItem.payload,
-			providerHandle: extensionTreeItem.providerHandle
+			childProvider: extensionTreeItem.childProvider
 		};
 
 		return item;

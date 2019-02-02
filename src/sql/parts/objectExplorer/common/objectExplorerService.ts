@@ -590,7 +590,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				setNodeExpandedState: (treeNode, expandedState) => this.setNodeExpandedState(treeNode, expandedState),
 				setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
 			});
-		node.providerHandle = nodeInfo.provider;
+		node.childProvider = nodeInfo.childProvider;
 		node.payload = nodeInfo.payload;
 		return node;
 	}

@@ -10,12 +10,14 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { Deferred } from 'sql/base/common/promise';
 
 import { IConnectionProfile } from 'sqlops';
 
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
+import { equalsIgnoreCase } from 'vs/base/common/strings';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -39,17 +41,26 @@ export class OEShimService implements IOEShimService {
 	) {
 	}
 
-	private createSession(providerId: string, node: ITreeItem): TPromise<string> {
+	private async createSession(providerId: string, node: ITreeItem): TPromise<string> {
+		let deferred = new Deferred<string>();
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
-		return TPromise.wrap(this.oe.createNewSession(providerId, connProfile).then(e => e.sessionId));
+		let sessionResp = await this.oe.createNewSession(providerId, connProfile);
+		let disp = this.oe.onUpdateObjectExplorerNodes(e => {
+			if (e.connection.id === connProfile.id) {
+				let rootNode = this.oe.getSession(sessionResp.sessionId).rootNode;
+				// this is how we know it was shimmed
+				if (rootNode.nodePath) {
+					node.handle = this.oe.getSession(sessionResp.sessionId).rootNode.nodePath;
+				}
+			}
+			disp.dispose();
+			deferred.resolve(sessionResp.sessionId);
+		});
+		return TPromise.wrap(deferred.promise);
 	}
 
 	private async connectAndCreateSession(providerId: string, node: ITreeItem): TPromise<string> {
 		// check if we need to connect first
-		// if (this.cm.providerRegistered(providerId)) {
-		// 	let connProfile = new ConnectionProfile(this.capabilities, node.payload);
-		// 	await this.cm.connectIfNotConnected(connProfile);
-		// }
 		return this.createSession(providerId, node);
 	}
 
@@ -57,13 +68,13 @@ export class OEShimService implements IOEShimService {
 		if (!this.sessionMap.has(identifier)) {
 			this.sessionMap.set(identifier, new Map<string, string>());
 		}
-		if (!this.sessionMap.get(identifier).has(node.providerHandle)) {
-			this.sessionMap.get(identifier).set(node.providerHandle, await this.connectAndCreateSession(node.providerHandle, node));
+		if (!this.sessionMap.get(identifier).has(node.childProvider)) {
+			this.sessionMap.get(identifier).set(node.childProvider, await this.connectAndCreateSession(node.childProvider, node));
 		}
-		let sessionId = this.sessionMap.get(identifier).get(node.providerHandle);
+		let sessionId = this.sessionMap.get(identifier).get(node.childProvider);
 		let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
 		let profile: IConnectionProfile = node.payload || {
-			providerName: node.providerHandle,
+			providerName: node.childProvider,
 			authenticationType: undefined,
 			azureTenantId: undefined,
 			connectionName: undefined,
@@ -84,23 +95,46 @@ export class OEShimService implements IOEShimService {
 			sessionId,
 			rootNode: undefined,
 			errorMessage: undefined
-		}, treeNode).then(e => {
-			return e.map(n => {
-				return <ITreeItem>{
-					parentHandle: n.parent.id,
-					handle: n.nodePath,
-					collapsibleState: n.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
-					label: n.label,
-					icon: n.iconType,
-					providerHandle: n.providerHandle || n.getConnectionProfile().providerName,
-					payload: n.payload,
-					contextValue: n.nodeTypeId
-				};
-			});
-		}));
+		}, treeNode).then(e => e.map(n => mapNodeToITreeItem(n, node.childProvider))));
 	}
 
 	public providerExists(providerId: string): boolean {
 		return this.oe.providerRegistered(providerId);
 	}
+}
+
+function mapNodeToITreeItem(node: TreeNode, parentproviderHandle: string): ITreeItem {
+	let icon: string;
+	let iconDark: string;
+	if (equalsIgnoreCase(parentproviderHandle, 'mssql')) {
+		if (node.iconType) {
+			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
+		} else {
+			icon = node.nodeTypeId;
+			if (node.nodeStatus) {
+				icon = node.nodeTypeId + '_' + node.nodeStatus;
+			}
+			if (node.nodeSubType) {
+				icon = node.nodeTypeId + '_' + node.nodeSubType;
+			}
+		}
+		icon = icon.toLowerCase();
+		iconDark = icon;
+	} else {
+		icon = node.iconType as string;
+		iconDark = node.nodeSubType;
+	}
+	return {
+		parentHandle: node.parent.id,
+		handle: node.nodePath,
+		collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+		label: node.label,
+		icon,
+		// this is just because we need to have some mapping
+		iconDark,
+		childProvider: node.childProvider || parentproviderHandle,
+		providerHandle: parentproviderHandle,
+		payload: node.payload,
+		contextValue: node.nodeTypeId
+	};
 }

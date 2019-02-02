@@ -63,16 +63,16 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 					serverName: database.serverFullName,
 					databaseName: database.name,
 					userName: database.loginName,
-					password: undefined,
+					password: '',
 					authenticationType: 'SqlLogin',
 					savePassword: true,
 					groupFullName: '',
 					groupId: '',
 					providerName: 'MSSQL',
-					saveProfile: true,
+					saveProfile: false,
 					options: {}
 				},
-				providerHandle: 'MSSQL'
+				childProvider: 'MSSQL'
 			}
 		});
 	}
