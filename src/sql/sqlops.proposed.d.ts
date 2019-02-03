@@ -497,6 +497,8 @@ declare module 'sqlops' {
 
 	export interface TableColumn {
 		value: string;
+		width?: number;
+		cssClass?: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
