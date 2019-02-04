@@ -21,7 +21,6 @@ import { warn, error } from 'sql/base/common/log';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { localize } from 'vs/nls.mock';
 
 export const SERVICE_ID = 'ObjectExplorerService';
 
@@ -448,7 +447,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (finalResult) {
 			if (errorMessages.length > 0) {
 				if (errorMessages.length > 1) {
-					errorMessages.unshift(localize('nodeExpansionError', 'Mulitiple errors:'));
+					errorMessages.unshift(nls.localize('nodeExpansionError', 'Mulitiple errors:'));
 				}
 				errorNode.errorMessage = errorMessages.join('\n');
 				errorNode.label = errorNode.errorMessage;
