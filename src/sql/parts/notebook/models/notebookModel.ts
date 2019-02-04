@@ -287,11 +287,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			index = undefined;
 		}
 		// Set newly created cell as active cell
-		if (this._activeCell) {
-			this._activeCell.active = false;
-		}
-		this._activeCell = cell;
-		this._activeCell.active = true;
+		this.updateActiveCell(cell);
 
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsAdded,
@@ -300,6 +296,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		});
 
 		return cell;
+	}
+
+	private updateActiveCell(cell: ICellModel) {
+		if (this._activeCell) {
+			this._activeCell.active = false;
+		}
+		this._activeCell = cell;
+		this._activeCell.active = true;
 	}
 
 	private createCell(cellType: CellType): ICellModel {
@@ -342,6 +346,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				newCells.push(this.notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
 			}
 			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
+			if (newCells.length > 0) {
+				this.updateActiveCell(newCells[0]);
+			}
 			this._contentChangedEmitter.fire({
 				changeType: NotebookChangeType.CellsAdded
 			});

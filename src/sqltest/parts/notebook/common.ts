@@ -27,6 +27,9 @@ export class NotebookModelStub implements INotebookModel {
 	get cells(): ReadonlyArray<ICellModel> {
 		throw new Error('method not implemented.');
 	}
+	get activeCell(): ICellModel {
+		throw new Error('method not implemented.');
+	}
 	get clientSession(): IClientSession {
 		throw new Error('method not implemented.');
 	}

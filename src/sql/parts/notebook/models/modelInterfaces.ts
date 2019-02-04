@@ -256,6 +256,12 @@ export interface INotebookModel {
 	 * Cell List for this model
 	 */
 	readonly cells: ReadonlyArray<ICellModel>;
+
+	/**
+	 * The active cell for this model. May be undefined
+	 */
+	readonly activeCell: ICellModel;
+
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
