@@ -497,6 +497,8 @@ declare module 'sqlops' {
 
 	export interface TableColumn {
 		value: string;
+		width?: number;
+		cssClass?: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -1569,10 +1571,10 @@ declare module 'sqlops' {
 			 * Kicks off execution of a cell. Thenable will resolve only once the full execution is completed.
 			 *
 			 *
-			 * @param cell A cell in this notebook which should be executed
+			 * @param cell An optional cell in this notebook which should be executed. If no cell is defined, it will run the active cell instead
 			 * @return A promise that resolves with a value indicating if the cell was run or not.
 			 */
-			runCell(cell: NotebookCell): Thenable<boolean>;
+			runCell(cell?: NotebookCell): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {
