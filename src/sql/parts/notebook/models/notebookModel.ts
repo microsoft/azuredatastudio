@@ -24,7 +24,6 @@ import { Schemas } from 'vs/base/common/network';
 import URI from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { mssqlProviderName, hadoopKnoxEndpointName } from 'sql/platform/connection/common/constants';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,

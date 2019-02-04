@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { nb, ServerInfo } from 'sqlops';
+import { nb } from 'sqlops';
 
 import { localize } from 'vs/nls';
 import { IDefaultConnection, notebookConstants, INotebookModelOptions } from 'sql/parts/notebook/models/modelInterfaces';
