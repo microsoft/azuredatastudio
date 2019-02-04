@@ -14,9 +14,7 @@ const localize = nls.loadMessageBundle();
 
 let counter = 0;
 const notebookConfigKey = 'notebook';
-const sqlKernelEnablebConfig = 'sqlKernelEnabled';
 const pythonPathConfigKey = 'pythonPath';
-const SQL_NOTEBOOK_PROVIDER = 'sql';
 const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
@@ -72,15 +70,11 @@ async function analyzeNotebook(oeContext?: sqlops.ObjectExplorerContext): Promis
 
 	let config = getConfiguration(notebookConfigKey);
 	if (config) {
-		let providerId: string = SQL_NOTEBOOK_PROVIDER;
-		let sqlKerelEnabled = config[sqlKernelEnablebConfig];
-		if (!sqlKerelEnabled) {
-			let pythonInstalledPath = config[pythonPathConfigKey];
-			if (pythonInstalledPath && fs.existsSync(pythonInstalledPath)) {
-				providerId = JUPYTER_NOTEBOOK_PROVIDER;
-			} else {
-				providerId = DEFAULT_NOTEBOOK_PROVIDER;
-			}
+		let providerId: string = JUPYTER_NOTEBOOK_PROVIDER;
+
+		let pythonInstalledPath = config[pythonPathConfigKey];
+		if (!(pythonInstalledPath && fs.existsSync(pythonInstalledPath))) {
+			providerId = DEFAULT_NOTEBOOK_PROVIDER;
 		}
 
 		let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
