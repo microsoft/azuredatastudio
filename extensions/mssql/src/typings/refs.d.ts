@@ -5,4 +5,5 @@
 
 /// <reference path='../../../../src/sql/sqlops.d.ts'/>
 /// <reference path='../../../../src/sql/sqlops.proposed.d.ts'/>
+/// <reference path='../../../../src/sql/sqlops.extension.d.ts'/>
 /// <reference path='../../../../src/vs/vscode.d.ts'/>

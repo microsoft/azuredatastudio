@@ -29,7 +29,7 @@ const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<sqlops.IMssqlExtensionApi> {
 	// lets make sure we support this platform first
 	let supported = await Utils.verifyPlatform();
 
@@ -113,6 +113,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(new CopyPathCommand(appContext));
 	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
+
+	let api: sqlops.IMssqlExtensionApi = {
+		getMssqlObjectExplorerBrowser(): sqlops.IMssqlObjectExplorerBrowser {
+			return {
+				getNode: (context: sqlops.ObjectExplorerContext) => {
+					let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
+					return <any>oeProvider.findNodeForContext(context);
+				}
+			};
+		}
+	};
+	return api;
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {
