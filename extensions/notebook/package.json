@@ -55,6 +55,13 @@
 				{
 					"command": "notebook.command.open"
 				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "notebook.command.new",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+					"group": "1root@1"
+				}
 			]
 		},
 		"keybindings": [
