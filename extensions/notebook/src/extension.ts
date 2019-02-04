@@ -7,13 +7,18 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
+import * as os from 'os';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-let counter = 0;
+const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
+const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 const noNotebookVisible = localize('noNotebookVisible', 'No notebook editor is active');
+
+let counter = 0;
+
 export function activate(extensionContext: vscode.ExtensionContext) {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', ( connectionId? : string) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (connectionId?: string) => {
 		newNotebook(connectionId);
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.open', () => {
@@ -27,6 +32,9 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addtext', () => {
 		addCell('markdown');
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', (explorerContext: sqlops.ObjectExplorerContext) => {
+		analyzeNotebook(explorerContext);
 	}));
 
 }
@@ -43,6 +51,7 @@ function newNotebook(connectionId: string) {
 		defaultKernel: null
 	} : null;
 	sqlops.nb.showNotebookDocument(untitledUri, options).then(success => {
+
 	}, (err: Error) => {
 		vscode.window.showErrorMessage(err.message);
 	});
@@ -94,6 +103,33 @@ async function addCell(cellType: sqlops.nb.CellType): Promise<void> {
 		}
 	} catch (err) {
 		vscode.window.showErrorMessage(err);
+	}
+}
+
+async function analyzeNotebook(oeContext?: sqlops.ObjectExplorerContext): Promise<void> {
+	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
+	// to handle this. We should look into improving this in the future
+	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${counter++}`);
+
+	let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
+		connectionId: oeContext ? oeContext.connectionProfile.id : '',
+		providerId: JUPYTER_NOTEBOOK_PROVIDER
+	});
+	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
+		// Get the file path after '/HDFS'
+		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
+		if (hdfsPath.length > 0) {
+			let analyzeCommand = "#" + msgSampleCodeDataFrame + os.EOL + "df = (spark.read.option(\"inferSchema\", \"true\")"
+				+ os.EOL + ".option(\"header\", \"true\")" + os.EOL + ".csv('{0}'))" + os.EOL + "df.show(10)";
+
+			editor.edit(editBuilder => {
+				editBuilder.replace(0, {
+					cell_type: 'code',
+					source: analyzeCommand.replace('{0}', hdfsPath)
+				});
+			});
+
+		}
 	}
 }
 
