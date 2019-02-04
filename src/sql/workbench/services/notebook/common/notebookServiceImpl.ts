@@ -30,7 +30,11 @@ import { Deferred } from 'sql/base/common/promise';
 import { SqlSessionManager } from 'sql/workbench/services/notebook/common/sqlSessionManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { sqlNotebooksEnabled } from 'sql/parts/notebook/notebookUtils';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { NotebookEditor } from 'sql/parts/notebook/notebookEditor';
+import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -84,13 +88,16 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _providerToStandardKernels = new Map<string, nb.IStandardKernel[]>();
 	private _registrationComplete = new Deferred<void>();
 	private _isRegistrationComplete = false;
+	private notebookEditorVisible: IContextKey<boolean>;
 
 	constructor(
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
 		@IExtensionManagementService extensionManagementService: IExtensionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IContextKeyService private _contextKeyService: IContextKeyService
+		@IContextKeyService private _contextKeyService: IContextKeyService,
+		@IEditorService private readonly _editorService: IEditorService,
+		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService
 	) {
 		super();
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
@@ -105,6 +112,23 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 		if (extensionManagementService) {
 			this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => this.removeContributedProvidersFromCache(identifier, extensionService)));
+		}
+		this.hookContextKeyListeners();
+	}
+
+	private hookContextKeyListeners() {
+		const updateEditorContextKeys = () => {
+			const visibleEditors = this._editorService.visibleControls;
+			this.notebookEditorVisible.set(visibleEditors.some(control => control.getId() === NotebookEditor.ID));
+		};
+		if (this._contextKeyService) {
+			this.notebookEditorVisible = NotebookEditorVisibleContext.bindTo(this._contextKeyService);
+		}
+		if (this._editorService) {
+			this._register(this._editorService.onDidActiveEditorChange(() => updateEditorContextKeys()));
+			this._register(this._editorService.onDidVisibleEditorsChange(() => updateEditorContextKeys()));
+			this._register(this._editorGroupsService.onDidAddGroup(() => updateEditorContextKeys()));
+			this._register(this._editorGroupsService.onDidRemoveGroup(() => updateEditorContextKeys()));
 		}
 	}
 
