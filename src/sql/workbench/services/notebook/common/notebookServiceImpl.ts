@@ -17,7 +17,7 @@ import {
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
-import { SessionManager } from 'sql/workbench/services/notebook/common/sessionManager';
+import { SessionManager, noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -359,7 +359,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			notebookRegistry.registerNotebookProvider({
 				provider: defaultProvider.providerId,
 				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				standardKernels: []
+				standardKernels: { name: noKernel, connectionProviderIds: [] }
 			});
 		} else {
 			let sqlProvider = new SqlNotebookProvider(this._instantiationService);

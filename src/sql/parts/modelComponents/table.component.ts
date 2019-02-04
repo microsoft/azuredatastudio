@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./table';
+
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef, ViewChild, ElementRef, OnDestroy, AfterViewInit
 } from '@angular/core';
@@ -53,7 +55,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 					return <Slick.Column<any>>{
 						name: col.value,
 						id: col.value,
-						field: col.value
+						field: col.value,
+						width: col.width,
+						cssClass: col.cssClass
 					};
 				} else {
 					return <Slick.Column<any>>{
