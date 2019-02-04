@@ -90,9 +90,6 @@ export class NotebookModelStub implements INotebookModel {
     getApplicableConnectionProviderIds(kernelName: string): string[] {
         throw new Error('Method not implemented.');
 	}
-	validateUnifiedConnection(connectionProfile?:IConnectionProfile): Promise<void>{
-		throw new Error('Method not implemented.');
-	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

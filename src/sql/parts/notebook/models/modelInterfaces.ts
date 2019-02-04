@@ -378,8 +378,6 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
-
-	validateUnifiedConnection(connection?: IConnectionProfile):Promise<void>;
 }
 
 export interface NotebookContentChange {

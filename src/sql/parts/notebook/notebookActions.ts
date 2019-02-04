@@ -265,9 +265,6 @@ export class AttachToDropdown extends SelectBox {
 		this.selectWithOptionName(model.contexts.defaultConnection.serverName);
 		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
 		let connections = otherConnections.map((context) => context.serverName);
-		if(otherConnections.length > 0){
-			this.model.validateUnifiedConnection(otherConnections[0]).then(() => {});
-		}
 		return connections;
 	}
 

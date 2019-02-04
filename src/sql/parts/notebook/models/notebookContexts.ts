@@ -151,26 +151,4 @@ export class NotebookContexts {
 		}
 		return defaultKernel;
 	}
-
-	//Retrieves cluster endpoint based on service name.
-	//This will be changed as Utility method going forward
-	public static async getClusterEndpoint(connectionService: IConnectionManagementService, profileId: string, serviceName: string): Promise<IEndpoint> {
-		let serverInfo: ServerInfo = await connectionService.getServerInfo(profileId);
-		if (!serverInfo || !serverInfo.options) {
-			return undefined;
-		}
-		let endpoints: IEndpoint[] = serverInfo.options['clusterEndpoints'];
-		if (!endpoints || endpoints.length === 0) {
-			return undefined;
-		}
-		return endpoints.find(ep => ep.serviceName.toLowerCase() === serviceName.toLowerCase());
-	}
-
 }
-
-interface IEndpoint
-	{
-		serviceName: string;
-		ipAddress: string;
-		port: number;
-	}

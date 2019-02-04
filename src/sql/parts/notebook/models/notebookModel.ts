@@ -407,21 +407,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
 
-	//Check if it's an invalid unified connection only when we have connection providers both 'MSSQL' and 'HADOOP_KNOX'
-	public async validateUnifiedConnection(connectionProfile?: IConnectionProfile): Promise<void> {
-		let kernelDisplayName = this.getDisplayNameFromSpecName(this.clientSession.kernel.name);
-		if (kernelDisplayName) {
-			let kernelProviders: string[] = this.getApplicableConnectionProviderIds(kernelDisplayName);
-			if (kernelProviders.length > 1 && connectionProfile && connectionProfile.providerName === mssqlProviderName) {
-				//It's a big data cluster
-				let endpoint = await NotebookContexts.getClusterEndpoint(this.notebookOptions.connectionService, connectionProfile.id, hadoopKnoxEndpointName);
-				if (!endpoint) {
-					this.notifyError(localize('connectionNotValid', 'Connection is not valid for the kernel: {0}. Choose a different one', kernelDisplayName));
-				}
-			}
-		}
-	}
-
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._defaultLanguageInfo;
 	}
@@ -458,7 +443,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async changeContext(server: string, newConnection?: IConnectionProfile): Promise<void> {
 		try {
-			await this.validateUnifiedConnection(newConnection);
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
 			}
@@ -468,7 +452,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
-			await this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile());
+			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).catch(() => {
+				let kernelDisplayName = this.getDisplayNameFromSpecName(this.clientSession.kernel.name);
+				this.notifyError(localize('connectionNotValid', 'Connection is not valid for the kernel: {0}. Choose a different one', kernelDisplayName));
+			});
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
