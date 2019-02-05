@@ -144,10 +144,10 @@ function activateSparkFeatures(appContext: AppContext): void {
 		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
 	apiWrapper.registerTaskHandler(Constants.livyOpenSparkHistory, (profile: sqlops.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(this.appContext).execute(profile, true);
+		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
 	apiWrapper.registerTaskHandler(Constants.livyOpenYarnHistory, (profile: sqlops.IConnectionProfile) => {
-		new OpenSparkYarnHistoryTask(this.appContext).execute(profile, false);
+		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }
 

@@ -19,16 +19,12 @@ export class OpenSparkYarnHistoryTask {
     async execute(sqlConnProfile: sqlops.IConnectionProfile, isSpark: boolean): Promise<void> {
         try {
 			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
-
-			// let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnInfo(sqlConnProfile);
             if (!sqlClusterConnection)
             {
                 let name = isSpark? 'Spark' : 'Yarn';
                 this.appContext.apiWrapper.showErrorMessage(`Please connect to the Spark cluster before View ${name} History.`);
                 return;
-            }
-
-            // let sqlClusterConnection = new SqlClusterConnection(clusterConnInfo);
+			}
             if (isSpark) {
                 vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateSparkHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
             }
