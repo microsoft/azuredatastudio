@@ -378,6 +378,9 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
+	readonly onValidConnectionSelected: Event<boolean>;
 }
 
 export interface NotebookContentChange {

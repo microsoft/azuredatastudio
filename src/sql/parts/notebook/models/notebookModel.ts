@@ -66,6 +66,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _defaultKernel: nb.IKernelSpec;
 	private _kernelDisplayNameToConnectionProviderIds: Map<string, string[]> = new Map<string, string[]>();
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
+	private _onValidConnectionSelected = new Emitter<boolean>();
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -227,6 +228,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public get onProviderIdChange(): Event<string> {
 		return this._onProviderIdChanged.event;
+	}
+
+	public get onValidConnectionSelected(): Event<boolean>{
+		return this._onValidConnectionSelected.event;
 	}
 
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
@@ -451,11 +456,18 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
-			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).catch((error) => {
-				if (error) {
-					this.notifyError(error.message);
-				}
-			});
+			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).then(
+				result => {
+					//Remove 'Select connection' from 'Attach to' drop-down since its a valid connection
+					this._onValidConnectionSelected.fire(true);
+				},
+				error => {
+					if (error) {
+						this.notifyError(notebookUtils.getErrorMessage(error));
+						//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
+						this._onValidConnectionSelected.fire(false);
+					}
+				});
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));

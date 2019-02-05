@@ -215,8 +215,11 @@ export class AttachToDropdown extends SelectBox {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
-				.then((model) => this.updateModel(model))
-				.catch((err) => {
+				.then(model => {
+					this.updateModel(model);
+					this.updateAttachtoDropdown(model);
+				})
+				.catch(err => {
 					// No-op for now
 				});
 		}
@@ -229,16 +232,43 @@ export class AttachToDropdown extends SelectBox {
 	public updateModel(model: INotebookModel): void {
 		this.model = model;
 		model.contextsChanged(() => {
-			if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
-				let nameLower = this.model.clientSession.kernel.name.toLowerCase();
-				let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === nameLower);
-				this.loadAttachToDropdown(this.model, currentKernelSpec.display_name);
+			let kernelDisplayName: string = this.getKernelDisplayName();
+			if (kernelDisplayName) {
+				this.loadAttachToDropdown(this.model, kernelDisplayName);
 			}
 		});
 	}
 
+	private updateAttachtoDropdown(model: INotebookModel): void {
+		this.model = model;
+		model.onValidConnectionSelected(validConnection => {
+			let kernelDisplayName: string = this.getKernelDisplayName();
+			if (kernelDisplayName) {
+				if (!validConnection) {
+					this.loadAttachToDropdown(this.model, kernelDisplayName, true);
+				}
+				else {
+					//load without 'Select connection'
+					this.loadAttachToDropdown(this.model, kernelDisplayName, false);
+				}
+			}
+		});
+	}
+
+	private getKernelDisplayName(): string {
+		let kernelDisplayName: string;
+		if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
+			let nameLower = this.model.clientSession.kernel.name.toLowerCase();
+			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === nameLower);
+			if (currentKernelSpec) {
+				kernelDisplayName = currentKernelSpec.display_name;
+			}
+		}
+		return kernelDisplayName;
+	}
+
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
-	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
+	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string, defaultSelectConnection?: boolean): Promise<void> {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
@@ -246,16 +276,30 @@ export class AttachToDropdown extends SelectBox {
 		else {
 			let connections = this.getConnections(model);
 			this.enable();
-			if (connections.length === 1 && connections[0] === msgAddNewConnection) {
-				connections.unshift(msgSelectConnection);
-				this.selectWithOptionName(msgSelectConnection);
+			if (defaultSelectConnection) {
+				connections = this.loadWithSelectConnection(connections);
 			}
 			else {
-				connections.push(msgAddNewConnection);
+				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
+					connections.unshift(msgSelectConnection);
+					this.selectWithOptionName(msgSelectConnection);
+				}
+				else {
+					connections.push(msgAddNewConnection);
+				}
 			}
 			this.setOptions(connections);
 		}
+	}
 
+	private loadWithSelectConnection(connections: string[]): string[] {
+		if (connections && connections.length > 0) {
+			connections.unshift(msgSelectConnection);
+			this.selectWithOptionName(msgSelectConnection);
+			connections.push(msgAddNewConnection);
+			this.setOptions(connections);
+		}
+		return connections;
 	}
 
 	//Get connections from context
