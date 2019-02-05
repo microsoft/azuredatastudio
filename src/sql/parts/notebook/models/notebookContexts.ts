@@ -54,7 +54,7 @@ export class NotebookContexts {
 	public static async getContextsForKernel(connectionService: IConnectionManagementService, connProviderIds: string[], kernelChangedArgs?: nb.IKernelChangedArgs, profile?: IConnectionProfile): Promise<IDefaultConnection> {
 		let connections: IDefaultConnection = this.DefaultContext;
 		if (!profile) {
-		if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
+			if (!kernelChangedArgs || !kernelChangedArgs.newValue ||
 				(kernelChangedArgs.oldValue && kernelChangedArgs.newValue.id === kernelChangedArgs.oldValue.id)) {
 				// nothing to do, kernels are the same or new kernel is undefined
 				return connections;

@@ -451,9 +451,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
-			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).catch(() => {
-				let kernelDisplayName = this.getDisplayNameFromSpecName(this.clientSession.kernel.name);
-				this.notifyError(localize('connectionNotValid', 'Connection is not valid for the kernel: {0}. Choose a different one', kernelDisplayName));
+			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).catch((error) => {
+				if(error)
+				{
+					this.notifyError(error.message);
+				}
 			});
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
