@@ -21,12 +21,13 @@ import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { SqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
 import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
-import SparkFeatureController from './sparkFeature/SparkFeatureController';
+import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
+import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -100,14 +101,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		credentialsStore.start();
 		resourceProvider.start();
 
-		let appContext = new AppContext(context, new ApiWrapper());
-		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
+		let nodeProvider = new SqlObjectExplorerNodeProvider(appContext);
 		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
-
-		let sparkFeatureController = new SparkFeatureController(appContext);
-		controllers.push(sparkFeatureController);
-		context.subscriptions.push(sparkFeatureController);
-		sparkFeatureController.activate();
+		activateSparkFeatures(appContext);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 		vscode.window.showErrorMessage('Failed to start Sql tools service');
@@ -129,13 +125,30 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
 				getNode: (context: sqlops.ObjectExplorerContext) => {
-					let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
-					return <any>oeProvider.findNodeForContext(context);
+					let oeProvider = appContext.getService<SqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
+					return <any>oeProvider.findSqlClusterNodeBySqlContext(context);
 				}
 			};
 		}
 	};
 	return api;
+}
+
+function activateSparkFeatures(appContext: AppContext): void {
+	let extensionContext = appContext.extensionContext;
+	let apiWrapper = appContext.apiWrapper;
+	let outputChannel: vscode.OutputChannel = appContext.apiWrapper.createOutputChannel('MSSQL');
+	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
+	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
+	apiWrapper.registerTaskHandler(Constants.livySubmitSparkJobTask, (profile: sqlops.IConnectionProfile) => {
+		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
+	});
+	apiWrapper.registerTaskHandler(Constants.livyOpenSparkHistory, (profile: sqlops.IConnectionProfile) => {
+		new OpenSparkYarnHistoryTask(this.appContext).execute(profile, true);
+	});
+	apiWrapper.registerTaskHandler(Constants.livyOpenYarnHistory, (profile: sqlops.IConnectionProfile) => {
+		new OpenSparkYarnHistoryTask(this.appContext).execute(profile, false);
+	});
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {

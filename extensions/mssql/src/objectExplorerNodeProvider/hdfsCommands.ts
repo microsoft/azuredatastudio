@@ -24,7 +24,7 @@ import * as utils from '../utils';
 import { SqlClusterConnection } from './connection';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
-import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
+import { SqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
 
 function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): vscode.Uri {
 	let root = utils.getUserHome();
@@ -45,14 +45,14 @@ function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: bo
 	return vscode.Uri.file(fspath.join(root, fileName));
 }
 
-export async function getNode<T extends TreeNode>(context: ICommandViewContext |ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {
+export async function getNode<T extends TreeNode>(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {
 	let node: T = undefined;
-	if (context && context.type === constants.ViewType && context.node) {
-		node = context.node as T;
-	} else if (context && context.type === constants.ObjectExplorerService) {
-		let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
-		if (oeProvider) {
-			node = await oeProvider.findNodeForContext<T>(context.explorerContext);
+	if (sqlContext && sqlContext.type === constants.ViewType && sqlContext.node) {
+		node = sqlContext.node as T;
+	} else if (sqlContext && sqlContext.type === constants.ObjectExplorerService) {
+		let oeNodeProvider = appContext.getService<SqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
+		if (oeNodeProvider) {
+			node = await oeNodeProvider.findSqlClusterNodeBySqlContext<T>(sqlContext);
 		}
 	} else {
 		throw new Error(LocalizedConstants.msgMissingNodeContext);
@@ -66,8 +66,8 @@ export class UploadFilesCommand extends ProgressCommand {
 		super('mssqlCluster.uploadFiles', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(context, args);
+	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(sqlContext, args);
 	}
 
 	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
@@ -134,13 +134,13 @@ export class MkDirCommand extends ProgressCommand {
 		super('mssqlCluster.mkdir', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(context, args);
+	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(sqlContext, args);
 	}
 
-	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let folderNode = await getNode<FolderNode>(context, this.appContext);
+			let folderNode = await getNode<FolderNode>(sqlContext, this.appContext);
 
 			if (folderNode) {
 				let fileName: string = await this.getDirName();
@@ -149,8 +149,8 @@ export class MkDirCommand extends ProgressCommand {
 						async (cancelToken: vscode.CancellationTokenSource) => this.mkDir(fileName, folderNode, cancelToken),
 						localize('makingDir', 'Creating directory'), true,
 						() => this.apiWrapper.showInformationMessage(localize('mkdirCanceled', 'Operation was canceled')));
-					if (context.type === constants.ObjectExplorerService) {
-						let objectExplorerNode = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
+					if (sqlContext.type === constants.ObjectExplorerService) {
+						let objectExplorerNode = await sqlops.objectexplorer.getNode(sqlContext.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
 					}
 				}
@@ -180,20 +180,20 @@ export class DeleteFilesCommand extends Command {
 		super('mssqlCluster.deleteFiles', appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(context, args);
+	protected async preExecute(sqlContext: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(sqlContext, args);
 	}
 
-	async execute(context: ICommandViewContext |ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(sqlContext: ICommandViewContext |ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let node = await getNode<TreeNode>(context, this.appContext);
+			let node = await getNode<TreeNode>(sqlContext, this.appContext);
 			if (node) {
 				// TODO ideally would let node define if it's deletable
 				// TODO also, would like to change this to getNodeInfo as OE is the primary use case now
 				let treeItem = await node.getTreeItem();
 				let oeNodeToRefresh: sqlops.objectexplorer.ObjectExplorerNode = undefined;
-				if (context.type === constants.ObjectExplorerService) {
-					let oeNodeToDelete = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
+				if (sqlContext.type === constants.ObjectExplorerService) {
+					let oeNodeToDelete = await sqlops.objectexplorer.getNode(sqlContext.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
 					oeNodeToRefresh = await oeNodeToDelete.getParent();
 				}
 				switch (treeItem.contextValue) {
@@ -251,13 +251,13 @@ export class SaveFileCommand extends ProgressCommand {
 		super('mssqlCluster.saveFile', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(context, args);
+	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(sqlContext, args);
 	}
 
-	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let fileNode = await getNode<FileNode>(context, this.appContext);
+			let fileNode = await getNode<FileNode>(sqlContext, this.appContext);
 			if (fileNode) {
 				let defaultUri = getSaveableUri(this.apiWrapper, fspath.basename(fileNode.hdfsPath));
 				let fileUri: vscode.Uri = await this.apiWrapper.showSaveDialog({
@@ -282,6 +282,7 @@ export class SaveFileCommand extends ProgressCommand {
 		await this.apiWrapper.executeCommand('vscode.open', fileUri);
 	}
 }
+
 export class PreviewFileCommand extends ProgressCommand {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
@@ -289,13 +290,13 @@ export class PreviewFileCommand extends ProgressCommand {
 		super('mssqlCluster.previewFile', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(context, args);
+	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(sqlContext, args);
 	}
 
-	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let fileNode = await getNode<FileNode>(context, this.appContext);
+			let fileNode = await getNode<FileNode>(sqlContext, this.appContext);
 			if (fileNode) {
 				await this.executeWithProgress(
 					async (cancelToken: vscode.CancellationTokenSource) => {
@@ -334,6 +335,7 @@ export class PreviewFileCommand extends ProgressCommand {
 		}
 	}
 }
+
 export class CopyPathCommand extends Command {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
@@ -341,13 +343,13 @@ export class CopyPathCommand extends Command {
 		super('mssqlCluster.copyPath', appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(context, args);
+	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(sqlContext, args);
 	}
 
-	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
+			let node = await getNode<HdfsFileSourceNode>(sqlContext, this.appContext);
 			if (node) {
 				let path = node.hdfsPath;
 				clipboardy.writeSync(path);
@@ -356,82 +358,6 @@ export class CopyPathCommand extends Command {
 			}
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', err));
-		}
-	}
-}
-
-/**
- * The connect task is only expected to work in the file-tree based APIs, not Object Explorer
- */
-export class ConnectTask {
-	constructor(private hdfsProvider: HdfsProvider, private prompter: IPrompter, private apiWrapper: ApiWrapper) {
-
-	}
-
-	async execute(profile: sqlops.IConnectionProfile, ...args: any[]): Promise<void> {
-		if (profile) {
-			return this.createFromProfile(profile);
-		}
-		return this.createHdfsConnection();
-	}
-
-	private createFromProfile(profile: sqlops.IConnectionProfile): Promise<void> {
-		let connection = new SqlClusterConnection(profile);
-		if (profile.providerName === constants.mssqlClusterProviderName && connection.host) {
-			// TODO need to get the actual port and auth to be used since this will be non-default
-			// in future versions
-			this.hdfsProvider.addHdfsConnection(<IHdfsOptions> {
-				protocol: 'https',
-				host: connection.host,
-				port: connection.knoxport,
-				user: connection.user,
-				path: 'gateway/default/webhdfs/v1',
-				requestParams: {
-					auth: {
-						user: connection.user,
-						pass: connection.password
-					}
-				}
-			});
-		}
-		return Promise.resolve(undefined);
-	}
-
-	private addConnection(options: IHdfsOptions): void {
-		let display: string = `${options.user}@${options.host}:${options.port}`;
-		this.hdfsProvider.addConnection(display, FileSourceFactory.instance.createHdfsFileSource(options));
-	}
-
-	private async createHdfsConnection(profile?: sqlops.IConnectionProfile): Promise<void> {
-		let questions: IQuestion[] = [
-			{
-				type: QuestionTypes.input,
-				name: constants.hdfsHost,
-				message: localize('msgSetWebHdfsHost', 'HDFS URL and port'),
-				default: 'localhost:50070'
-			},
-			{
-				type: QuestionTypes.input,
-				name: constants.hdfsUser,
-				message: localize('msgSetWebHdfsUser', 'User Name'),
-				default: 'root'
-			}];
-
-		let answers = await this.prompter.prompt(questions);
-		if (answers) {
-			let hostAndPort: string = answers[constants.hdfsHost];
-			let parts = hostAndPort.split(':');
-			let host: string = parts[0];
-			let port: string = parts.length > 1 ? parts[1] : undefined;
-			let user: string = answers[constants.hdfsUser];
-
-
-			let options: IHdfsOptions = {
-				host: host,
-				port: port,
-				user: user
-			};
-			this.addConnection(options);
 		}
 	}
 }

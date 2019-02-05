@@ -142,10 +142,10 @@ export class SparkJobSubmissionService {
 export class SparkJobSubmissionInput {
     public setSparkClusterInfo(hadoopConnection: SqlClusterConnection): void {
         this._host = hadoopConnection.host;
-        this._port = hadoopConnection.knoxport;
+        this._port = hadoopConnection.port;
         this._livyPath = constants.livySubmitPath;
         this._userName = hadoopConnection.user;
-        this._passWord = hadoopConnection.password;
+        this._passWord = hadoopConnection.pass;
     }
 
     constructor(

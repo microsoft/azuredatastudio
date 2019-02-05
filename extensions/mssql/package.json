@@ -365,6 +365,30 @@
         }
       ]
     },
+    "dashboard.tabs": [
+      {
+        "id": "data-management-cluster",
+        "title": "%title.bigDataCluster%",
+        "description": "tab.dataManagementDescription",
+        "container": {
+         "grid-container": [
+           {
+            "name": "%title.tasks%",
+            "row": 0,
+            "col": 0,
+            "colspan": 1,
+            "widget": {
+              "tasks-widget": [
+               "livy.task.submitSparkJob",
+               "livy.task.openSparkHistory",
+               "livy.task.openYarnHistory"
+              ]
+            }
+           }
+         ]
+        }
+      }
+    ],
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "Microsoft SQL Server",

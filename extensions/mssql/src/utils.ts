@@ -10,7 +10,6 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
-import { IEndpoint } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as constants from './constants';
 
 const configTracingLevel = 'tracingLevel';
@@ -203,6 +202,12 @@ export async function getClusterEndpoint(profileId: string, serviceName: string)
 		port: endpoints[index].port
 	};
 	return clusterEndpoint;
+}
+
+interface IEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
 }
 
 export function isValidNumber(maybeNumber: any) {

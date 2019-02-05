@@ -30,10 +30,10 @@ export class SparkJobSubmissionDialog {
     }
 
     constructor(
-        private connection: sqlops.connection.Connection,
+        private sqlClusterConnection: sqlops.connection.Connection,
         private appContext: AppContext,
         private outputChannel: vscode.OutputChannel) {
-            if (!this.connection || !this.appContext || !this.outputChannel) {
+            if (!this.sqlClusterConnection || !this.appContext || !this.outputChannel) {
                 throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError', 'Paramteres for SparkJobSubmissionDialog is illegal'));
             }
     }
@@ -41,8 +41,7 @@ export class SparkJobSubmissionDialog {
     public async openDialog(path?: string): Promise<void> {
         this._dialog = this.apiWrapper.createDialog(localize('sparkJobSubmission_DialogTitleNewJob', 'New Job'));
 
-        this._dataModel = new SparkJobSubmissionModel(this.connection, this._dialog, this.appContext);
-        let getCredentialResult = this._dataModel.getCredential();
+        this._dataModel = new SparkJobSubmissionModel(this.sqlClusterConnection, this._dialog, this.appContext);
 
         this._sparkConfigTab = new SparkConfigurationTab(this._dataModel, this.appContext, path);
         this._sparkAdvancedTab = new SparkAdvancedTab(this._dataModel, this.appContext);
@@ -56,15 +55,13 @@ export class SparkJobSubmissionDialog {
 
         this._dialog.registerCloseValidator(() => this.handleValidate());
 
-        await getCredentialResult;
-
         await this.apiWrapper.openDialog(this._dialog);
     }
 
     private onClickOk(): void {
         this.apiWrapper.startBackgroundOperation(
             {
-                connection: this.connection,
+                connection: this.sqlClusterConnection,
                 displayName: LocalizedConstants.submitSparkJobWithJobName(this._sparkConfigTab.getInputValues()[0]),
                 description: LocalizedConstants.submitSparkJobWithJobName(this._sparkConfigTab.getInputValues()[0]),
                 isCancelable: false,

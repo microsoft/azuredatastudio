@@ -39,20 +39,20 @@ export class SparkJobSubmissionModel {
     public hdfsFolderDestinationPath: string;
 
     constructor(
-        private readonly _sqlopsConnection: sqlops.connection.Connection,
+        private readonly _sqlClusterConnection: sqlops.connection.Connection,
         private readonly _dialog: sqlops.window.modelviewdialog.Dialog,
         private readonly _appContext: AppContext,
         requestService?: (args: any) => any) {
-            if (!this._sqlopsConnection || !this._dialog || !this._appContext) {
+            if (!this._sqlClusterConnection || !this._dialog || !this._appContext) {
                 throw new Error(localize('sparkJobSubmission_SparkJobSubmissionModelInitializeError', 'Paramteres for SparkJobSubmissionModel is illegal'));
             }
 
             this._dialogService = new SparkJobSubmissionService(requestService);
-            this.hadoopConnection = new SqlClusterConnection(this._sqlopsConnection, undefined, this._sqlopsConnection.connectionId);
+            this.hadoopConnection = new SqlClusterConnection(this._sqlClusterConnection);
             this._guidForClusterFolder = utils.generateGuid();
         }
 
-    public get connection(): sqlops.connection.Connection { return this._sqlopsConnection; }
+    public get connection(): sqlops.connection.Connection { return this._sqlClusterConnection; }
     public get dialogService(): SparkJobSubmissionService { return this._dialogService; }
     public get dialog(): sqlops.window.modelviewdialog.Dialog { return this._dialog; }
 
@@ -80,13 +80,9 @@ export class SparkJobSubmissionModel {
         };
     }
 
-    public async getCredential(): Promise<void> {
-        await this.hadoopConnection.getCredential();
-    }
-
     public getSparkClusterUrl(): string {
-        if (this.hadoopConnection && this.hadoopConnection.host && this.hadoopConnection.knoxport) {
-            return `https://${this.hadoopConnection.host}:${this.hadoopConnection.knoxport}`;
+        if (this.hadoopConnection && this.hadoopConnection.host && this.hadoopConnection.port) {
+            return `https://${this.hadoopConnection.host}:${this.hadoopConnection.port}`;
         }
 
         // Only for safety check, Won't happen with correct Model initialize.

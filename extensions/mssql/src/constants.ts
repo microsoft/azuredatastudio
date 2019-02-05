@@ -16,7 +16,6 @@ export const mssqlClusterProviderName = 'mssqlCluster';
 export const hadoopKnoxEndpointName = 'Knox';
 export const protocolVersion = '1.0';
 export const hostPropName = 'host';
-export const SERVER = 'server';
 export const userPropName = 'user';
 export const knoxPortPropName = 'knoxport';
 export const passwordPropName = 'password';
@@ -59,19 +58,6 @@ export enum MssqlClusterItems {
 export enum MssqlClusterItemsSubType {
 	Spark = 'mssqlCluster:spark'
 }
-
-export enum HdfsItemsSubType {
-    Spark = 'hdfs:spark'
-}
-
-// CONFIG VALUES ///////////////////////////////////////////////////////////
-export const extensionOutputChannel = 'SQL Server 2019 Preview';
-export const configLogDebugInfo = 'logDebugInfo';
-
-// DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
-export const hadoopKnoxProviderName = 'HADOOP_KNOX';
-export const clusterPropName = 'clustername';
-export const outputChannelName = 'dataManagement';
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
 export const livySubmitSparkJobCommand = 'livy.cmd.submitSparkJob';

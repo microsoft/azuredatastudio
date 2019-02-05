@@ -10,28 +10,30 @@ import * as vscode from 'vscode';
 import { AppContext } from '../appContext';
 import { getErrorMessage } from '../utils';
 import { SqlClusterConnection } from '../objectExplorerNodeProvider/connection';
-import { SqlClusterLookUp } from '../bigDataClusterLookUp';
+import { SqlClusterLookUp } from '../sqlClusterLookUp';
 
 export class OpenSparkYarnHistoryTask {
     constructor(private appContext: AppContext) {
     }
 
-    async execute(profile: sqlops.IConnectionProfile, isSpark: boolean): Promise<void> {
+    async execute(sqlConnProfile: sqlops.IConnectionProfile, isSpark: boolean): Promise<void> {
         try {
-            let connection: sqlops.connection.Connection = await SqlClusterLookUp.lookUpSqlClusterInfo(profile);
-            if (!connection)
+			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
+
+			// let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnInfo(sqlConnProfile);
+            if (!sqlClusterConnection)
             {
                 let name = isSpark? 'Spark' : 'Yarn';
                 this.appContext.apiWrapper.showErrorMessage(`Please connect to the Spark cluster before View ${name} History.`);
                 return;
             }
 
-            let hadoopConnection = new SqlClusterConnection(connection, undefined, connection.connectionId);
+            // let sqlClusterConnection = new SqlClusterConnection(clusterConnInfo);
             if (isSpark) {
-                vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateSparkHistoryUrl(hadoopConnection.host, hadoopConnection.knoxport)));
+                vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateSparkHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
             }
             else {
-                vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateYarnHistoryUrl(hadoopConnection.host, hadoopConnection.knoxport)));
+                vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(this.generateYarnHistoryUrl(sqlClusterConnection.host, sqlClusterConnection.port)));
             }
         } catch (error) {
             this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
