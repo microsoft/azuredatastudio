@@ -7,3 +7,12 @@
 {
 	text-align: center;
 }
+
+.slick-headerrow-column {
+	padding-left:3px !important;
+}
+
+.slick-cell
+{
+	padding-left:3px !important;
+}
