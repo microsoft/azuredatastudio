@@ -452,8 +452,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
 			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).catch((error) => {
-				if(error)
-				{
+				if (error) {
 					this.notifyError(error.message);
 				}
 			});
