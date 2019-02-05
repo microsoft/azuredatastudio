@@ -52,7 +52,7 @@ export enum MssqlClusterItems {
 	Connection = 'mssqlCluster:connection',
 	Folder = 'mssqlCluster:folder',
 	File = 'mssqlCluster:file',
-	Message = 'mssqlCluster:message'
+	Error = 'mssqlCluster:error'
 }
 
 export enum MssqlClusterItemsSubType {

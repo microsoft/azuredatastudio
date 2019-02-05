@@ -375,7 +375,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
 						} else {
-							console.log('OE provider returns empty result or providerId');
+							error('OE provider returns empty result or providerId');
 						}
 
 						// When get all responses from all providers, merge results
@@ -390,7 +390,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
-							TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId,
 								nodePath: nodePath
@@ -424,29 +423,36 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			nodePath: nodePath,
 			label: 'Error',
 			errorMessage: '',
-			nodeType: 'folder',
+			nodeType: 'error',
 			isLeaf: true,
 			nodeSubType: '',
 			nodeStatus: '',
 			metadata: null
 		};
-
+		let errorMessages: string[] = [];
 		for (let provider of allProviders) {
 			if (resultMap.has(provider.providerId)) {
 				let result = resultMap.get(provider.providerId);
 				if (result) {
 					if (!result.errorMessage) {
 						finalResult = result;
-						allNodes = allNodes.concat(result.nodes);
+						if (result.nodes !== undefined && result.nodes) {
+							allNodes = allNodes.concat(result.nodes);
+						}
 					} else {
-						errorNode.errorMessage += provider.providerId + 'returns ' + result.errorMessage + ' ';
+						errorMessages.push(result.errorMessage);
 					}
 				}
 			}
 		}
 		if (finalResult) {
-			if (errorNode.errorMessage && errorNode.errorMessage.length > 0) {
-				allNodes = allNodes.concat([errorNode]);
+			if (errorMessages.length > 0) {
+				if (errorMessages.length > 1) {
+					errorMessages.unshift(nls.localize('nodeExpansionError', 'Mulitiple errors:'));
+				}
+				errorNode.errorMessage = errorMessages.join('\n');
+				errorNode.label = errorNode.errorMessage;
+				allNodes = [errorNode].concat(allNodes);
 			}
 
 			finalResult.nodes = allNodes;
