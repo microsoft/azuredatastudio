@@ -1,7 +1,7 @@
 {
-  "name": "big-data-cluster-creation",
-  "displayName": "Big Data Cluster Creation",
-  "description": "Create big data cluster",
+  "name": "big-data-cluster",
+  "displayName": "SQL Server Big Data Cluster",
+  "description": "SQL Server Big Data Cluster",
   "version": "0.0.1",
   "publisher": "Microsoft",
   "preview": true,
@@ -25,9 +25,9 @@
   "contributes": {
     "commands": [
       {
-        "command": "aris.create-big-data-cluster",
+        "command": "mssql.create-big-data-cluster",
         "title": "Create Big Data Cluster",
-        "category": "Big Data Cluster"
+        "category": "SQL Server"
       }
     ]
   },

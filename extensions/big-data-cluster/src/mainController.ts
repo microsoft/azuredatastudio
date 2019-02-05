@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-"use strict";
+'use strict';
 
 import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
@@ -25,9 +25,9 @@ export class MainController {
 	 * Activates the extension
 	 */
 	public activate(): void {
-		vscode.commands.registerCommand('aris.create-big-data-cluster', () => {
+		vscode.commands.registerCommand('mssql.create-big-data-cluster', () => {
 			let wizard = sqlops.window.modelviewdialog.createWizard(
-				localize('aris.createClusterTitle','Create a big data cluster')
+				localize('bdc.createClusterTitle','Create a 2019 Big Data cluster')
             );
             //wizard.open();
 		});
