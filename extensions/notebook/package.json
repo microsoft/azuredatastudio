@@ -92,9 +92,7 @@
 					"command": "notebook.command.new",
 					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
 					"group": "1root@1"
-				}
-			],
-			"objectExplorer/item/context": [
+				},
 				{
 					"command": "notebook.command.analyzeNotebook",
 					"when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
