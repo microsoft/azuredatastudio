@@ -1055,9 +1055,7 @@ export class Workbench extends Disposable implements IPartService {
 	}
 
 	private useCustomTitleBarStyle(): boolean {
-		// {{SQL CARBON EDIT}}
-		// return getTitleBarStyle(this.configurationService, this.environmentService) === 'custom';
-		return true;
+		return getTitleBarStyle(this.configurationService, this.environmentService) === 'custom';
 	}
 
 	private setStatusBarHidden(hidden: boolean, skipLayout?: boolean): void {
