@@ -288,6 +288,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
+	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 }
 
 export enum DeclarativeDataType {
@@ -318,6 +319,17 @@ export class TreeComponentItem extends TreeItem {
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1
+}
+
+export interface ServerInfoOption {
+	isBigDataCluster: boolean;
+	clusterEndpoints: ClusterEndpoint;
+}
+
+export interface ClusterEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
 }
 
 export class SqlThemeIcon {
@@ -458,6 +470,7 @@ export enum FutureMessageType {
 export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
+	message: nb.IShellMessage;
 }
 
 export interface ICellRange {

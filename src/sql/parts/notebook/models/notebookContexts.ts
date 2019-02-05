@@ -99,6 +99,8 @@ export class NotebookContexts {
 						defaultConnection = connections.find(connection => connection.serverName === profile.serverName);
 					}
 				}
+			} else if (connections.length === 0) {
+				return NotebookContexts.DefaultContext;
 			}
 			activeConnections = [];
 			connections.forEach(connection => activeConnections.push(connection));

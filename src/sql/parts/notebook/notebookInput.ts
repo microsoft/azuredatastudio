@@ -11,7 +11,6 @@ import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
-import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import * as resources from 'vs/base/common/resources';
 import * as sqlops from 'sqlops';
 
@@ -21,8 +20,6 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import Severity from 'vs/base/common/severity';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
-
-export let notebooksEnabledCondition = ContextKeyExpr.equals('config.notebook.enabled', true);
 
 
 export class NotebookInputModel extends EditorModel {
@@ -105,23 +102,14 @@ export class NotebookInputModel extends EditorModel {
 	}
 }
 
-export class NotebookInputValidator {
-
-	constructor( @IContextKeyService private readonly _contextKeyService: IContextKeyService) { }
-
-	public isNotebookEnabled(): boolean {
-		return this._contextKeyService.contextMatchesRules(notebooksEnabledCondition);
-	}
-}
 
 export class NotebookInput extends EditorInput {
-
 	public static ID: string = 'workbench.editorinputs.notebookInput';
 
 	public hasBootstrapped = false;
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _parentContainer: HTMLElement;
-
+	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
 	constructor(private _title: string,
 		private _model: NotebookInputModel,
 		@INotebookService private notebookService: INotebookService,
@@ -149,6 +137,14 @@ export class NotebookInput extends EditorInput {
 
 	public get defaultKernel(): sqlops.nb.IKernelSpec {
 		return this._model.defaultKernel;
+	}
+
+	get layoutChanged(): Event<void> {
+		return this._layoutChanged.event;
+	}
+
+	doChangeLayout(): any {
+		this._layoutChanged.fire();
 	}
 
 	public getTypeId(): string {

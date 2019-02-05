@@ -97,6 +97,7 @@ describe('notebook model', function(): void {
             providerId: 'SQL',
             standardKernels: [{ name: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
             defaultKernel: undefined,
+            layoutChanged: undefined,
             capabilitiesService: capabilitiesService.object
         };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);

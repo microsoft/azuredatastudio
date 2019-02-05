@@ -85,7 +85,7 @@ export class NotebookEditorEdit {
 	insertCell(value:  Partial<sqlops.nb.ICellContents>, location?: number): void {
 		if (location === null || location === undefined) {
 			// If not specified, assume adding to end of list
-			location = this._document.cells.length - 1;
+			location = this._document.cells.length;
 		}
 		this._pushEdit(new CellRange(location, location), value, true);
 	}
@@ -152,7 +152,12 @@ export class ExtHostNotebookEditor implements sqlops.nb.NotebookEditor, IDisposa
 		return this._id;
 	}
 
-	edit(callback: (editBuilder: sqlops.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
+	public runCell(cell: sqlops.nb.NotebookCell): Thenable<boolean> {
+		let uri = cell ? cell.uri : undefined;
+		return this._proxy.$runCell(this._id, uri);
+	}
+
+	public edit(callback: (editBuilder: sqlops.nb.NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean> {
 		if (this._disposed) {
 			return TPromise.wrapError<boolean>(new Error('NotebookEditor#edit not possible on closed editors'));
 		}

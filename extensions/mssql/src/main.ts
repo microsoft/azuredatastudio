@@ -5,6 +5,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
@@ -17,12 +18,19 @@ import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
+import { AppContext } from './appContext';
+import { ApiWrapper } from './apiWrapper';
+import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
+import { IPrompter } from './prompts/question';
+import CodeAdapter from './prompts/adapter';
+import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
-export async function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext): Promise<MssqlExtensionApi> {
 	// lets make sure we support this platform first
 	let supported = await Utils.verifyPlatform();
 
@@ -61,6 +69,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		outputChannel: new CustomOutputChannel()
 	};
 
+	let prompter: IPrompter = new CodeAdapter();
+	let appContext = new AppContext(context, new ApiWrapper());
+
 	const installationStart = Date.now();
 	serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
@@ -85,6 +96,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		languageClient.start();
 		credentialsStore.start();
 		resourceProvider.start();
+		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
+		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 		vscode.window.showErrorMessage('Failed to start Sql tools service');
@@ -94,7 +107,25 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(contextProvider);
 	context.subscriptions.push(credentialsStore);
 	context.subscriptions.push(resourceProvider);
+	context.subscriptions.push(new UploadFilesCommand(prompter, appContext));
+	context.subscriptions.push(new MkDirCommand(prompter, appContext));
+	context.subscriptions.push(new SaveFileCommand(prompter, appContext));
+	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
+	context.subscriptions.push(new CopyPathCommand(appContext));
+	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
+
+	let api: MssqlExtensionApi = {
+		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
+			return {
+				getNode: (context: sqlops.ObjectExplorerContext) => {
+					let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
+					return <any>oeProvider.findNodeForContext(context);
+				}
+			};
+		}
+	};
+	return api;
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {

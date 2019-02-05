@@ -127,6 +127,8 @@ export interface IClientSession extends IDisposable {
 	 */
 	readonly kernelDisplayName: string;
 
+	readonly cachedKernelSpec: nb.IKernelSpec;
+
 	/**
 	 * Initializes the ClientSession, by starting the server and
 	 * connecting to the SessionManager.
@@ -200,7 +202,13 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Updates the connection
 	 */
-	updateConnection(connection: IConnectionProfile): void;
+	updateConnection(connection: IConnectionProfile): Promise<void>;
+
+	/**
+	 * Supports registering a handler to run during kernel change and implement any calls needed to configure
+	 * the kernel before actions such as run should be allowed
+	 */
+	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
 }
 
 export interface IDefaultConnection {
@@ -248,6 +256,12 @@ export interface INotebookModel {
 	 * Cell List for this model
 	 */
 	readonly cells: ReadonlyArray<ICellModel>;
+
+	/**
+	 * The active cell for this model. May be undefined
+	 */
+	readonly activeCell: ICellModel;
+
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
@@ -267,6 +281,11 @@ export interface INotebookModel {
 	 * on subsequent change events
 	 */
 	readonly kernelChanged: Event<nb.IKernelChangedArgs>;
+
+	/**
+	 * Fired on notifications that notebook components should be re-laid out.
+	 */
+	readonly layoutChanged: Event<void>;
 
 	/**
 	 * Event fired on first initialization of the kernels and
@@ -322,7 +341,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile): void;
+	changeContext(host: string, connection?: IConnectionProfile): Promise<void>;
 
 	/**
 	 * Find a cell's index given its model
@@ -400,7 +419,10 @@ export interface ICellModel {
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	readonly onExecutionStateChange: Event<boolean>;
 	setFuture(future: FutureInternal): void;
+	readonly isRunning: boolean;
+	runCell(notificationService?: INotificationService): Promise<boolean>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 }
@@ -431,6 +453,8 @@ export interface INotebookModelOptions {
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];
 	defaultKernel: nb.IKernelSpec;
+
+	layoutChanged: Event<void>;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;

@@ -123,7 +123,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.notebookService.addNotebookEditor(this);
 		this.initActionBar();
 		this.doLoad();
 	}
@@ -135,7 +134,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public get model(): NotebookModel {
+	public get model(): NotebookModel | null {
 		return this._model;
 	}
 
@@ -173,14 +172,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	public unselectActiveCell() {
 		if (this.model && this.model.activeCell) {
 			this.model.activeCell.active = false;
+			this.model.activeCell = undefined;
 		}
 		this._changeRef.detectChanges();
 	}
 
 	// Add cell based on cell type
 	public addCell(cellType: CellType) {
-		let newCell = this._model.addCell(cellType);
-		this.selectCell(newCell);
+		this._model.addCell(cellType);
 	}
 
 	// Updates Notebook model's trust details
@@ -222,6 +221,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', error));
 			this.setLoading(false);
 			this._modelReadyDeferred.reject(error);
+		} finally {
+			// Always add the editor for now to close loop, even if loading contents failed
+			this.notebookService.addNotebookEditor(this);
 		}
 	}
 
@@ -232,7 +234,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private async loadModel(): Promise<void> {
 		await this.awaitNonDefaultProvider();
-		let providerId = notebookUtils.sqlNotebooksEnabled() ? 'sql' : this._notebookParams.providers.find(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER); // this is tricky; really should also depend on the connection profile
+		let providerId = notebookUtils.sqlNotebooksEnabled(this.contextKeyService) ? 'sql' : this._notebookParams.providers.find(provider => provider !== DEFAULT_NOTEBOOK_PROVIDER); // this is tricky; really should also depend on the connection profile
 		this.setContextKeyServiceWithProviderId(providerId);
 		this.fillInActionsForCurrentContext();
 		for (let providerId of this._notebookParams.providers) {
@@ -246,8 +248,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
 			standardKernels: this._notebookParams.input.standardKernels,
-			providerId: notebookUtils.sqlNotebooksEnabled() ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
+			providerId: notebookUtils.sqlNotebooksEnabled(this.contextKeyService) ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
 			defaultKernel: this._notebookParams.input.defaultKernel,
+			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService
 		}, false, this.profile);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
@@ -538,4 +541,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._model.pushEditOperations(edits);
 		return true;
 	}
+
+	public async runCell(cell: ICellModel): Promise<boolean> {
+		await this.modelReady;
+		let uriString = cell.cellUri.toString();
+		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+			return cell.runCell(this.notificationService);
+		} else {
+			return Promise.reject<boolean>(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+		}
+	}
+
 }
