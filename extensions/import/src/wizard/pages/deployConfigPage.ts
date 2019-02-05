@@ -123,6 +123,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
 
+			// add deploy plan and generate script pages
 			let deployPlanPage = this.instance.pages.get('deployPlan');
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, 2);
 			let deployActionPage = this.instance.pages.get('deployAction');
@@ -135,6 +136,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = this.databaseTextBox.value;
 
+			// remove deploy plan and generate script pages
 			this.instance.wizard.removePage(3);
 			this.instance.wizard.removePage(2);
 		});

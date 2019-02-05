@@ -32,7 +32,6 @@ export class TableObject {
 }
 
 export class DeployPlanPage extends DacFxConfigPage {
-
 	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
@@ -41,9 +40,9 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private form: sqlops.FormContainer;
 	private table: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
-	private dataLossComponent: sqlops.FormComponent;
-	private dataLossTextComponent: sqlops.FormComponent;
+	private dataLossCheckbox: sqlops.CheckBoxComponent;
 	private dataLossComponentGroup: sqlops.FormComponentGroup;
+	private noDataLossTextComponent: sqlops.FormComponent;
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
@@ -52,9 +51,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
-		this.dataLossComponent = await this.createDataLossCheckbox();
-		this.dataLossTextComponent = await this.createDataLossText();
 		this.dataLossComponentGroup = await this.createDataLossComponents();
+		this.noDataLossTextComponent = await this.createNoDataLossText();
 
 		this.formBuilder = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -62,7 +60,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 					{
 						component: this.loader,
 						title: ''
-					}
+					},
+					this.dataLossComponentGroup
 				], {
 					horizontal: true,
 				});
@@ -74,7 +73,13 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.table.data = [];
-		this.formBuilder.removeFormItem(this.dataLossComponentGroup);
+
+		// reset checkbox settings
+		this.formBuilder.addFormItem(this.dataLossComponentGroup, { horizontal: true, componentWidth: 400 });
+		this.dataLossCheckbox.checked = false;
+		this.dataLossCheckbox.enabled = false;
+
+		this.formBuilder.removeFormItem(this.noDataLossTextComponent);
 
 		this.loader.loading = true;
 		await this.populateTable();
@@ -83,15 +88,16 @@ export class DeployPlanPage extends DacFxConfigPage {
 	}
 
 	private async populateTable() {
-		let report = await this.instance.generateDeployPlan();
 		let data = [];
-		let dataLossAlerts = new Map<string, string>();
+		let dataNoDataLoss = [];
+		let dataLossAlerts = new Set<string>();
 		let currentOperation = '';
 		let dataIssueAlert = false;
-		let issue = '';
 		let currentReportSection: reportSection;
 		let currentTableObj: TableObject;
 
+		// parse the xml deploy plan
+		let report = await this.instance.generateDeployPlan();
 		let p = new parser.Parser({
 			onopentagname(name) {
 				if (name === 'Alert') {
@@ -111,14 +117,9 @@ export class DeployPlanPage extends DacFxConfigPage {
 							}
 							break;
 						}
-						case attributeName.Value: {
-							if (dataIssueAlert) {
-								issue = value;
-							}
-						}
 						case attributeName.Id: {
 							if (dataIssueAlert) {
-								dataLossAlerts.set(value, issue);
+								dataLossAlerts.add(value);
 							}
 							break;
 						}
@@ -138,7 +139,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 							break;
 						}
 						case attributeName.Id: {
-							if (dataLossAlerts.get(value)) {
+							if (dataLossAlerts.has(value)) {
 								currentTableObj.dataloss = true;
 							}
 							break;
@@ -150,72 +151,119 @@ export class DeployPlanPage extends DacFxConfigPage {
 				// add table entry for the operation item
 				if (name === 'Item') {
 					let isDataLoss = currentTableObj.dataloss ? '⚠️' : '';
-					let operation = 'Operation: ' + currentOperation;
-					let objtype = 'Type: ' + currentTableObj.type;
-					let obj = 'Object: ' + currentTableObj.object;
-					data.push([isDataLoss, operation + ', ' + objtype + ', ' + obj]);
+					data.push([isDataLoss, currentOperation, currentTableObj.type, currentTableObj.object]);
+					dataNoDataLoss.push([currentOperation, currentTableObj.type, currentTableObj.object]);
 				}
 			}
 		}, { xmlMode: true, decodeEntities: true });
 
 		p.parseChunk(report);
 
-		this.table.updateProperties({
-			data: data,
-			columns: [{
-				value: localize('dacfx.dataLossColumn', 'Data Loss'),
-			},
-			{
-				value: localize('dacfx.actionColumn', 'Action'),
-			}
-		],
-			width: 700,
-			height: 300
-		});
-
-
 		if (dataLossAlerts.size > 0) {
-			this.formBuilder.addFormItem(this.dataLossComponentGroup, {horizontal: true, componentWidth: 400});
+			this.table.updateProperties({
+				data: data,
+				columns: [{
+					value: localize('dacfx.dataLossColumn', 'Data Loss'),
+					width: 50,
+					cssClass: 'center-align',
+					toolTip: 'Operations that may result in data loss are marked with a warning sign'
+				},
+				{
+					value: localize('dacfx.operationColumn', 'Operation'),
+					width: 75,
+					toolTip: 'Operation that will occur during deployment'
+				},
+				{
+					value: localize('dacfx.typeColumn', 'Type'),
+					width: 100,
+					toolTip: 'Type of object'
+				},
+				{
+					value: localize('dacfx.objectColumn', 'Object'),
+					width: 300,
+					toolTip: 'Object name'
+				}],
+				width: 875,
+				height: 300
+			});
+
+			this.dataLossCheckbox.enabled = true;
+		} else {
+			this.table.updateProperties({
+				data: dataNoDataLoss,
+				columns: [{
+					value: localize('dacfx.operationColumn', 'Operation'),
+					width: 75,
+					toolTip: 'Operation that will occur during deployment'
+				},
+				{
+					value: localize('dacfx.typeColumn', 'Type'),
+					width: 100,
+					toolTip: 'Type of object'
+				},
+				{
+					value: localize('dacfx.objectColumn', 'Object'),
+					width: 300,
+					toolTip: 'Object name'
+				}],
+				width: 875,
+				height: 300
+			});
+
+			// check checkbox to enable Next button and remove checkbox because there won't be any possible data loss
+			this.dataLossCheckbox.checked = true;
+			this.formBuilder.removeFormItem(this.dataLossComponentGroup);
+			this.formBuilder.addFormItem(this.noDataLossTextComponent, { componentWidth: 300, horizontal: true });
 		}
 	}
 
 	private async createDataLossCheckbox(): Promise<sqlops.FormComponent> {
-		let dataLossCheckbox = this.view.modelBuilder.checkBox()
+		this.dataLossCheckbox = this.view.modelBuilder.checkBox()
+			.withValidation(component => component.checked === true)
 			.withProperties({
 				label: localize('dacFx.dataLossCheckbox', 'Proceed despite possible data loss'),
 			}).component();
 
-		dataLossCheckbox.onChanged(() => {
-		});
-
-		dataLossCheckbox.checked = true;
 		return {
-			component: dataLossCheckbox,
+			component: this.dataLossCheckbox,
 			title: '',
 			required: true
 		};
 	}
 
-	private async createDataLossText(): Promise<sqlops.FormComponent> {
+	private async createNoDataLossText(): Promise<sqlops.FormComponent> {
+		let noDataLossText = this.view.modelBuilder.text()
+			.withProperties({
+				value: localize('dacfx.noDataLossText', 'No data loss will occur from the listed deploy actions.')
+			}).component();
+
+		return {
+			title: '',
+			component: noDataLossText
+		}
+	}
+
+	private async createDataLossComponents(): Promise<sqlops.FormComponentGroup> {
+		let dataLossComponent = await this.createDataLossCheckbox();
 		let dataLossText = this.view.modelBuilder.text()
 			.withProperties({
 				value: localize('dacfx.dataLossText', 'The deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
 			}).component();
 
 		return {
-			component: dataLossText,
-			title: '',
-			required: true
-		};
-	}
-
-	private async createDataLossComponents(): Promise<sqlops.FormComponentGroup> {
-		return {
 			title: '',
 			components: [
-			this.dataLossTextComponent,
-			this.dataLossComponent
-		]};
+				{
+					component: dataLossText,
+					layout: {
+						componentWidth: 400,
+						horizontal: true
+					},
+					title: ''
+				},
+				dataLossComponent
+			]
+		};
 	}
 
 	public setupNavigationValidator() {
