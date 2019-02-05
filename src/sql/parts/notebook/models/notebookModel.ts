@@ -451,7 +451,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
-			await this._activeClientSession.updateConnection(this._activeConnection);
+			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).catch((error) => {
+				if (error) {
+					this.notifyError(error.message);
+				}
+			});
 		} catch (err) {
 			let msg = notebookUtils.getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', 'Changing context failed: {0}', msg));
@@ -556,7 +560,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._activeClientSession) {
 				try {
 					await this._activeClientSession.ready;
-				} catch(err) {
+				} catch (err) {
 					this.notifyError(localize('shutdownClientSessionError', 'A client session error occurred when closing the notebook: {0}', err));
 				}
 				await this._activeClientSession.shutdown();
