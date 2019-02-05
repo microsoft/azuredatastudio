@@ -341,9 +341,9 @@ export class DataTierApplicationWizard {
 			}
 		} else if (this.isSummaryPage(idx)) {
 			page = this.pages.get('summary');
-		}else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployPlan) {
+		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployPlan) {
 			page = this.pages.get('deployPlan');
-		}else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
+		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
 			page = this.pages.get('deployAction');
 		}
 

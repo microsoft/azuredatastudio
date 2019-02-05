@@ -72,16 +72,14 @@ export class DeployPlanPage extends DacFxConfigPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.table.data = [];
-
 		// reset checkbox settings
 		this.formBuilder.addFormItem(this.dataLossComponentGroup, { horizontal: true, componentWidth: 400 });
 		this.dataLossCheckbox.checked = false;
 		this.dataLossCheckbox.enabled = false;
-
 		this.formBuilder.removeFormItem(this.noDataLossTextComponent);
 
 		this.loader.loading = true;
+		this.table.data = [];
 		await this.populateTable();
 		this.loader.loading = false;
 		return true;
@@ -166,22 +164,22 @@ export class DeployPlanPage extends DacFxConfigPage {
 					value: localize('dacfx.dataLossColumn', 'Data Loss'),
 					width: 50,
 					cssClass: 'center-align',
-					toolTip: 'Operations that may result in data loss are marked with a warning sign'
+					toolTip: localize('dacfx.dataLossTooltip', 'Operations that may result in data loss are marked with a warning sign')
 				},
 				{
 					value: localize('dacfx.operationColumn', 'Operation'),
 					width: 75,
-					toolTip: 'Operation that will occur during deployment'
+					toolTip: localize('dacfx.operationTooltip', 'Operation that will occur during deployment')
 				},
 				{
 					value: localize('dacfx.typeColumn', 'Type'),
 					width: 100,
-					toolTip: 'Type of object'
+					toolTip: localize('dacfx.typeTooltip', 'Type of object')
 				},
 				{
 					value: localize('dacfx.objectColumn', 'Object'),
 					width: 300,
-					toolTip: 'Object name'
+					toolTip: localize('dacfx.objecTooltip', 'Object name')
 				}],
 				width: 875,
 				height: 300
@@ -194,17 +192,17 @@ export class DeployPlanPage extends DacFxConfigPage {
 				columns: [{
 					value: localize('dacfx.operationColumn', 'Operation'),
 					width: 75,
-					toolTip: 'Operation that will occur during deployment'
+					toolTip: localize('dacfx.operationTooltip', 'Operation that will occur during deployment')
 				},
 				{
 					value: localize('dacfx.typeColumn', 'Type'),
 					width: 100,
-					toolTip: 'Type of object'
+					toolTip: localize('dacfx.typeTooltip', 'Type of object')
 				},
 				{
 					value: localize('dacfx.objectColumn', 'Object'),
 					width: 300,
-					toolTip: 'Object name'
+					toolTip: localize('dacfx.objecTooltip', 'Object name')
 				}],
 				width: 875,
 				height: 300
@@ -240,7 +238,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		return {
 			title: '',
 			component: noDataLossText
-		}
+		};
 	}
 
 	private async createDataLossComponents(): Promise<sqlops.FormComponentGroup> {
