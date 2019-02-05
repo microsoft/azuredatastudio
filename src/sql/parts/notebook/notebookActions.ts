@@ -258,8 +258,8 @@ export class AttachToDropdown extends SelectBox {
 	private getKernelDisplayName(): string {
 		let kernelDisplayName: string;
 		if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
-			let nameLower = this.model.clientSession.kernel.name.toLowerCase();
-			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === nameLower);
+			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
+			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
 				kernelDisplayName = currentKernelSpec.display_name;
 			}
