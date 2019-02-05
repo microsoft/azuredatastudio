@@ -142,7 +142,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 					// There is only child returned when failure happens
 					if (children.length === 1) {
 						let child = children[0].getNodeInfo();
-						if (child && child.nodeType === constants.MssqlClusterItems.Message) {
+						if (child && child.nodeType === constants.MssqlClusterItems.Error) {
 							expandResult.errorMessage = child.label;
 							expandResult.nodes = [];
 						}

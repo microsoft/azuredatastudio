@@ -375,7 +375,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 						if (expandResult && expandResult.providerId) {
 							resultMap.set(expandResult.providerId, expandResult);
 						} else {
-							console.log('OE provider returns empty result or providerId');
+							error('OE provider returns empty result or providerId');
 						}
 
 						// When get all responses from all providers, merge results
@@ -390,7 +390,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					});
 					if (newRequest) {
 						allProviders.forEach(provider => {
-							TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ObjectExplorerExpand, { refresh: 0, provider: providerId });
 							self.callExpandOrRefreshFromProvider(provider, {
 								sessionId: session.sessionId,
 								nodePath: nodePath
@@ -437,7 +436,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				if (result) {
 					if (!result.errorMessage) {
 						finalResult = result;
-						allNodes = allNodes.concat(result.nodes);
+						if (result.nodes !== undefined && result.nodes) {
+							allNodes = allNodes.concat(result.nodes);
+						}
 					} else {
 						errorMessages.push(result.errorMessage);
 					}

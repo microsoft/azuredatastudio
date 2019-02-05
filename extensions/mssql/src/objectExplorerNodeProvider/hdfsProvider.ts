@@ -55,7 +55,7 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 		if (element) {
 			return element.getChildren(false);
 		} else {
-			return this.connections.length > 0 ? this.connections : [MessageNode.create(HdfsProvider.NoConnectionsMessage, element)];
+			return this.connections.length > 0 ? this.connections : [ErrorNode.create(HdfsProvider.NoConnectionsMessage, element)];
 		}
 	}
 
@@ -136,7 +136,7 @@ export class FolderNode extends HdfsFileSourceNode {
 					});
 				}
 			} catch (error) {
-				this.children = [MessageNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this)];
+				this.children = [ErrorNode.create(localize('errorExpanding', 'Error: {0}', utils.getErrorMessage(error)), this)];
 			}
 		}
 		return this.children;
@@ -313,7 +313,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 	}
 }
 
-export class MessageNode extends TreeNode {
+export class ErrorNode extends TreeNode {
 	static messageNum: number = 0;
 
 	private _nodePathValue: string;
@@ -321,15 +321,15 @@ export class MessageNode extends TreeNode {
 		super();
 	}
 
-	public static create(message: string, parent: TreeNode): MessageNode {
-		let node = new MessageNode(message);
+	public static create(message: string, parent: TreeNode): ErrorNode {
+		let node = new ErrorNode(message);
 		node.parent = parent;
 		return node;
 	}
 
 	private ensureNodePathValue(): void {
 		if (!this._nodePathValue) {
-			this._nodePathValue = `message_${MessageNode.messageNum++}`;
+			this._nodePathValue = `message_${ErrorNode.messageNum++}`;
 		}
 	}
 
@@ -344,7 +344,7 @@ export class MessageNode extends TreeNode {
 
 	public getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
 		let item = new vscode.TreeItem(this.message, vscode.TreeItemCollapsibleState.None);
-		item.contextValue = Constants.MssqlClusterItems.Message;
+		item.contextValue = Constants.MssqlClusterItems.Error;
 		return item;
 	}
 
@@ -357,7 +357,7 @@ export class MessageNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: Constants.MssqlClusterItems.Message,
+			nodeType: Constants.MssqlClusterItems.Error,
 			nodeSubType: undefined,
 			iconType: 'MessageType'
 		};
