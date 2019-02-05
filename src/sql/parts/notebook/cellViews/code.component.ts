@@ -54,6 +54,15 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._activeCellId = value;
 	}
 
+	@Input() set hover(value: boolean) {
+		this._hover = value;
+		if (!this.isActive()) {
+			// Only make a change if we're not active, since this has priority
+			this.toggleMoreActionsButton(this._hover);
+		}
+	}
+
+
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
@@ -63,6 +72,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _hover: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -201,5 +211,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editor.focus();
 			this._editor.getContainer().scrollIntoView();
 		}
+	}
+
+	protected isActive() {
+		return this.cellModel && this.cellModel.id === this.activeCellId;
+	}
+
+	protected toggleMoreActionsButton(isActive: boolean) {
+		this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
 	}
 }
