@@ -8,8 +8,6 @@ text-cell-component {
 }
 
 text-cell-component .notebook-preview {
-	border-top-width: 1px;
-	border-top-style: solid;
 	user-select: initial;
 	padding-left: 8px;
 	padding-right: 8px;
