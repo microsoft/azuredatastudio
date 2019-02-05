@@ -24,12 +24,13 @@ import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/ob
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
+import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
-export async function activate(context: vscode.ExtensionContext): Promise<sqlops.IMssqlExtensionApi> {
+export async function activate(context: vscode.ExtensionContext): Promise<MssqlExtensionApi> {
 	// lets make sure we support this platform first
 	let supported = await Utils.verifyPlatform();
 
@@ -114,8 +115,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<sqlops
 	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
 
-	let api: sqlops.IMssqlExtensionApi = {
-		getMssqlObjectExplorerBrowser(): sqlops.IMssqlObjectExplorerBrowser {
+	let api: MssqlExtensionApi = {
+		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
 				getNode: (context: sqlops.ObjectExplorerContext) => {
 					let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
