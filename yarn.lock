@@ -3449,13 +3449,6 @@ gulp-replace@^0.5.4:
     readable-stream "^2.0.1"
     replacestream "^4.0.0"
 
-gulp-sequence@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/gulp-sequence/-/gulp-sequence-1.0.0.tgz#862f93e6503e67c350a42948fa666953cf88ba67"
-  integrity sha512-c+p+EcyBl1UCpbfFA/vUD6MuC7uxoY6Y4g2lq9lLtzOHh9o1wijAQ4o0TIRQ14C7cG6zR6Zi+bpA0cW78CFt6g==
-  dependencies:
-    thunks "^4.9.0"
-
 gulp-shell@^0.5.2:
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/gulp-shell/-/gulp-shell-0.5.2.tgz#a4959ca0651ad1c7bbfe70b2d0adbbb4e1aea98d"
@@ -8070,11 +8063,6 @@ through@2, through@^2.3.4, through@^2.3.6, through@~2.3, through@~2.3.1, through
   version "2.3.8"
   resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
-
-thunks@^4.9.0:
-  version "4.9.3"
-  resolved "https://registry.yarnpkg.com/thunks/-/thunks-4.9.3.tgz#816c35dfd03479139e4fc3f4f074fa137a0f50d0"
-  integrity sha512-opDsV5fCUOrcvw9mfWWo9vfhZ6+ePCxX7GKA+wB6+w4ZArjxA6IOppTlXMUXPN4Q4bnTA4dUOIPa1ovWFuHRCQ==
 
 tildify@^1.0.0:
   version "1.2.0"
