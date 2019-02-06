@@ -26,6 +26,11 @@
 					"type": "boolean",
 					"default": false,
 					"description": "%notebook.sqlKernelEnabled.description%"
+				},
+				"notebook.overrideEditorTheming": {
+					"type": "boolean",
+					"default": true,
+					"description": "%notebook.overrideEditorTheming.description%"
 				}
 			}
 		},

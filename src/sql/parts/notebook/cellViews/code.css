@@ -41,6 +41,9 @@ code-component .toolbarIconStop {
 	background-image: url('../media/dark/stop_cell_inverse.svg');
 }
 
+code-component .editor {
+	padding: 5px 0px 5px 0px
+}
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
 	visibility: hidden;
