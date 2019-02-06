@@ -6,7 +6,6 @@
 'use strict';
 
 const gulp = require('gulp');
-const gulpSequence = require('gulp-sequence');
 const fs = require('fs');
 const os = require('os');
 const cp = require('child_process');
@@ -506,7 +505,7 @@ gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], packageExtensionTas
 
 gulp.task('vscode-win32-x64-mssql', ['optimize-vscode'], packageExtensionTask('mssql', 'win32', 'x64'));
 gulp.task('vscode-darwin-mssql', ['optimize-vscode'], packageExtensionTask('mssql', 'darwin'));
-gulp.task('vscode-linux-x64-mssql', ['optimize-vscode'], packageExtensionTask('mssql', 'linux', 'x64'));
+gulp.task('vscode-linux-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'linux', 'x64'));
 
 gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-ia32')));
 gulp.task('clean-vscode-win32-x64', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-x64')));
@@ -519,7 +518,7 @@ gulp.task('vscode-win32-ia32', ['optimize-vscode', 'clean-vscode-win32-ia32'], p
 gulp.task('vscode-win32-x64',  ['vscode-win32-x64-azurecore', 'vscode-win32-x64-mssql', 'optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
 gulp.task('vscode-darwin', ['vscode-darwin-azurecore', 'vscode-darwin-mssql', 'optimize-vscode', 'clean-vscode-darwin'], packageTask('darwin'));
 gulp.task('vscode-linux-ia32', ['optimize-vscode', 'clean-vscode-linux-ia32'], packageTask('linux', 'ia32'));
-gulp.task('vscode-linux-x64', gulpSequence('vscode-linux-x64-azurecore', 'vscode-linux-x64-mssql', 'optimize-vscode', 'clean-vscode-linux-x64'), packageTask('linux', 'x64'));
+gulp.task('vscode-linux-x64', ['vscode-linux-x64-azurecore', 'vscode-linux-x64-mssql', 'optimize-vscode', 'clean-vscode-linux-x64'], packageTask('linux', 'x64'));
 gulp.task('vscode-linux-arm', ['optimize-vscode', 'clean-vscode-linux-arm'], packageTask('linux', 'arm'));
 
 gulp.task('vscode-win32-ia32-min', ['minify-vscode', 'clean-vscode-win32-ia32'], packageTask('win32', 'ia32', { minified: true }));
