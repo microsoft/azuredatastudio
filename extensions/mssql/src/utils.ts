@@ -211,10 +211,10 @@ interface IEndpoint {
 }
 
 export function isValidNumber(maybeNumber: any) {
-    return maybeNumber !== undefined
-        && maybeNumber !== null
-        && maybeNumber !== ''
-        && !isNaN(Number(maybeNumber.toString()));
+	return maybeNumber !== undefined
+		&& maybeNumber !== null
+		&& maybeNumber !== ''
+		&& !isNaN(Number(maybeNumber.toString()));
 }
 
 /**
@@ -222,11 +222,11 @@ export function isValidNumber(maybeNumber: any) {
  * @param msg Message to log to the console
  */
 export function logDebug(msg: any): void {
-    let config = vscode.workspace.getConfiguration(extensionConfigSectionName);
-    let logDebugInfo = config[configLogDebugInfo];
-    if (logDebugInfo === true) {
-        let currentTime = new Date().toLocaleTimeString();
-        let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';
-        console.log(outputMsg);
-    }
+	let config = vscode.workspace.getConfiguration(extensionConfigSectionName);
+	let logDebugInfo = config[configLogDebugInfo];
+	if (logDebugInfo === true) {
+		let currentTime = new Date().toLocaleTimeString();
+		let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';
+		console.log(outputMsg);
+	}
 }

@@ -33,29 +33,29 @@ export class ApiWrapper {
 		return sqlops.dataprotocol.registerFileBrowserProvider(provider);
 	}
 
-    public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-        return sqlops.window.modelviewdialog.createDialog(title);
-    }
+	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
+		return sqlops.window.modelviewdialog.createDialog(title);
+	}
 
-    public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
-        return sqlops.window.modelviewdialog.openDialog(dialog);
-    }
+	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		return sqlops.window.modelviewdialog.openDialog(dialog);
+	}
 
-    public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
-        return sqlops.window.modelviewdialog.closeDialog(dialog);
-    }
+	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		return sqlops.window.modelviewdialog.closeDialog(dialog);
+	}
 
-    public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
-        sqlops.tasks.registerTask(taskId, handler);
-    }
+	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
+		sqlops.tasks.registerTask(taskId, handler);
+	}
 
-    public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
-        sqlops.tasks.startBackgroundOperation(operationInfo);
+	public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		sqlops.tasks.startBackgroundOperation(operationInfo);
 	}
 
 	public getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
-        return sqlops.connection.getActiveConnections();
-    }
+		return sqlops.connection.getActiveConnections();
+	}
 
 	// VSCode APIs
 	public executeCommand(command: string, ...rest: any[]): Thenable<any> {
@@ -67,16 +67,16 @@ export class ApiWrapper {
 	}
 
 	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-        return vscode.window.showErrorMessage(message, ...items);
-    }
+		return vscode.window.showErrorMessage(message, ...items);
+	}
 
-    public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-        return vscode.window.showWarningMessage(message, ...items);
-    }
+	public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showWarningMessage(message, ...items);
+	}
 
-    public showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-        return vscode.window.showInformationMessage(message, ...items);
-    }
+	public showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showInformationMessage(message, ...items);
+	}
 
 	public showOpenDialog(options: vscode.OpenDialogOptions): Thenable<vscode.Uri[] | undefined> {
 		return vscode.window.showOpenDialog(options);
@@ -105,15 +105,15 @@ export class ApiWrapper {
 		return vscode.workspace.workspaceFolders;
 	}
 
-    public createStatusBarItem(alignment?: vscode.StatusBarAlignment, priority?: number): vscode.StatusBarItem {
-        return vscode.window.createStatusBarItem(alignment, priority);
-    }
+	public createStatusBarItem(alignment?: vscode.StatusBarAlignment, priority?: number): vscode.StatusBarItem {
+		return vscode.window.createStatusBarItem(alignment, priority);
+	}
 
-    public createOutputChannel(name: string): vscode.OutputChannel {
-        return vscode.window.createOutputChannel(name);
-    }
+	public createOutputChannel(name: string): vscode.OutputChannel {
+		return vscode.window.createOutputChannel(name);
+	}
 
-    public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-        return sqlops.window.modelviewdialog.createTab(title);
-    }
+	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
+		return sqlops.window.modelviewdialog.createTab(title);
+	}
 }

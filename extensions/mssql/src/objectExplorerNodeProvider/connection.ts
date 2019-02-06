@@ -41,7 +41,7 @@ export class SqlClusterConnection {
 	public get host(): string { return this._host; }
 	public get port(): string { return this._port || constants.defaultKnoxPort; }
 	public get user(): string { return this._user; }
-	public get pass(): string { return this._password; }
+	public get password(): string { return this._password; }
 
 	public isMatch(connection: SqlClusterConnection | sqlops.ConnectionInfo): boolean {
 		if (!connection) { return false; }
@@ -62,7 +62,7 @@ export class SqlClusterConnection {
 			requestParams: {
 				auth: {
 					user: this.user,
-					pass: this.pass
+					pass: this.password
 				}
 			}
 		};

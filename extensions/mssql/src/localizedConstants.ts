@@ -12,10 +12,7 @@ const localize = nls.loadMessageBundle();
 export const msgMissingNodeContext = localize('msgMissingNodeContext', 'Node Command called without any node passed');
 
 // Spark Job Submission Constants //////////////////////////////////////////
-export const sparkSelectLocalFile = localize('sparkSelectLocalFile', 'Select');
 export const sparkLocalFileDestinationHint = localize('sparkJobSubmission_LocalFileDestinationHint', 'Local file will be uploaded to HDFS. ');
-export function sparkGetLocalFileDestinationWithPath(path: string): string { return localize('sparkJobSubmission_LocalFileDestinationHintWithPath', 'The selected local file will be uploaded to HDFS: {0}', path); }
-export const sparkJobSubmissionStartMessage = localize('sparkJobSubmission_SubmissionStartMessage', '.......................... Submit Spark Job Start ..........................');
 export const sparkJobSubmissionEndMessage = localize('sparkJobSubmission_SubmissionEndMessage', '.......................... Submit Spark Job End ............................');
 export function sparkJobSubmissionPrepareUploadingFile(localPath: string, clusterFolder: string): string { return localize('sparkJobSubmission_PrepareUploadingFile', 'Uploading file from local {0} to HDFS folder: {1}', localPath, clusterFolder); }
 export const sparkJobSubmissionUploadingFileSucceeded = localize('sparkJobSubmission_UploadingFileSucceeded', 'Upload file to cluster Succeeded!');

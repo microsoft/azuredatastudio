@@ -54,15 +54,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		if (!clusterConnInfo) { return false; }
 
 		let clusterConnection = new SqlClusterConnection(clusterConnInfo);
-		let clusterSession = new SqlClusterSession(
-			{
-				sqlClusterConnection: clusterConnection,
-				sqlSession: session,
-				sqlConnProfile: sqlConnProfile,
-				appContext: this.appContext,
-				changeHandler: this
-			}
-		);
+		let clusterSession = new SqlClusterSession(clusterConnection, session, sqlConnProfile, this.appContext, this);
 		this.sessionMap.set(session.sessionId, clusterSession);
 		return true;
 	}
@@ -217,37 +209,29 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 }
 
 export class SqlClusterSession {
-	private _sqlClusterConnection: SqlClusterConnection;
-	private _sqlSession: sqlops.ObjectExplorerSession;
-	private _sqlConnProfile: sqlops.IConnectionProfile;
 	private _rootNode: SqlClusterRootNode;
 
-	constructor(arg: SqlClusterSessionArgs) {
-		this._sqlClusterConnection = arg.sqlClusterConnection;
-		this._sqlSession = arg.sqlSession;
-		this._sqlConnProfile = arg.sqlConnProfile;
+	constructor(
+		private _sqlClusterConnection: SqlClusterConnection,
+		private _sqlSession: sqlops.ObjectExplorerSession,
+		private _sqlConnectionProfile: sqlops.IConnectionProfile,
+		private _appContext: AppContext,
+		private _changeHandler: ITreeChangeHandler
+	) {
 		this._rootNode = new SqlClusterRootNode(this,
-			new TreeDataContext(arg.appContext.extensionContext, arg.changeHandler),
-			arg.sqlSession.rootNode.nodePath);
+			new TreeDataContext(this._appContext.extensionContext, this._changeHandler),
+			this._sqlSession.rootNode.nodePath);
 	}
 
 	public get sqlClusterConnection(): SqlClusterConnection { return this._sqlClusterConnection; }
 	public get sqlSession(): sqlops.ObjectExplorerSession { return this._sqlSession; }
-	public get sqlConnProfile(): sqlops.IConnectionProfile { return this._sqlConnProfile; }
+	public get sqlConnectionProfile(): sqlops.IConnectionProfile { return this._sqlConnectionProfile; }
 	public get sessionId(): string { return this._sqlSession.sessionId; }
 	public get rootNode(): SqlClusterRootNode { return this._rootNode; }
 
 	public isMatchedSqlConnection(sqlConnProfile: sqlops.IConnectionProfile): boolean {
-		return this._sqlConnProfile.id === sqlConnProfile.id;
+		return this._sqlConnectionProfile.id === sqlConnProfile.id;
 	}
-}
-
-interface SqlClusterSessionArgs {
-	sqlClusterConnection: SqlClusterConnection;
-	sqlSession: sqlops.ObjectExplorerSession;
-	sqlConnProfile: sqlops.IConnectionProfile;
-	appContext: AppContext;
-	changeHandler: ITreeChangeHandler;
 }
 
 class SqlClusterRootNode extends TreeNode {
