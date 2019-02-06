@@ -9,8 +9,7 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import { AppContext } from '../appContext';
 import { getErrorMessage } from '../utils';
-import { SqlClusterConnection } from '../objectExplorerNodeProvider/connection';
-import { SqlClusterLookUp } from '../sqlClusterLookUp';
+import * as SqlClusterLookUp from '../sqlClusterLookUp';
 
 export class OpenSparkYarnHistoryTask {
     constructor(private appContext: AppContext) {

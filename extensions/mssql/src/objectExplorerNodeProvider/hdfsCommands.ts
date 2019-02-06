@@ -24,7 +24,7 @@ import * as utils from '../utils';
 import { SqlClusterConnection } from './connection';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
-import { SqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
+import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
 
 function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): vscode.Uri {
 	let root = utils.getUserHome();
@@ -50,9 +50,9 @@ export async function getNode<T extends TreeNode>(sqlContext: ICommandViewContex
 	if (sqlContext && sqlContext.type === constants.ViewType && sqlContext.node) {
 		node = sqlContext.node as T;
 	} else if (sqlContext && sqlContext.type === constants.ObjectExplorerService) {
-		let oeNodeProvider = appContext.getService<SqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
+		let oeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
 		if (oeNodeProvider) {
-			node = await oeNodeProvider.findSqlClusterNodeBySqlContext<T>(sqlContext);
+			node = await oeNodeProvider.findSqlClusterNodeByContext<T>(sqlContext);
 		}
 	} else {
 		throw new Error(LocalizedConstants.msgMissingNodeContext);

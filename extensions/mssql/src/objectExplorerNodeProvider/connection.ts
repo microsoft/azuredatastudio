@@ -13,41 +13,41 @@ import * as constants from '../constants';
 import { IFileSource, IHdfsOptions, IRequestParams, FileSourceFactory } from './fileSources';
 
 export class SqlClusterConnection {
-	private _sqlClusterConnObj: sqlops.connection.Connection;
-	private _sqlClusterConnProfile: sqlops.IConnectionProfile;
+	private _connection: sqlops.connection.Connection;
+	private _profile: sqlops.IConnectionProfile;
 	private _host: string;
 	private _port: string;
 	private _user: string;
-	private _pass: string;
+	private _password: string;
 
 	constructor(connectionInfo: sqlops.connection.Connection | sqlops.IConnectionProfile) {
-		if (!this.isValid(connectionInfo)) {
-			throw new Error(localize('invalidConnectionInfo', 'Invalid ConnectionInfo is provided.'));
-		}
+		this.validate(connectionInfo);
+
 		if ('id' in connectionInfo) {
-			this._sqlClusterConnProfile = connectionInfo;
-			this._sqlClusterConnObj = this.toConnObj(this._sqlClusterConnProfile);
+			this._profile = connectionInfo;
+			this._connection = this.toConnection(this._profile);
 		} else {
-			this._sqlClusterConnObj = connectionInfo;
-			this._sqlClusterConnProfile = this.toConnProfile(this._sqlClusterConnObj);
+			this._connection = connectionInfo;
+			this._profile = this.toConnectionProfile(this._connection);
 		}
-		this._host = this._sqlClusterConnObj.options[constants.hostPropName];
-		this._port = this._sqlClusterConnObj.options[constants.knoxPortPropName];
-		this._user = this._sqlClusterConnObj.options[constants.userPropName];
-		this._pass = this._sqlClusterConnObj.options[constants.passwordPropName];
+		this._host = this._connection.options[constants.hostPropName];
+		this._port = this._connection.options[constants.knoxPortPropName];
+		this._user = this._connection.options[constants.userPropName];
+		this._password = this._connection.options[constants.passwordPropName];
 	}
 
-	public get sqlClusterConnObj(): sqlops.connection.Connection { return this._sqlClusterConnObj; }
-	public get sqlClusterConnProfile(): sqlops.IConnectionProfile { return this._sqlClusterConnProfile; }
+	public get connection(): sqlops.connection.Connection { return this._connection; }
+	public get profile(): sqlops.IConnectionProfile { return this._profile; }
 	public get host(): string { return this._host; }
 	public get port(): string { return this._port || constants.defaultKnoxPort; }
 	public get user(): string { return this._user; }
-	public get pass(): string { return this._pass; }
+	public get pass(): string { return this._password; }
 
-	public isMatch(obj: SqlClusterConnection | sqlops.ConnectionInfo): boolean {
-		if (!obj) { return false; }
-		let options1 = 'options' in obj ? obj.options : obj._sqlClusterConnObj.options;
-		let options2 = this._sqlClusterConnObj.options;
+	public isMatch(connection: SqlClusterConnection | sqlops.ConnectionInfo): boolean {
+		if (!connection) { return false; }
+		let options1 = connection instanceof SqlClusterConnection ?
+			connection._connection.options : connection.options;
+		let options2 = this._connection.options;
 		return [ constants.hostPropName, constants.knoxPortPropName, constants.userPropName ]
 			.every(e => options1[e] === options2[e]);
 	}
@@ -69,20 +69,36 @@ export class SqlClusterConnection {
 		return FileSourceFactory.instance.createHdfsFileSource(options);
 	}
 
-	private isValid(connectionInfo: sqlops.ConnectionInfo): boolean {
-		return connectionInfo && connectionInfo.options &&
-			[ constants.hostPropName, constants.knoxPortPropName,
-				constants.userPropName, constants.passwordPropName ]
-			.every(e => connectionInfo.options[e] !== undefined);
+	private validate(connectionInfo: sqlops.ConnectionInfo): void {
+		if (!connectionInfo) {
+			throw new Error(localize('connectionInfoUndefined', 'ConnectionInfo is undefined.'));
+		}
+		if (!connectionInfo.options) {
+			throw new Error(localize('connectionInfoOptionsUndefined', 'ConnectionInfo.options is undefined.'));
+		}
+		let missingProperties: string[] = this.getMissingProperties(connectionInfo);
+		if (missingProperties && missingProperties.length > 0) {
+			throw new Error(localize('connectionInfoOptionsMissingProperties',
+				'Some missing properties in connectionInfo.options: {0}',
+				missingProperties.join(', ')));
+		}
 	}
 
-	private toConnObj(connProfile: sqlops.IConnectionProfile): sqlops.connection.Connection {
+	private getMissingProperties(connectionInfo: sqlops.ConnectionInfo): string[] {
+		if (!connectionInfo || !connectionInfo.options) { return undefined; }
+		return [
+			constants.hostPropName, constants.knoxPortPropName,
+			constants.userPropName, constants.passwordPropName
+		].filter(e => connectionInfo.options[e] !== undefined);
+	}
+
+	private toConnection(connProfile: sqlops.IConnectionProfile): sqlops.connection.Connection {
 		let connection: sqlops.connection.Connection = Object.assign(connProfile,
-			{ connectionId: this._sqlClusterConnProfile.id });
+			{ connectionId: this._profile.id });
 		return connection;
 	}
 
-	private toConnProfile(connectionInfo: sqlops.connection.Connection): sqlops.IConnectionProfile {
+	private toConnectionProfile(connectionInfo: sqlops.connection.Connection): sqlops.IConnectionProfile {
 		let options = connectionInfo.options;
 		let connProfile: sqlops.IConnectionProfile = Object.assign(<sqlops.IConnectionProfile>{},
 			connectionInfo,

@@ -36,13 +36,13 @@ export class SparkJobSubmissionService {
                 rejectUnauthorized: false,
                 body: {
                     file: submissionArgs.sparkFile,
-                    proxyUser: submissionArgs.userName,
+                    proxyUser: submissionArgs.user,
                     className: submissionArgs.mainClass,
                     name: submissionArgs.jobName
                 },
                 // authentication headers
                 headers: {
-                    'Authorization': 'Basic ' + new Buffer(submissionArgs.userName + ':' + submissionArgs.passWord).toString('base64')
+                    'Authorization': 'Basic ' + new Buffer(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
                 }
             };
 
@@ -100,7 +100,7 @@ export class SparkJobSubmissionService {
                 rejectUnauthorized: false,
                 // authentication headers
                 headers: {
-                    'Authorization': 'Basic ' + new Buffer(submissionArgs.userName + ':' + submissionArgs.passWord).toString('base64')
+                    'Authorization': 'Basic ' + new Buffer(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
                 }
             };
 
@@ -140,12 +140,12 @@ export class SparkJobSubmissionService {
 }
 
 export class SparkJobSubmissionInput {
-    public setSparkClusterInfo(hadoopConnection: SqlClusterConnection): void {
-        this._host = hadoopConnection.host;
-        this._port = hadoopConnection.port;
+    public setSparkClusterInfo(sqlClusterConnection: SqlClusterConnection): void {
+        this._host = sqlClusterConnection.host;
+        this._port = sqlClusterConnection.port;
         this._livyPath = constants.livySubmitPath;
-        this._userName = hadoopConnection.user;
-        this._passWord = hadoopConnection.pass;
+        this._user = sqlClusterConnection.user;
+        this._passWord = sqlClusterConnection.pass;
     }
 
     constructor(
@@ -159,7 +159,7 @@ export class SparkJobSubmissionInput {
         private _host?: string,
         private _port?: string,
         private _livyPath?: string,
-        private _userName?: string,
+        private _user?: string,
         private _passWord?: string) {
     }
 
@@ -173,8 +173,8 @@ export class SparkJobSubmissionInput {
     public get host(): string { return this._host; }
     public get port(): string { return this._port; }
     public get livyPath(): string { return this._livyPath; }
-    public get userName(): string { return this._userName; }
-    public get passWord(): string { return this._passWord; }
+    public get user(): string { return this._user; }
+    public get password(): string { return this._passWord; }
 }
 
 export enum SparkFileSource {

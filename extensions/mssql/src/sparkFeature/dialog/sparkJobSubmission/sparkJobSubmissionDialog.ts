@@ -17,6 +17,7 @@ import { SparkJobSubmissionModel } from './sparkJobSubmissionModel';
 import { SparkConfigurationTab } from './sparkConfigurationTab';
 import { SparkJobSubmissionInput } from './sparkJobSubmissionService';
 import { SparkAdvancedTab } from './sparkAdvancedTab';
+import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,11 +31,12 @@ export class SparkJobSubmissionDialog {
     }
 
     constructor(
-        private sqlClusterConnection: sqlops.connection.Connection,
+        private sqlClusterConnection: SqlClusterConnection,
         private appContext: AppContext,
         private outputChannel: vscode.OutputChannel) {
             if (!this.sqlClusterConnection || !this.appContext || !this.outputChannel) {
-                throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError', 'Paramteres for SparkJobSubmissionDialog is illegal'));
+				throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError',
+					'Parameters for SparkJobSubmissionDialog is illegal'));
             }
     }
 
@@ -44,7 +46,7 @@ export class SparkJobSubmissionDialog {
         this._dataModel = new SparkJobSubmissionModel(this.sqlClusterConnection, this._dialog, this.appContext);
 
         this._sparkConfigTab = new SparkConfigurationTab(this._dataModel, this.appContext, path);
-        this._sparkAdvancedTab = new SparkAdvancedTab(this._dataModel, this.appContext);
+        this._sparkAdvancedTab = new SparkAdvancedTab(this.appContext);
 
         this._dialog.content = [this._sparkConfigTab.tab, this._sparkAdvancedTab.tab];
 
@@ -59,11 +61,13 @@ export class SparkJobSubmissionDialog {
     }
 
     private onClickOk(): void {
+		let jobName = localize('sparkJobSubmission_SubmitSparkJob', '{0} Spark Job Submission:',
+			this._sparkConfigTab.getInputValues()[0]);
         this.apiWrapper.startBackgroundOperation(
             {
-                connection: this.sqlClusterConnection,
-                displayName: LocalizedConstants.submitSparkJobWithJobName(this._sparkConfigTab.getInputValues()[0]),
-                description: LocalizedConstants.submitSparkJobWithJobName(this._sparkConfigTab.getInputValues()[0]),
+                connection: this.sqlClusterConnection.connection,
+                displayName: jobName,
+                description: jobName,
                 isCancelable: false,
                 operation: op => {
                     this.onSubmit(op);

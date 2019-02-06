@@ -10,113 +10,112 @@ import * as constants from './constants';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
-import { ICommandObjectExplorerContext, ICommandUnknownContext, ICommandViewContext } from './objectExplorerNodeProvider/command';
-import { SqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
+import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
-export class SqlClusterLookUp {
-	public static findSqlClusterConnection(
-		obj: ICommandObjectExplorerContext | sqlops.IConnectionProfile,
-		appContext: AppContext) : SqlClusterConnection  {
 
-		if (!obj || !appContext) { return undefined; }
+export function findSqlClusterConnection(
+	obj: ICommandObjectExplorerContext | sqlops.IConnectionProfile,
+	appContext: AppContext) : SqlClusterConnection  {
 
-		let sqlConnProfile: sqlops.IConnectionProfile;
-		if ('type' in obj && obj.type === constants.ObjectExplorerService
-			&& 'explorerContext' in obj && obj.explorerContext && obj.explorerContext.connectionProfile) {
-			sqlConnProfile = obj.explorerContext.connectionProfile;
-		} else if ('options' in obj) {
-			sqlConnProfile = obj;
-		}
+	if (!obj || !appContext) { return undefined; }
 
-		let sqlClusterConnection: SqlClusterConnection = undefined;
-		if (sqlConnProfile) {
-			sqlClusterConnection = this.findSqlClusterConnectionBySqlConnProfile(sqlConnProfile, appContext);
-		}
-		return sqlClusterConnection;
+	let sqlConnProfile: sqlops.IConnectionProfile;
+	if ('type' in obj && obj.type === constants.ObjectExplorerService
+		&& 'explorerContext' in obj && obj.explorerContext && obj.explorerContext.connectionProfile) {
+		sqlConnProfile = obj.explorerContext.connectionProfile;
+	} else if ('options' in obj) {
+		sqlConnProfile = obj;
 	}
 
-	private static findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: sqlops.IConnectionProfile, appContext: AppContext): SqlClusterConnection {
-		if (!sqlConnProfile || !appContext) { return undefined; }
-
-		let sqlOeNodeProvider = appContext.getService<SqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
-		if (!sqlOeNodeProvider) { return undefined; }
-
-		let sqlClusterSession = sqlOeNodeProvider.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
-		if (!sqlClusterSession) { return undefined; }
-
-		return  sqlClusterSession.sqlClusterConnection;
+	let sqlClusterConnection: SqlClusterConnection = undefined;
+	if (sqlConnProfile) {
+		sqlClusterConnection = findSqlClusterConnectionBySqlConnProfile(sqlConnProfile, appContext);
 	}
+	return sqlClusterConnection;
+}
 
-	public static async getSqlClusterConnInfo(
-		obj: sqlops.IConnectionProfile | sqlops.connection.Connection | ICommandObjectExplorerContext): Promise<ConnectionParam> {
+function findSqlClusterConnectionBySqlConnProfile(sqlConnProfile: sqlops.IConnectionProfile, appContext: AppContext): SqlClusterConnection {
+	if (!sqlConnProfile || !appContext) { return undefined; }
 
-		if (!obj) { return undefined; }
+	let sqlOeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
+	if (!sqlOeNodeProvider) { return undefined; }
 
-		let sqlClusterConnInfo: ConnectionParam = undefined;
-		if ('providerName' in obj) {
-			if (obj.providerName === constants.mssqlClusterProviderName) {
-				sqlClusterConnInfo = 'id' in obj ? this.connProfileToConnectionParam(obj) : this.connToConnectionParam(obj);
-			} else {
-				sqlClusterConnInfo = await this.createSqlClusterConnInfo(obj);
-			}
+	let sqlClusterSession = sqlOeNodeProvider.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
+	if (!sqlClusterSession) { return undefined; }
+
+	return  sqlClusterSession.sqlClusterConnection;
+}
+
+export async function getSqlClusterConnection(
+	obj: sqlops.IConnectionProfile | sqlops.connection.Connection | ICommandObjectExplorerContext): Promise<ConnectionParam> {
+
+	if (!obj) { return undefined; }
+
+	let sqlClusterConnInfo: ConnectionParam = undefined;
+	if ('providerName' in obj) {
+		if (obj.providerName === constants.mssqlClusterProviderName) {
+			sqlClusterConnInfo = 'id' in obj ? connProfileToConnectionParam(obj) : connToConnectionParam(obj);
 		} else {
-			sqlClusterConnInfo = await this.createSqlClusterConnInfo(obj.explorerContext.connectionProfile);
+			sqlClusterConnInfo = await createSqlClusterConnInfo(obj);
 		}
-
-		return sqlClusterConnInfo;
+	} else {
+		sqlClusterConnInfo = await createSqlClusterConnInfo(obj.explorerContext.connectionProfile);
 	}
 
-	private static async createSqlClusterConnInfo(sqlConnInfo: sqlops.IConnectionProfile | sqlops.connection.Connection): Promise<ConnectionParam> {
-		if (!sqlConnInfo) { return undefined; }
+	return sqlClusterConnInfo;
+}
 
-		let connectionId: string = 'id' in sqlConnInfo ? sqlConnInfo.id : sqlConnInfo.connectionId;
-		if (!connectionId) { return undefined; }
+async function createSqlClusterConnInfo(sqlConnInfo: sqlops.IConnectionProfile | sqlops.connection.Connection): Promise<ConnectionParam> {
+	if (!sqlConnInfo) { return undefined; }
 
-		let serverInfo = await sqlops.connection.getServerInfo(connectionId);
-		if (!serverInfo || !serverInfo.options) { return undefined; }
+	let connectionId: string = 'id' in sqlConnInfo ? sqlConnInfo.id : sqlConnInfo.connectionId;
+	if (!connectionId) { return undefined; }
 
-		let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
-		if (!endpoints || endpoints.length === 0) { return undefined; }
+	let serverInfo = await sqlops.connection.getServerInfo(connectionId);
+	if (!serverInfo || !serverInfo.options) { return undefined; }
 
-		let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
-		if (index < 0) { return undefined; }
+	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) { return undefined; }
 
-		let credentials = await sqlops.connection.getCredentials(connectionId);
-		if (!credentials) { return undefined; }
+	let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
+	if (index < 0) { return undefined; }
 
-		let clusterConnInfo = <ConnectionParam>{
-			providerName: constants.mssqlClusterProviderName,
-			connectionId: UUID.generateUuid(),
-			options: {}
-		};
+	let credentials = await sqlops.connection.getCredentials(connectionId);
+	if (!credentials) { return undefined; }
 
-		clusterConnInfo.options[constants.hostPropName] = endpoints[index].ipAddress;
-		clusterConnInfo.options[constants.knoxPortPropName] = endpoints[index].port;
-		clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
-		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
-		clusterConnInfo = this.connToConnectionParam(clusterConnInfo);
+	let clusterConnInfo = <ConnectionParam>{
+		providerName: constants.mssqlClusterProviderName,
+		connectionId: UUID.generateUuid(),
+		options: {}
+	};
 
-		return clusterConnInfo;
-	}
+	clusterConnInfo.options[constants.hostPropName] = endpoints[index].ipAddress;
+	clusterConnInfo.options[constants.knoxPortPropName] = endpoints[index].port;
+	clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
+	clusterConnInfo.options[constants.passwordPropName] = credentials.password;
+	clusterConnInfo = this.connToConnectionParam(clusterConnInfo);
 
-	private static connProfileToConnectionParam(connectionProfile: sqlops.IConnectionProfile): ConnectionParam {
-		let result = Object.assign(connectionProfile, { connectionId: connectionProfile.id });
-		return <ConnectionParam>result;
-	}
+	return clusterConnInfo;
+}
 
-	private static connToConnectionParam(connection: sqlops.connection.Connection): ConnectionParam {
-		let connectionId = connection.connectionId;
-		let options = connection.options;
-		let result = Object.assign(connection,
-			{
-				serverName: `${options[constants.hostPropName]},${options[constants.knoxPortPropName]}`,
-				userName: options[constants.userPropName],
-				password: options[constants.passwordPropName],
-				id: connectionId,
-			}
-		);
-		return <ConnectionParam>result;
-	}
+function connProfileToConnectionParam(connectionProfile: sqlops.IConnectionProfile): ConnectionParam {
+	let result = Object.assign(connectionProfile, { connectionId: connectionProfile.id });
+	return <ConnectionParam>result;
+}
+
+function connToConnectionParam(connection: sqlops.connection.Connection): ConnectionParam {
+	let connectionId = connection.connectionId;
+	let options = connection.options;
+	let result = Object.assign(connection,
+		{
+			serverName: `${options[constants.hostPropName]},${options[constants.knoxPortPropName]}`,
+			userName: options[constants.userPropName],
+			password: options[constants.passwordPropName],
+			id: connectionId,
+		}
+	);
+	return <ConnectionParam>result;
 }
 
 interface IEndpoint {

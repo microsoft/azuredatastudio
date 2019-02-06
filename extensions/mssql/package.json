@@ -259,11 +259,6 @@
           "group": "1mssqlCluster@4"
         },
         {
-          "command": "livy.cmd.submitSparkJob",
-          "when": "nodeType && nodeType == mssqlCluster:connection",
-          "group": "1mssqlCluster@5"
-        },
-        {
           "command": "livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
           "group": "1mssqlCluster@6"

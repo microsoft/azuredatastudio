@@ -27,7 +27,7 @@ export abstract class TreeNode implements ITreeNode {
 		if (this.parent) {
 			path = this.parent.generateNodePath();
 		}
-		path = path ? `${path}/${this.nodePath}` : this.nodePath;
+		path = path ? `${path}/${this.nodePathValue}` : this.nodePathValue;
 		return path;
 	}
 
@@ -69,7 +69,7 @@ export abstract class TreeNode implements ITreeNode {
 	/**
 	 * The value to use for this node in the node path
 	 */
-	public abstract get nodePath(): string;
+	public abstract get nodePathValue(): string;
 
 	abstract getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]>;
 	abstract getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem>;

@@ -21,18 +21,17 @@ import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature } from './features';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
-import { SqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
 import { MssqlExtensionApi, MssqlObjectExplorerBrowser } from './api/mssqlapis';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
+import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-const controllers = [];
 
 export async function activate(context: vscode.ExtensionContext): Promise<MssqlExtensionApi> {
 	// lets make sure we support this platform first
@@ -101,7 +100,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		credentialsStore.start();
 		resourceProvider.start();
 
-		let nodeProvider = new SqlObjectExplorerNodeProvider(appContext);
+		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
 		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 		activateSparkFeatures(appContext);
 	}, e => {
@@ -125,8 +124,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
 				getNode: (context: sqlops.ObjectExplorerContext) => {
-					let oeProvider = appContext.getService<SqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
-					return <any>oeProvider.findSqlClusterNodeBySqlContext(context);
+					let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(Constants.ObjectExplorerService);
+					return <any>oeProvider.findSqlClusterNodeByContext(context);
 				}
 			};
 		}
@@ -137,7 +136,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 function activateSparkFeatures(appContext: AppContext): void {
 	let extensionContext = appContext.extensionContext;
 	let apiWrapper = appContext.apiWrapper;
-	let outputChannel: vscode.OutputChannel = appContext.apiWrapper.createOutputChannel('MSSQL');
+	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
 	apiWrapper.registerTaskHandler(Constants.livySubmitSparkJobTask, (profile: sqlops.IConnectionProfile) => {
@@ -190,9 +189,6 @@ function generateHandleServerProviderEvent() {
 
 // this method is called when your extension is deactivated
 export function deactivate(): void {
-	for (let controller of controllers) {
-        controller.deactivate();
-    }
 }
 
 class CustomOutputChannel implements vscode.OutputChannel {

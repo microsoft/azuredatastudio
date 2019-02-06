@@ -23,7 +23,6 @@ import { IFileSource, File, joinHdfsPath } from '../../../objectExplorerNodeProv
 
 // Stores important state and service methods used by the Spark Job Submission Dialog.
 export class SparkJobSubmissionModel {
-    public hadoopConnection: SqlClusterConnection;
     private _dialogService: SparkJobSubmissionService;
     private _guidForClusterFolder: string;
     public get guidForClusterFolder(): string { return this._guidForClusterFolder; }
@@ -39,20 +38,21 @@ export class SparkJobSubmissionModel {
     public hdfsFolderDestinationPath: string;
 
     constructor(
-        private readonly _sqlClusterConnection: sqlops.connection.Connection,
+        private readonly _sqlClusterConnection: SqlClusterConnection,
         private readonly _dialog: sqlops.window.modelviewdialog.Dialog,
         private readonly _appContext: AppContext,
         requestService?: (args: any) => any) {
-            if (!this._sqlClusterConnection || !this._dialog || !this._appContext) {
-                throw new Error(localize('sparkJobSubmission_SparkJobSubmissionModelInitializeError', 'Paramteres for SparkJobSubmissionModel is illegal'));
-            }
 
-            this._dialogService = new SparkJobSubmissionService(requestService);
-            this.hadoopConnection = new SqlClusterConnection(this._sqlClusterConnection);
-            this._guidForClusterFolder = utils.generateGuid();
-        }
+		if (!this._sqlClusterConnection || !this._dialog || !this._appContext) {
+			throw new Error(localize('sparkJobSubmission_SparkJobSubmissionModelInitializeError',
+				'Parameters for SparkJobSubmissionModel is illegal'));
+		}
 
-    public get connection(): sqlops.connection.Connection { return this._sqlClusterConnection; }
+		this._dialogService = new SparkJobSubmissionService(requestService);
+		this._guidForClusterFolder = utils.generateGuid();
+	}
+
+    public get connection(): SqlClusterConnection { return this._sqlClusterConnection; }
     public get dialogService(): SparkJobSubmissionService { return this._dialogService; }
     public get dialog(): sqlops.window.modelviewdialog.Dialog { return this._dialog; }
 
@@ -81,8 +81,8 @@ export class SparkJobSubmissionModel {
     }
 
     public getSparkClusterUrl(): string {
-        if (this.hadoopConnection && this.hadoopConnection.host && this.hadoopConnection.port) {
-            return `https://${this.hadoopConnection.host}:${this.hadoopConnection.port}`;
+        if (this._sqlClusterConnection && this._sqlClusterConnection.host && this._sqlClusterConnection.port) {
+            return `https://${this._sqlClusterConnection.host}:${this._sqlClusterConnection.port}`;
         }
 
         // Only for safety check, Won't happen with correct Model initialize.
@@ -95,7 +95,7 @@ export class SparkJobSubmissionModel {
                 return Promise.reject(localize('sparkJobSubmission_submissionArgsIsInvalid', 'submissionArgs is invalid. '));
             }
 
-            submissionArgs.setSparkClusterInfo(this.hadoopConnection);
+            submissionArgs.setSparkClusterInfo(this._sqlClusterConnection);
             let livyBatchId = await this._dialogService.submitBatchJob(submissionArgs);
             return livyBatchId;
         } catch (error) {
@@ -118,7 +118,7 @@ export class SparkJobSubmissionModel {
                 retryTime = constants.livyRetryTimesForCheckYarnApp;
             }
 
-            submissionArgs.setSparkClusterInfo(this.hadoopConnection);
+            submissionArgs.setSparkClusterInfo(this._sqlClusterConnection);
             let response: LivyLogResponse = undefined;
             let timeOutCount: number = 0;
             do {
@@ -147,7 +147,7 @@ export class SparkJobSubmissionModel {
                 return Promise.reject(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(localFilePath));
             }
 
-            let fileSource: IFileSource = this.hadoopConnection.createHdfsFileSource();
+            let fileSource: IFileSource = this._sqlClusterConnection.createHdfsFileSource();
             await fileSource.writeFile(new File(localFilePath, false), hdfsFolderPath);
         } catch (error) {
             return Promise.reject(error);
@@ -160,7 +160,7 @@ export class SparkJobSubmissionModel {
                 return Promise.reject(localize('sparkJobSubmission_PathNotSpecified.', 'Property Path is not specified. '));
             }
 
-            let fileSource: IFileSource = this.hadoopConnection.createHdfsFileSource();
+            let fileSource: IFileSource = this._sqlClusterConnection.createHdfsFileSource();
             return await fileSource.exists(path);
         } catch (error) {
             return Promise.reject(error);

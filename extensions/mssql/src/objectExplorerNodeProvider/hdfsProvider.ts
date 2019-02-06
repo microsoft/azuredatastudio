@@ -86,7 +86,7 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 		return this._path;
 	}
 
-	public get nodePath(): string {
+	public get nodePathValue(): string {
 		return this.getDisplayName();
 	}
 
@@ -196,7 +196,7 @@ export class FolderNode extends HdfsFileSourceNode {
 		if (this.children) {
 			// Find the child matching the node. This is necessary
 			// since writing can add duplicates.
-			node = this.children.find(n => n.nodePath === node.nodePath) as T;
+			node = this.children.find(n => n.nodePathValue === node.nodePathValue) as T;
 			this.context.changeHandler.notifyNodeChanged(this);
 		} else {
 			// Failed to retrieve children from server so something went wrong
@@ -333,7 +333,7 @@ export class ErrorNode extends TreeNode {
 		}
 	}
 
-	public get nodePath(): string {
+	public get nodePathValue(): string {
 		this.ensureNodePathValue();
 		return this._nodePathValue;
 	}

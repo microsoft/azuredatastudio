@@ -18,12 +18,12 @@ import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvi
 import { IFileSource } from './fileSources';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
-import { SqlClusterLookUp } from '../sqlClusterLookUp';
+import * as SqlClusterLookUp from '../sqlClusterLookUp';
 import { ICommandObjectExplorerContext } from './command';
 
-const outputChannel = vscode.window.createOutputChannel(constants.providerId);
+export const mssqlOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
-export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
+export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
 	private sessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerExpandInfo>();
@@ -31,38 +31,39 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 	constructor(private appContext: AppContext) {
 		super();
 		this.sessionMap = new Map<string, SqlClusterSession>();
-		this.appContext.registerService<SqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
+		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
 	}
 
-	handleSessionOpen(sqlSession: sqlops.ObjectExplorerSession): Thenable<boolean> {
+	handleSessionOpen(session: sqlops.ObjectExplorerSession): Thenable<boolean> {
 		return new Promise((resolve, reject) => {
-			if (!sqlSession) {
+			if (!session) {
 				reject('handleSessionOpen requires a session object to be passed');
 			} else {
-				resolve(this.doSessionOpen(sqlSession));
+				resolve(this.doSessionOpen(session));
 			}
 		});
 	}
 
-	private async doSessionOpen(sqlSession: sqlops.ObjectExplorerSession): Promise<boolean> {
-		if (!sqlSession && !sqlSession.sessionId) { return false; }
+	private async doSessionOpen(session: sqlops.ObjectExplorerSession): Promise<boolean> {
+		if (!session || !session.sessionId) { return false; }
 
-		let sqlSessionId = sqlSession.sessionId;
-		let sqlConnProfile = await sqlops.objectexplorer.getSessionConnectionProfile(sqlSessionId);
+		let sqlConnProfile = await sqlops.objectexplorer.getSessionConnectionProfile(session.sessionId);
 		if (!sqlConnProfile) { return false; }
 
-		let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnInfo(sqlConnProfile);
+		let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnection(sqlConnProfile);
+		if (!clusterConnInfo) { return false; }
+
 		let clusterConnection = new SqlClusterConnection(clusterConnInfo);
 		let clusterSession = new SqlClusterSession(
 			{
 				sqlClusterConnection: clusterConnection,
-				sqlSession: sqlSession,
+				sqlSession: session,
 				sqlConnProfile: sqlConnProfile,
 				appContext: this.appContext,
 				changeHandler: this
 			}
 		);
-		this.sessionMap.set(sqlSession.sessionId, clusterSession);
+		this.sessionMap.set(session.sessionId, clusterSession);
 		return true;
 	}
 
@@ -77,7 +78,7 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 	}
 
 	private async doExpandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<boolean> {
-		let sqlClusterSession = this.sessionMap.get(nodeInfo.sessionId);
+		let session = this.sessionMap.get(nodeInfo.sessionId);
 		let response = {
 			sessionId: nodeInfo.sessionId,
 			nodePath: nodeInfo.nodePath,
@@ -85,7 +86,7 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 			nodes: []
 		};
 
-		if (!sqlClusterSession) {
+		if (!session) {
 			// This is not an error case. Just fire reponse with empty nodes for example: request from standalone SQL instance
 			this.expandCompleteEmitter.fire(response);
 			return false;
@@ -96,21 +97,21 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 				// Intentionally not awaiting or catching errors.
 				// Any failure in startExpansion should be emitted in the expand complete result
 				// We want this to be async and ideally return true before it completes
-				this.startExpansion(sqlClusterSession, nodeInfo, isRefresh);
+				this.startExpansion(session, nodeInfo, isRefresh);
 			}, 10);
 		}
 		return true;
 	}
 
-	private async startExpansion(sqlClustersession: SqlClusterSession, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
+	private async startExpansion(session: SqlClusterSession, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
 		let expandResult: sqlops.ObjectExplorerExpandInfo = {
-			sessionId: sqlClustersession.sessionId,
+			sessionId: session.sessionId,
 			nodePath: nodeInfo.nodePath,
 			errorMessage: undefined,
 			nodes: []
 		};
 		try {
-			let node = await sqlClustersession.rootNode.findNodeByPath(nodeInfo.nodePath, true);
+			let node = await session.rootNode.findNodeByPath(nodeInfo.nodePath, true);
 			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
 				let children = await node.getChildren(true);
@@ -161,7 +162,7 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 		try {
 			let session = this.getSqlClusterSessionForNode(node);
 			if (!session) {
-				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePath));
+				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
 				let expandInfo: sqlops.ExpandNodeInfo = {
@@ -171,7 +172,7 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 				await this.refreshNode(expandInfo);
 			}
 		} catch (err) {
-			outputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
+			mssqlOutputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
 		}
 	}
 
@@ -179,7 +180,7 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 		let sqlClusterSession: SqlClusterSession = undefined;
 		while (node !== undefined) {
 			if (node instanceof DataServicesNode) {
-				sqlClusterSession = node.sqlClusterSession;
+				sqlClusterSession = node.session;
 				break;
 			} else {
 				node = node.parent;
@@ -188,26 +189,30 @@ export class SqlObjectExplorerNodeProvider extends ProviderBase implements sqlop
 		return sqlClusterSession;
 	}
 
-	async findSqlClusterNodeBySqlContext<T extends TreeNode>(sqlContext: ICommandObjectExplorerContext | sqlops.ObjectExplorerContext): Promise<T> {
+	async findSqlClusterNodeByContext<T extends TreeNode>(context: ICommandObjectExplorerContext | sqlops.ObjectExplorerContext): Promise<T> {
 		let node: T = undefined;
-		let sqlOeContext = 'explorerContext' in sqlContext ? sqlContext.explorerContext : sqlContext;
-		let sqlConnProfile = sqlOeContext.connectionProfile;
+		let explorerContext = 'explorerContext' in context ? context.explorerContext : context;
+		let sqlConnProfile = explorerContext.connectionProfile;
 		let session = this.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
 		if (session) {
-			if (sqlOeContext.isConnectionNode) {
+			if (explorerContext.isConnectionNode) {
 				// Note: ideally fix so we verify T matches RootNode and go from there
 				node = <T><any>session.rootNode;
 			} else {
 				// Find the node under the session
-				node = <T><any>await session.rootNode.findNodeByPath(sqlOeContext.nodeInfo.nodePath, true);
+				node = <T><any>await session.rootNode.findNodeByPath(explorerContext.nodeInfo.nodePath, true);
 			}
 		}
 		return node;
 	}
 
-	public findSqlClusterSessionBySqlConnProfile(sqlConnProfile: sqlops.IConnectionProfile): SqlClusterSession {
-		return Array.from(this.sessionMap.values())
-			.find(s => s.isMatchedSqlConnProfile(sqlConnProfile));
+	public findSqlClusterSessionBySqlConnProfile(connectionProfile: sqlops.IConnectionProfile): SqlClusterSession {
+		for (let session of this.sessionMap.values()) {
+			if (session.isMatchedSqlConnection(connectionProfile)) {
+				return session;
+			}
+		}
+		return undefined;
 	}
 }
 
@@ -217,7 +222,7 @@ export class SqlClusterSession {
 	private _sqlConnProfile: sqlops.IConnectionProfile;
 	private _rootNode: SqlClusterRootNode;
 
-	constructor(arg: SqlClusterSessionArg) {
+	constructor(arg: SqlClusterSessionArgs) {
 		this._sqlClusterConnection = arg.sqlClusterConnection;
 		this._sqlSession = arg.sqlSession;
 		this._sqlConnProfile = arg.sqlConnProfile;
@@ -232,12 +237,12 @@ export class SqlClusterSession {
 	public get sessionId(): string { return this._sqlSession.sessionId; }
 	public get rootNode(): SqlClusterRootNode { return this._rootNode; }
 
-	public isMatchedSqlConnProfile(sqlConnProfile: sqlops.IConnectionProfile): boolean {
+	public isMatchedSqlConnection(sqlConnProfile: sqlops.IConnectionProfile): boolean {
 		return this._sqlConnProfile.id === sqlConnProfile.id;
 	}
 }
 
-interface SqlClusterSessionArg {
+interface SqlClusterSessionArgs {
 	sqlClusterConnection: SqlClusterConnection;
 	sqlSession: sqlops.ObjectExplorerSession;
 	sqlConnProfile: sqlops.IConnectionProfile;
@@ -247,29 +252,29 @@ interface SqlClusterSessionArg {
 
 class SqlClusterRootNode extends TreeNode {
 	private _children: TreeNode[];
-	private _sqlClusterSession: SqlClusterSession;
+	private _session: SqlClusterSession;
 	private _treeDataContext: TreeDataContext;
 	private _nodePath: string;
 
 	constructor(sqlClusterSession: SqlClusterSession, treeDataContext: TreeDataContext, nodePath: string) {
 		super();
-		this._sqlClusterSession = sqlClusterSession;
+		this._session = sqlClusterSession;
 		this._treeDataContext = treeDataContext;
 		this._nodePath = nodePath;
 	}
 
-	public get sqlClusterSession(): SqlClusterSession {
-		return this._sqlClusterSession;
+	public get session(): SqlClusterSession {
+		return this._session;
 	}
 
-	public get nodePath(): string {
+	public get nodePathValue(): string {
 		return this._nodePath;
 	}
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
 			this._children = [];
-			let dataServicesNode = new DataServicesNode(this._sqlClusterSession, this._treeDataContext, this._nodePath);
+			let dataServicesNode = new DataServicesNode(this._session, this._treeDataContext, this._nodePath);
 			dataServicesNode.parent = this;
 			this._children.push(dataServicesNode);
 		}
@@ -298,29 +303,23 @@ class SqlClusterRootNode extends TreeNode {
 
 class DataServicesNode extends TreeNode {
 	private _children: TreeNode[];
-	private _sqlClusterSession: SqlClusterSession;
-	private _treeDataContext: TreeDataContext;
-	private _nodePath: string;
-	constructor(sqlClusterSession: SqlClusterSession, treeDataContext: TreeDataContext, nodePath: string) {
+	constructor(private _session: SqlClusterSession, private _context: TreeDataContext, private _nodePath: string) {
 		super();
-		this._sqlClusterSession = sqlClusterSession;
-		this._treeDataContext = treeDataContext;
-		this._nodePath = nodePath;
 	}
 
-	public get sqlClusterSession(): SqlClusterSession {
-		return this._sqlClusterSession;
+	public get session(): SqlClusterSession {
+		return this._session;
 	}
 
-	public get nodePath(): string {
+	public get nodePathValue(): string {
 		return this._nodePath;
 	}
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
 			this._children = [];
-			let fileSource: IFileSource = this.sqlClusterSession.sqlClusterConnection.createHdfsFileSource();
-			let hdfsNode = new ConnectionNode(this._treeDataContext, localize('hdfsFolder', 'HDFS'), fileSource);
+			let fileSource: IFileSource = this.session.sqlClusterConnection.createHdfsFileSource();
+			let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', 'HDFS'), fileSource);
 			hdfsNode.parent = this;
 			this._children.push(hdfsNode);
 		}

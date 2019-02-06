@@ -18,7 +18,7 @@ import * as constants from '../../constants';
 import { HdfsFileSourceNode } from '../../objectExplorerNodeProvider/hdfsProvider';
 import { getNode } from '../../objectExplorerNodeProvider/hdfsCommands';
 import * as LocalizedConstants from '../../localizedConstants';
-import { SqlClusterLookUp } from '../../sqlClusterLookUp';
+import * as SqlClusterLookUp from '../../sqlClusterLookUp';
 import { SqlClusterConnection } from '../../objectExplorerNodeProvider/connection';
 
 export class OpenSparkJobSubmissionDialogCommand extends Command {
@@ -26,34 +26,28 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 		super(constants.livySubmitSparkJobCommand, appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandUnknownContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandUnknownContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandUnknownContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandUnknownContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
 			let sqlClusterConnection: SqlClusterConnection = undefined;
-			if (sqlContext.type === constants.ObjectExplorerService) {
-				sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(sqlContext, this.appContext);
+			if (context.type === constants.ObjectExplorerService) {
+				sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(context, this.appContext);
+			}
+			if (!sqlClusterConnection) {
+				sqlClusterConnection = await this.selectConnection();
 			}
 
-			let clusterConnInfo: sqlops.connection.Connection = undefined;
-			if (sqlClusterConnection) {
-				clusterConnInfo = sqlClusterConnection.sqlClusterConnObj;
-			}
-			if (!clusterConnInfo) {
-				let selectedConn = await this.selectConnection();
-				clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnInfo(selectedConn);
-			}
-
-			let dialog = new SparkJobSubmissionDialog(clusterConnInfo, this.appContext, this.outputChannel);
+			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
 			await dialog.openDialog();
 		} catch (error) {
 			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
 		}
 	}
 
-	private async selectConnection(): Promise<sqlops.connection.Connection> {
+	private async selectConnection(): Promise<SqlClusterConnection> {
 		let connectionList: sqlops.connection.Connection[] = await this.apiWrapper.getActiveConnections();
 		let displayList: string[] = new Array();
 		let connectionMap: Map<string, sqlops.connection.Connection> = new Map();
@@ -66,16 +60,21 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 			});
 		}
 
-		if (displayList.length === 0) {
-			throw new Error(localize('sparkJobSubmission_NoActiveHadoopConnection', 'Spark Job submission failed: No active Hadoop connection. Please click the cluster node in the left tree to activate. '));
+		let selectedHost: string = await vscode.window.showQuickPick(displayList, { placeHolder:
+			localize('sparkJobSubmission_PleaseSelectSqlWithCluster',
+				'Please select SQL Server with Big Data Cluster. ') });
+		let errorMsg = localize('sparkJobSubmission_NoSqlSelected', 'No Sql Server is selected.');
+		if (!selectedHost) { throw new Error(errorMsg); }
+
+		let sqlConnection = connectionMap.get(selectedHost);
+		if (!sqlConnection) { throw new Error(errorMsg); }
+
+		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnection(sqlConnection);
+		if (!sqlClusterConnection) {
+			throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
 		}
 
-		let selectHost: string = await vscode.window.showQuickPick(displayList, { placeHolder: localize('sparkJobSubmission_PleaseSelectAClusterConnection', 'Please select a cluster connection. ') });
-		if (!selectHost) {
-			throw new Error(localize('sparkJobSubmission_NoConnectionSelected', 'Submit Spark Job requires a connection to be selected.'));
-		}
-
-		return connectionMap.get(selectHost);
+		return new SqlClusterConnection(sqlClusterConnection);
 	}
 }
 
@@ -85,14 +84,14 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 		super(constants.livySubmitSparkJobFromFileCommand, appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		let path: string = undefined;
 		try {
-			let node = await getNode<HdfsFileSourceNode>(sqlContext, this.appContext);
+			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
 			if (node && node.hdfsPath) {
 				path = node.hdfsPath;
 			} else {
@@ -105,17 +104,14 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 		}
 
 		try {
-			let sqlClusterConn: SqlClusterConnection = undefined;
-			if (sqlContext.type === constants.ObjectExplorerService) {
-				sqlClusterConn = await SqlClusterLookUp.findSqlClusterConnection(sqlContext, this.appContext);
+			let sqlClusterConnection: SqlClusterConnection = undefined;
+			if (context.type === constants.ObjectExplorerService) {
+				sqlClusterConnection = await SqlClusterLookUp.findSqlClusterConnection(context, this.appContext);
 			}
-			if (!sqlClusterConn)
-			{
-				this.appContext.apiWrapper.showErrorMessage(localize('sparkJobSubmission_PleaseConnectToClusterBeforeSubmission',
-					'Please connect to the Spark cluster before submitting Spark job. '));
-				return;
+			if (!sqlClusterConnection) {
+				throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
 			}
-			let dialog = new SparkJobSubmissionDialog(sqlClusterConn.sqlClusterConnObj, this.appContext, this.outputChannel);
+			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
 			await dialog.openDialog(path);
 		} catch (error) {
 			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));
@@ -127,15 +123,13 @@ export class OpenSparkJobSubmissionDialogTask {
 	constructor(private appContext: AppContext, private outputChannel: vscode.OutputChannel) {
 	}
 
-	async execute(sqlConnProfile: sqlops.IConnectionProfile, ...args: any[]): Promise<void> {
+	async execute(profile: sqlops.IConnectionProfile, ...args: any[]): Promise<void> {
 		try {
-			let sqlClusterConn = SqlClusterLookUp.findSqlClusterConnection(sqlConnProfile, this.appContext);
-			if (!sqlClusterConn)
-			{
-				this.appContext.apiWrapper.showErrorMessage(localize('sparkJobSubmission_PleaseConnectToClusterBeforeSubmission', 'Please connect to the Spark cluster before submitting Spark job. '));
-				return;
+			let sqlClusterConnection = SqlClusterLookUp.findSqlClusterConnection(profile, this.appContext);
+			if (!sqlClusterConnection) {
+				throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
 			}
-			let dialog = new SparkJobSubmissionDialog(sqlClusterConn.sqlClusterConnObj, this.appContext, this.outputChannel);
+			let dialog = new SparkJobSubmissionDialog(sqlClusterConnection, this.appContext, this.outputChannel);
 			await dialog.openDialog();
 		} catch (error) {
 			this.appContext.apiWrapper.showErrorMessage(getErrorMessage(error));

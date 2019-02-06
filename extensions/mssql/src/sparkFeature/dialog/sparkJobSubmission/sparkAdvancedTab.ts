@@ -25,7 +25,7 @@ export class SparkAdvancedTab {
         return this.appContext.apiWrapper;
     }
 
-    constructor(private _dataModel: SparkJobSubmissionModel, private appContext: AppContext) {
+    constructor(private appContext: AppContext) {
         this._tab = this.apiWrapper.createTab(localize('sparkJobSubmission_AdvancedTabName', 'ADVANCED'));
 
         this._tab.registerContent(async (modelView) => {
