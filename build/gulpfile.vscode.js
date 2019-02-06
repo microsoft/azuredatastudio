@@ -503,8 +503,8 @@ gulp.task('vscode-win32-x64-azurecore', ['optimize-vscode'], packageExtensionTas
 gulp.task('vscode-darwin-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'darwin'));
 gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'linux', 'x64'));
 
-gulp.task('vscode-win32-x64-mssql', ['optimize-vscode'], packageExtensionTask('mssql', 'win32', 'x64'));
-gulp.task('vscode-darwin-mssql', ['optimize-vscode'], packageExtensionTask('mssql', 'darwin'));
+gulp.task('vscode-win32-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'win32', 'x64'));
+gulp.task('vscode-darwin-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'darwin'));
 gulp.task('vscode-linux-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'linux', 'x64'));
 
 gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-ia32')));
