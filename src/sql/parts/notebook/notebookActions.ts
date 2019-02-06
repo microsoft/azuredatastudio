@@ -217,7 +217,7 @@ export class AttachToDropdown extends SelectBox {
 			modelRegistered
 				.then(model => {
 					this.updateModel(model);
-					this.updateAttachtoDropdown(model);
+					this.updateAttachToDropdown(model);
 				})
 				.catch(err => {
 					// No-op for now
@@ -239,25 +239,19 @@ export class AttachToDropdown extends SelectBox {
 		});
 	}
 
-	private updateAttachtoDropdown(model: INotebookModel): void {
+	private updateAttachToDropdown(model: INotebookModel): void {
 		this.model = model;
 		model.onValidConnectionSelected(validConnection => {
 			let kernelDisplayName: string = this.getKernelDisplayName();
 			if (kernelDisplayName) {
-				if (!validConnection) {
-					this.loadAttachToDropdown(this.model, kernelDisplayName, true);
-				}
-				else {
-					//load without 'Select connection'
-					this.loadAttachToDropdown(this.model, kernelDisplayName, false);
-				}
+				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
 			}
 		});
 	}
 
 	private getKernelDisplayName(): string {
 		let kernelDisplayName: string;
-		if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
+		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
 			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
 			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
 			if (currentKernelSpec) {
