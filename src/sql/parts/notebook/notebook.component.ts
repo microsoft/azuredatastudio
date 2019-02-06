@@ -344,10 +344,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('div');
-		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
+		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
-		attachTodropdwon.render(attachToContainer);
-		attachSelectBoxStyler(attachTodropdwon, this.themeService);
+			attachToDropdown.render(attachToContainer);
+		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
 
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
