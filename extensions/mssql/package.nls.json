@@ -14,7 +14,7 @@
 	"mssqlCluster.copyPath": "Copy Path",
 
 	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server Big Data Cluster",
-	"title.bigDataCluster": "Big Data Cluster",
+	"title.bigDataCluster": "SQL Server Big Data Cluster",
     "title.submitSparkJob": "Submit Spark Job",
     "title.newSparkJob": "New Spark Job",
     "title.openSparkHistory": "View Spark History",
