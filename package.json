@@ -125,6 +125,7 @@
     "gulp-remote-src": "^0.4.4",
     "gulp-rename": "^1.2.0",
     "gulp-replace": "^0.5.4",
+    "gulp-sequence": "^1.0.0",
     "gulp-shell": "^0.5.2",
     "gulp-sourcemaps": "^1.11.0",
     "gulp-tsb": "2.0.5",
