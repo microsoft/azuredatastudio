@@ -139,13 +139,13 @@ function activateSparkFeatures(appContext: AppContext): void {
 	let outputChannel: vscode.OutputChannel = mssqlOutputChannel;
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogCommand(appContext, outputChannel));
 	extensionContext.subscriptions.push(new OpenSparkJobSubmissionDialogFromFileCommand(appContext, outputChannel));
-	apiWrapper.registerTaskHandler(Constants.livySubmitSparkJobTask, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivySubmitSparkJobTask, (profile: sqlops.IConnectionProfile) => {
 		new OpenSparkJobSubmissionDialogTask(appContext, outputChannel).execute(profile);
 	});
-	apiWrapper.registerTaskHandler(Constants.livyOpenSparkHistory, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenSparkHistory, (profile: sqlops.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, true);
 	});
-	apiWrapper.registerTaskHandler(Constants.livyOpenYarnHistory, (profile: sqlops.IConnectionProfile) => {
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: sqlops.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
 }

@@ -23,7 +23,7 @@ import { SqlClusterConnection } from '../../objectExplorerNodeProvider/connectio
 
 export class OpenSparkJobSubmissionDialogCommand extends Command {
 	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
-		super(constants.livySubmitSparkJobCommand, appContext);
+		super(constants.mssqlClusterLivySubmitSparkJobCommand, appContext);
 	}
 
 	protected async preExecute(context: ICommandUnknownContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
@@ -81,7 +81,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 // Open the submission dialog for a specific file path.
 export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
-		super(constants.livySubmitSparkJobFromFileCommand, appContext);
+		super(constants.mssqlClusterLivySubmitSparkJobFromFileCommand, appContext);
 	}
 
 	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {

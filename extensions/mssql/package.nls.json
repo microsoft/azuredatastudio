@@ -13,7 +13,7 @@
 	"mssqlCluster.saveFile": "Save",
 	"mssqlCluster.copyPath": "Copy Path",
 
-	"tab.dataManagementDescription": "Tasks and information about your SQL Server Big Data Cluster",
+	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server Big Data Cluster",
 	"title.bigDataCluster": "Big Data Cluster",
     "title.submitSparkJob": "Submit Spark Job",
     "title.newSparkJob": "New Spark Job",

@@ -71,11 +71,11 @@
         "title": "%mssqlCluster.copyPath%"
       },
       {
-        "command": "livy.cmd.submitSparkJob",
+        "command": "mssqlCluster.livy.cmd.submitSparkJob",
         "title": "%title.submitSparkJob%"
       },
       {
-        "command": "livy.task.submitSparkJob",
+        "command": "mssqlCluster.livy.task.submitSparkJob",
         "title": "%title.newSparkJob%",
         "icon": {
           "dark": "resources/dark/new_spark_job_inverse.svg",
@@ -83,7 +83,7 @@
         }
       },
       {
-        "command": "livy.task.openSparkHistory",
+        "command": "mssqlCluster.livy.task.openSparkHistory",
         "title": "%title.openSparkHistory%",
         "icon": {
           "dark": "resources/dark/new_spark_job_inverse.svg",
@@ -91,7 +91,7 @@
         }
       },
       {
-        "command": "livy.task.openYarnHistory",
+        "command": "mssqlCluster.livy.task.openYarnHistory",
         "title": "%title.openYarnHistory%",
         "icon": {
           "dark": "resources/light/hadoop.svg",
@@ -99,7 +99,7 @@
         }
       },
       {
-        "command": "livy.cmd.submitFileToSparkJob",
+        "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
         "title": "%title.submitSparkJob%"
       }
     ],
@@ -219,11 +219,11 @@
           "when": "false"
         },
         {
-          "command": "livy.cmd.submitFileToSparkJob",
+          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "false"
         },
         {
-            "command": "livy.task.submitSparkJob",
+            "command": "mssqlCluster.livy.task.submitSparkJob",
             "when": "false"
         }
       ],
@@ -259,7 +259,7 @@
           "group": "1mssqlCluster@4"
         },
         {
-          "command": "livy.cmd.submitFileToSparkJob",
+          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
           "group": "1mssqlCluster@6"
         }
@@ -362,9 +362,9 @@
     },
     "dashboard.tabs": [
       {
-        "id": "data-management-cluster",
+        "id": "mssql-big-data-cluster",
         "title": "%title.bigDataCluster%",
-        "description": "tab.dataManagementDescription",
+        "description": "tab.bigDataClusterDescription",
         "container": {
          "grid-container": [
            {
@@ -374,9 +374,9 @@
             "colspan": 1,
             "widget": {
               "tasks-widget": [
-               "livy.task.submitSparkJob",
-               "livy.task.openSparkHistory",
-               "livy.task.openYarnHistory"
+               "mssqlCluster.livy.task.submitSparkJob",
+               "mssqlCluster.livy.task.openSparkHistory",
+               "mssqlCluster.livy.task.openYarnHistory"
               ]
             }
            }

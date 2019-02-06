@@ -143,7 +143,7 @@ export class SparkJobSubmissionInput {
     public setSparkClusterInfo(sqlClusterConnection: SqlClusterConnection): void {
         this._host = sqlClusterConnection.host;
         this._port = sqlClusterConnection.port;
-        this._livyPath = constants.livySubmitPath;
+        this._livyPath = constants.mssqlClusterLivySubmitPath;
         this._user = sqlClusterConnection.user;
         this._passWord = sqlClusterConnection.pass;
     }

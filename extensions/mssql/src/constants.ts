@@ -60,13 +60,13 @@ export enum MssqlClusterItemsSubType {
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
-export const livySubmitSparkJobCommand = 'livy.cmd.submitSparkJob';
-export const livySubmitSparkJobFromFileCommand = 'livy.cmd.submitFileToSparkJob';
-export const livySubmitSparkJobTask = 'livy.task.submitSparkJob';
-export const livyOpenSparkHistory = 'livy.task.openSparkHistory';
-export const livyOpenYarnHistory = 'livy.task.openYarnHistory';
-export const livySubmitPath = '/gateway/default/livy/v1/batches';
-export const livyTimeInMSForCheckYarnApp = 1000;
-export const livyRetryTimesForCheckYarnApp = 20;
-export const sparkJobFileSelectorButtonWidth = '30px';
-export const sparkJobFileSelectorButtonHeight = '30px';
+export const mssqlClusterLivySubmitSparkJobCommand = 'mssqlCluster.livy.cmd.submitSparkJob';
+export const mssqlClusterLivySubmitSparkJobFromFileCommand = 'mssqlCluster.livy.cmd.submitFileToSparkJob';
+export const mssqlClusterLivySubmitSparkJobTask = 'mssqlCluster.livy.task.submitSparkJob';
+export const mssqlClusterLivyOpenSparkHistory = 'mssqlCluster.livy.task.openSparkHistory';
+export const mssqlClusterLivyOpenYarnHistory = 'mssqlCluster.livy.task.openYarnHistory';
+export const mssqlClusterLivySubmitPath = '/gateway/default/livy/v1/batches';
+export const mssqlClusterLivyTimeInMSForCheckYarnApp = 1000;
+export const mssqlClusterLivyRetryTimesForCheckYarnApp = 20;
+export const mssqlClusterSparkJobFileSelectorButtonWidth = '30px';
+export const mssqlClusterSparkJobFileSelectorButtonHeight = '30px';

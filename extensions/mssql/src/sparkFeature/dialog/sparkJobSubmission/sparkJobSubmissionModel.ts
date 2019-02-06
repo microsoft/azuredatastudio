@@ -115,7 +115,7 @@ export class SparkJobSubmissionModel {
             }
 
             if (!retryTime) {
-                retryTime = constants.livyRetryTimesForCheckYarnApp;
+                retryTime = constants.mssqlClusterLivyRetryTimesForCheckYarnApp;
             }
 
             submissionArgs.setSparkClusterInfo(this._sqlClusterConnection);
@@ -123,7 +123,7 @@ export class SparkJobSubmissionModel {
             let timeOutCount: number = 0;
             do {
                 timeOutCount++;
-                await this.sleep(constants.livyTimeInMSForCheckYarnApp);
+                await this.sleep(constants.mssqlClusterLivyTimeInMSForCheckYarnApp);
                 response = await this._dialogService.getYarnAppId(submissionArgs, livyBatchId);
             } while (response.appId === '' && timeOutCount < retryTime);
 
