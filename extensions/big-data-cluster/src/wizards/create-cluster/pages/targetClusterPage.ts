@@ -18,18 +18,44 @@ const PageDescription: string = localize(
 	'bdc.selectTargetClusterPageDescription',
 	'Select an existing Kubernetes cluster or choose a cluster type you want to deploy'
 );
+
+const RadioButtonGroupName = 'SelectClusterType';
+
 export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel) {
 		super(PageTitle, PageDescription, model);
 	}
 
 	protected async initialize(view: sqlops.ModelView) {
+		let existingClusterOption = view.modelBuilder.radioButton().withProperties({
+			label: localize('bdc.existingK8sCluster','Existing Kubernetes cluster'),
+			name: RadioButtonGroupName
+		}).component();
 
+		let createLocalClusterOption = view.modelBuilder.radioButton().withProperties({
+			label: localize('bdc.createLocalCluster', 'Create new local cluster'),
+			name: RadioButtonGroupName
+		}).component();
+
+		let createAksCluster = view.modelBuilder.radioButton().withProperties({
+			label: localize('bdc.createAksCluster', 'Create new Azure Kubernetes service cluster'),
+			name: RadioButtonGroupName
+		}).component();
+
+		let optionGroup = view.modelBuilder.divContainer().withItems([existingClusterOption, createLocalClusterOption, createAksCluster]).component();
+		let container = view.modelBuilder.flexContainer().withItems([optionGroup]).withLayout({
+			flexFlow: 'row',
+			alignItems: 'left'
+		}).component();
 		let formBuilder = view.modelBuilder.formContainer().withFormItems(
-			[],
+			[
+				{
+					component: container,
+					title: ''
+				}
+			],
 			{
-				horizontal: true,
-				componentWidth: 400
+				horizontal: true
 			}
 		);
 
