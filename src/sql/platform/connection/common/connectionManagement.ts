@@ -297,6 +297,16 @@ export interface IConnectionDialogService {
 	 * @param connectionResult
 	 */
 	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
+
+	/**
+	 * Opens the connection dialog and returns the promise when connection is made
+	 * or dialog is closed
+	 * @param connectionManagementService
+	 * @param params
+	 * @param model
+	 * @param connectionResult
+	 */
+	openDialogAndWaitButDontConnect(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
 }
 
 export enum RunQueryOnConnectionMode {

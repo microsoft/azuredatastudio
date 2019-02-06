@@ -47,7 +47,7 @@ export class OEShimService implements IOEShimService {
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
-			connProfile = await this.cd.openDialogAndWait(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile) as ConnectionProfile;
+			connProfile = new ConnectionProfile(this.capabilities, await this.cd.openDialogAndWaitButDontConnect(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile));
 		}
 		let sessionResp = await this.oe.createNewSession(providerId, connProfile);
 		let disp = this.oe.onUpdateObjectExplorerNodes(e => {

@@ -76,6 +76,11 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
+	/**
+	 * This is used to work around the interconnectedness of this code
+	 */
+	private ignoreNextConnect = false;
+
 	constructor(
 		@IPartService private _partService: IPartService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -85,6 +90,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@ICommandService private _commandService: ICommandService
 	) { }
+
 	/**
 	 * Gets the default provider with the following actions
 	 * 	1. Checks if master provider(map) has data
@@ -159,6 +165,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private handleOnCancel(params: INewConnectionParams): void {
+		if (this.ignoreNextConnect) {
+			this._connectionDialog.resetConnection();
+			this._connectionDialog.close();
+			this.ignoreNextConnect = false;
+			this._dialogDeferredPromise.resolve(undefined);
+			return;
+		}
 		if (this.uiController.databaseDropdownExpanded) {
 			this.uiController.closeDatabaseDropdown();
 		} else {
@@ -179,7 +192,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
+	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): void {
+		if (this.ignoreNextConnect) {
+			this._connectionDialog.resetConnection();
+			this._connectionDialog.close();
+			this.ignoreNextConnect = false;
+			this._dialogDeferredPromise.resolve(connection);
+			return;
+		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
 		let uri: string = undefined;
 		if (fromEditor && params && params.input) {
@@ -193,7 +213,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			showFirewallRuleOnError: true
 		};
 
-		return this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input).then(connectionResult => {
+		this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input).then(connectionResult => {
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close();
@@ -301,6 +321,24 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
+		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
+
+		this.showDialog(connectionManagementService,
+			params,
+			model,
+			connectionResult).then(() => {
+			}, error => {
+				this._dialogDeferredPromise.reject(error);
+			});
+		return this._dialogDeferredPromise;
+	}
+
+	public openDialogAndWaitButDontConnect(connectionManagementService: IConnectionManagementService,
+		params?: INewConnectionParams,
+		model?: IConnectionProfile,
+		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
+
+		this.ignoreNextConnect = true;
 		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
 
 		this.showDialog(connectionManagementService,
