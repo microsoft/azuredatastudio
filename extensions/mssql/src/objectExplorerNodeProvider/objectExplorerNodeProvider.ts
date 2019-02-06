@@ -236,15 +236,12 @@ export class SqlClusterSession {
 
 class SqlClusterRootNode extends TreeNode {
 	private _children: TreeNode[];
-	private _session: SqlClusterSession;
-	private _treeDataContext: TreeDataContext;
-	private _nodePath: string;
-
-	constructor(sqlClusterSession: SqlClusterSession, treeDataContext: TreeDataContext, nodePath: string) {
+	constructor(
+		private _session: SqlClusterSession,
+		private _treeDataContext: TreeDataContext,
+		private _nodePathValue: string
+	) {
 		super();
-		this._session = sqlClusterSession;
-		this._treeDataContext = treeDataContext;
-		this._nodePath = nodePath;
 	}
 
 	public get session(): SqlClusterSession {
@@ -252,13 +249,13 @@ class SqlClusterRootNode extends TreeNode {
 	}
 
 	public get nodePathValue(): string {
-		return this._nodePath;
+		return this._nodePathValue;
 	}
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
 			this._children = [];
-			let dataServicesNode = new DataServicesNode(this._session, this._treeDataContext, this._nodePath);
+			let dataServicesNode = new DataServicesNode(this._session, this._treeDataContext, this._nodePathValue);
 			dataServicesNode.parent = this;
 			this._children.push(dataServicesNode);
 		}
