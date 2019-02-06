@@ -280,12 +280,12 @@ function packageBuiltInExtensions() {
 	});
 }
 
-function packageExtensionTask(extensinName, platform, arch) {
+function packageExtensionTask(extensionName, platform, arch) {
 	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
 	if (platform === 'darwin') {
-		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensinName);
+		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
 	} else {
-		destination = path.join(destination, 'resources', 'app', 'extensions', extensinName);
+		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
 	}
 
 	platform = platform || process.platform;
@@ -298,7 +298,7 @@ function packageExtensionTask(extensinName, platform, arch) {
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath };
 			})
-			.filter(({ name }) => extensinName === name);
+			.filter(({ name }) => extensionName === name);
 
 		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
 			return ext.fromLocal(extension.path);
