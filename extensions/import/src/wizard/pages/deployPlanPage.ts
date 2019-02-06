@@ -13,22 +13,30 @@ import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
-export enum reportSection {
+export enum deployPlanXmlTag {
 	Alert = 'Alert',
 	Operation = 'Operation',
+	Item = 'Item'
 }
 
 export enum attributeName {
 	Name = 'Name',
 	Value = 'Value',
 	Type = 'Type',
-	Id = 'Id'
+	Id = 'Id',
+	DataIssue = 'DataIssue'
 }
 
 export class TableObject {
+	operation: string;
 	object: string;
 	type: string;
 	dataloss: boolean;
+}
+
+export class Result {
+	data: string[];
+	dataLossAlerts: Set<string>;
 }
 
 export class DeployPlanPage extends DacFxConfigPage {
@@ -41,6 +49,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private table: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
 	private dataLossCheckbox: sqlops.CheckBoxComponent;
+	private dataLossText: sqlops.TextComponent;
 	private dataLossComponentGroup: sqlops.FormComponentGroup;
 	private noDataLossTextComponent: sqlops.FormComponent;
 
@@ -86,128 +95,22 @@ export class DeployPlanPage extends DacFxConfigPage {
 	}
 
 	private async populateTable() {
-		let data = [];
-		let dataNoDataLoss = [];
-		let dataLossAlerts = new Set<string>();
-		let currentOperation = '';
-		let dataIssueAlert = false;
-		let currentReportSection: reportSection;
-		let currentTableObj: TableObject;
-
-		// parse the xml deploy plan
 		let report = await this.instance.generateDeployPlan();
-		let p = new parser.Parser({
-			onopentagname(name) {
-				if (name === 'Alert') {
-					currentReportSection = reportSection.Alert;
-				} else if (name === 'Operation') {
-					currentReportSection = reportSection.Operation;
-					currentTableObj = new TableObject();
-				}
-			},
-			onattribute: function (name, value) {
-				if (currentReportSection === reportSection.Alert) {
-					switch (name) {
-						case attributeName.Name: {
-							// only care about showing data loss alerts
-							if (value === 'DataIssue') {
-								dataIssueAlert = true;
-							}
-							break;
-						}
-						case attributeName.Id: {
-							if (dataIssueAlert) {
-								dataLossAlerts.add(value);
-							}
-							break;
-						}
-					}
-				} else if (currentReportSection === reportSection.Operation) {
-					switch (name) {
-						case attributeName.Name: {
-							currentOperation = value;
-							break;
-						}
-						case attributeName.Value: {
-							currentTableObj.object = value;
-							break;
-						}
-						case attributeName.Type: {
-							currentTableObj.type = value;
-							break;
-						}
-						case attributeName.Id: {
-							if (dataLossAlerts.has(value)) {
-								currentTableObj.dataloss = true;
-							}
-							break;
-						}
-					}
-				}
-			},
-			onclosetag: function (name) {
-				// add table entry for the operation item
-				if (name === 'Item') {
-					let isDataLoss = currentTableObj.dataloss ? '⚠️' : '';
-					data.push([isDataLoss, currentOperation, currentTableObj.type, currentTableObj.object]);
-					dataNoDataLoss.push([currentOperation, currentTableObj.type, currentTableObj.object]);
-				}
-			}
-		}, { xmlMode: true, decodeEntities: true });
+		let result = this.parseXml(report);
 
-		p.parseChunk(report);
-
-		if (dataLossAlerts.size > 0) {
-			this.table.updateProperties({
-				data: data,
-				columns: [{
-					value: localize('dacfx.dataLossColumn', 'Data Loss'),
-					width: 50,
-					cssClass: 'center-align',
-					toolTip: localize('dacfx.dataLossTooltip', 'Operations that may result in data loss are marked with a warning sign')
-				},
-				{
-					value: localize('dacfx.operationColumn', 'Operation'),
-					width: 75,
-					toolTip: localize('dacfx.operationTooltip', 'Operation that will occur during deployment')
-				},
-				{
-					value: localize('dacfx.typeColumn', 'Type'),
-					width: 100,
-					toolTip: localize('dacfx.typeTooltip', 'Type of object')
-				},
-				{
-					value: localize('dacfx.objectColumn', 'Object'),
-					width: 300,
-					toolTip: localize('dacfx.objecTooltip', 'Object name')
-				}],
-				width: 875,
-				height: 300
+		this.table.updateProperties({
+			data: result.data,
+			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
+			width: 875,
+			height: 300
+		});
+		if (result.dataLossAlerts.size > 0) {
+			// update message to list how many operations could result in data loss
+			this.dataLossText.updateProperties({
+				value: localize('dacfx.dataLossTextWithCount', result.dataLossAlerts.size + ' of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
 			});
-
 			this.dataLossCheckbox.enabled = true;
 		} else {
-			this.table.updateProperties({
-				data: dataNoDataLoss,
-				columns: [{
-					value: localize('dacfx.operationColumn', 'Operation'),
-					width: 75,
-					toolTip: localize('dacfx.operationTooltip', 'Operation that will occur during deployment')
-				},
-				{
-					value: localize('dacfx.typeColumn', 'Type'),
-					width: 100,
-					toolTip: localize('dacfx.typeTooltip', 'Type of object')
-				},
-				{
-					value: localize('dacfx.objectColumn', 'Object'),
-					width: 300,
-					toolTip: localize('dacfx.objecTooltip', 'Object name')
-				}],
-				width: 875,
-				height: 300
-			});
-
 			// check checkbox to enable Next button and remove checkbox because there won't be any possible data loss
 			this.dataLossCheckbox.checked = true;
 			this.formBuilder.removeFormItem(this.dataLossComponentGroup);
@@ -243,16 +146,16 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 	private async createDataLossComponents(): Promise<sqlops.FormComponentGroup> {
 		let dataLossComponent = await this.createDataLossCheckbox();
-		let dataLossText = this.view.modelBuilder.text()
+		this.dataLossText = this.view.modelBuilder.text()
 			.withProperties({
-				value: localize('dacfx.dataLossText', 'The deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
+				value: localize('dacfx.dataLossText', 'The deploy actions may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
 			}).component();
 
 		return {
 			title: '',
 			components: [
 				{
-					component: dataLossText,
+					component: this.dataLossText,
 					layout: {
 						componentWidth: 400,
 						horizontal: true
@@ -261,6 +164,119 @@ export class DeployPlanPage extends DacFxConfigPage {
 				},
 				dataLossComponent
 			]
+		};
+	}
+
+	private getTableColumns(dataloss: boolean): sqlops.TableColumn[] {
+		let columns: sqlops.TableColumn[] = [
+			{
+				value: localize('dacfx.operationColumn', 'Operation'),
+				width: 75,
+				toolTip: localize('dacfx.operationTooltip', 'Operation that will occur during deployment')
+			},
+			{
+				value: localize('dacfx.typeColumn', 'Type'),
+				width: 100,
+				toolTip: localize('dacfx.typeTooltip', 'Type of object')
+			},
+			{
+				value: localize('dacfx.objectColumn', 'Object'),
+				width: 300,
+				toolTip: localize('dacfx.objecTooltip', 'Object name')
+			}];
+
+		if (dataloss) {
+			columns.unshift(
+				{
+					value: localize('dacfx.dataLossColumn', 'Data Loss'),
+					width: 50,
+					cssClass: 'center-align',
+					toolTip: localize('dacfx.dataLossTooltip', 'Operations that may result in data loss are marked with a warning sign')
+				});
+		}
+		return columns;
+	}
+
+	private parseXml(report: string): Result {
+		let operations = [];
+		let dataLossAlerts = new Set<string>();
+
+		let currentOperation = '';
+		let dataIssueAlert = false;
+		let currentReportSection: deployPlanXmlTag;
+		let currentTableObj: TableObject;
+		let p = new parser.Parser({
+			onopentagname(name) {
+				if (name === deployPlanXmlTag.Alert) {
+					currentReportSection = deployPlanXmlTag.Alert;
+				} else if (name === deployPlanXmlTag.Operation) {
+					currentReportSection = deployPlanXmlTag.Operation;
+				} else if (name === deployPlanXmlTag.Item) {
+					currentTableObj = new TableObject();
+				}
+			},
+			onattribute: function (name, value) {
+				if (currentReportSection === deployPlanXmlTag.Alert) {
+					switch (name) {
+						case attributeName.Name: {
+							// only care about showing data loss alerts
+							if (value === attributeName.DataIssue) {
+								dataIssueAlert = true;
+							}
+							break;
+						}
+						case attributeName.Id: {
+							if (dataIssueAlert) {
+								dataLossAlerts.add(value);
+							}
+							break;
+						}
+					}
+				} else if (currentReportSection === deployPlanXmlTag.Operation) {
+					switch (name) {
+						case attributeName.Name: {
+							currentOperation = value;
+							break;
+						}
+						case attributeName.Value: {
+							currentTableObj.object = value;
+							break;
+						}
+						case attributeName.Type: {
+							currentTableObj.type = value;
+							break;
+						}
+						case attributeName.Id: {
+							if (dataLossAlerts.has(value)) {
+								currentTableObj.dataloss = true;
+							}
+							break;
+						}
+					}
+				}
+			},
+			onclosetag: function (name) {
+				if (name === deployPlanXmlTag.Item) {
+					currentTableObj.operation = currentOperation;
+					operations.push(currentTableObj);
+				}
+			}
+		}, { xmlMode: true, decodeEntities: true });
+		p.parseChunk(report);
+
+		let data = [];
+		operations.forEach(operation => {
+			if (dataLossAlerts.size > 0) {
+				let isDataLoss = operation.dataloss ? '⚠️' : '';
+				data.push([isDataLoss, operation.operation, operation.type, operation.object]);
+			} else {
+				data.push([operation.operation, operation.type, operation.object]);
+			}
+		});
+
+		return {
+			data: data,
+			dataLossAlerts: dataLossAlerts
 		};
 	}
 

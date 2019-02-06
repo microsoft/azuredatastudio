@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
@@ -125,9 +125,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 			// add deploy plan and generate script pages
 			let deployPlanPage = this.instance.pages.get('deployPlan');
-			this.instance.wizard.addPage(deployPlanPage.wizardPage, 2);
+			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
 			let deployActionPage = this.instance.pages.get('deployAction');
-			this.instance.wizard.addPage(deployActionPage.wizardPage, 3);
+			this.instance.wizard.addPage(deployActionPage.wizardPage, DeployOperationPath.deployAction);
 		});
 
 		newRadioButton.onDidClick(() => {
@@ -137,8 +137,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = this.databaseTextBox.value;
 
 			// remove deploy plan and generate script pages
-			this.instance.wizard.removePage(3);
-			this.instance.wizard.removePage(2);
+			this.instance.wizard.removePage(DeployOperationPath.deployAction);
+			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
 		});
 
 		//Initialize with upgrade existing true
