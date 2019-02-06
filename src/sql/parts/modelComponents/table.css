@@ -8,11 +8,7 @@
 	text-align: center;
 }
 
-.slick-headerrow-column {
-	padding-left:3px !important;
-}
-
-.slick-cell
+.align-with-header
 {
 	padding-left:3px !important;
 }
