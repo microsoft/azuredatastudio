@@ -22,7 +22,7 @@ import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { CellModel } from 'sql/parts/notebook/models/cell';
 
 export class CellToggleMoreActions {
-	private _actions: Action[] = [];
+	private _actions: CellActionBase[] = [];
 	private _moreActions: ActionBar;
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService) {
@@ -45,7 +45,8 @@ export class CellToggleMoreActions {
 			}
 			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 			this._moreActions.context = { target: moreActionsElement };
-			this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
+			let validActions = this._actions.filter(a => a.canRun(context));
+			this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: showIcon, label: false });
 		}
 		else if (moreActionsElement.childNodes.length > 0) {
 			moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
@@ -109,6 +110,11 @@ export class ClearCellOutputAction extends CellActionBase {
 	) {
 		super(id, label, undefined, notificationService);
 	}
+
+	public canRun(context: CellContext): boolean {
+		return context.cell && context.cell.cellType === CellTypes.Code;
+	}
+
 
 	doRun(context: CellContext): Promise<void> {
 		try {

@@ -46,6 +46,10 @@ export abstract class CellActionBase extends Action {
 		super(id, label, icon);
 	}
 
+	public canRun(context: CellContext): boolean {
+		return true;
+	}
+
 	public run(context: CellContext): TPromise<boolean> {
 		if (hasModelAndCell(context, this.notificationService)) {
 			return TPromise.wrap(this.doRun(context).then(() => true));
