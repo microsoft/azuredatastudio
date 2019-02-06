@@ -130,7 +130,7 @@ export class FolderNode extends HdfsFileSourceNode {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
 						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource)
-												: new FileNode(this.context, file.path, this.fileSource);
+							: new FileNode(this.context, file.path, this.fileSource);
 						node.parent = this;
 						return node;
 					});

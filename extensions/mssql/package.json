@@ -29,7 +29,8 @@
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "^0.0.15",
     "vscode-nls": "^4.0.0",
-    "webhdfs": "^1.1.1"
+    "webhdfs": "^1.1.1",
+    "request-promise": "^4.2.2"
   },
   "devDependencies": {},
   "contributes": {
@@ -68,6 +69,54 @@
       {
         "command": "mssqlCluster.copyPath",
         "title": "%mssqlCluster.copyPath%"
+      },
+      {
+        "command": "mssqlCluster.task.newNotebook",
+        "title": "%notebook.command.new%",
+        "icon": {
+          "dark": "resources/dark/new_notebook_inverse.svg",
+          "light": "resources/light/new_notebook.svg"
+        }
+      },
+      {
+        "command": "mssqlCluster.task.openNotebook",
+        "title": "%notebook.command.open%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      },
+      {
+        "command": "mssqlCluster.livy.cmd.submitSparkJob",
+        "title": "%title.submitSparkJob%"
+      },
+      {
+        "command": "mssqlCluster.livy.task.submitSparkJob",
+        "title": "%title.newSparkJob%",
+        "icon": {
+          "dark": "resources/dark/new_spark_job_inverse.svg",
+          "light": "resources/light/new_spark_job.svg"
+        }
+      },
+      {
+        "command": "mssqlCluster.livy.task.openSparkHistory",
+        "title": "%title.openSparkHistory%",
+        "icon": {
+          "dark": "resources/dark/new_spark_job_inverse.svg",
+          "light": "resources/light/new_spark_job.svg"
+        }
+      },
+      {
+        "command": "mssqlCluster.livy.task.openYarnHistory",
+        "title": "%title.openYarnHistory%",
+        "icon": {
+          "dark": "resources/light/hadoop.svg",
+          "light": "resources/light/hadoop.svg"
+        }
+      },
+      {
+        "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
+        "title": "%title.submitSparkJob%"
       }
     ],
     "outputChannels": [
@@ -184,6 +233,22 @@
         {
           "command": "mssqlCluster.copyPath",
           "when": "false"
+        },
+        {
+          "command": "mssqlCluster.task.newNotebook",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.task.openNotebook",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.livy.task.submitSparkJob",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -216,6 +281,11 @@
           "command": "mssqlCluster.deleteFiles",
           "when": "nodeType=~/^mssqlCluster/ && viewItem != mssqlCluster:connection && nodeType != mssqlCluster:message",
           "group": "1mssqlCluster@4"
+        },
+        {
+          "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
+          "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
+          "group": "1mssqlCluster@6"
         }
       ]
     },
@@ -314,6 +384,34 @@
         }
       ]
     },
+    "dashboard.tabs": [
+      {
+        "id": "mssql-big-data-cluster",
+        "description": "tab.bigDataClusterDescription",
+        "provider": "MSSQL",
+        "title": "%title.bigDataCluster%",
+        "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
+        "container": {
+          "grid-container": [
+            {
+              "name": "%title.tasks%",
+              "row": 0,
+              "col": 0,
+              "colspan": 2,
+              "widget": {
+                "tasks-widget": [
+                  "mssqlCluster.task.newNotebook",
+                  "mssqlCluster.task.openNotebook",
+                  "mssqlCluster.livy.task.submitSparkJob",
+                  "mssqlCluster.livy.task.openSparkHistory",
+                  "mssqlCluster.livy.task.openYarnHistory"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
     "connectionProvider": {
       "providerId": "MSSQL",
       "displayName": "Microsoft SQL Server",

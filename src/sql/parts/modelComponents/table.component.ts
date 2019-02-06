@@ -57,7 +57,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						id: col.value,
 						field: col.value,
 						width: col.width,
-						cssClass: col.cssClass
+						cssClass: col.cssClass,
+						toolTip: col.toolTip
 					};
 				} else {
 					return <Slick.Column<any>>{
