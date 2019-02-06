@@ -213,7 +213,7 @@ export class DeleteFilesCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('deleteError', 'Error deleting files {0}', err));
+			this.apiWrapper.showErrorMessage(localize('deleteError', 'Error deleting files {0}', utils.getErrorMessage(err)));
 		}
 	}
 
@@ -273,7 +273,7 @@ export class SaveFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('saveError', 'Error saving file: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('saveError', 'Error saving file: {0}', utils.getErrorMessage(err)));
 		}
 	}
 
@@ -313,7 +313,7 @@ export class PreviewFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('previewError', 'Error previewing file: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('previewError', 'Error previewing file: {0}', utils.getErrorMessage(err)));
 		}
 	}
 
@@ -357,7 +357,7 @@ export class CopyPathCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', utils.getErrorMessage(err)));
 		}
 	}
 }
