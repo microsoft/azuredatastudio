@@ -39,7 +39,7 @@ export default class ContextProvider {
 	public onDashboardOpen(e: sqlops.DashboardDocument): void {
 		let iscloud: boolean;
 		let edition: number;
-		let isCluster: boolean;
+		let isCluster: boolean = false;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
@@ -49,8 +49,11 @@ export default class ContextProvider {
 
 			edition = e.serverInfo.engineEditionId;
 
-			if (!types.isUndefinedOrNull(e.serverInfo.options[Constants.isBigDataClusterProperty])) {
-				isCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
+			if (!types.isUndefinedOrNull(e.serverInfo.options)) {
+				let isBigDataCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
+				if (isBigDataCluster) {
+					isCluster = isBigDataCluster;
+				}
 			}
 		}
 
