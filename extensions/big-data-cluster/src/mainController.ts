@@ -4,11 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-
-const localize = nls.loadMessageBundle();
+import { CreateClusterWizard } from './wizards/create-cluster/createClusterWizard';
 
 /**
  * The main controller class that initializes the extension
@@ -16,7 +13,6 @@ const localize = nls.loadMessageBundle();
 export class MainController {
 	protected _context: vscode.ExtensionContext;
 
-	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
 	}
@@ -26,10 +22,8 @@ export class MainController {
 	 */
 	public activate(): void {
 		vscode.commands.registerCommand('mssql.create-big-data-cluster', () => {
-			let wizard = sqlops.window.modelviewdialog.createWizard(
-				localize('bdc.createClusterTitle','Create a 2019 Big Data cluster')
-            );
-            //wizard.open();
+			let wizard = new CreateClusterWizard();
+			wizard.open();
 		});
 	}
 
