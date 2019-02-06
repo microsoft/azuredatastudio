@@ -45,14 +45,14 @@ function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: bo
 	return vscode.Uri.file(fspath.join(root, fileName));
 }
 
-export async function getNode<T extends TreeNode>(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {
+export async function getNode<T extends TreeNode>(context: ICommandViewContext | ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {
 	let node: T = undefined;
-	if (sqlContext && sqlContext.type === constants.ViewType && sqlContext.node) {
-		node = sqlContext.node as T;
-	} else if (sqlContext && sqlContext.type === constants.ObjectExplorerService) {
+	if (context && context.type === constants.ViewType && context.node) {
+		node = context.node as T;
+	} else if (context && context.type === constants.ObjectExplorerService) {
 		let oeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
 		if (oeNodeProvider) {
-			node = await oeNodeProvider.findSqlClusterNodeByContext<T>(sqlContext);
+			node = await oeNodeProvider.findSqlClusterNodeByContext<T>(context);
 		}
 	} else {
 		throw new Error(LocalizedConstants.msgMissingNodeContext);
@@ -66,8 +66,8 @@ export class UploadFilesCommand extends ProgressCommand {
 		super('mssqlCluster.uploadFiles', prompter, appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
 	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
@@ -134,13 +134,13 @@ export class MkDirCommand extends ProgressCommand {
 		super('mssqlCluster.mkdir', prompter, appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let folderNode = await getNode<FolderNode>(sqlContext, this.appContext);
+			let folderNode = await getNode<FolderNode>(context, this.appContext);
 
 			if (folderNode) {
 				let fileName: string = await this.getDirName();
@@ -149,8 +149,8 @@ export class MkDirCommand extends ProgressCommand {
 						async (cancelToken: vscode.CancellationTokenSource) => this.mkDir(fileName, folderNode, cancelToken),
 						localize('makingDir', 'Creating directory'), true,
 						() => this.apiWrapper.showInformationMessage(localize('mkdirCanceled', 'Operation was canceled')));
-					if (sqlContext.type === constants.ObjectExplorerService) {
-						let objectExplorerNode = await sqlops.objectexplorer.getNode(sqlContext.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
+					if (context.type === constants.ObjectExplorerService) {
+						let objectExplorerNode = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, folderNode.getNodeInfo().nodePath);
 						await objectExplorerNode.refresh();
 					}
 				}
@@ -180,20 +180,20 @@ export class DeleteFilesCommand extends Command {
 		super('mssqlCluster.deleteFiles', appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandViewContext |ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext |ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let node = await getNode<TreeNode>(sqlContext, this.appContext);
+			let node = await getNode<TreeNode>(context, this.appContext);
 			if (node) {
 				// TODO ideally would let node define if it's deletable
 				// TODO also, would like to change this to getNodeInfo as OE is the primary use case now
 				let treeItem = await node.getTreeItem();
 				let oeNodeToRefresh: sqlops.objectexplorer.ObjectExplorerNode = undefined;
-				if (sqlContext.type === constants.ObjectExplorerService) {
-					let oeNodeToDelete = await sqlops.objectexplorer.getNode(sqlContext.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
+				if (context.type === constants.ObjectExplorerService) {
+					let oeNodeToDelete = await sqlops.objectexplorer.getNode(context.explorerContext.connectionProfile.id, node.getNodeInfo().nodePath);
 					oeNodeToRefresh = await oeNodeToDelete.getParent();
 				}
 				switch (treeItem.contextValue) {
@@ -251,13 +251,13 @@ export class SaveFileCommand extends ProgressCommand {
 		super('mssqlCluster.saveFile', prompter, appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let fileNode = await getNode<FileNode>(sqlContext, this.appContext);
+			let fileNode = await getNode<FileNode>(context, this.appContext);
 			if (fileNode) {
 				let defaultUri = getSaveableUri(this.apiWrapper, fspath.basename(fileNode.hdfsPath));
 				let fileUri: vscode.Uri = await this.apiWrapper.showSaveDialog({
@@ -290,13 +290,13 @@ export class PreviewFileCommand extends ProgressCommand {
 		super('mssqlCluster.previewFile', prompter, appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let fileNode = await getNode<FileNode>(sqlContext, this.appContext);
+			let fileNode = await getNode<FileNode>(context, this.appContext);
 			if (fileNode) {
 				await this.executeWithProgress(
 					async (cancelToken: vscode.CancellationTokenSource) => {
@@ -343,13 +343,13 @@ export class CopyPathCommand extends Command {
 		super('mssqlCluster.copyPath', appContext);
 	}
 
-	protected async preExecute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
-		return this.execute(sqlContext, args);
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+		return this.execute(context, args);
 	}
 
-	async execute(sqlContext: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
-			let node = await getNode<HdfsFileSourceNode>(sqlContext, this.appContext);
+			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
 			if (node) {
 				let path = node.hdfsPath;
 				clipboardy.writeSync(path);
