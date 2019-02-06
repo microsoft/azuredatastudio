@@ -186,12 +186,12 @@ export class DeployPlanPage extends DacFxConfigPage {
 			{
 				value: localize('dacfx.typeColumn', 'Type'),
 				width: 100,
-				toolTip: localize('dacfx.typeTooltip', 'Type of object')
+				toolTip: localize('dacfx.typeTooltip', 'Type of object that will be affected by deployment')
 			},
 			{
 				value: localize('dacfx.objectColumn', 'Object'),
 				width: 300,
-				toolTip: localize('dacfx.objecTooltip', 'Object name')
+				toolTip: localize('dacfx.objecTooltip', 'Name of object that will be affected by deployment')
 			}];
 
 		if (dataloss) {
