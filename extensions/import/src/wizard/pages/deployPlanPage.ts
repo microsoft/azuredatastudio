@@ -181,16 +181,19 @@ export class DeployPlanPage extends DacFxConfigPage {
 			{
 				value: localize('dacfx.operationColumn', 'Operation'),
 				width: 75,
+				cssClass: 'align-with-header',
 				toolTip: localize('dacfx.operationTooltip', 'Operation(Create, Alter, Delete) that will occur during deployment')
 			},
 			{
 				value: localize('dacfx.typeColumn', 'Type'),
 				width: 100,
+				cssClass: 'align-with-header',
 				toolTip: localize('dacfx.typeTooltip', 'Type of object that will be affected by deployment')
 			},
 			{
 				value: localize('dacfx.objectColumn', 'Object'),
 				width: 300,
+				cssClass: 'align-with-header',
 				toolTip: localize('dacfx.objecTooltip', 'Name of object that will be affected by deployment')
 			}];
 
