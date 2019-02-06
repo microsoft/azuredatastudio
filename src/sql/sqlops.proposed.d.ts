@@ -499,6 +499,7 @@ declare module 'sqlops' {
 		value: string;
 		width?: number;
 		cssClass?: string;
+		toolTip?: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
