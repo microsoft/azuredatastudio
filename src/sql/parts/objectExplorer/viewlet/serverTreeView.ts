@@ -91,7 +91,7 @@ export class ServerTreeView {
 		if (!this._connectionManagementService.hasRegisteredServers()) {
 			this._activeConnectionsFilterAction.enabled = false;
 			this._buttonSection = $('div.button-section').appendTo(container);
-			var connectButton = new Button(this._buttonSection);
+			var connectButton = new Button(this._buttonSection.getHTMLElement());
 			connectButton.label = localize('serverTree.addConnection', 'Add Connection');
 			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
 			this._toDispose.push(connectButton.onDidClick(() => {

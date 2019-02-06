@@ -178,7 +178,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			this._modalHeaderSection = $().div({ class: 'modal-header' }, (modalHeader) => {
 				if (this._modalOptions.hasBackButton) {
 					modalHeader.div({ class: 'modal-go-back' }, (cellContainer) => {
-						this._backButton = new Button(cellContainer);
+						this._backButton = new Button(cellContainer.getHTMLElement());
 						this._backButton.icon = 'backButtonIcon';
 						this._backButton.title = localize('modalBack', "Back");
 					});
@@ -207,7 +207,7 @@ export abstract class Modal extends Disposable implements IThemable {
 						this._messageSeverity = messageSeverityContainer;
 					});
 					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
-						this._toggleMessageDetailButton = new Button(buttonContainer);
+						this._toggleMessageDetailButton = new Button(buttonContainer.getHTMLElement());
 						this._toggleMessageDetailButton.icon = 'message-details-icon';
 						this._toggleMessageDetailButton.label = SHOW_DETAILS_TEXT;
 						this._toggleMessageDetailButton.onDidClick((e) => {
@@ -215,7 +215,7 @@ export abstract class Modal extends Disposable implements IThemable {
 						});
 					});
 					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
-						this._copyMessageButton = new Button(buttonContainer);
+						this._copyMessageButton = new Button(buttonContainer.getHTMLElement());
 						this._copyMessageButton.icon = 'copy-message-icon';
 						this._copyMessageButton.label = COPY_TEXT;
 						this._copyMessageButton.onDidClick((e) => {
@@ -223,7 +223,7 @@ export abstract class Modal extends Disposable implements IThemable {
 						});
 					});
 					headerContainer.div({ class: 'dialog-message-button' }, (buttonContainer) => {
-						this._closeMessageButton = new Button(buttonContainer);
+						this._closeMessageButton = new Button(buttonContainer.getHTMLElement());
 						this._closeMessageButton.icon = 'close-message-icon';
 						this._closeMessageButton.label = CLOSE_TEXT;
 						this._closeMessageButton.onDidClick((e) => {
@@ -448,7 +448,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	protected addFooterButton(label: string, onSelect: () => void, orientation: 'left' | 'right' = 'right'): Button {
 		let footerButton = $('div.footer-button');
-		let button = new Button(footerButton);
+		let button = new Button(footerButton.getHTMLElement());
 		button.label = label;
 		button.onDidClick(() => onSelect());
 		if (orientation === 'left') {

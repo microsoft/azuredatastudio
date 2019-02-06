@@ -39,7 +39,7 @@ export function appendRowLink(container: Builder, label: string, labelClass: str
 		});
 		rowContainer.element('td', { class: cellContainerClass }, (inputCellContainer) => {
 			inputCellContainer.element('div', {}, (rowContainer) => {
-				rowButton = new Button(rowContainer);
+				rowButton = new Button(rowContainer.getHTMLElement());
 
 			});
 		});

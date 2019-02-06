@@ -17,7 +17,7 @@ export class Button extends vsButton {
 	private buttonFocusOutline: Color;
 	private $el: Builder;
 
-	constructor(container: any, options?: IButtonOptions) {
+	constructor(container: HTMLElement, options?: IButtonOptions) {
 		super(container, options);
 		this.buttonFocusOutline = null;
 		this.$el = new Builder(this.element);

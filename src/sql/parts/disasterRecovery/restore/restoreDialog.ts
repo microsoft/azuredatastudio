@@ -199,7 +199,7 @@ export class RestoreDialog extends Modal {
 				});
 
 				inputContainer.div({ class: 'file-browser' }, (inputCellContainer) => {
-					this._browseFileButton = new Button(inputCellContainer);
+					this._browseFileButton = new Button(inputCellContainer.getHTMLElement());
 					this._browseFileButton.label = '...';
 				});
 			});

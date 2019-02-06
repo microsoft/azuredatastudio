@@ -264,7 +264,7 @@ export class ConnectionWidget {
 			rowContainer.element('td');
 			rowContainer.element('td', { align: 'right' }, (cellContainer) => {
 				cellContainer.div({ class: 'advanced-button' }, (divContainer) => {
-					button = new Button(divContainer);
+					button = new Button(divContainer.getHTMLElement());
 					button.label = title;
 					button.onDidClick(() => {
 						//open advanced page
