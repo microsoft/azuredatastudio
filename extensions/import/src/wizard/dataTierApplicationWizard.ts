@@ -366,7 +366,7 @@ export class DataTierApplicationWizard {
 
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
-				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+				localize('alertData.deployPlanErrorMessage', "Generating deploy plan failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 		}
 
 		return result.report;

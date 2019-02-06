@@ -34,8 +34,8 @@ export class TableObject {
 	dataloss: boolean;
 }
 
-export class Result {
-	data: string[];
+export class DeployPlanResult {
+	columnData: Array<Array<string>>;
 	dataLossAlerts: Set<string>;
 }
 
@@ -99,15 +99,16 @@ export class DeployPlanPage extends DacFxConfigPage {
 		let result = this.parseXml(report);
 
 		this.table.updateProperties({
-			data: result.data,
+			data: result.columnData,
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
 			height: 300
 		});
+
 		if (result.dataLossAlerts.size > 0) {
 			// update message to list how many operations could result in data loss
 			this.dataLossText.updateProperties({
-				value: localize('dacfx.dataLossTextWithCount', result.dataLossAlerts.size + ' of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
+				value: result.dataLossAlerts.size + localize('dacfx.dataLossTextWithCount', ' of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
 			});
 			this.dataLossCheckbox.enabled = true;
 		} else {
@@ -172,7 +173,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 			{
 				value: localize('dacfx.operationColumn', 'Operation'),
 				width: 75,
-				toolTip: localize('dacfx.operationTooltip', 'Operation that will occur during deployment')
+				toolTip: localize('dacfx.operationTooltip', 'Operation(Create, Alter, Delete) that will occur during deployment')
 			},
 			{
 				value: localize('dacfx.typeColumn', 'Type'),
@@ -197,8 +198,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 		return columns;
 	}
 
-	private parseXml(report: string): Result {
-		let operations = [];
+	private parseXml(report: string): DeployPlanResult {
+		let operations = new Array<TableObject>();
 		let dataLossAlerts = new Set<string>();
 
 		let currentOperation = '';
@@ -264,7 +265,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		}, { xmlMode: true, decodeEntities: true });
 		p.parseChunk(report);
 
-		let data = [];
+		let data = new Array<Array<string>>();
 		operations.forEach(operation => {
 			if (dataLossAlerts.size > 0) {
 				let isDataLoss = operation.dataloss ? '⚠️' : '';
@@ -275,7 +276,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		});
 
 		return {
-			data: data,
+			columnData: data,
 			dataLossAlerts: dataLossAlerts
 		};
 	}
