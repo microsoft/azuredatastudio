@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import * as types from './types';
+import * as Constants from './constants';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext',
@@ -27,7 +28,6 @@ export function setCommandContext(key: ContextKeys | string, value: any) {
 	return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 }
 
-const isBigDataClusterProperty = 'isBigDataCluster';
 export default class ContextProvider {
 	private _disposables = new Array<vscode.Disposable>();
 
@@ -49,8 +49,8 @@ export default class ContextProvider {
 
 			edition = e.serverInfo.engineEditionId;
 
-			if (!types.isUndefinedOrNull(e.serverInfo.options[isBigDataClusterProperty])) {
-				isCluster = e.serverInfo.options[isBigDataClusterProperty];
+			if (!types.isUndefinedOrNull(e.serverInfo.options[Constants.isBigDataClusterProperty])) {
+				isCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
 			}
 		}
 
