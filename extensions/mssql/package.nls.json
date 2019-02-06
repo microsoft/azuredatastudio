@@ -13,6 +13,9 @@
 	"mssqlCluster.saveFile": "Save",
 	"mssqlCluster.copyPath": "Copy Path",
 
+	"notebook.command.new": "New Notebook",
+	"notebook.command.open": "Open Notebook",
+
 	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server Big Data Cluster",
 	"title.bigDataCluster": "SQL Server Big Data Cluster",
     "title.submitSparkJob": "Submit Spark Job",

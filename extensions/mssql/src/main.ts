@@ -7,6 +7,9 @@
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import * as path from 'path';
+import * as os from 'os';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { IConfig, ServerProvider, Events } from 'service-downloader';
@@ -32,6 +35,10 @@ import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExp
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+const jupyterNotebookProviderId = 'jupyter';
+const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
+
+let untitledCounter = 0;
 
 export async function activate(context: vscode.ExtensionContext): Promise<MssqlExtensionApi> {
 	// lets make sure we support this platform first
@@ -103,6 +110,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
 		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 		activateSparkFeatures(appContext);
+		activateNotebookTask(appContext);
 	}, e => {
 		Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
 		vscode.window.showErrorMessage('Failed to start Sql tools service');
@@ -148,6 +156,76 @@ function activateSparkFeatures(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterLivyOpenYarnHistory, (profile: sqlops.IConnectionProfile) => {
 		new OpenSparkYarnHistoryTask(appContext).execute(profile, false);
 	});
+}
+
+function activateNotebookTask(appContext: AppContext): void {
+	let apiWrapper = appContext.apiWrapper;
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterNewNotebookTask, (profile: sqlops.IConnectionProfile) => {
+		return saveProfileAndCreateNotebook(profile);
+	});
+	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: sqlops.IConnectionProfile) => {
+		return handleOpenNotebookTask(profile);
+	});
+}
+
+function saveProfileAndCreateNotebook(profile: sqlops.IConnectionProfile): Promise<void> {
+	return handleNewNotebookTask(undefined, profile);
+}
+
+async function handleNewNotebookTask(oeContext?: sqlops.ObjectExplorerContext, profile?: sqlops.IConnectionProfile): Promise<void> {
+	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
+	// to handle this. We should look into improving this in the future
+	let untitledUri = vscode.Uri.parse(`untitled:Notebook-${untitledCounter++}`);
+	let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
+		connectionId: profile.id,
+		providerId: jupyterNotebookProviderId,
+		preview: false,
+		defaultKernel: {
+			name: 'pyspark3kernel',
+			display_name: 'PySpark3',
+			language: 'python'
+		}
+	});
+	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
+		// Get the file path after '/HDFS'
+		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
+		if (hdfsPath.length > 0) {
+			let analyzeCommand = "#" + msgSampleCodeDataFrame + os.EOL + "df = (spark.read.option(\"inferSchema\", \"true\")"
+				+ os.EOL + ".option(\"header\", \"true\")" + os.EOL + ".csv('{0}'))" + os.EOL + "df.show(10)";
+			editor.edit(editBuilder => {
+				editBuilder.replace(0, {
+					cell_type: 'code',
+					source: analyzeCommand.replace('{0}', hdfsPath)
+				});
+			});
+
+		}
+	}
+}
+
+async function handleOpenNotebookTask(profile: sqlops.IConnectionProfile): Promise<void> {
+	let notebookFileTypeName = localize('notebookFileType', 'Notebooks');
+	let filter = {};
+	filter[notebookFileTypeName] = 'ipynb';
+	let uris = await vscode.window.showOpenDialog({
+		filters: filter,
+		canSelectFiles: true,
+		canSelectMany: false
+	});
+	if (uris && uris.length > 0) {
+		let fileUri = uris[0];
+		// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
+		if (path.extname(fileUri.fsPath) !== '.ipynb') {
+			// in the future might want additional supported types
+			vscode.window.showErrorMessage(localize('unsupportedFileType', 'Only .ipynb Notebooks are supported'));
+		} else {
+			await sqlops.nb.showNotebookDocument(fileUri, {
+				connectionId: profile.id,
+				providerId: jupyterNotebookProviderId,
+				preview: false
+			});
+		}
+	}
 }
 
 function generateServerOptions(executablePath: string): ServerOptions {

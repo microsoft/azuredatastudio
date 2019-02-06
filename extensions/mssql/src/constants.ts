@@ -60,6 +60,8 @@ export enum MssqlClusterItemsSubType {
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////
+export const mssqlClusterNewNotebookTask = 'mssqlCluster.task.newNotebook';
+export const mssqlClusterOpenNotebookTask = 'mssqlCluster.task.openNotebook';
 export const mssqlClusterLivySubmitSparkJobCommand = 'mssqlCluster.livy.cmd.submitSparkJob';
 export const mssqlClusterLivySubmitSparkJobFromFileCommand = 'mssqlCluster.livy.cmd.submitFileToSparkJob';
 export const mssqlClusterLivySubmitSparkJobTask = 'mssqlCluster.livy.task.submitSparkJob';

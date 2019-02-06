@@ -71,6 +71,22 @@
         "title": "%mssqlCluster.copyPath%"
       },
       {
+        "command": "mssqlCluster.task.newNotebook",
+        "title": "%notebook.command.new%",
+        "icon": {
+          "dark": "resources/dark/new_notebook_inverse.svg",
+          "light": "resources/light/new_notebook.svg"
+        }
+      },
+      {
+        "command": "mssqlCluster.task.openNotebook",
+        "title": "%notebook.command.open%",
+        "icon": {
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
+      },
+      {
         "command": "mssqlCluster.livy.cmd.submitSparkJob",
         "title": "%title.submitSparkJob%"
       },
@@ -219,12 +235,20 @@
           "when": "false"
         },
         {
+          "command": "mssqlCluster.task.newNotebook",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.task.openNotebook",
+          "when": "false"
+        },
+        {
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "false"
         },
         {
-            "command": "mssqlCluster.livy.task.submitSparkJob",
-            "when": "false"
+          "command": "mssqlCluster.livy.task.submitSparkJob",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -363,24 +387,28 @@
     "dashboard.tabs": [
       {
         "id": "mssql-big-data-cluster",
-        "title": "%title.bigDataCluster%",
         "description": "tab.bigDataClusterDescription",
+        "provider": "MSSQL",
+        "title": "%title.bigDataCluster%",
+        "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
         "container": {
-         "grid-container": [
-           {
-            "name": "%title.tasks%",
-            "row": 0,
-            "col": 0,
-            "colspan": 1,
-            "widget": {
-              "tasks-widget": [
-               "mssqlCluster.livy.task.submitSparkJob",
-               "mssqlCluster.livy.task.openSparkHistory",
-               "mssqlCluster.livy.task.openYarnHistory"
-              ]
+          "grid-container": [
+            {
+              "name": "%title.tasks%",
+              "row": 0,
+              "col": 0,
+              "colspan": 2,
+              "widget": {
+                "tasks-widget": [
+                  "mssqlCluster.task.newNotebook",
+                  "mssqlCluster.task.openNotebook",
+                  "mssqlCluster.livy.task.submitSparkJob",
+                  "mssqlCluster.livy.task.openSparkHistory",
+                  "mssqlCluster.livy.task.openYarnHistory"
+                ]
+              }
             }
-           }
-         ]
+          ]
         }
       }
     ],
