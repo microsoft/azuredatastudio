@@ -99,6 +99,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.setLoading(false);
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
+		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 		this.setFocusAndScroll();
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
@@ -193,7 +194,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	protected toggleMoreActionsButton(isActive: boolean) {
-		this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
+	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
 	}
 }

@@ -42,7 +42,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
-	@Input() hideVerticalToolbar: boolean = false;
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -92,9 +91,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		if (!this.hideVerticalToolbar) {
-			this.initActionBar();
-		}
+		this.initActionBar();
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -104,7 +101,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
-				this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
+				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
 				}
@@ -173,6 +170,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
+
+		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 	}
 
 
@@ -217,7 +216,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	protected toggleMoreActionsButton(isActive: boolean) {
-		this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
+	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
 	}
 }
