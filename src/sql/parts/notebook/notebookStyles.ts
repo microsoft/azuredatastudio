@@ -109,18 +109,24 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 				}
 			`);
 
+			// Ensure there's always a line between editor and output
+			collector.addRule(`
+				.notebookEditor .notebook-cell.active code-component {
+					border-color: ${inactiveBorder};
+					border-width: 0px 0px 1px 0px;
+					border-style: solid;
+					border-radius: 0;
+				}
+			`);
+
 			if (addBorderToInactiveCodeCells) {
-				// Sets a border for the editor component if we don't have a custom color for editor instead
+				// Sets a border for the editor component if we don't have a custom line color for editor instead
 				collector.addRule(`
 					.notebookEditor .notebook-cell code-component {
 						border-color: ${inactiveBorder};
 						border-width: 1px;
 						border-style: solid;
 						border-radius: 3px 3px 3px 3px;
-					}
-					.notebookEditor .notebook-cell.active code-component {
-						border-width: 0px 0px 1px 0px;
-						border-radius: 0px;
 					}
 					.notebookEditor .notebook-cell:hover code-component {
 						border-width: 0px 0px 1px 0px;
