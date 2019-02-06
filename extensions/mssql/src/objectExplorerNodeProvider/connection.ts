@@ -48,7 +48,7 @@ export class SqlClusterConnection {
 		let options1 = connection instanceof SqlClusterConnection ?
 			connection._connection.options : connection.options;
 		let options2 = this._connection.options;
-		return [ constants.hostPropName, constants.knoxPortPropName, constants.userPropName ]
+		return [constants.hostPropName, constants.knoxPortPropName, constants.userPropName]
 			.every(e => options1[e] === options2[e]);
 	}
 

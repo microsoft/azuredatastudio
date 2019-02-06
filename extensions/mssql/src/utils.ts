@@ -34,7 +34,7 @@ export function removeOldLogFiles(prefix: string): JSON {
 	return findRemoveSync(getDefaultLogDir(), { prefix: `${prefix}_`, age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
-export function getConfiguration(config: string = extensionConfigSectionName) : vscode.WorkspaceConfiguration {
+export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(extensionConfigSectionName);
 }
 

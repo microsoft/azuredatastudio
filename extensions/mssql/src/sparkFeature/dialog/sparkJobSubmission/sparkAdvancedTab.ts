@@ -42,33 +42,33 @@ export class SparkAdvancedTab {
 				component: this._referenceJARFilesInputBox,
 				title: localize('sparkJobSubmission_ReferenceJarList', 'Reference Jars')
 			},
-			Object.assign(
-				{
-					info: localize('sparkJobSubmission_ReferenceJarListToolTip',
-					'Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)')
-				},
-				parentLayout));
+				Object.assign(
+					{
+						info: localize('sparkJobSubmission_ReferenceJarListToolTip',
+							'Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)')
+					},
+					parentLayout));
 
 			this._referencePyFilesInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._referencePyFilesInputBox,
 				title: localize('sparkJobSubmission_ReferencePyList', 'Reference py Files')
 			},
-			Object.assign(
-				{
-					info: localize('sparkJobSubmission_ReferencePyListTooltip',
-					'Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)')
-				},
-				parentLayout));
+				Object.assign(
+					{
+						info: localize('sparkJobSubmission_ReferencePyListTooltip',
+							'Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)')
+					},
+					parentLayout));
 
 			this._referenceFilesInputBox = builder.inputBox().component();
 			formContainer.addFormItem({
 				component: this._referenceFilesInputBox,
 				title: localize('sparkJobSubmission_ReferenceFilesList', 'Reference Files')
 			},
-			Object.assign({
+				Object.assign({
 					info: localize('sparkJobSubmission_ReferenceFilesListTooltip',
-					'Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)')
+						'Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)')
 				}, parentLayout));
 
 			await modelView.initializeModel(formContainer.component());

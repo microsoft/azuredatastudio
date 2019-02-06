@@ -34,10 +34,10 @@ export class SparkJobSubmissionDialog {
 		private sqlClusterConnection: SqlClusterConnection,
 		private appContext: AppContext,
 		private outputChannel: vscode.OutputChannel) {
-			if (!this.sqlClusterConnection || !this.appContext || !this.outputChannel) {
-				throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError',
-					'Parameters for SparkJobSubmissionDialog is illegal'));
-			}
+		if (!this.sqlClusterConnection || !this.appContext || !this.outputChannel) {
+			throw new Error(localize('sparkJobSubmission_SparkJobSubmissionDialogInitializeError',
+				'Parameters for SparkJobSubmissionDialog is illegal'));
+		}
 	}
 
 	public async openDialog(path?: string): Promise<void> {

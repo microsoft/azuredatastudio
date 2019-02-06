@@ -84,7 +84,7 @@ export class SparkConfigurationTab {
 					this._filePickerButton.updateProperties({
 						enabled: isLocal,
 						required: isLocal
-					 });
+					});
 				}
 
 				// Clear the path When switching source.
@@ -140,10 +140,10 @@ export class SparkConfigurationTab {
 			this._filePickerButton.onDidClick(() => this.onSelectFile());
 
 			this._sourceFlexContainer = builder.flexContainer().component();
-			this._sourceFlexContainer.addItem(this._fileSourceDropDown, {flex: '0 0 auto', CSSStyles: { 'minWidth': '75px', 'marginBottom': '5px', 'paddingRight': '3px' } });
-			this._sourceFlexContainer.addItem(this._sparkSourceFileInputBox, { flex: '1 1 auto', CSSStyles: { 'marginBottom': '5px', 'paddingRight': '3px'} });
+			this._sourceFlexContainer.addItem(this._fileSourceDropDown, { flex: '0 0 auto', CSSStyles: { 'minWidth': '75px', 'marginBottom': '5px', 'paddingRight': '3px' } });
+			this._sourceFlexContainer.addItem(this._sparkSourceFileInputBox, { flex: '1 1 auto', CSSStyles: { 'marginBottom': '5px', 'paddingRight': '3px' } });
 			// Do not add margin for file picker button as the label forces it to have 5px margin
-			this._sourceFlexContainer.addItem(this._filePickerButton, { flex: '0 0 auto'});
+			this._sourceFlexContainer.addItem(this._filePickerButton, { flex: '0 0 auto' });
 			this._sourceFlexContainer.setLayout({
 				flexFlow: 'row',
 				height: '100%',
@@ -156,8 +156,8 @@ export class SparkConfigurationTab {
 				value: (this._path) ? '' : LocalizedConstants.sparkLocalFileDestinationHint
 			}).component();
 			this._sourceFlexContainerWithHint = builder.flexContainer().component();
-			this._sourceFlexContainerWithHint.addItem(this._sourceFlexContainer, {flex: '0 0 auto'});
-			this._sourceFlexContainerWithHint.addItem(this._localUploadDestinationLabel, {flex: '1 1 auto'});
+			this._sourceFlexContainerWithHint.addItem(this._sourceFlexContainer, { flex: '0 0 auto' });
+			this._sourceFlexContainerWithHint.addItem(this._localUploadDestinationLabel, { flex: '1 1 auto' });
 			this._sourceFlexContainerWithHint.setLayout({
 				flexFlow: 'column',
 				width: '100%',
@@ -184,9 +184,9 @@ export class SparkConfigurationTab {
 				component: this._argumentsInputBox,
 				title: localize('sparkJobSubmission_Arguments', 'Arguments')
 			},
-			Object.assign(
-				{ info: localize('sparkJobSubmission_ArgumentsTooltip', 'Command line arguments used in your main class, multiple arguments should be split by space.') },
-				parentLayout));
+				Object.assign(
+					{ info: localize('sparkJobSubmission_ArgumentsTooltip', 'Command line arguments used in your main class, multiple arguments should be split by space.') },
+					parentLayout));
 
 			await modelView.initializeModel(formContainer.component());
 		});
@@ -228,7 +228,7 @@ export class SparkConfigurationTab {
 				return false;
 			}
 		} else {
-		// 2. Check HDFS file existed for HDFS source.
+			// 2. Check HDFS file existed for HDFS source.
 			try {
 				let isFileExisted = await this._dataModel.isClusterFileExisted(this._dataModel.hdfsSubmitFilePath);
 				if (!isFileExisted) {

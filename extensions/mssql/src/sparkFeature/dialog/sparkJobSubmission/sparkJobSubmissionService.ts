@@ -17,13 +17,13 @@ export class SparkJobSubmissionService {
 
 	constructor(
 		requestService?: (args: any) => any) {
-			if (requestService) {
-				// this is to fake the request service for test.
-				this._requestPromise = requestService;
-			} else {
-				this._requestPromise = require('request-promise');
-			}
+		if (requestService) {
+			// this is to fake the request service for test.
+			this._requestPromise = requestService;
+		} else {
+			this._requestPromise = require('request-promise');
 		}
+	}
 
 	public async submitBatchJob(submissionArgs: SparkJobSubmissionInput): Promise<string> {
 		try {
@@ -84,7 +84,7 @@ export class SparkJobSubmissionService {
 			}
 
 			return Promise.reject(new Error(localize('sparkJobSubmission_LivyNoBatchIdReturned',
-			'No Spark job batch id is returned from response.{0}[Error] {1}', os.EOL, JSON.stringify(response))));
+				'No Spark job batch id is returned from response.{0}[Error] {1}', os.EOL, JSON.stringify(response))));
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -110,7 +110,7 @@ export class SparkJobSubmissionService {
 			}
 
 			return Promise.reject(localize('sparkJobSubmission_LivyNoLogReturned',
-			'No log is returned within response.{0}[Error] {1}', os.EOL, JSON.stringify(response)));
+				'No log is returned within response.{0}[Error] {1}', os.EOL, JSON.stringify(response)));
 		} catch (error) {
 			return Promise.reject(error);
 		}

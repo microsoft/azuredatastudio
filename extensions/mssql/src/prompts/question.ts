@@ -30,7 +30,7 @@ export interface IQuestion {
 	// Optional validation function that returns an error string if validation fails
 	validate?: (value: any) => string;
 	// Optional pre-prompt function. Takes in set of answers so far, and returns true if prompt should occur
-	shouldPrompt?: (answers: {[id: string]: any}) => boolean;
+	shouldPrompt?: (answers: { [id: string]: any }) => boolean;
 	// Optional action to take on the question being answered
 	onAnswered?: (value: any) => void;
 	// Optional set of options to support matching choices.
@@ -59,10 +59,10 @@ export interface IPrompter {
 	 * @returns {[questionId: string]: T} Map of question IDs to results, or undefined if
 	 * the user canceled the question session
 	 */
-	prompt<T>(questions: IQuestion[], ignoreFocusOut?: boolean): Promise<{[questionId: string]: any}>;
+	prompt<T>(questions: IQuestion[], ignoreFocusOut?: boolean): Promise<{ [questionId: string]: any }>;
 	promptCallback(questions: IQuestion[], callback: IPromptCallback): void;
 }
 
 export interface IPromptCallback {
-	(answers: {[id: string]: any}): void;
+	(answers: { [id: string]: any }): void;
 }

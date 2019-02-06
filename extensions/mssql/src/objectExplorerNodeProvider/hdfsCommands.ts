@@ -73,7 +73,7 @@ export class UploadFilesCommand extends ProgressCommand {
 	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
 			let folderNode = await getNode<FolderNode>(context, this.appContext);
-			const allFilesFilter =  localize('allFiles', 'All Files');
+			const allFilesFilter = localize('allFiles', 'All Files');
 			let filter = {};
 			filter[allFilesFilter] = '*';
 			if (folderNode) {
@@ -180,11 +180,11 @@ export class DeleteFilesCommand extends Command {
 		super('mssqlCluster.deleteFiles', appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
-	async execute(context: ICommandViewContext |ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
 			let node = await getNode<TreeNode>(context, this.appContext);
 			if (node) {

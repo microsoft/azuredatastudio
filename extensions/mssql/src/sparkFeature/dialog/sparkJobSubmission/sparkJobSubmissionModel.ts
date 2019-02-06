@@ -68,7 +68,7 @@ export class SparkJobSubmissionModel {
 		let errorLevel = sqlops.window.modelviewdialog.MessageLevel ? sqlops.window.modelviewdialog.MessageLevel : 0;
 		this._dialog.message = {
 			text: message,
-			level: <sqlops.window.modelviewdialog.MessageLevel> errorLevel
+			level: <sqlops.window.modelviewdialog.MessageLevel>errorLevel
 		};
 	}
 
@@ -199,8 +199,8 @@ export class SparkJobSubmissionModel {
 		return `https://${submissionArgs.host}:${submissionArgs.port}/gateway/default/sparkhistory/history/${appId}/1`;
 	}
 
-	private async sleep (ms: number): Promise<{}> {
+	private async sleep(ms: number): Promise<{}> {
 		// tslint:disable-next-line no-string-based-set-timeout
-		return new Promise (resolve => setTimeout(resolve, ms));
+		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 }
