@@ -13,18 +13,15 @@ import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
-export enum deployPlanXmlTag {
-	Alert = 'Alert',
-	Operation = 'Operation',
-	Item = 'Item'
-}
-
-export enum attributeName {
-	Name = 'Name',
-	Value = 'Value',
-	Type = 'Type',
-	Id = 'Id',
-	DataIssue = 'DataIssue'
+export enum deployPlanXml {
+	AlertElement = 'Alert',
+	OperationElement = 'Operation',
+	ItemElement = 'Item',
+	NameAttribute = 'Name',
+	ValueAttribute = 'Value',
+	TypeAttribute = 'Type',
+	IdAttribute = 'Id',
+	DataIssueAttribute = 'DataIssue'
 }
 
 export class TableObject {
@@ -99,7 +96,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		let result = this.parseXml(report);
 
 		this.table.updateProperties({
-			data: result.columnData,
+			data: this.getColumnData(result),
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
 			height: 300
@@ -168,6 +165,17 @@ export class DeployPlanPage extends DacFxConfigPage {
 		};
 	}
 
+	private getColumnData(result: DeployPlanResult): Array<Array<string>> {
+		// remove data loss column data if there aren't any alerts
+		let columnData = result.columnData;
+		if (result.dataLossAlerts.size === 0) {
+			columnData.forEach(entry => {
+				entry.shift();
+			});
+		}
+		return columnData;
+	}
+
 	private getTableColumns(dataloss: boolean): sqlops.TableColumn[] {
 		let columns: sqlops.TableColumn[] = [
 			{
@@ -204,50 +212,50 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 		let currentOperation = '';
 		let dataIssueAlert = false;
-		let currentReportSection: deployPlanXmlTag;
+		let currentReportSection: deployPlanXml;
 		let currentTableObj: TableObject;
 		let p = new parser.Parser({
 			onopentagname(name) {
-				if (name === deployPlanXmlTag.Alert) {
-					currentReportSection = deployPlanXmlTag.Alert;
-				} else if (name === deployPlanXmlTag.Operation) {
-					currentReportSection = deployPlanXmlTag.Operation;
-				} else if (name === deployPlanXmlTag.Item) {
+				if (name === deployPlanXml.AlertElement) {
+					currentReportSection = deployPlanXml.AlertElement;
+				} else if (name === deployPlanXml.OperationElement) {
+					currentReportSection = deployPlanXml.OperationElement;
+				} else if (name === deployPlanXml.ItemElement) {
 					currentTableObj = new TableObject();
 				}
 			},
 			onattribute: function (name, value) {
-				if (currentReportSection === deployPlanXmlTag.Alert) {
+				if (currentReportSection === deployPlanXml.AlertElement) {
 					switch (name) {
-						case attributeName.Name: {
+						case deployPlanXml.NameAttribute: {
 							// only care about showing data loss alerts
-							if (value === attributeName.DataIssue) {
+							if (value === deployPlanXml.DataIssueAttribute) {
 								dataIssueAlert = true;
 							}
 							break;
 						}
-						case attributeName.Id: {
+						case deployPlanXml.IdAttribute: {
 							if (dataIssueAlert) {
 								dataLossAlerts.add(value);
 							}
 							break;
 						}
 					}
-				} else if (currentReportSection === deployPlanXmlTag.Operation) {
+				} else if (currentReportSection === deployPlanXml.OperationElement) {
 					switch (name) {
-						case attributeName.Name: {
+						case deployPlanXml.NameAttribute: {
 							currentOperation = value;
 							break;
 						}
-						case attributeName.Value: {
+						case deployPlanXml.ValueAttribute: {
 							currentTableObj.object = value;
 							break;
 						}
-						case attributeName.Type: {
+						case deployPlanXml.TypeAttribute: {
 							currentTableObj.type = value;
 							break;
 						}
-						case attributeName.Id: {
+						case deployPlanXml.IdAttribute: {
 							if (dataLossAlerts.has(value)) {
 								currentTableObj.dataloss = true;
 							}
@@ -257,7 +265,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 				}
 			},
 			onclosetag: function (name) {
-				if (name === deployPlanXmlTag.Item) {
+				if (name === deployPlanXml.ItemElement) {
 					currentTableObj.operation = currentOperation;
 					operations.push(currentTableObj);
 				}
@@ -267,12 +275,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 		let data = new Array<Array<string>>();
 		operations.forEach(operation => {
-			if (dataLossAlerts.size > 0) {
-				let isDataLoss = operation.dataloss ? '⚠️' : '';
-				data.push([isDataLoss, operation.operation, operation.type, operation.object]);
-			} else {
-				data.push([operation.operation, operation.type, operation.object]);
-			}
+			let isDataLoss = operation.dataloss ? '⚠️' : '';
+			data.push([isDataLoss, operation.operation, operation.type, operation.object]);
 		});
 
 		return {
