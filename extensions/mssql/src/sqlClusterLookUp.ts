@@ -94,7 +94,7 @@ async function createSqlClusterConnInfo(sqlConnInfo: sqlops.IConnectionProfile |
 	clusterConnInfo.options[constants.knoxPortPropName] = endpoints[index].port;
 	clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
 	clusterConnInfo.options[constants.passwordPropName] = credentials.password;
-	clusterConnInfo = this.connToConnectionParam(clusterConnInfo);
+	clusterConnInfo = connToConnectionParam(clusterConnInfo);
 
 	return clusterConnInfo;
 }

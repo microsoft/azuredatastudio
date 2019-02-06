@@ -89,7 +89,7 @@ export class SqlClusterConnection {
 		return [
 			constants.hostPropName, constants.knoxPortPropName,
 			constants.userPropName, constants.passwordPropName
-		].filter(e => connectionInfo.options[e] !== undefined);
+		].filter(e => connectionInfo.options[e] === undefined);
 	}
 
 	private toConnection(connProfile: sqlops.IConnectionProfile): sqlops.connection.Connection {
