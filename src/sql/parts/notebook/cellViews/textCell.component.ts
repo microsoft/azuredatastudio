@@ -41,6 +41,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
+	@Input() set hover(value: boolean) {
+		this._hover = value;
+		if (!this.isActive()) {
+			// Only make a change if we're not active, since this has priority
+			this.updateMoreActions();
+		}
+	}
+
 	private _content: string;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
@@ -50,6 +58,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	protected isLoading: boolean;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _hover: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -158,24 +167,33 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
-		if (!this.isEditMode && this.cellModel.id === this._activeCellId) {
-			this._cellToggleMoreActions.toggle(true, this.moreActionsElementRef, this.model, this.cellModel);
-		}
-		else {
-			this._cellToggleMoreActions.toggle(false, this.moreActionsElementRef, this.model, this.cellModel);
-		}
+		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();
 	}
 
-	private setFocusAndScroll(): void {
-		if (this.cellModel.id === this._activeCellId) {
-			this.toggleEditMode(true);
-		} else {
-			this.toggleEditMode(false);
+	private updateMoreActions(): void {
+		if (!this.isEditMode && (this.isActive() || this._hover)) {
+			this.toggleMoreActionsButton(true);
 		}
+		else {
+			this.toggleMoreActionsButton(false);
+		}
+	}
+
+	private setFocusAndScroll(): void {
+		this.toggleEditMode(this.isActive());
+
 		if (this.output && this.output.nativeElement) {
 			(<HTMLElement>this.output.nativeElement).scrollTo();
 		}
+	}
+
+	protected isActive() {
+		return this.cellModel && this.cellModel.id === this.activeCellId;
+	}
+
+	protected toggleMoreActionsButton(isActive: boolean) {
+		this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
 	}
 }

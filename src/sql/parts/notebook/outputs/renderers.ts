@@ -296,6 +296,26 @@ export namespace renderLatex {
 }
 
 /**
+ * The namespace for the `renderDataResource` function statics.
+ */
+export namespace renderDataResource {
+	/**
+	 * The options for the `renderDataResource` function.
+	 */
+	export interface IRenderOptions {
+		/**
+		 * The host node for the rendered LaTeX.
+		 */
+		host: HTMLElement;
+
+		/**
+		 * The DataResource source to render.
+		 */
+		source: string;
+	}
+}
+
+/**
  * Render SVG into a host node.
  *
  * @params options - The options for rendering.

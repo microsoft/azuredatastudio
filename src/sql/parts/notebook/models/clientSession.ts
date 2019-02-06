@@ -20,6 +20,7 @@ import * as notebookUtils from '../notebookUtils';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
+type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**
  * Implementation of a client session. This is a model over session operations,
  * which may come from the session manager or a specific session.
@@ -41,6 +42,9 @@ export class ClientSession implements IClientSession {
 	private _kernelPreference: IKernelPreference;
 	private _kernelDisplayName: string;
 	private _errorMessage: string;
+	private _cachedKernelSpec: nb.IKernelSpec;
+	private _kernelChangeHandlers: KernelChangeHandler[] = [];
+
 	//#endregion
 
 	private _serverLoadFinished: Promise<void>;
@@ -62,6 +66,7 @@ export class ClientSession implements IClientSession {
 			this._serverLoadFinished = this.startServer();
 			await this._serverLoadFinished;
 			await this.initializeSession();
+			await this.updateCachedKernelSpec();
 		} catch (err) {
 			this._errorMessage = notebookUtils.getErrorMessage(err);
 		}
@@ -150,6 +155,12 @@ export class ClientSession implements IClientSession {
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
 	}
+
+	public onKernelChanging(changeHandler: (kernel: nb.IKernelChangedArgs) => Promise<void>): void {
+		if (changeHandler) {
+			this._kernelChangeHandlers.push(changeHandler);
+		}
+	}
 	public get statusChanged(): Event<nb.ISession> {
 		return this._statusChangedEmitter.event;
 	}
@@ -204,6 +215,10 @@ export class ClientSession implements IClientSession {
 	public get isInErrorState(): boolean {
 		return !!this._errorMessage;
 	}
+
+	public get cachedKernelSpec(): nb.IKernelSpec {
+		return this._cachedKernelSpec;
+	}
 	//#endregion
 
 	//#region Not Yet Implemented
@@ -227,13 +242,26 @@ export class ClientSession implements IClientSession {
 		}
 		newKernel = this._session ? kernel : this._session.kernel;
 		this._isReady = kernel.isReady;
+		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
-		this._kernelChangeCompleted.resolve();
-		this._kernelChangedEmitter.fire({
+		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel
-		});
+		};
+		let changePromises = this._kernelChangeHandlers.map(handler => handler(changeArgs));
+		await Promise.all(changePromises);
+		// Wait on connection configuration to complete before resolving full kernel change
+		this._kernelChangeCompleted.resolve();
+		this._kernelChangedEmitter.fire(changeArgs);
 		return kernel;
+	}
+
+	private async updateCachedKernelSpec(): Promise<void> {
+		this._cachedKernelSpec = undefined;
+		let kernel = this.kernel;
+		if (kernel && kernel.isReady) {
+			this._cachedKernelSpec = await this.kernel.getSpec();
+		}
 	}
 
 	/**

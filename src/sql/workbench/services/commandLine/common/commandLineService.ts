@@ -111,7 +111,7 @@ export class CommandLineService implements ICommandLineProcessing {
 				} else {
 					self._connectionManagementService.connectIfNotConnected(self._connectionProfile, 'connection', true)
 						.then(() => {
-							self._commandService.executeCommand(self._commandName, self._connectionProfile).then(() => resolve(), error => reject(error));
+							self._commandService.executeCommand(self._commandName, self._connectionProfile.id).then(() => resolve(), error => reject(error));
 						}, error => {
 							reject(error);
 						});

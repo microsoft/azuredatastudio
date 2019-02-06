@@ -13,6 +13,12 @@ code-component .toolbar {
 	border-right-width: 1px;
 }
 
+code-component .toolbar .carbon-taskbar {
+	position: sticky;
+	top: 10px;
+	bottom: 30px;
+}
+
 code-component .toolbarIconRun {
 	height: 20px;
 	background-image: url('../media/light/execute_cell.svg');
@@ -35,6 +41,9 @@ code-component .toolbarIconStop {
 	background-image: url('../media/dark/stop_cell_inverse.svg');
 }
 
+code-component .editor {
+	padding: 5px 0px 5px 0px
+}
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
 	visibility: hidden;
