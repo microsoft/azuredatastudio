@@ -283,6 +283,11 @@
           "group": "1mssqlCluster@4"
         },
         {
+          "command": "mssqlCluster.livy.cmd.submitSparkJob",
+          "when": "connectionProvider == MSSQL && nodeType == dataservices",
+          "group": "1root@1"
+        },
+        {
           "command": "mssqlCluster.livy.cmd.submitFileToSparkJob",
           "when": "nodeType == mssqlCluster:file && nodeSubType == mssqlCluster:spark",
           "group": "1mssqlCluster@6"
