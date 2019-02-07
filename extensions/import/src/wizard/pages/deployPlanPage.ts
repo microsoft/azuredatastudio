@@ -105,7 +105,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		if (result.dataLossAlerts.size > 0) {
 			// update message to list how many operations could result in data loss
 			this.dataLossText.updateProperties({
-				value: result.dataLossAlerts.size + localize('dacfx.dataLossTextWithCount', ' of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.')
+				value: localize('dacfx.dataLossTextWithCount', '{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.', result.dataLossAlerts.size)
 			});
 			this.dataLossCheckbox.enabled = true;
 		} else {
