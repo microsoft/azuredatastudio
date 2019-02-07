@@ -4,16 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { PagedModel, IPagedModel } from 'vs/base/common/paging';
 import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IExtension, IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
+import { IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
@@ -113,8 +111,8 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	layoutBody(size: number): void {
 		this._searchBox.layout();
-		this._serverTreeView.layout(size - 36); // account for search box
-		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth <= 350);
+		this._serverTreeView.layout(size); // account for search box
+		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
 	}
 
 	show(): void {
