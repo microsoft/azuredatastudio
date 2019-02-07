@@ -523,7 +523,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	// Get default language if saved in notebook file
 	// Otherwise, default to python
 	private getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
-		return notebook!.metadata!.language_info || {
+		return (notebook && notebook.metadata && notebook.metadata.language_info) ? notebook.metadata.language_info : {
 			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
 			version: '',
 			mimetype: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'x-sql' : 'x-python'
@@ -532,7 +532,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	// Get default kernel info if saved in notebook file
 	private getSavedKernelInfo(notebook: nb.INotebookContents): nb.IKernelInfo {
-		return notebook!.metadata!.kernelspec;
+		return (notebook && notebook.metadata && notebook.metadata.kernelspec) ? notebook.metadata.kernelspec : undefined;
 	}
 
 	private getKernelSpecFromDisplayName(displayName: string): nb.IKernelSpec {
@@ -645,28 +645,39 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * @param kernelSpec KernelSpec for new kernel
 	 */
 	private setProviderIdForKernel(kernelSpec: nb.IKernelSpec): void {
-		let sessionManagerFound: boolean = false;
-		for (let i = 0; i < this.notebookManagers.length; i++) {
-			if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
-				let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
-				if (index >= 0) {
-					this._activeClientSession = this._clientSessions[i];
-					if (this.notebookManagers[i].providerId !== this._providerId) {
-						this._providerId = this.notebookManagers[i].providerId;
-						this._onProviderIdChanged.fire(this._providerId);
+		if (!kernelSpec) {
+			// Just use the 1st non-default provider, we don't have a better heuristic
+			let notebookManagers = this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+			if (!notebookManagers.length) {
+				notebookManagers = this.notebookOptions.notebookManagers;
+			}
+			if (notebookManagers.length > 0) {
+				this._providerId = notebookManagers[0].providerId;
+			}
+		} else {
+			let sessionManagerFound: boolean = false;
+			for (let i = 0; i < this.notebookManagers.length; i++) {
+				if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
+					let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
+					if (index >= 0) {
+						this._activeClientSession = this._clientSessions[i];
+						if (this.notebookManagers[i].providerId !== this._providerId) {
+							this._providerId = this.notebookManagers[i].providerId;
+							this._onProviderIdChanged.fire(this._providerId);
+						}
+						sessionManagerFound = true;
+						break;
 					}
-					sessionManagerFound = true;
-					break;
 				}
 			}
-		}
 
-		// If no SessionManager exists, utilize passed in StandardKernels to see if we can intelligently set _providerId
-		if (!sessionManagerFound) {
-			let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
-			if (provider) {
-				this._providerId = provider;
-				this._onProviderIdChanged.fire(this._providerId);
+			// If no SessionManager exists, utilize passed in StandardKernels to see if we can intelligently set _providerId
+			if (!sessionManagerFound) {
+				let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
+				if (provider) {
+					this._providerId = provider;
+					this._onProviderIdChanged.fire(this._providerId);
+				}
 			}
 		}
 	}

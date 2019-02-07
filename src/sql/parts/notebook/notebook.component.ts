@@ -101,7 +101,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private updateProfile(): void {
-		this.profile = this.notebookParams!.profile;
+		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
 		if (!this.profile) {
 			// use global connection if possible
 			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
