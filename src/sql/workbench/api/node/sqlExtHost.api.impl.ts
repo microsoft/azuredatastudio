@@ -493,18 +493,18 @@ export function createApiFactory(
 }
 
 export function initializeExtensionApi(extensionService: ExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry): TPromise<void> {
-	return createExtensionPathIndex(extensionService).then(trie => defineAPI(apiFactory, trie, extensionRegistry));
+	return createExtensionPathIndex(extensionService, extensionRegistry).then(trie => defineAPI(apiFactory, trie, extensionRegistry));
 }
 
-async function createExtensionPathIndex(extensionService: ExtHostExtensionService): Promise<TrieMap<IExtensionDescription>> {
+function createExtensionPathIndex(extensionService: ExtHostExtensionService, extensionRegistry: ExtensionDescriptionRegistry): Promise<TrieMap<IExtensionDescription>> {
 
 	// create trie to enable fast 'filename -> extension id' look up
 	const trie = new TrieMap<IExtensionDescription>(TrieMap.PathSplitter);
-	const extensions = (await extensionService.getExtensionRegistry()).getAllExtensionDescriptions().map(ext => {
+	const extensions = extensionRegistry.getAllExtensionDescriptions().map(ext => {
 		if (!ext.main) {
 			return undefined;
 		}
-		return new TPromise((resolve, reject) => {
+		return new Promise((resolve, reject) => {
 			realpath(ext.extensionLocation.fsPath, (err, path) => {
 				if (err) {
 					reject(err);
@@ -516,7 +516,7 @@ async function createExtensionPathIndex(extensionService: ExtHostExtensionServic
 		});
 	});
 
-	return TPromise.join(extensions).then(() => trie);
+	return Promise.all(extensions).then(() => trie);
 }
 
 function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TrieMap<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry): void {
