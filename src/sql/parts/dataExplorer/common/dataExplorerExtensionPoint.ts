@@ -95,7 +95,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 						return;
 					}
 
-					let container = this.getViewContainer(entry.key);
+					let container = this.viewContainersRegistry.get(VIEWLET_ID);
 					if (!container) {
 						collector.warn(localize('ViewsContainerDoesnotExist', "View container '{0}' does not exist and all views registered to it will be added to 'Data Explorer'.", entry.key));
 						container = this.viewContainersRegistry.get(VIEWLET_ID);
@@ -155,14 +155,6 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 		}
 
 		return true;
-	}
-
-
-	private getViewContainer(value: string): ViewContainer {
-		switch (value) {
-			case 'azureResource': return this.viewContainersRegistry.get(VIEWLET_ID);
-			default: return this.viewContainersRegistry.get(`workbench.view.extension.${value}`);
-		}
 	}
 
 	private showCollapsed(container: ViewContainer): boolean {
