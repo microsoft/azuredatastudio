@@ -45,7 +45,6 @@ export class QueryTextEditor extends BaseTextEditor {
 		@IStorageService storageService: IStorageService,
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
-		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
@@ -120,7 +119,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
-	public setHeightToScrollHeight(): void {
+	public setHeightToScrollHeight(configChanged?: boolean): void {
 		let editorWidget = this.getControl() as ICodeEditor;
 		if (!this._config) {
 			this._config = new Configuration(undefined, editorWidget.getDomNode());
@@ -135,18 +134,20 @@ export class QueryTextEditor extends BaseTextEditor {
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
 		let shouldAddHorizontalScrollbarHeight = false;
-		if (!this._editorWorkspaceConfig) {
+		if (!this._editorWorkspaceConfig || configChanged) {
 			this._editorWorkspaceConfig = this.workspaceConfigurationService.getValue('editor');
 		}
 		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
 		if (wordWrapEnabled) {
 			for (let line = 1; line <= lineCount; line++) {
+				// 4 columns is equivalent to the viewport column width and the edge of the editor
 				if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn + 4) {
 					numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
 				}
 			}
 		} else {
 			for (let line = 1; line <= lineCount; line++) {
+				// The horizontal scrollbar always appears 1 column past the viewport column when word wrap is disabled
 				if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn + 1) {
 					shouldAddHorizontalScrollbarHeight = true;
 					break;
