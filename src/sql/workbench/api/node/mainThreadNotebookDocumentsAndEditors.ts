@@ -5,7 +5,6 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import * as util from 'util';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import URI, { UriComponents } from 'vs/base/common/uri';
@@ -29,7 +28,7 @@ import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/part
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { NotebookChangeType } from 'sql/parts/notebook/models/contracts';
+import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contracts';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -333,10 +332,20 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		if (!editor) {
 			return TPromise.wrapError<boolean>(disposed(`TextEditor(${id})`));
 		}
-		let uriString = URI.revive(cellUri).toString();
-		let cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+		let cell: ICellModel;
+		if (cellUri) {
+			let uriString = URI.revive(cellUri).toString();
+			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			// If it's markdown what should we do? Show notification??
+		} else {
+			// Use the active cell in this case, or 1st cell if there's none active
+			cell = editor.model.activeCell;
+			if (!cell) {
+				cell = editor.cells.find(c => c.cellType === CellTypes.Code);
+			}
+		}
 		if (!cell) {
-			return TPromise.wrapError<boolean>(disposed(`TextEditorCell(${uriString})`));
+			return TPromise.wrapError<boolean>(disposed(`Could not find cell for this Notebook`));
 		}
 
 		return TPromise.wrap(editor.runCell(cell));

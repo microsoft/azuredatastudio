@@ -114,6 +114,14 @@
 				}
 			]
 		},
+		"views": {
+			"azureResource": [
+				{
+					"id": "azureResourceExplorer",
+					"name": "%azure.resource.explorer.title%"
+				}
+			]
+		},
 		"dataExplorer": {
 			"azureResource": [
 				{

@@ -17,7 +17,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
 import { ViewContainerViewlet, IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -26,17 +25,15 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
-import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/viewlet/connectionViewletPanel';
-
-interface SearchInputEvent extends Event {
-	target: HTMLInputElement;
-	immediate?: boolean;
-}
+import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
+import { Extensions as ViewContainerExtensions, ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
 	constructor() {
-		this.registerViews();
+		if (process.env.NODE_ENV === 'development') {
+			this.registerViews();
+		}
 	}
 
 	private registerViews(): void {
@@ -53,7 +50,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 			ctor: ConnectionViewletPanel,
 			weight: 100,
 			canToggleVisibility: true,
-			order: 1
+			order: 0
 		};
 	}
 }
@@ -74,7 +71,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 		@IStorageService storageService: IStorageService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IExtensionService extensionService: IExtensionService,
+		@IExtensionService extensionService: IExtensionService
 	) {
 		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, partService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 		this.disposables.push(this.viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
@@ -108,8 +105,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 
 	layout(dimension: Dimension): void {
 		toggleClass(this.root, 'narrow', dimension.width <= 300);
-
-		super.layout(new Dimension(dimension.width, dimension.height - 38));
+		super.layout(new Dimension(dimension.width, dimension.height));
 	}
 
 	getOptimalWidth(): number {
@@ -134,9 +130,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 	}
 
 	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewletPanel {
-		if (viewDescriptor.id === 'dataExplorer.objectExplorer') {
-
-		}
 		return this.instantiationService.createInstance(viewDescriptor.ctor, options) as ViewletPanel;
 	}
 

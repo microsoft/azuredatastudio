@@ -256,6 +256,12 @@ export interface INotebookModel {
 	 * Cell List for this model
 	 */
 	readonly cells: ReadonlyArray<ICellModel>;
+
+	/**
+	 * The active cell for this model. May be undefined
+	 */
+	readonly activeCell: ICellModel;
+
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
@@ -372,6 +378,9 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
+	readonly onValidConnectionSelected: Event<boolean>;
 }
 
 export interface NotebookContentChange {

@@ -83,6 +83,9 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 	}
 
 	private handleAndRegisterCustomViews() {
+		if (process.env.NODE_ENV !== 'development') {
+			return;
+		}
 		dataExplorerExtensionPoint.setHandler(extensions => {
 			for (let extension of extensions) {
 				const { value, collector } = extension;

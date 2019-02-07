@@ -42,7 +42,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@Input() cellModel: ICellModel;
-	@Input() hideVerticalToolbar: boolean = false;
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -54,6 +53,15 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._activeCellId = value;
 	}
 
+	@Input() set hover(value: boolean) {
+		this._hover = value;
+		if (!this.isActive()) {
+			// Only make a change if we're not active, since this has priority
+			this.toggleMoreActionsButton(this._hover);
+		}
+	}
+
+
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
 	private _editor: QueryTextEditor;
@@ -63,6 +71,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _hover: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -82,9 +91,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	ngOnInit() {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		if (!this.hideVerticalToolbar) {
-			this.initActionBar();
-		}
+		this.initActionBar();
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -94,7 +101,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
-				this._cellToggleMoreActions.toggle(isActive, this.moreActionsElementRef, this.model, this.cellModel);
+				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
 				}
@@ -163,6 +170,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._actionBar.setContent([
 			{ action: runCellAction }
 		]);
+
+		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 	}
 
 
@@ -201,5 +210,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editor.focus();
 			this._editor.getContainer().scrollIntoView();
 		}
+	}
+
+	protected isActive() {
+		return this.cellModel && this.cellModel.id === this.activeCellId;
+	}
+
+	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
 	}
 }
