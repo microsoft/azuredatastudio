@@ -18,8 +18,8 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
-import { stringify } from 'vs/base/common/marshalling';
 import { hash } from 'vs/base/common/hash';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -35,6 +35,7 @@ export class OEShimService implements IOEShimService {
 
 	// maps a datasource to a provider handle to a session
 	private sessionMap = new Map<any, Map<number, string>>();
+	private nodeIdMap = new Map<string, string>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -74,6 +75,9 @@ export class OEShimService implements IOEShimService {
 			if (!this.sessionMap.get(identifier).has(hash(node.payload || node.childProvider))) {
 				this.sessionMap.get(identifier).set(hash(node.payload || node.childProvider), await this.createSession(node.childProvider, node));
 			}
+			if (this.nodeIdMap.has(node.handle)) {
+				node.handle = this.nodeIdMap.get(node.handle);
+			}
 			let sessionId = this.sessionMap.get(identifier).get(hash(node.payload || node.childProvider));
 			let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
 			let profile: IConnectionProfile = node.payload || {
@@ -98,49 +102,51 @@ export class OEShimService implements IOEShimService {
 				sessionId,
 				rootNode: undefined,
 				errorMessage: undefined
-			}, treeNode).then(e => e.map(n => mapNodeToITreeItem(n, node))));
+			}, treeNode).then(e => e.map(n => this.mapNodeToITreeItem(n, node))));
 		} catch (e) {
 			return TPromise.as([]);
 		}
 	}
 
+	public mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
+		let icon: string;
+		let iconDark: string;
+		if (equalsIgnoreCase(parentNode.childProvider, 'mssql')) {
+			if (node.iconType) {
+				icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
+			} else {
+				icon = node.nodeTypeId;
+				if (node.nodeStatus) {
+					icon = node.nodeTypeId + '_' + node.nodeStatus;
+				}
+				if (node.nodeSubType) {
+					icon = node.nodeTypeId + '_' + node.nodeSubType;
+				}
+			}
+			icon = icon.toLowerCase();
+			iconDark = icon;
+		} else {
+			icon = node.iconType as string;
+			// this is just because we need to have some mapping
+			iconDark = node.nodeSubType;
+		}
+		let handle = generateUuid();
+		this.nodeIdMap.set(handle, node.nodePath);
+		return {
+			parentHandle: node.parent.id,
+			handle,
+			collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
+			label: node.label,
+			icon,
+			iconDark,
+			childProvider: node.childProvider || parentNode.childProvider,
+			providerHandle: parentNode.childProvider,
+			payload: node.payload || parentNode.payload,
+			contextValue: node.nodeTypeId
+		};
+	}
+
 	public providerExists(providerId: string): boolean {
 		return this.oe.providerRegistered(providerId);
 	}
-}
-
-function mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
-	let icon: string;
-	let iconDark: string;
-	if (equalsIgnoreCase(parentNode.childProvider, 'mssql')) {
-		if (node.iconType) {
-			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
-		} else {
-			icon = node.nodeTypeId;
-			if (node.nodeStatus) {
-				icon = node.nodeTypeId + '_' + node.nodeStatus;
-			}
-			if (node.nodeSubType) {
-				icon = node.nodeTypeId + '_' + node.nodeSubType;
-			}
-		}
-		icon = icon.toLowerCase();
-		iconDark = icon;
-	} else {
-		icon = node.iconType as string;
-		// this is just because we need to have some mapping
-		iconDark = node.nodeSubType;
-	}
-	return {
-		parentHandle: node.parent.id,
-		handle: node.nodePath,
-		collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
-		label: node.label,
-		icon,
-		iconDark,
-		childProvider: node.childProvider || parentNode.childProvider,
-		providerHandle: parentNode.childProvider,
-		payload: node.payload || parentNode.payload,
-		contextValue: node.nodeTypeId
-	};
 }
