@@ -497,6 +497,9 @@ declare module 'sqlops' {
 
 	export interface TableColumn {
 		value: string;
+		width?: number;
+		cssClass?: string;
+		toolTip?: string;
 	}
 
 	export interface TableComponentProperties extends ComponentProperties {
@@ -1240,6 +1243,7 @@ declare module 'sqlops' {
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
 		DacFxServicesProvider = 'DacFxServicesProvider',
+		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	}
 
 	export namespace dataprotocol {
@@ -1488,6 +1492,12 @@ declare module 'sqlops' {
 			readonly cells: NotebookCell[];
 
 			/**
+			 * The spec for current kernel, if applicable. This will be undefined
+			 * until a kernel has been started
+			 */
+			readonly kernelSpec: IKernelSpec;
+
+			/**
 			 * Save the underlying file.
 			 *
 			 * @return A promise that will resolve to true when the file
@@ -1557,6 +1567,15 @@ declare module 'sqlops' {
 			 * @return A promise that resolves with a value indicating if the edits could be applied.
 			 */
 			edit(callback: (editBuilder: NotebookEditorEdit) => void, options?: { undoStopBefore: boolean; undoStopAfter: boolean; }): Thenable<boolean>;
+
+			/**
+			 * Kicks off execution of a cell. Thenable will resolve only once the full execution is completed.
+			 *
+			 *
+			 * @param cell An optional cell in this notebook which should be executed. If no cell is defined, it will run the active cell instead
+			 * @return A promise that resolves with a value indicating if the cell was run or not.
+			 */
+			runCell(cell?: NotebookCell): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {
@@ -1800,7 +1819,7 @@ declare module 'sqlops' {
 		export interface ICellContents {
 			cell_type: CellType;
 			source: string | string[];
-			metadata: {
+			metadata?: {
 				language?: string;
 			};
 			execution_count?: number;
@@ -2188,7 +2207,6 @@ declare module 'sqlops' {
 			handle(message: T): void | Thenable<void>;
 		}
 
-
 		/**
 		 * A Future interface for responses from the kernel.
 		 *
@@ -2282,6 +2300,20 @@ declare module 'sqlops' {
 			 * Send an `input_reply` message.
 			 */
 			sendInputReply(content: IInputReply): void;
+		}
+
+		export interface IExecuteReplyMsg extends IShellMessage {
+			content: IExecuteReply;
+		}
+
+		/**
+		 * The content of an `execute-reply` message.
+		 *
+		 * See [Messaging in Jupyter](https://jupyter-client.readthedocs.io/en/latest/messaging.html#execution-results).
+		 */
+		export interface IExecuteReply {
+			status: 'ok' | 'error' | 'abort';
+			execution_count: number | null;
 		}
 
 		/**
