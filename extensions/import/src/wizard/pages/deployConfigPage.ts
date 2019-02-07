@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, DeployOperationPath } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath, Operation } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
@@ -135,6 +135,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 			this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = this.databaseTextBox.value;
+			this.instance.setDoneButton(Operation.deploy);
 
 			// remove deploy plan and generate script pages
 			this.instance.wizard.removePage(DeployOperationPath.deployAction);
