@@ -8,6 +8,4 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-export class CreateClusterModel {
-
-}
+export class CreateClusterModel {}

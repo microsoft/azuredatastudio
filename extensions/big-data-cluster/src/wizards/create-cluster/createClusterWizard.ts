@@ -4,27 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { CreateClusterModel } from './createClusterModel';
 import { SelectTargetClusterPage } from './pages/targetClusterPage';
 import { SummaryPage } from './pages/summaryPage';
 import { SettingsPage } from './pages/settingsPage';
 import { ClusterProfilePage } from './pages/clusterProfilePage';
-
-const localize = nls.loadMessageBundle();
-const WizardTitle = localize('bdc.createClusterTitle','Create a 2019 Big Data cluster');
+import * as ResourceStrings from './resourceStrings';
 
 export class CreateClusterWizard {
 	private wizard: sqlops.window.modelviewdialog.Wizard;
 	private model: CreateClusterModel;
 
-	constructor() {
-	}
+	constructor() { }
 
 	public open() {
 		this.model = new CreateClusterModel();
-		this.wizard =sqlops.window.modelviewdialog.createWizard(WizardTitle);
+		this.wizard = sqlops.window.modelviewdialog.createWizard(ResourceStrings.WizardTitle);
 
 		let settingsPage = new SettingsPage(this.model);
 		let clusterProfilePage = new ClusterProfilePage(this.model);
@@ -38,8 +34,8 @@ export class CreateClusterWizard {
 			summaryPage.Page
 		];
 
-		this.wizard.generateScriptButton.label = localize('bdc.createClusterGenerateScriptButtonLabel', 'Generate Scripts');
-		this.wizard.doneButton.label = localize('bdc.createClusterDeployButtonLabel', 'Create');
+		this.wizard.generateScriptButton.label = ResourceStrings.GenerateScriptsButtonText;
+		this.wizard.doneButton.label = ResourceStrings.CreateClusterButtonText;
 
 		this.wizard.generateScriptButton.onClick(async () => {
 			await new Promise(resolve => {

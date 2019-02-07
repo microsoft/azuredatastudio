@@ -4,18 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
-const localize = nls.loadMessageBundle();
-
-const PageTitle: string = localize('bdc.clusterProfileTitle', 'Select a cluster profile');
-const PageDescription: string = localize('bdc.clusterProfileDescription', 'Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.');
+import * as ResourceStrings from '../resourceStrings';
 
 export class ClusterProfilePage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel) {
-		super(PageTitle, PageDescription, model);
+		super(ResourceStrings.ClusterProfilePageTitle, ResourceStrings.ClusterProfilePageDescription, model);
 	}
 
 	protected async initialize(view: sqlops.ModelView) {

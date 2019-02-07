@@ -4,17 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
-const localize = nls.loadMessageBundle();
-
-const PageTitle: string = localize('bdc.summaryPageTitle', 'Summary');
+import * as ResourceStrings from '../resourceStrings';
 
 export class SummaryPage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel) {
-		super(PageTitle, '', model);
+		super(ResourceStrings.SummaryPageTitle, ResourceStrings.SummaryPageDescription, model);
 	}
 
 	protected async initialize(view: sqlops.ModelView) {

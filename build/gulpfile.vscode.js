@@ -67,6 +67,7 @@ const excludedExtensions = [
 	'ms-vscode.node-debug2',
 	// {{SQL CARBON EDIT}}
 	'integration-tests',
+	'big-data-cluster'
 ];
 
 // {{SQL CARBON EDIT}}

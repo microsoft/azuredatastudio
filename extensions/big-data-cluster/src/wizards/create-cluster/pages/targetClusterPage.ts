@@ -4,49 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
-const localize = nls.loadMessageBundle();
-
-const PageTitle: string = localize(
-	'bdc.selectTargetClusterPageTitle',
-	'Where do you want to deploy this SQL Server big data cluster?'
-);
-const PageDescription: string = localize(
-	'bdc.selectTargetClusterPageDescription',
-	'Select an existing Kubernetes cluster or choose a cluster type you want to deploy'
-);
+import * as ResourceStrings from '../resourceStrings';
+import { networkInterfaces } from 'os';
 
 const RadioButtonGroupName = 'SelectClusterType';
 
 export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel) {
-		super(PageTitle, PageDescription, model);
+		super(ResourceStrings.SelectTargetClusterPageTitle, ResourceStrings.SelectTargetClusterPageDescription, model);
 	}
 
+	private existingClusterOption: sqlops.RadioButtonComponent;
+	private createLocalClusterOption: sqlops.RadioButtonComponent;
+	private createAksCluster: sqlops.RadioButtonComponent;
+
 	protected async initialize(view: sqlops.ModelView) {
-		let existingClusterOption = view.modelBuilder.radioButton().withProperties({
-			label: localize('bdc.existingK8sCluster','Existing Kubernetes cluster'),
-			name: RadioButtonGroupName
-		}).component();
+		this.existingClusterOption = this.createTargetTypeRadioButton(view, ResourceStrings.ExistingClusterOptionText, this.showExistingClusterOptionPage, true);
+		this.createLocalClusterOption = this.createTargetTypeRadioButton(view, ResourceStrings.CreateLocalClusterOptionText, this.showCreateLocalClusterOptionPage);
+		this.createAksCluster = this.createTargetTypeRadioButton(view, ResourceStrings.CreateNewAKSClusterOptionText, this.showCreateAksClusterOptionPage);
 
-		let createLocalClusterOption = view.modelBuilder.radioButton().withProperties({
-			label: localize('bdc.createLocalCluster', 'Create new local cluster'),
-			name: RadioButtonGroupName
-		}).component();
+		let optionGroup = view.modelBuilder.divContainer().withItems([this.existingClusterOption, this.createLocalClusterOption, this.createAksCluster]).component();
+		let container = view.modelBuilder.flexContainer().withItems([optionGroup]).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 
-		let createAksCluster = view.modelBuilder.radioButton().withProperties({
-			label: localize('bdc.createAksCluster', 'Create new Azure Kubernetes service cluster'),
-			name: RadioButtonGroupName
-		}).component();
-
-		let optionGroup = view.modelBuilder.divContainer().withItems([existingClusterOption, createLocalClusterOption, createAksCluster]).component();
-		let container = view.modelBuilder.flexContainer().withItems([optionGroup]).withLayout({
-			flexFlow: 'row',
-			alignItems: 'left'
-		}).component();
 		let formBuilder = view.modelBuilder.formContainer().withFormItems(
 			[
 				{
@@ -61,5 +43,25 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 
 		let form = formBuilder.component();
 		await view.initializeModel(form);
+	}
+
+	private createTargetTypeRadioButton(view: sqlops.ModelView, label: string, checkedHandler: () => void, checked: boolean = false): sqlops.RadioButtonComponent {
+		let radioButton = view.modelBuilder.radioButton().withProperties({ label: label, name: RadioButtonGroupName, checked: checked }).component();
+		radioButton.onDidClick(() => {
+			checkedHandler();
+		});
+		return radioButton;
+	}
+
+	private showExistingClusterOptionPage() {
+
+	}
+
+	private showCreateLocalClusterOptionPage() {
+
+	}
+
+	private showCreateAksClusterOptionPage() {
+
 	}
 }
