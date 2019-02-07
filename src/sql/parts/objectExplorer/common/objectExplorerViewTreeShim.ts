@@ -18,6 +18,8 @@ import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
+import { stringify } from 'vs/base/common/marshalling';
+import { hash } from 'vs/base/common/hash';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -32,7 +34,7 @@ export class OEShimService implements IOEShimService {
 	_serviceBrand: any;
 
 	// maps a datasource to a provider handle to a session
-	private sessionMap = new Map<any, Map<string, string>>();
+	private sessionMap = new Map<any, Map<number, string>>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -65,37 +67,41 @@ export class OEShimService implements IOEShimService {
 	}
 
 	public async getChildren(node: ITreeItem, identifier: any): TPromise<ITreeItem[]> {
-		if (!this.sessionMap.has(identifier)) {
-			this.sessionMap.set(identifier, new Map<string, string>());
+		try {
+			if (!this.sessionMap.has(identifier)) {
+				this.sessionMap.set(identifier, new Map<number, string>());
+			}
+			if (!this.sessionMap.get(identifier).has(hash(node.payload || node.childProvider))) {
+				this.sessionMap.get(identifier).set(hash(node.payload || node.childProvider), await this.createSession(node.childProvider, node));
+			}
+			let sessionId = this.sessionMap.get(identifier).get(hash(node.payload || node.childProvider));
+			let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
+			let profile: IConnectionProfile = node.payload || {
+				providerName: node.childProvider,
+				authenticationType: undefined,
+				azureTenantId: undefined,
+				connectionName: undefined,
+				databaseName: undefined,
+				groupFullName: undefined,
+				groupId: undefined,
+				id: undefined,
+				options: undefined,
+				password: undefined,
+				savePassword: undefined,
+				saveProfile: undefined,
+				serverName: undefined,
+				userName: undefined,
+			};
+			treeNode.connection = new ConnectionProfile(this.capabilities, profile);
+			return TPromise.wrap(this.oe.resolveTreeNodeChildren({
+				success: undefined,
+				sessionId,
+				rootNode: undefined,
+				errorMessage: undefined
+			}, treeNode).then(e => e.map(n => mapNodeToITreeItem(n, node))));
+		} catch (e) {
+			return TPromise.as([]);
 		}
-		if (!this.sessionMap.get(identifier).has(node.childProvider)) {
-			this.sessionMap.get(identifier).set(node.childProvider, await this.createSession(node.childProvider, node));
-		}
-		let sessionId = this.sessionMap.get(identifier).get(node.childProvider);
-		let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
-		let profile: IConnectionProfile = node.payload || {
-			providerName: node.childProvider,
-			authenticationType: undefined,
-			azureTenantId: undefined,
-			connectionName: undefined,
-			databaseName: undefined,
-			groupFullName: undefined,
-			groupId: undefined,
-			id: undefined,
-			options: undefined,
-			password: undefined,
-			savePassword: undefined,
-			saveProfile: undefined,
-			serverName: undefined,
-			userName: undefined,
-		};
-		treeNode.connection = new ConnectionProfile(this.capabilities, profile);
-		return TPromise.wrap(this.oe.resolveTreeNodeChildren({
-			success: undefined,
-			sessionId,
-			rootNode: undefined,
-			errorMessage: undefined
-		}, treeNode).then(e => e.map(n => mapNodeToITreeItem(n, node.childProvider))));
 	}
 
 	public providerExists(providerId: string): boolean {
@@ -103,10 +109,10 @@ export class OEShimService implements IOEShimService {
 	}
 }
 
-function mapNodeToITreeItem(node: TreeNode, parentproviderHandle: string): ITreeItem {
+function mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
 	let icon: string;
 	let iconDark: string;
-	if (equalsIgnoreCase(parentproviderHandle, 'mssql')) {
+	if (equalsIgnoreCase(parentNode.childProvider, 'mssql')) {
 		if (node.iconType) {
 			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
 		} else {
@@ -122,6 +128,7 @@ function mapNodeToITreeItem(node: TreeNode, parentproviderHandle: string): ITree
 		iconDark = icon;
 	} else {
 		icon = node.iconType as string;
+		// this is just because we need to have some mapping
 		iconDark = node.nodeSubType;
 	}
 	return {
@@ -130,11 +137,10 @@ function mapNodeToITreeItem(node: TreeNode, parentproviderHandle: string): ITree
 		collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
 		label: node.label,
 		icon,
-		// this is just because we need to have some mapping
 		iconDark,
-		childProvider: node.childProvider || parentproviderHandle,
-		providerHandle: parentproviderHandle,
-		payload: node.payload,
+		childProvider: node.childProvider || parentNode.childProvider,
+		providerHandle: parentNode.childProvider,
+		payload: node.payload || parentNode.payload,
 		contextValue: node.nodeTypeId
 	};
 }

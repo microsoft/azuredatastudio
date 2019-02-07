@@ -197,6 +197,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			this._connectionDialog.resetConnection();
 			this._connectionDialog.close();
 			this.ignoreNextConnect = false;
+			this._connecting = false;
 			this._dialogDeferredPromise.resolve(connection);
 			return;
 		}
