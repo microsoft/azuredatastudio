@@ -12,7 +12,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import URI from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
-import { ICellModelOptions, IModelFactory, FutureInternal } from './modelInterfaces';
+import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
@@ -30,11 +30,13 @@ export class CellModel implements ICellModel {
 	private _isEditMode: boolean;
 	private _onOutputsChanged = new Emitter<ReadonlyArray<nb.ICellOutput>>();
 	private _onCellModeChanged = new Emitter<boolean>();
-	private _onExecutionStateChanged = new Emitter<boolean>();
-	public id: string;
+	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
 	private _isTrusted: boolean;
 	private _active: boolean;
+	private _hover: boolean;
+	private _executionCount: number | undefined;
 	private _cellUri: URI;
+	public id: string;
 
 	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
 		this.id = `${modelId++}`;
@@ -97,6 +99,25 @@ export class CellModel implements ICellModel {
 
 	public set active(value: boolean) {
 		this._active = value;
+		this.fireExecutionStateChanged();
+	}
+
+	public get hover(): boolean {
+		return this._hover;
+	}
+
+	public set hover(value: boolean) {
+		this._hover = value;
+		this.fireExecutionStateChanged();
+	}
+
+	public get executionCount(): number | undefined {
+		return this._executionCount;
+	}
+
+	public set executionCount(value: number | undefined) {
+		this._executionCount = value;
+		this.fireExecutionStateChanged();
 	}
 
 	public get cellUri(): URI {
@@ -134,12 +155,23 @@ export class CellModel implements ICellModel {
 		this._language = newLanguage;
 	}
 
-	public get onExecutionStateChange(): Event<boolean> {
+	public get onExecutionStateChange(): Event<CellExecutionState> {
 		return this._onExecutionStateChanged.event;
 	}
 
-	public get isRunning(): boolean {
-		return !!(this._future && this._future.inProgress);
+	private fireExecutionStateChanged(): void {
+		this._onExecutionStateChanged.fire(this.executionState);
+	}
+
+	public get executionState(): CellExecutionState {
+		let isRunning = !!(this._future && this._future.inProgress);
+		if (isRunning) {
+			return CellExecutionState.Running;
+		} else if (this.active || this.hover) {
+			return CellExecutionState.Stopped;
+		}
+		// TODO save error state and show the error
+		return CellExecutionState.Hidden;
 	}
 
 	public async runCell(notificationService?: INotificationService): Promise<boolean> {
@@ -162,7 +194,7 @@ export class CellModel implements ICellModel {
 				// TODO update source based on editor component contents
 				let content = this.source;
 				if (content) {
-					this._onExecutionStateChanged.fire(true);
+					this.fireExecutionStateChanged();
 					let future = await kernel.requestExecute({
 						code: content,
 						stop_on_error: true
@@ -170,7 +202,13 @@ export class CellModel implements ICellModel {
 					this.setFuture(future as FutureInternal);
 					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
 					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any> await future.done;
-					return result && result.content.status === 'ok' ? true : false;
+					if (result && result.content) {
+						this.executionCount = result.content.execution_count;
+						if (result.content.status !== 'ok') {
+							// TODO track error state
+							return false;
+						}
+					}
 				}
 			}
 		} catch (error) {
@@ -179,9 +217,10 @@ export class CellModel implements ICellModel {
 			}
 			let message = notebookUtils.getErrorMessage(error);
 			this.sendNotification(notificationService, Severity.Error, message);
+			// TODO track error state for the cell
 			throw error;
 		} finally {
-			this._onExecutionStateChanged.fire(false);
+			this.fireExecutionStateChanged();
 		}
 
 		return true;
@@ -361,7 +400,7 @@ export class CellModel implements ICellModel {
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language,
 			cellJson.outputs = this._outputs;
-			cellJson.execution_count = 1; // TODO: keep track of actual execution count
+			cellJson.execution_count = this.executionCount;
 		}
 		return cellJson as nb.ICellContents;
 	}
@@ -371,6 +410,7 @@ export class CellModel implements ICellModel {
 			return;
 		}
 		this._cellType = cell.cell_type;
+		this.executionCount = cell.execution_count;
 		this._source = Array.isArray(cell.source) ? cell.source.join('') : cell.source;
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
