@@ -289,6 +289,7 @@ export enum DataProviderType {
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+	CmsServiceProvider = 'CmsServiceProvider',
 }
 
 export enum DeclarativeDataType {

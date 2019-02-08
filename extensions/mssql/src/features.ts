@@ -12,6 +12,7 @@ import * as contracts from './contracts';
 import * as sqlops from 'sqlops';
 import * as Utils from './utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
+import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 
 export class TelemetryFeature implements StaticFeature {
 
@@ -672,4 +673,48 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			registerOnUpdated
 		});
 	}
+}
+
+export class CmsServiceFeature extends SqlOpsFeature<undefined> {
+	private static readonly messagesTypes: RPCMessageType[] = [
+		contracts.GetRegisteredServerRequest.type
+	];
+
+	constructor(client: SqlOpsDataClient) {
+		super(client, CmsServiceFeature.messagesTypes);
+	}
+
+	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	}
+
+	public initialize(capabilities: ServerCapabilities): void {
+		this.register(this.messages, {
+			id: UUID.generateUuid(),
+			registerOptions: undefined
+		});
+	}
+
+	protected registerProvider(options: undefined): Disposable {
+		const client = this._client;
+		let self = this;
+
+		let getCmsServers = (ownerUri: string, connection: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult> => {
+			let params: ConnectParams = { ownerUri: ownerUri, connection: connection };
+			return client.sendRequest(contracts.GetRegisteredServerRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.GetRegisteredServerRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		return sqlops.dataprotocol.registerCmsServiceProvider({
+			providerId: client.providerId,
+			getCmsServers
+		});
+	}
+
 }

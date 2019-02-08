@@ -168,6 +168,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerCmsServiceProvider(provider: sqlops.CmsServiceProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.CmsServiceProvider);
+		this._proxy.$registerCmsServiceProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: sqlops.DataProtocolClientCapabilities): Thenable<sqlops.DataProtocolServerCapabilities> {
 		return this._resolveProvider<sqlops.CapabilitiesProvider>(handle).getServerCapabilities(client);

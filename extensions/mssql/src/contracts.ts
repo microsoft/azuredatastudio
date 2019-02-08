@@ -7,6 +7,7 @@
 import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as sqlops from 'sqlops';
+import { ConnectParams } from 'dataprotocol-client/lib/protocol';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -370,3 +371,7 @@ export namespace GenerateDeployPlanRequest {
 	export const type = new RequestType<GenerateDeployPlanParams, sqlops.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
 }
 // ------------------------------- < DacFx > ------------------------------------
+
+export namespace GetRegisteredServerRequest {
+	export const type = new RequestType<ConnectParams, sqlops.DacFxResult, void, void>('cms/list');
+}

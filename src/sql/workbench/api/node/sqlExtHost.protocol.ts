@@ -455,6 +455,10 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> { throw ni(); }
 
+	/**
+	 * Cms get registered servers
+	 */
+	$getCmsServers(handle: number, connectionUri: string, connection: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult> { throw ni(); }
 }
 
 /**
@@ -524,6 +528,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAdminServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerDacFxServicesProvider(providerId: string, handle: number): TPromise<any>;
+	$registerCmsServiceProvider(providerId: string, handle: number): TPromise<any>;
 	$unregisterProvider(handle: number): TPromise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: sqlops.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;

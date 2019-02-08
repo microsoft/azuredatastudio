@@ -27,6 +27,7 @@ import { ISerializationService } from 'sql/platform/serialization/common/seriali
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
+import { ICmsService } from 'sql/platform/cms/interfaces';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 
 /**
@@ -58,6 +59,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
 		@IDacFxService private _dacFxService: IDacFxService,
+		@ICmsService private _cmsService: ICmsService,
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
@@ -451,6 +453,16 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			}
 		});
 
+		return undefined;
+	}
+
+	public $registerCmsServiceProvider(providerId: string, handle:number): TPromise<any> {
+		const self = this;
+		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
+			getCmsServers(connectionUri: string, connectionInfo: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult> {
+				return self._proxy.$getCmsServers(handle, connectionUri, connectionInfo);
+			}
+		});
 		return undefined;
 	}
 
