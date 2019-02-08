@@ -19,7 +19,12 @@ Linux DEB | https://go.microsoft.com/fwlink/?linkid=2050157
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
-Try out the latest insiders build from `master` at https://github.com/Microsoft/azuredatastudio/releases.
+Try out the latest insiders build from `master`:
+- [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
+- [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
+- [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
+- [macOS ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
+- [Linux TAR.GZ - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider)
 
 See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
 
