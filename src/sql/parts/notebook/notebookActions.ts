@@ -168,7 +168,6 @@ export abstract class MultiStateAction<T> extends Action {
 	}
 
 	private updateLabelAndIcon() {
-		this.tooltip = this.states.tooltip;
 		this.label = this.states.label;
 		this.tooltip = this.states.tooltip;
 		this.class = this.states.classes;
