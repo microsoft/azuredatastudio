@@ -33,18 +33,49 @@ export class ApiWrapper {
 		return sqlops.dataprotocol.registerFileBrowserProvider(provider);
 	}
 
+	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
+		return sqlops.window.modelviewdialog.createDialog(title);
+	}
+
+	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		return sqlops.window.modelviewdialog.openDialog(dialog);
+	}
+
+	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
+		return sqlops.window.modelviewdialog.closeDialog(dialog);
+	}
+
 	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
 		sqlops.tasks.registerTask(taskId, handler);
 	}
 
-	// VSCode APIs
+	public startBackgroundOperation(operationInfo: sqlops.BackgroundOperationInfo): void {
+		sqlops.tasks.startBackgroundOperation(operationInfo);
+	}
 
+	public getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
+		return sqlops.connection.getActiveConnections();
+	}
+
+	// VSCode APIs
 	public executeCommand(command: string, ...rest: any[]): Thenable<any> {
 		return vscode.commands.executeCommand(command, ...rest);
 	}
 
 	public registerCommand(command: string, callback: (...args: any[]) => any, thisArg?: any): vscode.Disposable {
 		return vscode.commands.registerCommand(command, callback, thisArg);
+	}
+
+	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showErrorMessage(message, ...items);
+	}
+
+	public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showWarningMessage(message, ...items);
+	}
+
+	public showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
+		return vscode.window.showInformationMessage(message, ...items);
 	}
 
 	public showOpenDialog(options: vscode.OpenDialogOptions): Thenable<vscode.Uri[] | undefined> {
@@ -70,24 +101,19 @@ export class ApiWrapper {
 		return vscode.window.showTextDocument(document, options);
 	}
 
-	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-		return vscode.window.showErrorMessage(message, ...items);
-	}
-
-	public showWarningMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-		return vscode.window.showWarningMessage(message, ...items);
-	}
-
-	public showInformationMessage(message: string, ...items: string[]): Thenable<string | undefined> {
-		return vscode.window.showInformationMessage(message, ...items);
+	public get workspaceFolders(): vscode.WorkspaceFolder[] {
+		return vscode.workspace.workspaceFolders;
 	}
 
 	public createStatusBarItem(alignment?: vscode.StatusBarAlignment, priority?: number): vscode.StatusBarItem {
 		return vscode.window.createStatusBarItem(alignment, priority);
 	}
 
-	public get workspaceFolders(): vscode.WorkspaceFolder[] {
-		return vscode.workspace.workspaceFolders;
+	public createOutputChannel(name: string): vscode.OutputChannel {
+		return vscode.window.createOutputChannel(name);
 	}
 
+	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
+		return sqlops.window.modelviewdialog.createTab(title);
+	}
 }

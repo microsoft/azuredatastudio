@@ -28,6 +28,7 @@ const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
 const msgLocalHost = localize('localhost', 'localhost');
+const HIDE_ICON_CLASS = ' hideIcon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -100,6 +101,80 @@ export abstract class ToggleableAction extends Action {
 
 	protected toggle(isOn: boolean): void {
 		this.state.isOn = isOn;
+		this.updateLabelAndIcon();
+	}
+}
+
+
+export interface IActionStateData {
+	className?: string;
+	label?: string;
+	tooltip?: string;
+	hideIcon?: boolean;
+}
+
+export class IMultiStateData<T> {
+	private _stateMap = new Map<T, IActionStateData>();
+	constructor(mappings: { key: T, value: IActionStateData}[], private _state: T, private _baseClass?: string) {
+		if (mappings) {
+			mappings.forEach(s => this._stateMap.set(s.key, s.value));
+		}
+	}
+
+	public set state(value: T) {
+		if (!this._stateMap.has(value)) {
+			throw new Error('State value must be in stateMap');
+		}
+		this._state = value;
+	}
+
+	public updateStateData(state: T, updater: (data: IActionStateData) => void): void {
+		let data = this._stateMap.get(state);
+		if (data) {
+			updater(data);
+		}
+	}
+
+	public get classes(): string {
+		let classVal = this.getStateValueOrDefault<string>((data) => data.className, '');
+		let classes = this._baseClass ? `${this._baseClass} ` : '';
+		classes += classVal;
+		if (this.getStateValueOrDefault<boolean>((data) => data.hideIcon, false)) {
+			classes += HIDE_ICON_CLASS;
+		}
+		return classes;
+	}
+
+	public get label(): string {
+		return this.getStateValueOrDefault<string>((data) => data.label, '');
+	}
+
+	public get tooltip(): string {
+		return this.getStateValueOrDefault<string>((data) => data.tooltip, '');
+	}
+
+	private getStateValueOrDefault<U>(getter: (data: IActionStateData) => U, defaultVal?: U): U {
+		let data = this._stateMap.get(this._state);
+		return data ? getter(data) : defaultVal;
+	}
+}
+
+
+export abstract class MultiStateAction<T> extends Action {
+
+	constructor(id: string, protected states: IMultiStateData<T>) {
+		super(id, '');
+		this.updateLabelAndIcon();
+	}
+
+	private updateLabelAndIcon() {
+		this.label = this.states.label;
+		this.tooltip = this.states.tooltip;
+		this.class = this.states.classes;
+	}
+
+	protected updateState(state: T): void {
+		this.states.state = state;
 		this.updateLabelAndIcon();
 	}
 }
@@ -215,8 +290,11 @@ export class AttachToDropdown extends SelectBox {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
-				.then((model) => this.updateModel(model))
-				.catch((err) => {
+				.then(model => {
+					this.updateModel(model);
+					this.updateAttachToDropdown(model);
+				})
+				.catch(err => {
 					// No-op for now
 				});
 		}
@@ -229,16 +307,37 @@ export class AttachToDropdown extends SelectBox {
 	public updateModel(model: INotebookModel): void {
 		this.model = model;
 		model.contextsChanged(() => {
-			if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
-				let nameLower = this.model.clientSession.kernel.name.toLowerCase();
-				let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === nameLower);
-				this.loadAttachToDropdown(this.model, currentKernelSpec.display_name);
+			let kernelDisplayName: string = this.getKernelDisplayName();
+			if (kernelDisplayName) {
+				this.loadAttachToDropdown(this.model, kernelDisplayName);
 			}
 		});
 	}
 
+	private updateAttachToDropdown(model: INotebookModel): void {
+		this.model = model;
+		model.onValidConnectionSelected(validConnection => {
+			let kernelDisplayName: string = this.getKernelDisplayName();
+			if (kernelDisplayName) {
+				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
+			}
+		});
+	}
+
+	private getKernelDisplayName(): string {
+		let kernelDisplayName: string;
+		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
+			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
+			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
+			if (currentKernelSpec) {
+				kernelDisplayName = currentKernelSpec.display_name;
+			}
+		}
+		return kernelDisplayName;
+	}
+
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
-	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
+	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string, showSelectConnection?: boolean): Promise<void> {
 		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
 		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
@@ -246,16 +345,30 @@ export class AttachToDropdown extends SelectBox {
 		else {
 			let connections = this.getConnections(model);
 			this.enable();
-			if (connections.length === 1 && connections[0] === msgAddNewConnection) {
-				connections.unshift(msgSelectConnection);
-				this.selectWithOptionName(msgSelectConnection);
+			if (showSelectConnection) {
+				connections = this.loadWithSelectConnection(connections);
 			}
 			else {
-				connections.push(msgAddNewConnection);
+				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
+					connections.unshift(msgSelectConnection);
+					this.selectWithOptionName(msgSelectConnection);
+				}
+				else {
+					connections.push(msgAddNewConnection);
+				}
 			}
 			this.setOptions(connections);
 		}
+	}
 
+	private loadWithSelectConnection(connections: string[]): string[] {
+		if (connections && connections.length > 0) {
+			connections.unshift(msgSelectConnection);
+			this.selectWithOptionName(msgSelectConnection);
+			connections.push(msgAddNewConnection);
+			this.setOptions(connections);
+		}
+		return connections;
 	}
 
 	//Get connections from context
@@ -298,14 +411,14 @@ export class AttachToDropdown extends SelectBox {
 			await this._connectionDialogService.openDialogAndWait(this._connectionManagementService, { connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
-					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
+					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					return;
 				}
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 				let connectedServer = connectionProfile.serverName;
 				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
-					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
+					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					this.doChangeContext();
 					return;
 				}

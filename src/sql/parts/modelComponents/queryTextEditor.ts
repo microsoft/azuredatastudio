@@ -25,6 +25,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -36,16 +37,18 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _config: editorCommon.IConfiguration;
 	private _minHeight: number;
 	private _selected: boolean;
+	private _editorWorkspaceConfig;
+	private _scrollbarHeight: number;
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
-		@IModeService modeService: IModeService,
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
+		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService
 
 	) {
 		super(
@@ -116,10 +119,11 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
-	public setHeightToScrollHeight(): void {
+	public setHeightToScrollHeight(configChanged?: boolean): void {
 		let editorWidget = this.getControl() as ICodeEditor;
 		if (!this._config) {
 			this._config = new Configuration(undefined, editorWidget.getDomNode());
+			this._scrollbarHeight = this._config.editor.viewInfo.scrollbar.horizontalScrollbarSize;
 		}
 		let editorWidgetModel = editorWidget.getModel();
 		let lineCount = editorWidgetModel.getLineCount();
@@ -129,13 +133,30 @@ export class QueryTextEditor extends BaseTextEditor {
 		// number of lines that wrap). Finally, viewportColumn is calculated on editor resizing automatically; we can use it to ensure
 		// that the viewportColumn will always be greater than any character's column in an editor.
 		let numberWrappedLines = 0;
-		for (let line = 1; line <= lineCount; line++) {
-			if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn - 1) {
-				numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
+		let shouldAddHorizontalScrollbarHeight = false;
+		if (!this._editorWorkspaceConfig || configChanged) {
+			this._editorWorkspaceConfig = this.workspaceConfigurationService.getValue('editor');
+		}
+		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
+		if (wordWrapEnabled) {
+			for (let line = 1; line <= lineCount; line++) {
+				// 4 columns is equivalent to the viewport column width and the edge of the editor
+				if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn + 4) {
+					numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / this._config.editor.layoutInfo.viewportColumn);
+				}
+			}
+		} else {
+			for (let line = 1; line <= lineCount; line++) {
+				// The horizontal scrollbar always appears 1 column past the viewport column when word wrap is disabled
+				if (editorWidgetModel.getLineMaxColumn(line) >= this._config.editor.layoutInfo.viewportColumn + 1) {
+					shouldAddHorizontalScrollbarHeight = true;
+					break;
+				}
 			}
 		}
 		let editorHeightUsingLines = this._config.editor.lineHeight * (lineCount + numberWrappedLines);
 		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		editorHeightUsingMinHeight = shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
 		this.setHeight(editorHeightUsingMinHeight);
 	}
 

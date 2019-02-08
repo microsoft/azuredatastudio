@@ -21,7 +21,7 @@ import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
 import * as constants from '../constants';
 import * as LocalizedConstants from '../localizedConstants';
 import * as utils from '../utils';
-import { Connection } from './connection';
+import { SqlClusterConnection } from './connection';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
@@ -45,14 +45,14 @@ function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: bo
 	return vscode.Uri.file(fspath.join(root, fileName));
 }
 
-export async function getNode<T extends TreeNode>(context: ICommandViewContext |ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {
+export async function getNode<T extends TreeNode>(context: ICommandViewContext | ICommandObjectExplorerContext, appContext: AppContext): Promise<T> {
 	let node: T = undefined;
 	if (context && context.type === constants.ViewType && context.node) {
 		node = context.node as T;
 	} else if (context && context.type === constants.ObjectExplorerService) {
-		let oeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
-		if (oeProvider) {
-			node = await oeProvider.findNodeForContext<T>(context.explorerContext);
+		let oeNodeProvider = appContext.getService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService);
+		if (oeNodeProvider) {
+			node = await oeNodeProvider.findSqlClusterNodeByContext<T>(context);
 		}
 	} else {
 		throw new Error(LocalizedConstants.msgMissingNodeContext);
@@ -73,7 +73,7 @@ export class UploadFilesCommand extends ProgressCommand {
 	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
 			let folderNode = await getNode<FolderNode>(context, this.appContext);
-			const allFilesFilter =  localize('allFiles', 'All Files');
+			const allFilesFilter = localize('allFiles', 'All Files');
 			let filter = {};
 			filter[allFilesFilter] = '*';
 			if (folderNode) {
@@ -180,11 +180,11 @@ export class DeleteFilesCommand extends Command {
 		super('mssqlCluster.deleteFiles', appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext |ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
-	async execute(context: ICommandViewContext |ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
 			let node = await getNode<TreeNode>(context, this.appContext);
 			if (node) {
@@ -213,7 +213,7 @@ export class DeleteFilesCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('deleteError', 'Error deleting files {0}', err));
+			this.apiWrapper.showErrorMessage(localize('deleteError', 'Error deleting files {0}', utils.getErrorMessage(err)));
 		}
 	}
 
@@ -273,7 +273,7 @@ export class SaveFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('saveError', 'Error saving file: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('saveError', 'Error saving file: {0}', utils.getErrorMessage(err)));
 		}
 	}
 
@@ -282,6 +282,7 @@ export class SaveFileCommand extends ProgressCommand {
 		await this.apiWrapper.executeCommand('vscode.open', fileUri);
 	}
 }
+
 export class PreviewFileCommand extends ProgressCommand {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
@@ -312,7 +313,7 @@ export class PreviewFileCommand extends ProgressCommand {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('previewError', 'Error previewing file: {0}', err));
+			this.apiWrapper.showErrorMessage(localize('previewError', 'Error previewing file: {0}', utils.getErrorMessage(err)));
 		}
 	}
 
@@ -334,6 +335,7 @@ export class PreviewFileCommand extends ProgressCommand {
 		}
 	}
 }
+
 export class CopyPathCommand extends Command {
 	public static readonly DefaultMaxSize = 30 * 1024 * 1024;
 
@@ -355,83 +357,7 @@ export class CopyPathCommand extends Command {
 				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
 			}
 		} catch (err) {
-			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', err));
-		}
-	}
-}
-
-/**
- * The connect task is only expected to work in the file-tree based APIs, not Object Explorer
- */
-export class ConnectTask {
-	constructor(private hdfsProvider: HdfsProvider, private prompter: IPrompter, private apiWrapper: ApiWrapper) {
-
-	}
-
-	async execute(profile: sqlops.IConnectionProfile, ...args: any[]): Promise<void> {
-		if (profile) {
-			return this.createFromProfile(profile);
-		}
-		return this.createHdfsConnection();
-	}
-
-	private createFromProfile(profile: sqlops.IConnectionProfile): Promise<void> {
-		let connection = new Connection(profile);
-		if (profile.providerName === constants.mssqlClusterProviderName && connection.host) {
-			// TODO need to get the actual port and auth to be used since this will be non-default
-			// in future versions
-			this.hdfsProvider.addHdfsConnection(<IHdfsOptions> {
-				protocol: 'https',
-				host: connection.host,
-				port: connection.knoxport,
-				user: connection.user,
-				path: 'gateway/default/webhdfs/v1',
-				requestParams: {
-					auth: {
-						user: connection.user,
-						pass: connection.password
-					}
-				}
-			});
-		}
-		return Promise.resolve(undefined);
-	}
-
-	private addConnection(options: IHdfsOptions): void {
-		let display: string = `${options.user}@${options.host}:${options.port}`;
-		this.hdfsProvider.addConnection(display, FileSourceFactory.instance.createHdfsFileSource(options));
-	}
-
-	private async createHdfsConnection(profile?: sqlops.IConnectionProfile): Promise<void> {
-		let questions: IQuestion[] = [
-			{
-				type: QuestionTypes.input,
-				name: constants.hdfsHost,
-				message: localize('msgSetWebHdfsHost', 'HDFS URL and port'),
-				default: 'localhost:50070'
-			},
-			{
-				type: QuestionTypes.input,
-				name: constants.hdfsUser,
-				message: localize('msgSetWebHdfsUser', 'User Name'),
-				default: 'root'
-			}];
-
-		let answers = await this.prompter.prompt(questions);
-		if (answers) {
-			let hostAndPort: string = answers[constants.hdfsHost];
-			let parts = hostAndPort.split(':');
-			let host: string = parts[0];
-			let port: string = parts.length > 1 ? parts[1] : undefined;
-			let user: string = answers[constants.hdfsUser];
-
-
-			let options: IHdfsOptions = {
-				host: host,
-				port: port,
-				user: user
-			};
-			this.addConnection(options);
+			this.apiWrapper.showErrorMessage(localize('copyPathError', 'Error copying path: {0}', utils.getErrorMessage(err)));
 		}
 	}
 }
