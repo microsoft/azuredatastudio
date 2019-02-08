@@ -181,22 +181,4 @@ describe('Client Session', function (): void {
 		mockSessionManager.verify(s => s.shutdown(TypeMoq.It.isValue(expectedId)), TypeMoq.Times.once());
 	});
 
-
-	it('Should stop server if server is set', async function (): Promise<void> {
-		// Given a kernel has been started
-		serverManager.isStarted = true;
-		serverManager.result = Promise.resolve();
-		mockSessionManager.setup(s => s.isReady).returns(() => true);
-		mockSessionManager.setup(s => s.shutdown(TypeMoq.It.isAny())).returns(() => Promise.resolve());
-
-		await session.initialize();
-
-		// When I call shutdown
-		await session.shutdown();
-
-		// Then
-		should(serverManager.calledEnd).be.true();
-	});
-
-
 });
