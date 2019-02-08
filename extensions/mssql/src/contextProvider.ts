@@ -17,7 +17,7 @@ export enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
 	EDITIONID = 'mssql:engineedition',
 	ISCLUSTER = 'mssql:iscluster',
-	SERVERVERSION = 'mssql:serverVersion'
+	SERVERMAJORVERSION = 'mssql:servermajorversion'
 }
 
 const isCloudEditions = [
@@ -41,7 +41,7 @@ export default class ContextProvider {
 		let iscloud: boolean;
 		let edition: number;
 		let isCluster: boolean = false;
-		let serverVersion: string;
+		let serverMajorVersion: number;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
@@ -57,7 +57,7 @@ export default class ContextProvider {
 					isCluster = isBigDataCluster;
 				}
 			}
-			serverVersion = e.serverInfo.serverVersion;
+			serverMajorVersion = e.serverInfo.serverMajorVersion;
 		}
 
 		if (iscloud === true || iscloud === false) {
@@ -72,8 +72,8 @@ export default class ContextProvider {
 			setCommandContext(ContextKeys.ISCLUSTER, isCluster);
 		}
 
-		if (!types.isUndefinedOrNull(serverVersion)) {
-			setCommandContext(ContextKeys.SERVERVERSION, serverVersion);
+		if (!types.isUndefinedOrNull(serverMajorVersion)) {
+			setCommandContext(ContextKeys.SERVERMAJORVERSION, serverMajorVersion);
 		}
 	}
 
