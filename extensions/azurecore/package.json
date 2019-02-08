@@ -122,6 +122,14 @@
 				}
 			]
 		},
+		"dataExplorer": {
+			"azureResource": [
+				{
+					"id": "azureResourceExplorer",
+					"name": "%azure.resource.explorer.title%"
+				}
+			]
+		},
 		"menus": {
 			"view/title": [
 				{

@@ -4,49 +4,33 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/media/actionBarLabel';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ToggleViewletAction } from 'vs/workbench/browser/viewlet';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor } from 'vs/workbench/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { VIEWLET_ID } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
+import { DataExplorerViewlet, DataExplorerViewletViewsContribution } from 'sql/parts/dataExplorer/viewlet/dataExplorerViewlet';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
+import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { OpenConnectionsViewletAction } from 'sql/parts/objectExplorer/common/registeredServer.contribution';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 
-import { VIEWLET_ID } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
-import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
-
-// Viewlet Action
-export class OpenConnectionsViewletAction extends ToggleViewletAction {
-	public static ID = VIEWLET_ID;
-	public static LABEL = 'Show Servers';
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService viewletService: IViewletService,
-		@IEditorGroupsService editorGroupService: IEditorGroupsService
-	) {
-		super(id, label, VIEWLET_ID, viewletService, editorGroupService);
-	}
-}
-
-// Viewlet
+// Data Explorer Viewlet
 const viewletDescriptor = new ViewletDescriptor(
-	ConnectionViewlet,
+	DataExplorerViewlet,
 	VIEWLET_ID,
-	'Servers',
-	'connectionViewlet',
+	localize('workbench.dataExplorer', 'Data Explorer'),
+	'dataExplorer',
 	0
 );
 
-if (process.env.NODE_ENV !== 'development') {
+if (process.env.NODE_ENV === 'development') {
 	Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).registerViewlet(viewletDescriptor);
-
 	Registry.as<ViewletRegistry>(ViewletExtensions.Viewlets).setDefaultViewletId(VIEWLET_ID);
-
+	const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+	workbenchRegistry.registerWorkbenchContribution(DataExplorerViewletViewsContribution, LifecyclePhase.Starting);
 	const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 	registry.registerWorkbenchAction(
 		new SyncActionDescriptor(
