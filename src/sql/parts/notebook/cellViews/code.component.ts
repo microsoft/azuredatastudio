@@ -54,10 +54,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	@Input() set hover(value: boolean) {
-		this._hover = value;
+		this.cellModel.hover = value;
 		if (!this.isActive()) {
 			// Only make a change if we're not active, since this has priority
-			this.toggleMoreActionsButton(this._hover);
+			this.toggleMoreActionsButton(this.cellModel.hover);
 		}
 	}
 
@@ -71,7 +71,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
-	private _hover: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,

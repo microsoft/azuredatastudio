@@ -131,6 +131,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	private _id: string;
 	private _future: SQLFuture;
+	private _executionCount: number = 0;
 
 	constructor( @IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -212,7 +213,11 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			canRun = false;
 		}
 
-		this._future = new SQLFuture(this._queryRunner);
+		// Only update execution count if this will run. if not, set as undefined in future so cell isn't shown as having run?
+		// TODO verify this is "canonical" behavior
+		let count = canRun ? ++this._executionCount : undefined;
+
+		this._future = new SQLFuture(this._queryRunner, count);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
@@ -284,7 +289,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
 
-	constructor(private _queryRunner: QueryRunner) {
+	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined) {
 		super();
 	}
 
@@ -305,10 +310,13 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	public handleDone(err?: Error): void {
-		let msg: nb.IShellMessage = {
+		let msg: nb.IExecuteReplyMsg = {
 			channel: 'shell',
 			type: 'execute_reply',
-			content: { status: 'ok' },
+			content: {
+				status: 'ok',
+				execution_count: this._executionCount
+			},
 			header: undefined,
 			metadata: {},
 			parent_header: undefined

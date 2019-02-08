@@ -542,7 +542,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					uri: cell.cellUri,
 					contents: {
 						cell_type: cell.cellType,
-						execution_count: undefined,
+						execution_count: cell.executionCount,
 						metadata: {
 							language: cell.language
 						},
