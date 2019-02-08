@@ -216,7 +216,8 @@ const enum TraceType {
 	Creation, Invocation, Branch
 }
 
-class Trace {
+// {{SQL CARBON EDIT}} - Export trace
+export class Trace {
 
 	private static _None = new class extends Trace {
 		constructor() { super(-1, null); }

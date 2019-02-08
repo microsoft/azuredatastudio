@@ -36,8 +36,8 @@ export abstract class Task {
 		this.id = opts.id;
 		this.title = opts.title;
 		this.iconPath = {
-			dark: URI.parse(opts.iconPath.dark),
-			light: URI.parse(opts.iconPath.light),
+			dark: opts.iconPath ? URI.parse(opts.iconPath.dark) : undefined,
+			light: opts.iconPath ? URI.parse(opts.iconPath.light) : undefined,
 		};
 		this._iconClass = opts.iconClass;
 		this._description = opts.description;

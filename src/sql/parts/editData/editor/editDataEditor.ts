@@ -39,7 +39,6 @@ import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/parts/query/views/fle
 import { EditDataResultsEditor } from 'sql/parts/editData/editor/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IStorageLegacyService } from 'vs/platform/storage/common/storageLegacyService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 
 /**
@@ -86,7 +85,7 @@ export class EditDataEditor extends BaseEditor {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IStorageLegacyService storageService: IStorageService
+		@IStorageService storageService: IStorageService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
