@@ -65,6 +65,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
+	private readonly _maximumHeight = 10000;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
@@ -132,6 +133,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
+		this._editor.setMaximumHeight(this._maximumHeight);
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);

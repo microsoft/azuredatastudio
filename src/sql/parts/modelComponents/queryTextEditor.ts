@@ -35,10 +35,12 @@ export class QueryTextEditor extends BaseTextEditor {
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
 	private _config: editorCommon.IConfiguration;
-	private _minHeight: number;
+	private _minHeight: number = 0;
+	private _maxHeight: number = 10000;
 	private _selected: boolean;
 	private _editorWorkspaceConfig;
 	private _scrollbarHeight: number;
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -155,13 +157,17 @@ export class QueryTextEditor extends BaseTextEditor {
 			}
 		}
 		let editorHeightUsingLines = this._config.editor.lineHeight * (lineCount + numberWrappedLines);
-		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		let editorHeightUsingMinHeight = Math.max(Math.min(editorHeightUsingLines, this._maxHeight), this._minHeight);
 		editorHeightUsingMinHeight = shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
 		this.setHeight(editorHeightUsingMinHeight);
 	}
 
 	public setMinimumHeight(height: number) : void {
 		this._minHeight = height;
+	}
+
+	public setMaximumHeight(height: number) : void {
+		this._maxHeight = height;
 	}
 
 	public toggleEditorSelected(selected: boolean): void {
