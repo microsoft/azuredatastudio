@@ -31,8 +31,10 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { CellTypes } from 'sql/parts/notebook/models/contracts';
 
 export const CODE_SELECTOR: string = 'code-component';
+const MARKDOWN_CLASS = 'markdown';
 
 @Component({
 	selector: CODE_SELECTOR,
@@ -42,7 +44,18 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@Input() cellModel: ICellModel;
+
+	public get cellModel(): ICellModel {
+		return this._cellModel;
+	}
+
+	@Input() public set cellModel(value: ICellModel) {
+		this._cellModel = value;
+		if (this.toolbarElement && value && value.cellType === CellTypes.Markdown) {
+			let nativeToolbar = <HTMLElement> this.toolbarElement.nativeElement;
+			DOM.addClass(nativeToolbar, MARKDOWN_CLASS);
+		}
+	}
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -62,13 +75,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
-
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
+	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
-	private _uri: string;
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
