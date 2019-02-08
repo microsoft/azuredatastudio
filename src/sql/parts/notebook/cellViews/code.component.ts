@@ -65,7 +65,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
-	private readonly _maximumHeight = 10000;
+	private readonly _maximumHeight = 4000;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
