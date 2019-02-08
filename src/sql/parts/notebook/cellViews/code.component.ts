@@ -30,6 +30,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const CODE_SELECTOR: string = 'code-component';
 
@@ -83,6 +84,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
@@ -148,6 +150,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
+		}));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('editor.wordWrap')) {
+				this._editor.setHeightToScrollHeight(true);
+			}
 		}));
 		this._register(this.model.layoutChanged(this.layout, this));
 		this.layout();
