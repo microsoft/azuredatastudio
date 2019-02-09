@@ -31,6 +31,7 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Emitter, debounceEvent } from 'vs/base/common/event';
 
 export const CODE_SELECTOR: string = 'code-component';
 
@@ -73,6 +74,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _layoutEmitter = new Emitter<void>();
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -88,6 +90,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
+		debounceEvent(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
+		(() => this.layout());
+
 	}
 
 	ngOnInit() {
@@ -115,8 +120,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	ngAfterContentInit(): void {
 		this.createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
-			this.layout();
+			this._layoutEmitter.fire();
 		}));
+	}
+
+	ngAfterViewInit(): void {
+		this._layoutEmitter.fire();
 	}
 
 	get model(): NotebookModel {
@@ -151,13 +160,16 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
+			// TODO see if there's a better way to handle reassessing size.
+
+			setTimeout(() => this._layoutEmitter.fire(), 250);
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap')) {
 				this._editor.setHeightToScrollHeight(true);
 			}
 		}));
-		this._register(this.model.layoutChanged(this.layout, this));
+		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire, this));
 		this.layout();
 	}
 
