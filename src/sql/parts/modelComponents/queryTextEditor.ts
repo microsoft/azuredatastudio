@@ -16,7 +16,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
@@ -35,11 +34,13 @@ export class QueryTextEditor extends BaseTextEditor {
 	public static ID = 'modelview.editors.textEditor';
 	private _dimension: DOM.Dimension;
 	private _config: editorCommon.IConfiguration;
-	private _minHeight: number;
+	private _minHeight: number = 0;
+	private _maxHeight: number = 4000;
 	private _selected: boolean;
 	private _hideLineNumbers: boolean;
 	private _editorWorkspaceConfig;
 	private _scrollbarHeight: number;
+
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -159,13 +160,17 @@ export class QueryTextEditor extends BaseTextEditor {
 			}
 		}
 		let editorHeightUsingLines = this._config.editor.lineHeight * (lineCount + numberWrappedLines);
-		let editorHeightUsingMinHeight = Math.max(editorHeightUsingLines, this._minHeight);
+		let editorHeightUsingMinHeight = Math.max(Math.min(editorHeightUsingLines, this._maxHeight), this._minHeight);
 		editorHeightUsingMinHeight = shouldAddHorizontalScrollbarHeight ? editorHeightUsingMinHeight + this._scrollbarHeight : editorHeightUsingMinHeight;
 		this.setHeight(editorHeightUsingMinHeight);
 	}
 
 	public setMinimumHeight(height: number) : void {
 		this._minHeight = height;
+	}
+
+	public setMaximumHeight(height: number) : void {
+		this._maxHeight = height;
 	}
 
 	public toggleEditorSelected(selected: boolean): void {
