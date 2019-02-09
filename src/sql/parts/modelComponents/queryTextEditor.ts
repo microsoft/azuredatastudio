@@ -16,7 +16,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/resourceConfiguration';
-import { IModeService } from 'vs/editor/common/services/modeService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorOptions } from 'vs/workbench/common/editor';
@@ -36,7 +35,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _dimension: DOM.Dimension;
 	private _config: editorCommon.IConfiguration;
 	private _minHeight: number = 0;
-	private _maxHeight: number = 10000;
+	private _maxHeight: number = 4000;
 	private _selected: boolean;
 	private _hideLineNumbers: boolean;
 	private _editorWorkspaceConfig;

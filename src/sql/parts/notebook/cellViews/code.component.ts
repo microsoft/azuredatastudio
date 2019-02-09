@@ -178,7 +178,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
 			// TODO see if there's a better way to handle reassessing size.
-
 			setTimeout(() => this._layoutEmitter.fire(), 250);
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
