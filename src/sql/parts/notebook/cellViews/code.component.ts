@@ -32,6 +32,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
+import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -154,6 +155,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		});
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
+
+		// For markdown cells, don't show line numbers unless we're using editor defaults
+		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
+		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
 
 		this._register(this._editor);
 		this._register(this._editorInput);

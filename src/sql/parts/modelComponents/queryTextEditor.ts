@@ -37,6 +37,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	private _config: editorCommon.IConfiguration;
 	private _minHeight: number;
 	private _selected: boolean;
+	private _hideLineNumbers: boolean;
 	private _editorWorkspaceConfig;
 	private _scrollbarHeight: number;
 	constructor(
@@ -77,6 +78,9 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.hideCursorInOverviewRuler = true;
 			if (!this._selected) {
 				options.renderLineHighlight = 'none';
+			}
+			if (this._hideLineNumbers) {
+				options.lineNumbers = 'off';
 			}
 		}
 		return options;
@@ -166,6 +170,11 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public toggleEditorSelected(selected: boolean): void {
 		this._selected = selected;
+		this.refreshEditorConfguration();
+	}
+
+	public set hideLineNumbers(value: boolean) {
+		this._hideLineNumbers = value;
 		this.refreshEditorConfguration();
 	}
 

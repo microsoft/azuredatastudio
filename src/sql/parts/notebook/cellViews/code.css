@@ -19,7 +19,7 @@ code-component .toolbar {
 	orientation: portrait
 }
 
-code-component .toolbar.markdown .carbon-taskbar {
+code-component .toolbar.markdown {
 	display: none;
 }
 
