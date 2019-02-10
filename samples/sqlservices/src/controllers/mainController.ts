@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import SplitPropertiesPanel from './splitPropertiesPanel';
 import * as fs from 'fs';
 import * as path from 'path';
-import {TreeNode, TreeDataProvider} from './treeDataProvider';
+import { TreeNode, TreeDataProvider } from './treeDataProvider';
 
 /**
  * The main controller class that initializes the extension
@@ -319,23 +319,24 @@ export default class MainController implements vscode.Disposable {
 				title: 'Declarative Table'
 			}], formItemLayout);
 		let groupItems = {
-				components: [{
-					component: table,
-					title: 'Table'
-					}, {
-							component: listBox,
-							title: 'List Box'
-				}], title: 'group'};
+			components: [{
+				component: table,
+				title: 'Table'
+			}, {
+				component: listBox,
+				title: 'List Box'
+			}], title: 'group'
+		};
 		formBuilder.addFormItem(groupItems, formItemLayout);
 
 		formBuilder.insertFormItem({
 			component: inputBoxWrapper,
 			title: 'Backup name'
-			}, 0, formItemLayout);
+		}, 0, formItemLayout);
 		formBuilder.insertFormItem({
 			component: inputBox2,
 			title: 'Recovery model'
-			}, 1, formItemLayout);
+		}, 1, formItemLayout);
 		formBuilder.insertFormItem({
 			component: dropdown,
 			title: 'Backup type'
@@ -625,7 +626,7 @@ export default class MainController implements vscode.Disposable {
 				for (let i = 0; i < 10; i++) {
 					let panel = i % numPanels;
 					let card = view.modelBuilder.card().component();
-					card.label = `label${i.toString()}`;
+					card.label = `label-fda-f-fda-fd-af-fda-fd-af-fda-fda--fdafd-fafda-f-fda-f-da--fdafdaf-ad--fda-f-da-fda--fda--f-da-fd-a--fda-fda--fd-afda-${i.toString()}`;
 
 					splitPanel.addItem(card, panel);
 				}

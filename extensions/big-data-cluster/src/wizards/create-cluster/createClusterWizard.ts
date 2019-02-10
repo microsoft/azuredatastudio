@@ -4,28 +4,28 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as sqlops from 'sqlops';
 import { CreateClusterModel } from './createClusterModel';
 import { SelectTargetClusterPage } from './pages/targetClusterPage';
 import { SummaryPage } from './pages/summaryPage';
 import { SettingsPage } from './pages/settingsPage';
 import { ClusterProfilePage } from './pages/clusterProfilePage';
 import * as ResourceStrings from './resourceStrings';
+import { TestKubeConfigParser } from '../../data/kubeConfigParser';
+import { ExtensionContext } from 'vscode';
+import { WizardBase } from '../wizardBase';
 
-export class CreateClusterWizard {
-	private wizard: sqlops.window.modelviewdialog.Wizard;
-	private model: CreateClusterModel;
+export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
+	constructor(context: ExtensionContext) {
+		let configParser = new TestKubeConfigParser();
+		let model = new CreateClusterModel(configParser);
+		super(model, context, ResourceStrings.WizardTitle);
+	}
 
-	constructor() { }
-
-	public open() {
-		this.model = new CreateClusterModel();
-		this.wizard = sqlops.window.modelviewdialog.createWizard(ResourceStrings.WizardTitle);
-
-		let settingsPage = new SettingsPage(this.model);
-		let clusterProfilePage = new ClusterProfilePage(this.model);
-		let selectTargetClusterPage = new SelectTargetClusterPage(this.model);
-		let summaryPage = new SummaryPage(this.model);
+	protected initialize() {
+		let settingsPage = new SettingsPage(this.model, this);
+		let clusterProfilePage = new ClusterProfilePage(this.model, this);
+		let selectTargetClusterPage = new SelectTargetClusterPage(this.model, this);
+		let summaryPage = new SummaryPage(this.model, this);
 
 		this.wizard.pages = [
 			settingsPage.Page,
@@ -51,7 +51,5 @@ export class CreateClusterWizard {
 				}, 3000);
 			});
 		});
-
-		this.wizard.open();
 	}
 }

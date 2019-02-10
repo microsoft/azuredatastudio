@@ -41,5 +41,11 @@ export const SelectTargetClusterPageDescription: string = localize('bdc-create.s
 export const ExistingClusterOptionText: string = localize('bdc-create.existingK8sCluster', 'Existing Kubernetes cluster');
 export const CreateLocalClusterOptionText: string = localize('bdc-create.createLocalCluster', 'Create new local cluster');
 export const CreateNewAKSClusterOptionText: string = localize('bdc-create.createAksCluster', 'Create new Azure Kubernetes Service cluster');
+export const ExistingClusterSectionDescription: string = localize('bdc-create.existingClusterSectionDescription', 'Select the cluster context you want to install the SQL Server Big Data cluster');
+export const KubeConfigFileLabelText: string = localize('bdc-create.kubeConfigFileLabelText', 'KubeConfig File');
+export const BrowseText: string = localize('bdc-browseText', 'Browse');
+export const ClusterContextsLabelText: string = localize('bdc-clusterContextsLabelText', 'Cluster Contexts');
+export const ErrorLoadingClustersFromConfigText: string = localize('bdc-errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file');
+export const SelectKubeConfigFileText: string = localize('bdc-selectKubeConfigFileText', 'Select');
 
 //#endregion

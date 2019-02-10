@@ -262,6 +262,7 @@ export interface CardProperties {
 	label: string;
 	value?: string;
 	actions?: ActionDescriptor[];
+	descriptions?: string[];
 	status?: StatusIndicator;
 	selected?: boolean;
 	cardType: CardType;
@@ -300,7 +301,8 @@ export enum DeclarativeDataType {
 
 export enum CardType {
 	VerticalButton = 'VerticalButton',
-	Details = 'Details'
+	Details = 'Details',
+	ListItem = 'ListItem'
 }
 
 export enum Orientation {
@@ -492,7 +494,7 @@ export class CellRange {
 	}
 
 	constructor(start: number, end: number) {
-		if (typeof(start) !== 'number' || typeof(start) !== 'number' || start < 0 || end < 0) {
+		if (typeof (start) !== 'number' || typeof (start) !== 'number' || start < 0 || end < 0) {
 			throw new Error('Invalid arguments');
 		}
 

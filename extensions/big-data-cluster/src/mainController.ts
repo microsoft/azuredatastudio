@@ -22,7 +22,7 @@ export class MainController {
 	 */
 	public activate(): void {
 		vscode.commands.registerCommand('mssql.create-big-data-cluster', () => {
-			let wizard = new CreateClusterWizard();
+			let wizard = new CreateClusterWizard(this._context);
 			wizard.open();
 		});
 	}
@@ -30,5 +30,5 @@ export class MainController {
 	/**
 	 * Deactivates the extension
 	 */
-	public deactivate(): void {}
+	public deactivate(): void { }
 }

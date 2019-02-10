@@ -433,7 +433,8 @@ declare module 'sqlops' {
 
 	export enum CardType {
 		VerticalButton = 'VerticalButton',
-		Details = 'Details'
+		Details = 'Details',
+		ListItem = 'ListItem'
 	}
 
 	/**
@@ -444,6 +445,7 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
+		descriptions?: string[];
 		status?: StatusIndicator;
 
 		/**

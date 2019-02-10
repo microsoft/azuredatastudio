@@ -8,10 +8,11 @@ import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
 import * as ResourceStrings from '../resourceStrings';
+import { WizardBase } from '../../wizardBase';
 
 export class SummaryPage extends WizardPageBase<CreateClusterModel> {
-	constructor(model: CreateClusterModel) {
-		super(ResourceStrings.SummaryPageTitle, ResourceStrings.SummaryPageDescription, model);
+	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
+		super(ResourceStrings.SummaryPageTitle, ResourceStrings.SummaryPageDescription, model, wizard);
 	}
 
 	protected async initialize(view: sqlops.ModelView) {

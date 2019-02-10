@@ -4,8 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as nls from 'vscode-nls';
-import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
+import { ClusterInfo } from '../../data/clusterInfo';
+import { IKubeConfigParser } from '../../data/kubeConfigParser';
+import { TargetClusterType } from '../../data/targetClusterType';
 
-export class CreateClusterModel {}
+export class CreateClusterModel {
+
+	constructor(private _kubeConfigParser: IKubeConfigParser) {
+	}
+
+	public loadClusters(configPath: string): ClusterInfo[] {
+		return this._kubeConfigParser.Parse(configPath);
+	}
+
+	public targetClusterType: TargetClusterType;
+
+	public selectedCluster: ClusterInfo;
+}
