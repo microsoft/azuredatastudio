@@ -136,8 +136,8 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 						descriptions: [cluster.displayName, cluster.user],
 						cardType: sqlops.CardType.ListItem,
 						iconPath: {
-							dark: self.Wizard.context.asAbsolutePath('images/database_inverse.svg'),
-							light: self.Wizard.context.asAbsolutePath('images/database.svg')
+							dark: self.Wizard.context.asAbsolutePath('images/cluster_inverse.svg'),
+							light: self.Wizard.context.asAbsolutePath('images/cluster.svg')
 						},
 					}).component();
 					card.onCardSelectedChanged(() => {
