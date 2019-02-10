@@ -6,7 +6,7 @@
 'use strict';
 
 // // import { AdvancedPropertiesDialog } from 'sql/parts/connection/connectionDialog/advancedPropertiesDialog';
-import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
+import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as sqlops from 'sqlops';
 import { localize } from 'vs/nls';

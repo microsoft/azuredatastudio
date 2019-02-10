@@ -26,7 +26,7 @@ import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelec
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/parts/objectExplorer/serverGroupDialog/serverGroup.contribution';

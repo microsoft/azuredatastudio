@@ -5,7 +5,7 @@
 
 'use strict';
 import * as sqlops from 'sqlops';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
+import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import * as types from 'vs/base/common/types';
 
 import { Event, Emitter } from 'vs/base/common/event';

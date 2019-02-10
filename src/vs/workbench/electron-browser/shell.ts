@@ -100,7 +100,7 @@ import { MulitExtensionManagementService } from 'vs/platform/extensionManagement
 import { ExtensionManagementServerService } from 'vs/workbench/services/extensions/node/extensionManagementServerService';
 
 // {{SQL CARBON EDIT}}
-import { FileTelemetryService } from 'sql/platform/telemetry/fileTelemetryService';
+import { FileTelemetryService } from 'sql/workbench/services/telemetry/node/fileTelemetryService';
 
 /**
  * Services that we require for the Shell

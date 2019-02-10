@@ -14,7 +14,7 @@ import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { Checkbox, ICheckboxOptions } from 'sql/base/browser/ui/checkbox/checkbox';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { attachCheckboxStyler } from 'sql/common/theme/styler';
+import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 
 @Component({

@@ -6,9 +6,9 @@ import 'vs/css!sql/parts/insights/browser/media/insightsDialog';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';

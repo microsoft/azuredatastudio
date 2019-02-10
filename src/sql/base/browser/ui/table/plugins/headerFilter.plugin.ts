@@ -1,11 +1,10 @@
 // Adopted and converted to typescript from https://github.com/danny-sg/slickgrid-spreadsheet-plugins/blob/master/ext.headerfilter.js
 // heavily modified
-import 'vs/css!sql/base/browser/ui/table/media/table';
+import 'vs/css!./media/table';
 
 import { mixin } from 'vs/base/common/objects';
-import { SlickGrid } from 'angular2-slickgrid';
 import { Button } from '../../button/button';
-import { attachButtonStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { escape } from 'sql/base/common/strings';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 

@@ -5,12 +5,12 @@
 import 'vs/css!./media/connectionDialog';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
+import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionManagementService, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import * as DialogHelper from 'sql/base/browser/ui/modal/dialogHelper';
+import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TreeCreationUtils } from 'sql/parts/objectExplorer/viewlet/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/parts/objectExplorer/viewlet/treeUpdateUtils';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

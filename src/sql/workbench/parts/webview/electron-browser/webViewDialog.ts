@@ -7,9 +7,9 @@
 
 import 'vs/css!sql/media/icons/common-icons';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
-import { attachButtonStyler, attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Builder } from 'vs/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
@@ -18,8 +18,6 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
-import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { WebviewElement } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -50,8 +48,6 @@ export class WebViewDialog extends Modal {
 		@IPartService private _webViewPartService: IPartService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IContextViewService private _contextViewService: IContextViewService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super('', TelemetryKeys.WebView, _webViewPartService, telemetryService, clipboardService, themeService, contextKeyService, { isFlyout: false, hasTitleIcon: true });

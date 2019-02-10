@@ -10,7 +10,7 @@ import * as DialogHelper from './dialogHelper';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IModalOptions, Modal } from './modal';
 import * as OptionsDialogHelper from './optionsDialogHelper';
-import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler, attachModalDialogStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
