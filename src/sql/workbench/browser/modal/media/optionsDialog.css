@@ -62,9 +62,9 @@
 }
 
 .optionsDialog-description {
-    height: 90px;
-    margin: 15px;
-    overflow-y: auto;
+	height: 90px;
+	margin: 15px;
+	overflow-y: auto;
 }
 
 .optionsDialog-description .modal-title {
