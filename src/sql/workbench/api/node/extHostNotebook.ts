@@ -125,6 +125,16 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return session.changeKernel(kernelInfo).then(kernel => this.saveKernel(kernel));
 	}
 
+	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
+		return session.configureKernel(kernelInfo).then(() => null);
+	}
+
+	$configureConnection(sessionId: number, connection: sqlops.IConnectionProfile): Thenable<void> {
+		let session = this._getAdapter<sqlops.nb.ISession>(sessionId);
+		return session.configureConnection(connection).then(() => null);
+	}
+
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply> {
 		let kernel = this._getAdapter<sqlops.nb.IKernel>(kernelId);
 		return kernel.ready.then(success => kernel.info);
@@ -154,7 +164,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 
 	private hookFutureDone(futureId: number, future: sqlops.nb.IFuture): void {
 		future.done.then(success => {
-			return this._proxy.$onFutureDone(futureId, { succeeded: true, rejectReason: undefined });
+			return this._proxy.$onFutureDone(futureId, { succeeded: true, message: success, rejectReason: undefined });
 		}, err => {
 			let rejectReason: string;
 			if (typeof err === 'string') {
@@ -166,7 +176,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 			else {
 				rejectReason = err;
 			}
-			return this._proxy.$onFutureDone(futureId, { succeeded: false, rejectReason: rejectReason });
+			return this._proxy.$onFutureDone(futureId, { succeeded: false, message: undefined, rejectReason: rejectReason });
 		});
 	}
 

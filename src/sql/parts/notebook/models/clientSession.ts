@@ -17,11 +17,10 @@ import { IClientSession, IKernelPreference, IClientSessionOptions } from './mode
 import { Deferred } from 'sql/base/common/promise';
 
 import * as notebookUtils from '../notebookUtils';
-import * as sparkUtils from '../spark/sparkUtils';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
 
+type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**
  * Implementation of a client session. This is a model over session operations,
  * which may come from the session manager or a specific session.
@@ -43,13 +42,15 @@ export class ClientSession implements IClientSession {
 	private _kernelPreference: IKernelPreference;
 	private _kernelDisplayName: string;
 	private _errorMessage: string;
+	private _cachedKernelSpec: nb.IKernelSpec;
+	private _kernelChangeHandlers: KernelChangeHandler[] = [];
+
 	//#endregion
 
 	private _serverLoadFinished: Promise<void>;
 	private _session: nb.ISession;
 	private isServerStarted: boolean;
 	private notebookManager: INotebookManager;
-	private _connection: NotebookConnection;
 	private _kernelConfigActions: ((kernelName: string) => Promise<any>)[] = [];
 
 	constructor(private options: IClientSessionOptions) {
@@ -60,13 +61,12 @@ export class ClientSession implements IClientSession {
 		this._kernelChangeCompleted = new Deferred<void>();
 	}
 
-	public async initialize(connection?: NotebookConnection): Promise<void> {
+	public async initialize(): Promise<void> {
 		try {
-			this._kernelConfigActions.push((kernelName: string) => { return this.runTasksBeforeSessionStart(kernelName); });
-			this._connection = connection;
 			this._serverLoadFinished = this.startServer();
 			await this._serverLoadFinished;
 			await this.initializeSession();
+			await this.updateCachedKernelSpec();
 		} catch (err) {
 			this._errorMessage = notebookUtils.getErrorMessage(err);
 		}
@@ -114,7 +114,7 @@ export class ClientSession implements IClientSession {
 		} catch (err) {
 			// TODO move registration
 			if (err && err.response && err.response.status === 501) {
-				this.options.notificationService.warn(nls.localize('sparkKernelRequiresConnection', 'Kernel {0} was not found. The default kernel will be used instead.', kernelName));
+				this.options.notificationService.warn(nls.localize('kernelRequiresConnection', 'Kernel {0} was not found. The default kernel will be used instead.', kernelName));
 				session = await this.notebookManager.sessionManager.startNew({
 					path: this.notebookUri.fsPath,
 					kernelName: undefined
@@ -154,6 +154,12 @@ export class ClientSession implements IClientSession {
 	}
 	public get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
+	}
+
+	public onKernelChanging(changeHandler: (kernel: nb.IKernelChangedArgs) => Promise<void>): void {
+		if (changeHandler) {
+			this._kernelChangeHandlers.push(changeHandler);
+		}
 	}
 	public get statusChanged(): Event<nb.ISession> {
 		return this._statusChangedEmitter.event;
@@ -209,6 +215,10 @@ export class ClientSession implements IClientSession {
 	public get isInErrorState(): boolean {
 		return !!this._errorMessage;
 	}
+
+	public get cachedKernelSpec(): nb.IKernelSpec {
+		return this._cachedKernelSpec;
+	}
 	//#endregion
 
 	//#region Not Yet Implemented
@@ -232,13 +242,26 @@ export class ClientSession implements IClientSession {
 		}
 		newKernel = this._session ? kernel : this._session.kernel;
 		this._isReady = kernel.isReady;
+		await this.updateCachedKernelSpec();
 		// Send resolution events to listeners
-		this._kernelChangeCompleted.resolve();
-		this._kernelChangedEmitter.fire({
+		let changeArgs: nb.IKernelChangedArgs = {
 			oldValue: oldKernel,
 			newValue: newKernel
-		});
+		};
+		let changePromises = this._kernelChangeHandlers.map(handler => handler(changeArgs));
+		await Promise.all(changePromises);
+		// Wait on connection configuration to complete before resolving full kernel change
+		this._kernelChangeCompleted.resolve();
+		this._kernelChangedEmitter.fire(changeArgs);
 		return kernel;
+	}
+
+	private async updateCachedKernelSpec(): Promise<void> {
+		this._cachedKernelSpec = undefined;
+		let kernel = this.kernel;
+		if (kernel && kernel.isReady) {
+			this._cachedKernelSpec = await this.kernel.getSpec();
+		}
 	}
 
 	/**
@@ -256,39 +279,20 @@ export class ClientSession implements IClientSession {
 		return kernel;
 	}
 
-	public async runTasksBeforeSessionStart(kernelName: string): Promise<void> {
-		// TODO we should move all Spark-related code to SparkMagicContext
-		if (this._session && this._connection && this.isSparkKernel(kernelName)) {
-			// TODO may need to reenable a way to get the credential
-			// await this._connection.getCredential();
-			// %_do_not_call_change_endpoint is a SparkMagic command that lets users change endpoint options,
-			// such as user/profile/host name/auth type
-
-			let server = URI.parse(sparkUtils.getLivyUrl(this._connection.host, this._connection.knoxport)).toString();
-			let doNotCallChangeEndpointParams =
-				`%_do_not_call_change_endpoint --username=${this._connection.user} --password=${this._connection.password} --server=${server} --auth=Basic_Access`;
-			let future = this._session.kernel.requestExecute({
-				code: doNotCallChangeEndpointParams
-			}, true);
-			await future.done;
+	public async configureKernel(options: nb.IKernelSpec): Promise<void> {
+		if (this._session) {
+			await this._session.configureKernel(options);
 		}
 	}
 
-	public async updateConnection(connection: NotebookConnection): Promise<void> {
+	public async updateConnection(connection: IConnectionProfile): Promise<void> {
 		if (!this.kernel) {
 			// TODO is there any case where skipping causes errors? So far it seems like it gets called twice
 			return;
 		}
-		this._connection = (connection.connectionProfile.id !== '-1') ? connection : this._connection;
-		// if kernel is not set, don't run kernel config actions
-		// this should only occur when a cell is cancelled, which interrupts the kernel
-		if (this.kernel && this.kernel.name) {
-			await this.runKernelConfigActions(this.kernel.name);
+		if (connection.id !== '-1') {
+			await this._session.configureConnection(connection);
 		}
-	}
-
-	isSparkKernel(kernelName: string): any {
-		return kernelName && kernelName.toLowerCase().indexOf('spark') > -1;
 	}
 
 	/**
@@ -300,10 +304,6 @@ export class ClientSession implements IClientSession {
 		// Always try to shut down session
 		if (this._session && this._session.id) {
 			await this.notebookManager.sessionManager.shutdown(this._session.id);
-		}
-		let serverManager = this.notebookManager.serverManager;
-		if (serverManager) {
-			await serverManager.stopServer();
 		}
 	}
 

@@ -12,6 +12,7 @@ import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { IOutputChannel } from 'vs/workbench/parts/output/common/output';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 
 /**
@@ -58,7 +59,28 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	return providers;
 }
 
-// Private feature flag to enable Sql Notebook experience
-export function sqlNotebooksEnabled() {
-	return process.env['SQLOPS_SQL_NOTEBOOK'] !== undefined;
+export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : IStandardKernelWithProvider[] {
+	if (!providerId || !notebookService) {
+		return [];
+	}
+	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	standardKernels.forEach(kernel => {
+		Object.assign(<IStandardKernelWithProvider>kernel, {
+			name: kernel.name,
+			connectionProviderIds: kernel.connectionProviderIds,
+			notebookProvider: providerId
+		});
+	});
+	return <IStandardKernelWithProvider[]>(standardKernels);
+}
+
+// Feature flag to enable Sql Notebook experience
+export function sqlNotebooksEnabled(contextKeyService: IContextKeyService) {
+	return contextKeyService.contextMatchesRules(ContextKeyExpr.equals('config.notebook.sqlKernelEnabled', true));
+}
+
+export interface IStandardKernelWithProvider {
+	readonly name: string;
+	readonly connectionProviderIds: string[];
+	readonly notebookProvider: string;
 }

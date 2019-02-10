@@ -156,6 +156,9 @@ import 'vs/workbench/parts/experiments/electron-browser/experiments.contribution
 import 'sql/parts/taskHistory/common/taskHistory.contribution';
 import 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 import 'sql/parts/tasks/common/tasks.contribution';
+import 'sql/parts/dataExplorer/common/dataExplorer.contribution';
+import 'sql/parts/dataExplorer/viewlet/dataExplorerViewlet';
+import 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
 import 'sql/parts/objectExplorer/common/registeredServer.contribution';
 import 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
 import 'sql/workbench/api/node/sqlExtHost.contribution';

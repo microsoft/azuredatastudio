@@ -55,7 +55,7 @@ const BOTTOM_PADDING = 15;
 const ACTIONBAR_WIDTH = 36;
 
 // minimum height needed to show the full actionbar
-const ACTIONBAR_HEIGHT = 100;
+const ACTIONBAR_HEIGHT = 120;
 
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
@@ -194,7 +194,7 @@ export class GridPanel extends ViewletPanel {
 				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
 			}
 			return p;
-		}, []));
+		}, []).reverse());
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
 		}, 0);

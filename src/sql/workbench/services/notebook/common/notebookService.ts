@@ -24,6 +24,7 @@ export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
+export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
 
 export interface INotebookService {
 	_serviceBrand: any;
@@ -47,6 +48,8 @@ export interface INotebookService {
 	getSupportedFileExtensions(): string[];
 
 	getProvidersForFileType(fileType: string): string[];
+
+	getStandardKernelsForProvider(provider: string): sqlops.nb.IStandardKernel[];
 
 	/**
 	 * Initializes and returns a Notebook manager that can handle all important calls to open, display, and
@@ -98,9 +101,11 @@ export interface INotebookEditor {
 	readonly id: string;
 	readonly cells?: ICellModel[];
 	readonly modelReady: Promise<INotebookModel>;
+	readonly model: INotebookModel | null;
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
 	save(): Promise<boolean>;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
+	runCell(cell: ICellModel): Promise<boolean>;
 }

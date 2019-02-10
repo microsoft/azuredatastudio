@@ -12,12 +12,13 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
+import { INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
@@ -27,7 +28,8 @@ const attachToLabel: string = localize('AttachTo', 'Attach to: ');
 const msgLoadingContexts = localize('loadingContexts', 'Loading contexts...');
 const msgAddNewConnection = localize('addNewConnection', 'Add new connection');
 const msgSelectConnection = localize('selectConnection', 'Select connection');
-const msgLocalHost = localize('localhost', 'Localhost');
+const msgLocalHost = localize('localhost', 'localhost');
+const HIDE_ICON_CLASS = ' hideIcon';
 
 // Action to add a cell to notebook based on cell type(code/markdown).
 export class AddCellAction extends Action {
@@ -100,6 +102,80 @@ export abstract class ToggleableAction extends Action {
 
 	protected toggle(isOn: boolean): void {
 		this.state.isOn = isOn;
+		this.updateLabelAndIcon();
+	}
+}
+
+
+export interface IActionStateData {
+	className?: string;
+	label?: string;
+	tooltip?: string;
+	hideIcon?: boolean;
+}
+
+export class IMultiStateData<T> {
+	private _stateMap = new Map<T, IActionStateData>();
+	constructor(mappings: { key: T, value: IActionStateData}[], private _state: T, private _baseClass?: string) {
+		if (mappings) {
+			mappings.forEach(s => this._stateMap.set(s.key, s.value));
+		}
+	}
+
+	public set state(value: T) {
+		if (!this._stateMap.has(value)) {
+			throw new Error('State value must be in stateMap');
+		}
+		this._state = value;
+	}
+
+	public updateStateData(state: T, updater: (data: IActionStateData) => void): void {
+		let data = this._stateMap.get(state);
+		if (data) {
+			updater(data);
+		}
+	}
+
+	public get classes(): string {
+		let classVal = this.getStateValueOrDefault<string>((data) => data.className, '');
+		let classes = this._baseClass ? `${this._baseClass} ` : '';
+		classes += classVal;
+		if (this.getStateValueOrDefault<boolean>((data) => data.hideIcon, false)) {
+			classes += HIDE_ICON_CLASS;
+		}
+		return classes;
+	}
+
+	public get label(): string {
+		return this.getStateValueOrDefault<string>((data) => data.label, '');
+	}
+
+	public get tooltip(): string {
+		return this.getStateValueOrDefault<string>((data) => data.tooltip, '');
+	}
+
+	private getStateValueOrDefault<U>(getter: (data: IActionStateData) => U, defaultVal?: U): U {
+		let data = this._stateMap.get(this._state);
+		return data ? getter(data) : defaultVal;
+	}
+}
+
+
+export abstract class MultiStateAction<T> extends Action {
+
+	constructor(id: string, protected states: IMultiStateData<T>) {
+		super(id, '');
+		this.updateLabelAndIcon();
+	}
+
+	private updateLabelAndIcon() {
+		this.label = this.states.label;
+		this.tooltip = this.states.tooltip;
+		this.class = this.states.classes;
+	}
+
+	protected updateState(state: T): void {
+		this.states.state = state;
 		this.updateLabelAndIcon();
 	}
 }
@@ -210,77 +286,118 @@ export class AttachToDropdown extends SelectBox {
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelRegistered: Promise<INotebookModel>,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
-		@INotificationService private _notificationService: INotificationService) {
+		@INotificationService private _notificationService: INotificationService,
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
 		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
 		if (modelRegistered) {
 			modelRegistered
-				.then((model) => this.updateModel(model))
-				.catch((err) => {
+				.then(model => {
+					this.updateModel(model);
+					this.updateAttachToDropdown(model);
+				})
+				.catch(err => {
 					// No-op for now
 				});
 		}
 		this.onDidSelect(e => {
-			let connection = this.model.contexts.otherConnections.find((c) => c.options.host === e.selected);
-			this.doChangeContext(connection);
+			let connection = this.model.contexts.otherConnections.find((c) => c.serverName === e.selected);
+			this.doChangeContext(new ConnectionProfile(this._capabilitiesService, connection));
 		});
 	}
 
 	public updateModel(model: INotebookModel): void {
 		this.model = model;
 		model.contextsChanged(() => {
-			if (this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
-				let currentKernel = this.model.clientSession.kernel.name;
-				this.loadAttachToDropdown(this.model, currentKernel);
+			let kernelDisplayName: string = this.getKernelDisplayName();
+			if (kernelDisplayName) {
+				this.loadAttachToDropdown(this.model, kernelDisplayName);
 			}
 		});
 	}
 
+	private updateAttachToDropdown(model: INotebookModel): void {
+		this.model = model;
+		model.onValidConnectionSelected(validConnection => {
+			let kernelDisplayName: string = this.getKernelDisplayName();
+			if (kernelDisplayName) {
+				this.loadAttachToDropdown(this.model, kernelDisplayName, !validConnection);
+			}
+		});
+	}
+
+	private getKernelDisplayName(): string {
+		let kernelDisplayName: string;
+		if (this.model.clientSession && this.model.clientSession.kernel && this.model.clientSession.kernel.name) {
+			let currentKernelName = this.model.clientSession.kernel.name.toLowerCase();
+			let currentKernelSpec = this.model.specs.kernels.find(kernel => kernel.name && kernel.name.toLowerCase() === currentKernelName);
+			if (currentKernelSpec) {
+				kernelDisplayName = currentKernelSpec.display_name;
+			}
+		}
+		return kernelDisplayName;
+	}
+
 	// Load "Attach To" dropdown with the values corresponding to Kernel dropdown
-	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string): Promise<void> {
-		if (currentKernel === notebookConstants.python3 || currentKernel === noKernel) {
+	public async loadAttachToDropdown(model: INotebookModel, currentKernel: string, showSelectConnection?: boolean): Promise<void> {
+		let connProviderIds = this.model.getApplicableConnectionProviderIds(currentKernel);
+		if ((connProviderIds && connProviderIds.length === 0) || currentKernel === noKernel) {
 			this.setOptions([msgLocalHost]);
 		}
 		else {
-			let hadoopConnections = this.getHadoopConnections(model);
+			let connections = this.getConnections(model);
 			this.enable();
-			if (hadoopConnections.length === 1 && hadoopConnections[0] === msgAddNewConnection) {
-				hadoopConnections.unshift(msgSelectConnection);
-				this.selectWithOptionName(msgSelectConnection);
+			if (showSelectConnection) {
+				connections = this.loadWithSelectConnection(connections);
 			}
 			else {
-				hadoopConnections.push(msgAddNewConnection);
+				if (connections.length === 1 && connections[0] === msgAddNewConnection) {
+					connections.unshift(msgSelectConnection);
+					this.selectWithOptionName(msgSelectConnection);
+				}
+				else {
+					connections.push(msgAddNewConnection);
+				}
 			}
-			this.setOptions(hadoopConnections);
+			this.setOptions(connections);
 		}
-
 	}
 
-	//Get hadoop connections from context
-	public getHadoopConnections(model: INotebookModel): string[] {
-		let otherHadoopConnections: IConnectionProfile[] = [];
-		model.contexts.otherConnections.forEach((conn) => { otherHadoopConnections.push(conn); });
-		this.selectWithOptionName(model.contexts.defaultConnection.options.host);
-		otherHadoopConnections = this.setHadoopConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
-		let hadoopConnections = otherHadoopConnections.map((context) => context.options.host);
-		return hadoopConnections;
+	private loadWithSelectConnection(connections: string[]): string[] {
+		if (connections && connections.length > 0) {
+			connections.unshift(msgSelectConnection);
+			this.selectWithOptionName(msgSelectConnection);
+			connections.push(msgAddNewConnection);
+			this.setOptions(connections);
+		}
+		return connections;
 	}
 
-	private setHadoopConnectionsList(defaultHadoopConnection: IConnectionProfile, otherHadoopConnections: IConnectionProfile[]) {
-		if (defaultHadoopConnection.options.host !== msgSelectConnection) {
-			otherHadoopConnections = otherHadoopConnections.filter(conn => conn.options.host !== defaultHadoopConnection.options.host);
-			otherHadoopConnections.unshift(defaultHadoopConnection);
-			if (otherHadoopConnections.length > 1) {
-				otherHadoopConnections = otherHadoopConnections.filter(val => val.options.host !== msgSelectConnection);
+	//Get connections from context
+	public getConnections(model: INotebookModel): string[] {
+		let otherConnections: ConnectionProfile[] = [];
+		model.contexts.otherConnections.forEach((conn) => { otherConnections.push(conn); });
+		this.selectWithOptionName(model.contexts.defaultConnection.serverName);
+		otherConnections = this.setConnectionsList(model.contexts.defaultConnection, model.contexts.otherConnections);
+		let connections = otherConnections.map((context) => context.serverName);
+		return connections;
+	}
+
+	private setConnectionsList(defaultConnection: ConnectionProfile, otherConnections: ConnectionProfile[]) {
+		if (defaultConnection.serverName !== msgSelectConnection) {
+			otherConnections = otherConnections.filter(conn => conn.serverName !== defaultConnection.serverName);
+			otherConnections.unshift(defaultConnection);
+			if (otherConnections.length > 1) {
+				otherConnections = otherConnections.filter(val => val.serverName !== msgSelectConnection);
 			}
 		}
-		return otherHadoopConnections;
+		return otherConnections;
 	}
 
-	public doChangeContext(connection?: IConnectionProfile): void {
+	public doChangeContext(connection?: ConnectionProfile): void {
 		if (this.value === msgAddNewConnection) {
 			this.openConnectionDialog();
 		} else {
-			this.model.changeContext(this.value, connection);
+			this.model.changeContext(this.value, connection).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
 		}
 	}
 
@@ -292,17 +409,17 @@ export class AttachToDropdown extends SelectBox {
 	 **/
 	public async openConnectionDialog(): Promise<void> {
 		try {
-			//TODO: Figure out how to plumb through the correct provider here
-			await this._connectionDialogService.openDialogAndWait({ connectionType: 1, providers: [notebookConstants.hadoopKnoxProviderName] }).then(connection => {
+			await this._connectionDialogService.openDialogAndWait({ connectionType: 1, providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name) }).then(connection => {
 				let attachToConnections = this.values;
 				if (!connection) {
-					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
+					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					return;
 				}
-				let connectedServer = connection.options[notebookConstants.hostPropName];
-				//Check to see if the same host is already there in dropdown. We only have host names in dropdown
+				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
+				let connectedServer = connectionProfile.serverName;
+				//Check to see if the same server is already there in dropdown. We only have server names in dropdown
 				if (attachToConnections.some(val => val === connectedServer)) {
-					this.loadAttachToDropdown(this.model, this.model.clientSession.kernel.name);
+					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
 					this.doChangeContext();
 					return;
 				}
@@ -321,7 +438,7 @@ export class AttachToDropdown extends SelectBox {
 				this.select(index);
 
 				// Call doChangeContext to set the newly chosen connection in the model
-				this.doChangeContext(connection);
+				this.doChangeContext(connectionProfile);
 			});
 		}
 		catch (error) {

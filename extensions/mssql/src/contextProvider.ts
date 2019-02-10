@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 
 import * as types from './types';
+import * as Constants from './constants';
 
 export enum BuiltInCommands {
 	SetContext = 'setContext',
@@ -14,7 +15,9 @@ export enum BuiltInCommands {
 
 export enum ContextKeys {
 	ISCLOUD = 'mssql:iscloud',
-	EDITIONID = 'mssql:engineedition'
+	EDITIONID = 'mssql:engineedition',
+	ISCLUSTER = 'mssql:iscluster',
+	SERVERMAJORVERSION = 'mssql:servermajorversion'
 }
 
 const isCloudEditions = [
@@ -37,6 +40,8 @@ export default class ContextProvider {
 	public onDashboardOpen(e: sqlops.DashboardDocument): void {
 		let iscloud: boolean;
 		let edition: number;
+		let isCluster: boolean = false;
+		let serverMajorVersion: number;
 		if (e.profile.providerName.toLowerCase() === 'mssql' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {
 				iscloud = true;
@@ -45,6 +50,14 @@ export default class ContextProvider {
 			}
 
 			edition = e.serverInfo.engineEditionId;
+
+			if (!types.isUndefinedOrNull(e.serverInfo.options)) {
+				let isBigDataCluster = e.serverInfo.options[Constants.isBigDataClusterProperty];
+				if (isBigDataCluster) {
+					isCluster = isBigDataCluster;
+				}
+			}
+			serverMajorVersion = e.serverInfo.serverMajorVersion;
 		}
 
 		if (iscloud === true || iscloud === false) {
@@ -53,6 +66,14 @@ export default class ContextProvider {
 
 		if (!types.isUndefinedOrNull(edition)) {
 			setCommandContext(ContextKeys.EDITIONID, edition);
+		}
+
+		if (!types.isUndefinedOrNull(isCluster)) {
+			setCommandContext(ContextKeys.ISCLUSTER, isCluster);
+		}
+
+		if (!types.isUndefinedOrNull(serverMajorVersion)) {
+			setCommandContext(ContextKeys.SERVERMAJORVERSION, serverMajorVersion);
 		}
 	}
 

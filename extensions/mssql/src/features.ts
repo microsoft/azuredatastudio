@@ -106,12 +106,40 @@ export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let generateDeployScript = (packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> => {
+			let params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, scriptFilePath: scriptFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.GenerateDeployScriptRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let generateDeployPlan = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> => {
+			let params: contracts.GenerateDeployPlanParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
+			return client.sendRequest(contracts.GenerateDeployPlanRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.GenerateDeployPlanRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return sqlops.dataprotocol.registerDacFxServicesProvider({
 			providerId: client.providerId,
 			exportBacpac,
 			importBacpac,
 			extractDacpac,
-			deployDacpac
+			deployDacpac,
+			generateDeployScript,
+			generateDeployPlan
 		});
 	}
 }

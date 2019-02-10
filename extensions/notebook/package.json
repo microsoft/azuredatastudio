@@ -17,19 +17,28 @@
 			"type": "object",
 			"title": "%notebook.configuration.title%",
 			"properties": {
-				"notebook.enabled": {
-					"type": "boolean",
-					"default": true,
-					"description": "%notebook.enabled.description%"
-				},
 				"notebook.pythonPath": {
 					"type": "string",
 					"default": "",
 					"description": "%notebook.pythonPath.description%"
+				},
+				"notebook.sqlKernelEnabled": {
+					"type": "boolean",
+					"default": false,
+					"description": "%notebook.sqlKernelEnabled.description%"
+				},
+				"notebook.overrideEditorTheming": {
+					"type": "boolean",
+					"default": true,
+					"description": "%notebook.overrideEditorTheming.description%"
 				}
 			}
 		},
 		"commands": [
+			{
+				"command": "notebook.command.analyzeNotebook",
+				"title": "%notebook.analyzeJupyterNotebook%"
+			},
 			{
 				"command": "notebook.command.new",
 				"title": "%notebook.command.new%",
@@ -45,25 +54,76 @@
 					"dark": "resources/dark/open_notebook_inverse.svg",
 					"light": "resources/light/open_notebook.svg"
 				}
+			},
+			{
+				"command": "notebook.command.runactivecell",
+				"title": "%notebook.command.runactivecell%"
+			},
+			{
+				"command": "notebook.command.addcode",
+				"title": "%notebook.command.addcode%"
+			},
+			{
+				"command": "notebook.command.addtext",
+				"title": "%notebook.command.addtext%"
 			}
 		],
 		"menus": {
 			"commandPalette": [
 				{
-					"command": "notebook.command.new",
-					"when": "config.notebook.enabled"
+					"command": "notebook.command.analyzeNotebook"
 				},
 				{
-					"command": "notebook.command.open",
-					"when": "config.notebook.enabled"
+					"command": "notebook.command.new"
+				},
+				{
+					"command": "notebook.command.open"
+				},
+				{
+					"command": "notebook.command.runactivecell",
+					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addcode",
+					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "notebook.command.addtext",
+					"when": "notebookEditorVisible"
+				}
+			],
+			"objectExplorer/item/context": [
+				{
+					"command": "notebook.command.new",
+					"when": "connectionProvider == MSSQL && nodeType == dataservices",
+					"group": "1root@1"
+				},
+				{
+					"command": "notebook.command.analyzeNotebook",
+					"when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
+					"group": "1notebook@1"
 				}
 			]
 		},
 		"keybindings": [
 			{
 				"command": "notebook.command.new",
-				"key": "Ctrl+Shift+N",
-				"when": "config.notebook.enabled"
+				"key": "Ctrl+Shift+N"
+			},
+			{
+				"command": "notebook.command.runactivecell",
+				"key": "F5",
+				"when": "notebookEditorVisible"
+			},
+			{
+				"command": "notebook.command.addcode",
+				"key": "Ctrl+Shift+C",
+				"when": "notebookEditorVisible"
+			},
+			{
+				"command": "notebook.command.addtext",
+				"key": "Ctrl+Shift+T",
+				"when": "notebookEditorVisible"
 			}
 		]
 	},

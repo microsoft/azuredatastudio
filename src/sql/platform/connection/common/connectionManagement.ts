@@ -257,6 +257,13 @@ export interface IConnectionManagementService {
 	getActiveConnectionCredentials(profileId: string): { [name: string]: string };
 
 	/**
+	 * Get the ServerInfo for a connected connection profile
+	 * @param {string} profileId The id of the connection profile to get the password for
+	 * @returns ServerInfo
+	 */
+	getServerInfo(profileId: string): sqlops.ServerInfo;
+
+	/**
 	 * Get the connection string for the provided connection ID
 	 */
 	getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;

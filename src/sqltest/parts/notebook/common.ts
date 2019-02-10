@@ -27,6 +27,9 @@ export class NotebookModelStub implements INotebookModel {
 	get cells(): ReadonlyArray<ICellModel> {
 		throw new Error('method not implemented.');
 	}
+	get activeCell(): ICellModel {
+		throw new Error('method not implemented.');
+	}
 	get clientSession(): IClientSession {
 		throw new Error('method not implemented.');
 	}
@@ -38,7 +41,11 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	get kernelsChanged(): Event<nb.IKernelSpec> {
 		throw new Error('method not implemented.');
-	} get defaultKernel(): nb.IKernelSpec {
+	}
+	get layoutChanged(): Event<void> {
+		throw new Error('method not implemented.');
+	}
+	get defaultKernel(): nb.IKernelSpec {
 		throw new Error('method not implemented.');
 	}
 	get contextsChanged(): Event<void> {
@@ -47,35 +54,45 @@ export class NotebookModelStub implements INotebookModel {
 	get contentChanged(): Event<NotebookContentChange> {
 		throw new Error('method not implemented.');
 	}
-	get specs(): nb.IAllKernels {
+    get specs(): nb.IAllKernels {
+        throw new Error('method not implemented.');
+    }
+    get contexts(): IDefaultConnection {
+        throw new Error('method not implemented.');
+    }
+    get providerId(): string {
+        throw new Error('method not implemented.');
+    }
+    get applicableConnectionProviderIds(): string[] {
+        throw new Error('method not implemented.');
+    }
+    changeKernel(displayName: string): void {
+        throw new Error('Method not implemented.');
+    }
+    changeContext(host: string, connection?: IConnectionProfile): Promise<void> {
+        throw new Error('Method not implemented.');
+    }
+    findCellIndex(cellModel: ICellModel): number {
+        throw new Error('Method not implemented.');
+    }
+    addCell(cellType: CellType, index?: number): void {
+        throw new Error('Method not implemented.');
+    }
+    deleteCell(cellModel: ICellModel): void {
+        throw new Error('Method not implemented.');
+    }
+    saveModel(): Promise<boolean> {
+        throw new Error('Method not implemented.');
+    }
+    pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
+        throw new Error('Method not implemented.');
+    }
+    getApplicableConnectionProviderIds(kernelName: string): string[] {
+        throw new Error('Method not implemented.');
+	}
+	get onValidConnectionSelected(): Event<boolean>
+	{
 		throw new Error('method not implemented.');
-	}
-	get contexts(): IDefaultConnection {
-		throw new Error('method not implemented.');
-	}
-	get providerId(): string {
-		throw new Error('method not implemented.');
-	}
-	changeKernel(displayName: string): void {
-		throw new Error('Method not implemented.');
-	}
-	changeContext(host: string, connection?: IConnectionProfile): void {
-		throw new Error('Method not implemented.');
-	}
-	findCellIndex(cellModel: ICellModel): number {
-		throw new Error('Method not implemented.');
-	}
-	addCell(cellType: CellType, index?: number): void {
-		throw new Error('Method not implemented.');
-	}
-	deleteCell(cellModel: ICellModel): void {
-		throw new Error('Method not implemented.');
-	}
-	saveModel(): Promise<boolean> {
-		throw new Error('Method not implemented.');
-	}
-	pushEditOperations(edits: ISingleNotebookEditOperation[]): void {
-		throw new Error('Method not implemented.');
 	}
 }
 

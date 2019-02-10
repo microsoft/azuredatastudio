@@ -8,14 +8,17 @@ import { nb } from 'sqlops';
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
-import { CellType } from 'sql/parts/notebook/models/contracts';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import * as types from 'vs/base/common/types';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { ICellModel, FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
-import { ToggleableAction } from 'sql/parts/notebook/notebookActions';
+import { ICellModel, CellExecutionState } from 'sql/parts/notebook/models/modelInterfaces';
+import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/parts/notebook/notebookActions';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
+const emptyExecutionCountLabel = '[ ]';
 
 function hasModelAndCell(context: CellContext, notificationService: INotificationService): boolean  {
 	if (!context || !context.model) {
@@ -46,92 +49,83 @@ export abstract class CellActionBase extends Action {
 		super(id, label, icon);
 	}
 
+	public canRun(context: CellContext): boolean {
+		return true;
+	}
+
 	public run(context: CellContext): TPromise<boolean> {
 		if (hasModelAndCell(context, this.notificationService)) {
-			return TPromise.wrap(this.runCellAction(context).then(() => true));
+			return TPromise.wrap(this.doRun(context).then(() => true));
 		}
 		return TPromise.as(true);
 	}
 
-	abstract runCellAction(context: CellContext): Promise<void>;
+	abstract doRun(context: CellContext): Promise<void>;
 }
 
-export class RunCellAction extends ToggleableAction {
+export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	public static ID = 'notebook.runCell';
 	public static LABEL = 'Run cell';
-
-	constructor(@INotificationService private notificationService: INotificationService) {
-		super(RunCellAction.ID, {
-			shouldToggleTooltip: true,
-			toggleOnLabel: localize('runCell', 'Run cell'),
-			toggleOnClass: 'toolbarIconRun',
-			toggleOffLabel: localize('stopCell', 'Cancel execution'),
-			toggleOffClass: 'toolbarIconStop',
-			isOn: true
-		});
+	private _executionChangedDisposable: IDisposable;
+	private _context: CellContext;
+	constructor(context: CellContext, @INotificationService private notificationService: INotificationService) {
+		super(RunCellAction.ID, new IMultiStateData<CellExecutionState>([
+			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true }},
+			{ key: CellExecutionState.Stopped, value: { label: '', className: 'toolbarIconRun', tooltip: localize('runCell', 'Run cell') }},
+			{ key: CellExecutionState.Running, value: { label: '', className: 'toolbarIconStop', tooltip: localize('stopCell', 'Cancel execution') }},
+			{ key: CellExecutionState.Error, value: { label: '', className: 'toolbarIconRunError', tooltip: localize('errorRunCell', 'Error on last run. Click to run again') }},
+		], CellExecutionState.Hidden ));
+		this.ensureContextIsUpdated(context);
 	}
 
-	public run(context: CellContext): TPromise<boolean> {
-		if (hasModelAndCell(context, this.notificationService)) {
-			return TPromise.wrap(this.runCellAction(context).then(() => true));
+	public run(context?: CellContext): TPromise<boolean> {
+		return TPromise.wrap(this.doRun(context).then(() => true));
+	}
+
+	public async doRun(context: CellContext): Promise<void> {
+		this.ensureContextIsUpdated(context);
+		if (!this._context) {
+			// TODO should we error?
+			return;
 		}
-		return TPromise.as(true);
+		try {
+			await this._context.cell.runCell(this.notificationService);
+		} catch (error) {
+			let message = getErrorMessage(error);
+			this.notificationService.error(message);
+		}
 	}
 
-	public async runCellAction(context: CellContext): Promise<void> {
-        try {
-			let model = context.model;
-			let cell = context.cell;
-            let kernel = await this.getOrStartKernel(model);
-            if (!kernel) {
-                return;
+	private ensureContextIsUpdated(context: CellContext) {
+		if (context && context !== this._context) {
+			if (this._executionChangedDisposable) {
+				this._executionChangedDisposable.dispose();
 			}
-            // If cell is currently running and user clicks the stop/cancel button, call kernel.interrupt()
-            // This matches the same behavior as JupyterLab
-            if (cell.future && cell.future.inProgress) {
-                cell.future.inProgress = false;
-                await kernel.interrupt();
-            } else {
-                // TODO update source based on editor component contents
-                let content = cell.source;
-                if (content) {
-                    this.toggle(false);
-                    let future = await kernel.requestExecute({
-                        code: content,
-                        stop_on_error: true
-                    }, false);
-                    cell.setFuture(future as FutureInternal);
-                    // For now, await future completion. Later we should just track and handle cancellation based on model notifications
-                    let reply = await future.done;
-                }
-            }
-        } catch (error) {
-            let message = getErrorMessage(error);
-            this.notificationService.error(message);
-        } finally {
-            this.toggle(true);
+			this._context = context;
+			this.updateStateAndExecutionCount(context.cell.executionState);
+			this._executionChangedDisposable = this._context.cell.onExecutionStateChange((state) => {
+				this.updateStateAndExecutionCount(state);
+			});
 		}
-    }
+	}
 
-    private async getOrStartKernel(model: NotebookModel): Promise<nb.IKernel> {
-        let clientSession = model && model.clientSession;
-        if (!clientSession) {
-            this.notificationService.error(localize('notebookNotReady', 'The session for this notebook is not yet ready'));
-            return undefined;
-        } else if (!clientSession.isReady || clientSession.status === 'dead') {
-            this.notificationService.info(localize('sessionNotReady', 'The session for this notebook will start momentarily'));
-            await clientSession.kernelChangeCompleted;
-        }
-        if (!clientSession.kernel) {
-            let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
-            if (!defaultKernel) {
-                this.notificationService.error(localize('noDefaultKernel', 'No kernel is available for this notebook'));
-                return undefined;
-            }
-            await clientSession.changeKernel({
-                name: defaultKernel
-            });
-        }
-        return clientSession.kernel;
-    }
+	private updateStateAndExecutionCount(state: CellExecutionState) {
+		let label = emptyExecutionCountLabel;
+		let className = '';
+		if (!types.isUndefinedOrNull(this._context.cell.executionCount)) {
+			label = `[${this._context.cell.executionCount}]`;
+			// Heuristic to try and align correctly independent of execution count length. Moving left margin
+			// back by a few px seems to make things "work" OK, but isn't a super clean solution
+			if (label.length === 4) {
+				className = 'execCountTen';
+			} else if (label.length > 4) {
+				className = 'execCountHundred';
+			}
+		}
+		this.states.updateStateData(CellExecutionState.Hidden, (data) => {
+			data.label = label;
+			data.className = className;
+		});
+		this.updateState(state);
+	}
 }
