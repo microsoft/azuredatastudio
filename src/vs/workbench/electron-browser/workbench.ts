@@ -181,6 +181,8 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { ICmsService } from 'sql/platform/cms/interfaces';
+import { CmsService } from 'sql/platform/cms/cmsService';
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -590,6 +592,7 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
 		// {{SQL CARBON EDIT}}
 		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
+		serviceCollection.set(ICmsService, this.instantiationService.createInstance(CmsService));
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));

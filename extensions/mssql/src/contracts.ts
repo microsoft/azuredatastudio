@@ -372,6 +372,8 @@ export namespace GenerateDeployPlanRequest {
 }
 // ------------------------------- < DacFx > ------------------------------------
 
+// ------------------------------- <CMS> ----------------------------------------
 export namespace GetRegisteredServerRequest {
-	export const type = new RequestType<ConnectParams, sqlops.DacFxResult, void, void>('cms/list');
+	export const type = new RequestType<ConnectParams, sqlops.ListCmsServersResult, void, void>('cms/get');
 }
+// ------------------------------- <CMS> ----------------------------------------
