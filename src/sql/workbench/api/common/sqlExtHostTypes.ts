@@ -544,3 +544,19 @@ export class ConnectionProfile {
 		return undefined;
 	}
 }
+
+export enum SchemaUpdateAction {
+	Delete = 0,
+	Change = 1,
+	Add = 2
+}
+
+export enum SchemaDifferenceType {
+	Object = 0,
+	Property = 1
+}
+
+export enum SchemaCompareEndpointType {
+	database = 0,
+	dacpac = 1
+}

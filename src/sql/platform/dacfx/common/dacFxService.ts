@@ -24,6 +24,7 @@ export interface IDacFxService {
 	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	generateDeployScript(packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
 export class DacFxService implements IDacFxService {
@@ -72,6 +73,12 @@ export class DacFxService implements IDacFxService {
 	generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 		return this._runAction(ownerUri, (runner) => {
 			return runner.generateDeployPlan(packageFilePath, databaseName, ownerUri, taskExecutionMode);
+		});
+	}
+
+	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
+		return this._runAction(sourceEndpointInfo.ownerUri, (runner) => {
+			return runner.schemaCompare(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
 		});
 	}
 

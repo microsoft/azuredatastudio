@@ -346,6 +346,12 @@ export interface GenerateDeployPlanParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaCompareParams {
+	sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo;
+	targetEndpointInfo: sqlops.SchemaCompareEndpointInfo;
+	taskExecutionMode: TaskExecutionMode;
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, azdata.DacFxResult, void, void>('dacfx/export');
 }
@@ -368,5 +374,9 @@ export namespace GenerateDeployScriptRequest {
 
 export namespace GenerateDeployPlanRequest {
 	export const type = new RequestType<GenerateDeployPlanParams, azdata.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
+}
+
+export namespace SchemaCompareRequest {
+	export const type = new RequestType<SchemaCompareParams, sqlops.SchemaCompareResult, void, void>('dacfx/schemaCompare');
 }
 // ------------------------------- < DacFx > ------------------------------------

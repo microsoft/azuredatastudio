@@ -456,6 +456,11 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> { throw ni(); }
 
+	/**
+	 * DacFx schema compare
+	 */
+	$schemaCompare(handle: number, sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, targetEndpointInfo: sqlops.SchemaCompareEndpointInfo, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.SchemaCompareResult> { throw ni(); }
+
 }
 
 /**
