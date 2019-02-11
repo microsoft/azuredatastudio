@@ -93,6 +93,7 @@ export interface INotebookParams extends IBootstrapParams {
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
+	connectionProfileId?: string;
 }
 
 export interface INotebookEditor {
