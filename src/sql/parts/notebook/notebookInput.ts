@@ -28,13 +28,18 @@ export class NotebookInputModel extends EditorModel {
 	private _providerId: string;
 	private _standardKernels: IStandardKernelWithProvider[];
 	private _defaultKernel: sqlops.nb.IKernelSpec;
-	private _connectionProfileId: string;
-	constructor(public readonly notebookUri: URI, private readonly handle: number, private _isTrusted: boolean = false, private saveHandler?: ModeViewSaveHandler, provider?: string, private _providers?: string[], connectionProfileId?: string) {
+	constructor(public readonly notebookUri: URI,
+		private readonly handle: number,
+		private _isTrusted: boolean = false,
+		private saveHandler?: ModeViewSaveHandler,
+		provider?: string,
+		private _providers?: string[],
+		private _connectionProfileId?: string) {
+
 		super();
 		this.dirty = false;
 		this._providerId = provider;
 		this._standardKernels = [];
-		this._connectionProfileId = connectionProfileId;
 	}
 
 	public get providerId(): string {
@@ -56,7 +61,7 @@ export class NotebookInputModel extends EditorModel {
 	public get connectionProfileId(): string {
 		return this._connectionProfileId;
 	}
-	
+
 	public get standardKernels(): IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
@@ -116,7 +121,6 @@ export class NotebookInput extends EditorInput {
 	// Holds the HTML content for the editor when the editor discards this input and loads another
 	private _parentContainer: HTMLElement;
 	private readonly _layoutChanged: Emitter<void> = this._register(new Emitter<void>());
-	private _connectionProfileId: string;
 	constructor(private _title: string,
 		private _model: NotebookInputModel,
 		@INotebookService private notebookService: INotebookService,
@@ -124,7 +128,6 @@ export class NotebookInput extends EditorInput {
 	) {
 		super();
 		this._model.onDidChangeDirty(() => this._onDidChangeDirty.fire());
-		this._connectionProfileId = this._model.connectionProfileId;
 	}
 
 	public get notebookUri(): URI {
@@ -140,7 +143,7 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public get connectionProfileId(): string {
-		return this._connectionProfileId;
+		return this._model.connectionProfileId;
 	}
 
 	public get standardKernels(): IStandardKernelWithProvider[] {
