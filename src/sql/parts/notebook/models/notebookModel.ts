@@ -87,7 +87,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.notebookOptions.layoutChanged) {
 			this.notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
-		if (this._providerId && (this._providerId.toLowerCase() === SQL_NOTEBOOK_PROVIDER.toLocaleLowerCase())) {
+		if (this._providerId && (this._providerId.toLowerCase() === SQL_NOTEBOOK_PROVIDER.toLowerCase())) {
 			this._defaultKernel = this._sqlKernel;
 		}
 		else {
