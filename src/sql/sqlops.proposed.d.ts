@@ -349,6 +349,7 @@ declare module 'sqlops' {
 		width?: number | string;
 		header?: string;
 		collapsible?: boolean;
+		collapsed?: boolean;
 	}
 
 	export interface GroupItemLayout {

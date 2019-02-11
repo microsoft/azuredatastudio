@@ -40,7 +40,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	@Input() modelStore: IModelStore;
 
 	private _containerLayout: GroupLayout;
-	private _expanded: boolean;
+	private _collapsed: boolean;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
@@ -49,7 +49,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
-		this._expanded = true;
+		this._collapsed = false;
 	}
 
 	ngOnInit(): void {
@@ -67,6 +67,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 
 	public setLayout(layout: GroupLayout): void {
 		this._containerLayout = layout;
+		this._collapsed = !!layout.collapsed;
 		this.layout();
 	}
 
@@ -91,12 +92,12 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	}
 
 	private getContainerDisplayStyle() {
-		return this._expanded ? 'block' : 'none';
+		return !this.isCollapsible() || !this._collapsed ? 'block' : 'none';
 	}
 
 	private getHeaderClass(): string {
-		if (this.isCollapsible) {
-			let modifier = this._expanded ? 'expanded' : 'collapsed';
+		if (this.isCollapsible()) {
+			let modifier = this._collapsed ? 'collapsed' : 'expanded';
 			return `modelview-group-header-collapsible ${modifier}`;
 		} else {
 			return 'modelview-group-header';
@@ -105,7 +106,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 
 	private changeState() {
 		if (this.isCollapsible()) {
-			this._expanded = !this._expanded;
+			this._collapsed = !this._collapsed;
 			this._changeRef.detectChanges();
 		}
 	}
