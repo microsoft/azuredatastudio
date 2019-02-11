@@ -102,9 +102,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private updateProfile(): void {
 		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
+		let profile: IConnectionProfile;
 		if (!this.profile) {
-			// use global connection if possible
-			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			// Use connectionProfile passed in first
+			if (this._notebookParams.connectionProfileId !== undefined && this._notebookParams.connectionProfileId) {
+				profile = this.connectionManagementService.getConnectionProfileById(this._notebookParams.connectionProfileId);
+			} else {
+				// Second use global connection if possible
+				profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			}
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
 			if (profile && profile.providerName) {
 				this.profile = profile;
@@ -481,10 +487,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	 */
 	private fillInActionsForCurrentContext(): void {
 		let primary: IAction[] = [];
-		let	secondary: IAction[] = [];
+		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
 		this.addPrimaryContributedActions(primary);
 	}
 

@@ -1378,6 +1378,14 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return serverInfo;
 	}
 
+	public getConnectionProfileById(profileId: string): IConnectionProfile {
+		let profile = this._connectionStatusManager.findConnectionByProfileId(profileId);
+		if (!profile) {
+			return undefined;
+		}
+		return profile.connectionProfile;
+	}
+
 	/**
 	 * Get the connection string for the provided connection ID
 	 */
