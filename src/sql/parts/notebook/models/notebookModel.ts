@@ -315,7 +315,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			cell_type: cellType,
 			source: '',
 			metadata: {},
-			execution_count: 1
+			execution_count: undefined
 		};
 		return this.notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
