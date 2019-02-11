@@ -20,10 +20,10 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 @Component({
 	selector: 'modelview-groupContainer',
 	template: `
-		<div *ngIf="hasHeader()" class="modelview-group-header" >
+		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()">
 				{{_containerLayout.header}}
 		</div>
-		<div #container *ngIf="items" class="modelview-group-container" [style.width]="getContainerWidth()">
+		<div #container *ngIf="items" class="modelview-group-container" [style.width]="getContainerWidth()" [style.display]="getContainerDisplayStyle()">
 			<ng-container *ngFor="let item of items">
 			<div class="modelview-group-row" >
 				<div  class="modelview-group-cell">
@@ -40,6 +40,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	@Input() modelStore: IModelStore;
 
 	private _containerLayout: GroupLayout;
+	private _expanded: boolean;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
@@ -48,6 +49,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
+		this._expanded = true;
 	}
 
 	ngOnInit(): void {
@@ -72,6 +74,10 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		return this._containerLayout && this._containerLayout && this._containerLayout.header !== undefined;
 	}
 
+	private isCollapsible(): boolean {
+		return this.hasHeader() && this._containerLayout.collapsible === true;
+	}
+
 	private getContainerWidth(): string {
 		if (this._containerLayout && this._containerLayout.width) {
 			let width: string = this._containerLayout.width.toString();
@@ -81,6 +87,26 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 			return width;
 		} else {
 			return '100%';
+		}
+	}
+
+	private getContainerDisplayStyle() {
+		return this._expanded ? 'block' : 'none';
+	}
+
+	private getHeaderClass(): string {
+		if (this.isCollapsible) {
+			let modifier = this._expanded ? 'expanded' : 'collapsed';
+			return `modelview-group-header-collapsible ${modifier}`;
+		} else {
+			return 'modelview-group-header';
+		}
+	}
+
+	private changeState() {
+		if (this.isCollapsible()) {
+			this._expanded = !this._expanded;
+			this._changeRef.detectChanges();
 		}
 	}
 }

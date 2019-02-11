@@ -348,6 +348,7 @@ declare module 'sqlops' {
 	export interface GroupLayout {
 		width?: number | string;
 		header?: string;
+		collapsible?: boolean;
 	}
 
 	export interface GroupItemLayout {
@@ -639,7 +640,7 @@ declare module 'sqlops' {
 
 	}
 
-	export interface TextComponent extends Component {
+	export interface TextComponent extends Component, ComponentProperties {
 		value: string;
 	}
 

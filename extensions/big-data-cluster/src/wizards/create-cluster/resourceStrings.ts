@@ -23,7 +23,10 @@ export const ClusterProfilePageDescription: string = localize('bdc-create.cluste
 
 export const SettingsPageTitle: string = localize('bdc-create.settingsPageTitle', 'Settings');
 export const SettingsPageDescription: string = localize('bdc-create.settingsPageDescription', 'Configure the settings required for deploying SQL Server big data cluster');
-
+export const BasicSettingsText: string = localize('bdc-create.BasicSettingsText', 'Basic Settings');
+export const AdminUserNameText: string = localize('bdc-create.AdminUserNameText', 'Admin user name');
+export const AdminUserPasswordText: string = localize('bdc-create.AdminUserPasswordText', 'Password');
+export const DockerSettingsText: string = localize('bdc-create.DockerSettingsText', 'Docker Settings');
 //#endregion
 
 //#region summary page strings
