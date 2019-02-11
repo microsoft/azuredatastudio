@@ -67,6 +67,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToConnectionProviderIds: Map<string, string[]> = new Map<string, string[]>();
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
+	private readonly _sqlKernel: nb.IKernelSpec = { name: SQL_NOTEBOOK_PROVIDER.toLocaleUpperCase(), display_name: SQL_NOTEBOOK_PROVIDER.toLocaleUpperCase(), language: SQL_NOTEBOOK_PROVIDER.toLowerCase()};
 
 	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
@@ -86,7 +87,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (this.notebookOptions.layoutChanged) {
 			this.notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
-		this._defaultKernel = notebookOptions.defaultKernel;
+		if (this._providerId && (this._providerId.toLowerCase() === SQL_NOTEBOOK_PROVIDER.toLocaleLowerCase())) {
+			this._defaultKernel = this._sqlKernel;
+		}
+		else {
+			this._defaultKernel = notebookOptions.defaultKernel;
+		}
 	}
 
 	public get notebookManagers(): INotebookManager[] {
