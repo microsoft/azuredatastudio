@@ -1194,7 +1194,7 @@
 				{
 					"extensionId": "32",
 					"extensionName": "admin-pack",
-					"displayName": "admin-pack",
+					"displayName": "Admin Pack for SQL Server",
 					"shortDescription": "Admin Pack for SQL Server is a collection of popular database administration extensions to help you manage SQL Server.",
 					"publisher": {
 						"displayName": "Microsoft",
