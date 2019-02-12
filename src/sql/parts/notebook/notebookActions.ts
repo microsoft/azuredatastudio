@@ -412,6 +412,7 @@ export class AttachToDropdown extends SelectBox {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
+					this.doChangeContext();
 					return;
 				}
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
