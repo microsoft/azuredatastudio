@@ -26,6 +26,9 @@ export const SettingsPageDescription: string = localize('bdc-create.settingsPage
 export const BasicSettingsText: string = localize('bdc-create.BasicSettingsText', 'Basic Settings');
 export const AdminUserNameText: string = localize('bdc-create.AdminUserNameText', 'Admin user name');
 export const AdminUserPasswordText: string = localize('bdc-create.AdminUserPasswordText', 'Password');
+export const AcceptEulaText: string = localize('bdc-create.AcceptEulaText', 'I accept the SQL Server EULA');
+export const ViewEulaText: string = localize('bdc-create.ViewEulaText', 'View Eula');
+export const SqlServerEulaUrl = 'https://docs.microsoft.com/en-us/sql/getting-started/about-the-sql-server-license-terms?view=sql-server-2014';
 export const DockerSettingsText: string = localize('bdc-create.DockerSettingsText', 'Docker Settings');
 //#endregion
 

@@ -10,9 +10,6 @@ import { CreateClusterModel } from '../createClusterModel';
 import * as ResourceStrings from '../resourceStrings';
 import { WizardBase } from '../../wizardBase';
 
-const LabelWidth = '150px';
-const InputWidth = '300px';
-
 export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
 		super(ResourceStrings.SettingsPageTitle, ResourceStrings.SettingsPageDescription, model, wizard);
@@ -20,21 +17,50 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 
 	protected async initialize(view: sqlops.ModelView) {
 		let formBuilder = view.modelBuilder.formContainer();
-		let adminUserNameLabel = view.modelBuilder.text().withProperties({ value: ResourceStrings.AdminUserNameText }).component();
-		let adminUserNameInput = view.modelBuilder.inputBox().component();
-		let adminPasswordLabel = view.modelBuilder.text().withProperties({ value: ResourceStrings.AdminUserPasswordText }).component();
-		let adminUserPasswordInput = view.modelBuilder.inputBox().component();
-		adminUserNameInput.width = InputWidth;
-		adminUserNameLabel.width = LabelWidth;
-		adminUserPasswordInput.width = InputWidth;
-		adminPasswordLabel.width = LabelWidth;
+		let adminUserNameInput = this.createInputWithLabel(view, ResourceStrings.AdminUserNameText, true, (inputBox: sqlops.InputBoxComponent) => {
+			this.model.adminUserName = inputBox.value;
+		});
+		let adminPasswordInput = this.createInputWithLabel(view, ResourceStrings.AdminUserPasswordText, true, (inputBox: sqlops.InputBoxComponent) => {
+			this.model.adminPassword = inputBox.value;
+		});
 
-		let userNameContainer = view.modelBuilder.flexContainer().withItems([adminUserNameLabel, adminUserNameInput]).withLayout({ flexFlow: 'row', alignItems: 'baseline' }).component();
-		let passwordContainer = view.modelBuilder.flexContainer().withItems([adminPasswordLabel, adminUserPasswordInput]).withLayout({ flexFlow: 'row', alignItems: 'baseline' }).component();
+		let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([adminUserNameInput, adminPasswordInput]).withLayout({ header: ResourceStrings.BasicSettingsText, collapsible: true }).component();
+		let dockerSettingsGroup = view.modelBuilder.groupContainer().withItems([]).withLayout({ header: ResourceStrings.DockerSettingsText, collapsible: true }).component();
 
-		let group1 = view.modelBuilder.groupContainer().withItems([userNameContainer, passwordContainer]).withLayout({ header: ResourceStrings.BasicSettingsText, collapsible: true }).component();
-		let group2 = view.modelBuilder.groupContainer().withItems([]).withLayout({ header: ResourceStrings.DockerSettingsText, collapsible: true }).component();
-		let form = formBuilder.withFormItems([{ title: '', component: group1 }, { title: '', component: group2 }]).component();
+		let acceptEulaCheckbox = view.modelBuilder.checkBox().component();
+		acceptEulaCheckbox.label = ResourceStrings.AcceptEulaText;
+		acceptEulaCheckbox.checked = false;
+
+		let eulaHyperLink = view.modelBuilder.hyperLink().withProperties({ label: ResourceStrings.ViewEulaText, url: ResourceStrings.SqlServerEulaUrl }).component();
+
+		let eulaContainer = this.createRow(view, [acceptEulaCheckbox, eulaHyperLink]);
+
+		let form = formBuilder.withFormItems([
+			{
+				title: '',
+				component: basicSettingsGroup
+			}, {
+				title: '',
+				component: dockerSettingsGroup
+			}, {
+				title: '',
+				component: eulaContainer
+			}]).component();
 		await view.initializeModel(form);
+	}
+
+	private createInputWithLabel(view: sqlops.ModelView, label: string, isRequiredField: boolean, textChangedHandler: (inputBox: sqlops.InputBoxComponent) => void): sqlops.FlexContainer {
+		let input = view.modelBuilder.inputBox().withProperties({ required: isRequiredField }).component();
+		let text = view.modelBuilder.text().withProperties({ value: label }).component();
+		input.width = '300px';
+		text.width = '150px';
+		input.onTextChanged(() => {
+			textChangedHandler(input);
+		});
+		return this.createRow(view, [text, input]);
+	}
+
+	private createRow(view: sqlops.ModelView, items: sqlops.Component[]): sqlops.FlexContainer {
+		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'baseline' }).component();
 	}
 }

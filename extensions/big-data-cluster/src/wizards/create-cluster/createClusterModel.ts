@@ -20,4 +20,8 @@ export class CreateClusterModel {
 	public targetClusterType: TargetClusterType;
 
 	public selectedCluster: ClusterInfo;
+
+	public adminUserName: string;
+
+	public adminPassword: string;
 }

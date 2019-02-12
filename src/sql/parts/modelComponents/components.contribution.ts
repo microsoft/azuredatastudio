@@ -25,6 +25,7 @@ import EditorComponent from './editor.component';
 import DomComponent from './dom.component';
 import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
+import HyperLinkComponent from 'sql/parts/modelComponents/hyperLink.component.';
 
 export const DIV_CONTAINER = 'div-container';
 registerComponentType(DIV_CONTAINER, ModelComponentTypes.DivContainer, DivContainer);
@@ -89,3 +90,6 @@ registerComponentType(EDITOR_COMPONENT, ModelComponentTypes.Editor, EditorCompon
 
 export const DOM_COMPONENT = 'dom-component';
 registerComponentType(DOM_COMPONENT, ModelComponentTypes.Dom, DomComponent);
+
+export const HYPERLINK_COMPONENT = 'hyperlink-component';
+registerComponentType(HYPERLINK_COMPONENT, ModelComponentTypes.HyperLink, HyperLinkComponent);

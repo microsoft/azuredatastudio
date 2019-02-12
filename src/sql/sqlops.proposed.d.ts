@@ -40,6 +40,7 @@ declare module 'sqlops' {
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
+		hyperLink(): ComponentBuilder<HyperLinkComponent>;
 	}
 
 	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
@@ -543,6 +544,11 @@ declare module 'sqlops' {
 		value?: string;
 	}
 
+	export interface HyperLinkComponentProperties extends ComponentProperties {
+		label: string;
+		url: string;
+	}
+
 	export interface DropDownProperties extends ComponentProperties {
 		value?: string | CategoryValue;
 		values?: string[] | CategoryValue[];
@@ -643,6 +649,11 @@ declare module 'sqlops' {
 
 	export interface TextComponent extends Component, ComponentProperties {
 		value: string;
+	}
+
+	export interface HyperLinkComponent extends Component, HyperLinkComponentProperties {
+		label: string;
+		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
