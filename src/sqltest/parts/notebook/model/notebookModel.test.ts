@@ -101,7 +101,7 @@ describe('notebook model', function(): void {
             capabilitiesService: capabilitiesService.object
         };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
-        mockClientSession.setup(c => c.initialize(TypeMoq.It.isAny())).returns(() => {
+        mockClientSession.setup(c => c.initialize()).returns(() => {
             return Promise.resolve();
         });
         mockClientSession.setup(c => c.ready).returns(() => sessionReady.promise);
