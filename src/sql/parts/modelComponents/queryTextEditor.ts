@@ -131,6 +131,10 @@ export class QueryTextEditor extends BaseTextEditor {
 			this._scrollbarHeight = this._config.editor.viewInfo.scrollbar.horizontalScrollbarSize;
 		}
 		let editorWidgetModel = editorWidget.getModel();
+		if (!editorWidgetModel) {
+			// Not ready yet
+			return;
+		}
 		let lineCount = editorWidgetModel.getLineCount();
 		// Need to also keep track of lines that wrap; if we just keep into account line count, then the editor's height would not be
 		// tall enough and we would need to show a scrollbar. Unfortunately, it looks like there isn't any metadata saved in a ICodeEditor
