@@ -86,7 +86,10 @@
 }
 
 .notebookEditor .notebook-cellTable {
-	border: 1px silver solid;
 	margin-left: 20px;
 	margin-top: 10px;
+}
+
+.notebookEditor .notebook-cellTable .ui-widget-content.slick-row {
+	border-left: 1px silver dotted;
 }
