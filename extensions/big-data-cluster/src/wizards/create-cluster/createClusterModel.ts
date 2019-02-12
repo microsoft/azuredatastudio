@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ClusterInfo } from '../../data/clusterInfo';
 import { IKubeConfigParser } from '../../data/kubeConfigParser';
-import { TargetClusterType } from '../../data/targetClusterType';
+import { ClusterInfo, TargetClusterType } from '../../interfaces';
 
 export class CreateClusterModel {
 
@@ -14,7 +13,7 @@ export class CreateClusterModel {
 	}
 
 	public loadClusters(configPath: string): ClusterInfo[] {
-		return this._kubeConfigParser.Parse(configPath);
+		return this._kubeConfigParser.parse(configPath);
 	}
 
 	public targetClusterType: TargetClusterType;

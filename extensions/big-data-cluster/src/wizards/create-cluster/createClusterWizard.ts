@@ -21,7 +21,7 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
 		super(model, context, ResourceStrings.WizardTitle);
 	}
 
-	protected initialize() {
+	protected initialize(): void {
 		let settingsPage = new SettingsPage(this.model, this);
 		let clusterProfilePage = new ClusterProfilePage(this.model, this);
 		let selectTargetClusterPage = new SelectTargetClusterPage(this.model, this);
@@ -37,19 +37,7 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
 		this.wizard.generateScriptButton.label = ResourceStrings.GenerateScriptsButtonText;
 		this.wizard.doneButton.label = ResourceStrings.CreateClusterButtonText;
 
-		this.wizard.generateScriptButton.onClick(async () => {
-			await new Promise(resolve => {
-				setTimeout(() => {
-					resolve();
-				}, 3000);
-			});
-		});
-		this.wizard.doneButton.onClick(async () => {
-			await new Promise(resolve => {
-				setTimeout(() => {
-					resolve();
-				}, 3000);
-			});
-		});
+		this.wizard.generateScriptButton.onClick(() => { });
+		this.wizard.doneButton.onClick(() => { });
 	}
 }

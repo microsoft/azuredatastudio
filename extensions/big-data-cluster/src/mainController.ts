@@ -21,7 +21,7 @@ export class MainController {
 	 * Activates the extension
 	 */
 	public activate(): void {
-		vscode.commands.registerCommand('mssql.create-big-data-cluster', () => {
+		vscode.commands.registerCommand('mssql.cluster.create', () => {
 			let wizard = new CreateClusterWizard(this._context);
 			wizard.open();
 		});

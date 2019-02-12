@@ -18,7 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 	selector: 'modelview-hyperlink',
 	template: `<a [href]="getUrl()" target="blank">{{getLabel()}}</a>`
 })
-export default class HyperLinkComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class HyperlinkComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -45,11 +45,11 @@ export default class HyperLinkComponent extends ComponentBase implements ICompon
 	}
 
 	public set label(newValue: string) {
-		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.label = value; }, newValue);
+		this.setPropertyFromUI<sqlops.HyperlinkComponentProperties, string>((properties, value) => { properties.label = value; }, newValue);
 	}
 
 	public get label(): string {
-		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.label, '');
+		return this.getPropertyOrDefault<sqlops.HyperlinkComponentProperties, string>((props) => props.label, '');
 	}
 
 	public getLabel(): string {
@@ -57,11 +57,11 @@ export default class HyperLinkComponent extends ComponentBase implements ICompon
 	}
 
 	public set url(newValue: string) {
-		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.url = value; }, newValue);
+		this.setPropertyFromUI<sqlops.HyperlinkComponentProperties, string>((properties, value) => { properties.url = value; }, newValue);
 	}
 
 	public get url(): string {
-		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.url, '');
+		return this.getPropertyOrDefault<sqlops.HyperlinkComponentProperties, string>((props) => props.url, '');
 	}
 
 	public getUrl(): string {

@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ClusterInfo } from './clusterInfo';
+import { ClusterInfo } from '../interfaces';
 
 export interface IKubeConfigParser {
-	Parse(configPath: string): ClusterInfo[];
+	parse(configPath: string): ClusterInfo[];
 }
 
 export class TestKubeConfigParser implements IKubeConfigParser {
-	Parse(configPath: string): ClusterInfo[] {
+	parse(configPath: string): ClusterInfo[] {
 		let clusters = [];
 		for (let i = 0; i < 18; i++) {
 			let name;

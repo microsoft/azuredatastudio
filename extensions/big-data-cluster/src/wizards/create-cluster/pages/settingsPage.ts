@@ -17,7 +17,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 
 	protected async initialize(view: sqlops.ModelView) {
 		let formBuilder = view.modelBuilder.formContainer();
-		let adminUserNameInput = this.createInputWithLabel(view, ResourceStrings.AdminUserNameText, true, (inputBox: sqlops.InputBoxComponent) => {
+		let adminUserNameInput = this.createInputWithLabel(view, ResourceStrings.AdminUsernameText, true, (inputBox: sqlops.InputBoxComponent) => {
 			this.model.adminUserName = inputBox.value;
 		});
 		let adminPasswordInput = this.createInputWithLabel(view, ResourceStrings.AdminUserPasswordText, true, (inputBox: sqlops.InputBoxComponent) => {
@@ -31,9 +31,9 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 		acceptEulaCheckbox.label = ResourceStrings.AcceptEulaText;
 		acceptEulaCheckbox.checked = false;
 
-		let eulaHyperLink = view.modelBuilder.hyperLink().withProperties({ label: ResourceStrings.ViewEulaText, url: ResourceStrings.SqlServerEulaUrl }).component();
+		let eulaHyperlink = view.modelBuilder.hyperlink().withProperties({ label: ResourceStrings.ViewEulaText, url: ResourceStrings.SqlServerEulaUrl }).component();
 
-		let eulaContainer = this.createRow(view, [acceptEulaCheckbox, eulaHyperLink]);
+		let eulaContainer = this.createRow(view, [acceptEulaCheckbox, eulaHyperlink]);
 
 		let form = formBuilder.withFormItems([
 			{

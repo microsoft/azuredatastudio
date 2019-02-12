@@ -4,6 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+export interface ClusterInfo {
+	name: string;
+	displayName: string;
+	user: string;
+}
+
 export enum TargetClusterType {
 	ExistingKubernetesCluster,
 	NewLocalCluster,

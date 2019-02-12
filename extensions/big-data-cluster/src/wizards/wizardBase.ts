@@ -14,11 +14,11 @@ export abstract class WizardBase<T> {
 	constructor(public model: T, public context: ExtensionContext, private title: string) {
 	}
 
-	public open() {
+	public open(): Thenable<void> {
 		this.wizard = sqlops.window.modelviewdialog.createWizard(this.title);
 		this.initialize();
-		this.wizard.open();
+		return this.wizard.open();
 	}
 
-	protected abstract initialize();
+	protected abstract initialize(): void;
 }

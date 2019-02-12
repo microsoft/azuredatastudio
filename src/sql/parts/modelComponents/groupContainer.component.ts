@@ -91,7 +91,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		}
 	}
 
-	private getContainerDisplayStyle() {
+	private getContainerDisplayStyle(): string {
 		return !this.isCollapsible() || !this._collapsed ? 'block' : 'none';
 	}
 
@@ -104,7 +104,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		}
 	}
 
-	private changeState() {
+	private changeState(): void {
 		if (this.isCollapsible()) {
 			this._collapsed = !this._collapsed;
 			this._changeRef.detectChanges();

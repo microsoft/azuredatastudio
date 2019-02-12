@@ -165,7 +165,7 @@ export enum ModelComponentTypes {
 	FileBrowserTree,
 	Editor,
 	Dom,
-	HyperLink
+	Hyperlink
 }
 
 export interface IComponentShape {

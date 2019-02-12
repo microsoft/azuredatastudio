@@ -11,7 +11,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
 import * as ResourceStrings from '../resourceStrings';
 import { WizardBase } from '../../wizardBase';
-import { TargetClusterType } from '../../../data/targetClusterType';
+import { TargetClusterType } from '../../../interfaces';
 
 const ClusterTypeRadioButtonGroupName = 'SelectClusterType';
 

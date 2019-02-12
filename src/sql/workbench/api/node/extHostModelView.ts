@@ -198,9 +198,9 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
-	hyperLink(): sqlops.ComponentBuilder<sqlops.HyperLinkComponent> {
+	hyperlink(): sqlops.ComponentBuilder<sqlops.HyperlinkComponent> {
 		let id = this.getNextComponentId();
-		let builder: ComponentBuilderImpl<sqlops.HyperLinkComponent> = this.getComponentBuilder(new HyperLinkComponentWrapper(this._proxy, this._handle, id), id);
+		let builder: ComponentBuilderImpl<sqlops.HyperlinkComponent> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
 		this._componentBuilders.set(id, builder);
 		return builder;
 	}
@@ -1255,10 +1255,10 @@ class TreeComponentWrapper<T> extends ComponentWrapper implements sqlops.TreeCom
 	}
 }
 
-class HyperLinkComponentWrapper extends ComponentWrapper implements sqlops.HyperLinkComponentProperties {
+class HyperlinkComponentWrapper extends ComponentWrapper implements sqlops.HyperlinkComponentProperties {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
-		super(proxy, handle, ModelComponentTypes.HyperLink, id);
+		super(proxy, handle, ModelComponentTypes.Hyperlink, id);
 		this.properties = {};
 	}
 

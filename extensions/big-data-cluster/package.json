@@ -1,7 +1,7 @@
 {
   "name": "big-data-cluster",
-  "displayName": "SQL Server Big Data Cluster",
-  "description": "SQL Server Big Data Cluster",
+  "displayName": "SQL Server big data cluster",
+  "description": "SQL Server big data cluster",
   "version": "0.0.1",
   "publisher": "Microsoft",
   "preview": true,
@@ -25,8 +25,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "mssql.create-big-data-cluster",
-        "title": "Create Big Data Cluster",
+        "command": "mssql.cluster.create",
+        "title": "Create SQL Server big data cluster",
         "category": "SQL Server"
       }
     ]
