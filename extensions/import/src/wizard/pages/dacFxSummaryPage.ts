@@ -131,7 +131,15 @@ export class DacFxSummaryPage extends BasePage {
 
 		this.table.updateProperties({
 			data: data,
-			columns: ['Setting', 'Value'],
+			columns: [
+				{
+					value: localize('dacfx.settingColumn', 'Setting'),
+					cssClass: 'align-with-header'
+				},
+				{
+					value: localize('dacfx.valueColumn', 'Value'),
+					cssClass: 'align-with-header'
+				}],
 			width: 700,
 			height: 200
 		});

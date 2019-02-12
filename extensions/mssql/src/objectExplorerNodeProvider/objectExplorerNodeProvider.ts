@@ -10,32 +10,27 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { ProviderBase } from './providerBase';
-import { Connection } from './connection';
+import { SqlClusterConnection } from './connection';
 import * as utils from '../utils';
 import { TreeNode } from './treeNodes';
 import { ConnectionNode, TreeDataContext, ITreeChangeHandler } from './hdfsProvider';
 import { IFileSource } from './fileSources';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
+import * as SqlClusterLookUp from '../sqlClusterLookUp';
+import { ICommandObjectExplorerContext } from './command';
 
-const outputChannel = vscode.window.createOutputChannel(constants.providerId);
-export interface IEndpoint {
-	serviceName: string;
-	ipAddress: string;
-	port: number;
-}
+export const mssqlOutputChannel = vscode.window.createOutputChannel(constants.providerId);
 
 export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sqlops.ObjectExplorerNodeProvider, ITreeChangeHandler {
 	public readonly supportedProviderId: string = constants.providerId;
-	private sessionMap: Map<string, Session>;
+	private sessionMap: Map<string, SqlClusterSession>;
 	private expandCompleteEmitter = new vscode.EventEmitter<sqlops.ObjectExplorerExpandInfo>();
 
 	constructor(private appContext: AppContext) {
 		super();
-
-		this.sessionMap = new Map();
+		this.sessionMap = new Map<string, SqlClusterSession>();
 		this.appContext.registerService<MssqlObjectExplorerNodeProvider>(constants.ObjectExplorerService, this);
 	}
 
@@ -49,44 +44,19 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		});
 	}
 
-	private async doSessionOpen(sessionInfo: sqlops.ObjectExplorerSession): Promise<boolean> {
-		let connectionProfile = await sqlops.objectexplorer.getSessionConnectionProfile(sessionInfo.sessionId);
-		if (!connectionProfile) {
-			return false;
-		} else {
-			let credentials = await sqlops.connection.getCredentials(connectionProfile.id);
-			let serverInfo = await sqlops.connection.getServerInfo(connectionProfile.id);
-			if (!serverInfo || !credentials || !serverInfo.options) {
-				return false;
-			}
-			let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
-			if (!endpoints || endpoints.length === 0) {
-				return false;
-			}
-			let index = endpoints.findIndex(ep => ep.serviceName === constants.hadoopKnoxEndpointName);
-			if (index === -1) {
-				return false;
-			}
+	private async doSessionOpen(session: sqlops.ObjectExplorerSession): Promise<boolean> {
+		if (!session || !session.sessionId) { return false; }
 
-			let connInfo: sqlops.connection.Connection = {
-				options: {
-					'host': endpoints[index].ipAddress,
-					'groupId': connectionProfile.options.groupId,
-					'knoxport': endpoints[index].port,
-					'user': 'root', //connectionProfile.options.userName cluster setup has to have the same user for master and big data cluster
-					'password': credentials.password,
-				},
-				providerName: constants.mssqlClusterProviderName,
-				connectionId: UUID.generateUuid()
-			};
+		let sqlConnProfile = await sqlops.objectexplorer.getSessionConnectionProfile(session.sessionId);
+		if (!sqlConnProfile) { return false; }
 
-			let connection = new Connection(connInfo);
-			connection.saveUriWithPrefix(constants.objectExplorerPrefix);
-			let session = new Session(connection, sessionInfo.sessionId);
-			session.root = new RootNode(session, new TreeDataContext(this.appContext.extensionContext, this), sessionInfo.rootNode.nodePath);
-			this.sessionMap.set(sessionInfo.sessionId, session);
-			return true;
-		}
+		let clusterConnInfo = await SqlClusterLookUp.getSqlClusterConnection(sqlConnProfile);
+		if (!clusterConnInfo) { return false; }
+
+		let clusterConnection = new SqlClusterConnection(clusterConnInfo);
+		let clusterSession = new SqlClusterSession(clusterConnection, session, sqlConnProfile, this.appContext, this);
+		this.sessionMap.set(session.sessionId, clusterSession);
+		return true;
 	}
 
 	expandNode(nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Thenable<boolean> {
@@ -125,15 +95,15 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 		return true;
 	}
 
-	private async startExpansion(session: Session, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
+	private async startExpansion(session: SqlClusterSession, nodeInfo: sqlops.ExpandNodeInfo, isRefresh: boolean = false): Promise<void> {
 		let expandResult: sqlops.ObjectExplorerExpandInfo = {
-			sessionId: session.uri,
+			sessionId: session.sessionId,
 			nodePath: nodeInfo.nodePath,
 			errorMessage: undefined,
 			nodes: []
 		};
 		try {
-			let node = await session.root.findNodeByPath(nodeInfo.nodePath, true);
+			let node = await session.rootNode.findNodeByPath(nodeInfo.nodePath, true);
 			if (node) {
 				expandResult.errorMessage = node.getNodeInfo().errorMessage;
 				let children = await node.getChildren(true);
@@ -182,57 +152,55 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 
 	private async notifyNodeChangesAsync(node: TreeNode): Promise<void> {
 		try {
-			let session = this.getSessionForNode(node);
+			let session = this.getSqlClusterSessionForNode(node);
 			if (!session) {
 				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
 				let expandInfo: sqlops.ExpandNodeInfo = {
 					nodePath: nodeInfo.nodePath,
-					sessionId: session.uri
+					sessionId: session.sessionId
 				};
 				await this.refreshNode(expandInfo);
 			}
 		} catch (err) {
-			outputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
+			mssqlOutputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
 		}
 	}
 
-	private getSessionForNode(node: TreeNode): Session {
-		let rootNode: DataServicesNode = undefined;
-		while (rootNode === undefined && node !== undefined) {
+	private getSqlClusterSessionForNode(node: TreeNode): SqlClusterSession {
+		let sqlClusterSession: SqlClusterSession = undefined;
+		while (node !== undefined) {
 			if (node instanceof DataServicesNode) {
-				rootNode = node;
+				sqlClusterSession = node.session;
 				break;
 			} else {
 				node = node.parent;
 			}
 		}
-		if (rootNode) {
-			return rootNode.session;
-		}
-		// Not found
-		return undefined;
+		return sqlClusterSession;
 	}
 
-	async findNodeForContext<T extends TreeNode>(explorerContext: sqlops.ObjectExplorerContext): Promise<T> {
+	async findSqlClusterNodeByContext<T extends TreeNode>(context: ICommandObjectExplorerContext | sqlops.ObjectExplorerContext): Promise<T> {
 		let node: T = undefined;
-		let session = await this.findSessionForConnection(explorerContext.connectionProfile);
+		let explorerContext = 'explorerContext' in context ? context.explorerContext : context;
+		let sqlConnProfile = explorerContext.connectionProfile;
+		let session = this.findSqlClusterSessionBySqlConnProfile(sqlConnProfile);
 		if (session) {
 			if (explorerContext.isConnectionNode) {
 				// Note: ideally fix so we verify T matches RootNode and go from there
-				node = <T><any>session.root;
+				node = <T><any>session.rootNode;
 			} else {
 				// Find the node under the session
-				node = <T><any>await session.root.findNodeByPath(explorerContext.nodeInfo.nodePath, true);
+				node = <T><any>await session.rootNode.findNodeByPath(explorerContext.nodeInfo.nodePath, true);
 			}
 		}
 		return node;
 	}
 
-	private async findSessionForConnection(connectionProfile: sqlops.IConnectionProfile): Promise<Session> {
+	public findSqlClusterSessionBySqlConnProfile(connectionProfile: sqlops.IConnectionProfile): SqlClusterSession {
 		for (let session of this.sessionMap.values()) {
-			if (session.connection && await session.connection.isMatch(connectionProfile)) {
+			if (session.isMatchedSqlConnection(connectionProfile)) {
 				return session;
 			}
 		}
@@ -240,50 +208,58 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements sql
 	}
 }
 
-export class Session {
-	private _root: RootNode;
-	constructor(private _connection: Connection, private sessionId?: string) {
+export class SqlClusterSession {
+	private _rootNode: SqlClusterRootNode;
+
+	constructor(
+		private _sqlClusterConnection: SqlClusterConnection,
+		private _sqlSession: sqlops.ObjectExplorerSession,
+		private _sqlConnectionProfile: sqlops.IConnectionProfile,
+		private _appContext: AppContext,
+		private _changeHandler: ITreeChangeHandler
+	) {
+		this._rootNode = new SqlClusterRootNode(this,
+			new TreeDataContext(this._appContext.extensionContext, this._changeHandler),
+			this._sqlSession.rootNode.nodePath);
 	}
 
-	public get uri(): string {
-		return this.sessionId || this._connection.uri;
-	}
+	public get sqlClusterConnection(): SqlClusterConnection { return this._sqlClusterConnection; }
+	public get sqlSession(): sqlops.ObjectExplorerSession { return this._sqlSession; }
+	public get sqlConnectionProfile(): sqlops.IConnectionProfile { return this._sqlConnectionProfile; }
+	public get sessionId(): string { return this._sqlSession.sessionId; }
+	public get rootNode(): SqlClusterRootNode { return this._rootNode; }
 
-	public get connection(): Connection {
-		return this._connection;
-	}
-
-	public set root(node: RootNode) {
-		this._root = node;
-	}
-
-	public get root(): RootNode {
-		return this._root;
+	public isMatchedSqlConnection(sqlConnProfile: sqlops.IConnectionProfile): boolean {
+		return this._sqlConnectionProfile.id === sqlConnProfile.id;
 	}
 }
 
-class RootNode extends TreeNode {
-	private children: TreeNode[];
-	constructor(private _session: Session, private context: TreeDataContext, private nodePath: string) {
+class SqlClusterRootNode extends TreeNode {
+	private _children: TreeNode[];
+	constructor(
+		private _session: SqlClusterSession,
+		private _treeDataContext: TreeDataContext,
+		private _nodePathValue: string
+	) {
 		super();
 	}
 
-	public get session(): Session {
+	public get session(): SqlClusterSession {
 		return this._session;
 	}
 
 	public get nodePathValue(): string {
-		return this.nodePath;
+		return this._nodePathValue;
 	}
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
-		if (refreshChildren || !this.children) {
-			this.children = [];
-			let dataServicesNode = new DataServicesNode(this._session, this.context, this.nodePath);
+		if (refreshChildren || !this._children) {
+			this._children = [];
+			let dataServicesNode = new DataServicesNode(this._session, this._treeDataContext, this._nodePathValue);
 			dataServicesNode.parent = this;
-			this.children.push(dataServicesNode);
+			this._children.push(dataServicesNode);
 		}
-		return this.children;
+		return this._children;
 	}
 
 	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
@@ -307,31 +283,28 @@ class RootNode extends TreeNode {
 }
 
 class DataServicesNode extends TreeNode {
-	private children: TreeNode[];
-	constructor(private _session: Session, private context: TreeDataContext, private nodePath: string) {
+	private _children: TreeNode[];
+	constructor(private _session: SqlClusterSession, private _context: TreeDataContext, private _nodePath: string) {
 		super();
 	}
 
-	public get session(): Session {
+	public get session(): SqlClusterSession {
 		return this._session;
 	}
 
 	public get nodePathValue(): string {
-		return this.nodePath;
+		return this._nodePath;
 	}
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
-		if (refreshChildren || !this.children) {
-			this.children = [];
-			let hdfsNode = new ConnectionNode(this.context, localize('hdfsFolder', 'HDFS'), this.createHdfsFileSource());
+		if (refreshChildren || !this._children) {
+			this._children = [];
+			let fileSource: IFileSource = this.session.sqlClusterConnection.createHdfsFileSource();
+			let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', 'HDFS'), fileSource);
 			hdfsNode.parent = this;
-			this.children.push(hdfsNode);
+			this._children.push(hdfsNode);
 		}
-		return this.children;
-	}
-
-	private createHdfsFileSource(): IFileSource {
-		return this.session.connection.createHdfsFileSource();
+		return this._children;
 	}
 
 	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {

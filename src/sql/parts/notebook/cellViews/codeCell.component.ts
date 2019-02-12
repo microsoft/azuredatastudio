@@ -3,8 +3,7 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges } from '@angular/core';
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges, AfterViewInit } from '@angular/core';
 import { CellView } from 'sql/parts/notebook/cellViews/interfaces';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
@@ -18,7 +17,6 @@ export const CODE_SELECTOR: string = 'code-cell-component';
 })
 
 export class CodeCellComponent extends CellView implements OnInit, OnChanges {
-	@ViewChild('codeCellOutput', { read: ElementRef }) private outputPreview: ElementRef;
 	@Input() cellModel: ICellModel;
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
@@ -61,8 +59,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	get activeCellId(): string {
 		return this._activeCellId;
 	}
-
-	// Todo: implement layout
 	public layout() {
 
 	}

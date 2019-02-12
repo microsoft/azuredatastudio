@@ -89,7 +89,11 @@ export class NotebookModelStub implements INotebookModel {
     }
     getApplicableConnectionProviderIds(kernelName: string): string[] {
         throw new Error('Method not implemented.');
-    }
+	}
+	get onValidConnectionSelected(): Event<boolean>
+	{
+		throw new Error('method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

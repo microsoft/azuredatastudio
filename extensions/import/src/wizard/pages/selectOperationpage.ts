@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, Operation, DeployOperationPath, ExtractOperationPath, ImportOperationPath, ExportOperationPath } from '../dataTierApplicationWizard';
 import { BasePage } from '../api/basePage';
 
 const localize = nls.loadMessageBundle();
@@ -73,10 +73,12 @@ export class SelectOperationPage extends BasePage {
 
 			//add deploy pages
 			let configPage = this.instance.pages.get('deployConfig');
-			this.instance.wizard.addPage(configPage.wizardPage, 1);
+			this.instance.wizard.addPage(configPage.wizardPage, DeployOperationPath.deployOptions);
+			let deployPlanPage = this.instance.pages.get('deployPlan');
+			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
 			let actionPage = this.instance.pages.get('deployAction');
-			this.instance.wizard.addPage(actionPage.wizardPage, 2);
-			this.addSummaryPage(3);
+			this.instance.wizard.addPage(actionPage.wizardPage, DeployOperationPath.deployAction);
+			this.addSummaryPage(DeployOperationPath.summary);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.deploy);
@@ -100,8 +102,8 @@ export class SelectOperationPage extends BasePage {
 
 			// add the extract page
 			let page = this.instance.pages.get('extractConfig');
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			this.addSummaryPage(2);
+			this.instance.wizard.addPage(page.wizardPage, ExtractOperationPath.options);
+			this.addSummaryPage(ExtractOperationPath.summary);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.extract);
@@ -125,8 +127,8 @@ export class SelectOperationPage extends BasePage {
 
 			// add the import page
 			let page = this.instance.pages.get('importConfig');
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			this.addSummaryPage(2);
+			this.instance.wizard.addPage(page.wizardPage, ImportOperationPath.options);
+			this.addSummaryPage(ImportOperationPath.summary);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.import);
@@ -150,8 +152,8 @@ export class SelectOperationPage extends BasePage {
 
 			// add the export pages
 			let page = this.instance.pages.get('exportConfig');
-			this.instance.wizard.addPage(page.wizardPage, 1);
-			this.addSummaryPage(2);
+			this.instance.wizard.addPage(page.wizardPage, ExportOperationPath.options);
+			this.addSummaryPage(ExportOperationPath.summary);
 
 			// change button text and operation
 			this.instance.setDoneButton(Operation.export);

@@ -17,6 +17,7 @@ import { localize } from 'vs/nls';
 import { JSONObject } from 'sql/parts/notebook/models/jsonext';
 import { OutputTypes } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from 'sql/parts/notebook/notebookConstants';
+import { nbformat } from 'sql/parts/notebook/models/nbformat';
 
 type MimeBundle = { [key: string]: string | string[] | undefined };
 
@@ -29,7 +30,8 @@ export class LocalContentManager implements nb.ContentManager {
 		let path = notebookUri.fsPath;
 		// Note: intentionally letting caller handle exceptions
 		let notebookFileBuffer = await pfs.readFile(path);
-		let contents: JSONObject = json.parse(notebookFileBuffer.toString());
+		let stringContents = notebookFileBuffer.toString();
+		let contents: JSONObject = json.parse(stringContents);
 
 		if (contents) {
 			if (contents.nbformat === 4) {
@@ -40,9 +42,13 @@ export class LocalContentManager implements nb.ContentManager {
 			if (contents.nbformat) {
 				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat, contents.nbformat_minor));
 			}
+		} else if (stringContents === '' || stringContents === undefined) {
+			// Empty?
+			return v4.createEmptyNotebook();
 		}
+
 		// else, fallthrough condition
-		throw new TypeError(localize('nbNotSupported', 'This notebook format is not supported'));
+		throw new TypeError(localize('nbNotSupported', 'This file does not have a valid notebook format'));
 
 	}
 
@@ -70,6 +76,15 @@ namespace v4 {
 		}
 
 		return notebook;
+	}
+
+	export function createEmptyNotebook(): nb.INotebookContents {
+		return {
+			cells: [],
+			metadata: undefined,
+			nbformat: nbformat.MAJOR_VERSION,
+			nbformat_minor: nbformat.MINOR_VERSION
+		};
 	}
 
 	function readCell(cell: nb.ICellContents): nb.ICellContents {

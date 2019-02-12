@@ -378,6 +378,9 @@ export interface INotebookModel {
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
+	readonly onValidConnectionSelected: Event<boolean>;
 }
 
 export interface NotebookContentChange {
@@ -408,6 +411,13 @@ export interface ICellModelOptions {
 	isTrusted: boolean;
 }
 
+export enum CellExecutionState {
+	Hidden = 0,
+	Stopped = 1,
+	Running = 2,
+	Error = 3
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -416,12 +426,14 @@ export interface ICellModel {
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
+	hover: boolean;
+	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
-	readonly onExecutionStateChange: Event<boolean>;
+	readonly onExecutionStateChange: Event<CellExecutionState>;
 	setFuture(future: FutureInternal): void;
-	readonly isRunning: boolean;
+	readonly executionState: CellExecutionState;
 	runCell(notificationService?: INotificationService): Promise<boolean>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;

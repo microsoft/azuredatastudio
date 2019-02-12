@@ -26,6 +26,11 @@
 					"type": "boolean",
 					"default": false,
 					"description": "%notebook.sqlKernelEnabled.description%"
+				},
+				"notebook.overrideEditorTheming": {
+					"type": "boolean",
+					"default": true,
+					"description": "%notebook.overrideEditorTheming.description%"
 				}
 			}
 		},
@@ -90,7 +95,7 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "notebook.command.new",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Server",
+					"when": "connectionProvider == MSSQL && nodeType == dataservices",
 					"group": "1root@1"
 				},
 				{

@@ -3,8 +3,6 @@
 *  Licensed under the Source EULA. See License.txt in the project root for license information.
 *--------------------------------------------------------------------------------------------*/
 
-import 'sql/parts/notebook/notebookStyles';
-
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -103,10 +101,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private updateProfile(): void {
-		this.profile = this.notebookParams!.profile;
+		this.profile = this.notebookParams ? this.notebookParams.profile : undefined;
+		let profile: IConnectionProfile;
 		if (!this.profile) {
-			// use global connection if possible
-			let profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			// Use connectionProfile passed in first
+			if (this._notebookParams.connectionProfileId !== undefined && this._notebookParams.connectionProfileId) {
+				profile = this.connectionManagementService.getConnectionProfileById(this._notebookParams.connectionProfileId);
+			} else {
+				// Second use global connection if possible
+				profile = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+			}
 			// TODO use generic method to match kernel with valid connection that's compatible. For now, we only have 1
 			if (profile && profile.providerName) {
 				this.profile = profile;
@@ -346,11 +350,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		attachSelectBoxStyler(kernelDropdown, this.themeService);
 
 		let attachToContainer = document.createElement('div');
-		let attachTodropdwon = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
+		let attachToDropdown = new AttachToDropdown(attachToContainer, this.contextViewService, this.modelRegistered,
 			this.connectionManagementService, this.connectionDialogService, this.notificationService, this.capabilitiesService);
-		attachTodropdwon.render(attachToContainer);
-		attachSelectBoxStyler(attachTodropdwon, this.themeService);
-
+		attachToDropdown.render(attachToContainer);
+		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
 		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
 		addCodeCellButton.cellType = CellTypes.Code;
@@ -484,10 +487,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	 */
 	private fillInActionsForCurrentContext(): void {
 		let primary: IAction[] = [];
-		let	secondary: IAction[] = [];
+		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, {primary, secondary}, false, (group: string) => group === undefined);
+		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined);
 		this.addPrimaryContributedActions(primary);
 	}
 

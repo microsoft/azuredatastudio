@@ -81,3 +81,12 @@
 	height: 20px;
 	width: 20px;
 }
+.moreActions.actionhidden {
+	visibility: hidden
+}
+
+.notebookEditor .notebook-cellTable {
+	border: 1px silver solid;
+	margin-left: 20px;
+	margin-top: 10px;
+}
