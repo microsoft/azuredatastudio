@@ -14,6 +14,7 @@ import { ServiceClient } from '../services/serviceClient';
 import { ApiType, managerInstance } from '../services/serviceApiManager';
 import { FlatFileProvider } from '../services/contracts';
 import { DataTierApplicationWizard } from '../wizard/dataTierApplicationWizard';
+import { SchemaCompareDialog } from '../dialogs/schemaCompareDialog';
 
 /**
  * The main controller class that initializes the extension
@@ -37,6 +38,7 @@ export default class MainController extends ControllerBase {
 		});
 
 		this.initializeDacFxWizard();
+		this.initializeSchemaCompareDialog();
 		return Promise.resolve(true);
 	}
 
@@ -46,5 +48,9 @@ export default class MainController extends ControllerBase {
 
 	private initializeDacFxWizard() {
 		azdata.tasks.registerTask('dacFx.start', (profile: azdata.IConnectionProfile, ...args: any[]) => new DataTierApplicationWizard().start(profile, args));
+	}
+
+	private initializeSchemaCompareDialog() {
+		sqlops.tasks.registerTask('schemaCompare.start', () => new SchemaCompareDialog().openDialog());
 	}
 }

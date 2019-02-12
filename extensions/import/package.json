@@ -42,6 +42,14 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
+      },
+      {
+        "command": "schemaCompare.start",
+        "title": "Schema Compare",
+        "icon": {
+          "light": "./images/light_icon.svg",
+          "dark": "./images/dark_icon.svg"
+        }
       }
     ],
     "keybindings": [
