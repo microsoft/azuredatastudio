@@ -546,8 +546,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return kernel;
 	}
 
-	private getDisplayNameFromSpecName(kernelid: string): string {
-		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(kernel => kernel.name === kernelid);
+	private getDisplayNameFromSpecName(kernel: nb.IKernel): string {
+		let specs = this.notebookManager.sessionManager.specs;
+		if (!specs || !specs.kernels) {
+			return kernel.name;
+		}
+		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(kernel => kernel.name === kernel.name);
 		let newKernelDisplayName;
 		if (newKernel) {
 			newKernelDisplayName = newKernel.display_name;
@@ -586,7 +590,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
-			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue.name);
+			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
 			this._activeContexts = await NotebookContexts.getContextsForKernel(this.notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
