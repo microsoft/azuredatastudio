@@ -194,7 +194,7 @@ export class GridPanel extends ViewletPanel {
 				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
 			}
 			return p;
-		}, []).reverse());
+		}, []));
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
 		}, 0);
