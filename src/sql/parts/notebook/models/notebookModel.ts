@@ -428,6 +428,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
 		this.setProviderIdForKernel(kernelSpec);
+		// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
+		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
+			this.notebookManager.sessionManager.specs.kernels && this.notebookManager.sessionManager.specs.kernels.findIndex(k => k.name === kernelSpec.name) < 0) {
+				kernelSpec = this.notebookManager.sessionManager.specs.kernels.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
+		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			return this._activeClientSession.changeKernel(kernelSpec)
 				.then((kernel) => {
@@ -678,7 +683,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// If no SessionManager exists, utilize passed in StandardKernels to see if we can intelligently set _providerId
 			if (!sessionManagerFound) {
 				let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
-				if (provider) {
+				if (provider && provider !== this._providerId) {
 					this._providerId = provider;
 					this._onProviderIdChanged.fire(this._providerId);
 				}
