@@ -429,9 +429,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
 		this.setProviderIdForKernel(kernelSpec);
 		// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
-		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
-			this.notebookManager.sessionManager.specs.kernels && this.notebookManager.sessionManager.specs.kernels.findIndex(k => k.name === kernelSpec.name) < 0) {
-				kernelSpec = this.notebookManager.sessionManager.specs.kernels.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
+		let kernelSpecs = this.getKernelSpecs();
+		if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.name === kernelSpec.name) < 0) {
+				kernelSpec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
 		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			return this._activeClientSession.changeKernel(kernelSpec)
@@ -690,6 +690,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 		}
 	}
+
+	// Get kernel specs from current sessionManager
+	private getKernelSpecs(): nb.IKernelSpec[] {
+		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
+			this.notebookManager.sessionManager.specs.kernels) {
+				return this.notebookManager.sessionManager.specs.kernels;
+			}
+		return [];
+	}
+
 	/**
 	 * Serialize the model to JSON.
 	 */
