@@ -8,11 +8,11 @@
         "vscode": "*",
         "sqlops": "*"
     },
-"extensionPack": [
-"Microsoft.agent",
-"Microsoft.profiler",
-"Microsoft.import"
-],
+    "extensionPack": [
+        "Microsoft.agent",
+        "Microsoft.profiler",
+        "Microsoft.import"
+    ],
     "repository": {
         "type": "git",
         "url": "https://github.com/Microsoft/azuredatastudio.git"
