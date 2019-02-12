@@ -430,6 +430,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Hides the modal and removes key listeners
 	 */
 	protected hide() {
+		this._footerButtons.forEach(button => button.applyStyles());
 		this._modalShowingContext.get().pop();
 		this._builder.offDOM();
 		if (this._focusedElementBeforeOpen) {
