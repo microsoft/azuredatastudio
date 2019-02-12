@@ -7,6 +7,8 @@
 import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
+import * as os from 'os';
+import * as path from 'path';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,6 +24,7 @@ export class SchemaCompareDialog {
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
 	private sourceTextBox: sqlops.InputBoxComponent;
 	private targetTextBox: sqlops.InputBoxComponent;
+	protected fileTextBox: sqlops.InputBoxComponent;
 
 	// Dialog Name for Telemetry
 	public dialogName: string;
@@ -86,14 +89,14 @@ export class SchemaCompareDialog {
 
 		let sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo = {
 			endpointType: sqlops.SchemaCompareEndpointType.dacpac,
-			databaseName: 'nullableComputedColumn-2019-1-25-11-10',
+			databaseName: path.parse(this.sourceTextBox.value).name,
 			ownerUri: '',
 			packageFilePath: this.sourceTextBox.value
 		};
 
 		let targetEndpointInfo: sqlops.SchemaCompareEndpointInfo = {
 			endpointType: sqlops.SchemaCompareEndpointType.dacpac,
-			databaseName: 'Database1-2019-1-23-21-35',
+			databaseName: path.parse(this.targetTextBox.value).name,
 			ownerUri: '',
 			packageFilePath: this.targetTextBox.value
 		};
@@ -119,28 +122,67 @@ export class SchemaCompareDialog {
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
 
-			this.sourceTextBox = view.modelBuilder.inputBox()
-				.withProperties({ width: 420 })
-				.component();
+			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
+				width: 350,
+				required: true
+			},).component();
 
-			this.targetTextBox = view.modelBuilder.inputBox()
-				.withProperties({ width: 420 })
-				.component();
+			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
+				width: 350,
+				required: true
+			}).component();
+
+			let sourceComponent = await this.createFileBrowser(view, this.sourceTextBox, SchemaCompareDialog.SourceTextBoxLabel);
+			let targetComponent = await this.createFileBrowser(view, this.targetTextBox, SchemaCompareDialog.TargetTextBoxLabel);
 
 			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.sourceTextBox,
-					title: SchemaCompareDialog.SourceTextBoxLabel
-				},
-				{
-					component: this.targetTextBox,
-					title: SchemaCompareDialog.TargetTextBoxLabel
-				}]).withLayout({ width: 420 }).component();
+				.withFormItems([
+				sourceComponent,
+				targetComponent
+			], {
+				horizontal: true
+			}).withLayout({
+				 width: 350,
+				}).component();
 
 			await view.initializeModel(formModel);
-
-			this.sourceTextBox.value = 'C:\\Users\\kisantia\\nullableComputedColumn-2019-1-25-11-10.dacpac';
-			this.targetTextBox.value = 'C:\\Users\\kisantia\\Database1-2019-1-23-21-35.dacpac';
 		});
+	}
+
+	private async createFileBrowser(view: sqlops.ModelView, textbox: sqlops.InputBoxComponent, title: string): Promise<sqlops.FormComponent> {
+		let fileButton = view.modelBuilder.button().withProperties({
+			label: '•••',
+		}).component();
+
+		fileButton.onDidClick(async (click) => {
+			let fileUris = await vscode.window.showOpenDialog(
+				{
+					canSelectFiles: true,
+					canSelectFolders: false,
+					canSelectMany: false,
+					defaultUri: vscode.Uri.file(os.homedir()),
+					openLabel: localize('schemaCompare.openFile', 'Open'),
+					filters: {
+						'dacpac Files': ['dacpac'],
+					}
+				}
+			);
+
+			if (!fileUris || fileUris.length === 0) {
+				return;
+			}
+
+			let fileUri = fileUris[0];
+			textbox.value = fileUri.fsPath;
+		});
+
+		textbox.onTextChanged(async () => {
+		});
+
+		return {
+			component: textbox,
+			title: title,
+			actions: [fileButton]
+		};
 	}
 }
