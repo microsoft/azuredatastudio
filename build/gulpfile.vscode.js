@@ -66,7 +66,7 @@ const excludedExtensions = [
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
 	// {{SQL CARBON EDIT}}
-	'integration-tests',
+	'integration-tests'
 ];
 
 // {{SQL CARBON EDIT}}
@@ -76,7 +76,8 @@ const sqlBuiltInExtensions = [
 	// the extension will be excluded from SQLOps package and will have separate vsix packages
 	'agent',
 	'import',
-	'profiler'
+	'profiler',
+	'admin-pack'
 ];
 var azureExtensions =  [ 'azurecore', 'mssql'];
 
