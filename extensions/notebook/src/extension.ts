@@ -113,7 +113,13 @@ async function analyzeNotebook(oeContext?: sqlops.ObjectExplorerContext): Promis
 
 	let editor = await sqlops.nb.showNotebookDocument(untitledUri, {
 		connectionId: oeContext ? oeContext.connectionProfile.id : '',
-		providerId: JUPYTER_NOTEBOOK_PROVIDER
+		providerId: JUPYTER_NOTEBOOK_PROVIDER,
+		preview: false,
+		defaultKernel: {
+			name: 'pyspark3kernel',
+			display_name: 'PySpark3',
+			language: 'python'
+		}
 	});
 	if (oeContext && oeContext.nodeInfo && oeContext.nodeInfo.nodePath) {
 		// Get the file path after '/HDFS'
