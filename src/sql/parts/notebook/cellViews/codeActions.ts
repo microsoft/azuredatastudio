@@ -8,14 +8,17 @@ import { nb } from 'sqlops';
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import * as types from 'vs/base/common/types';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { getErrorMessage } from 'sql/parts/notebook/notebookUtils';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
-import { ToggleableAction } from 'sql/parts/notebook/notebookActions';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { ICellModel, CellExecutionState } from 'sql/parts/notebook/models/modelInterfaces';
+import { MultiStateAction, IMultiStateData, IActionStateData } from 'sql/parts/notebook/notebookActions';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
+const emptyExecutionCountLabel = '[ ]';
 
 function hasModelAndCell(context: CellContext, notificationService: INotificationService): boolean  {
 	if (!context || !context.model) {
@@ -60,26 +63,19 @@ export abstract class CellActionBase extends Action {
 	abstract doRun(context: CellContext): Promise<void>;
 }
 
-export class RunCellAction extends ToggleableAction {
+export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	public static ID = 'notebook.runCell';
 	public static LABEL = 'Run cell';
 	private _executionChangedDisposable: IDisposable;
 	private _context: CellContext;
 	constructor(context: CellContext, @INotificationService private notificationService: INotificationService) {
-		super(RunCellAction.ID, {
-			shouldToggleTooltip: true,
-			toggleOffLabel: localize('runCell', 'Run cell'),
-			toggleOffClass: 'toolbarIconRun',
-			toggleOnLabel: localize('stopCell', 'Cancel execution'),
-			toggleOnClass: 'toolbarIconStop',
-			// On == running
-			isOn: false
-		});
+		super(RunCellAction.ID, new IMultiStateData<CellExecutionState>([
+			{ key: CellExecutionState.Hidden, value: { label: emptyExecutionCountLabel, className: '', tooltip: '', hideIcon: true }},
+			{ key: CellExecutionState.Stopped, value: { label: '', className: 'toolbarIconRun', tooltip: localize('runCell', 'Run cell') }},
+			{ key: CellExecutionState.Running, value: { label: '', className: 'toolbarIconStop', tooltip: localize('stopCell', 'Cancel execution') }},
+			{ key: CellExecutionState.Error, value: { label: '', className: 'toolbarIconRunError', tooltip: localize('errorRunCell', 'Error on last run. Click to run again') }},
+		], CellExecutionState.Hidden ));
 		this.ensureContextIsUpdated(context);
-	}
-
-	private _handleExecutionStateChange(running: boolean): void {
-		this.toggle(running);
 	}
 
 	public run(context?: CellContext): TPromise<boolean> {
@@ -106,8 +102,30 @@ export class RunCellAction extends ToggleableAction {
 				this._executionChangedDisposable.dispose();
 			}
 			this._context = context;
-			this.toggle(context.cell.isRunning);
-			this._executionChangedDisposable = this._context.cell.onExecutionStateChange(this._handleExecutionStateChange, this);
+			this.updateStateAndExecutionCount(context.cell.executionState);
+			this._executionChangedDisposable = this._context.cell.onExecutionStateChange((state) => {
+				this.updateStateAndExecutionCount(state);
+			});
 		}
+	}
+
+	private updateStateAndExecutionCount(state: CellExecutionState) {
+		let label = emptyExecutionCountLabel;
+		let className = '';
+		if (!types.isUndefinedOrNull(this._context.cell.executionCount)) {
+			label = `[${this._context.cell.executionCount}]`;
+			// Heuristic to try and align correctly independent of execution count length. Moving left margin
+			// back by a few px seems to make things "work" OK, but isn't a super clean solution
+			if (label.length === 4) {
+				className = 'execCountTen';
+			} else if (label.length > 4) {
+				className = 'execCountHundred';
+			}
+		}
+		this.states.updateStateData(CellExecutionState.Hidden, (data) => {
+			data.label = label;
+			data.className = className;
+		});
+		this.updateState(state);
 	}
 }

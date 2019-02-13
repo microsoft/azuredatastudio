@@ -274,6 +274,10 @@ export interface IConnectionManagementService {
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
 
 	providerRegistered(providerId: string): boolean;
+	/**
+	 * Get connection profile by id
+	 */
+	getConnectionProfileById(profileId: string): IConnectionProfile;
 }
 
 export const IConnectionDialogService = createDecorator<IConnectionDialogService>('connectionDialogService');

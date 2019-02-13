@@ -164,7 +164,8 @@ export enum ModelComponentTypes {
 	TreeComponent,
 	FileBrowserTree,
 	Editor,
-	Dom
+	Dom,
+	Hyperlink
 }
 
 export interface IComponentShape {
@@ -262,6 +263,7 @@ export interface CardProperties {
 	label: string;
 	value?: string;
 	actions?: ActionDescriptor[];
+	descriptions?: string[];
 	status?: StatusIndicator;
 	selected?: boolean;
 	cardType: CardType;
@@ -300,7 +302,8 @@ export enum DeclarativeDataType {
 
 export enum CardType {
 	VerticalButton = 'VerticalButton',
-	Details = 'Details'
+	Details = 'Details',
+	ListItem = 'ListItem'
 }
 
 export enum Orientation {

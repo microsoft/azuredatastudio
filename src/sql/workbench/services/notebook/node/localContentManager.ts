@@ -71,8 +71,10 @@ namespace v4 {
 			nbformat_minor: contents.nbformat_minor
 		};
 
-		for (let cell of contents.cells) {
-			notebook.cells.push(readCell(cell));
+		if (contents.cells) {
+			for (let cell of contents.cells) {
+				notebook.cells.push(readCell(cell));
+			}
 		}
 
 		return notebook;

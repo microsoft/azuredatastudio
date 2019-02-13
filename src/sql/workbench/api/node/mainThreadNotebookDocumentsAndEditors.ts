@@ -361,7 +361,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			pinned: !options.preview
 		};
 		let trusted = uri.scheme === Schemas.untitled;
-		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
+		let model = new NotebookInputModel(uri, undefined, trusted, undefined, undefined, undefined, options.connectionId);
 		let providerId = options.providerId;
 		let providers: string[] = undefined;
 		// Ensure there is always a sensible provider ID for this file type
@@ -542,7 +542,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					uri: cell.cellUri,
 					contents: {
 						cell_type: cell.cellType,
-						execution_count: undefined,
+						execution_count: cell.executionCount,
 						metadata: {
 							language: cell.language
 						},

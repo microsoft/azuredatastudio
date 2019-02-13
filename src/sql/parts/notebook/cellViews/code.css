@@ -11,12 +11,22 @@ code-component {
 
 code-component .toolbar {
 	border-right-width: 1px;
+	flex: 0 0 auto;
+	display: flex;
+	flex-flow:column;
+	width: 40px;
+	min-height: 40px;
+	orientation: portrait
+}
+
+code-component .toolbar.markdown {
+	display: none;
 }
 
 code-component .toolbar .carbon-taskbar {
 	position: sticky;
-	top: 10px;
-	bottom: 30px;
+	top: 0px;
+	margin-top: 5px;
 }
 
 code-component .toolbarIconRun {
@@ -30,15 +40,21 @@ code-component .toolbarIconRun {
 	background-image: url('../media/dark/execute_cell_inverse.svg');
 }
 
+code-component .toolbarIconRunError {
+	height: 20px;
+	background-image: url('../media/light/execute_cell_error.svg');
+	padding-bottom: 10px;
+}
+
 code-component .toolbarIconStop {
 	height: 20px;
-	background-image: url('../media/light/stop_cell.svg');
+	background-image: url('../media/light/stop_cell_solidanimation.svg');
 	padding-bottom: 10px;
 }
 
 .vs-dark code-component .toolbarIconStop,
 .hc-black code-component .toolbarIconStop {
-	background-image: url('../media/dark/stop_cell_inverse.svg');
+	background-image: url('../media/dark/stop_cell_solidanimation_inverse.svg');
 }
 
 code-component .editor {
@@ -54,6 +70,21 @@ code-component .carbon-taskbar .icon {
 	width: 40px;
 }
 
+code-component .carbon-taskbar .icon.hideIcon {
+	width: 0px;
+	padding-left: 0px;
+	padding-top: 6px;
+	font-family: monospace;
+	font-size: 12px;
+}
+
+code-component .carbon-taskbar .icon.hideIcon.execCountTen {
+	margin-left: -2px;
+}
+
+code-component .carbon-taskbar .icon.hideIcon.execCountHundred {
+	margin-left: -6px;
+}
 
 code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container
 {

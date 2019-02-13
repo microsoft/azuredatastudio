@@ -30,8 +30,13 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Emitter, debounceEvent } from 'vs/base/common/event';
+import { CellTypes } from 'sql/parts/notebook/models/contracts';
+import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
 
 export const CODE_SELECTOR: string = 'code-component';
+const MARKDOWN_CLASS = 'markdown';
 
 @Component({
 	selector: CODE_SELECTOR,
@@ -41,7 +46,18 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@Input() cellModel: ICellModel;
+
+	public get cellModel(): ICellModel {
+		return this._cellModel;
+	}
+
+	@Input() public set cellModel(value: ICellModel) {
+		this._cellModel = value;
+		if (this.toolbarElement && value && value.cellType === CellTypes.Markdown) {
+			let nativeToolbar = <HTMLElement> this.toolbarElement.nativeElement;
+			DOM.addClass(nativeToolbar, MARKDOWN_CLASS);
+		}
+	}
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
@@ -54,24 +70,24 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	@Input() set hover(value: boolean) {
-		this._hover = value;
+		this.cellModel.hover = value;
 		if (!this.isActive()) {
 			// Only make a change if we're not active, since this has priority
-			this.toggleMoreActionsButton(this._hover);
+			this.toggleMoreActionsButton(this.cellModel.hover);
 		}
 	}
 
-
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
+	private readonly _maximumHeight = 4000;
+	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
-	private _uri: string;
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
-	private _hover: boolean;
+	private _layoutEmitter = new Emitter<void>();
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -83,9 +99,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
+		debounceEvent(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
+		(() => this.layout());
+
 	}
 
 	ngOnInit() {
@@ -113,8 +133,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	ngAfterContentInit(): void {
 		this.createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
-			this.layout();
+			this._layoutEmitter.fire();
 		}));
+	}
+
+	ngAfterViewInit(): void {
+		this._layoutEmitter.fire();
 	}
 
 	get model(): NotebookModel {
@@ -131,6 +155,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
+		this._editor.setMaximumHeight(this._maximumHeight);
 		let uri = this.createUri();
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
@@ -142,14 +167,25 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
 
+		// For markdown cells, don't show line numbers unless we're using editor defaults
+		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
+		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
+
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
+			// TODO see if there's a better way to handle reassessing size.
+			setTimeout(() => this._layoutEmitter.fire(), 250);
 		}));
-		this._register(this.model.layoutChanged(this.layout, this));
+		this._register(this._configurationService.onDidChangeConfiguration(e => {
+			if (e.affectsConfiguration('editor.wordWrap')) {
+				this._editor.setHeightToScrollHeight(true);
+			}
+		}));
+		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire, this));
 		this.layout();
 	}
 

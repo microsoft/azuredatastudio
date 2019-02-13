@@ -7,12 +7,38 @@
 
 .modelview-group-row {
 	display: table-row;
-
 }
 
+.modelview-group-header-collapsible,
 .modelview-group-header {
 	padding-bottom: 5px;
 	font-size: 14px;
+}
+
+.modelview-group-header-collapsible {
+	padding-left: 20px;
+	background-position: 2px 2px;
+	background-size: 16px 16px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+.vs .modelview-group-header-collapsible.expanded {
+	background-image: url("../../media/icons/expanded.svg");
+}
+
+.vs-dark .modelview-group-header-collapsible.expanded,
+.hc-black .modelview-group-header-collapsible.expanded {
+	background-image: url("../../media/icons/expanded_inverse.svg");
+}
+
+.vs .modelview-group-header-collapsible.collapsed {
+	background-image: url("../../media/icons/collapsed.svg");
+}
+
+.vs-dark .modelview-group-header-collapsible.collapsed,
+.hc-black .modelview-group-header-collapsible.collapsed {
+	background-image: url("../../media/icons/collapsed_inverse.svg");
 }
 
 .modelview-group-cell {

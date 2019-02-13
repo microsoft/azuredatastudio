@@ -40,6 +40,7 @@ declare module 'sqlops' {
 		toolbarContainer(): ToolbarBuilder;
 		loadingComponent(): LoadingComponentBuilder;
 		fileBrowserTree(): ComponentBuilder<FileBrowserTreeComponent>;
+		hyperlink(): ComponentBuilder<HyperlinkComponent>;
 	}
 
 	export interface TreeComponentDataProvider<T> extends vscode.TreeDataProvider<T> {
@@ -348,6 +349,8 @@ declare module 'sqlops' {
 	export interface GroupLayout {
 		width?: number | string;
 		header?: string;
+		collapsible?: boolean;
+		collapsed?: boolean;
 	}
 
 	export interface GroupItemLayout {
@@ -433,7 +436,8 @@ declare module 'sqlops' {
 
 	export enum CardType {
 		VerticalButton = 'VerticalButton',
-		Details = 'Details'
+		Details = 'Details',
+		ListItem = 'ListItem'
 	}
 
 	/**
@@ -444,6 +448,7 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
+		descriptions?: string[];
 		status?: StatusIndicator;
 
 		/**
@@ -538,6 +543,11 @@ declare module 'sqlops' {
 
 	export interface TextComponentProperties {
 		value?: string;
+	}
+
+	export interface HyperlinkComponentProperties extends ComponentProperties {
+		label: string;
+		url: string;
 	}
 
 	export interface DropDownProperties extends ComponentProperties {
@@ -638,8 +648,13 @@ declare module 'sqlops' {
 
 	}
 
-	export interface TextComponent extends Component {
+	export interface TextComponent extends Component, ComponentProperties {
 		value: string;
+	}
+
+	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
+		label: string;
+		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {

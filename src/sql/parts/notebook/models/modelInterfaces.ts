@@ -135,7 +135,7 @@ export interface IClientSession extends IDisposable {
 	 * This will optionally start a session if the kernel preferences
 	 * indicate this is desired
 	 */
-	initialize(connection?: IConnectionProfile): Promise<void>;
+	initialize(): Promise<void>;
 
 	/**
 	 * Change the current kernel associated with the document.
@@ -411,6 +411,13 @@ export interface ICellModelOptions {
 	isTrusted: boolean;
 }
 
+export enum CellExecutionState {
+	Hidden = 0,
+	Stopped = 1,
+	Running = 2,
+	Error = 3
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -419,12 +426,14 @@ export interface ICellModel {
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
+	hover: boolean;
+	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
-	readonly onExecutionStateChange: Event<boolean>;
+	readonly onExecutionStateChange: Event<CellExecutionState>;
 	setFuture(future: FutureInternal): void;
-	readonly isRunning: boolean;
+	readonly executionState: CellExecutionState;
 	runCell(notificationService?: INotificationService): Promise<boolean>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;

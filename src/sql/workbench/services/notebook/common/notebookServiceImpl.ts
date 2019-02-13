@@ -12,7 +12,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider, DEFAULT_NOTEBOOK_PROVIDER,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
 } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/parts/notebook/outputs/factories';
@@ -38,8 +38,6 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
-
-const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
 
 export interface NotebookProviderProperties {
 	provider: string;
