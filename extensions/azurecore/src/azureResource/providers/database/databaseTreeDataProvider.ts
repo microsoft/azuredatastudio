@@ -55,7 +55,7 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 					dark: this._extensionContext.asAbsolutePath('resources/dark/sql_database_inverse.svg'),
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_database.svg')
 				},
-				collapsibleState: TreeItemCollapsibleState.Collapsed,
+				collapsibleState: process.env.NODE_ENV === 'development' ? TreeItemCollapsibleState.Collapsed : TreeItemCollapsibleState.None,
 				contextValue: AzureResourceItemType.database,
 				payload: {
 					id: generateGuid(),
