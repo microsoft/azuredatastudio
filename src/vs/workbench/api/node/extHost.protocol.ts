@@ -42,6 +42,7 @@ import { IProgressOptions, IProgressStep } from 'vs/workbench/services/progress/
 import { SaveReason } from 'vs/workbench/services/textfile/common/textfiles';
 import * as vscode from 'vscode';
 
+// {{SQL CARBON EDIT}}
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
 
 export interface IEnvironment {
@@ -670,6 +671,7 @@ export interface ExtHostDocumentsAndEditorsShape {
 }
 
 export interface ExtHostTreeViewsShape {
+	// {{SQL CARBON EDIT}}
 	$getChildren(treeViewId: string, treeItemHandle?: string): TPromise<sqlITreeItem[]>;
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;

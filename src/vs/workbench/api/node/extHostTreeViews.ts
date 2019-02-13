@@ -20,9 +20,9 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { equals } from 'vs/base/common/arrays';
 import { ILogService } from 'vs/platform/log/common/log';
 
+// {{SQL CARBON EDIT}}
 import * as sqlops from 'sqlops';
 import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
-// {{SQL CARBON EDIT}}
 export type TreeItemHandle = string;
 
 export class ExtHostTreeViews implements ExtHostTreeViewsShape {
@@ -410,6 +410,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			iconDark: this.getDarkIconPath(extensionTreeItem) || icon,
 			themeIcon: extensionTreeItem.iconPath instanceof ThemeIcon ? { id: extensionTreeItem.iconPath.id } : void 0,
 			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState,
+			// {{SQL CARBON EDIT}}
 			payload: extensionTreeItem.payload,
 			childProvider: extensionTreeItem.childProvider
 		};
