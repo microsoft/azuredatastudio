@@ -9,15 +9,18 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
-import * as ResourceStrings from '../resourceStrings';
 import { WizardBase } from '../../wizardBase';
 import { TargetClusterType } from '../../../interfaces';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 const ClusterTypeRadioButtonGroupName = 'SelectClusterType';
 
 export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
-		super(ResourceStrings.SelectTargetClusterPageTitle, ResourceStrings.SelectTargetClusterPageDescription, model, wizard);
+		super(localize('bdc-create.selectTargetClusterPageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
+			localize('bdc-create.selectTargetClusterPageDescription', 'Select an existing Kubernetes cluster or choose a cluster type you want to deploy'),
+			model, wizard);
 	}
 
 	private existingClusterOption: sqlops.RadioButtonComponent;
@@ -25,7 +28,7 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 	private createAksClusterOption: sqlops.RadioButtonComponent;
 	private pageContainer: sqlops.DivContainer;
 	private existingClusterControl: sqlops.FlexContainer;
-	private createLocalclusterControl: sqlops.FlexContainer;
+	private createLocalClusterControl: sqlops.FlexContainer;
 	private createAksClusterControl: sqlops.FlexContainer;
 	private clusterContextsLabel: sqlops.TextComponent;
 	private errorLoadingClustersLabel: sqlops.TextComponent;
@@ -33,12 +36,12 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 
 	private cards: sqlops.CardComponent[];
 
-	protected async initialize(view: sqlops.ModelView) {
+	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let self = this;
 		this.model.targetClusterType = TargetClusterType.ExistingKubernetesCluster;
-		this.existingClusterOption = this.createTargetTypeRadioButton(view, ResourceStrings.ExistingClusterOptionText, true);
-		this.createLocalClusterOption = this.createTargetTypeRadioButton(view, ResourceStrings.CreateLocalClusterOptionText);
-		this.createAksClusterOption = this.createTargetTypeRadioButton(view, ResourceStrings.CreateNewAKSClusterOptionText);
+		this.existingClusterOption = this.createTargetTypeRadioButton(view, localize('bdc-create.existingK8sCluster', 'Existing Kubernetes cluster'), true);
+		this.createLocalClusterOption = this.createTargetTypeRadioButton(view, localize('bdc-create.createLocalCluster', 'Create new local cluster'));
+		this.createAksClusterOption = this.createTargetTypeRadioButton(view, localize('bdc-create.createAksCluster', 'Create new Azure Kubernetes Service cluster'));
 
 		this.existingClusterOption.onDidClick(() => {
 			self.pageContainer.clearItems();
@@ -48,7 +51,7 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 
 		this.createLocalClusterOption.onDidClick(() => {
 			self.pageContainer.clearItems();
-			self.pageContainer.addItem(self.createLocalclusterControl);
+			self.pageContainer.addItem(self.createLocalClusterControl);
 			self.model.targetClusterType = TargetClusterType.NewLocalCluster;
 		});
 
@@ -79,24 +82,24 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 		).withLayout({ width: '100%', height: '100%' });
 
 		let form = formBuilder.component();
-		await view.initializeModel(form);
+		return view.initializeModel(form);
 	}
 
 	private createTargetTypeRadioButton(view: sqlops.ModelView, label: string, checked: boolean = false): sqlops.RadioButtonComponent {
 		return view.modelBuilder.radioButton().withProperties({ label: label, name: ClusterTypeRadioButtonGroupName, checked: checked }).component();
 	}
 
-	private initExistingClusterControl(view: sqlops.ModelView) {
+	private initExistingClusterControl(view: sqlops.ModelView): void {
 		let self = this;
-		let sectionDescription = view.modelBuilder.text().withProperties({ value: ResourceStrings.ExistingClusterSectionDescription }).component();
-		let configFileLabel = view.modelBuilder.text().withProperties({ value: ResourceStrings.KubeConfigFileLabelText }).component();
+		let sectionDescription = view.modelBuilder.text().withProperties({ value: localize('bdc-create.existingClusterSectionDescription', 'Select the cluster context you want to install the SQL Server big data cluster') }).component();
+		let configFileLabel = view.modelBuilder.text().withProperties({ value: localize('bdc-create.kubeConfigFileLabelText', 'KubeConfig File') }).component();
 		let configFileInput = view.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
-		let browseFileButton = view.modelBuilder.button().withProperties({ label: ResourceStrings.BrowseText, width: '100px' }).component();
+		let browseFileButton = view.modelBuilder.button().withProperties({ label: localize('bdc-browseText', 'Browse'), width: '100px' }).component();
 		let configFileContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
 			.withItems([configFileLabel, configFileInput, browseFileButton], { CSSStyles: { 'margin-right': '10px' } }).component();
-		this.clusterContextsLabel = view.modelBuilder.text().withProperties({ value: ResourceStrings.ClusterContextsLabelText }).component();
-		this.errorLoadingClustersLabel = view.modelBuilder.text().withProperties({ value: ResourceStrings.ErrorLoadingClustersFromConfigText }).component();
+		this.clusterContextsLabel = view.modelBuilder.text().withProperties({ value: localize('bdc-clusterContextsLabelText', 'Cluster Contexts') }).component();
+		this.errorLoadingClustersLabel = view.modelBuilder.text().withProperties({ value: localize('bdc-errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file') }).component();
 		this.clusterContextContainer = view.modelBuilder.divContainer().component();
 		this.existingClusterControl = view.modelBuilder.divContainer().withItems([sectionDescription, configFileContainer, this.clusterContextContainer], { CSSStyles: { 'margin-top': '0px' } }).component();
 
@@ -107,7 +110,7 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 					canSelectFolders: false,
 					canSelectMany: false,
 					defaultUri: vscode.Uri.file(os.homedir()),
-					openLabel: ResourceStrings.SelectKubeConfigFileText,
+					openLabel: localize('bdc-selectKubeConfigFileText', 'Select'),
 					filters: {
 						'KubeConfig Files': ['kubeconfig'],
 					}
@@ -136,8 +139,8 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 						descriptions: [cluster.displayName, cluster.user],
 						cardType: sqlops.CardType.ListItem,
 						iconPath: {
-							dark: self.Wizard.context.asAbsolutePath('images/cluster_inverse.svg'),
-							light: self.Wizard.context.asAbsolutePath('images/cluster.svg')
+							dark: self.wizard.context.asAbsolutePath('images/cluster_inverse.svg'),
+							light: self.wizard.context.asAbsolutePath('images/cluster.svg')
 						},
 					}).component();
 					card.onCardSelectedChanged(() => {
@@ -161,12 +164,12 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 		});
 	}
 
-	private initLocalClusterControl(view: sqlops.ModelView) {
+	private initLocalClusterControl(view: sqlops.ModelView): void {
 		let placeholder = view.modelBuilder.text().withProperties({ value: 'create local cluster place holder' }).component();
-		this.createLocalclusterControl = view.modelBuilder.divContainer().withItems([placeholder]).component();
+		this.createLocalClusterControl = view.modelBuilder.divContainer().withItems([placeholder]).component();
 	}
 
-	private initAksClusterControl(view: sqlops.ModelView) {
+	private initAksClusterControl(view: sqlops.ModelView): void {
 		let placeholder = view.modelBuilder.text().withProperties({ value: 'AKS cluster place holder' }).component();
 		this.createAksClusterControl = view.modelBuilder.divContainer().withItems([placeholder]).component();
 	}

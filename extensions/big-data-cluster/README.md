@@ -1,6 +1,6 @@
-# Microsoft SQL Server Big Data Cluster Extension for Azure Data Studio
+# Microsoft SQL Server big data cluster Extension for Azure Data Studio
 
-Welcome to Microsoft SQL Server Big Data Cluster Extension for Azure Data Studio!
+Welcome to Microsoft SQL Server big data cluster Extension for Azure Data Studio!
 
 ## Code of Conduct
 

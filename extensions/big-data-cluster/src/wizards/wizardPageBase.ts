@@ -10,15 +10,15 @@ import { WizardBase } from './wizardBase';
 export abstract class WizardPageBase<T> {
 	private _page: sqlops.window.modelviewdialog.WizardPage;
 
-	public get Page(): sqlops.window.modelviewdialog.WizardPage {
+	public get page(): sqlops.window.modelviewdialog.WizardPage {
 		return this._page;
 	}
 
-	public get Wizard(): WizardBase<T> {
-		return this.wizard;
+	public get wizard(): WizardBase<T> {
+		return this._wizard;
 	}
 
-	constructor(title: string, description: string, protected model: T, private wizard: WizardBase<T>) {
+	constructor(title: string, description: string, protected model: T, private _wizard: WizardBase<T>) {
 		this._page = sqlops.window.modelviewdialog.createWizardPage(title);
 		this._page.description = description;
 		this._page.registerContent((view: sqlops.ModelView) => {
@@ -26,5 +26,5 @@ export abstract class WizardPageBase<T> {
 		});
 	}
 
-	protected abstract async initialize(view: sqlops.ModelView);
+	protected abstract initialize(view: sqlops.ModelView): Thenable<void>;
 }

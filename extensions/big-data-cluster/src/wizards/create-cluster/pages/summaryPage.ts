@@ -7,17 +7,19 @@
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
-import * as ResourceStrings from '../resourceStrings';
 import { WizardBase } from '../../wizardBase';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
-		super(ResourceStrings.SummaryPageTitle, ResourceStrings.SummaryPageDescription, model, wizard);
+		super(localize('bdc-create.summaryPageTitle', 'Summary'), '', model, wizard);
 	}
 
-	protected async initialize(view: sqlops.ModelView) {
+	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let formBuilder = view.modelBuilder.formContainer();
 		let form = formBuilder.component();
-		await view.initializeModel(form);
+		return view.initializeModel(form);
 	}
 }

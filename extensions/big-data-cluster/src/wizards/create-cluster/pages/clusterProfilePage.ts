@@ -7,17 +7,21 @@
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterModel } from '../createClusterModel';
-import * as ResourceStrings from '../resourceStrings';
 import { WizardBase } from '../../wizardBase';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class ClusterProfilePage extends WizardPageBase<CreateClusterModel> {
 	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
-		super(ResourceStrings.ClusterProfilePageTitle, ResourceStrings.ClusterProfilePageDescription, model, wizard);
+		super(localize('bdc-create.clusterProfilePageTitle', 'Select a cluster profile'),
+			localize('bdc-create.clusterProfilePageDescription', 'Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.'),
+			model, wizard);
 	}
 
-	protected async initialize(view: sqlops.ModelView) {
+	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let formBuilder = view.modelBuilder.formContainer();
 		let form = formBuilder.component();
-		await view.initializeModel(form);
+		return view.initializeModel(form);
 	}
 }

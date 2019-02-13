@@ -9,16 +9,18 @@ import { SelectTargetClusterPage } from './pages/targetClusterPage';
 import { SummaryPage } from './pages/summaryPage';
 import { SettingsPage } from './pages/settingsPage';
 import { ClusterProfilePage } from './pages/clusterProfilePage';
-import * as ResourceStrings from './resourceStrings';
 import { TestKubeConfigParser } from '../../data/kubeConfigParser';
 import { ExtensionContext } from 'vscode';
 import { WizardBase } from '../wizardBase';
+import * as nls from 'vscode-nls';
+
+const localize = nls.loadMessageBundle();
 
 export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
 	constructor(context: ExtensionContext) {
 		let configParser = new TestKubeConfigParser();
 		let model = new CreateClusterModel(configParser);
-		super(model, context, ResourceStrings.WizardTitle);
+		super(model, context, localize('bdc-create.wizardTitle', 'Create a big data cluster'));
 	}
 
 	protected initialize(): void {
@@ -28,14 +30,14 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
 		let summaryPage = new SummaryPage(this.model, this);
 
 		this.wizard.pages = [
-			settingsPage.Page,
-			clusterProfilePage.Page,
-			selectTargetClusterPage.Page,
-			summaryPage.Page
+			settingsPage.page,
+			clusterProfilePage.page,
+			selectTargetClusterPage.page,
+			summaryPage.page
 		];
 
-		this.wizard.generateScriptButton.label = ResourceStrings.GenerateScriptsButtonText;
-		this.wizard.doneButton.label = ResourceStrings.CreateClusterButtonText;
+		this.wizard.generateScriptButton.label = localize('bdc-create.generateScriptsButtonText', 'Generate Scripts');
+		this.wizard.doneButton.label = localize('bdc-create.createClusterButtonText', 'Create');
 
 		this.wizard.generateScriptButton.onClick(() => { });
 		this.wizard.doneButton.onClick(() => { });
