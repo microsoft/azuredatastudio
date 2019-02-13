@@ -16,8 +16,7 @@ cd $ROOT
 echo $VSCODEUSERDATADIR
 echo $VSCODEEXTDIR
 
-./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
-
+./scripts/code.sh --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/test --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR
 
 rm -r $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR

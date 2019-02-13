@@ -11,5 +11,16 @@
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",
 	"notebook.command.runactivecell": "Run Cell",
 	"notebook.command.addcode": "Add Code Cell",
-	"notebook.command.addtext": "Add Text Cell"
+	"notebook.command.addtext": "Add Text Cell",
+	"title.analyzeJupyterNotebook": "Analyze in Notebook",
+	"title.newJupyterNotebook": "New Notebook",
+	"title.openJupyterNotebook": "Open Notebook",
+	"title.jupyter.setContext": "Set context for Notebook",
+	"title.jupyter.setKernel": "Set kernel for Notebook",
+	"config.jupyter.extraKernelsTitle": "Extra kernels",
+	"config.jupyter.extraKernelsDescription": "IDs of the extra kernels to enable",
+	"config.jupyter.kernelConfigValuesDescription": "Configuration options for Jupyter kernels. This is automatically managed and not recommended to be manually edited.",
+	"title.reinstallNotebookDependencies": "Reinstall Notebook dependencies",
+	"title.configurePython": "Configure Python for Notebooks",
+	"title.installPackages": "Install Packages"
 }
