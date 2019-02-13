@@ -10,11 +10,13 @@
 	vertical-align: top;
 }
 
+.model-card-list-item.selected,
 .model-card.selected {
 	border-color: rgb(0, 120, 215);
 	box-shadow: rgba(0, 120, 215, 0.75) 0px 0px 6px;
 }
 
+.model-card-list-item.unselected,
 .model-card.unselected {
 	border-color: rgb(214, 214, 214);
 	box-shadow: none;
@@ -96,6 +98,7 @@
 	text-align: center;
 }
 
+.model-card-list-item .selection-indicator-container,
 .model-card .selection-indicator-container {
 	position: absolute;
 	top: 5px;
@@ -110,6 +113,30 @@
 	border-style: solid;
 }
 
+.model-card-list-item .selection-indicator-container,
+.model-card .selection-indicator-container {
+	position: absolute;
+	overflow: hidden;
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background-color: white;
+	border-width: 1px;
+	border-color: rgb(0, 120, 215);
+	border-style: solid;
+}
+
+.model-card-list-item .selection-indicator-container {
+	top: 10px;
+	right: 10px;
+}
+
+.model-card .selection-indicator-container {
+	top: 5px;
+	right: 5px;
+}
+
+.model-card-list-item .selection-indicator,
 .model-card .selection-indicator {
 	margin: 4px;
 	width: 8px;
@@ -135,4 +162,34 @@
 .model-table a {
 	cursor: pointer;
 	text-decoration: underline
+}
+
+.model-card-list-item {
+	display: inline-block;
+	height: 100%;
+	width: 100%;
+	margin: 5px 0px 5px 0px;
+	border-width: 1px;
+	border-style: solid;
+	text-align: left;
+	vertical-align: top;
+}
+
+.model-card-list-item .list-item-content {
+	height: auto;
+	padding: 5px 26px 5px 5px;
+	min-height: 30px;
+	min-width: 300px;
+}
+
+.model-card-list-item .list-item-icon {
+	background-position: 2px 2px;
+	padding-left:22px;
+	font-size: 15px;
+	background-repeat: no-repeat;
+	background-size: 16px 16px;
+}
+
+.model-card-list-item .list-item-description {
+	padding-left:22px;
 }

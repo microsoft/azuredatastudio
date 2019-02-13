@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./radioButton';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	OnDestroy, AfterViewInit, ElementRef
@@ -16,11 +15,10 @@ import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelCo
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
 @Component({
-	selector: 'modelview-text',
-	template: `
-		<p [style.width]="getWidth()">{{getValue()}}</p>`
+	selector: 'modelview-hyperlink',
+	template: `<a [href]="getUrl()" target="blank">{{getLabel()}}</a>`
 })
-export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class HyperlinkComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 
@@ -42,22 +40,31 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 		this.baseDestroy();
 	}
 
-	/// IComponent implementation
-
 	public setLayout(layout: any): void {
-		// TODO allow configuring the look and feel
 		this.layout();
 	}
 
-	public set value(newValue: string) {
-		this.setPropertyFromUI<sqlops.TextComponentProperties, string>((properties, value) => { properties.value = value; }, newValue);
+	public set label(newValue: string) {
+		this.setPropertyFromUI<sqlops.HyperlinkComponentProperties, string>((properties, value) => { properties.label = value; }, newValue);
 	}
 
-	public get value(): string {
-		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.value, '');
+	public get label(): string {
+		return this.getPropertyOrDefault<sqlops.HyperlinkComponentProperties, string>((props) => props.label, '');
 	}
 
-	public getValue(): string {
-		return this.value;
+	public getLabel(): string {
+		return this.label;
+	}
+
+	public set url(newValue: string) {
+		this.setPropertyFromUI<sqlops.HyperlinkComponentProperties, string>((properties, value) => { properties.url = value; }, newValue);
+	}
+
+	public get url(): string {
+		return this.getPropertyOrDefault<sqlops.HyperlinkComponentProperties, string>((props) => props.url, '');
+	}
+
+	public getUrl(): string {
+		return this.url;
 	}
 }
