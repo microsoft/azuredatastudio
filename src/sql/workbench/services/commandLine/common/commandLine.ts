@@ -13,7 +13,7 @@ export interface ICommandLineProcessing {
 	* Interprets the various Azure Data Studio-specific command line switches and
 	* performs the requisite tasks such as connecting to a server
 	*/
-	processCommandLine(args:ParsedArgs): Promise<void>;
+	processCommandLine(args: ParsedArgs): Promise<void>;
 }
 
 export const ICommandLineProcessing = createDecorator<ICommandLineProcessing>('commandLineService');

@@ -33,13 +33,13 @@ export class CommandLineService implements ICommandLineProcessing {
 		@IWorkspaceConfigurationService private _configurationService: IWorkspaceConfigurationService
 	) {
 		if (ipc) {
-		    ipc.on('ads:processCommandLine', (event:any, args:ParsedArgs) => this.onLaunched(args));
+		    ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
 		}
 		// we only get the ipc from main during window reuse
 		this.onLaunched(_environmentService.args);
 	}
 
-	private onLaunched(args:ParsedArgs)
+	private onLaunched(args: ParsedArgs)
 	{
 		const registry = platform.Registry.as<IConnectionProviderRegistry>(ConnectionProviderExtensions.ConnectionProviderContributions);
 		let sqlProvider = registry.getProperties(Constants.mssqlProviderName);
@@ -61,7 +61,7 @@ export class CommandLineService implements ICommandLineProcessing {
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
 	// (serverName, null) => Connect object explorer and open a new query editor
 	// (null, null) => Prompt for a connection unless there are registered servers
-	public processCommandLine(args:ParsedArgs): Promise<void> {
+	public processCommandLine(args: ParsedArgs): Promise<void> {
 		let profile = null;
 		let commandName = null;
 		if (args) {
