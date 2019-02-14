@@ -392,11 +392,11 @@ export class AttachToDropdown extends SelectBox {
 		return otherConnections;
 	}
 
-	public doChangeContext(connection?: ConnectionProfile): void {
+	public doChangeContext(connection?: ConnectionProfile, hideErrorMessage?: boolean): void {
 		if (this.value === msgAddNewConnection) {
 			this.openConnectionDialog();
 		} else {
-			this.model.changeContext(this.value, connection).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
+			this.model.changeContext(this.value, connection, hideErrorMessage).then(ok => undefined, err => this._notificationService.error(getErrorMessage(err)));
 		}
 	}
 
@@ -412,7 +412,7 @@ export class AttachToDropdown extends SelectBox {
 				let attachToConnections = this.values;
 				if (!connection) {
 					this.loadAttachToDropdown(this.model, this.getKernelDisplayName());
-					this.doChangeContext();
+					this.doChangeContext(undefined, true);
 					return;
 				}
 				let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);

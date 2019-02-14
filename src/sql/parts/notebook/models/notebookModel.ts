@@ -444,7 +444,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return Promise.resolve();
 	}
 
-	public async changeContext(server: string, newConnection?: IConnectionProfile): Promise<void> {
+	public async changeContext(server: string, newConnection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
@@ -462,7 +462,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				},
 				error => {
 					if (error) {
-						this.notifyError(notebookUtils.getErrorMessage(error));
+						if (!hideErrorMessage) {
+							this.notifyError(notebookUtils.getErrorMessage(error));
+						}
 						//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
 						this._onValidConnectionSelected.fire(false);
 					}
