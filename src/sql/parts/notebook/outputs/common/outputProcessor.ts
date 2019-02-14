@@ -40,8 +40,12 @@ export function getData(output: nb.ICellOutput): JSONObject {
 		}
 	} else if (nbformat.isError(output)) {
 		let traceback = output.traceback ? output.traceback.join('\n') : undefined;
-		bundle['application/vnd.jupyter.stderr'] =
-			traceback || `${output.ename}: ${output.evalue}`;
+		bundle['application/vnd.jupyter.stderr'] = undefined;
+		if (traceback && traceback !== '') {
+			bundle['application/vnd.jupyter.stderr'] = traceback;
+		} else if (output.evalue) {
+			bundle['application/vnd.jupyter.stderr'] = output.ename && output.ename !== '' ? `${output.ename}: ${output.evalue}` : `${output.evalue}`;
+		}
 	}
 	return convertBundle(bundle);
 }
