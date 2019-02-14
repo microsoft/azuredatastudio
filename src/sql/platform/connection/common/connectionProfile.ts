@@ -116,8 +116,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return instance;
 	}
 
-	public cloneWithDatabase(databaseName: string): ConnectionProfile {
-		let instance = this.cloneWithNewId();
+	public cloneWithDatabase(databaseName: string, newId: boolean = true): ConnectionProfile {
+		let instance = newId ? this.cloneWithNewId() : this.clone();
 		instance.databaseName = databaseName;
 		return instance;
 	}

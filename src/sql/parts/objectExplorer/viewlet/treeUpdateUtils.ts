@@ -274,7 +274,7 @@ export class TreeUpdateUtils {
 		let connectionProfile = treeNode.getConnectionProfile();
 		let databaseName = treeNode.getDatabaseName();
 		if (databaseName !== undefined && connectionProfile.databaseName !== databaseName) {
-			connectionProfile = connectionProfile.cloneWithDatabase(databaseName);
+			connectionProfile = connectionProfile.cloneWithDatabase(databaseName, false);
 		}
 		return connectionProfile;
 	}
