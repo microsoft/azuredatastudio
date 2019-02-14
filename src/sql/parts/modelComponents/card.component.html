@@ -1,33 +1,49 @@
-<div *ngIf="label" [class]="getClass()" (click)="onCardClick()" (mouseover)="onCardHoverChanged($event)" (mouseout)="onCardHoverChanged($event)">
-	<span *ngIf="hasStatus" class="card-status">
-		<div class="status-content" [style.backgroundColor]="statusColor"></div>
-	</span>
-	<span *ngIf="showRadioButton" class="selection-indicator-container">
-		<div *ngIf="showAsSelected" class="selection-indicator"></div>
-	</span>
-	<ng-container *ngIf="isVerticalButton">
-		<div class="card-vertical-button">
-			<div *ngIf="iconPath" class="iconContainer">
-				<div [class]="iconClass" [style.maxWidth]="iconWidth" [style.maxHeight]="iconHeight"></div>
+<div *ngIf="label" [class]="getClass()" (click)="onCardClick()" (mouseover)="onCardHoverChanged($event)" (mouseout)="onCardHoverChanged($event)"
+ tabIndex="0">
+	<ng-container *ngIf="isVerticalButton || isDetailsCard">
+		<span *ngIf="hasStatus" class="card-status">
+			<div class="status-content" [style.backgroundColor]="statusColor"></div>
+		</span>
+		<span *ngIf="showRadioButton" class="selection-indicator-container">
+			<div *ngIf="showAsSelected" class="selection-indicator"></div>
+		</span>
+		<ng-container *ngIf="isVerticalButton">
+			<div class="card-vertical-button">
+				<div *ngIf="iconPath" class="iconContainer">
+					<div [class]="iconClass" [style.maxWidth]="iconWidth" [style.maxHeight]="iconHeight"></div>
+				</div>
+				<h4 class="card-label">{{label}}</h4>
 			</div>
-			<h4 class="card-label">{{label}}</h4>
-		</div>
-	</ng-container>
+		</ng-container>
 
-	<ng-container *ngIf="isDetailsCard">
-		<div class="card-content">
-			<h4 class="card-label">{{label}}</h4>
-			<p class="card-value">{{value}}</p>
-			<span *ngIf="actions">
-				<table class="model-table">
-					<tr *ngFor="let action of actions">
-						<td class="table-row">{{action.label}}</td>
-						<td *ngIf="action.actionTitle" class="table-row">
-							<a class="pointer prominent" (click)="onDidActionClick(action)">{{action.actionTitle}}</a>
-						</td>
-					</tr>
-				</table>
-			</span>
+		<ng-container *ngIf="isDetailsCard">
+			<div class="card-content">
+				<h4 class="card-label">{{label}}</h4>
+				<p class="card-value">{{value}}</p>
+				<span *ngIf="actions">
+					<table class="model-table">
+						<tr *ngFor="let action of actions">
+							<td class="table-row">{{action.label}}</td>
+							<td *ngIf="action.actionTitle" class="table-row">
+								<a class="pointer prominent" (click)="onDidActionClick(action)">{{action.actionTitle}}</a>
+							</td>
+						</tr>
+					</table>
+				</span>
+			</div>
+		</ng-container>
+	</ng-container>
+	<ng-container *ngIf="isListItemCard">
+		<div class="list-item-content">
+			<div>
+				<div [class]="iconClass">{{label}}</div>
+				<div *ngFor="let desc of descriptions">
+					<div class="list-item-description">{{desc}}</div>
+				</div>
+				<span *ngIf="showRadioButton" class="selection-indicator-container">
+					<div *ngIf="showAsSelected" class="selection-indicator"></div>
+				</span>
+			</div>
 		</div>
 	</ng-container>
 </div>

@@ -357,7 +357,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 						content: <nb.IExecuteResult>{
 							output_type: 'execute_result',
 							metadata: {},
-							execution_count: 1,
+							execution_count: this._executionCount,
 							data: { 'application/vnd.dataresource+json': this.convertToDataResource(columns, d), 'text/html': this.convertToHtmlTable(columns, d) }
 						},
 						metadata: undefined,

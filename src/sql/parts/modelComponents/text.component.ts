@@ -18,7 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p>{{getValue()}}</p>`
+		<p [style.width]="getWidth()">{{getValue()}}</p>`
 })
 export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;

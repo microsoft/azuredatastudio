@@ -315,7 +315,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			cell_type: cellType,
 			source: '',
 			metadata: {},
-			execution_count: 1
+			execution_count: undefined
 		};
 		return this.notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
@@ -391,15 +391,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._activeConnection = undefined;
 			}
 
-			clientSession.initialize(this._activeConnection);
+			clientSession.initialize();
 			this._sessionLoadFinished = clientSession.ready.then(async () => {
 				if (clientSession.isInErrorState) {
 					this.setErrorState(clientSession.errorMessage);
 				} else {
 					this._onClientSessionReady.fire(clientSession);
 					// Once session is loaded, can use the session manager to retrieve useful info
-					this.loadKernelInfo();
-					await this.loadActiveContexts(undefined);
+					this.loadKernelInfo(clientSession);
 				}
 			});
 		});
@@ -428,6 +427,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public doChangeKernel(kernelSpec: nb.IKernelSpec): Promise<void> {
 		this.setProviderIdForKernel(kernelSpec);
+		// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
+		let kernelSpecs = this.getKernelSpecs();
+		if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.name === kernelSpec.name) < 0) {
+				kernelSpec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
+		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			return this._activeClientSession.changeKernel(kernelSpec)
 				.then((kernel) => {
@@ -488,11 +492,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	private loadKernelInfo(): void {
-		this._clientSessions.forEach(clientSession => {
-			clientSession.onKernelChanging(async (e) => {
-				await this.loadActiveContexts(e);
-			});
+	private loadKernelInfo(clientSession: IClientSession): void {
+		clientSession.onKernelChanging(async (e) => {
+			await this.loadActiveContexts(e);
+		});
+		clientSession.statusChanged(async (session) => {
+			this._kernelsChangedEmitter.fire(session.kernel);
 		});
 		if (!this.notebookManager) {
 			return;
@@ -503,11 +508,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (!this._defaultKernel) {
 					this._defaultKernel = NotebookContexts.getDefaultKernel(sessionManager.specs, this.connectionProfile, this._savedKernelInfo);
 				}
-				this._clientSessions.forEach(clientSession => {
-					clientSession.statusChanged(async (session) => {
-						this._kernelsChangedEmitter.fire(session.kernel);
-					});
-				});
 				let spec = this.getKernelSpecFromDisplayName(this._defaultKernel.display_name);
 				if (spec) {
 					this._defaultKernel = spec;
@@ -546,8 +546,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return kernel;
 	}
 
-	private getDisplayNameFromSpecName(kernelid: string): string {
-		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(kernel => kernel.name === kernelid);
+	private getDisplayNameFromSpecName(kernel: nb.IKernel): string {
+		let specs = this.notebookManager.sessionManager.specs;
+		if (!specs || !specs.kernels) {
+			return kernel.name;
+		}
+		let newKernel = this.notebookManager.sessionManager.specs.kernels.find(k => k.name === kernel.name);
 		let newKernelDisplayName;
 		if (newKernel) {
 			newKernelDisplayName = newKernel.display_name;
@@ -586,7 +590,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
-			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue.name);
+			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
 			this._activeContexts = await NotebookContexts.getContextsForKernel(this.notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
@@ -674,13 +678,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// If no SessionManager exists, utilize passed in StandardKernels to see if we can intelligently set _providerId
 			if (!sessionManagerFound) {
 				let provider = this._kernelDisplayNameToNotebookProviderIds.get(kernelSpec.display_name);
-				if (provider) {
+				if (provider && provider !== this._providerId) {
 					this._providerId = provider;
 					this._onProviderIdChanged.fire(this._providerId);
 				}
 			}
 		}
 	}
+
+	// Get kernel specs from current sessionManager
+	private getKernelSpecs(): nb.IKernelSpec[] {
+		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
+			this.notebookManager.sessionManager.specs.kernels) {
+				return this.notebookManager.sessionManager.specs.kernels;
+			}
+		return [];
+	}
+
 	/**
 	 * Serialize the model to JSON.
 	 */

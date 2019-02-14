@@ -135,7 +135,7 @@ export interface IClientSession extends IDisposable {
 	 * This will optionally start a session if the kernel preferences
 	 * indicate this is desired
 	 */
-	initialize(connection?: IConnectionProfile): Promise<void>;
+	initialize(): Promise<void>;
 
 	/**
 	 * Change the current kernel associated with the document.
