@@ -116,7 +116,7 @@ export interface IActionStateData {
 
 export class IMultiStateData<T> {
 	private _stateMap = new Map<T, IActionStateData>();
-	constructor(mappings: { key: T, value: IActionStateData}[], private _state: T, private _baseClass?: string) {
+	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
 		if (mappings) {
 			mappings.forEach(s => this._stateMap.set(s.key, s.value));
 		}
