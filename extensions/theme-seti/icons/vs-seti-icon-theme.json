@@ -247,11 +247,11 @@
 			"fontColor": "#cc3e44"
 		},
 		"_db_light": {
-			"fontCharacter": "\\E01C",
+			"fontCharacter": "\\E01D",
 			"fontColor": "#bfc2c1"
 		},
 		"_db": {
-			"fontCharacter": "\\E01C",
+			"fontCharacter": "\\E01D",
 			"fontColor": "#d4d7d6"
 		},
 		"_default_light": {
@@ -967,11 +967,11 @@
 			"fontColor": "#cc3e44"
 		},
 		"_shell_light": {
-			"fontCharacter": "\\E073",
+			"fontCharacter": "\\E075",
 			"fontColor": "#bfc2c1"
 		},
 		"_shell": {
-			"fontCharacter": "\\E073",
+			"fontCharacter": "\\E075",
 			"fontColor": "#d4d7d6"
 		},
 		"_slim_light": {

@@ -14,6 +14,7 @@ import { ResourceMap } from 'vs/base/common/map';
 
 // {{SQL CARBON EDIT}}
 import { QueryInput } from 'sql/parts/query/common/queryInput';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/parts/common/customInputConverter';
 
 const EditorOpenPositioning = {
@@ -629,6 +630,14 @@ export class EditorGroup extends Disposable {
 		editors.forEach(e => {
 			let factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
+				// {{SQL CARBON EDIT}}
+				// don't serialize unmodified unitited files
+				if (e instanceof UntitledEditorInput && !e.isDirty()
+						&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
+					return;
+				}
+				// {{SQL CARBON EDIT}} - End
+
 				let value = factory.serialize(e);
 				if (typeof value === 'string') {
 					serializedEditors.push({ id: e.getTypeId(), value });

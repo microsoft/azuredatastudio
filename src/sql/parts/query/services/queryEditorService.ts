@@ -76,7 +76,7 @@ export class QueryEditorService implements IQueryEditorService {
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
 	public newSqlEditor(sqlContent?: string, connectionProviderName?: string): Promise<IConnectableInput> {
-		return new Promise<IConnectableInput>((resolve, reject) => {
+		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
 				let filePath = this.createUntitledSqlFilePath();
@@ -84,11 +84,10 @@ export class QueryEditorService implements IQueryEditorService {
 
 				// Create a sql document pane with accoutrements
 				const fileInput = this._untitledEditorService.createOrGet(docUri, 'sql');
-				fileInput.resolve().then(m => {
-					if (sqlContent) {
-						m.textEditorModel.setValue(sqlContent);
-					}
-				});
+				let untitledEditorModel = await fileInput.resolve();
+				if (sqlContent) {
+					untitledEditorModel.textEditorModel.setValue(sqlContent);
+				}
 
 				const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());
 				let queryInput: QueryInput = this._instantiationService.createInstance(QueryInput, '', fileInput, queryResultsInput, connectionProviderName);

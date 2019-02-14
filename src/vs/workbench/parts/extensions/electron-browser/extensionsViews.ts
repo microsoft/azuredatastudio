@@ -563,7 +563,7 @@ export class ExtensionsListView extends ViewletPanel {
 						});
 						pager.total = pager.firstPage.length;
 						pager.pageSize = pager.firstPage.length;
-						return new PagedModel(pager || []);
+						return this.getPagedModel(pager);
 					});
 				});
 			});

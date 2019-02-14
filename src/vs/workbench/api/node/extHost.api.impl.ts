@@ -681,7 +681,8 @@ export function createApiFactory(
 		};
 
 		return <typeof vscode>{
-			version: pkg.version,
+			// {{SQL CARBON EDIT}} - Expose the VS Code version here for extensions that rely on it
+			version: product.vscodeVersion,
 			// namespaces
 			commands,
 			// {{SQL CARBON EDIT}}

@@ -76,6 +76,9 @@ import { SnapUpdateService } from 'vs/platform/update/electron-main/updateServic
 import { IStorageMainService, StorageMainService } from 'vs/platform/storage/node/storageMainService';
 import { GlobalStorageDatabaseChannel } from 'vs/platform/storage/node/storageIpc';
 import { generateUuid } from 'vs/base/common/uuid';
+// {{SQL CARBON EDIT}}
+import { CodeMenu } from 'sql/workbench/electron-browser/menus';
+// {{SQL CARBON EDIT}} - End
 
 export class CodeApplication extends Disposable {
 
@@ -726,6 +729,15 @@ export class CodeApplication extends Disposable {
 				}
 			}
 		}
+
+		// {{SQL CARBON EDIT}} - Use static menu for now
+		// Install Menu
+		const instantiationService = accessor.get(IInstantiationService);
+		const configurationService = accessor.get(IConfigurationService);
+		if (platform.isMacintosh || configurationService.getValue<string>('window.titleBarStyle') !== 'custom') {
+			instantiationService.createInstance(CodeMenu);
+		}
+		// {{SQL CARBON EDIT}} - End
 
 		// Jump List
 		this.historyMainService.updateWindowsJumpList();
