@@ -22,7 +22,7 @@ suite('ConnectionDialogService tests', () => {
 
 	setup(() => {
 		let errorMessageService = getMockErrorMessageService();
-		connectionDialogService = new ConnectionDialogService(undefined, undefined, undefined, undefined, errorMessageService.object,
+		connectionDialogService = new ConnectionDialogService(undefined, undefined, undefined, errorMessageService.object,
 			undefined, undefined, undefined);
 		mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {});
 		(connectionDialogService as any)._connectionManagementService = mockConnectionManagementService.object;

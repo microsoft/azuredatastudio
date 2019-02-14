@@ -76,9 +76,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _connectionErrorTitle = localize('connectionError', 'Connection error');
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
+	private _connectionManagementService: IConnectionManagementService;
+
 	constructor(
 		@IPartService private _partService: IPartService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
@@ -299,12 +300,13 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public openDialogAndWait(
+		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
 		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
 
-		this.showDialog(params,
+		this.showDialog(connectionManagementService, params,
 			model,
 			connectionResult).then(() => {
 			}, error => {
@@ -314,9 +316,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	public showDialog(
+		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult): Thenable<void> {
+		this._connectionManagementService = connectionManagementService;
+
 		this._params = params;
 		this._inputModel = model;
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { INewConnectionParams, IConnectionResult } from 'sql/platform/connection/common/connectionManagement';
+import { INewConnectionParams, IConnectionResult, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -13,12 +13,14 @@ export class ConnectionDialogTestService implements IConnectionDialogService {
 	_serviceBrand: any;
 
 	public showDialog(
+		connectionManagementService: IConnectionManagementService,
 		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<void> {
 		let none: void;
 		return TPromise.as(none);
 	}
 
 	public openDialogAndWait(
+		connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): TPromise<IConnectionProfile> {
 		return TPromise.as(undefined);
 	}

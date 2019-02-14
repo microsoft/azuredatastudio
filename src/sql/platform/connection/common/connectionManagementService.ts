@@ -203,7 +203,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (!model && params.input && params.input.uri) {
 				model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
 			}
-			self._connectionDialogService.showDialog(params, model, connectionResult).then(() => {
+			self._connectionDialogService.showDialog(self, params, model, connectionResult).then(() => {
 				resolve();
 			}, dialogError => {
 				warn('failed to open the connection dialog. error: ' + dialogError);

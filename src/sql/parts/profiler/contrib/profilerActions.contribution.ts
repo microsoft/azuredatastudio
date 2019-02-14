@@ -48,7 +48,7 @@ CommandsRegistry.registerCommand({
 			promise = connectionService.connectIfNotConnected(connectionProfile, 'connection', true);
 		} else {
 			// if still no luck, we will open the Connection dialog and let user connect to a server
-			promise = connectionDialogService.openDialogAndWait({ connectionType: 0, showDashboard: false, providers: [mssqlProviderName] }).then((profile) => {
+			promise = connectionDialogService.openDialogAndWait(connectionService, { connectionType: 0, showDashboard: false, providers: [mssqlProviderName] }).then((profile) => {
 				connectionProfile = profile as ConnectionProfile;
 			});
 		}
