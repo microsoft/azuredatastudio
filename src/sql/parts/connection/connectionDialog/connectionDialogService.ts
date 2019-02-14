@@ -192,14 +192,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		}
 	}
 
-	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): void {
+	private handleDefaultOnConnect(params: INewConnectionParams, connection: IConnectionProfile): Thenable<void> {
 		if (this.ignoreNextConnect) {
 			this._connectionDialog.resetConnection();
 			this._connectionDialog.close();
 			this.ignoreNextConnect = false;
 			this._connecting = false;
 			this._dialogDeferredPromise.resolve(connection);
-			return;
+			return Promise.resolve();
 		}
 		let fromEditor = params && params.connectionType === ConnectionType.editor;
 		let uri: string = undefined;
@@ -214,7 +214,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			showFirewallRuleOnError: true
 		};
 
-		this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input).then(connectionResult => {
+		return this._connectionManagementService.connectAndSaveProfile(connection, uri, options, params && params.input).then(connectionResult => {
 			this._connecting = false;
 			if (connectionResult && connectionResult.connected) {
 				this._connectionDialog.close();
