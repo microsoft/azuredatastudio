@@ -218,16 +218,8 @@
         "watch": "gulp watch",
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
-    "dependencies": {
-        "fs-extra": "^5.0.0",
-        "handlebars": "^4.0.11",
-        "vscode-nls": "2.0.2",
-        "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
-    },
+    "dependencies": {},
     "devDependencies": {
-        "@types/handlebars": "^4.0.11",
-        "@types/mocha": "^2.2.42",
-        "@types/node": "^7.0.43",
         "child-process-promise": "^2.2.1",
         "del": "^3.0.0",
         "gulp": "^4.0.0",
@@ -236,11 +228,10 @@
         "gulp-tslint": "^6.0.2",
         "gulp-typescript": "^3.2.4",
         "should": "^13.2.1",
-        "temp-write": "^3.4.0",
         "tslint": "^3.14.0",
         "typemoq": "^2.1.0",
         "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "vsce": "1.36.2"
+        "vsce": "1.36.2",
+        "vscode": "^1.1.6"
     }
 }
