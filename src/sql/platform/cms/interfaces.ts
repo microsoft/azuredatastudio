@@ -18,5 +18,16 @@ export interface ICmsService {
 	_serviceBrand: any;
 
 	registerProvider(providerId: string, provider: sqlops.CmsServiceProvider): void;
-	getCmsServers(sourceDatabaseName: string, packageFilePath: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult>;
+
+	createCmsServer(name: string, description:string, connectiondetails: sqlops.ConnectionInfo, connectionUri: string): Thenable<sqlops.ListRegisteredServersResult>;
+
+	getRegisteredServers(ownerUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult>;
+
+	addRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean>;
+
+	removeRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string):Thenable<boolean>;
+
+	addServerGroup(ownerUri: string, relativePath: string[], name: string, description:string):Thenable<boolean>;
+
+	removeServerGroup(ownerUri: string, relativePath: string[], name: string):Thenable<boolean>;
 }

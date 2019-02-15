@@ -488,11 +488,6 @@ declare module 'sqlops' {
 		databaseNames: Array<string>;
 	}
 
-
-	export interface ListCmsServersResult {
-		cmsServerNames: Array<string>;
-	}
-
 	/**
 	 * Information about a connection changed event for a resource represented by a URI
 	 */
@@ -1701,7 +1696,17 @@ declare module 'sqlops' {
 	}
 
 	export interface CmsServiceProvider extends DataProvider {
-		getCmsServers(connectionUri: string, connectionInfo: ConnectionInfo): Thenable<ListCmsServersResult>;
+		createCmsServer(name: string, description: string, connectiondetails: ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
+
+		getRegisteredServers(ownerUri: string, relativePath: string[]): Thenable<ListRegisteredServersResult>;
+
+		addRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: ConnectionInfo): Thenable<boolean>;
+
+		removeRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string):Thenable<boolean>;
+
+		addServerGroup(ownerUri: string, relativePath: string[], name: string, description:string):Thenable<boolean>;
+
+		removeServerGroup(ownerUri: string, relativePath: string[], name: string):Thenable<boolean>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -2398,4 +2403,25 @@ declare module 'sqlops' {
 		*/
 		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
 	}
+
+	// CMS interfaces -------------------------------------------------------------------------------------------
+
+	export interface RegisteredServerResult {
+		name: string;
+		serverName: string;
+		description: string;
+		connectionDetails: ConnectionInfo;
+	}
+
+	export interface ServerGroupResult {
+		name: string;
+		description: string;
+	}
+
+	export interface ListRegisteredServersResult {
+		registeredServersList: Array<RegisteredServerResult>;
+		servergroupsList: Array<ServerGroupResult>;
+	}
+
+	//CMS interfaces ---------------------------------------------------------------------------------------
 }

@@ -373,7 +373,63 @@ export namespace GenerateDeployPlanRequest {
 // ------------------------------- < DacFx > ------------------------------------
 
 // ------------------------------- <CMS> ----------------------------------------
+
+
+export interface CreateCentralManagementServerParams {
+    registeredServerName: string;
+    registeredServerDescription : string;
+    connectParams: ConnectParams;
+}
+
+export interface ListRegisteredServerParams extends RegisteredServerParamsBase {
+        // same as base
+}
+
+export interface AddRegisteredServerParams extends RegisteredServerParamsBase {
+    registeredServerName: string;
+    registeredServerDescription : string;
+    regServerConnectionDetails: sqlops.ConnectionInfo;
+}
+
+export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase {
+    registeredServerName: string;
+}
+
+export interface AddServerGroupParams extends RegisteredServerParamsBase {
+    groupName: string;
+    groupDescription: string;
+}
+
+export interface RemoveServerGroupParams extends RegisteredServerParamsBase {
+    groupName: string;
+}
+
+export interface RegisteredServerParamsBase {
+    parentOwnerUri: string;
+    relativePath: string[];
+}
+
+export namespace CreateCentralManagementServerRequest {
+	export const type = new RequestType<CreateCentralManagementServerParams, sqlops.ListRegisteredServersResult, void, void>('cms/createCms');
+}
+
 export namespace GetRegisteredServerRequest {
-	export const type = new RequestType<ConnectParams, sqlops.ListCmsServersResult, void, void>('cms/get');
+	export const type = new RequestType<ListRegisteredServerParams, sqlops.ListRegisteredServersResult, void, void>('cms/listRegServers');
+}
+
+export namespace AddRegisteredServerRequest {
+	export const type = new RequestType<AddRegisteredServerParams, boolean, void, void>('cms/addRegServers');
+}
+
+export namespace RemoveRegisteredServerRequest {
+	export const type = new RequestType<RemoveRegisteredServerParams, boolean, void, void>('cms/addRegServers');
+}
+
+export namespace AddServerGroupRequest {
+	export const type = new RequestType<AddServerGroupParams, boolean, void, void>('cms/addRegServers');
+}
+
+export namespace RemoveServerGroupRequest {
+	export const type = new RequestType<RemoveServerGroupParams, boolean, void, void>('cms/addRegServers');
 }
 // ------------------------------- <CMS> ----------------------------------------

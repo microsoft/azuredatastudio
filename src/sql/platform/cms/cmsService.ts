@@ -11,6 +11,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { ICmsService } from 'sql/platform/cms/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
+import { relative } from 'path';
 
 export class CmsService implements ICmsService {
 
@@ -34,9 +35,39 @@ export class CmsService implements ICmsService {
 		this._providers[providerId] = provider;
 	}
 
-	getCmsServers(connectionUri: string, connection: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult> {
+	createCmsServer(name: string, description:string, connectiondetails: sqlops.ConnectionInfo, connectionUri: string): Thenable<sqlops.ListRegisteredServersResult> {
 		return this._runAction(connectionUri, (runner) => {
-			return runner.getCmsServers(connectionUri, connection);
+			return runner.createCmsServer(name, description, connectiondetails, connectionUri);
+		});
+	}
+
+	getRegisteredServers(connectionUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.getRegisteredServers(connectionUri, relativePath);
+		});
+	}
+
+	addRegisteredServer(connectionUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.addRegisteredServer(connectionUri, relativePath, registeredServerName, registeredServerDescription, connectionDetails);
+		});
+	}
+
+	removeRegisteredServer(connectionUri: string, relativePath: string[], registeredServerName: string): Thenable<boolean> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.removeRegisteredServer(connectionUri, relativePath, registeredServerName);
+		});
+	}
+
+	addServerGroup(connectionUri: string, relativePath: string[], groupName: string, groupDescription: string): Thenable<boolean> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.addServerGroup(connectionUri, relativePath, groupName, groupDescription);
+		});
+	}
+
+	removeServerGroup(connectionUri: string, relativePath: string[], groupName: string): Thenable<boolean> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.removeServerGroup(connectionUri, relativePath, groupName);
 		});
 	}
 

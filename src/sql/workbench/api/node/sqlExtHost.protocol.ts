@@ -456,9 +456,35 @@ export abstract class ExtHostDataProtocolShape {
 	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> { throw ni(); }
 
 	/**
-	 * Cms get registered servers
+	 * create cms Server (top level)
 	 */
-	$getCmsServers(handle: number, connectionUri: string, connection: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult> { throw ni(); }
+	$createCmsServer(handle: number, name: string, description:string, connectiondetails: sqlops.ConnectionInfo, connectionUri: string): Thenable<sqlops.ListRegisteredServersResult> { throw ni(); }
+
+	/**
+	 * get registered servers from a parent
+	 */
+	$getRegisteredServers(handle: number, ownerUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult> { throw ni();}
+
+	/**
+	 * add registered server to a cms
+	 */
+	$addRegisteredServer(handle: number, ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> { throw ni(); }
+
+	/**
+	 * remove registered server from a cms
+	 */
+	$removeRegisteredServer(handle: number, ownerUri: string, relativePath: string[], registeredServerName: string):Thenable<boolean> { throw ni(); }
+
+	/**
+	 * add server group to a cms
+	 */
+	$addServerGroup(handle: number, ownerUri: string, relativePath: string[], name: string, description:string):Thenable<boolean> { throw ni(); }
+
+	/**
+	 * remove server group from a cms
+	 */
+	$removeServerGroup(handle: number, ownerUri: string, relativePath: string[], name: string):Thenable<boolean> { throw ni(); }
+
 }
 
 /**

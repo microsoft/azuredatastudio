@@ -459,10 +459,41 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerCmsServiceProvider(providerId: string, handle:number): TPromise<any> {
 		const self = this;
 		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
-			getCmsServers(connectionUri: string, connectionInfo: sqlops.ConnectionInfo): Thenable<sqlops.ListCmsServersResult> {
-				return self._proxy.$getCmsServers(handle, connectionUri, connectionInfo);
+			createCmsServer(name: string, description : string, connectiondetails: sqlops.ConnectionInfo, connectionUri: string): Thenable<sqlops.ListRegisteredServersResult> {
+				return self._proxy.$createCmsServer(handle, name, description, connectiondetails, connectionUri);
 			}
 		});
+
+		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
+			getRegisteredServers(ownerUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult> {
+				return self._proxy.$getRegisteredServers(handle, ownerUri, relativePath);
+			}
+		});
+
+		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
+			addRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> {
+				return self._proxy.$addRegisteredServer(handle, ownerUri, relativePath, registeredServerName, registeredServerDescription, connectionDetails);
+			}
+		});
+
+		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
+			removeRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string): Thenable<boolean> {
+				return self._proxy.$removeRegisteredServer(handle, ownerUri, relativePath, registeredServerName);
+			}
+		});
+
+		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
+			addServerGroup(ownerUri: string, relativePath: string[], groupName: string, groupDescription:string): Thenable<boolean> {
+				return self._proxy.$addServerGroup(handle, ownerUri, relativePath, groupName, groupDescription);
+			}
+		});
+
+		this._cmsService.registerProvider(providerId, <sqlops.CmsServiceProvider> {
+			removeServerGroup(ownerUri: string, relativePath: string[], groupName: string, groupDescription:string): Thenable<boolean> {
+				return self._proxy.$removeServerGroup(handle, ownerUri, relativePath, groupName);
+			}
+		});
+
 		return undefined;
 	}
 
