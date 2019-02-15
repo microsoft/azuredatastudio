@@ -66,8 +66,6 @@ expressly granted herein, whether by implication, estoppel or otherwise.
 
 
 %% angular NOTICES AND INFORMATION BEGIN HERE
-=========================================
-The MIT License
 
 Copyright (c) 2014-2017 Google, Inc. http://angular.io
 

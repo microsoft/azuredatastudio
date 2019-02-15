@@ -15,6 +15,7 @@ const util = require('./lib/util');
 const pkg = require('../package.json');
 const product = require('../product.json');
 const vfs = require('vinyl-fs');
+const rcedit = require('rcedit');
 const mkdirp = require('mkdirp');
 
 const repoPath = path.dirname(__dirname);
@@ -25,16 +26,19 @@ const zipPath = arch => path.join(zipDir(arch), `VSCode-win32-${arch}.zip`);
 const setupDir = (arch, target) => path.join(repoPath, '.build', `win32-${arch}`, `${target}-setup`);
 const issPath = path.join(__dirname, 'win32', 'code.iss');
 const innoSetupPath = path.join(path.dirname(path.dirname(require.resolve('innosetup-compiler'))), 'bin', 'ISCC.exe');
-const signPS1 = path.join(repoPath, 'build', 'tfs', 'win32', 'sign.ps1');
+const signPS1 = path.join(repoPath, 'build', 'azure-pipelines', 'win32', 'sign.ps1');
 
 function packageInnoSetup(iss, options, cb) {
 	options = options || {};
 
 	const definitions = options.definitions || {};
-	const debug = process.argv.some(arg => arg === '--debug-inno');
 
-	if (debug) {
+	if (process.argv.some(arg => arg === '--debug-inno')) {
 		definitions['Debug'] = 'true';
+	}
+
+	if (process.argv.some(arg => arg === '--sign')) {
+		definitions['Sign'] = 'true';
 	}
 
 	const keys = Object.keys(definitions);
@@ -137,3 +141,13 @@ function copyInnoUpdater(arch) {
 
 gulp.task('vscode-win32-ia32-copy-inno-updater', copyInnoUpdater('ia32'));
 gulp.task('vscode-win32-x64-copy-inno-updater', copyInnoUpdater('x64'));
+
+function patchInnoUpdater(arch) {
+	return cb => {
+		const icon = path.join(repoPath, 'resources', 'win32', 'code.ico');
+		rcedit(path.join(buildPath(arch), 'tools', 'inno_updater.exe'), { icon }, cb);
+	};
+}
+
+gulp.task('vscode-win32-ia32-inno-updater', ['vscode-win32-ia32-copy-inno-updater'], patchInnoUpdater('ia32'));
+gulp.task('vscode-win32-x64-inno-updater', ['vscode-win32-x64-copy-inno-updater'], patchInnoUpdater('x64'));

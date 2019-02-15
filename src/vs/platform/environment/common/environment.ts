@@ -4,11 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { URI } from 'vs/base/common/uri';
 
 export interface ParsedArgs {
 	[arg: string]: any;
 	_: string[];
 	'folder-uri'?: string | string[];
+	'file-uri'?: string | string[];
 	_urls?: string[];
 	help?: boolean;
 	version?: boolean;
@@ -28,9 +30,13 @@ export interface ParsedArgs {
 	'prof-startup-prefix'?: string;
 	'prof-append-timers'?: string;
 	verbose?: boolean;
+	trace?: boolean;
+	'trace-category-filter'?: string;
+	'trace-options'?: string;
 	log?: string;
 	logExtensionHostCommunication?: boolean;
 	'extensions-dir'?: string;
+	'builtin-extensions-dir'?: string;
 	extensionDevelopmentPath?: string;
 	extensionTestsPath?: string;
 	debugPluginHost?: string;
@@ -62,6 +68,7 @@ export interface ParsedArgs {
 	'upload-logs'?: string;
 	'driver'?: string;
 	'driver-verbose'?: boolean;
+	remote?: string;
 	// {{SQL CARBON EDIT}}
 	aad?: boolean;
 	database?: string;
@@ -74,12 +81,12 @@ export interface ParsedArgs {
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');
 
 export interface IDebugParams {
-	port: number;
+	port: number | null;
 	break: boolean;
 }
 
 export interface IExtensionHostDebugParams extends IDebugParams {
-	debugId: string;
+	debugId?: string;
 }
 
 export interface IEnvironmentService {
@@ -95,13 +102,16 @@ export interface IEnvironmentService {
 	userDataPath: string;
 
 	appNameLong: string;
-	appQuality: string;
+	appQuality?: string;
 	appSettingsHome: string;
 	appSettingsPath: string;
 	appKeybindingsPath: string;
 
-	settingsSearchBuildId: number;
-	settingsSearchUrl: string;
+	settingsSearchBuildId?: number;
+	settingsSearchUrl?: string;
+
+	globalStorageHome: string;
+	workspaceStorageHome: string;
 
 	backupHome: string;
 	backupWorkspacesPath: string;
@@ -110,13 +120,13 @@ export interface IEnvironmentService {
 
 	isExtensionDevelopment: boolean;
 	disableExtensions: boolean | string[];
+	builtinExtensionsPath: string;
 	extensionsPath: string;
-	extensionDevelopmentPath: string;
-	extensionTestsPath: string;
+	extensionDevelopmentLocationURI?: URI;
+	extensionTestsPath?: string;
 
 	debugExtensionHost: IExtensionHostDebugParams;
 	debugSearch: IDebugParams;
-
 
 	logExtensionHostCommunication: boolean;
 
@@ -126,7 +136,7 @@ export interface IEnvironmentService {
 	performance: boolean;
 
 	// logging
-	log: string;
+	log?: string;
 	logsPath: string;
 	verbose: boolean;
 
@@ -138,12 +148,12 @@ export interface IEnvironmentService {
 	mainIPCHandle: string;
 	sharedIPCHandle: string;
 
-	nodeCachedDataDir: string;
+	nodeCachedDataDir?: string;
 
 	installSourcePath: string;
 	disableUpdates: boolean;
 	disableCrashReporter: boolean;
 
-	driverHandle: string;
+	driverHandle?: string;
 	driverVerbose: boolean;
 }

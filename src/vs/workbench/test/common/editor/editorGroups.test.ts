@@ -3,17 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
 import { EditorGroup, ISerializedEditorGroup, EditorCloseEvent } from 'vs/workbench/common/editor/editorGroup';
 import { Extensions as EditorExtensions, IEditorInputFactoryRegistry, EditorInput, IFileEditorInput, IEditorInputFactory, CloseDirection } from 'vs/workbench/common/editor';
-import URI from 'vs/base/common/uri';
-import { TestStorageService, TestLifecycleService, TestContextService } from 'vs/workbench/test/workbenchTestServices';
+import { URI } from 'vs/base/common/uri';
+import { TestLifecycleService, TestContextService, TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -21,8 +18,8 @@ import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 function inst(): IInstantiationService {
 	let inst = new TestInstantiationService();
@@ -80,7 +77,7 @@ class TestEditorInput extends EditorInput {
 		super();
 	}
 	getTypeId() { return 'testEditorInputForGroups'; }
-	resolve(): TPromise<IEditorModel> { return null; }
+	resolve(): Thenable<IEditorModel> { return Promise.resolve(null); }
 
 	matches(other: TestEditorInput): boolean {
 		return other && this.id === other.id && other instanceof TestEditorInput;
@@ -100,7 +97,7 @@ class NonSerializableTestEditorInput extends EditorInput {
 		super();
 	}
 	getTypeId() { return 'testEditorInputForGroups-nonSerializable'; }
-	resolve(): TPromise<IEditorModel> { return null; }
+	resolve(): Thenable<IEditorModel> { return Promise.resolve(null); }
 
 	matches(other: NonSerializableTestEditorInput): boolean {
 		return other && this.id === other.id && other instanceof NonSerializableTestEditorInput;
@@ -113,7 +110,7 @@ class TestFileEditorInput extends EditorInput implements IFileEditorInput {
 		super();
 	}
 	getTypeId() { return 'testFileEditorInputForGroups'; }
-	resolve(): TPromise<IEditorModel> { return null; }
+	resolve(): Thenable<IEditorModel> { return Promise.resolve(null); }
 
 	matches(other: TestFileEditorInput): boolean {
 		return other && this.id === other.id && other instanceof TestFileEditorInput;

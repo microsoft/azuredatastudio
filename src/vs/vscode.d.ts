@@ -29,7 +29,7 @@ declare module 'vscode' {
 		command: string;
 
 		/**
-		 * A tooltip for for command, when represented in the UI.
+		 * A tooltip for the command, when represented in the UI.
 		 */
 		tooltip?: string;
 
@@ -928,12 +928,12 @@ declare module 'vscode' {
 		overviewRulerColor?: string | ThemeColor;
 
 		/**
-		 * Defines the rendering options of the attachment that is inserted before the decorated text
+		 * Defines the rendering options of the attachment that is inserted before the decorated text.
 		 */
 		before?: ThemableDecorationAttachmentRenderOptions;
 
 		/**
-		 * Defines the rendering options of the attachment that is inserted after the decorated text
+		 * Defines the rendering options of the attachment that is inserted after the decorated text.
 		 */
 		after?: ThemableDecorationAttachmentRenderOptions;
 	}
@@ -1046,12 +1046,12 @@ declare module 'vscode' {
 
 	export interface ThemableDecorationInstanceRenderOptions {
 		/**
-		 * Defines the rendering options of the attachment that is inserted before the decorated text
+		 * Defines the rendering options of the attachment that is inserted before the decorated text.
 		 */
 		before?: ThemableDecorationAttachmentRenderOptions;
 
 		/**
-		 * Defines the rendering options of the attachment that is inserted after the decorated text
+		 * Defines the rendering options of the attachment that is inserted after the decorated text.
 		 */
 		after?: ThemableDecorationAttachmentRenderOptions;
 	}
@@ -1232,22 +1232,39 @@ declare module 'vscode' {
 	export class Uri {
 
 		/**
+		 * Create an URI from a string, e.g. `http://www.msft.com/some/path`,
+		 * `file:///usr/home`, or `scheme:with/path`.
+		 *
+		 * @see [Uri.toString](#Uri.toString)
+		 * @param value The string value of an Uri.
+		 * @return A new Uri instance.
+		 */
+		static parse(value: string): Uri;
+
+		/**
 		 * Create an URI from a file system path. The [scheme](#Uri.scheme)
 		 * will be `file`.
+		 *
+		 * The *difference* between `Uri#parse` and `Uri#file` is that the latter treats the argument
+		 * as path, not as stringified-uri. E.g. `Uri.file(path)` is *not* the same as
+		 * `Uri.parse('file://' + path)` because the path might contain characters that are
+		 * interpreted (# and ?). See the following sample:
+		 * ```ts
+		const good = URI.file('/coding/c#/project1');
+		good.scheme === 'file';
+		good.path === '/coding/c#/project1';
+		good.fragment === '';
+
+		const bad = URI.parse('file://' + '/coding/c#/project1');
+		bad.scheme === 'file';
+		bad.path === '/coding/c'; // path is now broken
+		bad.fragment === '/project1';
+		```
 		 *
 		 * @param path A file system or UNC path.
 		 * @return A new Uri instance.
 		 */
 		static file(path: string): Uri;
-
-		/**
-		 * Create an URI from a string. Will throw if the given value is not
-		 * valid.
-		 *
-		 * @param value The string value of an Uri.
-		 * @return A new Uri instance.
-		 */
-		static parse(value: string): Uri;
 
 		/**
 		 * Use the `file` and `parse` factory functions to create new `Uri` objects.
@@ -1285,8 +1302,21 @@ declare module 'vscode' {
 		 * The string representing the corresponding file system path of this Uri.
 		 *
 		 * Will handle UNC paths and normalize windows drive letters to lower-case. Also
-		 * uses the platform specific path separator. Will *not* validate the path for
-		 * invalid characters and semantics. Will *not* look at the scheme of this Uri.
+		 * uses the platform specific path separator.
+		 *
+		 * * Will *not* validate the path for invalid characters and semantics.
+		 * * Will *not* look at the scheme of this Uri.
+		 * * The resulting string shall *not* be used for display purposes but
+		 * for disk operations, like `readFile` et al.
+		 *
+		 * The *difference* to the [`path`](#Uri.path)-property is the use of the platform specific
+		 * path separator and the handling of UNC paths. The sample below outlines the difference:
+		 * ```ts
+		const u = URI.parse('file://server/c$/folder/file.txt')
+		u.authority === 'server'
+		u.path === '/shares/c$/file.txt'
+		u.fsPath === '\\server\c$\folder\file.txt'
+		```
 		 */
 		readonly fsPath: string;
 
@@ -1308,8 +1338,16 @@ declare module 'vscode' {
 
 		/**
 		 * Returns a string representation of this Uri. The representation and normalization
-		 * of a URI depends on the scheme. The resulting string can be safely used with
-		 * [Uri.parse](#Uri.parse).
+		 * of a URI depends on the scheme.
+		 *
+		 * * The resulting string can be safely used with [Uri.parse](#Uri.parse).
+		 * * The resulting string shall *not* be used for display purposes.
+		 *
+		 * *Note* that the implementation will encode _aggressive_ which often leads to unexpected,
+		 * but not incorrect, results. For instance, colons are encoded to `%3A` which might be unexpected
+		 * in file-uri. Also `&` and `=` will be encoded which might be unexpected for http-uris. For stability
+		 * reasons this cannot be changed anymore. If you suffer from too aggressive encoding you should use
+		 * the `skipEncoding`-argument: `uri.toString(true)`.
 		 *
 		 * @param skipEncoding Do not percentage-encode the result, defaults to `false`. Note that
 		 *	the `#` and `?` characters occurring in the path will always be encoded.
@@ -1435,7 +1473,7 @@ declare module 'vscode' {
 		event: Event<T>;
 
 		/**
-		 * Notify all subscribers of the [event](EventEmitter#event). Failure
+		 * Notify all subscribers of the [event](#EventEmitter.event). Failure
 		 * of one or more listener will not fail this function call.
 		 *
 		 * @param data The event object.
@@ -1514,6 +1552,9 @@ declare module 'vscode' {
 		 * [document](#TextDocument). Resources allocated should be released when
 		 * the corresponding document has been [closed](#workspace.onDidCloseTextDocument).
 		 *
+		 * **Note**: The contents of the created [document](#TextDocument) might not be
+		 * identical to the provided text due to end-of-line-sequence normalization.
+		 *
 		 * @param uri An uri which scheme matches the scheme this provider was [registered](#workspace.registerTextDocumentContentProvider) for.
 		 * @param token A cancellation token.
 		 * @return A string or a thenable that resolves to such.
@@ -1549,6 +1590,11 @@ declare module 'vscode' {
 		 * @see [QuickPickOptions.canPickMany](#QuickPickOptions.canPickMany)
 		 */
 		picked?: boolean;
+
+		/**
+		 * Always show this item.
+		 */
+		alwaysShow?: boolean;
 	}
 
 	/**
@@ -2009,7 +2055,7 @@ declare module 'vscode' {
 	 * A code action represents a change that can be performed in code, e.g. to fix a problem or
 	 * to refactor code.
 	 *
-	 * A CodeAction must set either [`edit`](CodeAction#edit) and/or a [`command`](CodeAction#command). If both are supplied, the `edit` is applied first, then the command is executed.
+	 * A CodeAction must set either [`edit`](#CodeAction.edit) and/or a [`command`](#CodeAction.command). If both are supplied, the `edit` is applied first, then the command is executed.
 	 */
 	export class CodeAction {
 
@@ -2162,34 +2208,7 @@ declare module 'vscode' {
 	 * Provides additional metadata over normal [location](#Location) definitions, including the range of
 	 * the defining symbol
 	 */
-	export interface DefinitionLink {
-		/**
-		 * Span of the symbol being defined in the source file.
-		 *
-		 * Used as the underlined span for mouse definition hover. Defaults to the word range at
-		 * the definition position.
-		 */
-		originSelectionRange?: Range;
-
-		/**
-		 * The resource identifier of the definition.
-		 */
-		targetUri: Uri;
-
-		/**
-		 * The full range of the definition.
-		 *
-		 * For a class definition for example, this would be the entire body of the class definition.
-		 */
-		targetRange: Range;
-
-		/**
-		 * The span of the symbol definition.
-		 *
-		 * For a class definition, this would be the class name itself in the class definition.
-		 */
-		targetSelectionRange?: Range;
-	}
+	export type DefinitionLink = LocationLink;
 
 	/**
 	 * The definition of a symbol represented as one or many [locations](#Location).
@@ -2251,6 +2270,30 @@ declare module 'vscode' {
 		 * signaled by returning `undefined` or `null`.
 		 */
 		provideTypeDefinition(document: TextDocument, position: Position, token: CancellationToken): ProviderResult<Definition | DefinitionLink[]>;
+	}
+
+	/**
+	 * The declaration of a symbol representation as one or many [locations](#Location)
+	 * or [location links][#LocationLink].
+	 */
+	export type Declaration = Location | Location[] | LocationLink[];
+
+	/**
+	 * The declaration provider interface defines the contract between extensions and
+	 * the go to declaration feature.
+	 */
+	export interface DeclarationProvider {
+
+		/**
+		 * Provide the declaration of the symbol at the given position and document.
+		 *
+		 * @param document The document in which the command was invoked.
+		 * @param position The position at which the command was invoked.
+		 * @param token A cancellation token.
+		 * @return A declaration or a thenable that resolves to such. The lack of a result can be
+		 * signaled by returning `undefined` or `null`.
+		 */
+		provideDeclaration(document: TextDocument, position: Position, token: CancellationToken): ProviderResult<Declaration>;
 	}
 
 	/**
@@ -2483,7 +2526,7 @@ declare module 'vscode' {
 		 * @param name The name of the symbol.
 		 * @param kind The kind of the symbol.
 		 * @param containerName The name of the symbol containing the symbol.
-		 * @param location The the location of the symbol.
+		 * @param location The location of the symbol.
 		 */
 		constructor(name: string, kind: SymbolKind, containerName: string, location: Location);
 
@@ -2566,6 +2609,16 @@ declare module 'vscode' {
 		 * signaled by returning `undefined`, `null`, or an empty array.
 		 */
 		provideDocumentSymbols(document: TextDocument, token: CancellationToken): ProviderResult<SymbolInformation[] | DocumentSymbol[]>;
+	}
+
+	/**
+	 * Metadata about a document symbol provider.
+	 */
+	export interface DocumentSymbolProviderMetadata {
+		/**
+		 * A human readable string that is shown when multiple outlines trees show for one document.
+		 */
+		label?: string;
 	}
 
 	/**
@@ -2991,10 +3044,13 @@ declare module 'vscode' {
 	export class ParameterInformation {
 
 		/**
-		 * The label of this signature. Will be shown in
-		 * the UI.
+		 * The label of this signature.
+		 *
+		 * Either a string or inclusive start and exclusive end offsets within its containing
+		 * [signature label](#SignatureInformation.label). *Note*: A label of type string must be
+		 * a substring of its containing signature information's [label](#SignatureInformation.label).
 		 */
-		label: string;
+		label: string | [number, number];
 
 		/**
 		 * The human-readable doc-comment of this signature. Will be shown
@@ -3005,10 +3061,10 @@ declare module 'vscode' {
 		/**
 		 * Creates a new parameter information object.
 		 *
-		 * @param label A label string.
+		 * @param label A label string or inclusive start and exclusive end offsets within its containing signature label.
 		 * @param documentation A doc string.
 		 */
-		constructor(label: string, documentation?: string | MarkdownString);
+		constructor(label: string | [number, number], documentation?: string | MarkdownString);
 	}
 
 	/**
@@ -3068,6 +3124,53 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * How a [`SignatureHelpProvider`](#SignatureHelpProvider) was triggered.
+	 */
+	export enum SignatureHelpTriggerKind {
+		/**
+		 * Signature help was invoked manually by the user or by a command.
+		 */
+		Invoke = 1,
+
+		/**
+		 * Signature help was triggered by a trigger character.
+		 */
+		TriggerCharacter = 2,
+
+		/**
+		 * Signature help was triggered by the cursor moving or by the document content changing.
+		 */
+		ContentChange = 3,
+	}
+
+	/**
+	 * Additional information about the context in which a
+	 * [`SignatureHelpProvider`](#SignatureHelpProvider.provideSignatureHelp) was triggered.
+	 */
+	export interface SignatureHelpContext {
+		/**
+		 * Action that caused signature help to be triggered.
+		 */
+		readonly triggerKind: SignatureHelpTriggerKind;
+
+		/**
+		 * Character that caused signature help to be triggered.
+		 *
+		 * This is `undefined` when signature help is not triggered by typing, such as when manually invoking
+		 * signature help or when moving the cursor.
+		 */
+		readonly triggerCharacter?: string;
+
+		/**
+		 * `true` if signature help was already showing when it was triggered.
+		 *
+		 * Retriggers occur when the signature help is already active and can be caused by actions such as
+		 * typing a trigger character, a cursor move, or document content changes.
+		 */
+		readonly isRetrigger: boolean;
+	}
+
+	/**
 	 * The signature help provider interface defines the contract between extensions and
 	 * the [parameter hints](https://code.visualstudio.com/docs/editor/intellisense)-feature.
 	 */
@@ -3079,10 +3182,30 @@ declare module 'vscode' {
 		 * @param document The document in which the command was invoked.
 		 * @param position The position at which the command was invoked.
 		 * @param token A cancellation token.
+		 * @param context Information about how signature help was triggered.
+		 *
 		 * @return Signature help or a thenable that resolves to such. The lack of a result can be
 		 * signaled by returning `undefined` or `null`.
 		 */
-		provideSignatureHelp(document: TextDocument, position: Position, token: CancellationToken): ProviderResult<SignatureHelp>;
+		provideSignatureHelp(document: TextDocument, position: Position, token: CancellationToken, context: SignatureHelpContext): ProviderResult<SignatureHelp>;
+	}
+
+	/**
+	 * Metadata about a registered [`SignatureHelpProvider`](#SignatureHelpProvider).
+	 */
+	export interface SignatureHelpProviderMetadata {
+		/**
+		 * List of characters that trigger signature help.
+		 */
+		readonly triggerCharacters: ReadonlyArray<string>;
+
+		/**
+		 * List of characters that re-trigger signature help.
+		 *
+		 * These trigger characters are only active when signature help is alread showing. All trigger characters
+		 * are also counted as re-trigger characters.
+		 */
+		readonly retriggerCharacters: ReadonlyArray<string>;
 	}
 
 	/**
@@ -3122,10 +3245,10 @@ declare module 'vscode' {
 	 * It is sufficient to create a completion item from just a [label](#CompletionItem.label). In that
 	 * case the completion item will replace the [word](#TextDocument.getWordRangeAtPosition)
 	 * until the cursor with the given label or [insertText](#CompletionItem.insertText). Otherwise the
-	 * the given [edit](#CompletionItem.textEdit) is used.
+	 * given [edit](#CompletionItem.textEdit) is used.
 	 *
 	 * When selecting a completion item in the editor its defined or synthesized text edit will be applied
-	 * to *all* cursors/selections whereas [additionalTextEdits](CompletionItem.additionalTextEdits) will be
+	 * to *all* cursors/selections whereas [additionalTextEdits](#CompletionItem.additionalTextEdits) will be
 	 * applied as provided.
 	 *
 	 * @see [CompletionItemProvider.provideCompletionItems](#CompletionItemProvider.provideCompletionItems)
@@ -3202,6 +3325,13 @@ declare module 'vscode' {
 		 * characters will be ignored.
 		 */
 		commitCharacters?: string[];
+
+		/**
+		 * Keep whitespace of the [insertText](#CompletionItem.insertText) as is. By default, the editor adjusts leading
+		 * whitespace of new lines so that they match the indentation of the line for which the item is accepeted - setting
+		 * this to `true` will prevent that.
+		 */
+		keepWhitespace?: boolean;
 
 		/**
 		 * @deprecated Use `CompletionItem.insertText` and `CompletionItem.range` instead.
@@ -3758,7 +3888,7 @@ declare module 'vscode' {
 			/**
 			 * This property is deprecated and not fully supported anymore by
 			 * the editor (scope and lineStart are ignored).
-			 * Use the the autoClosingPairs property in the language configuration file instead.
+			 * Use the autoClosingPairs property in the language configuration file instead.
 			 * @deprecated
 			 */
 			docComment?: {
@@ -3772,7 +3902,7 @@ declare module 'vscode' {
 		/**
 		 * **Deprecated** Do not use.
 		 *
-		 * @deprecated * Use the the autoClosingPairs property in the language configuration file instead.
+		 * @deprecated * Use the autoClosingPairs property in the language configuration file instead.
 		 */
 		__characterPairSupport?: {
 			autoClosingPairs: {
@@ -3945,6 +4075,35 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * Represents the connection of two locations. Provides additional metadata over normal [locations](#Location),
+	 * including an origin range.
+	 */
+	export interface LocationLink {
+		/**
+		 * Span of the origin of this link.
+		 *
+		 * Used as the underlined span for mouse definition hover. Defaults to the word range at
+		 * the definition position.
+		 */
+		originSelectionRange?: Range;
+
+		/**
+		 * The target resource identifier of this link.
+		 */
+		targetUri: Uri;
+
+		/**
+		 * The full target range of this link.
+		 */
+		targetRange: Range;
+
+		/**
+		 * The span of this link.
+		 */
+		targetSelectionRange?: Range;
+	}
+
+	/**
 	 * The event that is fired when diagnostics change.
 	 */
 	export interface DiagnosticChangeEvent {
@@ -4053,9 +4212,8 @@ declare module 'vscode' {
 		source?: string;
 
 		/**
-		 * A code or identifier for this diagnostics. Will not be surfaced
-		 * to the user, but should be used for later processing, e.g. when
-		 * providing [code actions](#CodeActionContext).
+		 * A code or identifier for this diagnostic.
+		 * Should be used for later processing, e.g. when providing [code actions](#CodeActionContext).
 		 */
 		code?: string | number;
 
@@ -4505,6 +4663,13 @@ declare module 'vscode' {
 		 * [`globalState`](#ExtensionContext.globalState) to store key value data.
 		 */
 		storagePath: string | undefined;
+
+		/**
+		 * An absolute file path of a directory in which the extension can create log files.
+		 * The directory might not exist on disk and creation is up to the extension. However,
+		 * the parent directory is guaranteed to be existent.
+		 */
+		logPath: string;
 	}
 
 	/**
@@ -4615,6 +4780,11 @@ declare module 'vscode' {
 		 * Controls whether to show the "Terminal will be reused by tasks, press any key to close it" message.
 		 */
 		showReuseMessage?: boolean;
+
+		/**
+		 * Controls whether the terminal is cleared before executing the task.
+		 */
+		clear?: boolean;
 	}
 
 	/**
@@ -4775,7 +4945,10 @@ declare module 'vscode' {
 		executable?: string;
 
 		/**
-		 * The arguments to be passed to the shell executable used to run the task.
+		 * The arguments to be passed to the shell executable used to run the task. Most shells
+		 * require special arguments to execute a command. For  example `bash` requires the `-c`
+		 * argument to execute a command, `PowerShell` requires `-Command` and `cmd` requires both
+		 * `/d` and `/c`.
 		 */
 		shellArgs?: string[];
 
@@ -4903,14 +5076,38 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * Run options for a task.
+	 */
+	export interface RunOptions {
+		/**
+		 * Controls whether task variables are re-evaluated on rerun.
+		 */
+		reevaluateOnRerun?: boolean;
+	}
+
+	/**
 	 * A task to execute
 	 */
 	export class Task {
 
 		/**
+		 * Creates a new task.
+		 *
+		 * @param definition The task definition as defined in the taskDefinitions extension point.
+		 * @param scope Specifies the task's scope. It is either a global or a workspace task or a task for a specific workspace folder.
+		 * @param name The task's name. Is presented in the user interface.
+		 * @param source The task's source (e.g. 'gulp', 'npm', ...). Is presented in the user interface.
+		 * @param execution The process or shell execution.
+		 * @param problemMatchers the names of problem matchers to use, like '$tsc'
+		 *  or '$eslint'. Problem matchers can be contributed by an extension using
+		 *  the `problemMatchers` extension point.
+		 */
+		constructor(taskDefinition: TaskDefinition, scope: WorkspaceFolder | TaskScope.Global | TaskScope.Workspace, name: string, source: string, execution?: ProcessExecution | ShellExecution, problemMatchers?: string | string[]);
+
+		/**
 		 * ~~Creates a new task.~~
 		 *
-		 * @deprecated Use the new constructors that allow specifying a target for the task.
+		 * @deprecated Use the new constructors that allow specifying a scope for the task.
 		 *
 		 * @param definition The task definition as defined in the taskDefinitions extension point.
 		 * @param name The task's name. Is presented in the user interface.
@@ -4923,20 +5120,6 @@ declare module 'vscode' {
 		constructor(taskDefinition: TaskDefinition, name: string, source: string, execution?: ProcessExecution | ShellExecution, problemMatchers?: string | string[]);
 
 		/**
-		 * Creates a new task.
-		 *
-		 * @param definition The task definition as defined in the taskDefinitions extension point.
-		 * @param target Specifies the task's target. It is either a global or a workspace task or a task for a specific workspace folder.
-		 * @param name The task's name. Is presented in the user interface.
-		 * @param source The task's source (e.g. 'gulp', 'npm', ...). Is presented in the user interface.
-		 * @param execution The process or shell execution.
-		 * @param problemMatchers the names of problem matchers to use, like '$tsc'
-		 *  or '$eslint'. Problem matchers can be contributed by an extension using
-		 *  the `problemMatchers` extension point.
-		 */
-		constructor(taskDefinition: TaskDefinition, target: WorkspaceFolder | TaskScope.Global | TaskScope.Workspace, name: string, source: string, execution?: ProcessExecution | ShellExecution, problemMatchers?: string | string[]);
-
-		/**
 		 * The task's definition.
 		 */
 		definition: TaskDefinition;
@@ -4944,7 +5127,7 @@ declare module 'vscode' {
 		/**
 		 * The task's scope.
 		 */
-		scope?: TaskScope.Global | TaskScope.Workspace | WorkspaceFolder;
+		readonly scope?: TaskScope.Global | TaskScope.Workspace | WorkspaceFolder;
 
 		/**
 		 * The task's name
@@ -4954,7 +5137,7 @@ declare module 'vscode' {
 		/**
 		 * The task's execution engine
 		 */
-		execution: ProcessExecution | ShellExecution;
+		execution?: ProcessExecution | ShellExecution;
 
 		/**
 		 * Whether the task is a background task or not.
@@ -4985,6 +5168,11 @@ declare module 'vscode' {
 		 * array.
 		 */
 		problemMatchers: string[];
+
+		/**
+		 * Run options for the task
+		 */
+		runOptions: RunOptions;
 	}
 
 	/**
@@ -5506,7 +5694,7 @@ declare module 'vscode' {
 		 * is no longer visible.
 		 *
 		 * Normally the webview panel's html context is created when the panel becomes visible
-		 * and destroyed when it is is hidden. Extensions that have complex state
+		 * and destroyed when it is hidden. Extensions that have complex state
 		 * or UI can set the `retainContextWhenHidden` to make VS Code keep the webview
 		 * context around, even when the webview moves to a background tab. When a webview using
 		 * `retainContextWhenHidden` becomes hidden, its scripts and other dynamic content are suspended.
@@ -5658,6 +5846,24 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * The clipboard provides read and write access to the system's clipboard.
+	 */
+	export interface Clipboard {
+
+		/**
+		 * Read the current clipboard contents as text.
+		 * @returns A thenable that resolves to a string.
+		 */
+		readText(): Thenable<string>;
+
+		/**
+		 * Writes text into the clipboard.
+		 * @returns A thenable that resolves when writing happened.
+		 */
+		writeText(value: string): Thenable<void>;
+	}
+
+	/**
 	 * Namespace describing the environment the editor runs in.
 	 */
 	export namespace env {
@@ -5682,6 +5888,11 @@ declare module 'vscode' {
 		 * @readonly
 		 */
 		export let language: string;
+
+		/**
+		 * The system clipboard.
+		 */
+		export const clipboard: Clipboard;
 
 		/**
 		 * A unique identifier for the computer.
@@ -5875,6 +6086,19 @@ declare module 'vscode' {
 		 * The currently opened terminals or an empty array.
 		 */
 		export const terminals: ReadonlyArray<Terminal>;
+
+		/**
+		 * The currently active terminal or `undefined`. The active terminal is the one that
+		 * currently has focus or most recently had focus.
+		 */
+		export const activeTerminal: Terminal | undefined;
+
+		/**
+		 * An [event](#Event) which fires when the [active terminal](#window.activeTerminal)
+		 * has changed. *Note* that the event also fires when the active terminal changes
+		 * to `undefined`.
+		 */
+		export const onDidChangeActiveTerminal: Event<Terminal | undefined>;
 
 		/**
 		 * An [event](#Event) which fires when a terminal has been created, either through the
@@ -6182,7 +6406,7 @@ declare module 'vscode' {
 		export function createInputBox(): InputBox;
 
 		/**
-		 * Create a new [output channel](#OutputChannel) with the given name.
+		 * Creates a new [output channel](#OutputChannel) with the given name.
 		 *
 		 * @param name Human-readable string which will be used to represent the channel in the UI.
 		 */
@@ -6308,10 +6532,10 @@ declare module 'vscode' {
 		/**
 		 * Create a [TreeView](#TreeView) for the view contributed using the extension point `views`.
 		 * @param viewId Id of the view contributed using the extension point `views`.
-		 * @param options Options object to provide [TreeDataProvider](#TreeDataProvider) for the view.
+		 * @param options Options for creating the [TreeView](#TreeView)
 		 * @returns a [TreeView](#TreeView).
 		 */
-		export function createTreeView<T>(viewId: string, options: { treeDataProvider: TreeDataProvider<T> }): TreeView<T>;
+		export function createTreeView<T>(viewId: string, options: TreeViewOptions<T>): TreeView<T>;
 
 		/**
 		 * Registers a [uri handler](#UriHandler) capable of handling system-wide [uris](#Uri).
@@ -6348,6 +6572,22 @@ declare module 'vscode' {
 		 * @param serializer Webview serializer.
 		 */
 		export function registerWebviewPanelSerializer(viewType: string, serializer: WebviewPanelSerializer): Disposable;
+	}
+
+	/**
+	 * Options for creating a [TreeView](#TreeView)
+	 */
+	export interface TreeViewOptions<T> {
+
+		/**
+		 * A data provider that provides tree data.
+		 */
+		treeDataProvider: TreeDataProvider<T>;
+
+		/**
+		 * Whether to show collapse all action or not.
+		 */
+		showCollapseAll?: boolean;
 	}
 
 	/**
@@ -6417,7 +6657,7 @@ declare module 'vscode' {
 		readonly visible: boolean;
 
 		/**
-		 * Event that is fired when [visibility](TreeView.visible) has changed
+		 * Event that is fired when [visibility](#TreeView.visible) has changed
 		 */
 		readonly onDidChangeVisibility: Event<TreeViewVisibilityChangeEvent>;
 
@@ -6425,13 +6665,15 @@ declare module 'vscode' {
 		 * Reveals the given element in the tree view.
 		 * If the tree view is not visible then the tree view is shown and element is revealed.
 		 *
-		 * By default revealed element is selected and not focused.
+		 * By default revealed element is selected.
 		 * In order to not to select, set the option `select` to `false`.
 		 * In order to focus, set the option `focus` to `true`.
+		 * In order to expand the revealed element, set the option `expand` to `true`. To expand recursively set `expand` to the number of levels to expand.
+		 * **NOTE:** You can expand only to 3 levels maximum.
 		 *
 		 * **NOTE:** [TreeDataProvider](#TreeDataProvider) is required to implement [getParent](#TreeDataProvider.getParent) method to access this API.
 		 */
-		reveal(element: T, options?: { select?: boolean, focus?: boolean }): Thenable<void>;
+		reveal(element: T, options?: { select?: boolean, focus?: boolean, expand?: boolean | number }): Thenable<void>;
 	}
 
 	/**
@@ -6492,6 +6734,12 @@ declare module 'vscode' {
 		 * When a [ThemeIcon](#ThemeIcon) is specified, icon is derived from the current file icon theme for the specified theme icon using [resourceUri](#TreeItem.resourceUri) (if provided).
 		 */
 		iconPath?: string | Uri | { light: string | Uri; dark: string | Uri } | ThemeIcon;
+
+		/**
+		 * A human readable string which is rendered less prominent.
+		 * When `true`, it is derived from [resourceUri](#TreeItem.resourceUri) and when `falsy`, it is not shown.
+		 */
+		description?: string | boolean;
 
 		/**
 		 * The [uri](#Uri) of the resource representing this item.
@@ -7286,7 +7534,8 @@ declare module 'vscode' {
 		export function registerTextDocumentContentProvider(scheme: string, provider: TextDocumentContentProvider): Disposable;
 
 		/**
-		 * An event that is emitted when a [text document](#TextDocument) is opened.
+		 * An event that is emitted when a [text document](#TextDocument) is opened or when the language id
+		 * of a text document [has been changed](#languages.setTextDocumentLanguage).
 		 *
 		 * To add an event listener when a visible text document is opened, use the [TextEditor](#TextEditor) events in the
 		 * [window](#window) namespace. Note that:
@@ -7299,7 +7548,8 @@ declare module 'vscode' {
 		export const onDidOpenTextDocument: Event<TextDocument>;
 
 		/**
-		 * An event that is emitted when a [text document](#TextDocument) is disposed.
+		 * An event that is emitted when a [text document](#TextDocument) is disposed or when the language id
+		 * of a text document [has been changed](#languages.setTextDocumentLanguage).
 		 *
 		 * To add an event listener when a visible text document is closed, use the [TextEditor](#TextEditor) events in the
 		 * [window](#window) namespace. Note that this event is not emitted when a [TextEditor](#TextEditor) is closed
@@ -7429,6 +7679,19 @@ declare module 'vscode' {
 		 * @return Promise resolving to an array of identifier strings.
 		 */
 		export function getLanguages(): Thenable<string[]>;
+
+		/**
+		 * Set (and change) the [language](#TextDocument.languageId) that is associated
+		 * with the given document.
+		 *
+		 * *Note* that calling this function will trigger the [`onDidCloseTextDocument`](#workspace.onDidCloseTextDocument) event
+		 * followed by the [`onDidOpenTextDocument`](#workspace.onDidOpenTextDocument) event.
+		 *
+		 * @param document The document which language is to be changed
+		 * @param languageId The new language identifier.
+		 * @returns A thenable that resolves with the updated document.
+		 */
+		export function setTextDocumentLanguage(document: TextDocument, languageId: string): Thenable<TextDocument>;
 
 		/**
 		 * Compute the match between a document [selector](#DocumentSelector) and a document. Values
@@ -7583,6 +7846,19 @@ declare module 'vscode' {
 		export function registerTypeDefinitionProvider(selector: DocumentSelector, provider: TypeDefinitionProvider): Disposable;
 
 		/**
+		 * Register a declaration provider.
+		 *
+		 * Multiple providers can be registered for a language. In that case providers are asked in
+		 * parallel and the results are merged. A failing provider (rejected promise or exception) will
+		 * not cause a failure of the whole operation.
+		 *
+		 * @param selector A selector that defines the documents this provider is applicable to.
+		 * @param provider A declaration provider.
+		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
+		 */
+		export function registerDeclarationProvider(selector: DocumentSelector, provider: DeclarationProvider): Disposable;
+
+		/**
 		 * Register a hover provider.
 		 *
 		 * Multiple providers can be registered for a language. In that case providers are asked in
@@ -7617,9 +7893,10 @@ declare module 'vscode' {
 		 *
 		 * @param selector A selector that defines the documents this provider is applicable to.
 		 * @param provider A document symbol provider.
+		 * @param metaData metadata about the provider
 		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
 		 */
-		export function registerDocumentSymbolProvider(selector: DocumentSelector, provider: DocumentSymbolProvider): Disposable;
+		export function registerDocumentSymbolProvider(selector: DocumentSelector, provider: DocumentSymbolProvider, metaData?: DocumentSymbolProviderMetadata): Disposable;
 
 		/**
 		 * Register a workspace symbol provider.
@@ -7676,7 +7953,7 @@ declare module 'vscode' {
 		 * Register a formatting provider for a document range.
 		 *
 		 * *Note:* A document range provider is also a [document formatter](#DocumentFormattingEditProvider)
-		 * which means there is no need to [register](registerDocumentFormattingEditProvider) a document
+		 * which means there is no need to [register](#languages.registerDocumentFormattingEditProvider) a document
 		 * formatter when also registering a range provider.
 		 *
 		 * Multiple providers can be registered for a language. In that case providers are sorted
@@ -7714,9 +7991,11 @@ declare module 'vscode' {
 		 * @param selector A selector that defines the documents this provider is applicable to.
 		 * @param provider A signature help provider.
 		 * @param triggerCharacters Trigger signature help when the user types one of the characters, like `,` or `(`.
+		 * @param metadata Information about the provider.
 		 * @return A [disposable](#Disposable) that unregisters this provider when being disposed.
 		 */
 		export function registerSignatureHelpProvider(selector: DocumentSelector, provider: SignatureHelpProvider, ...triggerCharacters: string[]): Disposable;
+		export function registerSignatureHelpProvider(selector: DocumentSelector, provider: SignatureHelpProvider, metadata: SignatureHelpProviderMetadata): Disposable;
 
 		/**
 		 * Register a document link provider.
@@ -8044,6 +8323,19 @@ declare module 'vscode' {
 		 * The debug session's name from the [debug configuration](#DebugConfiguration).
 		 */
 		readonly name: string;
+
+		/**
+		 * The workspace folder of this session or `undefined` for a folderless setup.
+		 */
+		readonly workspaceFolder: WorkspaceFolder | undefined;
+
+		/**
+		 * The "resolved" [debug configuration](#DebugConfiguration) of this session.
+		 * "Resolved" means that
+		 * - all variables have been substituted and
+		 * - platform specific attribute sections have been "flattened" for the matching platform and removed for non-matching platforms.
+		 */
+		readonly configuration: DebugConfiguration;
 
 		/**
 		 * Send a custom request to the debug adapter.

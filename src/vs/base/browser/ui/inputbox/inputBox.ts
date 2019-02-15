@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import 'vs/css!./inputBox';
 
@@ -43,10 +42,13 @@ export interface IInputBoxStyles {
 	inputBorder?: Color;
 	inputValidationInfoBorder?: Color;
 	inputValidationInfoBackground?: Color;
+	inputValidationInfoForeground?: Color;
 	inputValidationWarningBorder?: Color;
 	inputValidationWarningBackground?: Color;
+	inputValidationWarningForeground?: Color;
 	inputValidationErrorBorder?: Color;
 	inputValidationErrorBackground?: Color;
+	inputValidationErrorForeground?: Color;
 }
 
 export interface IInputValidator {
@@ -63,7 +65,7 @@ export interface IInputValidationOptions {
 	validation: IInputValidator;
 }
 
-export enum MessageType {
+export const enum MessageType {
 	INFO = 1,
 	WARNING = 2,
 	ERROR = 3
@@ -108,10 +110,13 @@ export class InputBox extends Widget {
 
 	private inputValidationInfoBorder: Color;
 	private inputValidationInfoBackground: Color;
+	private inputValidationInfoForeground: Color;
 	private inputValidationWarningBorder: Color;
 	private inputValidationWarningBackground: Color;
+	private inputValidationWarningForeground: Color;
 	private inputValidationErrorBorder: Color;
 	private inputValidationErrorBackground: Color;
+	private inputValidationErrorForeground: Color;
 
 	private _onDidChange = this._register(new Emitter<string>());
 	public readonly onDidChange: Event<string> = this._onDidChange.event;
@@ -136,10 +141,13 @@ export class InputBox extends Widget {
 
 		this.inputValidationInfoBorder = this.options.inputValidationInfoBorder;
 		this.inputValidationInfoBackground = this.options.inputValidationInfoBackground;
+		this.inputValidationInfoForeground = this.options.inputValidationInfoForeground;
 		this.inputValidationWarningBorder = this.options.inputValidationWarningBorder;
 		this.inputValidationWarningBackground = this.options.inputValidationWarningBackground;
+		this.inputValidationWarningForeground = this.options.inputValidationWarningForeground;
 		this.inputValidationErrorBorder = this.options.inputValidationErrorBorder;
 		this.inputValidationErrorBackground = this.options.inputValidationErrorBackground;
+		this.inputValidationErrorForeground = this.options.inputValidationErrorForeground;
 
 		if (this.options.validationOptions) {
 			this.validation = this.options.validationOptions.validation;
@@ -162,6 +170,7 @@ export class InputBox extends Widget {
 
 		if (this.options.flexibleHeight) {
 			this.mirror = dom.append(wrapper, $('div.mirror'));
+			this.mirror.innerHTML = '&nbsp;';
 		} else {
 			this.input.type = this.options.type || 'text';
 			this.input.setAttribute('wrap', 'off');
@@ -274,7 +283,7 @@ export class InputBox extends Widget {
 		return document.activeElement === this.input;
 	}
 
-	public select(range: IRange = null): void {
+	public select(range: IRange | null = null): void {
 		this.input.select();
 
 		if (range) {
@@ -305,6 +314,9 @@ export class InputBox extends Widget {
 
 	public set width(width: number) {
 		this.input.style.width = width + 'px';
+		if (this.mirror) {
+			this.mirror.style.width = width + 'px';
+		}
 	}
 
 	public showMessage(message: IMessage, force?: boolean): void {
@@ -353,7 +365,7 @@ export class InputBox extends Widget {
 	}
 
 	public validate(): boolean {
-		let errorMsg: IMessage = null;
+		let errorMsg: IMessage | null = null;
 
 		if (this.validation) {
 			errorMsg = this.validation(this.value);
@@ -380,11 +392,11 @@ export class InputBox extends Widget {
 		return errorMsg ? errorMsg.type !== MessageType.ERROR : true;
 	}
 
-	private stylesForType(type: MessageType): { border: Color; background: Color } {
+	private stylesForType(type: MessageType): { border: Color; background: Color; foreground: Color } {
 		switch (type) {
-			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground };
-			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground };
-			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground };
+			case MessageType.INFO: return { border: this.inputValidationInfoBorder, background: this.inputValidationInfoBackground, foreground: this.inputValidationInfoForeground };
+			case MessageType.WARNING: return { border: this.inputValidationWarningBorder, background: this.inputValidationWarningBackground, foreground: this.inputValidationWarningForeground };
+			default: return { border: this.inputValidationErrorBorder, background: this.inputValidationErrorBackground, foreground: this.inputValidationErrorForeground };
 		}
 	}
 
@@ -426,6 +438,7 @@ export class InputBox extends Widget {
 
 				const styles = this.stylesForType(this.message.type);
 				spanElement.style.backgroundColor = styles.background ? styles.background.toString() : null;
+				spanElement.style.color = styles.foreground ? styles.foreground.toString() : null;
 				spanElement.style.border = styles.border ? `1px solid ${styles.border}` : null;
 
 				dom.append(div, spanElement);
@@ -463,9 +476,16 @@ export class InputBox extends Widget {
 		}
 
 		const value = this.value || this.placeholder;
-		let lastCharCode = value.charCodeAt(value.length - 1);
-		let suffix = lastCharCode === 10 ? ' ' : '';
-		this.mirror.textContent = value + suffix;
+		const lastCharCode = value.charCodeAt(value.length - 1);
+		const suffix = lastCharCode === 10 ? ' ' : '';
+		const mirrorTextContent = value + suffix;
+
+		if (mirrorTextContent) {
+			this.mirror.textContent = value + suffix;
+		} else {
+			this.mirror.innerHTML = '&nbsp;';
+		}
+
 		this.layout();
 	}
 
@@ -475,10 +495,13 @@ export class InputBox extends Widget {
 		this.inputBorder = styles.inputBorder;
 
 		this.inputValidationInfoBackground = styles.inputValidationInfoBackground;
+		this.inputValidationInfoForeground = styles.inputValidationInfoForeground;
 		this.inputValidationInfoBorder = styles.inputValidationInfoBorder;
 		this.inputValidationWarningBackground = styles.inputValidationWarningBackground;
+		this.inputValidationWarningForeground = styles.inputValidationWarningForeground;
 		this.inputValidationWarningBorder = styles.inputValidationWarningBorder;
 		this.inputValidationErrorBackground = styles.inputValidationErrorBackground;
+		this.inputValidationErrorForeground = styles.inputValidationErrorForeground;
 		this.inputValidationErrorBorder = styles.inputValidationErrorBorder;
 
 		this.applyStyles();

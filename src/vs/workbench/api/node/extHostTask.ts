@@ -2,14 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import URI, { UriComponents } from 'vs/base/common/uri';
+import * as path from 'path';
+
+import { URI, UriComponents } from 'vs/base/common/uri';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as Objects from 'vs/base/common/objects';
-import { asWinJsPromise } from 'vs/base/common/async';
+import { asThenable } from 'vs/base/common/async';
 import { Event, Emitter } from 'vs/base/common/event';
+import { win32 } from 'vs/base/node/processes';
 
 import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import * as tasks from 'vs/workbench/parts/tasks/common/tasks';
@@ -30,6 +31,7 @@ import {
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/node/extHostDocumentsAndEditors';
 import { ExtHostConfiguration } from 'vs/workbench/api/node/extHostConfiguration';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 /*
 namespace ProblemPattern {
@@ -235,14 +237,15 @@ namespace TaskPanelKind {
 namespace PresentationOptions {
 	export function from(value: vscode.TaskPresentationOptions): tasks.PresentationOptions {
 		if (value === void 0 || value === null) {
-			return { reveal: tasks.RevealKind.Always, echo: true, focus: false, panel: tasks.PanelKind.Shared, showReuseMessage: true };
+			return { reveal: tasks.RevealKind.Always, echo: true, focus: false, panel: tasks.PanelKind.Shared, showReuseMessage: true, clear: false };
 		}
 		return {
 			reveal: TaskRevealKind.from(value.reveal),
 			echo: value.echo === void 0 ? true : !!value.echo,
 			focus: !!value.focus,
 			panel: TaskPanelKind.from(value.panel),
-			showReuseMessage: value.showReuseMessage === void 0 ? true : !!value.showReuseMessage
+			showReuseMessage: value.showReuseMessage === void 0 ? true : !!value.showReuseMessage,
+			clear: value.clear === void 0 ? false : !!value.clear,
 		};
 	}
 }
@@ -403,7 +406,8 @@ namespace Tasks {
 			command: command,
 			isBackground: !!task.isBackground,
 			problemMatchers: task.problemMatchers.slice(),
-			hasDefinedMatchers: (task as types.Task).hasDefinedMatchers
+			hasDefinedMatchers: (task as types.Task).hasDefinedMatchers,
+			runOptions: (<vscode.Task>task).runOptions ? (<vscode.Task>task).runOptions : { reevaluateOnRerun: true },
 		};
 		return result;
 	}
@@ -608,7 +612,7 @@ namespace TaskDTO {
 			if (typeof value.scope === 'number') {
 				scope = value.scope;
 			} else {
-				scope = value.scope.uri.toJSON();
+				scope = value.scope.uri;
 			}
 		}
 		if (!definition || !scope) {
@@ -629,7 +633,8 @@ namespace TaskDTO {
 			group: group,
 			presentationOptions: TaskPresentationOptionsDTO.from(value.presentationOptions),
 			problemMatchers: value.problemMatchers,
-			hasDefinedMatchers: (value as types.Task).hasDefinedMatchers
+			hasDefinedMatchers: (value as types.Task).hasDefinedMatchers,
+			runOptions: (<vscode.Task>value).runOptions ? (<vscode.Task>value).runOptions : { reevaluateOnRerun: true },
 		};
 		return result;
 	}
@@ -807,7 +812,7 @@ export class ExtHostTask implements ExtHostTaskShape {
 		return result;
 	}
 
-	public terminateTask(execution: vscode.TaskExecution): TPromise<void> {
+	public terminateTask(execution: vscode.TaskExecution): Thenable<void> {
 		if (!(execution instanceof TaskExecutionImpl)) {
 			throw new Error('No valid task execution provided');
 		}
@@ -864,12 +869,12 @@ export class ExtHostTask implements ExtHostTaskShape {
 		}
 	}
 
-	public $provideTasks(handle: number, validTypes: { [key: string]: boolean; }): TPromise<tasks.TaskSet> {
+	public $provideTasks(handle: number, validTypes: { [key: string]: boolean; }): Thenable<tasks.TaskSet> {
 		let handler = this._handlers.get(handle);
 		if (!handler) {
-			return TPromise.wrapError<tasks.TaskSet>(new Error('no handler found'));
+			return Promise.reject(new Error('no handler found'));
 		}
-		return asWinJsPromise(token => handler.provider.provideTasks(token)).then(value => {
+		return asThenable(() => handler.provider.provideTasks(CancellationToken.None)).then(value => {
 			let sanitized: vscode.Task[] = [];
 			for (let task of value) {
 				if (task.definition && validTypes[task.definition.type] === true) {
@@ -888,9 +893,12 @@ export class ExtHostTask implements ExtHostTaskShape {
 	}
 
 	// {{SQL CARBON EDIT}} disable debug related method
-	public $resolveVariables(uriComponents: UriComponents, variables: string[]): any {
+	public $resolveVariables(uriComponents: UriComponents, toResolve: { process?: { name: string; cwd?: string; path?: string }, variables: string[] }): Thenable<{ process?: string, variables: { [key: string]: string; } }> {
 		// let uri: URI = URI.revive(uriComponents);
-		// let result: { [key: string]: string; } = Object.create(null);
+		// let result = {
+		// 	process: undefined as string,
+		// 	variables: Object.create(null)
+		// };
 		// let workspaceFolder = this._workspaceService.resolveWorkspaceFolder(uri);
 		// let resolver = new ExtHostVariableResolverService(this._workspaceService, this._editorService, this._configurationService);
 		// let ws: IWorkspaceFolder = {
@@ -901,11 +909,25 @@ export class ExtHostTask implements ExtHostTaskShape {
 		// 		throw new Error('Not implemented');
 		// 	}
 		// };
-		// for (let variable of variables) {
-		// 	result[variable] = resolver.resolve(ws, variable);
+		// for (let variable of toResolve.variables) {
+		// 	result.variables[variable] = resolver.resolve(ws, variable);
 		// }
-		// return result;
-		return undefined;
+		// if (toResolve.process !== void 0) {
+		// 	let paths: string[] | undefined = undefined;
+		// 	if (toResolve.process.path !== void 0) {
+		// 		paths = toResolve.process.path.split(path.delimiter);
+		// 		for (let i = 0; i < paths.length; i++) {
+		// 			paths[i] = resolver.resolve(ws, paths[i]);
+		// 		}
+		// 	}
+		// 	result.process = win32.findExecutable(
+		// 		resolver.resolve(ws, toResolve.process.name),
+		// 		toResolve.process.cwd !== void 0 ? resolver.resolve(ws, toResolve.process.cwd) : undefined,
+		// 		paths
+		// 	);
+		// }
+		// return Promise.resolve(result);
+		return Promise.resolve(undefined);
 	}
 
 	private nextHandle(): number {

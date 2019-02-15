@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ITextModel } from 'vs/editor/common/model';
 import { Disposable, IDisposable, dispose, IReference } from 'vs/base/common/lifecycle';
 import { EditorOptions, EditorInput, IEditorMemento } from 'vs/workbench/common/editor';
@@ -61,9 +58,9 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IEditorGroupsService readonly editorGroupService: IEditorGroupsService
 	) {
-		super(HtmlPreviewPart.ID, telemetryService, themeService, contextKeyService);
+		super(HtmlPreviewPart.ID, telemetryService, themeService, contextKeyService, _storageService);
 
-		this.editorMemento = this.getEditorMemento<HtmlPreviewEditorViewState>(_storageService, editorGroupService, this.viewStateStorageKey);
+		this.editorMemento = this.getEditorMemento<HtmlPreviewEditorViewState>(editorGroupService, this.viewStateStorageKey);
 	}
 
 	dispose(): void {
@@ -95,8 +92,6 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 
 			this._webview = this._instantiationService.createInstance(WebviewElement,
 				this._partService.getContainer(Parts.EDITOR_PART),
-				this.contextKey,
-				this.findInputFocusContextKey,
 				{
 					...webviewOptions,
 					useSameOriginForRoot: true
@@ -166,13 +161,14 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 		super.clearInput();
 	}
 
-	public shutdown(): void {
+	protected saveState(): void {
 		if (this.input instanceof HtmlInput) {
 			this.saveHTMLPreviewViewState(this.input, {
 				scrollYPercentage: this._scrollYPercentage
 			});
 		}
-		super.shutdown();
+
+		super.saveState();
 	}
 
 	public sendMessage(data: any): void {
@@ -182,7 +178,7 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 	public setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Thenable<void> {
 
 		if (this.input && this.input.matches(input) && this._hasValidModel() && this.input instanceof HtmlInput && input instanceof HtmlInput && areHtmlInputOptionsEqual(this.input.options, input.options)) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
 
 		let oldOptions: HtmlInputOptions | undefined = undefined;
@@ -200,7 +196,7 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 		this._modelChangeSubscription.dispose();
 
 		if (!(input instanceof HtmlInput)) {
-			return TPromise.wrapError<void>(new Error('Invalid input'));
+			return Promise.reject(new Error('Invalid input'));
 		}
 
 		return super.setInput(input, options, token).then(() => {
@@ -216,7 +212,7 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 				}
 
 				if (!this.model) {
-					return TPromise.wrapError<void>(new Error(localize('html.voidInput', "Invalid editor input.")));
+					return Promise.reject(new Error(localize('html.voidInput', "Invalid editor input.")));
 				}
 
 				if (oldOptions && !areHtmlInputOptionsEqual(oldOptions, input.options)) {
@@ -246,10 +242,10 @@ export class HtmlPreviewPart extends BaseWebviewEditor {
 	}
 
 	private saveHTMLPreviewViewState(input: HtmlInput, editorViewState: HtmlPreviewEditorViewState): void {
-		this.editorMemento.saveState(this.group, input, editorViewState);
+		this.editorMemento.saveEditorState(this.group, input, editorViewState);
 	}
 
 	private loadHTMLPreviewViewState(input: HtmlInput): HtmlPreviewEditorViewState {
-		return this.editorMemento.loadState(this.group, input);
+		return this.editorMemento.loadEditorState(this.group, input);
 	}
 }
