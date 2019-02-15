@@ -242,8 +242,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.2.1",
-							"lastUpdated": "7/26/2018",
+							"version": "0.3.0",
+							"lastUpdated": "1/15/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
