@@ -22,7 +22,6 @@ export interface IQueryManagementService {
 
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	isProviderRegistered(providerId: string): boolean;
-	//getQueryProviderId(ownerUri: string): string;
 	registerRunner(runner: QueryRunner, uri: string): void;
 
 	cancelQuery(ownerUri: string): Thenable<sqlops.QueryCancelResult>;

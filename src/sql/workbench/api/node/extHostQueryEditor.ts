@@ -30,8 +30,9 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 	}
 
 	public $registerQueryInfoListener(providerId: string, listener: sqlops.QueryInfoListener): void {
-		this._queryListeners[this._nextListenerHandle++] = listener;
-		this._proxy.$registerQueryInfoListener(0, providerId);
+		this._queryListeners[this._nextListenerHandle] = listener;
+		this._proxy.$registerQueryInfoListener(this._nextListenerHandle, providerId);
+		this._nextListenerHandle++;
 	}
 
 	public $onExecutionPlanAvailable(handle: number, fileUri: string, planXml: string) : void {
