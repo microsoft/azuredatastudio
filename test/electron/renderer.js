@@ -15,12 +15,19 @@ const i_remap = require('remap-istanbul/lib/remap');
 const util = require('util');
 const bootstrap = require('../../src/bootstrap');
 
+// {{SQL CARBON EDIT}}
+require('reflect-metadata');
+
 // Disabled custom inspect. See #38847
 if (util.inspect && util.inspect['defaultOptions']) {
 	util.inspect['defaultOptions'].customInspect = false;
 }
 
-let _tests_glob = '**/test/**/*.test.js';
+// {{SQL CARBON EDIT}}
+let _tests_glob = '**/*test*/**/*.test.js';
+// {{SQL CARBON EDIT}}
+let _sql_tests_glob = '**/sqltest/**/*.test.js';
+
 let loader;
 let _out;
 
@@ -35,11 +42,30 @@ function initLoader(opts) {
 		nodeMain: __filename,
 		catchError: true,
 		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
+		// {{SQL CARBON EDIT}}
 		paths: {
+			'vs/css': '../test/css.mock',
 			'vs': `../${outdir}/vs`,
+			'sqltest': `../${outdir}/sqltest`,
+			'sql': `../${outdir}/sql`,
 			'lib': `../${outdir}/lib`,
 			'bootstrap-fork': `../${outdir}/bootstrap-fork`
-		}
+		},
+		// {{SQL CARBON EDIT}}
+		nodeModules: [
+			'@angular/common',
+			'@angular/core',
+			'@angular/forms',
+			'@angular/platform-browser',
+			'@angular/platform-browser-dynamic',
+			'@angular/router',
+			'angular2-grid',
+			'ng2-charts/ng2-charts',
+			'rxjs/add/observable/of',
+			'rxjs/Observable',
+			'rxjs/Subject',
+			'rxjs/Observer'
+		]
 	};
 
 	// nodeInstrumenter when coverage is requested
@@ -47,6 +73,11 @@ function initLoader(opts) {
 		const instrumenter = new istanbul.Instrumenter();
 
 		loaderConfig.nodeInstrumenter = function (contents, source) {
+			// {{SQL CARBON EDIT}}
+			if (minimatch(source, _sql_tests_glob)) {
+				return contents;
+			}
+
 			return minimatch(source, _tests_glob)
 				? contents // don't instrument tests itself
 				: instrumenter.instrumentSync(contents, source);
@@ -93,7 +124,10 @@ function createCoverageReport(opts) {
 		for (const entryKey in remappedCoverage) {
 			const entry = remappedCoverage[entryKey];
 			entry.path = fixPath(entry.path);
-			finalCoverage[fixPath(entryKey)] = entry;
+			// {{SQL CARBON EDIT}}
+			if (!entry.path.includes('\\vs\\') && !entry.path.includes('/vs/')) {
+				finalCoverage[fixPath(entryKey)] = entry;
+			}
 		}
 
 		const collector = new istanbul.Collector();
@@ -106,7 +140,8 @@ function createCoverageReport(opts) {
 			coveragePath += '-single';
 			reportTypes = ['lcovonly'];
 		} else {
-			reportTypes = ['json', 'lcov', 'html'];
+			// {{SQL CARBON EDIT}}
+			reportTypes = ['json', 'lcov', 'html', 'cobertura'];
 		}
 
 		const reporter = new istanbul.Reporter(null, coveragePath);

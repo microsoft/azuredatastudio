@@ -58,7 +58,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 		webFrame.setZoomLevel(zoomLevel);
 	}
 
-	// {{SQL CARBON EDIT}} - Todo mairvine - Check if we still need this
+	// {{SQL CARBON EDIT}}
 	// Load the loader and start loading the workbench
 	function createScript(src, onload) {
 		const script = document.createElement('script');

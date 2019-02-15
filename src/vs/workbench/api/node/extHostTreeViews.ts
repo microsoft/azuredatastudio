@@ -196,7 +196,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			}, 200)(elements => {
 				const _promiseCallback = promiseCallback;
 				refreshingPromise = null;
-				this.refresh(elements);
+				this.refresh(elements).then(() => _promiseCallback());
 			}));
 		}
 	}
@@ -344,11 +344,11 @@ export class ExtHostTreeView<T> extends Disposable {
 		const hasRoot = elements.some(element => !element);
 		if (hasRoot) {
 			this.clearAll(); // clear cache
-			this.proxy.$refresh(this.viewId);
+			return this.proxy.$refresh(this.viewId);
 		} else {
 			const handlesToRefresh = this.getHandlesToRefresh(elements);
 			if (handlesToRefresh.length) {
-				this.refreshHandles(handlesToRefresh);
+				return this.refreshHandles(handlesToRefresh);
 			}
 		}
 		return Promise.resolve(null);

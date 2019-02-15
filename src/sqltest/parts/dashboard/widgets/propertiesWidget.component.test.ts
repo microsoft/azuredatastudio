@@ -77,7 +77,10 @@ suite('Dashboard Properties Widget Tests', () => {
 			edition: 0
 		};
 
-		let dashboardService = TypeMoq.Mock.ofType(DashboardServiceInterface, TypeMoq.MockBehavior.Loose, [{}]);
+		let dashboardService = TypeMoq.Mock.ofInstance<DashboardServiceInterface>({
+			adminService: undefined,
+			connectionManagementService: undefined
+		} as DashboardServiceInterface, TypeMoq.MockBehavior.Loose);
 
 		let singleAdminService = TypeMoq.Mock.ofType(SingleAdminService);
 		singleAdminService.setup(x => x.databaseInfo).returns(() => Observable.of(databaseInfo));

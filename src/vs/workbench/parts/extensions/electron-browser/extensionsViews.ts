@@ -341,6 +341,7 @@ export class ExtensionsListView extends ViewletPanel {
 		}
 
 		if (/\bcurated:([^\s]+)\b/.test(query.value)) {
+			return this.getCuratedModel(query, options);
 		}
 
 		let text = query.value;

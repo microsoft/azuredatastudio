@@ -72,12 +72,12 @@ let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
 
-describe('notebook model', function(): void {
+suite('notebook model', function(): void {
     let notebookManager = new NotebookManagerStub();
     let memento: TypeMoq.Mock<Memento>;
     let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
     let defaultModelOptions: INotebookModelOptions;
-    beforeEach(() => {
+    setup(() => {
         sessionReady = new Deferred<void>();
         notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
         memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
@@ -102,7 +102,7 @@ describe('notebook model', function(): void {
         });
     });
 
-    it('Should create single cell if model has no contents', async function(): Promise<void> {
+    test('Should create single cell if model has no contents', async function(): Promise<void> {
         // Given an empty notebook
         let emptyNotebook: nb.INotebookContents = {
             cells: [],
@@ -129,7 +129,7 @@ describe('notebook model', function(): void {
         should(model.cells[0].source).be.empty();
     });
 
-    it('Should throw if model load fails', async function(): Promise<void> {
+    test('Should throw if model load fails', async function(): Promise<void> {
         // Given a call to get Contents fails
         let error = new Error('File not found');
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
@@ -144,7 +144,7 @@ describe('notebook model', function(): void {
         should(model.inErrorState).be.true();
     });
 
-    it('Should convert cell info to CellModels', async function(): Promise<void> {
+    test('Should convert cell info to CellModels', async function(): Promise<void> {
         // Given a notebook with 2 cells
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
@@ -160,7 +160,7 @@ describe('notebook model', function(): void {
         should(model.cells[1].source).be.equal(expectedNotebookContent.cells[1].source);
     });
 
-    it('Should load contents but then go to error state if client session startup fails', async function(): Promise<void> {
+    test('Should load contents but then go to error state if client session startup fails', async function(): Promise<void> {
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
         notebookManager.contentManager = mockContentManager.object;
@@ -189,7 +189,7 @@ describe('notebook model', function(): void {
         should(sessionFired).be.false();
     });
 
-    it('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
+    test('Should not be in error state if client session initialization succeeds', async function(): Promise<void> {
         let mockContentManager = TypeMoq.Mock.ofType(LocalContentManager);
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
         notebookManager.contentManager = mockContentManager.object;
@@ -224,14 +224,14 @@ describe('notebook model', function(): void {
         should(model.clientSession).equal(mockClientSession.object);
     });
 
-    it('Should sanitize kernel display name when IP is included', async function(): Promise<void> {
+    test('Should sanitize kernel display name when IP is included', async function(): Promise<void> {
         let model = new NotebookModel(defaultModelOptions);
         let displayName = 'PySpark (1.1.1.1)';
         let sanitizedDisplayName = model.sanitizeDisplayName(displayName);
         should(sanitizedDisplayName).equal('PySpark');
     });
 
-    it('Should sanitize kernel display name properly when IP is not included', async function(): Promise<void> {
+    test('Should sanitize kernel display name properly when IP is not included', async function(): Promise<void> {
         let model = new NotebookModel(defaultModelOptions);
         let displayName = 'PySpark';
         let sanitizedDisplayName = model.sanitizeDisplayName(displayName);

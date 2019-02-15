@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope, IWorkspaceStorageChangeEvent, IWillSaveStateEvent } from 'vs/platform/storage/common/storage';
+import { Event } from 'vs/base/common/event';
 
 export class StorageTestService implements IStorageService {
 	_serviceBrand: any;
@@ -12,7 +13,7 @@ export class StorageTestService implements IStorageService {
 	/**
 	 * Emitted whenever data is updated or deleted.
 	 */
-	readonly onDidChangeStorage: any; // TODO mairvine
+	readonly onDidChangeStorage: Event<IWorkspaceStorageChangeEvent>;
 
 	/**
 	 * Emitted when the storage is about to persist. This is the right time
@@ -23,7 +24,7 @@ export class StorageTestService implements IStorageService {
 	 * saving the state, e.g. to find out if the state is saved due to a
 	 * shutdown.
 	 */
-	readonly onWillSaveState: any; // TODO mairvine
+	readonly onWillSaveState: Event<IWillSaveStateEvent>;
 
 	/**
 	 * Store a string value under the given key to local storage.

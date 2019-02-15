@@ -43,10 +43,10 @@ function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
     should(notebook.nbformat_minor).equal(expectedNotebookContent.nbformat_minor);
 }
 
-describe('Local Content Manager', function(): void {
+suite('Local Content Manager', function(): void {
     let contentManager = new LocalContentManager();
 
-    it('Should return undefined if path is undefined', async function(): Promise<void> {
+    test('Should return undefined if path is undefined', async function(): Promise<void> {
         let content = await contentManager.getNotebookContents(undefined);
         should(content).be.undefined();
         // tslint:disable-next-line:no-null-keyword
@@ -54,10 +54,10 @@ describe('Local Content Manager', function(): void {
         should(content).be.undefined();
     });
 
-    it('Should throw if file does not exist', async function(): Promise<void> {
+    test('Should throw if file does not exist', async function(): Promise<void> {
         await testUtils.assertThrowsAsync(async () => await contentManager.getNotebookContents(URI.file('/path/doesnot/exist.ipynb')), undefined);
     });
-    it('Should return notebook contents parsed as INotebook when valid notebook file parsed', async function(): Promise<void> {
+    test('Should return notebook contents parsed as INotebook when valid notebook file parsed', async function(): Promise<void> {
         // Given a file containing a valid notebook
         let localFile = tempWrite.sync(notebookContentString, 'notebook.ipynb');
         // when I read the content
@@ -65,7 +65,7 @@ describe('Local Content Manager', function(): void {
         // then I expect notebook format to match
         verifyMatchesExpectedNotebook(notebook);
     });
-    it('Should ignore invalid content in the notebook file', async function(): Promise<void> {
+    test('Should ignore invalid content in the notebook file', async function(): Promise<void> {
         // Given a file containing a notebook with some garbage properties
         let invalidContent = notebookContentString + '\\nasddfdsafasdf';
         let localFile = tempWrite.sync(invalidContent, 'notebook.ipynb');

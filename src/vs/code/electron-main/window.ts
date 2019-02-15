@@ -160,7 +160,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			options.tabbingIdentifier = product.nameShort; // this opts in to sierra tabs
 		}
 
-		// {{SQL CARBON EDIT}} -- TODO mairvine - see if this is still necessary now that it has been refactored
+		// {{SQL CARBON EDIT}}
 		// turn-off custom menus to avoid bug calculating size of SQL editor
 		// const useCustomTitleStyle = getTitleBarStyle(this.configurationService, this.environmentService, !!config.extensionDevelopmentPath) === 'custom';
 		const useCustomTitleStyle = false;

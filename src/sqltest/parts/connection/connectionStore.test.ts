@@ -94,6 +94,8 @@ suite('SQL ConnectionStore tests', () => {
 			id: undefined
 		});
 
+		storageServiceMock = TypeMoq.Mock.ofType(StorageTestService);
+
 		let momento = new Memento('ConnectionManagement', storageServiceMock.object);
 		context = TypeMoq.Mock.ofInstance(momento);
 		context.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => mementoArray);
@@ -109,8 +111,6 @@ suite('SQL ConnectionStore tests', () => {
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
 		workspaceConfigurationServiceMock.setup(x => x.getValue(Constants.sqlConfigSectionName))
 			.returns(() => configResult);
-
-		storageServiceMock = TypeMoq.Mock.ofType(StorageTestService);
 
 		let extensionManagementServiceMock = {
 			getInstalled: () => {

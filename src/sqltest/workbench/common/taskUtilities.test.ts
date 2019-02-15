@@ -76,7 +76,7 @@ suite('TaskUtilities', function () {
 		mockConnectionManagementService.setup(x => x.isProfileConnected(TypeMoq.It.is(profile => profile === oeProfile || profile === tabProfile))).returns(() => true);
 
 		// Mock the workbench service to return the active tab connection
-		let tabConnectionUri = 'test_uri';
+		let tabConnectionUri = 'file://test_uri';
 		let editorInput = new UntitledEditorInput(URI.parse(tabConnectionUri), false, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		let queryInput = new QueryInput(undefined, editorInput, undefined, undefined, undefined, undefined, undefined, undefined);
 		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri)).returns(() => tabProfile);
