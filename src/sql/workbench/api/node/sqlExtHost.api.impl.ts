@@ -443,8 +443,8 @@ export function createApiFactory(
 					extHostQueryEditor.$runQuery(fileUri);
 				},
 
-				registerQueryListener(listener: sqlops.QueryListener): void {
-					extHostQueryEditor.$registerQueryListener(listener);
+				registerQueryInfoListener(listener: sqlops.QueryInfoListener): void {
+					extHostQueryEditor.$registerQueryInfoListener(listener.providerId, listener);
 				}
 			};
 

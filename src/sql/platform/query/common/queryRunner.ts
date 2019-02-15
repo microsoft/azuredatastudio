@@ -26,6 +26,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -52,7 +53,7 @@ export interface IEventType {
 	batchComplete: sqlops.BatchSummary;
 	resultSet: sqlops.ResultSetSummary;
 	editSessionReady: IEditSessionReadyEvent;
-	queryPlanAvailable: string;
+	queryPlanAvailable: IQueryPlanInfo;
 }
 
 export interface IGridMessage extends sqlops.IResultMessage {
@@ -358,7 +359,15 @@ export default class QueryRunner extends Disposable {
 				// check if this result has show plan, this needs work, it won't work for any other provider
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+						let planXmlString = e.resultSubset.rows[0][0].displayValue;
+						this._eventEmitter.emit(EventType.QUERY_PLAN_AVAILABLE, {
+							providerId: 'MSSQL',
+							fileUri: result.ownerUri,
+							planXml: planXmlString
+						});
+						this._planXml.resolve(planXmlString);
+					});
 				}
 			}
 			// we will just ignore the set if we already have it

@@ -24,6 +24,12 @@ export const SERVICE_ID = 'queryModelService';
 
 export const IQueryModelService = createDecorator<IQueryModelService>(SERVICE_ID);
 
+export interface IQueryPlanInfo {
+	providerId: string;
+	fileUri: string;
+	planXml: string;
+}
+
 /**
  * Interface for the logic of handling running queries and grid interactions for all URIs.
  */
@@ -56,7 +62,7 @@ export interface IQueryModelService {
 
 	onRunQueryStart: Event<string>;
 	onRunQueryComplete: Event<string>;
-
+	onExecutionPlanAvailable: Event<IQueryPlanInfo>;
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;

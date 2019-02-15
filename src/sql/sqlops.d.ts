@@ -2333,10 +2333,10 @@ declare module 'sqlops' {
 		html: string;
 	}
 
-	export interface QueryListener {
+	export interface QueryInfoListener {
 		providerId: string;
 
-		onExecutionPlanAvailable(executionPlan: string): void;
+		onExecutionPlanAvailable(fileUri: string, executionPlan: string): void;
 	}
 
 	export namespace dashboard {

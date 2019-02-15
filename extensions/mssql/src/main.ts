@@ -107,6 +107,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		credentialsStore.start();
 		resourceProvider.start();
 
+		sqlops.queryeditor.registerQueryInfoListener({
+			providerId: Constants.providerId,
+			onExecutionPlanAvailable: (fileUri: string, executionPlan: string): void => {
+				vscode.window.showInformationMessage(executionPlan);
+			}
+		});
+
 		let nodeProvider = new MssqlObjectExplorerNodeProvider(appContext);
 		sqlops.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 		activateSparkFeatures(appContext);

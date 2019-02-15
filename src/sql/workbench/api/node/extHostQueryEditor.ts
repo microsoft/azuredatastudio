@@ -12,6 +12,8 @@ import * as vscode from 'vscode';
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 
 	private _proxy: MainThreadQueryEditorShape;
+	private _nextListenerHandle: number = 0;
+	private _queryListeners = new Map<number, sqlops.QueryInfoListener>();
 
 	constructor(
 		mainContext: IMainContext
@@ -27,10 +29,15 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		return this._proxy.$runQuery(fileUri);
 	}
 
-	private _nextHandle: number = 0;
-	private _queryListeners = new Map<number, sqlops.QueryListener>();
+	public $registerQueryInfoListener(providerId: string, listener: sqlops.QueryInfoListener): void {
+		this._queryListeners[this._nextListenerHandle++] = listener;
+		this._proxy.$registerQueryInfoListener(0, providerId);
+	}
 
-	public $registerQueryListener(listener: sqlops.QueryListener): void {
-		this._proxy.$registerQueryListener(0, 'mssql');
+	public $onExecutionPlanAvailable(handle: number, fileUri: string, planXml: string) : void {
+		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
+		if (listener) {
+			listener.onExecutionPlanAvailable(fileUri, planXml);
+		}
 	}
 }

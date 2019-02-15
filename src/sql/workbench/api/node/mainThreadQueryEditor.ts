@@ -12,6 +12,7 @@ import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -23,6 +24,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		extHostContext: IExtHostContext,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorService private _editorService: IEditorService
 	) {
 		if (extHostContext) {
@@ -76,7 +78,11 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		}
 	}
 
-	public $registerQueryListener(handle: number, providerId: string): void {
-
+	public $registerQueryInfoListener(handle: number, providerId: string): void {
+		this._toDispose.push(this._queryModelService.onExecutionPlanAvailable(planInfo => {
+			if (planInfo.providerId === providerId) {
+				this._proxy.$onExecutionPlanAvailable(handle, planInfo.fileUri, planInfo.planXml);
+			}
+		}));
 	}
 }

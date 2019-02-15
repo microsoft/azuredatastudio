@@ -9,7 +9,7 @@ import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/parts/grid/services/dataService';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import { IQueryModelService, IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryStatusbarItem } from 'sql/parts/query/execution/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/parts/query/common/flavorStatus';
@@ -68,11 +68,13 @@ export class QueryModelService implements IQueryModelService {
 	private _queryInfoMap: Map<string, QueryInfo>;
 	private _onRunQueryStart: Emitter<string>;
 	private _onRunQueryComplete: Emitter<string>;
+	private _onExecutionPlanAvailable: Emitter<IQueryPlanInfo>;
 	private _onEditSessionReady: Emitter<sqlops.EditSessionReadyParams>;
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
+	public get onExecutionPlanAvailable(): Event<IQueryPlanInfo> { return this._onExecutionPlanAvailable.event; }
 	public get onEditSessionReady(): Event<sqlops.EditSessionReadyParams> { return this._onEditSessionReady.event; }
 
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
@@ -83,6 +85,7 @@ export class QueryModelService implements IQueryModelService {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
 		this._onRunQueryComplete = new Emitter<string>();
+		this._onExecutionPlanAvailable = new Emitter<IQueryPlanInfo>();
 		this._onEditSessionReady = new Emitter<sqlops.EditSessionReadyParams>();
 
 		// Register Statusbar items
@@ -315,9 +318,8 @@ export class QueryModelService implements IQueryModelService {
 			this._fireQueryEvent(uri, 'start');
 		});
 
-		queryRunner.addListener(QREvents.QUERY_PLAN_AVAILABLE, (planXml) => {
-			//his._onRunQueryStart.fire(uri);
-			//this._fireQueryEvent(uri, 'start');
+		queryRunner.addListener(QREvents.QUERY_PLAN_AVAILABLE, (planInfo) => {
+			this._onExecutionPlanAvailable.fire(planInfo);
 		});
 
 		info.queryRunner = queryRunner;
@@ -356,12 +358,6 @@ export class QueryModelService implements IQueryModelService {
 			this._fireQueryEvent(queryRunner.uri, 'complete', 0);
 		});
 
-	}
-
-	private queryListeners: sqlops.QueryListener[] = [];
-
-	public registerQueryListener(listener: sqlops.QueryListener): void {
-		this.queryListeners.push(listener);
 	}
 
 	public disposeQuery(ownerUri: string): void {

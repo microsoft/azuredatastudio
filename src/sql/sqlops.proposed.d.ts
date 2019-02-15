@@ -1203,7 +1203,7 @@ declare module 'sqlops' {
 		/**
 		 * Register a query listener
 		 */
-		export function registerQueryListener(listener: QueryListener): void;
+		export function registerQueryInfoListener(listener: QueryInfoListener): void;
 	}
 
 	/**
