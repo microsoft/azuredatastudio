@@ -212,7 +212,6 @@
         "snippets": []
     },
     "scripts": {
-        "prepare": "node ./node_modules/sqlops/bin/install",
         "build": "gulp build",
         "compile": "gulp compile",
         "watch": "gulp watch",
