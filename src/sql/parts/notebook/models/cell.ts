@@ -18,6 +18,7 @@ import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/mode
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
 
 
@@ -54,6 +55,7 @@ export class CellModel implements ICellModel {
 		} else {
 			this._isTrusted = false;
 		}
+		this.createUri();
 	}
 
 	public equals(other: ICellModel) {
@@ -506,5 +508,11 @@ export class CellModel implements ICellModel {
 
 	private hasLanguage(): boolean {
 		return !!this._language;
+	}
+
+	private createUri(): void {
+		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		// Use this to set the internal (immutable) and public (shared with extension) uri properties
+		this.cellUri = uri;
 	}
 }
