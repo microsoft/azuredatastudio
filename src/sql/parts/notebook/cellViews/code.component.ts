@@ -122,7 +122,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				if (isActive && this._model.defaultKernel.display_name === notebookConstants.SQL
 					&& this.cellModel.cellType === CellTypes.Code
 					&& this.cellModel.cellUri) {
-					this._model.notebookOptions.connectionService.connect(this._model.activeConnection, this.cellModel.cellUri.toString());
+					this._model.notebookOptions.connectionService.connect(this._model.activeConnection, this.cellModel.cellUri.toString()).catch(e => console.log(e));
 				}
 				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {

@@ -293,12 +293,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// Set newly created cell as active cell
 		this.updateActiveCell(cell);
 
-		if (this._defaultKernel.display_name === notebookConstants.SQL
-			&& cell.cellType === CellTypes.Code
-			&& cell.cellUri) {
-			this.notebookOptions.connectionService.connect(this.activeConnection, cell.cellUri.toString());
-		}
-
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.CellsAdded,
 			cells: [cell],
