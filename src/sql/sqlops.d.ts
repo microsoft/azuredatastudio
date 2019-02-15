@@ -1659,6 +1659,8 @@ declare module 'sqlops' {
 		targetValue: string;
 		parent: DiffEntry;
 		children: DiffEntry[];
+		sourceScript: string;
+		targetScript: string;
 	}
 
 	export enum SchemaUpdateAction {
