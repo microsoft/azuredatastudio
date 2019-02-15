@@ -87,8 +87,8 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "Unit Tests",
-			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+			"name": "Unit Tests (stdout)",
+			"program": "${workspaceFolder}/test/electron/index.js",
 			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
@@ -98,14 +98,9 @@
 			},
 			"outputCapture": "std",
 			"args": [
-				"--delay",
-				"--timeout",
-				"2000"
+				"--remote-debugging-port=9222"
 			],
 			"cwd": "${workspaceFolder}",
-			"env": {
-				"ELECTRON_RUN_AS_NODE": "true"
-			},
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
 			]
@@ -121,6 +116,13 @@
 		}
 	],
 	"compounds": [
+		{
+			"name": "Unit Tests",
+			"configurations": [
+				"Attach to azuredatastudio",
+				"Unit Tests (stdout)"
+			]
+		},
 		{
 			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [
