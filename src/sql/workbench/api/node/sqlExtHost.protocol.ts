@@ -763,6 +763,7 @@ export interface ExtHostQueryEditorShape {
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
 	$runQuery(fileUri: string): void;
+	$registerQueryListener(handle: number, providerId: string): void;
 }
 
 export interface ExtHostNotebookShape {

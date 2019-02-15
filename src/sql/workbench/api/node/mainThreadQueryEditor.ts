@@ -75,4 +75,8 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 			}
 		}
 	}
+
+	public $registerQueryListener(handle: number, providerId: string): void {
+
+	}
 }

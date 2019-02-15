@@ -315,6 +315,11 @@ export class QueryModelService implements IQueryModelService {
 			this._fireQueryEvent(uri, 'start');
 		});
 
+		queryRunner.addListener(QREvents.QUERY_PLAN_AVAILABLE, (planXml) => {
+			//his._onRunQueryStart.fire(uri);
+			//this._fireQueryEvent(uri, 'start');
+		});
+
 		info.queryRunner = queryRunner;
 		info.dataService = this._instantiationService.createInstance(DataService, uri);
 		this._queryInfoMap.set(uri, info);
@@ -351,6 +356,12 @@ export class QueryModelService implements IQueryModelService {
 			this._fireQueryEvent(queryRunner.uri, 'complete', 0);
 		});
 
+	}
+
+	private queryListeners: sqlops.QueryListener[] = [];
+
+	public registerQueryListener(listener: sqlops.QueryListener): void {
+		this.queryListeners.push(listener);
 	}
 
 	public disposeQuery(ownerUri: string): void {

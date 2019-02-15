@@ -1199,6 +1199,11 @@ declare module 'sqlops' {
 		 * @param {string} fileUri file URI for the query editor
 		 */
 		export function runQuery(fileUri: string): void;
+
+		/**
+		 * Register a query listener
+		 */
+		export function registerQueryListener(listener: QueryListener): void;
 	}
 
 	/**

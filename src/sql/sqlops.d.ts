@@ -2333,6 +2333,12 @@ declare module 'sqlops' {
 		html: string;
 	}
 
+	export interface QueryListener {
+		providerId: string;
+
+		onExecutionPlanAvailable(executionPlan: string): void;
+	}
+
 	export namespace dashboard {
 		/**
 		 * Register a provider for a webview widget

@@ -40,7 +40,8 @@ export const enum EventType {
 	BATCH_START = 'batchStart',
 	BATCH_COMPLETE = 'batchComplete',
 	RESULT_SET = 'resultSet',
-	EDIT_SESSION_READY = 'editSessionReady'
+	EDIT_SESSION_READY = 'editSessionReady',
+	QUERY_PLAN_AVAILABLE = 'queryPlanAvailable'
 }
 
 export interface IEventType {
@@ -51,6 +52,7 @@ export interface IEventType {
 	batchComplete: sqlops.BatchSummary;
 	resultSet: sqlops.ResultSetSummary;
 	editSessionReady: IEditSessionReadyEvent;
+	queryPlanAvailable: string;
 }
 
 export interface IGridMessage extends sqlops.IResultMessage {

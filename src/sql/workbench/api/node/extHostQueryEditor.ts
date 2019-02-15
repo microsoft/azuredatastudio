@@ -26,4 +26,11 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 	public $runQuery(fileUri: string): void {
 		return this._proxy.$runQuery(fileUri);
 	}
+
+	private _nextHandle: number = 0;
+	private _queryListeners = new Map<number, sqlops.QueryListener>();
+
+	public $registerQueryListener(listener: sqlops.QueryListener): void {
+		this._proxy.$registerQueryListener(0, 'mssql');
+	}
 }

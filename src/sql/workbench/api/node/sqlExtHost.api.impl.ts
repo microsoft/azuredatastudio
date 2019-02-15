@@ -441,6 +441,10 @@ export function createApiFactory(
 
 				runQuery(fileUri: string): void {
 					extHostQueryEditor.$runQuery(fileUri);
+				},
+
+				registerQueryListener(listener: sqlops.QueryListener): void {
+					extHostQueryEditor.$registerQueryListener(listener);
 				}
 			};
 
