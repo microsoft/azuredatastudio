@@ -62,8 +62,8 @@ export class CommandLineService implements ICommandLineProcessing {
 	// (serverName, null) => Connect object explorer and open a new query editor
 	// (null, null) => Prompt for a connection unless there are registered servers
 	public processCommandLine(args: ParsedArgs): Promise<void> {
-		let profile = null;
-		let commandName = null;
+		let profile = undefined;
+		let commandName = undefined;
 		if (args) {
 			if (this._commandService) {
 				commandName = args.command;
