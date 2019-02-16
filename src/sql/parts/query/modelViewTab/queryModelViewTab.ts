@@ -12,11 +12,11 @@ import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/parts/query/modelViewTab/queryModelViewTab.module';
 
 export class QueryModelViewTab implements IPanelTab {
-	public readonly title = 'Model View';
-	public readonly identifier = 'QueryModelViewTab';
+	public identifier = 'QueryModelViewTab_';
 	public readonly view: QueryModelViewTabView;
 
-	constructor(@IInstantiationService instantiationService: IInstantiationService) {
+	constructor(public title: string, @IInstantiationService instantiationService: IInstantiationService) {
+		this.identifier += title;
 		this.view = instantiationService.createInstance(QueryModelViewTabView);
 	}
 
@@ -41,19 +41,10 @@ export class QueryModelViewTabView implements IPanelView {
 	}
 
 	public render(container: HTMLElement): void {
-
 		this.bootstrapAngular(container);
-
-		// if (!this._isInitialized) {
-		// 	this._selector = this.bootstrapAngular(container);
-		// 	this._isInitialized = true;
-		// } else {
-		// 	container.innerHTML = '<' + this._selector + ' />';
-		// }
 	}
 
 	dispose() {
-		//dispose(this.disposables);
 	}
 
 	public clear() {

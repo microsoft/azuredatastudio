@@ -103,7 +103,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		if (editor) {
 			let queryEditor = editor as QueryEditor;
 			if (queryEditor) {
-				queryEditor.setQueryModelViewTab(componentId);
+				queryEditor.registerQueryModelViewTab(title, componentId);
 			}
 		}
 	}

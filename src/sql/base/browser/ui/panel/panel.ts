@@ -145,7 +145,8 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	public showTab(id: PanelTabIdentifier): void {
-		if (this._shownTab && this._shownTab === id) {
+		let tab = this._tabMap.get(id);
+		if (!tab || (this._shownTab && this._shownTab === id)) {
 			return;
 		}
 
@@ -158,7 +159,6 @@ export class TabbedPanel extends Disposable implements IThemable {
 		this._shownTab = id;
 		this.tabHistory.push(id);
 		qb(this.body).empty();
-		let tab = this._tabMap.get(this._shownTab);
 		this.body.setAttribute('aria-labelledby', tab.identifier);
 		qb(tab.label).addClass('active');
 		qb(tab.header).addClass('active');

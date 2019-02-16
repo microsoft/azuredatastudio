@@ -36,22 +36,43 @@ export function activate(context: vscode.ExtensionContext) {
 			if (toggleOn) {
 				let tab = sqlops.window.modelviewdialog.createTab('Query Watcher');
 				tab.registerContent(async view => {
-					let nameTextBox = view.modelBuilder.inputBox().component();
-					let ownerTextBox = view.modelBuilder.inputBox().component();
+					let fileNameTextBox = view.modelBuilder.inputBox().component();
+					let xmlTextBox = view.modelBuilder.inputBox().component();
 
 					let formModel = view.modelBuilder.formContainer()
 						.withFormItems([{
-							component: nameTextBox,
-							title: 'Name'
+							component: fileNameTextBox,
+							title: 'File name'
 						}, {
-							component: ownerTextBox,
-							title: 'Owner'
+							component: xmlTextBox,
+							title: 'Plan XML'
 						}]).withLayout({ width: '100%' }).component();
 
 					await view.initializeModel(formModel);
+
+					fileNameTextBox.value = fileUri;
+					xmlTextBox.value = executionPlan;
 				});
 
 				sqlops.queryeditor.createQueryTab(fileUri, tab);
+
+				// add a second tab to make sure that scenario works
+				let tab2 = sqlops.window.modelviewdialog.createTab('Query Watcher 2');
+				tab2.registerContent(async view => {
+					let xmlTextBox = view.modelBuilder.inputBox().component();
+
+					let formModel = view.modelBuilder.formContainer()
+						.withFormItems([{
+							component: xmlTextBox,
+							title: 'Plan XML'
+						}]).withLayout({ width: '100%' }).component();
+
+					await view.initializeModel(formModel);
+
+					xmlTextBox.value = executionPlan;
+				});
+
+				sqlops.queryeditor.createQueryTab(fileUri, tab2);
 			}
 		}
 	});
