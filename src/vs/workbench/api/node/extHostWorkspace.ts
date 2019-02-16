@@ -337,11 +337,10 @@ export class ExtHostWorkspace implements ExtHostWorkspaceShape {
 		this._unconfirmedWorkspace = undefined;
 
 		// Events
-		// {{SQL CARBON EDIT}} - fix build break  Argument of type 'Readonly<...
-		this._onDidChangeWorkspace.fire({
-			added: added,
-			removed: removed
-		});
+		this._onDidChangeWorkspace.fire(Object.freeze({
+			added,
+			removed
+		}));
 	}
 
 	// --- search ---

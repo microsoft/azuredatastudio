@@ -317,8 +317,7 @@ class DecorationProviderWrapper {
 				}
 			}));
 
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-			this.data.set(uri.toString(), <any>request);
+			this.data.set(uri.toString(), request);
 			return undefined;
 		}
 	}

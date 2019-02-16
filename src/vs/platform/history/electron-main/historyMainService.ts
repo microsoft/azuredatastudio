@@ -31,10 +31,6 @@ interface ILegacySerializedRecentlyOpened {
 	files: string[]; // files as paths
 }
 
-interface ILegacySerializedRecentlyOpened {
-	workspaces: (IWorkspaceIdentifier | string | UriComponents)[]; // legacy (UriComponents was also supported for a few insider builds)
-}
-
 export class HistoryMainService implements IHistoryMainService {
 
 	private static readonly MAX_TOTAL_RECENT_ENTRIES = 100;

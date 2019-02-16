@@ -9,7 +9,7 @@ import * as nls from 'vs/nls';
 import { isMacintosh, isLinux, isWindows, language } from 'vs/base/common/platform';
 import * as arrays from 'vs/base/common/arrays';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { app, shell, Menu, MenuItem, BrowserWindow } from 'electron';
+import { app, shell, Menu, MenuItem, BrowserWindow, ipcMain } from 'electron';
 import { OpenContext, IRunActionInWindowRequest, IWindowsService } from 'vs/platform/windows/common/windows';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { AutoSaveConfiguration } from 'vs/platform/files/common/files';
@@ -19,12 +19,16 @@ import product from 'vs/platform/node/product';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { mnemonicMenuLabel as baseMnemonicLabel, unmnemonicLabel } from 'vs/base/common/labels';
-import { KeybindingsResolver } from 'vs/code/electron-main/keyboard';
 import { IWindowsMainService, IWindowsCountChangedEvent } from 'vs/platform/windows/electron-main/windows';
 import { IHistoryMainService } from 'vs/platform/history/common/history';
 import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier, isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { URI } from 'vs/base/common/uri';
 import { ILabelService } from 'vs/platform/label/common/label';
+import { ConfigWatcher } from 'vs/base/node/config';
+import { IUserFriendlyKeybinding } from 'vs/platform/keybinding/common/keybinding';
+import { Emitter, Event, once } from 'vs/base/common/event';
+import { IStateService } from 'vs/platform/state/common/state';
+import { ILogService } from 'vs/platform/log/common/log';
 
 interface IMenuItemClickHandler {
 	inDevTools: (contents: Electron.WebContents) => void;
@@ -1342,4 +1346,109 @@ export class CodeMenu {
 
 function __separator__(): Electron.MenuItem {
 	return new MenuItem({ type: 'separator' });
+}
+
+export interface IKeybinding {
+	id: string;
+	label: string;
+	isNative: boolean;
+}
+
+export class KeybindingsResolver {
+
+	private static readonly lastKnownKeybindingsMapStorageKey = 'lastKnownKeybindings';
+
+	private commandIds: Set<string>;
+	private keybindings: { [commandId: string]: IKeybinding };
+	private keybindingsWatcher: ConfigWatcher<IUserFriendlyKeybinding[]>;
+
+	private _onKeybindingsChanged = new Emitter<void>();
+	onKeybindingsChanged: Event<void> = this._onKeybindingsChanged.event;
+
+	constructor(
+		@IStateService private stateService: IStateService,
+		@IEnvironmentService environmentService: IEnvironmentService,
+		@IWindowsMainService private windowsMainService: IWindowsMainService,
+		@ILogService private logService: ILogService
+	) {
+		this.commandIds = new Set<string>();
+		this.keybindings = this.stateService.getItem<{ [id: string]: string; }>(KeybindingsResolver.lastKnownKeybindingsMapStorageKey) || Object.create(null);
+		this.keybindingsWatcher = new ConfigWatcher<IUserFriendlyKeybinding[]>(environmentService.appKeybindingsPath, { changeBufferDelay: 100, onError: error => this.logService.error(error), defaultConfig: [] });
+
+		this.registerListeners();
+	}
+
+	private registerListeners(): void {
+
+		// Listen to resolved keybindings from window
+		ipcMain.on('vscode:keybindingsResolved', (event, rawKeybindings: string) => {
+			let keybindings: IKeybinding[] = [];
+			try {
+				keybindings = JSON.parse(rawKeybindings);
+			} catch (error) {
+				// Should not happen
+			}
+
+			// Fill hash map of resolved keybindings and check for changes
+			let keybindingsChanged = false;
+			let keybindingsCount = 0;
+			const resolvedKeybindings: { [commandId: string]: IKeybinding } = Object.create(null);
+			keybindings.forEach(keybinding => {
+				keybindingsCount++;
+
+				resolvedKeybindings[keybinding.id] = keybinding;
+
+				if (!this.keybindings[keybinding.id] || keybinding.label !== this.keybindings[keybinding.id].label) {
+					keybindingsChanged = true;
+				}
+			});
+
+			// A keybinding might have been unassigned, so we have to account for that too
+			if (Object.keys(this.keybindings).length !== keybindingsCount) {
+				keybindingsChanged = true;
+			}
+
+			if (keybindingsChanged) {
+				this.keybindings = resolvedKeybindings;
+				this.stateService.setItem(KeybindingsResolver.lastKnownKeybindingsMapStorageKey, this.keybindings); // keep to restore instantly after restart
+
+				this._onKeybindingsChanged.fire();
+			}
+		});
+
+		// Resolve keybindings when any first window is loaded
+		const onceOnWindowReady = once(this.windowsMainService.onWindowReady);
+		onceOnWindowReady(win => this.resolveKeybindings(win));
+
+		// Resolve keybindings again when keybindings.json changes
+		this.keybindingsWatcher.onDidUpdateConfiguration(() => this.resolveKeybindings());
+
+		// Resolve keybindings when window reloads because an installed extension could have an impact
+		this.windowsMainService.onWindowReload(() => this.resolveKeybindings());
+	}
+
+	private resolveKeybindings(win = this.windowsMainService.getLastActiveWindow()): void {
+		if (this.commandIds.size && win) {
+			const commandIds: string[] = [];
+			this.commandIds.forEach(id => commandIds.push(id));
+			win.sendWhenReady('vscode:resolveKeybindings', JSON.stringify(commandIds));
+		}
+	}
+
+	public getKeybinding(commandId: string): IKeybinding {
+		if (!commandId) {
+			return void 0;
+		}
+
+		if (!this.commandIds.has(commandId)) {
+			this.commandIds.add(commandId);
+		}
+
+		return this.keybindings[commandId];
+	}
+
+	public dispose(): void {
+		this._onKeybindingsChanged.dispose();
+		this.keybindingsWatcher.dispose();
+	}
 }

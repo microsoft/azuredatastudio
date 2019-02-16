@@ -115,8 +115,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 				try {
 					validateConstraint(args[i], description.args[i].constraint);
 				} catch (err) {
-					// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-					return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
+					return Promise.reject(new Error(`Running the contributed command:'${id}' failed. Illegal argument '${description.args[i].name}' - ${description.args[i].description}`));
 				}
 			}
 		}
@@ -126,8 +125,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 			return Promise.resolve(result);
 		} catch (err) {
 			this._logService.error(err, id);
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-			return <any>Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
+			return Promise.reject(new Error(`Running the contributed command:'${id}' failed.`));
 		}
 	}
 
@@ -135,8 +133,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		this._logService.trace('ExtHostCommands#$executeContributedCommand', id);
 
 		if (!this._commands.has(id)) {
-			// {{ SQL CARBON EDIT }} - Add type assertion to fix build break
-			return <any>Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
+			return Promise.reject(new Error(`Contributed command '${id}' does not exist.`));
 		} else {
 			args = args.map(arg => this._argumentProcessors.reduce((r, p) => p.processArgument(r), arg));
 			return this._executeContributedCommand(id, args);

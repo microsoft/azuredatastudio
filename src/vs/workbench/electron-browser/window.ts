@@ -38,8 +38,6 @@ import { AccessibilitySupport, isRootUser, isWindows, isMacintosh } from 'vs/bas
 import product from 'vs/platform/node/product';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 
 const TextInputActions: IAction[] = [
 	new Action('undo', nls.localize('undo', "Undo"), null, true, () => document.execCommand('undo') && Promise.resolve(true)),
@@ -73,9 +71,7 @@ export class ElectronWindow extends Themable {
 		@IWorkbenchThemeService protected themeService: IWorkbenchThemeService,
 		@INotificationService private notificationService: INotificationService,
 		@ICommandService private commandService: ICommandService,
-		@IExtensionService private extensionService: IExtensionService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
-		@IKeybindingService private keybindingService: IKeybindingService,
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService,
 		@IFileService private fileService: IFileService,

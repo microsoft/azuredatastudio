@@ -126,9 +126,11 @@ function connectToRenderer(protocol: IMessagePassingProtocol): Promise<IRenderer
 				onUnexpectedError(err);
 			});
 
+			// {{SQL CARBON EDIT}}
 			process.on('SIGPIPE', () => {
 				onUnexpectedError(new Error('Unexpected SIGPIPE'));
 			});
+			// {{SQL CARBON EDIT}} - End
 
 			// Kill oneself if one's parent dies. Much drama.
 			setInterval(function () {

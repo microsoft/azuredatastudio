@@ -827,8 +827,7 @@ export class Workbench extends Disposable implements IPartService {
 					return editorService.openEditors(editors);
 				}
 
-				// {{SQL CARBON EDIT}} - Fix build break caused by no type
-				return Promise.resolve<ReadonlyArray<IEditor>>(undefined);
+				return Promise.resolve();
 			}
 
 			const editorsToOpen = this.resolveEditorsToOpen();

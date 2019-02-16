@@ -275,14 +275,14 @@ suite('ExtHostWorkspace', function () {
 
 	test('updateWorkspaceFolders - valid arguments', function (done) {
 		let finished = false;
-		const finish = (error?) => {
+		const finish = (error?: any) => {
 			if (!finished) {
 				finished = true;
 				done(error);
 			}
 		};
 
-		const protocol = {
+		const protocol: IMainContext = {
 			getProxy: () => { return undefined; },
 			set: undefined,
 			assertRegistered: undefined

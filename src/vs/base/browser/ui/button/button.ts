@@ -156,7 +156,7 @@ export class Button extends Disposable {
 	}
 
 	set icon(iconClassName: string) {
-		DOM.addClass(this._element, iconClassName);
+		DOM.addClasses(this._element, ...iconClassName.split(' '));
 	}
 
 	set enabled(value: boolean) {

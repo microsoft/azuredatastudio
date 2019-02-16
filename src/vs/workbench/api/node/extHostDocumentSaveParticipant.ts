@@ -162,11 +162,11 @@ export class ExtHostDocumentSaveParticipant implements ExtHostDocumentSavePartic
 			// apply edits if any and if document
 			// didn't change somehow in the meantime
 			if (resourceEdit.edits.length === 0) {
-				return <any>undefined;
+				return undefined;
 			}
 
 			if (version === document.version) {
-				return <any>this._mainThreadEditors.$tryApplyWorkspaceEdit({ edits: [resourceEdit] });
+				return this._mainThreadEditors.$tryApplyWorkspaceEdit({ edits: [resourceEdit] });
 			}
 
 			// TODO@joh bubble this to listener?

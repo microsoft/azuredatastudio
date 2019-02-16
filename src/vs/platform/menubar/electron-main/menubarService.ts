@@ -8,7 +8,6 @@ import { Menubar } from 'vs/platform/menubar/electron-main/menubar';
 import { ILogService } from 'vs/platform/log/common/log';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { isMacintosh, isWindows } from 'vs/base/common/platform';
 
 export class MenubarService implements IMenubarService {
 	_serviceBrand: any;
@@ -20,9 +19,7 @@ export class MenubarService implements IMenubarService {
 		@ILogService private logService: ILogService
 	) {
 		// Install Menu
-		if (isMacintosh && isWindows) {
-			this._menubar = this.instantiationService.createInstance(Menubar);
-		}
+		this._menubar = this.instantiationService.createInstance(Menubar);
 	}
 
 	updateMenubar(windowId: number, menus: IMenubarData): TPromise<void> {

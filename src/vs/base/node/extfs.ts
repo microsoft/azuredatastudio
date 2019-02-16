@@ -127,8 +127,7 @@ function doCopyFile(source: string, target: string, mode: number, callback: (err
 }
 
 export function mkdirp(path: string, mode?: number, token?: CancellationToken): Promise<boolean> {
-	// {{SQL CARBON EDIT}} - Fix build break by changing Promise<null> to Promise<void>
-	const mkdir = (): Promise<void> => {
+	const mkdir = (): Promise<null> => {
 		return nfcall(fs.mkdir, path, mode).then(null, (mkdirErr: NodeJS.ErrnoException) => {
 
 			// ENOENT: a parent folder does not exist yet
