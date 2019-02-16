@@ -38,6 +38,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
+import { LanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -333,6 +334,12 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
+	get languageMagics(): LanguageMagic[] {
+		return notebookRegistry.languageMagics;
+	}
+
+	// PRIVATE HELPERS /////////////////////////////////////////////////////
+
 	private sendNotebookCloseToProvider(editor: INotebookEditor): void {
 		let notebookUri = editor.notebookParams.notebookUri;
 		let uriString = notebookUri.toString();
@@ -347,7 +354,6 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private async doWithProvider<T>(providerId: string, op: (provider: INotebookProvider) => Thenable<T>): Promise<T> {
 		// Make sure the provider exists before attempting to retrieve accounts
 		let provider: INotebookProvider = await this.getProviderInstance(providerId);
@@ -405,7 +411,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private cleanupProviders(): void {
-		let knownProviders = Object.keys(notebookRegistry.registrations);
+		let knownProviders = Object.keys(notebookRegistry.providers);
 		let cache = this.providersMemento.notebookProviderCache;
 		for (let key in cache) {
 			if (!knownProviders.includes(key)) {

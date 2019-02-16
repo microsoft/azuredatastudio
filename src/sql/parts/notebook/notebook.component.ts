@@ -48,6 +48,7 @@ import { IResourceInput } from 'vs/platform/editor/common/editor';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { CellMagicMapper } from 'sql/parts/notebook/models/cellMagicMapper';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -252,6 +253,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
 			standardKernels: this._notebookParams.input.standardKernels,
+			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: notebookUtils.sqlNotebooksEnabled(this.contextKeyService) ? 'sql' : 'jupyter', // this is tricky; really should also depend on the connection profile
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,

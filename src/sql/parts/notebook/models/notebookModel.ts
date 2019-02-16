@@ -56,6 +56,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
+	private _language: string;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
@@ -68,31 +69,31 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 
-	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(private _notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
-		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManagers) {
+		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
 		}
 		if (startSessionImmediately) {
 			this.backgroundStartSession();
 		}
 		this._trustedMode = false;
-		this._providerId = notebookOptions.providerId;
+		this._providerId = _notebookOptions.providerId;
 		this._onProviderIdChanged.fire(this._providerId);
-		this.notebookOptions.standardKernels.forEach(kernel => {
+		this._notebookOptions.standardKernels.forEach(kernel => {
 			this._kernelDisplayNameToConnectionProviderIds.set(kernel.name, kernel.connectionProviderIds);
 			this._kernelDisplayNameToNotebookProviderIds.set(kernel.name, kernel.notebookProvider);
 		});
-		if (this.notebookOptions.layoutChanged) {
-			this.notebookOptions.layoutChanged(() => this._layoutChanged.fire());
+		if (this._notebookOptions.layoutChanged) {
+			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
-		this._defaultKernel = notebookOptions.defaultKernel;
+		this._defaultKernel = _notebookOptions.defaultKernel;
 	}
 
 	public get notebookManagers(): INotebookManager[] {
-		let notebookManagers = this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+		let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 		if (!notebookManagers.length) {
-			return this.notebookOptions.notebookManagers;
+			return this._notebookOptions.notebookManagers;
 		}
 		return notebookManagers;
 	}
@@ -107,11 +108,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return manager;
 	}
 
+	public get notebookOptions(): INotebookModelOptions {
+		return this._notebookOptions;
+	}
+
 	public get notebookUri(): URI {
-		return this.notebookOptions.notebookUri;
+		return this._notebookOptions.notebookUri;
 	}
 	public set notebookUri(value: URI) {
-		this.notebookOptions.notebookUri = value;
+		this._notebookOptions.notebookUri = value;
 	}
 
 	public get hasServerManager(): boolean {
@@ -246,11 +251,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
-			if (this.notebookOptions.notebookUri.scheme !== Schemas.untitled) {
+			if (this._notebookOptions.notebookUri.scheme !== Schemas.untitled) {
 				// TODO: separate ContentManager from NotebookManager
-				contents = await this.notebookManagers[0].contentManager.getNotebookContents(this.notebookOptions.notebookUri);
+				contents = await this.notebookManagers[0].contentManager.getNotebookContents(this._notebookOptions.notebookUri);
 			}
-			let factory = this.notebookOptions.factory;
+			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
 			this._defaultLanguageInfo = {
@@ -268,6 +273,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
 				}
 			}
+			this.trySetLanguageFromLangInfo();
 		} catch (error) {
 			this._inErrorState = true;
 			throw error;
@@ -317,7 +323,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			metadata: {},
 			execution_count: undefined
 		};
-		return this.notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
+		return this._notebookOptions.factory.createCell(singleCell, { notebook: this, isTrusted: true });
 	}
 
 	deleteCell(cellModel: ICellModel): void {
@@ -347,7 +353,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (edit.cell) {
 				// TODO: should we validate and complete required missing parameters?
 				let contents: nb.ICellContents = edit.cell as nb.ICellContents;
-				newCells.push(this.notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
+				newCells.push(this._notebookOptions.factory.createCell(contents, { notebook: this, isTrusted: this._trustedMode }));
 			}
 			this._cells.splice(edit.range.start, edit.range.end - edit.range.start, ...newCells);
 			if (newCells.length > 0) {
@@ -374,16 +380,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public backgroundStartSession(): void {
 		// TODO: only one session should be active at a time, depending on the current provider
 		this.notebookManagers.forEach(manager => {
-			let clientSession = this.notebookOptions.factory.createClientSession({
-				notebookUri: this.notebookOptions.notebookUri,
+			let clientSession = this._notebookOptions.factory.createClientSession({
+				notebookUri: this._notebookOptions.notebookUri,
 				notebookManager: manager,
-				notificationService: this.notebookOptions.notificationService
+				notificationService: this._notebookOptions.notificationService
 			});
 			this._clientSessions.push(clientSession);
 			if (!this._activeClientSession) {
 				this._activeClientSession = clientSession;
 			}
-			let profile = new ConnectionProfile(this.notebookOptions.capabilitiesService, this.connectionProfile);
+			let profile = new ConnectionProfile(this._notebookOptions.capabilitiesService, this.connectionProfile);
 
 			if (this.isValidConnection(profile)) {
 				this._activeConnection = profile;
@@ -405,7 +411,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		let standardKernels = this.notebookOptions.standardKernels.find(kernel => this._savedKernelInfo && kernel.name === this._savedKernelInfo.display_name);
+		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._savedKernelInfo && kernel.name === this._savedKernelInfo.display_name);
 		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
 		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
 	}
@@ -414,10 +420,49 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._defaultLanguageInfo;
 	}
 
+	public get language(): string {
+		return this._language;
+	}
+
 	private updateLanguageInfo(info: nb.ILanguageInfo) {
 		if (info) {
 			this._defaultLanguageInfo = info;
+			this.trySetLanguageFromLangInfo();
 		}
+	}
+
+	private trySetLanguageFromLangInfo() {
+		// In languageInfo, set the language to the "name" property
+		// If the "name" property isn't defined, check the "mimeType" property
+		// Otherwise, default to python as the language
+		let languageInfo = this.languageInfo;
+		let language: string;
+		if (languageInfo) {
+			if (languageInfo.codemirror_mode) {
+				let codeMirrorMode: nb.ICodeMirrorMode = <nb.ICodeMirrorMode>(languageInfo.codemirror_mode);
+				if (codeMirrorMode && codeMirrorMode.name) {
+					language = codeMirrorMode.name;
+				}
+			}
+			if (!language && languageInfo.name) {
+				language = languageInfo.name;
+			}
+			if (!language && languageInfo.mimetype) {
+				language = languageInfo.mimetype;
+			}
+		}
+
+		if (language) {
+			let mimeTypePrefix = 'x-';
+			if (language.includes(mimeTypePrefix)) {
+				language = language.replace(mimeTypePrefix, '');
+			} else if (language.toLowerCase() === 'ipython') {
+				// Special case ipython because in many cases this is defined as the code mirror mode for python notebooks
+				language = 'python';
+			}
+		}
+
+		this._language = language;
 	}
 
 	public changeKernel(displayName: string): void {
@@ -457,7 +502,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (!newConnection && (this._activeContexts.defaultConnection.serverName === server)) {
 				newConnection = this._activeContexts.defaultConnection;
 			}
-			let newConnectionProfile = new ConnectionProfile(this.notebookOptions.capabilitiesService, newConnection);
+			let newConnectionProfile = new ConnectionProfile(this._notebookOptions.capabilitiesService, newConnection);
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
 			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).then(
@@ -593,7 +638,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private async loadActiveContexts(kernelChangedArgs: nb.IKernelChangedArgs): Promise<void> {
 		if (kernelChangedArgs && kernelChangedArgs.newValue && kernelChangedArgs.newValue.name) {
 			let kernelDisplayName = this.getDisplayNameFromSpecName(kernelChangedArgs.newValue);
-			this._activeContexts = await NotebookContexts.getContextsForKernel(this.notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
+			this._activeContexts = await NotebookContexts.getContextsForKernel(this._notebookOptions.connectionService, this.getApplicableConnectionProviderIds(kernelDisplayName), kernelChangedArgs, this.connectionProfile);
 			this._contextsChangedEmitter.fire();
 			if (this.contexts.defaultConnection !== undefined && this.contexts.defaultConnection.serverName !== undefined) {
 				await this.changeContext(this.contexts.defaultConnection.serverName);
@@ -622,7 +667,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			return false;
 		}
 		// TODO: refactor ContentManager out from NotebookManager
-		await this.notebookManagers[0].contentManager.save(this.notebookOptions.notebookUri, notebook);
+		await this.notebookManagers[0].contentManager.save(this._notebookOptions.notebookUri, notebook);
 		this._contentChangedEmitter.fire({
 			changeType: NotebookChangeType.DirtyStateChanged,
 			isDirty: false
@@ -653,9 +698,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private setProviderIdForKernel(kernelSpec: nb.IKernelSpec): void {
 		if (!kernelSpec) {
 			// Just use the 1st non-default provider, we don't have a better heuristic
-			let notebookManagers = this.notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
+			let notebookManagers = this._notebookOptions.notebookManagers.filter(manager => manager.providerId !== DEFAULT_NOTEBOOK_PROVIDER);
 			if (!notebookManagers.length) {
-				notebookManagers = this.notebookOptions.notebookManagers;
+				notebookManagers = this._notebookOptions.notebookManagers;
 			}
 			if (notebookManagers.length > 0) {
 				this._providerId = notebookManagers[0].providerId;
