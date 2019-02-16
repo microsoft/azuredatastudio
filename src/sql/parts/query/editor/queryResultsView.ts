@@ -30,6 +30,8 @@ class ResultsView extends Disposable implements IPanelView {
 	private needsGridResize = false;
 	private _state: ResultsViewState;
 
+
+
 	constructor(private instantiationService: IInstantiationService) {
 		super();
 		this.panelViewlet = this._register(this.instantiationService.createInstance(PanelViewlet, 'resultsView', { showHeaderInTitleWhenSingleView: false }));

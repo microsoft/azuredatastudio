@@ -1204,6 +1204,8 @@ declare module 'sqlops' {
 		 * Register a query listener
 		 */
 		export function registerQueryInfoListener(listener: QueryInfoListener): void;
+
+		export function createWebviewPanel(fileUri: string): void;
 	}
 
 	/**

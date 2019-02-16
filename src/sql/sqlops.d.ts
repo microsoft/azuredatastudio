@@ -2336,6 +2336,10 @@ declare module 'sqlops' {
 	export interface QueryInfoListener {
 		providerId: string;
 
+		onExecutionStart(fileUri: string): void;
+
+		onExecutionComplete(fileUri: string): void;
+
 		onExecutionPlanAvailable(fileUri: string, executionPlan: string): void;
 	}
 

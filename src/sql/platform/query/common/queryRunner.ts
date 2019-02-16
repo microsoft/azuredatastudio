@@ -360,13 +360,9 @@ export default class QueryRunner extends Disposable {
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
 					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
-						let planXmlString = e.resultSubset.rows[0][0].displayValue;
-						this._eventEmitter.emit(EventType.QUERY_PLAN_AVAILABLE, {
-							providerId: 'MSSQL',
-							fileUri: result.ownerUri,
-							planXml: planXmlString
-						});
-						this._planXml.resolve(planXmlString);
+						if (e.resultSubset.rows) {
+							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+						}
 					});
 				}
 			}
@@ -391,7 +387,20 @@ export default class QueryRunner extends Disposable {
 				// check if this result has show plan, this needs work, it won't work for any other provider
 				let hasShowPlan = !!result.resultSetSummary.columnInfo.find(e => e.columnName === 'Microsoft SQL Server 2005 XML Showplan');
 				if (hasShowPlan) {
-					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => this._planXml.resolve(e.resultSubset.rows[0][0].displayValue));
+					this.getQueryRows(0, 1, result.resultSetSummary.batchId, result.resultSetSummary.id).then(e => {
+						if (e.resultSubset.rows) {
+							let planXmlString = e.resultSubset.rows[0][0].displayValue;
+							this._planXml.resolve(e.resultSubset.rows[0][0].displayValue);
+							// fire query plan available event if execution is completed
+							if (result.resultSetSummary.complete) {
+								this._eventEmitter.emit(EventType.QUERY_PLAN_AVAILABLE, {
+									providerId: 'MSSQL',
+									fileUri: result.ownerUri,
+									planXml: planXmlString
+								});
+							}
+						}
+					});
 				}
 			}
 			if (batchSet) {

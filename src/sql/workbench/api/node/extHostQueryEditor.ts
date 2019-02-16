@@ -29,6 +29,12 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		return this._proxy.$runQuery(fileUri);
 	}
 
+	public $createWebviewPanel(fileUri: string): void {
+
+
+
+	}
+
 	public $registerQueryInfoListener(providerId: string, listener: sqlops.QueryInfoListener): void {
 		this._queryListeners[this._nextListenerHandle] = listener;
 		this._proxy.$registerQueryInfoListener(this._nextListenerHandle, providerId);
@@ -39,6 +45,20 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
 		if (listener) {
 			listener.onExecutionPlanAvailable(fileUri, planXml);
+		}
+	}
+
+	public $onExecutionStart(handle: number, fileUri:string): void {
+		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
+		if (listener) {
+			listener.onExecutionStart(fileUri);
+		}
+	}
+
+	public $onExecutionComplete(handle: number, fileUri:string): void {
+		let listener: sqlops.QueryInfoListener = this._queryListeners[handle];
+		if (listener) {
+			listener.onExecutionComplete(fileUri);
 		}
 	}
 }

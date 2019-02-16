@@ -758,7 +758,11 @@ export interface MainThreadModelViewDialogShape extends IDisposable {
 	$setDirty(handle: number, isDirty: boolean): void;
 }
 export interface ExtHostQueryEditorShape {
-	$onExecutionPlanAvailable(handle: number, fileUri:string, planXml: string) : void;
+	$onExecutionPlanAvailable(handle: number, fileUri:string, planXml: string): void;
+
+	$onExecutionStart(handle: number, fileUri:string): void;
+
+	$onExecutionComplete(handle: number, fileUri:string): void;
 }
 
 export interface MainThreadQueryEditorShape extends IDisposable {

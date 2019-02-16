@@ -84,5 +84,13 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 				this._proxy.$onExecutionPlanAvailable(handle, planInfo.fileUri, planInfo.planXml);
 			}
 		}));
+
+		this._toDispose.push(this._queryModelService.onRunQueryStart(uri => {
+			this._proxy.$onExecutionStart(handle, uri);
+		}));
+
+		this._toDispose.push(this._queryModelService.onRunQueryComplete(uri => {
+			this._proxy.$onExecutionComplete(handle, uri);
+		}));
 	}
 }

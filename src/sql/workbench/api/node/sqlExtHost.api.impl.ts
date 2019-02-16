@@ -445,6 +445,10 @@ export function createApiFactory(
 
 				registerQueryInfoListener(listener: sqlops.QueryInfoListener): void {
 					extHostQueryEditor.$registerQueryInfoListener(listener.providerId, listener);
+				},
+
+				createWebviewPanel(fileUri: string): void {
+					extHostQueryEditor.$createWebviewPanel(fileUri);
 				}
 			};
 
