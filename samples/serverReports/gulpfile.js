@@ -9,6 +9,3 @@
 
 // Basic build tasks
 require('./tasks/buildtasks');
-
-// VSIX generation tasks
-require('./tasks/packagetasks');
