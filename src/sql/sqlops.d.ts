@@ -2342,8 +2342,7 @@ declare module 'sqlops' {
 
 	export namespace window {
 		/**
-		 * NOTE: This method will be deprecated in a future release.
-		 * Please use sqlops.window.createWebViewDialog instead
+		 * @deprecated this method has been deprecated and will be removed in a future release, please use sqlops.window.createWebViewDialog instead.
 		 * @param title
 		 */
 		export function createDialog(

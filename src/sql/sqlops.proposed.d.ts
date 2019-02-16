@@ -853,8 +853,7 @@ declare module 'sqlops' {
 
 	export namespace window {
 		/**
-		 * NOTE: This namespace will be deprecated in a future release.
-		 * Please use the methods under sqlops.window namespace.
+		 * @deprecated this namespace has been deprecated and will be removed in a future release, please use the methods under sqlops.window namespace.
 		 */
 		export namespace modelviewdialog {
 			/**
