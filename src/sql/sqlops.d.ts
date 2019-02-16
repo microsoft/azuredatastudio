@@ -2342,7 +2342,8 @@ declare module 'sqlops' {
 
 	export namespace window {
 		/**
-		 * creates a dialog
+		 * NOTE: This method will be deprecated in a future release.
+		 * Please use sqlops.window.createWebViewDialog instead
 		 * @param title
 		 */
 		export function createDialog(

@@ -121,9 +121,9 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private readonly EditAlertDialog = 'EditAlertDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private responseTab: sqlops.window.modelviewdialog.DialogTab;
-	private optionsTab: sqlops.window.modelviewdialog.DialogTab;
+	private generalTab: sqlops.window.DialogTab;
+	private responseTab: sqlops.window.DialogTab;
+	private optionsTab: sqlops.window.DialogTab;
 
 	// General tab controls
 	private nameTextBox: sqlops.InputBoxComponent;
@@ -175,13 +175,13 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.dialogName = this.isEdit ? this.EditAlertDialog : this.NewAlertDialog;
 	}
 
-	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+	protected async initializeDialog(dialog: sqlops.window.Dialog) {
 		this.databases = await AgentUtils.getDatabases(this.ownerUri);
 		this.databases.unshift(AlertDialog.AllDatabases);
 
-		this.generalTab = sqlops.window.modelviewdialog.createTab(AlertDialog.GeneralTabText);
-		this.responseTab = sqlops.window.modelviewdialog.createTab(AlertDialog.ResponseTabText);
-		this.optionsTab = sqlops.window.modelviewdialog.createTab(AlertDialog.OptionsTabText);
+		this.generalTab = sqlops.window.createTab(AlertDialog.GeneralTabText);
+		this.responseTab = sqlops.window.createTab(AlertDialog.ResponseTabText);
+		this.optionsTab = sqlops.window.createTab(AlertDialog.OptionsTabText);
 
 		this.initializeGeneralTab(this.databases, dialog);
 		this.initializeResponseTab();
@@ -190,7 +190,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		dialog.content = [this.generalTab, this.responseTab, this.optionsTab];
 	}
 
-	private initializeGeneralTab(databases: string[], dialog: sqlops.window.modelviewdialog.Dialog) {
+	private initializeGeneralTab(databases: string[], dialog: sqlops.window.Dialog) {
 		this.generalTab.registerContent(async view => {
 			// create controls
 			this.nameTextBox = view.modelBuilder.inputBox().component();

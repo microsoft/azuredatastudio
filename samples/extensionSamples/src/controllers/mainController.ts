@@ -32,7 +32,7 @@ export default class MainController extends ControllerBase {
         let buttonWidget: sqlops.DashboardWebview;
         let count = 0;
 
-        let dialog: sqlops.ModalDialog = sqlops.window.createDialog('Flyout extension');
+        let dialog: sqlops.ModalDialog = sqlops.window.createWebViewDialog('Flyout extension');
         dialog.html = '<div>This is a flyout extension.</div>';
 
         sqlops.dashboard.registerWebviewProvider('webview-count', e => {
