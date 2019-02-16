@@ -15,6 +15,9 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 	private _nextListenerHandle: number = 0;
 	private _queryListeners = new Map<number, sqlops.QueryInfoListener>();
 
+	private _nextTabHandle: number = 0;
+	private _queryTabs = new Map<number, sqlops.QueryInfoListener>();
+
 	constructor(
 		mainContext: IMainContext
 	) {
@@ -29,10 +32,10 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape  {
 		return this._proxy.$runQuery(fileUri);
 	}
 
-	public $createWebviewPanel(fileUri: string): void {
-
-
-
+	public $createQueryTab(fileUri: string, tab: sqlops.window.modelviewdialog.DialogTab): void {
+		// this._queryTabs[this._nextTabHandle] = tab;
+		this._proxy.$createQueryTab(fileUri, tab.title, tab.content);
+		// this._nextListenerHandle++;
 	}
 
 	public $registerQueryInfoListener(providerId: string, listener: sqlops.QueryInfoListener): void {

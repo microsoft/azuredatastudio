@@ -447,8 +447,8 @@ export function createApiFactory(
 					extHostQueryEditor.$registerQueryInfoListener(listener.providerId, listener);
 				},
 
-				createWebviewPanel(fileUri: string): void {
-					extHostQueryEditor.$createWebviewPanel(fileUri);
+				createQueryTab(fileUri: string, tab: sqlops.window.modelviewdialog.DialogTab): void {
+					extHostQueryEditor.$createQueryTab(fileUri, tab);
 				}
 			};
 

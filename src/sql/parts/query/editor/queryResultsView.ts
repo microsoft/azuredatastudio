@@ -13,6 +13,7 @@ import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
 import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
 import { TopOperationsTab } from 'sql/parts/queryPlan/topOperations';
+import { QueryModelViewTab } from 'sql/parts/query/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
@@ -29,8 +30,6 @@ class ResultsView extends Disposable implements IPanelView {
 	private currentDimension: DOM.Dimension;
 	private needsGridResize = false;
 	private _state: ResultsViewState;
-
-
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -177,6 +176,8 @@ export class QueryResultsView extends Disposable {
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
 
+	private queryModelViewTab: QueryModelViewTab;
+
 	private runnerDisposables: IDisposable[];
 
 	constructor(
@@ -190,6 +191,8 @@ export class QueryResultsView extends Disposable {
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
 		this.qpTab = this._register(new QueryPlanTab());
 		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
+
+		this.queryModelViewTab = this._register(new QueryModelViewTab(instantiationService));
 
 		this._panelView.pushTab(this.resultsTab);
 		this._register(this._panelView.onTabChange(e => {
@@ -226,6 +229,11 @@ export class QueryResultsView extends Disposable {
 				this._panelView.pushTab(this.topOperationsTab);
 			}
 		}
+
+		if (!this._panelView.contains(this.queryModelViewTab)) {
+			this._panelView.pushTab(this.queryModelViewTab);
+		}
+
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
@@ -317,5 +325,9 @@ export class QueryResultsView extends Disposable {
 	public dispose() {
 		dispose(this.runnerDisposables);
 		super.dispose();
+	}
+
+	public setQueryModelViewTab(componentId: string): void {
+		this.queryModelViewTab.view._componentId = componentId;
 	}
 }

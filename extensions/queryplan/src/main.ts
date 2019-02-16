@@ -34,17 +34,24 @@ export function activate(context: vscode.ExtensionContext) {
 		},
 		onExecutionPlanAvailable: (fileUri: string, executionPlan: string): void => {
 			if (toggleOn) {
-				let panel = vscode.window.createWebviewPanel(fileUri + (windowCount++), 'Show Plan ' + windowCount, vscode.ViewColumn.One, {
-					retainContextWhenHidden: false,
-					enableScripts: false
+				let tab = sqlops.window.modelviewdialog.createTab('Query Watcher');
+				tab.registerContent(async view => {
+					let nameTextBox = view.modelBuilder.inputBox().component();
+					let ownerTextBox = view.modelBuilder.inputBox().component();
+
+					let formModel = view.modelBuilder.formContainer()
+						.withFormItems([{
+							component: nameTextBox,
+							title: 'Name'
+						}, {
+							component: ownerTextBox,
+							title: 'Owner'
+						}]).withLayout({ width: '100%' }).component();
+
+					await view.initializeModel(formModel);
 				});
 
-				let html = '<html><body>' +  escape(executionPlan).substring(0, 200)  + '</body></html>';
-				panel.webview.html = html;
-				panel.reveal(vscode.ViewColumn.One);
-
-				// WIP --- not desired interface...
-				sqlops.queryeditor.createWebviewPanel(fileUri);
+				sqlops.queryeditor.createQueryTab(fileUri, tab);
 			}
 		}
 	});

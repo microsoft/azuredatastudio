@@ -1205,7 +1205,7 @@ declare module 'sqlops' {
 		 */
 		export function registerQueryInfoListener(listener: QueryInfoListener): void;
 
-		export function createWebviewPanel(fileUri: string): void;
+		export function createQueryTab(fileUri: string, tab: window.modelviewdialog.DialogTab): void;
 	}
 
 	/**

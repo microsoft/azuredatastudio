@@ -93,4 +93,18 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 			this._proxy.$onExecutionComplete(handle, uri);
 		}));
 	}
+
+	public $createQueryTab(fileUri: string, title: string, componentId: string): void {
+		let editors = this._editorService.visibleControls.filter(resource => {
+			return !!resource && resource.input.getResource().toString() === fileUri;
+		});
+
+		let editor = editors && editors.length > 0 ? editors[0] : undefined;
+		if (editor) {
+			let queryEditor = editor as QueryEditor;
+			if (queryEditor) {
+				queryEditor.setQueryModelViewTab(componentId);
+			}
+		}
+	}
 }
