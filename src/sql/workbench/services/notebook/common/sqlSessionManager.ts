@@ -393,7 +393,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
-		let htmlString = '<html>';
+		let htmlString = '<table>';
 		if (columns.length > 0) {
 			htmlString += '<tr>';
 			for (let column of columns) {
@@ -408,7 +408,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			}
 			htmlString += '</tr>';
 		}
-		htmlString += '</html>';
+		htmlString += '</table>';
 		return htmlString;
 	}
 
