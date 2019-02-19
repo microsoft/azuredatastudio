@@ -9,11 +9,11 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';

@@ -1,0 +1,104 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.optionsDialog-label {
+	width: 120px;
+	padding-bottom: 5px;
+}
+
+.optionsDialog-input {
+	width: 200px;
+	padding-bottom: 5px;
+	padding-right: 7px;
+}
+
+.options-dialog .select-box {
+	width: 321px;
+	margin-left: 1px;
+}
+
+.optionsDialog-options-groups {
+	margin-top: 10px;
+	flex: 1 1;
+	overflow-y: auto;
+}
+
+.optionsDialog-options-groups {
+	margin: 10px 0px;
+	flex: 1 1;
+	overflow-y: auto;
+}
+
+.vs .optionsDialog-options-groups {
+	box-shadow: 0 1px 4px 1px rgba(220, 220, 220, 0.71);
+}
+
+.vs-dark .optionsDialog-options-groups {
+	box-shadow: 0 4px 5px 0px rgba(0, 0, 0, 0.71);
+}
+
+.optionsDialog-options-groups .split-view-view .header {
+	padding-left: 28px !important;
+	background-position-x: 8px !important;
+}
+
+.optionsDialog-options-groups .split-view-view .body {
+	padding-left: 5px !important;
+}
+
+.backButtonIcon {
+	content: url('back.svg');
+	width: 20px;
+	margin-right: 10px;
+	float: left;
+	cursor: pointer;
+}
+
+.hc-black .backButtonIcon,
+.vs-dark .backButtonIcon {
+	content: url('back_inverse.svg');
+}
+
+.optionsDialog-description {
+	height: 90px;
+	margin: 15px;
+	overflow-y: auto;
+}
+
+.optionsDialog-description .modal-title {
+	background-repeat: no-repeat;
+	background-position: 2px center;
+	padding-left: 25px;
+	background-size: 16px;
+}
+
+.vs .optionsDialog-description .modal-title {
+	background-image: url('info_notification.svg')
+}
+
+.vs-dark .optionsDialog-description .modal-title,
+.hc-black .optionsDialog-description .modal-title {
+	background-image: url('info_notification_inverse.svg')
+}
+
+.optionsDialog-options {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.optionsDialog-description-content {
+	padding-top: 10px;
+	padding-left: 25px;
+}
+
+.optionsDialog-table{
+	width:100%;
+	padding: 10px;
+}
+
+td.optionsDialog-input.select-container {
+	padding-right: 9px;
+}
