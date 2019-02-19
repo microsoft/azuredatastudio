@@ -5,8 +5,6 @@
 'use strict';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorOptions } from 'vs/platform/editor/common/editor';
-import { IEditor } from 'vs/workbench/common/editor';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -288,7 +286,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		this._proxy.$updateWizardPageInfo(handle, wizard.pages.map(page => this._wizardPageHandles.get(page)), wizard.currentPage);
 	}
 
-	private validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
+	private validateNavigation(handle: number, info: sqlops.window.WizardPageChangeInfo): Thenable<boolean> {
 		return this._proxy.$validateNavigation(handle, info);
 	}
 

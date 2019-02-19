@@ -5,18 +5,14 @@
 
 'use strict';
 
-import * as assert from 'assert';
-import * as sqlops from 'sqlops';
-import * as TypeMoq from 'typemoq';
-
-import { AdminService } from 'sql/parts/admin/common/adminService';
+import { AdminService } from 'sql/workbench/services/admin/common/adminService';
 
 suite('SQL AdminService tests', () => {
 
 	let adminService: AdminService;
 	setup(() => {
 		adminService = new AdminService(
-			undefined, undefined, undefined, undefined
+			undefined, undefined, undefined
 		);
 	});
 

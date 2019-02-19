@@ -220,6 +220,15 @@ export class LaunchService implements ILaunchService {
 			});
 		}
 
+		// {{SQL CARBON EDIT}}
+		// give the first used window a chance to process the other command line arguments
+		if (args['reuse-window'] && usedWindows.length > 0 && usedWindows[0])
+		{
+			let window = usedWindows[0];
+			usedWindows[0].ready().then(() => window.send('ads:processCommandLine', args));
+		}
+		// {{SQL CARBON EDIT}}
+
 		// If the other instance is waiting to be killed, we hook up a window listener if one window
 		// is being used and only then resolve the startup promise which will kill this second instance.
 		// In addition, we poll for the wait marker file to be deleted to return.

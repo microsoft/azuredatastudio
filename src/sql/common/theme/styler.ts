@@ -11,7 +11,8 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as cr from 'vs/platform/theme/common/colorRegistry';
 import { IThemable, attachStyler } from 'vs/platform/theme/common/styler';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
+import { IPanelColors } from 'vs/workbench/browser/parts/views/panelViewlet';
 
 export function attachModalDialogStyler(widget: IThemable, themeService: IThemeService, style?:
 	{
@@ -260,5 +261,14 @@ export function attachCheckboxStyler(widget: IThemable, themeService: IThemeServ
 	: IDisposable {
 	return attachStyler(themeService, {
 		disabledCheckboxForeground: (style && style.disabledCheckboxForeground) || sqlcolors.disabledCheckboxForeground
+	}, widget);
+}
+
+export function attachPanelStyler(widget: IThemable, themeService: IThemeService) {
+	return attachStyler<IPanelColors>(themeService, {
+		headerForeground: SIDE_BAR_SECTION_HEADER_FOREGROUND,
+		headerBackground: SIDE_BAR_SECTION_HEADER_BACKGROUND,
+		// headerHighContrastBorder: index === 0 ? null : contrastBorder,
+		dropBackground: SIDE_BAR_DRAG_AND_DROP_BACKGROUND
 	}, widget);
 }

@@ -3,13 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfigDetails } from 'sql/parts/dashboard/widgets/insights/interfaces';
-import QueryRunner, { EventType as QREvents } from 'sql/parts/query/execution/queryRunner';
-import * as Utils from 'sql/parts/connection/common/utils';
+import QueryRunner, { EventType as QREvents } from 'sql/platform/query/common/queryRunner';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { IInsightsDialogModel, insertValueRegex } from 'sql/parts/insights/common/interfaces';
 import { error } from 'sql/base/common/log';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'sqlops';
 
@@ -129,7 +130,7 @@ export class InsightsDialogController {
 			} catch (e) {
 				return Promise.reject(e);
 			}
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionUri, undefined);
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionUri);
 			this.addQueryEventListeners(this._queryRunner);
 		}
 

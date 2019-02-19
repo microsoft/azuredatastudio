@@ -8,8 +8,8 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
 	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
@@ -19,7 +19,7 @@ import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagem
 import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import * as Constants from 'sql/parts/connection/common/constants';
+import * as Constants from 'sql/platform/connection/common/constants';
 import * as  LocalizedConstants from 'sql/parts/connection/common/localizedConstants';
 import { ObjectExplorerService, ObjectExplorerNodeEventArgs } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
@@ -31,7 +31,7 @@ import WinJS = require('vs/base/common/winjs.base');
 import { Emitter } from 'vs/base/common/event';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
-import { IConnectionResult, IConnectionParams } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/parts/objectExplorer/viewlet/treeSelectionHandler';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 

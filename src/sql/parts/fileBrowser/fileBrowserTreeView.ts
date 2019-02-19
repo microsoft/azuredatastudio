@@ -3,17 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
 import { FileBrowserDataSource } from 'sql/parts/fileBrowser/fileBrowserDataSource';
 import { FileBrowserController } from 'sql/parts/fileBrowser/fileBrowserController';
 import { FileBrowserRenderer } from 'sql/parts/fileBrowser/fileBrowserRenderer';
-import { IFileBrowserService } from 'sql/parts/fileBrowser/common/interfaces';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
 import errors = require('vs/base/common/errors');
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
 import nls = require('vs/nls');
-import { DefaultFilter, DefaultAccessibilityProvider, DefaultController, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';
+import { DefaultFilter, DefaultAccessibilityProvider, DefaultDragAndDrop } from 'vs/base/parts/tree/browser/treeDefaults';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -30,7 +29,6 @@ export class FileBrowserTreeView implements IDisposable {
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IThemeService private _themeService: IThemeService
 	) {
 	}

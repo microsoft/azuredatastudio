@@ -10,9 +10,9 @@ import { IRenderMime } from './common/renderMimeInterfaces';
  * A mime renderer factory for raw html.
  */
 export const htmlRendererFactory: IRenderMime.IRendererFactory = {
-    safe: true,
-    mimeTypes: ['text/html'],
-    defaultRank: 50,
+	safe: true,
+	mimeTypes: ['text/html'],
+	defaultRank: 50,
    createRenderer: options => new widgets.RenderedHTML(options)
 };
 
@@ -20,10 +20,10 @@ export const htmlRendererFactory: IRenderMime.IRendererFactory = {
  * A mime renderer factory for images.
  */
 export const imageRendererFactory: IRenderMime.IRendererFactory = {
-    safe: true,
-    mimeTypes: ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'],
-    defaultRank: 90,
-    createRenderer: options => new widgets.RenderedImage(options)
+	safe: true,
+	mimeTypes: ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'],
+	defaultRank: 90,
+	createRenderer: options => new widgets.RenderedImage(options)
 };
 
 // /**
@@ -50,45 +50,56 @@ export const imageRendererFactory: IRenderMime.IRendererFactory = {
  * A mime renderer factory for svg.
  */
 export const svgRendererFactory: IRenderMime.IRendererFactory = {
-    safe: false,
-    mimeTypes: ['image/svg+xml'],
-    defaultRank: 80,
-    createRenderer: options => new widgets.RenderedSVG(options)
+	safe: false,
+	mimeTypes: ['image/svg+xml'],
+	defaultRank: 80,
+	createRenderer: options => new widgets.RenderedSVG(options)
 };
 
 /**
  * A mime renderer factory for plain and jupyter console text data.
  */
 export const textRendererFactory: IRenderMime.IRendererFactory = {
-    safe: true,
-    mimeTypes: [
-        'text/plain',
-        'application/vnd.jupyter.stdout',
-        'application/vnd.jupyter.stderr'
-    ],
-    defaultRank: 120,
-    createRenderer: options => new widgets.RenderedText(options)
+	safe: true,
+	mimeTypes: [
+		'text/plain',
+		'application/vnd.jupyter.stdout',
+		'application/vnd.jupyter.stderr'
+	],
+	defaultRank: 120,
+	createRenderer: options => new widgets.RenderedText(options)
 };
 
 /**
  * A placeholder factory for deprecated rendered JavaScript.
  */
 export const javaScriptRendererFactory: IRenderMime.IRendererFactory = {
-    safe: false,
-    mimeTypes: ['text/javascript', 'application/javascript'],
-    defaultRank: 110,
-    createRenderer: options => new widgets.RenderedJavaScript(options)
+	safe: false,
+	mimeTypes: ['text/javascript', 'application/javascript'],
+	defaultRank: 110,
+	createRenderer: options => new widgets.RenderedJavaScript(options)
+};
+
+export const dataResourceRendererFactory: IRenderMime.IRendererFactory = {
+	safe: true,
+	mimeTypes: [
+		'application/vnd.dataresource+json',
+		'application/vnd.dataresource'
+	],
+	defaultRank: 40,
+	createRenderer: options => new widgets.RenderedDataResource(options)
 };
 
 /**
  * The standard factories provided by the rendermime package.
  */
 export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFactory> = [
-    htmlRendererFactory,
-    // markdownRendererFactory,
-    // latexRendererFactory,
-    svgRendererFactory,
-    imageRendererFactory,
-    javaScriptRendererFactory,
-    textRendererFactory
+	htmlRendererFactory,
+	// markdownRendererFactory,
+	// latexRendererFactory,
+	svgRendererFactory,
+	imageRendererFactory,
+	javaScriptRendererFactory,
+	textRendererFactory,
+	dataResourceRendererFactory
 ];

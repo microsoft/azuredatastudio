@@ -30,6 +30,12 @@
 	background: url("database_inverse.svg") center center no-repeat;
 }
 
+.vs .icon.error,
+.vs-dark .icon.error,
+.hc-black .icon.error {
+	    background: url("globalerror_red.svg") center center no-repeat;
+}
+
 .vs .icon.file {
 	background: url("file.svg") center center no-repeat;
 }
@@ -147,6 +153,15 @@
 .vs-dark .icon.filterLabel,
 .hc-black .icon.filterLabel {
 	background-image: url("filter_inverse.svg");
+}
+
+.vs .icon.clear-filter {
+	background-image: url("clearfilter.svg");
+}
+
+.vs-dark .icon.clear-filter,
+.hc-black .icon.clear-filter {
+	background-image: url("clearfilter_inverse.svg");
 }
 
 .vs .icon.warning-badge,

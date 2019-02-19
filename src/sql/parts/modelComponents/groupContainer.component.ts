@@ -20,10 +20,10 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 @Component({
 	selector: 'modelview-groupContainer',
 	template: `
-		<div *ngIf="hasHeader()" class="modelview-group-header" >
+		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()">
 				{{_containerLayout.header}}
 		</div>
-		<div #container *ngIf="items" class="modelview-group-container" [style.width]="getContainerWidth()">
+		<div #container *ngIf="items" class="modelview-group-container" [style.width]="getContainerWidth()" [style.display]="getContainerDisplayStyle()">
 			<ng-container *ngFor="let item of items">
 			<div class="modelview-group-row" >
 				<div  class="modelview-group-cell">
@@ -40,6 +40,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 	@Input() modelStore: IModelStore;
 
 	private _containerLayout: GroupLayout;
+	private _collapsed: boolean;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 
@@ -48,6 +49,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
 		super(changeRef, el);
+		this._collapsed = false;
 	}
 
 	ngOnInit(): void {
@@ -65,11 +67,16 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 
 	public setLayout(layout: GroupLayout): void {
 		this._containerLayout = layout;
+		this._collapsed = !!layout.collapsed;
 		this.layout();
 	}
 
 	private hasHeader(): boolean {
 		return this._containerLayout && this._containerLayout && this._containerLayout.header !== undefined;
+	}
+
+	private isCollapsible(): boolean {
+		return this.hasHeader() && this._containerLayout.collapsible === true;
 	}
 
 	private getContainerWidth(): string {
@@ -81,6 +88,26 @@ export default class GroupContainer extends ContainerBase<GroupLayout> implement
 			return width;
 		} else {
 			return '100%';
+		}
+	}
+
+	private getContainerDisplayStyle(): string {
+		return !this.isCollapsible() || !this._collapsed ? 'block' : 'none';
+	}
+
+	private getHeaderClass(): string {
+		if (this.isCollapsible()) {
+			let modifier = this._collapsed ? 'collapsed' : 'expanded';
+			return `modelview-group-header-collapsible ${modifier}`;
+		} else {
+			return 'modelview-group-header';
+		}
+	}
+
+	private changeState(): void {
+		if (this.isCollapsible()) {
+			this._collapsed = !this._collapsed;
+			this._changeRef.detectChanges();
 		}
 	}
 }

@@ -18,7 +18,7 @@ export class CreateSessionDialog {
 	private readonly DialogTitleText: string = localize('createSessionDialog.title', 'Start New Profiler Session');
 
 	// UI Components
-	private dialog: sqlops.window.modelviewdialog.Dialog;
+	private dialog: sqlops.window.Dialog;
 	private templatesBox: sqlops.DropDownComponent;
 	private sessionNameBox: sqlops.InputBoxComponent;
 
@@ -44,14 +44,14 @@ export class CreateSessionDialog {
 	}
 
 	public async showDialog(): Promise<void> {
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitleText);
+		this.dialog = sqlops.window.createModelViewDialog(this.DialogTitleText);
 		this.initializeContent();
 		this.dialog.okButton.onClick(() => this.execute());
 		this.dialog.cancelButton.onClick(() => { });
 		this.dialog.okButton.label = this.CreateButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		sqlops.window.openDialog(this.dialog);
 	}
 
 	private initializeContent(): void {
@@ -106,7 +106,7 @@ export class CreateSessionDialog {
 
 	private updateSessionName() {
 		if (this.templatesBox.value) {
-			this.sessionNameBox.value = `ADS_${this.templatesBox.value.toString()}`
+			this.sessionNameBox.value = `ADS_${this.templatesBox.value.toString()}`;
 		}
 	}
 

@@ -6,10 +6,9 @@
 import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { error } from 'sql/base/common/log';
 import { IDashboardRegistry, Extensions as DashboardExtensions } from 'sql/platform/dashboard/common/dashboardRegistry';
 

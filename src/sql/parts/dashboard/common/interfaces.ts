@@ -6,10 +6,8 @@
 import { OnDestroy } from '@angular/core';
 
 import { Event } from 'vs/base/common/event';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
-import { AngularDisposable } from 'sql/base/common/lifecycle';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 

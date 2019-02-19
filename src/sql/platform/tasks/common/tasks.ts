@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import * as types from 'vs/base/common/types';
 import { TPromise } from 'vs/base/common/winjs.base';

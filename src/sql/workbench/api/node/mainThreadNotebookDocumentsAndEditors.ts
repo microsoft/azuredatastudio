@@ -5,7 +5,6 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import * as util from 'util';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -23,12 +22,13 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInputModel, NotebookInput } from 'sql/parts/notebook/notebookInput';
-import { INotebookService, INotebookEditor } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { getProviderForFileName } from 'sql/parts/notebook/notebookUtils';
+import { getProvidersForFileName, getStandardKernelsForProvider } from 'sql/parts/notebook/notebookUtils';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { NotebookChangeType, CellTypes } from 'sql/parts/notebook/models/contracts';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -38,6 +38,12 @@ class MainThreadNotebookEditor extends Disposable {
 		super();
 		editor.modelReady.then(model => {
 			this._register(model.contentChanged((e) => this._contentChangedEmitter.fire(e)));
+			this._register(model.kernelChanged((e) => {
+				let changeEvent: NotebookContentChange = {
+					changeType: NotebookChangeType.KernelChanged
+				};
+				this._contentChangedEmitter.fire(changeEvent);
+			}));
 		});
 	}
 
@@ -57,8 +63,16 @@ class MainThreadNotebookEditor extends Disposable {
 		return this.editor.notebookParams.providerId;
 	}
 
+	public get providers(): string[] {
+		return this.editor.notebookParams.providers;
+	}
+
 	public get cells(): ICellModel[] {
 		return this.editor.cells;
+	}
+
+	public get model(): INotebookModel | null {
+		return this.editor.model;
 	}
 
 	public save(): Thenable<boolean> {
@@ -95,6 +109,14 @@ class MainThreadNotebookEditor extends Disposable {
 		// 	this._codeEditor.pushUndoStop();
 		// }
 		return true;
+	}
+
+	public runCell(cell: ICellModel): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+
+		return this.editor.runCell(cell);
 	}
 }
 
@@ -262,7 +284,6 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebookDocumentsAndEditors)
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
-
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
 	private _modelToDisposeMap = new Map<string, IDisposable>();
@@ -304,6 +325,32 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		return TPromise.as(editor.applyEdits(modelVersionId, edits, opts));
 	}
+
+	$runCell(id: string, cellUri: UriComponents): Promise<boolean> {
+		// Requires an editor and the matching cell in that editor
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		let cell: ICellModel;
+		if (cellUri) {
+			let uriString = URI.revive(cellUri).toString();
+			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			// If it's markdown what should we do? Show notification??
+		} else {
+			// Use the active cell in this case, or 1st cell if there's none active
+			cell = editor.model.activeCell;
+			if (!cell) {
+				cell = editor.cells.find(c => c.cellType === CellTypes.Code);
+			}
+		}
+		if (!cell) {
+			return Promise.reject(disposed(`Could not find cell for this Notebook`));
+		}
+
+		return editor.runCell(cell);
+	}
+
 	//#endregion
 
 	private async doOpenEditor(resource: UriComponents, options: INotebookShowOptions): Promise<string> {
@@ -314,14 +361,25 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			pinned: !options.preview
 		};
 		let trusted = uri.scheme === Schemas.untitled;
-		let model = new NotebookInputModel(uri, undefined, trusted, undefined);
+		let model = new NotebookInputModel(uri, undefined, trusted, undefined, undefined, undefined, options.connectionId);
 		let providerId = options.providerId;
-		if (!providerId) {
-			// Ensure there is always a sensible provider ID for this file type
-			providerId = getProviderForFileName(uri.fsPath, this._notebookService);
+		let providers: string[] = undefined;
+		// Ensure there is always a sensible provider ID for this file type
+		providers = getProvidersForFileName(uri.fsPath, this._notebookService);
+		// Try to use a non-builtin provider first
+		if (providers) {
+			providerId = providers.find(p => p !== DEFAULT_NOTEBOOK_PROVIDER);
+			if (!providerId) {
+				providerId = model.providerId;
+			}
 		}
-
+		model.providers = providers;
 		model.providerId = providerId;
+		model.defaultKernel = options && options.defaultKernel;
+		model.providers.forEach(provider => {
+			let standardKernels = getStandardKernelsForProvider(provider, this._notebookService);
+			model.standardKernels = standardKernels;
+		});
 		let input = this._instantiationService.createInstance(NotebookInput, undefined, model);
 
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
@@ -452,6 +510,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			uri: editor.uri,
 			isDirty: editor.isDirty,
 			providerId: editor.providerId,
+			providers: editor.providers,
 			cells: this.convertCellModelToNotebookCell(editor.cells)
 		};
 		return addData;
@@ -463,9 +522,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			cells: this.convertCellModelToNotebookCell(editor.cells),
 			isDirty: e.isDirty,
 			providerId: editor.providerId,
-			uri: editor.uri
+			providers: editor.providers,
+			uri: editor.uri,
+			kernelSpec: this.getKernelSpec(editor)
 		};
 		return changeData;
+	}
+
+	private getKernelSpec(editor: MainThreadNotebookEditor): sqlops.nb.IKernelSpec {
+		let spec = editor && editor.model && editor.model.clientSession ? editor.model.clientSession.cachedKernelSpec : undefined;
+		return spec;
 	}
 
 	private convertCellModelToNotebookCell(cells: ICellModel | ICellModel[]): sqlops.nb.NotebookCell[] {
@@ -476,12 +542,12 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					uri: cell.cellUri,
 					contents: {
 						cell_type: cell.cellType,
-						execution_count: undefined,
+						execution_count: cell.executionCount,
 						metadata: {
 							language: cell.language
 						},
-						source: undefined
-
+						source: undefined,
+						outputs: [...cell.outputs]
 					}
 				});
 			}

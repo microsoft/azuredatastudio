@@ -26,6 +26,7 @@ import 'sql/workbench/api/node/mainThreadModelViewDialog';
 import 'sql/workbench/api/node/mainThreadNotebook';
 import 'sql/workbench/api/node/mainThreadNotebookDocumentsAndEditors';
 import 'sql/workbench/api/node/mainThreadAccountManagement';
+import 'sql/workbench/api/node/mainThreadExtensionManagement';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 export class SqlExtHostContribution implements IWorkbenchContribution {

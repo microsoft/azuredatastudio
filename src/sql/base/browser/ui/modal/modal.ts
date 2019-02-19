@@ -414,23 +414,22 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 		});
 		this._resizeListener = DOM.addDisposableListener(window, DOM.EventType.RESIZE, (e: Event) => {
-			this.layout(DOM.getTotalHeight(this._builder.getHTMLElement()));
+			this.layout(DOM.getTotalHeight(this._modalBodySection));
 		});
 
-		this.layout(DOM.getTotalHeight(this._builder.getHTMLElement()));
+		this.layout(DOM.getTotalHeight(this._modalBodySection));
 		TelemetryUtils.addTelemetry(this._telemetryService, TelemetryKeys.ModalDialogOpened, { name: this._name });
 	}
 
 	/**
 	 * Required to be implemented so that scrolling and other functions operate correctly. Should re-layout controls in the modal
 	 */
-	protected abstract layout(height?: number): void;
+	protected abstract layout(height: number): void;
 
 	/**
 	 * Hides the modal and removes key listeners
 	 */
 	protected hide() {
-		this._footerButtons.forEach(button => button.applyStyles());
 		this._modalShowingContext.get().pop();
 		this._builder.offDOM();
 		if (this._focusedElementBeforeOpen) {

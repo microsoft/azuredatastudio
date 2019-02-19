@@ -17,6 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 export const GRID_SAVECSV_ID = 'grid.saveAsCsv';
 export const GRID_SAVEJSON_ID = 'grid.saveAsJson';
 export const GRID_SAVEEXCEL_ID = 'grid.saveAsExcel';
+export const GRID_SAVEXML_ID = 'grid.saveAsXml';
 export const GRID_COPY_ID = 'grid.copySelection';
 export const GRID_COPYWITHHEADERS_ID = 'grid.copyWithHeaders';
 export const GRID_SELECTALL_ID = 'grid.selectAll';
@@ -46,6 +47,7 @@ export class GridActionProvider {
 		actions.push(new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV, this._dataService));
 		actions.push(new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveFormat.JSON, this._dataService));
 		actions.push(new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveFormat.EXCEL, this._dataService));
+		actions.push(new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveFormat.XML, this._dataService));
 		actions.push(new SelectAllGridAction(SelectAllGridAction.ID, SelectAllGridAction.LABEL, this._selectAllCallback));
 		actions.push(new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, this._dataService));
 		actions.push(new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, this._dataService));
@@ -73,6 +75,9 @@ export class SaveResultAction extends Action {
 
 	public static SAVEEXCEL_ID = GRID_SAVEEXCEL_ID;
 	public static SAVEEXCEL_LABEL = localize('saveAsExcel', 'Save As Excel');
+
+	public static SAVEXML_ID = GRID_SAVEXML_ID;
+	public static SAVEXML_LABEL = localize('saveAsXml', 'Save As XML');
 
 	constructor(
 		id: string,

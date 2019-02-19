@@ -9,16 +9,22 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows Setup Installer | https://go.microsoft.com/fwlink/?linkid=2038320
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2038323
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2038327
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2038332
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2038401
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2038405
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2072725
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2072728
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2072354
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2072737
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2072360
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2072741
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2072744
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
-Try out the latest insiders build from `master` at https://github.com/Microsoft/azuredatastudio/releases.
+Try out the latest insiders build from `master`:
+- [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
+- [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
+- [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
+- [macOS ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/darwin/insider)
+- [Linux TAR.GZ - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/linux-x64/insider)
 
 See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
 
@@ -62,6 +68,13 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
+* sadedil for `Missing feature request: Save as XML #3729`
+* gbritton1 for `Removed reference to object explorer #3463`
+* Tarig0  for `Add Routine_Type to CreateStoredProc fixes #3257 (#3286)`
+* oltruong  for `typo fix #3025'`
+* Thomas-S-B for `Removed unnecessary IErrorDetectionStrategy #749`
+* Thomas-S-B for `Simplified code #750`
 * rdaniels6813  for `Add query plan theme support #3031`
 * Ruturaj123 for `Fixed some typos and grammatical errors #3027`
 * PromoFaux for `Use emoji shortcodes in CONTRIBUTING.md instead of � #3009`

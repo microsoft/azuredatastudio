@@ -85,6 +85,30 @@
 			"timeout": 45000
 		},
 		{
+			"type": "chrome",
+			"request": "launch",
+			"name": "Launch azuredatastudio with new notebook command",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat"
+			},
+			"osx": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
+			},
+			"urlFilter": "*index.html*",
+			"runtimeArgs": [
+				"--inspect=5875",
+				"--command=notebook.command.new"
+			],
+			"skipFiles": [
+				"**/winjs*.js"
+			],
+			"webRoot": "${workspaceFolder}",
+			"timeout": 45000
+		},
+		{
 			"type": "node",
 			"request": "launch",
 			"name": "Unit Tests (stdout)",
@@ -113,6 +137,16 @@
 			"args": [
 				"--extensionDevelopmentPath=${workspaceRoot}/extensions/debug-auto-launch"
 			]
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Launch Smoke Test",
+			"program": "${workspaceFolder}/test/smoke/test/index.js",
+			"cwd": "${workspaceFolder}/test/smoke",
+			"env": {
+				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
+			}
 		}
 	],
 	"compounds": [

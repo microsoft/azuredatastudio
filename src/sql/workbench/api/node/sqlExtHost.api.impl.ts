@@ -41,6 +41,7 @@ import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
 import { ExtHostStorage } from 'vs/workbench/api/node/extHostStorage';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/node/extensionDescriptionRegistry';
+import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry): typeof vscode;
@@ -80,6 +81,7 @@ export function createApiFactory(
 	const extHostQueryEditor = rpcProtocol.set(SqlExtHostContext.ExtHostQueryEditor, new ExtHostQueryEditor(rpcProtocol));
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
+	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 
 
 	return {
@@ -121,6 +123,9 @@ export function createApiFactory(
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);
 				},
+				getServerInfo(connectionId: string): Thenable<sqlops.ServerInfo> {
+					return extHostConnectionManagement.$getServerInfo(connectionId);
+				},
 				openConnectionDialog(providers?: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
 					return extHostConnectionManagement.$openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 				},
@@ -132,6 +137,9 @@ export function createApiFactory(
 				},
 				getUriForConnection(connectionId: string): Thenable<string> {
 					return extHostConnectionManagement.$getUriForConnection(connectionId);
+				},
+				connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult> {
+					return extHostConnectionManagement.$connect(connectionProfile);
 				}
 			};
 
@@ -155,6 +163,12 @@ export function createApiFactory(
 				},
 				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
+				},
+				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
+					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
+				},
+				getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
+					return extHostObjectExplorer.$getSessionConnectionProfile(sessionId);
 				}
 			};
 
@@ -233,10 +247,18 @@ export function createApiFactory(
 				}
 
 				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
-					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.handle, response);
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
 				});
 
 				return extHostDataProvider.$registerObjectExplorerProvider(provider);
+			};
+
+			let registerObjectExplorerNodeProvider = (provider: sqlops.ObjectExplorerNodeProvider): vscode.Disposable => {
+				provider.registerOnExpandCompleted((response: sqlops.ObjectExplorerExpandInfo) => {
+					extHostDataProvider.$onObjectExplorerNodeExpanded(provider.providerId, response);
+				});
+
+				return extHostDataProvider.$registerObjectExplorerNodeProvider(provider);
 			};
 
 			let registerTaskServicesProvider = (provider: sqlops.TaskServicesProvider): vscode.Disposable => {
@@ -330,6 +352,7 @@ export function createApiFactory(
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
+				registerObjectExplorerNodeProvider,
 				registerProfilerProvider,
 				registerRestoreProvider,
 				registerScriptingProvider,
@@ -352,24 +375,31 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
+					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with sqlops.window.createModelViewDialog');
 					return extHostModelViewDialog.createDialog(title, dialogName, extension);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
+					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with sqlops.window.createTab');
 					return extHostModelViewDialog.createTab(title, extension);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
+					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with sqlops.window.createButton');
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with sqlops.window.openDialog');
 					return extHostModelViewDialog.openDialog(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with sqlops.window.closeDialog');
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
+					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with sqlops.window.createWizardPage');
 					return extHostModelViewDialog.createWizardPage(title);
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
+					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with sqlops.window.createWizard');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
@@ -377,10 +407,36 @@ export function createApiFactory(
 
 			const window: typeof sqlops.window = {
 				createDialog(name: string) {
+					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with sqlops.window.createWebViewDialog');
 					return extHostModalDialogs.createDialog(name);
 				},
-
-				modelviewdialog: modelViewDialog
+				modelviewdialog: modelViewDialog,
+				createWebViewDialog(name: string) {
+					return extHostModalDialogs.createDialog(name);
+				},
+				createModelViewDialog(title: string, dialogName?: string): sqlops.window.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension);
+				},
+				createTab(title: string): sqlops.window.DialogTab {
+					return extHostModelViewDialog.createTab(title, extension);
+				},
+				createButton(label: string): sqlops.window.Button {
+					return extHostModelViewDialog.createButton(label);
+				},
+				openDialog(dialog: sqlops.window.Dialog) {
+					return extHostModelViewDialog.openDialog(dialog);
+				},
+				closeDialog(dialog: sqlops.window.Dialog) {
+					return extHostModelViewDialog.closeDialog(dialog);
+				},
+				createWizardPage(title: string): sqlops.window.WizardPage {
+					return extHostModelViewDialog.createWizardPage(title);
+				},
+				createWizard(title: string): sqlops.window.Wizard {
+					console.warn('deprecated method');
+					return extHostModelViewDialog.createWizard(title);
+				},
+				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
 			const tasks: typeof sqlops.tasks = {
@@ -421,6 +477,12 @@ export function createApiFactory(
 
 				runQuery(fileUri: string): void {
 					extHostQueryEditor.$runQuery(fileUri);
+				}
+			};
+
+			const extensions: typeof sqlops.extensions = {
+				install(vsixPath: string): Thenable<string> {
+					return extHostExtensionManagement.$install(vsixPath);
 				}
 			};
 
@@ -486,7 +548,8 @@ export function createApiFactory(
 				SqlThemeIcon: sqlExtHostTypes.SqlThemeIcon,
 				TreeComponentItem: sqlExtHostTypes.TreeComponentItem,
 				nb: nb,
-				AzureResource: sqlExtHostTypes.AzureResource
+				AzureResource: sqlExtHostTypes.AzureResource,
+				extensions: extensions,
 			};
 		}
 	};

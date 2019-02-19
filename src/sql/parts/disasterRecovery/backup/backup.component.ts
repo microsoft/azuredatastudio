@@ -13,27 +13,25 @@ import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
 import { ModalFooterStyle } from 'sql/base/browser/ui/modal/modal';
 import { CategoryView } from 'sql/base/browser/ui/modal/optionsDialog';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
-import { SplitView } from 'sql/base/browser/ui/splitview/splitview';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/common/theme/styler';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as BackupConstants from 'sql/parts/disasterRecovery/backup/constants';
-import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/parts/disasterRecovery/backup/common/backupService';
+import { IBackupService, IBackupUiService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import FileValidationConstants = require('sql/parts/fileBrowser/common/fileValidationServiceConstants');
-import { IDashboardComponentParams } from 'sql/services/bootstrap/bootstrapParams';
-import { IFileBrowserDialogController } from 'sql/parts/fileBrowser/common/interfaces';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
 import * as types from 'vs/base/common/types';
 import * as strings from 'vs/base/common/strings';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -207,7 +205,8 @@ export class BackupComponent {
 		@Inject(IBackupUiService) private _backupUiService: IBackupUiService,
 		@Inject(IBackupService) private _backupService: IBackupService,
 		@Inject(IClipboardService) private clipboardService: IClipboardService,
-		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService
+		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		this._backupUiService.onShowBackupEvent((param) => this.onGetBackupConfigInfo(param));
 	}
@@ -338,10 +337,10 @@ export class BackupComponent {
 
 	ngAfterViewInit() {
 		// Set category view for advanced options. This should be defined in ngAfterViewInit so that it correctly calculates the text height after data binding.
-		var splitview = new SplitView(this.advancedOptionElement.nativeElement);
+		var splitview = new ScrollableSplitView(this.advancedOptionElement.nativeElement);
 		var advancedBodySize = DOM.getTotalHeight(this.advancedOptionBodyElement.nativeElement);
-		var categoryView = new CategoryView(LocalizedStrings.ADVANCED_CONFIGURATION, this.advancedOptionBodyElement.nativeElement, true, advancedBodySize, this._advancedHeaderSize);
-		splitview.addView(categoryView);
+		var categoryView = this.instantiationService.createInstance(CategoryView, this.advancedOptionBodyElement.nativeElement, advancedBodySize, { title: LocalizedStrings.ADVANCED_CONFIGURATION, id: LocalizedStrings.ADVANCED_CONFIGURATION, ariaHeaderLabel: LocalizedStrings.ADVANCED_CONFIGURATION });
+		splitview.addView(categoryView, 0);
 		splitview.layout(advancedBodySize + this._advancedHeaderSize);
 
 		this._backupUiService.onShowBackupDialog();

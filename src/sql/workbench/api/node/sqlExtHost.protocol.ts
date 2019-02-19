@@ -129,6 +129,10 @@ export abstract class ExtHostDataProtocolShape {
 
 	$findNodes(handle: number, findNodesInfo: sqlops.FindNodesInfo): Thenable<sqlops.ObjectExplorerFindNodesResponse> { throw ni(); }
 
+	$createObjectExplorerNodeProviderSession(handle: number, sessionInfo: sqlops.ObjectExplorerSession): Thenable<boolean> { throw ni(); }
+
+	$handleSessionClose(handle: number, closeSessionInfo: sqlops.ObjectExplorerCloseSessionInfo): void { throw ni(); }
+
 	/**
 	 * Tasks
 	 */
@@ -358,6 +362,11 @@ export abstract class ExtHostDataProtocolShape {
 	$getXEventSessions(handle: number, sessionId: string): Thenable<string[]> { throw ni(); }
 
 	/**
+	 * Disconnect a profiler session
+	 */
+	$disconnectSession(handle: number, sessionId: string): Thenable<boolean> { throw ni(); }
+
+	/**
 	 * Get Agent Job list
 	 */
 	$getJobs(handle: number, ownerUri: string): Thenable<sqlops.AgentJobsResult> { throw ni(); }
@@ -436,6 +445,17 @@ export abstract class ExtHostDataProtocolShape {
 	 * DacFx deploy dacpac
 	 */
 	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx generate deploy script
+	 */
+	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> { throw ni(); }
+
+	/**
+	 * DacFx generate deploy plan
+	 */
+	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.GenerateDeployPlanResult> { throw ni(); }
+
 }
 
 /**
@@ -497,6 +517,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerQueryProvider(providerId: string, handle: number): TPromise<any>;
 	$registerProfilerProvider(providerId: string, handle: number): TPromise<any>;
 	$registerObjectExplorerProvider(providerId: string, handle: number): TPromise<any>;
+	$registerObjectExplorerNodeProvider(providerId: string, supportedProviderId: string, group: string, handle: number): TPromise<any>;
 	$registerMetadataProvider(providerId: string, handle: number): TPromise<any>;
 	$registerTaskServicesProvider(providerId: string, handle: number): TPromise<any>;
 	$registerFileBrowserProvider(providerId: string, handle: number): TPromise<any>;
@@ -516,7 +537,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$onQueryMessage(handle: number, message: sqlops.QueryExecuteMessageParams): void;
 	$onObjectExplorerSessionCreated(handle: number, message: sqlops.ObjectExplorerSession): void;
 	$onObjectExplorerSessionDisconnected(handle: number, message: sqlops.ObjectExplorerSession): void;
-	$onObjectExplorerNodeExpanded(handle: number, message: sqlops.ObjectExplorerExpandInfo): void;
+	$onObjectExplorerNodeExpanded(providerId: string, message: sqlops.ObjectExplorerExpandInfo): void;
 	$onTaskCreated(handle: number, sessionResponse: sqlops.TaskInfo): void;
 	$onTaskStatusChanged(handle: number, sessionResponse: sqlops.TaskProgressInfo): void;
 	$onFileBrowserOpened(handle: number, response: sqlops.FileBrowserOpenedParams): void;
@@ -538,10 +559,12 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getActiveConnections(): Thenable<sqlops.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<sqlops.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
+	$getServerInfo(connectedId: string): Thenable<sqlops.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection>;
 	$listDatabases(connectionId: string): Thenable<string[]>;
 	$getConnectionString(connectionId: string, includePassword: boolean): Thenable<string>;
 	$getUriForConnection(connectionId: string): Thenable<string>;
+	$connect(connectionProfile: sqlops.IConnectionProfile): Thenable<sqlops.ConnectionResult>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
@@ -576,8 +599,8 @@ export const SqlMainContext = {
 	MainThreadModelViewDialog: createMainId<MainThreadModelViewDialogShape>('MainThreadModelViewDialog'),
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
-	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors')
-
+	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
 };
 
 export const SqlExtHostContext = {
@@ -598,7 +621,8 @@ export const SqlExtHostContext = {
 	ExtHostModelViewDialog: createExtId<ExtHostModelViewDialogShape>('ExtHostModelViewDialog'),
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
-	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors')
+	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
@@ -704,14 +728,16 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.NodeInfo[]>;
 	$refresh(connectionId: string, nodePath: string): Thenable<sqlops.NodeInfo>;
+	$getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
+	$getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile>;
 }
 
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
 	$onPanelValidityChanged(handle: number, valid: boolean): void;
-	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
+	$onWizardPageChanged(handle: number, info: sqlops.window.WizardPageChangeInfo): void;
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
-	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
+	$validateNavigation(handle: number, info: sqlops.window.WizardPageChangeInfo): Thenable<boolean>;
 	$validateDialogClose(handle: number): Thenable<boolean>;
 	$handleSave(handle: number): Thenable<boolean>;
 }
@@ -766,6 +792,8 @@ export interface ExtHostNotebookShape {
 
 	// Session APIs
 	$changeKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<INotebookKernelDetails>;
+	$configureKernel(sessionId: number, kernelInfo: sqlops.nb.IKernelSpec): Thenable<void>;
+	$configureConnection(sessionId: number, connection: sqlops.IConnectionProfile): Thenable<void>;
 
 	// Kernel APIs
 	$getKernelReadyStatus(kernelId: number): Thenable<sqlops.nb.IInfoReply>;
@@ -797,6 +825,7 @@ export interface INotebookDocumentsAndEditorsDelta {
 export interface INotebookModelAddedData {
 	uri: UriComponents;
 	providerId: string;
+	providers: string[];
 	isDirty: boolean;
 	cells: sqlops.nb.NotebookCell[];
 }
@@ -804,8 +833,10 @@ export interface INotebookModelAddedData {
 export interface INotebookModelChangedData {
 	uri: UriComponents;
 	providerId: string;
+	providers: string[];
 	isDirty: boolean;
 	cells: sqlops.nb.NotebookCell[];
+	kernelSpec: sqlops.nb.IKernelSpec;
 }
 
 export interface INotebookEditorAddData {
@@ -820,6 +851,7 @@ export interface INotebookShowOptions {
 	preview?: boolean;
 	providerId?: string;
 	connectionId?: string;
+	defaultKernel?: sqlops.nb.IKernelSpec;
 }
 
 export interface ExtHostNotebookDocumentsAndEditorsShape {
@@ -831,4 +863,13 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$trySaveDocument(uri: UriComponents): Thenable<boolean>;
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): TPromise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): TPromise<boolean>;
+	$runCell(id: string, cellUri: UriComponents): TPromise<boolean>;
+}
+
+export interface ExtHostExtensionManagementShape {
+	$install(vsixPath: string): Thenable<string>;
+}
+
+export interface MainThreadExtensionManagementShape extends IDisposable {
+	$install(vsixPath: string): Thenable<string>;
 }

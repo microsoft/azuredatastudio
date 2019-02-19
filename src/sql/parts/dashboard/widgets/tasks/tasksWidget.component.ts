@@ -14,7 +14,7 @@ import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from '
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BaseActionContext } from 'sql/workbench/common/actions';
 
 /* VS imports */

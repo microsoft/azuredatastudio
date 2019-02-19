@@ -17,7 +17,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import nls = require('vs/nls');
 
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 
 import { DidChangeLanguageFlavorParams } from 'sqlops';

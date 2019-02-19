@@ -2,7 +2,13 @@
 	"displayName": "Notebook Core Extensions",
 	"description": "Defines the Data-procotol based Notebook contribution and many Notebook commands and contributions.",
 	"notebook.configuration.title": "Notebook configuration",
-	"notebook.enabled.description": "Enable viewing notebook files using built-in notebook editor.",
+	"notebook.pythonPath.description": "Local path to python installation used by Notebooks.",
+	"notebook.sqlKernelEnabled.description": "Enable SQL kernel in notebook editor (Preview). Requires reloading this window to take effect",
+	"notebook.overrideEditorTheming.description": "Override editor default settings in the Notebook editor. Settings include background color, current line color and border",
 	"notebook.command.new": "New Notebook",
-	"notebook.command.open": "Open Notebook"
+	"notebook.command.open": "Open Notebook",
+	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",
+	"notebook.command.runactivecell": "Run Cell",
+	"notebook.command.addcode": "Add Code Cell",
+	"notebook.command.addtext": "Add Text Cell"
 }

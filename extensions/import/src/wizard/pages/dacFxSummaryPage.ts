@@ -14,7 +14,7 @@ const localize = nls.loadMessageBundle();
 
 export class DacFxSummaryPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
@@ -23,7 +23,7 @@ export class DacFxSummaryPage extends BasePage {
 	private table: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;
@@ -49,6 +49,14 @@ export class DacFxSummaryPage extends BasePage {
 	async onPageEnter(): Promise<boolean> {
 		this.populateTable();
 		this.loader.loading = false;
+		if (this.model.upgradeExisting && this.model.generateScriptAndDeploy) {
+			this.instance.wizard.generateScriptButton.hidden = false;
+		}
+		return true;
+	}
+
+	async onPageLeave(): Promise<boolean> {
+		this.instance.wizard.generateScriptButton.hidden = true;
 		return true;
 	}
 
@@ -68,6 +76,10 @@ export class DacFxSummaryPage extends BasePage {
 		let sourceServer = localize('dacfx.sourceServerName', 'Source Server');
 		let sourceDatabase = localize('dacfx.sourceDatabaseName', 'Source Database');
 		let fileLocation = localize('dacfx.fileLocation', 'File Location');
+		let scriptLocation = localize('dacfx.scriptLocation', 'Deployment Script Location');
+		let action = localize('dacfx.action', 'Action');
+		let deploy = localize('dacfx.deploy', 'Deploy');
+		let generateScript = localize('dacfx.generateScript', 'Generate Deployment Script');
 
 		switch (this.instance.selectedOperation) {
 			case Operation.deploy: {
@@ -75,6 +87,13 @@ export class DacFxSummaryPage extends BasePage {
 					[targetServer, this.model.serverName],
 					[fileLocation, this.model.filePath],
 					[targetDatabase, this.model.database]];
+				if (this.model.generateScriptAndDeploy) {
+					data[3] = [scriptLocation, this.model.scriptFilePath];
+					data[4] = [action, generateScript + ', ' + deploy];
+				}
+				else {
+					data[3] = [action, deploy];
+				}
 				break;
 			}
 			case Operation.extract: {
@@ -99,12 +118,29 @@ export class DacFxSummaryPage extends BasePage {
 					[fileLocation, this.model.filePath]];
 				break;
 			}
+			case Operation.generateDeployScript: {
+				data = [
+					[targetServer, this.model.serverName],
+					[fileLocation, this.model.filePath],
+					[targetDatabase, this.model.database],
+					[scriptLocation, this.model.scriptFilePath],
+					[action, generateScript]];
+				break;
+			}
 		}
 
 		this.table.updateProperties({
 			data: data,
-			columns: ['Setting', 'Value'],
-			width: 600,
+			columns: [
+				{
+					value: localize('dacfx.settingColumn', 'Setting'),
+					cssClass: 'align-with-header'
+				},
+				{
+					value: localize('dacfx.valueColumn', 'Value'),
+					cssClass: 'align-with-header'
+				}],
+			width: 700,
 			height: 200
 		});
 	}

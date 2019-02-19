@@ -7,10 +7,10 @@
 
 import { IInsightOptions, IInsight } from './insights/interfaces';
 import { Graph } from './insights/graphInsight';
-import * as PathUtilities from 'sql/common/pathUtilities';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
+import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtilities';
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
@@ -190,7 +190,7 @@ export class SaveImageAction extends Action {
 	}
 
 	private promptForFilepath(): TPromise<string> {
-		let filepathPlaceHolder = PathUtilities.resolveCurrentDirectory(this.getActiveUriString(), PathUtilities.getRootPath(this.workspaceContextService));
+		let filepathPlaceHolder = resolveCurrentDirectory(this.getActiveUriString(), getRootPath(this.workspaceContextService));
 		filepathPlaceHolder = join(filepathPlaceHolder, 'chart.png');
 		return this.windowService.showSaveDialog({
 			title: localize('chartViewer.saveAsFileTitle', 'Choose Results File'),

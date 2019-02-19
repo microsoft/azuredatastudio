@@ -201,7 +201,7 @@ function getElectron(arch) {
 		});
 
 		return gulp.src('package.json')
-		.pipe(json({ name: product.nameShort }))
+			.pipe(json({ name: product.nameShort }))
 			.pipe(electron(electronOpts))
 			.pipe(filter(['**', '!**/app/package.json']))
 			.pipe(vfs.dest('.build/electron'));
@@ -252,32 +252,31 @@ function computeChecksum(filename) {
 
 function packageBuiltInExtensions() {
 	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
-			.map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			})
-			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-			.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
 	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
 		const packagePath = path.join(path.dirname(root), element.name + '.vsix');
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
-				cwd: element.path,
-				packagePath: packagePath,
-				useYarn: true
+			cwd: element.path,
+			packagePath: packagePath,
+			useYarn: true
 		});
 	});
 }
 
-// {{SQL CARBON EDIT}}
-function packageAzureCoreTask(platform, arch) {
+function packageExtensionTask(extensionName, platform, arch) {
 	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
 	if (platform === 'darwin') {
-		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', 'azurecore');
+		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
 	} else {
-		destination = path.join(destination, 'resources', 'app', 'extensions', 'azurecore');
+		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
 	}
 
 	platform = platform || process.platform;
@@ -290,7 +289,7 @@ function packageAzureCoreTask(platform, arch) {
 				const extensionName = path.basename(extensionPath);
 				return { name: extensionName, path: extensionPath };
 			})
-			.filter(({ name }) => azureExtensions.indexOf(name) > -1);
+			.filter(({ name }) => extensionName === name);
 
 		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
 			return ext.fromLocal(extension.path);
@@ -399,7 +398,7 @@ function packageTask(platform, arch, opts) {
 
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
-    // {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
 
 		const depsSrc = [
@@ -544,9 +543,13 @@ function packageTask(platform, arch, opts) {
 const buildRoot = path.dirname(root);
 
 // {{SQL CARBON EDIT}}
-gulp.task('vscode-win32-x64-azurecore', ['optimize-vscode'], packageAzureCoreTask('win32', 'x64'));
-gulp.task('vscode-darwin-azurecore', ['optimize-vscode'], packageAzureCoreTask('darwin'));
-gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], packageAzureCoreTask('linux', 'x64'));
+gulp.task('vscode-win32-x64-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'win32', 'x64'));
+gulp.task('vscode-darwin-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'darwin'));
+gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'linux', 'x64'));
+
+gulp.task('vscode-win32-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'win32', 'x64'));
+gulp.task('vscode-darwin-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'darwin'));
+gulp.task('vscode-linux-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'linux', 'x64'));
 
 gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-ia32')));
 gulp.task('clean-vscode-win32-x64', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-x64')));
@@ -557,10 +560,10 @@ gulp.task('clean-vscode-linux-arm', util.rimraf(path.join(buildRoot, 'azuredatas
 gulp.task('clean-vscode-linux-arm64', util.rimraf(path.join(buildRoot, 'azuredatastudio-linux-arm64')));
 
 gulp.task('vscode-win32-ia32', ['optimize-vscode', 'clean-vscode-win32-ia32'], packageTask('win32', 'ia32'));
-gulp.task('vscode-win32-x64',  ['vscode-win32-x64-azurecore', 'optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
-gulp.task('vscode-darwin', ['vscode-darwin-azurecore', 'optimize-vscode', 'clean-vscode-darwin'], packageTask('darwin', null, { stats: true }));
+gulp.task('vscode-win32-x64', ['vscode-win32-x64-azurecore', 'vscode-win32-x64-mssql', 'optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
+gulp.task('vscode-darwin', ['vscode-darwin-azurecore', 'vscode-darwin-mssql', 'optimize-vscode', 'clean-vscode-darwin'], packageTask('darwin', null, { stats: true }));
 gulp.task('vscode-linux-ia32', ['optimize-vscode', 'clean-vscode-linux-ia32'], packageTask('linux', 'ia32'));
-gulp.task('vscode-linux-x64', ['vscode-linux-x64-azurecore', 'optimize-vscode', 'clean-vscode-linux-x64'], packageTask('linux', 'x64'));
+gulp.task('vscode-linux-x64', ['vscode-linux-x64-azurecore', 'vscode-linux-x64-mssql', 'optimize-vscode', 'clean-vscode-linux-x64'], packageTask('linux', 'x64'));
 gulp.task('vscode-linux-arm', ['optimize-vscode', 'clean-vscode-linux-arm'], packageTask('linux', 'arm'));
 gulp.task('vscode-linux-arm64', ['optimize-vscode', 'clean-vscode-linux-arm64'], packageTask('linux', 'arm64'));
 
@@ -770,5 +773,5 @@ function installService() {
 }
 
 gulp.task('install-sqltoolsservice', () => {
-    return installService();
+	return installService();
 });

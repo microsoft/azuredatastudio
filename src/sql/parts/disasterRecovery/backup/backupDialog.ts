@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BackupModule } from 'sql/parts/disasterRecovery/backup/backup.module';
 import { BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
 import { attachModalDialogStyler } from 'sql/common/theme/styler';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';

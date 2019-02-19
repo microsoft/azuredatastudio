@@ -6,22 +6,24 @@
 import { localize } from 'vs/nls';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Action } from 'vs/base/common/actions';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { IConnectionManagementService, IErrorMessageService } from 'sql/parts/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/services/capabilities/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
-import { ConnectionViewlet } from 'sql/parts/objectExplorer/viewlet/connectionViewlet';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionViewlet } from 'sql/workbench/parts/connection/electron-browser/connectionViewlet';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import * as Constants from 'sql/parts/connection/common/constants';
+import * as Constants from 'sql/platform/connection/common/constants';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/objectExplorerActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
 
 export class RefreshAction extends Action {
 
@@ -388,7 +390,7 @@ export class ClearSearchAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _viewlet: ConnectionViewlet,
+		private _viewlet: ConnectionViewlet | ConnectionViewletPanel,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);

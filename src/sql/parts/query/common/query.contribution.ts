@@ -150,7 +150,7 @@ actionRegistry.registerWorkbenchAction(
 		FocusOnCurrentQueryKeyboardAction,
 		FocusOnCurrentQueryKeyboardAction.ID,
 		FocusOnCurrentQueryKeyboardAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_O }
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_O }
 	),
 	FocusOnCurrentQueryKeyboardAction.LABEL
 );
@@ -234,6 +234,14 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
+	id: gridActions.GRID_SAVEXML_ID,
+	weight: KeybindingWeight.EditorContrib,
+	when: ResultsGridFocusCondition,
+	primary: KeyChord(KeyMod.CtrlCmd | KeyCode.KEY_R, KeyMod.CtrlCmd | KeyCode.KEY_X),
+	handler: gridCommands.saveAsXml
+});
+
+KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GRID_VIEWASCHART_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: ResultsGridFocusCondition,
@@ -253,7 +261,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLERESULTS_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_R,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_R,
 	handler: gridCommands.toggleResultsPane
 });
 
@@ -261,7 +269,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.TOGGLEMESSAGES_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_Y,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_Y,
 	handler: gridCommands.toggleMessagePane
 });
 
@@ -269,7 +277,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: gridActions.GOTONEXTQUERYOUTPUTTAB_ID,
 	weight: KeybindingWeight.EditorContrib,
 	when: QueryEditorVisibleCondition,
-	primary: KeyMod.CtrlCmd | KeyMod.Alt | KeyCode.KEY_P,
+	primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_P,
 	handler: gridCommands.goToNextQueryOutputTab
 });
 
@@ -308,7 +316,17 @@ let registryProperties = {
 	'sql.results.streaming': {
 		'type': 'boolean',
 		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
-		'default': false
+		'default': true
+	},
+	'sql.saveAsXml.formatted': {
+		'type': 'string',
+		'description': localize('sql.saveAsXml.formatted', '[Optional] When true, XML output will be formatted when saving results as XML'),
+		'default': true
+	},
+	'sql.saveAsXml.encoding': {
+		'type': 'string',
+		'description': localize('sql.saveAsXml.encoding', '[Optional] File encoding used when saving results as XML'),
+		'default': 'utf-8'
 	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
@@ -345,6 +363,11 @@ let registryProperties = {
 		'type': 'boolean',
 		'description': localize('showConnectionInfoInTitle', "Controls whether to show the connection info for a tab in the title."),
 		'default': true
+	},
+	'sql.promptToSaveGeneratedFiles': {
+		'type': 'boolean',
+		'default': false,
+		'description': localize('sql.promptToSaveGeneratedFiles', 'Prompt to save generated SQL files')
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
@@ -413,6 +436,3 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
-
-
-

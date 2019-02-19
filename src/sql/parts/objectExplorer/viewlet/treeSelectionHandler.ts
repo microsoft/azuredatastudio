@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 
 import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';

@@ -42,7 +42,7 @@ export const tripleDES = 'Triple DES';
 export const serverCertificate = localize('backup.serverCertificate', "Server Certificate");
 export const asymmetricKey = localize('backup.asymmetricKey', "Asymmetric Key");
 
-export const fileFiltersSet: {label: string, filters: string[]}[] = [
+export const fileFiltersSet: { label: string, filters: string[] }[] = [
 	{ label: localize('backup.filterBackupFiles', "Backup Files"), filters: ['*.bak', '*.trn', '*.log'] },
 	{ label: localize('backup.allFiles', "All Files"), filters: ['*'] }
 ];

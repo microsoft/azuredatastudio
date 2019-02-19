@@ -148,7 +148,7 @@ export default class MainController implements vscode.Disposable {
 
 		await view.initializeModel(formWrapper);
 	}
-	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.modelviewdialog.Button, customButton2: sqlops.window.modelviewdialog.Button, componentWidth: number | string): Promise<void> {
+	private async getTabContent(view: sqlops.ModelView, customButton1: sqlops.window.Button, customButton2: sqlops.window.Button, componentWidth: number | string): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
 			.withProperties({
 				multiline: true,
@@ -377,20 +377,20 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private openDialog(): void {
-		let dialog = sqlops.window.modelviewdialog.createDialog('Test dialog');
-		let tab1 = sqlops.window.modelviewdialog.createTab('Test tab 1');
+		let dialog = sqlops.window.createModelViewDialog('Test dialog');
+		let tab1 = sqlops.window.createTab('Test tab 1');
 
-		let tab2 = sqlops.window.modelviewdialog.createTab('Test tab 2');
-		let tab3 = sqlops.window.modelviewdialog.createTab('Test tab 3');
+		let tab2 = sqlops.window.createTab('Test tab 2');
+		let tab3 = sqlops.window.createTab('Test tab 3');
 		tab2.content = 'sqlservices';
 		dialog.content = [tab1, tab2, tab3];
 		dialog.okButton.onClick(() => console.log('ok clicked!'));
 		dialog.cancelButton.onClick(() => console.log('cancel clicked!'));
 		dialog.okButton.label = 'ok';
 		dialog.cancelButton.label = 'no';
-		let customButton1 = sqlops.window.modelviewdialog.createButton('Load name');
+		let customButton1 = sqlops.window.createButton('Load name');
 		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = sqlops.window.modelviewdialog.createButton('Load all');
+		let customButton2 = sqlops.window.createButton('Load all');
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		dialog.customButtons = [customButton1, customButton2];
 		tab1.registerContent(async (view) => {
@@ -400,17 +400,17 @@ export default class MainController implements vscode.Disposable {
 		tab3.registerContent(async (view) => {
 			await this.getTab3Content(view);
 		});
-		sqlops.window.modelviewdialog.openDialog(dialog);
+		sqlops.window.openDialog(dialog);
 	}
 
 	private openWizard(): void {
-		let wizard = sqlops.window.modelviewdialog.createWizard('Test wizard');
-		let page1 = sqlops.window.modelviewdialog.createWizardPage('First wizard page');
-		let page2 = sqlops.window.modelviewdialog.createWizardPage('Second wizard page');
+		let wizard = sqlops.window.createWizard('Test wizard');
+		let page1 = sqlops.window.createWizardPage('First wizard page');
+		let page2 = sqlops.window.createWizardPage('Second wizard page');
 		page2.content = 'sqlservices';
-		let customButton1 = sqlops.window.modelviewdialog.createButton('Load name');
+		let customButton1 = sqlops.window.createButton('Load name');
 		customButton1.onClick(() => console.log('button 1 clicked!'));
-		let customButton2 = sqlops.window.modelviewdialog.createButton('Load all');
+		let customButton2 = sqlops.window.createButton('Load all');
 		customButton2.onClick(() => console.log('button 2 clicked!'));
 		wizard.customButtons = [customButton1, customButton2];
 		page1.registerContent(async (view) => {

@@ -32,3 +32,9 @@
     -webkit-mask: url('icons/search_inverse.svg') no-repeat 50% 50%;
 	-webkit-mask-size: 25px 25px;
 }
+
+/* Activity Bar - Data Explorer */
+.monaco-workbench > .activitybar .monaco-action-bar .action-label.dataExplorer {
+	-webkit-mask: url('icons/server_page_inverse.svg') no-repeat 50% 50%;
+	-webkit-mask-size: 25px 25px;
+}

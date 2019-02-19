@@ -10,14 +10,14 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath, Operation } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 
 const localize = nls.loadMessageBundle();
 
 export class DeployConfigPage extends DacFxConfigPage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
@@ -26,7 +26,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 	private formBuilder: sqlops.FormBuilder;
 	private form: sqlops.FormContainer;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 		this.fileExtension = '.bacpac';
 	}
@@ -122,6 +122,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.removeFormItem(this.databaseComponent);
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<sqlops.CategoryValue>this.databaseDropdown.value).name;
+
+			// add deploy plan and generate script pages
+			let deployPlanPage = this.instance.pages.get('deployPlan');
+			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
+			let deployActionPage = this.instance.pages.get('deployAction');
+			this.instance.wizard.addPage(deployActionPage.wizardPage, DeployOperationPath.deployAction);
 		});
 
 		newRadioButton.onDidClick(() => {
@@ -129,6 +135,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.removeFormItem(this.databaseDropdownComponent);
 			this.formBuilder.addFormItem(this.databaseComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = this.databaseTextBox.value;
+			this.instance.setDoneButton(Operation.deploy);
+
+			// remove deploy plan and generate script pages
+			this.instance.wizard.removePage(DeployOperationPath.deployAction);
+			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
 		});
 
 		//Initialize with upgrade existing true

@@ -14,11 +14,11 @@ import 'vs/css!sql/parts/grid/media/slickGrid';
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { SlickGrid } from 'angular2-slickgrid';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import * as Constants from 'sql/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/parts/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/parts/grid/common/interfaces';
-import * as Utils from 'sql/parts/connection/common/utils';
+import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/parts/grid/services/dataService';
 import * as actions from 'sql/parts/grid/views/gridActions';
 import * as Services from 'sql/parts/grid/services/sharedServices';
@@ -154,6 +154,9 @@ export abstract class GridParentComponent {
 				case GridContentEvents.SaveAsExcel:
 					self.sendSaveRequest(SaveFormat.EXCEL);
 					break;
+				case GridContentEvents.SaveAsXML:
+					self.sendSaveRequest(SaveFormat.XML);
+					break;
 				case GridContentEvents.GoToNextQueryOutputTab:
 					self.goToNextQueryOutputTab();
 					break;
@@ -232,7 +235,7 @@ export abstract class GridParentComponent {
 		let selection = this.slickgrids.toArray()[index || this.activeGrid].getSelectedRanges();
 		if (selection) {
 			selection = selection.map(c => { return <Slick.Range>{ fromCell: c.fromCell - 1, toCell: c.toCell - 1, toRow: c.toRow, fromRow: c.fromRow }; });
-		return selection;
+			return selection;
 		} else {
 			return undefined;
 		}
@@ -320,6 +323,9 @@ export abstract class GridParentComponent {
 			'SaveAsExcel': () => {
 				this.sendSaveRequest(SaveFormat.EXCEL);
 			},
+			'SaveAsXML': () => {
+				this.sendSaveRequest(SaveFormat.XML);
+			},
 			'GoToNextQueryOutputTab': () => {
 				this.goToNextQueryOutputTab();
 			}
@@ -344,6 +350,9 @@ export abstract class GridParentComponent {
 				break;
 			case 'saveexcel':
 				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.EXCEL, selection: event.selection });
+				break;
+			case 'savexml':
+				this.dataService.sendSaveRequest({ batchIndex: event.batchId, resultSetNumber: event.resultId, format: SaveFormat.XML, selection: event.selection });
 				break;
 			case 'selectall':
 				this.activeGrid = event.index;

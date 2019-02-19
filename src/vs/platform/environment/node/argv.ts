@@ -43,7 +43,13 @@ const options: minimist.Opts = {
 		'driver',
 		'trace-category-filter',
 		'trace-options',
-		'_'
+		'_',
+		// {{SQL CARBON EDIT}}
+	    'database',
+	    'server',
+		'user',
+		'command'
+		// {{SQL CARBON EDIT}}
 	],
 	boolean: [
 		// {{SQL CARBON EDIT}}
@@ -105,6 +111,7 @@ const options: minimist.Opts = {
 		integrated: 'E',
 		server: 'S',
 		user: 'U',
+		command : 'c',
 		// {{SQL CARBON EDIT}}
 	}
 };

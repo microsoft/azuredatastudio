@@ -41,6 +41,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._activeCellId = value;
 	}
 
+	@Input() set hover(value: boolean) {
+		this._hover = value;
+		if (!this.isActive()) {
+			// Only make a change if we're not active, since this has priority
+			this.updateMoreActions();
+		}
+	}
+
 	private _content: string;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
@@ -50,6 +58,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	protected isLoading: boolean;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _hover: boolean;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
@@ -60,7 +69,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IOpenerService) private readonly openerService: IOpenerService,
 	) {
 		super();
-		this.isEditMode = false;
+		this.isEditMode = true;
 		this.isLoading = true;
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 	}
@@ -87,13 +96,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnInit() {
-		this.updatePreview();
 		this.setLoading(false);
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
-		this.cellModel.onOutputsChanged(e => {
+		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
+		this.setFocusAndScroll();
+		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
-		});
+		}));
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -101,7 +111,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				this._activeCellId = changedProp.currentValue;
-				this.toggleEditMode(false);
+				// If the activeCellId is undefined (i.e. in an active cell update), don't unnecessarily set editMode to false;
+				// it will be set to true in a subsequent call to toggleEditMode()
+				if (changedProp.previousValue !== undefined) {
+					this.toggleEditMode(false);
+				}
 				break;
 			}
 		}
@@ -154,13 +168,33 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	public toggleEditMode(editMode?: boolean): void {
 		this.isEditMode = editMode !== undefined? editMode : !this.isEditMode;
-		if (!this.isEditMode && this.cellModel.id === this._activeCellId) {
-			this._cellToggleMoreActions.toggle(true, this.moreActionsElementRef, this.model, this.cellModel);
-		}
-		else {
-			this._cellToggleMoreActions.toggle(false, this.moreActionsElementRef, this.model, this.cellModel);
-		}
+		this.updateMoreActions();
 		this.updatePreview();
 		this._changeRef.detectChanges();
+	}
+
+	private updateMoreActions(): void {
+		if (!this.isEditMode && (this.isActive() || this._hover)) {
+			this.toggleMoreActionsButton(true);
+		}
+		else {
+			this.toggleMoreActionsButton(false);
+		}
+	}
+
+	private setFocusAndScroll(): void {
+		this.toggleEditMode(this.isActive());
+
+		if (this.output && this.output.nativeElement) {
+			(<HTMLElement>this.output.nativeElement).scrollTo();
+		}
+	}
+
+	protected isActive() {
+		return this.cellModel && this.cellModel.id === this.activeCellId;
+	}
+
+	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
 	}
 }

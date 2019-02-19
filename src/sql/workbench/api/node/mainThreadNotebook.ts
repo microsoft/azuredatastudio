@@ -12,9 +12,9 @@ import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 
-import { INotebookService, INotebookProvider, INotebookManager } from 'sql/services/notebook/notebookService';
+import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { LocalContentManager } from 'sql/services/notebook/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 
@@ -288,10 +288,29 @@ class SessionWrapper implements sqlops.nb.ISession {
 		return this.doChangeKernel(kernelInfo);
 	}
 
+	configureKernel(kernelInfo: sqlops.nb.IKernelSpec): Thenable<void> {
+		return this.doConfigureKernel(kernelInfo);
+	}
+
+	configureConnection(connection: sqlops.IConnectionProfile): Thenable<void> {
+		if (connection['capabilitiesService'] !== undefined) {
+			connection['capabilitiesService'] = undefined;
+		}
+		return this.doConfigureConnection(connection);
+	}
+
 	private async doChangeKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<sqlops.nb.IKernel> {
 		let kernelDetails = await this._proxy.ext.$changeKernel(this.sessionDetails.sessionId, kernelInfo);
 		this._kernel = new KernelWrapper(this._proxy, kernelDetails);
 		return this._kernel;
+	}
+
+	private async doConfigureKernel(kernelInfo: sqlops.nb.IKernelSpec): Promise<void> {
+		await this._proxy.ext.$configureKernel(this.sessionDetails.sessionId, kernelInfo);
+	}
+
+	private async doConfigureConnection(connection: sqlops.IConnectionProfile): Promise<void> {
+		await this._proxy.ext.$configureConnection(this.sessionDetails.sessionId, connection);
 	}
 }
 
@@ -348,11 +367,11 @@ class KernelWrapper implements sqlops.nb.IKernel {
 	requestExecute(content: sqlops.nb.IExecuteRequest, disposeOnDone?: boolean): sqlops.nb.IFuture {
 		let future = new FutureWrapper(this._proxy);
 		this._proxy.ext.$requestExecute(this.kernelDetails.kernelId, content, disposeOnDone)
-		.then(details => {
-			future.setDetails(details);
-			// Save the future in the main thread notebook so extension can call through and reference it
-			this._proxy.main.addFuture(details.futureId, future);
-		}, error => future.setError(error));
+			.then(details => {
+				future.setDetails(details);
+				// Save the future in the main thread notebook so extension can call through and reference it
+				this._proxy.main.addFuture(details.futureId, future);
+			}, error => future.setError(error));
 		return future;
 	}
 
@@ -370,7 +389,7 @@ class FutureWrapper implements FutureInternal {
 	private _inProgress: boolean;
 
 	constructor(private _proxy: Proxies) {
-        this._inProgress = true;
+		this._inProgress = true;
 	}
 
 	public setDetails(details: INotebookFutureDetails): void {
@@ -396,7 +415,7 @@ class FutureWrapper implements FutureInternal {
 	public onDone(done: INotebookFutureDone): void {
 		this._inProgress = false;
 		if (done.succeeded) {
-			this._done.resolve();
+			this._done.resolve(done.message);
 		} else {
 			this._done.reject(new Error(done.rejectReason));
 		}

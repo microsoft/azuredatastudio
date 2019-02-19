@@ -15,7 +15,7 @@ import {
 	INewConnectionParams,
 	ConnectionType,
 	RunQueryOnConnectionMode
-} from 'sql/parts/connection/common/connectionManagement';
+} from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
 import {
 	RunQueryAction, CancelQueryAction, ListDatabasesActionItem,
@@ -23,9 +23,9 @@ import {
 } from 'sql/parts/query/execution/queryActions';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/parts/query/editor/queryEditor';
-import { QueryModelService } from 'sql/parts/query/execution/queryModelService';
-import { ConnectionManagementService } from 'sql/parts/connection/common/connectionManagementService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { QueryModelService } from 'sql/platform/query/common/queryModelService';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 import { TestThemeService } from 'sqltest/stubs/themeTestService';
 import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';

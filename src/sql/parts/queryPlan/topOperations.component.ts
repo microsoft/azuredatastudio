@@ -13,7 +13,7 @@ import { attachTableStyler } from 'sql/common/theme/styler';
 import { IQueryComponentParams } from 'sql/services/bootstrap/bootstrapParams';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { DataService } from 'sql/parts/grid/services/dataService';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';

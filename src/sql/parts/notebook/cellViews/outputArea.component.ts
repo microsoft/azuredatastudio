@@ -5,7 +5,7 @@
 import 'vs/css!./code';
 import 'vs/css!./outputArea';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -33,9 +33,11 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		if (this.cellModel) {
-			this.cellModel.onOutputsChanged(() => {
-				this._changeRef.detectChanges();
-			});
+			this._register(this.cellModel.onOutputsChanged(() => {
+				if (!(this._changeRef['destroyed'])) {
+					this._changeRef.detectChanges();
+				}
+			}));
 		}
 	}
 

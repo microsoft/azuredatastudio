@@ -15,11 +15,13 @@ import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';
-import { INotebookManager } from 'sql/services/notebook/notebookService';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { NotebookConnection } from 'sql/parts/notebook/models/notebookConnection';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IStandardKernelWithProvider } from 'sql/parts/notebook/notebookUtils';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -125,13 +127,15 @@ export interface IClientSession extends IDisposable {
 	 */
 	readonly kernelDisplayName: string;
 
+	readonly cachedKernelSpec: nb.IKernelSpec;
+
 	/**
 	 * Initializes the ClientSession, by starting the server and
 	 * connecting to the SessionManager.
 	 * This will optionally start a session if the kernel preferences
 	 * indicate this is desired
 	 */
-	initialize(connection?: NotebookConnection): Promise<void>;
+	initialize(): Promise<void>;
 
 	/**
 	 * Change the current kernel associated with the document.
@@ -139,6 +143,13 @@ export interface IClientSession extends IDisposable {
 	changeKernel(
 		options: nb.IKernelSpec
 	): Promise<nb.IKernel>;
+
+	/**
+	 * Configure the current kernel associated with the document.
+	 */
+	configureKernel(
+		options: nb.IKernelSpec
+	): Promise<void>;
 
 	/**
 	 * Kill the kernel and shutdown the session.
@@ -191,12 +202,18 @@ export interface IClientSession extends IDisposable {
 	/**
 	 * Updates the connection
 	 */
-	updateConnection(connection: NotebookConnection): void;
+	updateConnection(connection: IConnectionProfile): Promise<void>;
+
+	/**
+	 * Supports registering a handler to run during kernel change and implement any calls needed to configure
+	 * the kernel before actions such as run should be allowed
+	 */
+	onKernelChanging(changeHandler: ((kernel: nb.IKernelChangedArgs) => Promise<void>)): void;
 }
 
 export interface IDefaultConnection {
-	defaultConnection: IConnectionProfile;
-	otherConnections: IConnectionProfile[];
+	defaultConnection: ConnectionProfile;
+	otherConnections: ConnectionProfile[];
 }
 
 /**
@@ -239,6 +256,12 @@ export interface INotebookModel {
 	 * Cell List for this model
 	 */
 	readonly cells: ReadonlyArray<ICellModel>;
+
+	/**
+	 * The active cell for this model. May be undefined
+	 */
+	readonly activeCell: ICellModel;
+
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
 	 */
@@ -249,15 +272,20 @@ export interface INotebookModel {
 	readonly languageInfo: nb.ILanguageInfo;
 
 	/**
-	 * The notebook service used to call backend APIs
+	 * All notebook managers applicable for a given notebook
 	 */
-	readonly notebookManager: INotebookManager;
+	readonly notebookManagers: INotebookManager[];
 
 	/**
 	 * Event fired on first initialization of the kernel and
 	 * on subsequent change events
 	 */
 	readonly kernelChanged: Event<nb.IKernelChangedArgs>;
+
+	/**
+	 * Fired on notifications that notebook components should be re-laid out.
+	 */
+	readonly layoutChanged: Event<void>;
 
 	/**
 	 * Event fired on first initialization of the kernels and
@@ -300,6 +328,11 @@ export interface INotebookModel {
 	trustedMode: boolean;
 
 	/**
+	 * Current notebook provider id
+	 */
+	providerId: string;
+
+	/**
 	 * Change the current kernel from the Kernel dropdown
 	 * @param displayName kernel name (as displayed in Kernel dropdown)
 	 */
@@ -308,7 +341,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile): void;
+	changeContext(host: string, connection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void>;
 
 	/**
 	 * Find a cell's index given its model
@@ -343,6 +376,11 @@ export interface INotebookModel {
 	 * @param edits The edit operations to perform
 	 */
 	pushEditOperations(edits: ISingleNotebookEditOperation[]): void;
+
+	getApplicableConnectionProviderIds(kernelName: string): string[];
+
+	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
+	readonly onValidConnectionSelected: Event<boolean>;
 }
 
 export interface NotebookContentChange {
@@ -373,6 +411,13 @@ export interface ICellModelOptions {
 	isTrusted: boolean;
 }
 
+export enum CellExecutionState {
+	Hidden = 0,
+	Stopped = 1,
+	Running = 2,
+	Error = 3
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -381,10 +426,15 @@ export interface ICellModel {
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
+	hover: boolean;
+	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	readonly onExecutionStateChange: Event<CellExecutionState>;
 	setFuture(future: FutureInternal): void;
+	readonly executionState: CellExecutionState;
+	runCell(notificationService?: INotificationService): Promise<boolean>;
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 }
@@ -411,17 +461,18 @@ export interface INotebookModelOptions {
 	 */
 	factory: IModelFactory;
 
-	notebookManager: INotebookManager;
+	notebookManagers: INotebookManager[];
+	providerId: string;
+	standardKernels: IStandardKernelWithProvider[];
+	defaultKernel: nb.IKernelSpec;
+
+	layoutChanged: Event<void>;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
+	capabilitiesService: ICapabilitiesService;
 }
 
-// TODO would like to move most of these constants to an extension
 export namespace notebookConstants {
-	export const hadoopKnoxProviderName = 'HADOOP_KNOX';
-	export const python3 = 'python3';
-	export const python3DisplayName = 'Python 3';
-	export const defaultSparkKernel = 'pyspark3kernel';
-	export const hostPropName = 'host';
+	export const SQL = 'SQL';
 }

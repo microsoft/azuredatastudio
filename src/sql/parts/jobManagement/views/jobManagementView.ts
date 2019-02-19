@@ -9,15 +9,14 @@ import { AgentViewComponent } from 'sql/parts/jobManagement/agent/agentView.comp
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { IAction, Action } from 'vs/base/common/actions';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Taskbar } from '../../../base/browser/ui/taskbar/taskbar';
-import { JobsRefreshAction } from 'sql/parts/jobManagement/common/jobActions';
+import { JobsRefreshAction } from 'sql/platform/jobManagement/common/jobActions';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
-import { IDashboardService } from 'sql/services/dashboard/common/dashboardService';
+import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 
 export abstract class JobManagementView extends TabChild implements AfterContentChecked {
 	protected isVisible: boolean = false;
@@ -79,7 +78,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		let actions = this.getTableActions();
 		if (actions) {
 			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-			let actionContext= {
+			let actionContext = {
 				ownerUri: ownerUri,
 				targetObject: targetObject
 			};

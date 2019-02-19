@@ -5,8 +5,8 @@
 'use strict';
 
 import 'vs/css!./media/messagePanel';
-import { IMessagesActionContext, SelectAllMessagesAction, CopyMessagesAction } from './actions';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { $ } from 'sql/base/browser/builder';
 
@@ -30,6 +30,7 @@ import { isArray, isUndefinedOrNull } from 'vs/base/common/types';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 export interface IResultMessageIntern extends IResultMessage {
 	id?: string;
@@ -88,6 +89,7 @@ export class MessagePanel extends ViewletPanel {
 	private _state: MessagePanelState;
 
 	private tree: ITree;
+	private _selectAllMessages: boolean;
 
 	constructor(
 		options: IViewletPanelOptions,
@@ -95,7 +97,8 @@ export class MessagePanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IThemeService private themeService: IThemeService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IClipboardService private clipboardService: IClipboardService
 	) {
 		super(options, keybindingService, contextMenuService, configurationService);
 		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
@@ -116,6 +119,55 @@ export class MessagePanel extends ViewletPanel {
 				this.state.collapsed = !this.isExpanded();
 			}
 		});
+		this.controller.onKeyDown = (tree, event) => {
+			if (event.ctrlKey) {
+				let context: IMessagesActionContext = {
+					selection: document.getSelection(),
+					tree: this.tree,
+				};
+				// Ctrl + C for copy
+				if (event.code === 'KeyC') {
+					let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService);
+					copyMessageAction.run(context);
+				}
+			}
+			event.preventDefault();
+			event.stopPropagation();
+			return true;
+		};
+		this.controller.onContextMenu = (tree, element, event) => {
+			if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
+				return false; // allow context menu on input fields
+			}
+
+			// Prevent native context menu from showing up
+			if (event) {
+				event.preventDefault();
+				event.stopPropagation();
+			}
+
+			const selection = document.getSelection();
+
+			this.contextMenuService.showContextMenu({
+				getAnchor: () => {
+					return { x: event.posx, y: event.posy };
+				},
+				getActions: () => {
+					return [
+						instantiationService.createInstance(CopyMessagesAction, this, this.clipboardService),
+						instantiationService.createInstance(CopyAllMessagesAction, this.tree, this.clipboardService)
+					];
+				},
+				getActionsContext: () => {
+					return <IMessagesActionContext>{
+						selection,
+						tree
+					};
+				}
+			});
+
+			return true;
+		};
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -144,6 +196,7 @@ export class MessagePanel extends ViewletPanel {
 		this.reset();
 		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
 		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
+		this.onMessage(runner.messages);
 	}
 
 	private onMessage(message: IResultMessage | IResultMessage[]) {
@@ -273,11 +326,11 @@ class MessageRenderer implements IRenderer {
 
 		if (templateId === TemplateIds.MESSAGE) {
 			$('div.time-stamp').appendTo(container);
-			const message = $('div.message').appendTo(container).getHTMLElement();
+			const message = $('div.message').style('white-space', 'pre').appendTo(container).getHTMLElement();
 			return { message };
 		} else if (templateId === TemplateIds.BATCH) {
 			const timeStamp = $('div.time-stamp').appendTo(container).getHTMLElement();
-			const message = $('div.batch-start').appendTo(container).getHTMLElement();
+			const message = $('div.batch-start').style('white-space', 'pre').appendTo(container).getHTMLElement();
 			return { message, timeStamp };
 		} else if (templateId === TemplateIds.ERROR) {
 			$('div.time-stamp').appendTo(container);
@@ -345,36 +398,6 @@ export class MessageController extends WorkbenchTreeController {
 	}
 
 	public onContextMenu(tree: ITree, element: any, event: ContextMenuEvent): boolean {
-		if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
-			return false; // allow context menu on input fields
-		}
-
-		// Prevent native context menu from showing up
-		if (event) {
-			event.preventDefault();
-			event.stopPropagation();
-		}
-
-		const selection = document.getSelection();
-
-		this.contextMenuService.showContextMenu({
-			getAnchor: () => {
-				return { x: event.posx, y: event.posy };
-			},
-			getActions: () => {
-				return [
-					this.instantiationService.createInstance(CopyMessagesAction),
-					new SelectAllMessagesAction()
-				];
-			},
-			getActionsContext: () => {
-				return <IMessagesActionContext>{
-					selection,
-					tree
-				};
-			}
-		});
-
 		return true;
 	}
 }

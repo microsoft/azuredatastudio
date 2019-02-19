@@ -6,8 +6,8 @@ import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./dashboardWidgetWrapper';
 
 import {
-	Component, Input, Inject, forwardRef, ComponentFactoryResolver, AfterContentInit, ViewChild,
-	ElementRef, OnInit, ChangeDetectorRef, OnDestroy, ReflectiveInjector, Injector, Type, ComponentRef
+	Component, Input, Inject, forwardRef, ComponentFactoryResolver, ViewChild,
+	ElementRef, OnInit, ChangeDetectorRef, ReflectiveInjector, Injector, Type, ComponentRef
 } from '@angular/core';
 
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
@@ -15,7 +15,7 @@ import { WidgetConfig, WIDGET_CONFIG, IDashboardWidget } from 'sql/parts/dashboa
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { error } from 'sql/base/common/log';
 import { RefreshWidgetAction, ToggleMoreWidgetAction, DeleteWidgetAction, CollapseWidgetAction } from 'sql/parts/dashboard/common/actions';
-import { AngularDisposable } from 'sql/base/common/lifecycle';
+import { AngularDisposable } from 'sql/base/node/lifecycle';
 
 /* Widgets */
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
@@ -24,10 +24,8 @@ import { TasksWidget } from 'sql/parts/dashboard/widgets/tasks/tasksWidget.compo
 import { InsightsWidget } from 'sql/parts/dashboard/widgets/insights/insightsWidget.component';
 import { WebviewWidget } from 'sql/parts/dashboard/widgets/webview/webviewWidget.component';
 
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 
-import { IDisposable } from 'vs/base/common/lifecycle';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -36,7 +34,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
-import { Emitter } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {

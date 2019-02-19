@@ -19,7 +19,7 @@ import * as types from 'vs/base/common/types';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
-import { IQueryModelService } from 'sql/parts/query/execution/queryModel';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryResultsView } from 'sql/parts/query/editor/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';

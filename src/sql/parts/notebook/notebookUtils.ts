@@ -11,7 +11,9 @@ import * as os from 'os';
 import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 import { IOutputChannel } from 'vs/workbench/parts/output/common/output';
-import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/services/notebook/notebookService';
+import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 
 /**
@@ -39,21 +41,67 @@ export async function mkDir(dirPath: string, outputChannel?: IOutputChannel): Pr
 	}
 }
 
-export function getProviderForFileName(fileName: string, notebookService: INotebookService): string {
+export function getProvidersForFileName(fileName: string, notebookService: INotebookService): string[] {
 	let fileExt = path.extname(fileName);
-	let provider: string;
+	let providers: string[];
 	// First try to get provider for actual file type
 	if (fileExt && fileExt.startsWith('.')) {
-		fileExt = fileExt.slice(1,fileExt.length);
-		provider = notebookService.getProviderForFileType(fileExt);
+		fileExt = fileExt.slice(1, fileExt.length);
+		providers = notebookService.getProvidersForFileType(fileExt);
 	}
 	// Fallback to provider for default file type (assume this is a global handler)
-	if (!provider) {
-		provider = notebookService.getProviderForFileType(DEFAULT_NOTEBOOK_FILETYPE);
+	if (!providers) {
+		providers = notebookService.getProvidersForFileType(DEFAULT_NOTEBOOK_FILETYPE);
 	}
 	// Finally if all else fails, use the built-in handler
-	if (!provider) {
-		provider = DEFAULT_NOTEBOOK_PROVIDER;
+	if (!providers) {
+		providers = [DEFAULT_NOTEBOOK_PROVIDER];
 	}
-	return provider;
+	return providers;
+}
+
+export function getStandardKernelsForProvider(providerId: string, notebookService: INotebookService) : IStandardKernelWithProvider[] {
+	if (!providerId || !notebookService) {
+		return [];
+	}
+	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
+	standardKernels.forEach(kernel => {
+		Object.assign(<IStandardKernelWithProvider>kernel, {
+			name: kernel.name,
+			connectionProviderIds: kernel.connectionProviderIds,
+			notebookProvider: providerId
+		});
+	});
+	return <IStandardKernelWithProvider[]>(standardKernels);
+}
+
+// Feature flag to enable Sql Notebook experience
+export function sqlNotebooksEnabled(contextKeyService: IContextKeyService) {
+	return contextKeyService.contextMatchesRules(ContextKeyExpr.equals('config.notebook.sqlKernelEnabled', true));
+}
+
+// In the Attach To dropdown, show the database name (if it exists) using the current connection
+// Example: myFakeServer (myDatabase)
+export function formatServerNameWithDatabaseNameForAttachTo(connectionProfile: ConnectionProfile): string {
+	if (connectionProfile && connectionProfile.serverName) {
+		return !connectionProfile.databaseName ? connectionProfile.serverName : connectionProfile.serverName + ' (' + connectionProfile.databaseName + ')';
+	}
+	return '';
+}
+
+// Extract server name from format used in Attach To: serverName (databaseName)
+export function getServerFromFormattedAttachToName(name: string): string {
+	return name.substring(0, name.lastIndexOf(' (')) ? name.substring(0, name.lastIndexOf(' (')) : name;
+}
+
+// Extract database name from format used in Attach To: serverName (databaseName)
+export function getDatabaseFromFormattedAttachToName(name: string): string {
+	return name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) ?
+	name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) : '';
+}
+
+export interface IStandardKernelWithProvider {
+	readonly name: string;
+	readonly connectionProviderIds: string[];
+	readonly notebookProvider: string;
 }

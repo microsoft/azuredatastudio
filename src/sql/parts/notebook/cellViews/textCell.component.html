@@ -4,10 +4,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
+<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column" (mouseover)="hover=true" (mouseleave)="hover=false">
 	<loading-spinner [loading]="isLoading"></loading-spinner>
 	<div class="notebook-text" style="flex: 0 0 auto;">
-		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId" [hideVerticalToolbar]=true>
+		<code-component *ngIf="isEditMode" [cellModel]="cellModel" (onContentChanged)="handleContentChanged()" [model]="model" [activeCellId]="activeCellId">
 		</code-component>
 	</div>
 	<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: row">

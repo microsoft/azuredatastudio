@@ -17,6 +17,7 @@ export let SelectAllMessages = 'SelectAllMessages';
 export let SaveAsCsv = 'SaveAsCSV';
 export let SaveAsJSON = 'SaveAsJSON';
 export let SaveAsExcel = 'SaveAsExcel';
+export let SaveAsXML = 'SaveAsXML';
 export let ViewAsChart = 'ViewAsChart';
 export let GoToNextQueryOutputTab = 'GoToNextQueryOutputTab';
 export let GoToNextGrid = 'GoToNextGrid';

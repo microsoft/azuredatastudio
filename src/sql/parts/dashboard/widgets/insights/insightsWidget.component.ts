@@ -9,11 +9,10 @@ import {
 import { Observable } from 'rxjs/Observable';
 
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/parts/dashboard/common/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
-import { toDisposableSubscription } from 'sql/parts/common/rxjsUtils';
+import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { IInsightsConfig, IInsightsView } from './interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
 import { insertValueRegex } from 'sql/parts/insights/common/interfaces';

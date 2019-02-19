@@ -150,6 +150,9 @@ export class Button extends Disposable {
 			DOM.addClass(this._element, 'monaco-text-button');
 		}
 		this._element.textContent = value;
+		//{{SQL CARBON EDIT}}
+		this._element.setAttribute('aria-label', value);
+		//{{END}}
 		if (this.options.title) {
 			this._element.title = value;
 		}

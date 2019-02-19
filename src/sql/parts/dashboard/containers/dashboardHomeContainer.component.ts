@@ -8,11 +8,10 @@ import 'vs/css!./dashboardHomeContainer';
 import { Component, forwardRef, Input, ChangeDetectorRef, Inject, ViewChild, ContentChild } from '@angular/core';
 
 import { DashboardWidgetContainer } from 'sql/parts/dashboard/containers/dashboardWidgetContainer.component';
-import { DashboardTab } from 'sql/parts/dashboard/common/interfaces';
 import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
-import { AngularEventType, IAngularEventingService } from 'sql/services/angularEventing/angularEventingService';
+import { AngularEventType, IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
 import { DashboardWidgetWrapper } from 'sql/parts/dashboard/contents/dashboardWidgetWrapper.component';
 import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';

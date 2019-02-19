@@ -11,6 +11,7 @@
 	margin: 10px 20px 10px;
 	border-width: 1px;
 	border-style: solid;
+	border-radius: 3px;
 }
 
 .notebookEditor .notebook-info-label {
@@ -79,4 +80,17 @@
 .moreActions .action-label.icon.toggle-more {
 	height: 20px;
 	width: 20px;
+}
+.moreActions.actionhidden {
+	visibility: hidden
+}
+
+.notebookEditor .notebook-cellTable {
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.notebookEditor .notebook-cellTable .ui-widget-content.slick-row {
+	border-left: 1px silver dotted;
 }

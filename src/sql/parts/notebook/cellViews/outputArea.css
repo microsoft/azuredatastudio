@@ -7,9 +7,7 @@ output-area-component {
 }
 
 output-area-component .notebook-output {
-	border-top-width: 1px;
-	border-top-style: solid;
+	border-top-width: 0px;
 	user-select: initial;
 	padding: 5px 20px 0px;
-	box-shadow: rgba(120, 120, 120, 0.75) 0px -2px 1px -2px;
 }

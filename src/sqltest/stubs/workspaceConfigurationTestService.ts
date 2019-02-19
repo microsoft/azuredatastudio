@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IWorkspaceConfigurationService  } from 'vs/workbench/services/configuration/common/configuration';
+import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { IConfigurationData, IConfigurationOverrides, ConfigurationTarget, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 
 import { Event } from 'vs/base/common/event';
@@ -23,7 +23,7 @@ export class WorkspaceConfigurationTestService implements IWorkspaceConfiguratio
 
 	onDidChangeConfiguration: Event<IConfigurationChangeEvent>;
 
-	getConfigurationData(): IConfigurationData  { return undefined; }
+	getConfigurationData(): IConfigurationData { return undefined; }
 
 	getConfiguration<T>(): T;
 	getConfiguration<T>(section: string): T;
@@ -53,7 +53,7 @@ export class WorkspaceConfigurationTestService implements IWorkspaceConfiguratio
 		workspaceFolder: T,
 		memory?: T,
 		value: T,
-	}  { return undefined; }
+	} { return undefined; }
 
 	keys(): {
 		default: string[];
@@ -61,7 +61,7 @@ export class WorkspaceConfigurationTestService implements IWorkspaceConfiguratio
 		workspace: string[];
 		workspaceFolder: string[];
 		memory?: string[];
-	}  { return undefined; }
+	} { return undefined; }
 
 	getUnsupportedWorkspaceKeys(): string[] { return undefined; }
 }

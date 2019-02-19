@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks, IConnectionResult, INewConnectionParams }
-	from 'sql/parts/connection/common/connectionManagement';
-import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+	from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import * as sqlops from 'sqlops';
 import { Event, Emitter } from 'vs/base/common/event';
 
@@ -254,11 +254,19 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
+	getServerInfo(profileId: string): sqlops.ServerInfo {
+		return undefined;
+	}
+
 	getConnectionString(connectionId: string): Thenable<string> {
 		return undefined;
 	}
 
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo> {
+		return undefined;
+	}
+
+	getConnectionProfileById(profileId: string): IConnectionProfile {
 		return undefined;
 	}
 }

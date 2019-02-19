@@ -15,7 +15,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { NotebookModule } from 'sql/parts/notebook/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/parts/notebook/notebook.component';
-import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/services/notebook/notebookService';
+import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { $ } from 'sql/base/browser/builder';
 
@@ -23,7 +23,6 @@ export class NotebookEditor extends BaseEditor {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
 	private _notebookContainer: HTMLElement;
-	protected _input: NotebookInput;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -34,8 +33,8 @@ export class NotebookEditor extends BaseEditor {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 	}
 
-	public get input(): NotebookInput {
-		return this._input;
+	public get notebookInput(): NotebookInput {
+		return this.input as NotebookInput;
 	}
 
 	/**
@@ -55,6 +54,9 @@ export class NotebookEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
+		if (this.notebookInput) {
+			this.notebookInput.doChangeLayout();
+		}
 	}
 
 	public setInput(input: NotebookInput, options: EditorOptions): TPromise<void> {
@@ -72,10 +74,11 @@ export class NotebookEditor extends BaseEditor {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
 			container.style.height = '100%';
 			this._notebookContainer = DOM.append(parentElement, container);
-			this.input.container = this._notebookContainer;
+			input.container = this._notebookContainer;
 			return TPromise.wrap<void>(this.bootstrapAngular(input));
 		} else {
-			this._notebookContainer = DOM.append(parentElement, this.input.container);
+			this._notebookContainer = DOM.append(parentElement, input.container);
+			input.doChangeLayout();
 			return TPromise.wrap<void>(null);
 		}
 	}
@@ -90,7 +93,9 @@ export class NotebookEditor extends BaseEditor {
 			notebookUri: input.notebookUri,
 			input: input,
 			providerId: input.providerId ? input.providerId : DEFAULT_NOTEBOOK_PROVIDER,
-			isTrusted: input.isTrusted
+			providers: input.providers ? input.providers : [DEFAULT_NOTEBOOK_PROVIDER],
+			isTrusted: input.isTrusted,
+			connectionProfileId: input.connectionProfileId
 		};
 		bootstrapAngular(this.instantiationService,
 			NotebookModule,

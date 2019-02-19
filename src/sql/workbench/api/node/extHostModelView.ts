@@ -199,6 +199,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return builder;
 	}
 
+	hyperlink(): sqlops.ComponentBuilder<sqlops.HyperlinkComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<sqlops.HyperlinkComponent> = this.getComponentBuilder(new HyperlinkComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	getComponentBuilder<T extends sqlops.Component>(component: ComponentWrapper, id: string): ComponentBuilderImpl<T> {
 		let componentBuilder: ComponentBuilderImpl<T> = new ComponentBuilderImpl<T>(component);
 		this._componentBuilders.set(id, componentBuilder);
@@ -1246,6 +1253,28 @@ class TreeComponentWrapper<T> extends ComponentWrapper implements sqlops.TreeCom
 	}
 	public set withCheckbox(v: boolean) {
 		this.setProperty('withCheckbox', v);
+	}
+}
+
+class HyperlinkComponentWrapper extends ComponentWrapper implements sqlops.HyperlinkComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Hyperlink, id);
+		this.properties = {};
+	}
+
+	public get label(): string {
+		return this.properties['label'];
+	}
+	public set label(v: string) {
+		this.setProperty('label', v);
+	}
+
+	public get url(): string {
+		return this.properties['url'];
+	}
+	public set url(v: string) {
+		this.setProperty('url', v);
 	}
 }
 

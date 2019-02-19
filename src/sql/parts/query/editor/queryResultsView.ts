@@ -6,12 +6,13 @@
 
 import { QueryResultsInput, ResultsViewState } from 'sql/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IQueryModelService } from '../execution/queryModel';
-import QueryRunner from 'sql/parts/query/execution/queryRunner';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel } from './messagePanel';
 import { GridPanel } from './gridPanel';
 import { ChartTab } from './charting/chartTab';
 import { QueryPlanTab } from 'sql/parts/queryPlan/queryPlan';
+import { TopOperationsTab } from 'sql/parts/queryPlan/topOperations';
 
 import * as nls from 'vs/nls';
 import { PanelViewlet } from 'vs/workbench/browser/parts/views/panelViewlet';
@@ -171,6 +172,7 @@ export class QueryResultsView extends Disposable {
 	private resultsTab: ResultsTab;
 	private chartTab: ChartTab;
 	private qpTab: QueryPlanTab;
+	private topOperationsTab: TopOperationsTab;
 
 	private runnerDisposables: IDisposable[];
 
@@ -184,6 +186,8 @@ export class QueryResultsView extends Disposable {
 		this.chartTab = this._register(new ChartTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: false }));
 		this.qpTab = this._register(new QueryPlanTab());
+		this.topOperationsTab = this._register(new TopOperationsTab(instantiationService));
+
 		this._panelView.pushTab(this.resultsTab);
 		this._register(this._panelView.onTabChange(e => {
 			if (this.input) {
@@ -195,17 +199,10 @@ export class QueryResultsView extends Disposable {
 	public style() {
 	}
 
-	public set input(input: QueryResultsInput) {
-		this._input = input;
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
-		this.resultsTab.view.state = this.input.state;
-		this.qpTab.view.state = this.input.state.queryPlanState;
-		this.chartTab.view.state = this.input.state.chartState;
-		let queryRunner = this.queryModelService._getQueryInfo(input.uri).queryRunner;
-		this.resultsTab.queryRunner = queryRunner;
-		this.chartTab.queryRunner = queryRunner;
-		this.runnerDisposables.push(queryRunner.onQueryStart(e => {
+	private setQueryRunner(runner: QueryRunner) {
+		this.resultsTab.queryRunner = runner;
+		this.chartTab.queryRunner = runner;
+		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.hideChart();
 			this.hidePlan();
 			this.input.state.visibleTabs = new Set();
@@ -221,9 +218,14 @@ export class QueryResultsView extends Disposable {
 				this._panelView.pushTab(this.qpTab);
 			}
 		}
-		this.runnerDisposables.push(queryRunner.onQueryEnd(() => {
-			if (queryRunner.isQueryPlan) {
-				queryRunner.planXml.then(e => {
+		if (this.input.state.visibleTabs.has(this.topOperationsTab.identifier)) {
+			if (!this._panelView.contains(this.topOperationsTab)) {
+				this._panelView.pushTab(this.topOperationsTab);
+			}
+		}
+		this.runnerDisposables.push(runner.onQueryEnd(() => {
+			if (runner.isQueryPlan) {
+				runner.planXml.then(e => {
 					this.showPlan(e);
 				});
 			}
@@ -233,10 +235,34 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
+	public set input(input: QueryResultsInput) {
+		this._input = input;
+		dispose(this.runnerDisposables);
+		this.runnerDisposables = [];
+		this.resultsTab.view.state = this.input.state;
+		this.qpTab.view.state = this.input.state.queryPlanState;
+		this.topOperationsTab.view.state = this.input.state.topOperationsState;
+		this.chartTab.view.state = this.input.state.chartState;
+
+		let info = this.queryModelService._getQueryInfo(input.uri);
+		if (info) {
+			this.setQueryRunner(info.queryRunner);
+		} else {
+			let disposeable = this.queryModelService.onRunQueryStart(c => {
+				if (c === input.uri) {
+					let info = this.queryModelService._getQueryInfo(input.uri);
+					this.setQueryRunner(info.queryRunner);
+					disposeable.dispose();
+				}
+			});
+		}
+	}
+
 	clearInput() {
 		this._input = undefined;
 		this.resultsTab.clear();
 		this.qpTab.clear();
+		this.topOperationsTab.clear();
 		this.chartTab.clear();
 	}
 
@@ -269,9 +295,14 @@ export class QueryResultsView extends Disposable {
 		if (!this._panelView.contains(this.qpTab)) {
 			this._panelView.pushTab(this.qpTab);
 		}
+		this.input.state.visibleTabs.add(this.topOperationsTab.identifier);
+		if (!this._panelView.contains(this.topOperationsTab)) {
+			this._panelView.pushTab(this.topOperationsTab);
+		}
 
 		this._panelView.showTab(this.qpTab.identifier);
 		this.qpTab.view.showPlan(xml);
+		this.topOperationsTab.view.showPlan(xml);
 	}
 
 	public hidePlan() {

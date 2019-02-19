@@ -43,7 +43,7 @@ import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumb
 import { IFileService } from 'vs/platform/files/common/files';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { ICommandService } from 'vs/platform/commands/common/commands';

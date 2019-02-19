@@ -18,7 +18,7 @@ import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/co
 import { VIEWLET_ID, TaskHistoryViewlet } from 'sql/parts/taskHistory/viewlet/taskHistoryViewlet';
 import lifecycle = require('vs/base/common/lifecycle');
 import ext = require('vs/workbench/common/contributions');
-import { ITaskService } from 'sql/parts/taskHistory/common/taskService';
+import { ITaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';

@@ -50,7 +50,7 @@ import { CLOSE_EDITORS_AND_GROUP_COMMAND_ID } from 'vs/workbench/browser/parts/e
 import { IViewlet } from 'vs/workbench/common/viewlet';
 
 // {{SQL CARBON EDIT}}
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectableInput } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
 
@@ -24,7 +24,7 @@ export interface IQueryEditorService {
 	_serviceBrand: any;
 
 	// Creates new untitled document for SQL queries and opens it in a new editor tab
-	newSqlEditor(sqlContent?: string, connectionProviderName?: string): Promise<IConnectableInput>;
+	newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput>;
 
 	// Creates a new query plan document
 	newQueryPlanEditor(xmlShowPlan: string): Promise<any>;

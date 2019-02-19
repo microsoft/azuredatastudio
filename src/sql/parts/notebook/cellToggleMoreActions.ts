@@ -5,14 +5,12 @@
 
 import { ElementRef } from '@angular/core';
 
-import { nb } from 'sqlops';
-
 import { localize } from 'vs/nls';
-import { Action } from 'vs/base/common/actions';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import * as DOM from 'vs/base/browser/dom';
 
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { CellContext, CellActionBase } from 'sql/parts/notebook/cellViews/codeActions';
@@ -21,9 +19,12 @@ import { ToggleMoreWidgetAction } from 'sql/parts/dashboard/common/actions';
 import { CellTypes, CellType } from 'sql/parts/notebook/models/contracts';
 import { CellModel } from 'sql/parts/notebook/models/cell';
 
+export const HIDDEN_CLASS ='actionhidden';
+
 export class CellToggleMoreActions {
-	private _actions: Action[] = [];
+	private _actions: CellActionBase[] = [];
 	private _moreActions: ActionBar;
+	private _moreActionsElement: HTMLElement;
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService) {
 		this._actions.push(
@@ -36,19 +37,26 @@ export class CellToggleMoreActions {
 		);
 	}
 
-	public toggle(showIcon: boolean, elementRef: ElementRef, model: NotebookModel, cellModel: ICellModel) {
+	public onInit(elementRef: ElementRef, model: NotebookModel, cellModel: ICellModel) {
 		let context = new CellContext(model,cellModel);
-		let moreActionsElement = <HTMLElement>elementRef.nativeElement;
-		if (showIcon) {
-			if (moreActionsElement.childNodes.length > 0) {
-				moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
-			}
-			this._moreActions = new ActionBar(moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
-			this._moreActions.context = { target: moreActionsElement };
-			this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, this._actions, context), { icon: showIcon, label: false });
+		this._moreActionsElement = <HTMLElement>elementRef.nativeElement;
+		if (this._moreActionsElement.childNodes.length > 0) {
+			this._moreActionsElement.removeChild(this._moreActionsElement.childNodes[0]);
 		}
-		else if (moreActionsElement.childNodes.length > 0) {
-			moreActionsElement.removeChild(moreActionsElement.childNodes[0]);
+		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
+		this._moreActions.context = { target: this._moreActionsElement };
+		let validActions = this._actions.filter(a => a.canRun(context));
+		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false, isMenu: true });
+	}
+
+	public toggleVisible(visible: boolean): void {
+		if (!this._moreActionsElement) {
+			return;
+		}
+		if (visible) {
+			DOM.addClass(this._moreActionsElement, HIDDEN_CLASS);
+		} else {
+			DOM.removeClass(this._moreActionsElement, HIDDEN_CLASS);
 		}
 	}
 }
@@ -61,7 +69,7 @@ export class AddCellFromContextAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	runCellAction(context: CellContext): Promise<void> {
+	doRun(context: CellContext): Promise<void> {
 		try {
 			let model = context.model;
 			let index = model.cells.findIndex((cell) => cell.id === context.cell.id);
@@ -88,7 +96,7 @@ export class DeleteCellAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	runCellAction(context: CellContext): Promise<void> {
+	doRun(context: CellContext): Promise<void> {
 		try {
 			context.model.deleteCell(context.cell);
 		} catch (error) {
@@ -110,9 +118,17 @@ export class ClearCellOutputAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	runCellAction(context: CellContext): Promise<void> {
+	public canRun(context: CellContext): boolean {
+		return context.cell && context.cell.cellType === CellTypes.Code;
+	}
+
+
+	doRun(context: CellContext): Promise<void> {
 		try {
-			(context.model.activeCell as CellModel).clearOutputs();
+			let cell = context.cell || context.model.activeCell;
+			if (cell) {
+				(cell as CellModel).clearOutputs();
+			}
 		} catch (error) {
 			let message = getErrorMessage(error);
 

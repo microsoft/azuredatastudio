@@ -6,7 +6,7 @@
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
-import { IConnectableInput, IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IEditorGroupsService, IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/parts/query/common/queryEditorService';
 import { QueryPlanInput } from 'sql/parts/queryPlan/queryPlanInput';
@@ -30,6 +30,7 @@ import { EditDataResultsInput } from 'sql/parts/editData/common/editDataResultsI
 import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { ILanguageSelection } from 'vs/editor/common/services/modeService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const fs = require('fs');
 
@@ -62,7 +63,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@INotificationService private _notificationService: INotificationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
@@ -75,7 +77,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL query and opens in new editor tab
 	 */
-	public newSqlEditor(sqlContent?: string, connectionProviderName?: string): Promise<IConnectableInput> {
+	public newSqlEditor(sqlContent?: string, connectionProviderName?: string, isDirty?: boolean): Promise<IConnectableInput> {
 		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
@@ -87,6 +89,9 @@ export class QueryEditorService implements IQueryEditorService {
 				let untitledEditorModel = await fileInput.resolve();
 				if (sqlContent) {
 					untitledEditorModel.textEditorModel.setValue(sqlContent);
+					if (isDirty === false || (isDirty === undefined && !this._configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles'))) {
+						untitledEditorModel.setDirty(false);
+					}
 				}
 
 				const queryResultsInput: QueryResultsInput = this._instantiationService.createInstance(QueryResultsInput, docUri.toString());

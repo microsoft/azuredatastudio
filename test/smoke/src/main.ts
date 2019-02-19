@@ -12,7 +12,10 @@ import * as rimraf from 'rimraf';
 import * as mkdirp from 'mkdirp';
 import { ncp } from 'ncp';
 import { Application, Quality, ApplicationOptions } from './application';
-
+//{{SQL CARBON EDIT}}
+import { setup as runProfilerTests } from './sql/profiler/profiler.test';
+//Original
+/*
 // import { setup as setupDataMigrationTests } from './areas/workbench/data-migration.test';
 import { setup as setupDataLossTests } from './areas/workbench/data-loss.test';
 import { setup as setupDataExplorerTests } from './areas/explorer/explorer.test';
@@ -28,6 +31,8 @@ import { setup as setupTerminalTests } from './areas/terminal/terminal.test';
 import { setup as setupDataMultirootTests } from './areas/multiroot/multiroot.test';
 import { setup as setupDataLocalizationTests } from './areas/workbench/localization.test';
 import { setup as setupLaunchTests } from './areas/workbench/launch.test';
+*/
+//{{END}}
 import { MultiLogger, Logger, ConsoleLogger, FileLogger } from './logger';
 
 const tmpDir = tmp.dirSync({ prefix: 't' }) as { name: string; removeCallback: Function; };
@@ -226,6 +231,20 @@ describe('Running Code', () => {
 	before(async function () {
 		const app = new Application(this.defaultOptions);
 		await app!.start();
+		//{{SQL CARBON EDIT}}
+		const testExtLoadedText = 'Test Extension Loaded';
+		const testSetupCompletedText = 'Test Setup Completed';
+		const allExtensionsLoadedText = 'All Extensions Loaded';
+		const setupTestCommand = 'Test: Setup Integration Test';
+		const waitForExtensionsCommand = 'Test: Wait For Extensions To Load';
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
+		await app.workbench.quickopen.runCommand(setupTestCommand);
+		await app.workbench.statusbar.waitForStatusbarText(testSetupCompletedText, testSetupCompletedText);
+		await app!.reload();
+		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
+		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
+		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
+		//{{END}}
 		this.app = app;
 	});
 
@@ -254,6 +273,10 @@ describe('Running Code', () => {
 		});
 	}
 
+	//{{SQL CARBON EDIT}}
+	runProfilerTests();
+	//Original
+	/*
 	setupDataLossTests();
 	setupDataExplorerTests();
 	setupDataPreferencesTests();
@@ -267,6 +290,9 @@ describe('Running Code', () => {
 	setupTerminalTests();
 	setupDataMultirootTests();
 	setupDataLocalizationTests();
+	*/
+	//{{END}}
 });
 
-setupLaunchTests();
+// {{SQL CARBON EDIT}}
+// setupLaunchTests();

@@ -11,7 +11,7 @@ import { WidgetConfig } from 'sql/parts/dashboard/common/dashboardWidget';
 import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboardServiceInterface.service';
 import { SingleAdminService, SingleConnectionManagementService } from 'sql/services/common/commonServiceInterface.service';
 import { PropertiesWidgetComponent } from 'sql/parts/dashboard/widgets/properties/propertiesWidget.component';
-import { ConnectionManagementInfo } from 'sql/parts/connection/common/connectionManagementInfo';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
@@ -60,6 +60,7 @@ suite('Dashboard Properties Widget Tests', () => {
 			serverEdition: undefined,
 			azureVersion: undefined,
 			osVersion: undefined,
+			options: {},
 		};
 
 		let databaseInfo = {

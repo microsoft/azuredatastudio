@@ -75,6 +75,7 @@ export interface ParsedArgs {
 	integrated?: boolean;
 	server?: string;
 	user?: string;
+	command?: string;
 	// {{SQL CARBON EDIT}}
 }
 

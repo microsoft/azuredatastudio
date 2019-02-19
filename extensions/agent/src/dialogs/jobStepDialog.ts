@@ -29,11 +29,10 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private readonly AdvancedTabText: string = localize('jobStepDialog.advanced', 'Advanced');
 	private readonly OpenCommandText: string = localize('jobStepDialog.open', 'Open...');
 	private readonly ParseCommandText: string = localize('jobStepDialog.parse','Parse');
-	private readonly NextButtonText: string = localize('jobStepDialog.next', 'Next');
-	private readonly PreviousButtonText: string = localize('jobStepDialog.previous','Previous');
 	private readonly SuccessfulParseText: string = localize('jobStepDialog.successParse', 'The command was successfully parsed.');
 	private readonly FailureParseText: string = localize('jobStepDialog.failParse', 'The command failed.');
 	private readonly BlankStepNameErrorText: string = localize('jobStepDialog.blankStepName', 'The step name cannot be left blank');
+	private readonly ProcessExitCodeText: string = localize('jobStepDialog.processExitCode', 'Process exit code of a successful command:');
 
 	// General Control Titles
 	private readonly StepNameLabelString: string = localize('jobStepDialog.stepNameLabel', 'Step Name');
@@ -62,6 +61,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	// Dropdown options
 	private readonly TSQLScript: string = localize('jobStepDialog.TSQL', 'Transact-SQL script (T-SQL)');
+	private readonly Powershell: string = localize('jobStepDialog.powershell', 'PowerShell');
+	private readonly CmdExec: string = localize('jobStepDialog.CmdExec', 'Operating system (CmdExec)');
 	private readonly AgentServiceAccount: string = localize('jobStepDialog.agentServiceAccount', 'SQL Server Agent Service Account');
 	private readonly NextStep: string = localize('jobStepDialog.nextStep', 'Go to the next step');
 	private readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', 'Quit the job reporting success');
@@ -73,11 +74,11 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	// UI Components
 
 	// Dialogs
-	private fileBrowserDialog: sqlops.window.modelviewdialog.Dialog;
+	private fileBrowserDialog: sqlops.window.Dialog;
 
 	// Dialog tabs
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private advancedTab: sqlops.window.modelviewdialog.DialogTab;
+	private generalTab: sqlops.window.DialogTab;
+	private advancedTab: sqlops.window.DialogTab;
 
 	//Input boxes
 	private nameTextBox: sqlops.InputBoxComponent;
@@ -88,6 +89,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private outputFileNameBox: sqlops.InputBoxComponent;
 	private fileBrowserNameBox: sqlops.InputBoxComponent;
 	private userInputBox: sqlops.InputBoxComponent;
+	private processExitCodeBox: sqlops.InputBoxComponent;
 
 	// Dropdowns
 	private typeDropdown: sqlops.DropDownComponent;
@@ -100,8 +102,6 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	// Buttons
 	private openButton: sqlops.ButtonComponent;
 	private parseButton: sqlops.ButtonComponent;
-	private nextButton: sqlops.ButtonComponent;
-	private previousButton: sqlops.ButtonComponent;
 	private outputFileBrowserButton: sqlops.ButtonComponent;
 
 	// Checkbox
@@ -138,8 +138,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	}
 
 	private initializeUIComponents() {
-		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
-		this.advancedTab = sqlops.window.modelviewdialog.createTab(this.AdvancedTabText);
+		this.generalTab = sqlops.window.createTab(this.GeneralTabText);
+		this.advancedTab = sqlops.window.createTab(this.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 	}
 
@@ -179,18 +179,6 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				inputType: 'text'
 			})
 			.component();
-		this.nextButton = view.modelBuilder.button()
-			.withProperties({
-				label: this.NextButtonText,
-				enabled: false,
-				width: '80px'
-			}).component();
-		this.previousButton = view.modelBuilder.button()
-			.withProperties({
-				label: this.PreviousButtonText,
-				enabled: false,
-				width: '80px'
-			}).component();
 	}
 
 	private createGeneralTab(databases: string[], queryProvider: sqlops.QueryProvider) {
@@ -208,7 +196,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: this.TSQLScript,
-					values: [this.TSQLScript]
+					values: [this.TSQLScript, this.CmdExec, this.Powershell]
 				})
 				.component();
 			this.runAsDropdown = view.modelBuilder.dropDown()
@@ -218,32 +206,19 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				})
 				.component();
 			this.runAsDropdown.enabled = false;
-			this.typeDropdown.onValueChanged((type) => {
-				if (type.selected !== this.TSQLScript) {
-					this.runAsDropdown.value = this.AgentServiceAccount;
-					this.runAsDropdown.values = [this.runAsDropdown.value];
-				} else {
-					this.runAsDropdown.value = '';
-					this.runAsDropdown.values = [''];
-				}
-			});
 			this.databaseDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
 					values: databases
 				}).component();
 
+			this.processExitCodeBox = view.modelBuilder.inputBox()
+				.withProperties({
+				}).component();
+			this.processExitCodeBox.enabled = false;
+
 			// create the commands section
 			this.createCommands(view, queryProvider);
-
-			let buttonContainer = view.modelBuilder.flexContainer()
-			.withLayout({
-				flexFlow: 'row',
-				justifyContent: 'space-between',
-				width: 420
-			}).withItems([this.openButton, this.parseButton, this.previousButton, this.nextButton], {
-				flex: '1 1 50%'
-			}).component();
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -259,13 +234,51 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					component: this.databaseDropdown,
 					title: this.DatabaseLabelString
 				}, {
+					component: this.processExitCodeBox,
+					title: this.ProcessExitCodeText
+				}, {
 					component: this.commandTextBox,
 					title: this.CommandLabelString,
-					actions: [buttonContainer]
+					actions: [this.openButton, this.parseButton]
 				}], {
 						horizontal: false,
 						componentWidth: 420
 					}).component();
+			this.typeDropdown.onValueChanged((type) => {
+				switch (type.selected) {
+					case(this.TSQLScript):
+						this.runAsDropdown.value = '';
+						this.runAsDropdown.values = [''];
+						this.runAsDropdown.enabled = false;
+						this.databaseDropdown.enabled = true;
+						this.databaseDropdown.values = databases;
+						this.databaseDropdown.value = databases[0];
+						this.processExitCodeBox.value = '';
+						this.processExitCodeBox.enabled = false;
+						break;
+					case(this.Powershell):
+						this.runAsDropdown.value = this.AgentServiceAccount;
+						this.runAsDropdown.values = [this.runAsDropdown.value];
+						this.runAsDropdown.enabled = true;
+						this.databaseDropdown.enabled = false;
+						this.databaseDropdown.values = [''];
+						this.databaseDropdown.value = '';
+						this.processExitCodeBox.value = '';
+						this.processExitCodeBox.enabled = false;
+						break;
+					case(this.CmdExec):
+						this.databaseDropdown.enabled = false;
+						this.databaseDropdown.values = [''];
+						this.databaseDropdown.value = '';
+						this.runAsDropdown.value = this.AgentServiceAccount;
+						this.runAsDropdown.values = [this.runAsDropdown.value];
+						this.runAsDropdown.enabled = true;
+						this.processExitCodeBox.enabled = true;
+						this.processExitCodeBox.value = '0';
+						break;
+
+				}
+			});
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
 			await view.initializeModel(formWrapper);
@@ -412,8 +425,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private openFileBrowserDialog() {
 		let fileBrowserTitle = this.FileBrowserDialogTitle + `${this.server}`;
-		this.fileBrowserDialog = sqlops.window.modelviewdialog.createDialog(fileBrowserTitle);
-		let fileBrowserTab = sqlops.window.modelviewdialog.createTab('File Browser');
+		this.fileBrowserDialog = sqlops.window.createModelViewDialog(fileBrowserTitle);
+		let fileBrowserTab = sqlops.window.createTab('File Browser');
 		this.fileBrowserDialog.content =  [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
@@ -457,7 +470,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		});
 		this.fileBrowserDialog.okButton.label = this.OkButtonText;
 		this.fileBrowserDialog.cancelButton.label = this.CancelButtonText;
-		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
+		sqlops.window.openDialog(this.fileBrowserDialog);
 	}
 
 	private createTSQLOptions(view) {
@@ -524,6 +537,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 		this.model.command = this.commandTextBox.value ? this.commandTextBox.value : '';
+		this.model.commandExecutionSuccessCode = this.processExitCodeBox.value ? +this.processExitCodeBox.value : 0;
 	}
 
 	public async initializeDialog() {

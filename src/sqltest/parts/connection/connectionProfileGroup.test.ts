@@ -6,7 +6,7 @@
 'use strict';
 
 
-import { ConnectionProfileGroup } from 'sql/parts/connection/common/connectionProfileGroup';
+import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as assert from 'assert';
 
 suite('SQL ConnectionProfileGroup tests', () => {

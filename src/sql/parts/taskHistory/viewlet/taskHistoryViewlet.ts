@@ -15,7 +15,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import Severity from 'vs/base/common/severity';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TaskHistoryView } from 'sql/parts/taskHistory/viewlet/taskHistoryView';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPartService } from 'vs/workbench/services/part/common/partService';

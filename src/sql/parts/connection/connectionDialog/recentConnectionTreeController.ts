@@ -12,12 +12,12 @@ import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ClearSingleRecentConnectionAction } from 'sql/parts/connection/common/connectionActions';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IConnectionManagementService } from 'sql/parts/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/parts/connection/common/connectionProfile';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IAction } from 'vs/base/common/actions';
 import { Event, Emitter } from 'vs/base/common/event';
 import mouse = require('vs/base/browser/mouseEvent');
-import { IConnectionProfile } from 'sql/parts/connection/common/interfaces';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class RecentConnectionActionsProvider extends ContributableActionProvider {
 	private _onRecentConnectionRemoved = new Emitter<void>();
@@ -33,7 +33,7 @@ export class RecentConnectionActionsProvider extends ContributableActionProvider
 	private getRecentConnectionActions(tree: ITree, element: any): IAction[] {
 		let actions: IAction[] = [];
 		let clearSingleConnectionAction = this._instantiationService.createInstance(ClearSingleRecentConnectionAction, ClearSingleRecentConnectionAction.ID,
-			ClearSingleRecentConnectionAction.LABEL,<IConnectionProfile>element);
+			ClearSingleRecentConnectionAction.LABEL, <IConnectionProfile>element);
 		clearSingleConnectionAction.onRecentConnectionRemoved(() => this._onRecentConnectionRemoved.fire());
 		actions.push(clearSingleConnectionAction);
 		return actions;

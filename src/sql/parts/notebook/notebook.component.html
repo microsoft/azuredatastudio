@@ -15,5 +15,9 @@
 			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 			</text-cell-component>
 		</div>
+		<div class="notebook-cell" *ngIf="!cells.length && !isLoading">
+			<placeholder-cell-component [cellModel]="cell" [model]="model">
+			</placeholder-cell-component>
+		</div>
 	</div>
 </div>

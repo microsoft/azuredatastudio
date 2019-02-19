@@ -94,6 +94,7 @@ suite('Advanced properties dialog tests', () => {
 			undefined, // partsService
 			undefined, // themeService
 			undefined, // Context view service
+			undefined, // instantiation Service
 			undefined, // telemetry service
 			new ContextKeyServiceStub() // contextkeyservice
 		);

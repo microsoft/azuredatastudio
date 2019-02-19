@@ -164,7 +164,8 @@ export enum ModelComponentTypes {
 	TreeComponent,
 	FileBrowserTree,
 	Editor,
-	Dom
+	Dom,
+	Hyperlink
 }
 
 export interface IComponentShape {
@@ -262,6 +263,7 @@ export interface CardProperties {
 	label: string;
 	value?: string;
 	actions?: ActionDescriptor[];
+	descriptions?: string[];
 	status?: StatusIndicator;
 	selected?: boolean;
 	cardType: CardType;
@@ -288,6 +290,7 @@ export enum DataProviderType {
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
 	DacFxServicesProvider = 'DacFxServicesProvider',
+	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 }
 
 export enum DeclarativeDataType {
@@ -299,7 +302,8 @@ export enum DeclarativeDataType {
 
 export enum CardType {
 	VerticalButton = 'VerticalButton',
-	Details = 'Details'
+	Details = 'Details',
+	ListItem = 'ListItem'
 }
 
 export enum Orientation {
@@ -319,6 +323,17 @@ export class TreeComponentItem extends TreeItem {
 export enum AzureResource {
 	ResourceManagement = 0,
 	Sql = 1
+}
+
+export interface ServerInfoOption {
+	isBigDataCluster: boolean;
+	clusterEndpoints: ClusterEndpoint;
+}
+
+export interface ClusterEndpoint {
+	serviceName: string;
+	ipAddress: string;
+	port: number;
 }
 
 export class SqlThemeIcon {
@@ -459,6 +474,7 @@ export enum FutureMessageType {
 export interface INotebookFutureDone {
 	succeeded: boolean;
 	rejectReason: string;
+	message: nb.IShellMessage;
 }
 
 export interface ICellRange {
@@ -480,7 +496,7 @@ export class CellRange {
 	}
 
 	constructor(start: number, end: number) {
-		if (typeof(start) !== 'number' || typeof(start) !== 'number' || start < 0 || end < 0) {
+		if (typeof (start) !== 'number' || typeof (start) !== 'number' || start < 0 || end < 0) {
 			throw new Error('Invalid arguments');
 		}
 

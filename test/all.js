@@ -130,7 +130,7 @@ function main() {
 				});
 			}
 
-			let remapIgnores = /\b((winjs\.base)|(marked)|(raw\.marked)|(nls)|(css))\.js$/;
+			let remapIgnores = /\b((winjs\.base)|(filters\.perf\.data)|(performance)|(marked)|(raw\.marked)|(nls)|(css))\.js$/;
 
 			var remappedCoverage = i_remap(global.__coverage__, { exclude: remapIgnores }).getFinalCoverage();
 
@@ -171,6 +171,7 @@ function main() {
 			collector.add(finalCoverage);
 
 			var coveragePath = path.join(path.dirname(__dirname), '.build', 'coverage');
+			console.log('coverage folder is at: '.concat(coveragePath));
 			var reportTypes = [];
 			if (argv.run || argv.runGlob) {
 				// single file running
