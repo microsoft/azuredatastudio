@@ -463,27 +463,27 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * get registered servers from a parent
 	 */
-	$getRegisteredServers(handle: number, ownerUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult> { throw ni();}
+	$getRegisteredServers(handle: number, ownerUri: string, relativePath: string): Thenable<sqlops.ListRegisteredServersResult> { throw ni();}
 
 	/**
 	 * add registered server to a cms
 	 */
-	$addRegisteredServer(handle: number, ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> { throw ni(); }
+	$addRegisteredServer(handle: number, ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> { throw ni(); }
 
 	/**
 	 * remove registered server from a cms
 	 */
-	$removeRegisteredServer(handle: number, ownerUri: string, relativePath: string[], registeredServerName: string):Thenable<boolean> { throw ni(); }
+	$removeRegisteredServer(handle: number, ownerUri: string, relativePath: string, registeredServerName: string):Thenable<boolean> { throw ni(); }
 
 	/**
 	 * add server group to a cms
 	 */
-	$addServerGroup(handle: number, ownerUri: string, relativePath: string[], name: string, description:string):Thenable<boolean> { throw ni(); }
+	$addServerGroup(handle: number, ownerUri: string, relativePath: string, name: string, description:string):Thenable<boolean> { throw ni(); }
 
 	/**
 	 * remove server group from a cms
 	 */
-	$removeServerGroup(handle: number, ownerUri: string, relativePath: string[], name: string):Thenable<boolean> { throw ni(); }
+	$removeServerGroup(handle: number, ownerUri: string, relativePath: string, name: string):Thenable<boolean> { throw ni(); }
 
 }
 

@@ -397,7 +397,7 @@ export interface RemoveRegisteredServerParams extends RegisteredServerParamsBase
 
 export interface AddServerGroupParams extends RegisteredServerParamsBase {
     groupName: string;
-    groupDescription: string;
+	groupDescription: string;
 }
 
 export interface RemoveServerGroupParams extends RegisteredServerParamsBase {
@@ -406,7 +406,7 @@ export interface RemoveServerGroupParams extends RegisteredServerParamsBase {
 
 export interface RegisteredServerParamsBase {
     parentOwnerUri: string;
-    relativePath: string[];
+    relativePath: string;
 }
 
 export namespace CreateCentralManagementServerRequest {

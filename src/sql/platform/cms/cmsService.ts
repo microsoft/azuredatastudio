@@ -41,31 +41,31 @@ export class CmsService implements ICmsService {
 		});
 	}
 
-	getRegisteredServers(connectionUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult> {
+	getRegisteredServers(connectionUri: string, relativePath: string): Thenable<sqlops.ListRegisteredServersResult> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.getRegisteredServers(connectionUri, relativePath);
 		});
 	}
 
-	addRegisteredServer(connectionUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> {
+	addRegisteredServer(connectionUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: sqlops.ConnectionInfo): Thenable<boolean> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.addRegisteredServer(connectionUri, relativePath, registeredServerName, registeredServerDescription, connectionDetails);
 		});
 	}
 
-	removeRegisteredServer(connectionUri: string, relativePath: string[], registeredServerName: string): Thenable<boolean> {
+	removeRegisteredServer(connectionUri: string, relativePath: string, registeredServerName: string): Thenable<boolean> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.removeRegisteredServer(connectionUri, relativePath, registeredServerName);
 		});
 	}
 
-	addServerGroup(connectionUri: string, relativePath: string[], groupName: string, groupDescription: string): Thenable<boolean> {
+	addServerGroup(connectionUri: string, relativePath: string, groupName: string, groupDescription: string): Thenable<boolean> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.addServerGroup(connectionUri, relativePath, groupName, groupDescription);
 		});
 	}
 
-	removeServerGroup(connectionUri: string, relativePath: string[], groupName: string): Thenable<boolean> {
+	removeServerGroup(connectionUri: string, relativePath: string, groupName: string): Thenable<boolean> {
 		return this._runAction(connectionUri, (runner) => {
 			return runner.removeServerGroup(connectionUri, relativePath, groupName);
 		});

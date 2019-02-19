@@ -1698,15 +1698,15 @@ declare module 'sqlops' {
 	export interface CmsServiceProvider extends DataProvider {
 		createCmsServer(name: string, description: string, connectiondetails: ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
 
-		getRegisteredServers(ownerUri: string, relativePath: string[]): Thenable<ListRegisteredServersResult>;
+		getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult>;
 
-		addRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription: string, connectionDetails: ConnectionInfo): Thenable<boolean>;
+		addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: ConnectionInfo): Thenable<boolean>;
 
-		removeRegisteredServer(ownerUri: string, relativePath: string[], registeredServerName: string):Thenable<boolean>;
+		removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string):Thenable<boolean>;
 
-		addServerGroup(ownerUri: string, relativePath: string[], name: string, description:string):Thenable<boolean>;
+		addServerGroup(ownerUri: string, relativePath: string, name: string, description:string):Thenable<boolean>;
 
-		removeServerGroup(ownerUri: string, relativePath: string[], name: string):Thenable<boolean>;
+		removeServerGroup(ownerUri: string, relativePath: string, name: string):Thenable<boolean>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------
@@ -2411,11 +2411,13 @@ declare module 'sqlops' {
 		serverName: string;
 		description: string;
 		connectionDetails: ConnectionInfo;
+		relativePath: string;
 	}
 
 	export interface ServerGroupResult {
 		name: string;
 		description: string;
+		relativePath: string;
 	}
 
 	export interface ListRegisteredServersResult {

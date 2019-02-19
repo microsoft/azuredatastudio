@@ -713,7 +713,7 @@ export class CmsServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getRegisteredServers = (ownerUri: string, relativePath: string[]): Thenable<sqlops.ListRegisteredServersResult> => {
+		let getRegisteredServers = (ownerUri: string, relativePath: string): Thenable<sqlops.ListRegisteredServersResult> => {
 			let params: contracts.ListRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath };
 			return client.sendRequest(contracts.GetRegisteredServerRequest.type, params).then(
 				r => {
@@ -726,7 +726,7 @@ export class CmsServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let addRegisteredServer = (ownerUri: string, relativePath: string[], registeredServerName: string, registeredServerDescription:string, connectionDetails:sqlops.ConnectionInfo): Thenable<boolean> => {
+		let addRegisteredServer = (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:sqlops.ConnectionInfo): Thenable<boolean> => {
 			let params: contracts.AddRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName, registeredServerDescription: registeredServerDescription, regServerConnectionDetails: connectionDetails };
 			return client.sendRequest(contracts.AddRegisteredServerRequest.type, params).then(
 				r => {
@@ -739,7 +739,7 @@ export class CmsServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let removeRegisteredServer = (ownerUri: string, relativePath: string[], registeredServerName: string): Thenable<boolean> => {
+		let removeRegisteredServer = (ownerUri: string, relativePath: string, registeredServerName: string): Thenable<boolean> => {
 			let params: contracts.RemoveRegisteredServerParams = { parentOwnerUri: ownerUri, relativePath: relativePath, registeredServerName: registeredServerName };
 			return client.sendRequest(contracts.RemoveRegisteredServerRequest.type, params).then(
 				r => {
@@ -752,7 +752,7 @@ export class CmsServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let addServerGroup = (ownerUri: string, relativePath: string[], name: string, description:string): Thenable<boolean> => {
+		let addServerGroup = (ownerUri: string, relativePath: string, name: string, description:string): Thenable<boolean> => {
 			let params: contracts.AddServerGroupParams = { parentOwnerUri: ownerUri, relativePath: relativePath, groupName: name, groupDescription: description };
 			return client.sendRequest(contracts.AddServerGroupRequest.type, params).then(
 				r => {
@@ -765,7 +765,7 @@ export class CmsServiceFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let removeServerGroup = (ownerUri: string, relativePath: string[], name: string): Thenable<boolean> => {
+		let removeServerGroup = (ownerUri: string, relativePath: string, name: string): Thenable<boolean> => {
 			let params: contracts.RemoveServerGroupParams = { parentOwnerUri: ownerUri, relativePath: relativePath, groupName: name };
 			return client.sendRequest(contracts.RemoveServerGroupRequest.type, params).then(
 				r => {
