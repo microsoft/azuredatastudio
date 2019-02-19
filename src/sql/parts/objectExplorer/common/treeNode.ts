@@ -26,11 +26,11 @@ export interface ObjectExplorerCallbacks {
 
 export class TreeNode {
 	/**
-	 * USED BY NEW OE VIEWLET
+	 * Informs who provides the children to a node, used by data explorer tree view api
 	 */
 	public childProvider: string;
 	/**
-	 * USED BY NEW OE VIEWLET
+	 * Holds the connection profile for nodes, used by data explorer tree view api
 	 */
 	public payload: any;
 	/**
