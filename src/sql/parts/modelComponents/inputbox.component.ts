@@ -13,7 +13,7 @@ import * as sqlops from 'sqlops';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
-import { attachInputBoxStyler } from 'sql/common/theme/styler';
+import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
 import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

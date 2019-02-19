@@ -21,11 +21,11 @@ import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/v
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { Builder } from 'vs/base/browser/builder';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
+import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ClearSearchAction, ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction } from 'sql/parts/objectExplorer/viewlet/connectionTreeAction';
-import { IAction } from 'vs/base/common/actions';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
 export class ConnectionViewletPanel extends ViewletPanel {
 

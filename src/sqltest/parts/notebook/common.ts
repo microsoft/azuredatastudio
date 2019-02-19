@@ -69,7 +69,7 @@ export class NotebookModelStub implements INotebookModel {
     changeKernel(displayName: string): void {
         throw new Error('Method not implemented.');
     }
-    changeContext(host: string, connection?: IConnectionProfile): Promise<void> {
+    changeContext(host: string, connection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
         throw new Error('Method not implemented.');
     }
     findCellIndex(cellModel: ICellModel): number {

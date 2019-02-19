@@ -12,7 +12,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { PlanXmlParser } from 'sql/parts/queryPlan/planXmlParser';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachTableStyler } from 'sql/common/theme/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 

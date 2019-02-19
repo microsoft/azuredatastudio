@@ -21,7 +21,7 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import * as sqlops from 'sqlops';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
-import { attachDropdownStyler } from 'sql/common/theme/styler';
+import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';

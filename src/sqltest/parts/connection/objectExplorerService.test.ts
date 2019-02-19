@@ -8,9 +8,9 @@ import { ObjectExplorerProviderTestService } from 'sqltest/stubs/objectExplorerP
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { ObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { ObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
-import { TreeNode, TreeItemCollapsibleState, ObjectExplorerCallbacks } from 'sql/parts/objectExplorer/common/treeNode';
+import { TreeNode, TreeItemCollapsibleState } from 'sql/parts/objectExplorer/common/treeNode';
 
 import { TPromise } from 'vs/base/common/winjs.base';
 import * as sqlops from 'sqlops';
@@ -19,7 +19,6 @@ import * as assert from 'assert';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Event, Emitter } from 'vs/base/common/event';
-import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL Object Explorer Service tests', () => {
