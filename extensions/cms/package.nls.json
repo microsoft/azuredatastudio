@@ -1,0 +1,15 @@
+{
+	"cms.displayName": "CMS",
+	"cms.description": "Browse and work with Azure resources",
+	"cms.title": "Central Management Servers",
+
+	"cms.resource.config.title": "Azure Resource Configuration",
+	"cms.resource.config.filter.description": "The resource filter, each element is an account id, a subscription id and name separated by a slash",
+	"cms.resource.explorer.title": "CMS Explorer",
+	"cms.resource.refreshall.title": "Refresh All",
+	"cms.resource.refresh.title": "Refresh",
+	"cms.resource.signin.title": "Sign In",
+	"cms.resource.selectsubscriptions.title": "Select Subscriptions",
+	"cms.resource.connectsqlserver.title": "Connect",
+	"cms.resource.connectsqldb.title": "Connect"
+}

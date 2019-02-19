@@ -1,0 +1,92 @@
+{
+	"name": "cms",
+	"displayName": "%cms.displayName%",
+	"description": "%cms.description",
+	"version": "0.1.0",
+	"publisher": "Microsoft",
+	"preview": true,
+	"engines": {
+		"vscode": "^1.25.0",
+		"sqlops": "*"
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "cms.resource.connectsqlserver",
+				"title": "%cms.resource.connectsqlserver.title%",
+				"icon": {
+					"dark": "resources/dark/connect_to_inverse.svg",
+					"light": "resources/light/connect_to.svg"
+				}
+			},
+			{
+				"command": "cms.resource.connectsqldb",
+				"title": "%cms.resource.connectsqldb.title%",
+				"icon": {
+					"dark": "resources/dark/connect_to_inverse.svg",
+					"light": "resources/light/connect_to.svg"
+				}
+			}
+		],
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "cmsResource",
+					"title": "%cms.title%",
+					"icon": "resources/azure.svg"
+				}
+			]
+		},
+		"views": {
+			"cmsResource": [
+				{
+					"id": "cmsResourceExplorer",
+					"name": "%cms.resource.explorer.title%"
+				}
+			]
+		},
+		"dataExplorer": {
+			"cmsResource": [
+				{
+					"id": "cmsResourceExplorer",
+					"name": "%cms.resource.explorer.title%"
+				}
+			]
+		},
+		"menus": {
+			"view/title": [
+				{
+					"command": "cms.resource.connectsqlserver",
+					"when": "view == cmsResourceExplorer",
+					"group": "navigation@1"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "cms.resource.connectsqlserver",
+					"when": "viewItem == cms.resource.itemType.databaseServer",
+					"group": "inline"
+				}
+			]
+		},
+		"hasAzureResourceProviders": true
+	},
+	"dependencies": {
+		"azure-arm-resource": "^7.0.0",
+		"azure-arm-sql": "^5.0.1",
+		"request": "2.88.0",
+		"vscode-nls": "^4.0.0"
+	},
+	"devDependencies": {
+		"@types/mocha": "^5.2.5",
+		"@types/node": "^8.0.24",
+		"mocha": "^5.2.0",
+		"should": "^13.2.1",
+		"vscode": "^1.1.26",
+		"typemoq": "^2.1.0"
+	}
+}
