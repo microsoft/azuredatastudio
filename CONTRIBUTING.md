@@ -20,7 +20,7 @@ File a single issue per problem and feature request.
 
 The more information you can provide, the more likely someone will be successful at reproducing the issue and finding a fix.
 
-The built-in tool for reporting an issue, which you can access by using `Report Issue` in VS Code's Help menu, can help streamline this process by automatically providing the version of VS Code, all your installed extensions, and your system info. Additionally, the tool will search among existing issues to see if a similar issue already exists.
+The built-in tool for reporting an issue, which you can access by using `Report Issue` in Azure Data Studio's Help menu, can help streamline this process by automatically providing the version of Azure Data Studio, all your installed extensions, and your system info.
 
 Please include the following with each issue.
 
