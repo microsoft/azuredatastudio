@@ -77,6 +77,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     yauzl: https://github.com/thejoshwolfe/yauzl
     zone.js: https://www.npmjs.com/package/zone
 
+    Microsoft PROSE SDK: https://microsoft.github.io/prose
 
 %% angular NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -2362,3 +2363,188 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 =========================================
 END OF zone.js NOTICES AND INFORMATION
+
+%% Microsoft.ProgramSynthesis.Common NOTICES AND INFORMATION BEGIN HERE
+=========================================
+NOTICES AND INFORMATION
+Do Not Translate or Localize
+
+This software incorporates material from third parties. Microsoft makes certain
+open source code available at http://3rdpartysource.microsoft.com, or you may
+send a check or money order for US $5.00, including the product name, the open
+source component name, and version number, to:
+
+Source Code Compliance Team
+Microsoft Corporation
+One Microsoft Way
+Redmond, WA 98052
+USA
+
+Notwithstanding any other terms, you may reverse engineer this software to the
+extent required to debug changes to any libraries licensed under the GNU Lesser
+General Public License.
+
+-------------------------------START OF THIRD-PARTY NOTICES-------------------------------------------
+
+===================================CoreFx (BEGIN)
+The MIT License (MIT)
+
+Copyright (c) .NET Foundation and Contributors
+
+All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+===================================CoreFx (END)
+
+===================================CoreFxLab (BEGIN)
+The MIT License (MIT)
+
+Copyright (c) Microsoft Corporation
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+===================================CoreFxLab (END)
+
+===================================Reactive Extensions (BEGIN)
+Copyright (c) .NET Foundation and Contributors
+All Rights Reserved
+
+Licensed under the Apache License, Version 2.0 (the "License"); you
+may not use this file except in compliance with the License. You may
+obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+implied. See the License for the specific language governing permissions
+and limitations under the License.
+
+List of contributors to the Rx libraries
+
+Rx and Ix.NET:
+Wes Dyer
+Jeffrey van Gogh	
+Matthew Podwysocki 
+Bart De Smet		
+Danny van Velzen
+Erik Meijer
+Brian Beckman
+Aaron Lahman
+Georgi Chkodrov
+Arthur Watson
+Gert Drapers
+Mark Shields
+Eric Rozell
+
+Rx.js and Ix.js:
+Matthew Podwysocki
+Jeffrey van Gogh
+Bart De Smet
+Brian Beckman
+Wes Dyer
+Erik Meijer
+
+Tx:
+Georgi Chkodrov
+Bart De Smet		
+Aaron Lahman
+Erik Meijer
+Brian Grunkemeyer
+Beysim Sezgin
+Tiho Tarnavski
+Collin Meek
+Sajay Anthony
+Karen Albrecht
+John Allen
+Zach Kramer
+
+Rx++ and Ix++:
+Aaron Lahman
+===================================Reactive Extensions (END)
+
+-------------------------------END OF THIRD-PARTY NOTICES-------------------------------------------
+=========================================
+END OF Microsoft.ProgramSynthesis.Common NOTICES AND INFORMATION
+
+%% Microsoft.ProgramSynthesis.Detection NOTICES AND INFORMATION BEGIN HERE
+=========================================
+NOTICES AND INFORMATION
+Do Not Translate or Localize
+
+This software incorporates material from third parties. Microsoft makes certain
+open source code available at http://3rdpartysource.microsoft.com, or you may
+send a check or money order for US $5.00, including the product name, the open
+source component name, and version number, to:
+
+Source Code Compliance Team
+Microsoft Corporation
+One Microsoft Way
+Redmond, WA 98052
+USA
+
+Notwithstanding any other terms, you may reverse engineer this software to the
+extent required to debug changes to any libraries licensed under the GNU Lesser
+General Public License.
+
+-------------------------------START OF THIRD-PARTY NOTICES-------------------------------------------
+
+===================================ExcelDataReader (BEGIN)
+The MIT License (MIT)
+
+Copyright (c) 2014 ExcelDataReader
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+===================================ExcelDataReader (END)
+
+-------------------------------END OF THIRD-PARTY NOTICES-------------------------------------------
+=========================================
+END OF Microsoft.ProgramSynthesis.Detection NOTICES AND INFORMATION
