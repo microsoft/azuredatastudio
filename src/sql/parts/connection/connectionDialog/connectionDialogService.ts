@@ -321,25 +321,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	public openDialogAndWait(connectionManagementService: IConnectionManagementService,
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
-		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
-		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
+		connectionResult?: IConnectionResult,
+		doConnect: boolean = true): Thenable<IConnectionProfile> {
 
-		this.showDialog(connectionManagementService,
-			params,
-			model,
-			connectionResult).then(() => {
-			}, error => {
-				this._dialogDeferredPromise.reject(error);
-			});
-		return this._dialogDeferredPromise;
-	}
-
-	public openDialogAndWaitButDontConnect(connectionManagementService: IConnectionManagementService,
-		params?: INewConnectionParams,
-		model?: IConnectionProfile,
-		connectionResult?: IConnectionResult): Thenable<IConnectionProfile> {
-
-		this.ignoreNextConnect = true;
+		if (!doConnect) {
+			this.ignoreNextConnect = true;
+		}
 		this._dialogDeferredPromise = new Deferred<IConnectionProfile>();
 
 		this.showDialog(connectionManagementService,

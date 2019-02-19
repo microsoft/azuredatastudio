@@ -157,7 +157,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	}
 
 	public getSession(sessionId: string): sqlops.ObjectExplorerSession {
-		let node = this._activeObjectExplorerNodes[this._sessions[sessionId].connection.id];
+		let session = this._sessions[sessionId];
+		if (!session) {
+			return undefined;
+		}
+		let node = this._activeObjectExplorerNodes[session.connection.id];
 		return node ? node.getSession() : undefined;
 	}
 

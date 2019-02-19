@@ -50,7 +50,7 @@ export class OEShimService implements IOEShimService {
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
-			connProfile = new ConnectionProfile(this.capabilities, await this.cd.openDialogAndWaitButDontConnect(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile));
+			connProfile = new ConnectionProfile(this.capabilities, await this.cd.openDialogAndWait(this.cm, { connectionType: ConnectionType.default, showDashboard: false }, connProfile, undefined, false));
 		}
 		let sessionResp = await this.oe.createNewSession(providerId, connProfile);
 		let disp = this.oe.onUpdateObjectExplorerNodes(e => {
@@ -108,7 +108,7 @@ export class OEShimService implements IOEShimService {
 		}
 	}
 
-	public mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
+	private mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let icon: string;
 		let iconDark: string;
 		if (equalsIgnoreCase(parentNode.childProvider, 'mssql')) {
