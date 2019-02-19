@@ -10,7 +10,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/common/angularEventingService';
-import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
+import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/common/newDashboardTabDialog';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 

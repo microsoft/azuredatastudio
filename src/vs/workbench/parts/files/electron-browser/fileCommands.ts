@@ -43,7 +43,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { ILabelService } from 'vs/platform/label/common/label';
 
 // {{SQL CARBON EDIT}}
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 // Commands
 

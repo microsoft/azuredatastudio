@@ -44,8 +44,8 @@ import { IFileService } from 'vs/platform/files/common/files';
 
 // {{SQL CARBON EDIT}} -- Display the editor's tab color
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { GlobalNewUntitledFileAction } from 'vs/workbench/parts/files/electron-browser/fileActions';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';

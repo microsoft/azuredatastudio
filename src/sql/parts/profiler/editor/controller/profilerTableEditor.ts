@@ -6,7 +6,7 @@
 import { IProfilerController } from './interfaces';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { attachTableStyler } from 'sql/common/theme/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { IProfilerStateChangedEvent } from 'sql/parts/profiler/editor/profilerState';
 import { FindWidget, ITableController, IConfigurationChangedEvent, ACTION_IDS } from './profilerFindWidget';

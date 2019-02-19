@@ -107,7 +107,7 @@ import { IRemoteAuthorityResolverService } from 'vs/platform/remote/common/remot
 import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
 
 // {{SQL CARBON EDIT}}
-import { FileTelemetryService } from 'sql/platform/telemetry/fileTelemetryService';
+import { FileTelemetryService } from 'sql/workbench/services/telemetry/node/fileTelemetryService';
 
 /**
  * Services that we require for the Shell
@@ -601,7 +601,7 @@ export class WorkbenchShell extends Disposable {
 
 	// {{SQL CARBON EDIT}}
 	private diffInDays(nowDate: number, lastUseDate: number): number {
-		return (nowDate - lastUseDate)/(24*3600*1000);
+		return (nowDate - lastUseDate) / (24 * 3600 * 1000);
 	}
 
 	onUnexpectedError(error: any): void {

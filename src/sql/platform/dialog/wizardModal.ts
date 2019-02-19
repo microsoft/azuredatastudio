@@ -6,8 +6,8 @@
 'use strict';
 
 import 'vs/css!./media/dialogModal';
-import { Modal, IModalOptions } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Modal, IModalOptions } from 'sql/workbench/browser/modal/modal';
+import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { Wizard, DialogButton, WizardPage } from 'sql/platform/dialog/dialogTypes';
 import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';

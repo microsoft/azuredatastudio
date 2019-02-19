@@ -51,8 +51,8 @@ import { IViewlet } from 'vs/workbench/common/viewlet';
 
 // {{SQL CARBON EDIT}}
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 export interface IEditableData {

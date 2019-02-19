@@ -21,7 +21,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/parts/query/execution/queryActions';
-import { EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
+import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 
 import { TestThemeService } from 'sqltest/stubs/themeTestService';
 

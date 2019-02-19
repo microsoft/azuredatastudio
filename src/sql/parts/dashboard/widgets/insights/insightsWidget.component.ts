@@ -15,7 +15,7 @@ import { InsightAction, InsightActionContext } from 'sql/workbench/common/action
 import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import { IInsightsConfig, IInsightsView } from './interfaces';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { insertValueRegex } from 'sql/parts/insights/common/interfaces';
+import { insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { RunInsightQueryAction } from './actions';
 
 import { SimpleExecuteResult } from 'sqlops';

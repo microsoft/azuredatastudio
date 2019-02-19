@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import * as OptionsDialogHelper from 'sql/base/browser/ui/modal/optionsDialogHelper';
+import * as OptionsDialogHelper from 'sql/workbench/browser/modal/optionsDialogHelper';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as sqlops from 'sqlops';
 import { Builder, $ } from 'sql/base/browser/builder';

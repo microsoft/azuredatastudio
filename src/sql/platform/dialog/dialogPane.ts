@@ -9,7 +9,7 @@ import 'vs/css!./media/dialogModal';
 
 import { NgModuleRef } from '@angular/core';
 
-import { IModalDialogStyles } from 'sql/base/browser/ui/modal/modal';
+import { IModalDialogStyles } from 'sql/workbench/browser/modal/modal';
 import { DialogTab } from 'sql/platform/dialog/dialogTypes';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';

@@ -65,7 +65,7 @@ class SideBySideEditorEncodingSupport implements IEncodingSupport {
 }
 
 // {{SQL CARBON EDIT}}
-import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
+import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 
 function toEditorWithEncodingSupport(input: IEditorInput): IEncodingSupport {
 
