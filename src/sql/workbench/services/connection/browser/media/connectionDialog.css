@@ -29,7 +29,7 @@
 	margin: 0px 11px;
 }
 
-.connection-dialog .tabBody {
+.connection-dialog .tab-container {
 	overflow: hidden;
 	flex: 1 1;
 	display: flex;
