@@ -22,8 +22,8 @@ import { SparkFileSource } from './sparkJobSubmissionService';
 const localize = nls.loadMessageBundle();
 
 export class SparkConfigurationTab {
-	private _tab: sqlops.window.modelviewdialog.DialogTab;
-	public get tab(): sqlops.window.modelviewdialog.DialogTab { return this._tab; }
+	private _tab: sqlops.window.DialogTab;
+	public get tab(): sqlops.window.DialogTab { return this._tab; }
 
 	private _jobNameInputBox: sqlops.InputBoxComponent;
 	private _sparkContextLabel: sqlops.TextComponent;

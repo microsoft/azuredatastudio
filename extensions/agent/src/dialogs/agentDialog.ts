@@ -18,7 +18,7 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 
 	protected _onSuccess: vscode.EventEmitter<T> = new vscode.EventEmitter<T>();
 	public readonly onSuccess: vscode.Event<T> = this._onSuccess.event;
-	public dialog: sqlops.window.modelviewdialog.Dialog;
+	public dialog: sqlops.window.Dialog;
 
 	// Dialog Name for Telemetry
 	public dialogName: string;
@@ -32,11 +32,11 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 
 	protected abstract async updateModel();
 
-	protected abstract async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog);
+	protected abstract async initializeDialog(dialog: sqlops.window.Dialog);
 
 	public async openDialog(dialogName?: string) {
 		let event = dialogName ? dialogName : null;
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.title, event);
+		this.dialog = sqlops.window.createModelViewDialog(this.title, event);
 
 		await this.model.initialize();
 
@@ -48,7 +48,7 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 		this.dialog.cancelButton.label = AgentDialog.CancelButtonText;
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		sqlops.window.openDialog(this.dialog);
 	}
 
 	protected async execute() {
