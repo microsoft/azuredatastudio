@@ -25,7 +25,8 @@ const webpackGulp = require('webpack-stream');
 
 const root = path.resolve(path.join(__dirname, '..', '..'));
 
-function fromLocal(extensionPath: string, sourceMappingURLBase?: string): Stream {
+// {{SQL CARBON EDIT}} - Export fromLocal function
+export function fromLocal(extensionPath: string, sourceMappingURLBase?: string): Stream {
 	const webpackFilename = path.join(extensionPath, 'extension.webpack.config.js');
 	if (fs.existsSync(webpackFilename)) {
 		return fromLocalWebpack(extensionPath, sourceMappingURLBase);

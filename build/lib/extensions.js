@@ -23,6 +23,7 @@ const json = require("gulp-json-editor");
 const webpack = require('webpack');
 const webpackGulp = require('webpack-stream');
 const root = path.resolve(path.join(__dirname, '..', '..'));
+// {{SQL CARBON EDIT}} - Export fromLocal function
 function fromLocal(extensionPath, sourceMappingURLBase) {
     const webpackFilename = path.join(extensionPath, 'extension.webpack.config.js');
     if (fs.existsSync(webpackFilename)) {
@@ -32,6 +33,7 @@ function fromLocal(extensionPath, sourceMappingURLBase) {
         return fromLocalNormal(extensionPath);
     }
 }
+exports.fromLocal = fromLocal;
 function fromLocalWebpack(extensionPath, sourceMappingURLBase) {
     const result = es.through();
     const packagedDependencies = [];
