@@ -734,9 +734,9 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 export interface ExtHostModelViewDialogShape {
 	$onButtonClick(handle: number): void;
 	$onPanelValidityChanged(handle: number, valid: boolean): void;
-	$onWizardPageChanged(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): void;
+	$onWizardPageChanged(handle: number, info: sqlops.window.WizardPageChangeInfo): void;
 	$updateWizardPageInfo(handle: number, pageHandles: number[], currentPageIndex: number): void;
-	$validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean>;
+	$validateNavigation(handle: number, info: sqlops.window.WizardPageChangeInfo): Thenable<boolean>;
 	$validateDialogClose(handle: number): Thenable<boolean>;
 	$handleSave(handle: number): Thenable<boolean>;
 }

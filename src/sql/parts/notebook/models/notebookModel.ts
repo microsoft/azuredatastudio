@@ -13,7 +13,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, notebookConstants, NotebookContentChange } from './modelInterfaces';
-import { NotebookChangeType, CellType } from 'sql/parts/notebook/models/contracts';
+import { NotebookChangeType, CellType, CellTypes } from 'sql/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
@@ -68,7 +68,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 
-	constructor(private notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
+	constructor(public notebookOptions: INotebookModelOptions, startSessionImmediately?: boolean, private connectionProfile?: IConnectionProfile) {
 		super();
 		if (!notebookOptions || !notebookOptions.notebookUri || !notebookOptions.notebookManagers) {
 			throw new Error('path or notebook service not defined');
@@ -230,7 +230,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._onProviderIdChanged.event;
 	}
 
-	public get onValidConnectionSelected(): Event<boolean>{
+	public get onValidConnectionSelected(): Event<boolean> {
 		return this._onValidConnectionSelected.event;
 	}
 
@@ -430,7 +430,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// Ensure that the kernel we try to switch to is a valid kernel; if not, use the default
 		let kernelSpecs = this.getKernelSpecs();
 		if (kernelSpecs && kernelSpecs.length > 0 && kernelSpecs.findIndex(k => k.name === kernelSpec.name) < 0) {
-				kernelSpec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
+			kernelSpec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
 		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
 			return this._activeClientSession.changeKernel(kernelSpec)
@@ -449,7 +449,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return Promise.resolve();
 	}
 
-	public async changeContext(server: string, newConnection?: IConnectionProfile): Promise<void> {
+	public async changeContext(server: string, newConnection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
 		try {
 			if (!newConnection) {
 				newConnection = this._activeContexts.otherConnections.find((connection) => connection.serverName === server);
@@ -467,7 +467,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				},
 				error => {
 					if (error) {
-						this.notifyError(notebookUtils.getErrorMessage(error));
+						if (!hideErrorMessage) {
+							this.notifyError(notebookUtils.getErrorMessage(error));
+						}
 						//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
 						this._onValidConnectionSelected.fire(false);
 					}
@@ -690,8 +692,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private getKernelSpecs(): nb.IKernelSpec[] {
 		if (this.notebookManager && this.notebookManager.sessionManager && this.notebookManager.sessionManager.specs &&
 			this.notebookManager.sessionManager.specs.kernels) {
-				return this.notebookManager.sessionManager.specs.kernels;
-			}
+			return this.notebookManager.sessionManager.specs.kernels;
+		}
 		return [];
 	}
 

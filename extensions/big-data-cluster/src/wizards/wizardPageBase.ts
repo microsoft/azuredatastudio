@@ -8,9 +8,9 @@ import * as sqlops from 'sqlops';
 import { WizardBase } from './wizardBase';
 
 export abstract class WizardPageBase<T> {
-	private _page: sqlops.window.modelviewdialog.WizardPage;
+	private _page: sqlops.window.WizardPage;
 
-	public get page(): sqlops.window.modelviewdialog.WizardPage {
+	public get page(): sqlops.window.WizardPage {
 		return this._page;
 	}
 
@@ -19,7 +19,7 @@ export abstract class WizardPageBase<T> {
 	}
 
 	constructor(title: string, description: string, protected model: T, private _wizard: WizardBase<T>) {
-		this._page = sqlops.window.modelviewdialog.createWizardPage(title);
+		this._page = sqlops.window.createWizardPage(title);
 		this._page.description = description;
 		this._page.registerContent((view: sqlops.ModelView) => {
 			return this.initialize(view);

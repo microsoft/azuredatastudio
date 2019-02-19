@@ -33,16 +33,16 @@ export class ApiWrapper {
 		return sqlops.dataprotocol.registerFileBrowserProvider(provider);
 	}
 
-	public createDialog(title: string): sqlops.window.modelviewdialog.Dialog {
-		return sqlops.window.modelviewdialog.createDialog(title);
+	public createDialog(title: string): sqlops.window.Dialog {
+		return sqlops.window.createModelViewDialog(title);
 	}
 
-	public openDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
-		return sqlops.window.modelviewdialog.openDialog(dialog);
+	public openDialog(dialog: sqlops.window.Dialog): void {
+		return sqlops.window.openDialog(dialog);
 	}
 
-	public closeDialog(dialog: sqlops.window.modelviewdialog.Dialog): void {
-		return sqlops.window.modelviewdialog.closeDialog(dialog);
+	public closeDialog(dialog: sqlops.window.Dialog): void {
+		return sqlops.window.closeDialog(dialog);
 	}
 
 	public registerTaskHandler(taskId: string, handler: (profile: sqlops.IConnectionProfile) => void): void {
@@ -113,7 +113,7 @@ export class ApiWrapper {
 		return vscode.window.createOutputChannel(name);
 	}
 
-	public createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
-		return sqlops.window.modelviewdialog.createTab(title);
+	public createTab(title: string): sqlops.window.DialogTab {
+		return sqlops.window.createTab(title);
 	}
 }

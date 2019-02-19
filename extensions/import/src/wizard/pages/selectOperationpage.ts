@@ -14,7 +14,7 @@ const localize = nls.loadMessageBundle();
 
 export class SelectOperationPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
@@ -25,7 +25,7 @@ export class SelectOperationPage extends BasePage {
 	private exportRadioButton: sqlops.RadioButtonComponent;
 	private form: sqlops.FormContainer;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;

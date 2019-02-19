@@ -372,24 +372,31 @@ export function createApiFactory(
 
 			const modelViewDialog: typeof sqlops.window.modelviewdialog = {
 				createDialog(title: string, dialogName?: string): sqlops.window.modelviewdialog.Dialog {
+					console.warn('the method sqlops.window.modelviewdialog.createDialog has been deprecated, replace it with sqlops.window.createModelViewDialog');
 					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
 				},
 				createTab(title: string): sqlops.window.modelviewdialog.DialogTab {
+					console.warn('the method sqlops.window.modelviewdialog.createTab has been deprecated, replace it with sqlops.window.createTab');
 					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
 				},
 				createButton(label: string): sqlops.window.modelviewdialog.Button {
+					console.warn('the method sqlops.window.modelviewdialog.createButton has been deprecated, replace it with sqlops.window.createButton');
 					return extHostModelViewDialog.createButton(label);
 				},
 				openDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					console.warn('the method sqlops.window.modelviewdialog.openDialog has been deprecated, replace it with sqlops.window.openDialog');
 					return extHostModelViewDialog.openDialog(dialog);
 				},
 				closeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+					console.warn('the method sqlops.window.modelviewdialog.closeDialog has been deprecated, replace it with sqlops.window.closeDialog');
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
 				createWizardPage(title: string): sqlops.window.modelviewdialog.WizardPage {
+					console.warn('the method sqlops.window.modelviewdialog.createWizardPage has been deprecated, replace it with sqlops.window.createWizardPage');
 					return extHostModelViewDialog.createWizardPage(title);
 				},
 				createWizard(title: string): sqlops.window.modelviewdialog.Wizard {
+					console.warn('the method sqlops.window.modelviewdialog.createWizard has been deprecated, replace it with sqlops.window.createWizard');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel
@@ -397,10 +404,36 @@ export function createApiFactory(
 
 			const window: typeof sqlops.window = {
 				createDialog(name: string) {
+					console.warn('the method sqlops.window.createDialog has been deprecated, replace it with sqlops.window.createWebViewDialog');
 					return extHostModalDialogs.createDialog(name);
 				},
-
-				modelviewdialog: modelViewDialog
+				modelviewdialog: modelViewDialog,
+				createWebViewDialog(name: string) {
+					return extHostModalDialogs.createDialog(name);
+				},
+				createModelViewDialog(title: string, dialogName?: string): sqlops.window.Dialog {
+					return extHostModelViewDialog.createDialog(title, dialogName, extension.extensionLocation);
+				},
+				createTab(title: string): sqlops.window.DialogTab {
+					return extHostModelViewDialog.createTab(title, extension.extensionLocation);
+				},
+				createButton(label: string): sqlops.window.Button {
+					return extHostModelViewDialog.createButton(label);
+				},
+				openDialog(dialog: sqlops.window.Dialog) {
+					return extHostModelViewDialog.openDialog(dialog);
+				},
+				closeDialog(dialog: sqlops.window.Dialog) {
+					return extHostModelViewDialog.closeDialog(dialog);
+				},
+				createWizardPage(title: string): sqlops.window.WizardPage {
+					return extHostModelViewDialog.createWizardPage(title);
+				},
+				createWizard(title: string): sqlops.window.Wizard {
+					console.warn('deprecated method');
+					return extHostModelViewDialog.createWizard(title);
+				},
+				MessageLevel: sqlExtHostTypes.MessageLevel
 			};
 
 			const tasks: typeof sqlops.tasks = {

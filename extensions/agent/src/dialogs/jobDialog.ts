@@ -73,11 +73,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private readonly EditJobDialogEvent: string  = 'EditJobDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private stepsTab: sqlops.window.modelviewdialog.DialogTab;
-	private alertsTab: sqlops.window.modelviewdialog.DialogTab;
-	private schedulesTab: sqlops.window.modelviewdialog.DialogTab;
-	private notificationsTab: sqlops.window.modelviewdialog.DialogTab;
+	private generalTab: sqlops.window.DialogTab;
+	private stepsTab: sqlops.window.DialogTab;
+	private alertsTab: sqlops.window.DialogTab;
+	private schedulesTab: sqlops.window.DialogTab;
+	private notificationsTab: sqlops.window.DialogTab;
 
 	// General tab controls
 	private nameTextBox: sqlops.InputBoxComponent;
@@ -139,11 +139,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 	}
 
 	protected async initializeDialog() {
-		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
-		this.stepsTab = sqlops.window.modelviewdialog.createTab(this.StepsTabText);
-		this.alertsTab = sqlops.window.modelviewdialog.createTab(this.AlertsTabText);
-		this.schedulesTab = sqlops.window.modelviewdialog.createTab(this.SchedulesTabText);
-		this.notificationsTab = sqlops.window.modelviewdialog.createTab(this.NotificationsTabText);
+		this.generalTab = sqlops.window.createTab(this.GeneralTabText);
+		this.stepsTab = sqlops.window.createTab(this.StepsTabText);
+		this.alertsTab = sqlops.window.createTab(this.AlertsTabText);
+		this.schedulesTab = sqlops.window.createTab(this.SchedulesTabText);
+		this.notificationsTab = sqlops.window.createTab(this.NotificationsTabText);
 		this.initializeGeneralTab();
 		this.initializeStepsTab();
 		this.initializeAlertsTab();

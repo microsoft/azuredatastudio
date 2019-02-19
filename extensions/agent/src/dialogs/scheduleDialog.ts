@@ -21,7 +21,7 @@ export class ScheduleDialog {
 	private readonly SchedulesLabelText: string = localize('scheduleDialog.schedules', 'Schedules');
 
 	// UI Components
-	private dialog: sqlops.window.modelviewdialog.Dialog;
+	private dialog: sqlops.window.Dialog;
 	private schedulesTable: sqlops.TableComponent;
 
 	private model: ScheduleData;
@@ -35,14 +35,14 @@ export class ScheduleDialog {
 
 	public async showDialog() {
 		await this.model.initialize();
-		this.dialog = sqlops.window.modelviewdialog.createDialog(this.DialogTitle);
+		this.dialog = sqlops.window.createModelViewDialog(this.DialogTitle);
 		this.initializeContent();
 		this.dialog.okButton.onClick(async () => await this.execute());
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 
-		sqlops.window.modelviewdialog.openDialog(this.dialog);
+		sqlops.window.openDialog(this.dialog);
 	}
 
 	private initializeContent() {
