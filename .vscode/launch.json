@@ -109,27 +109,6 @@
 			"timeout": 45000
 		},
 		{
-			"type": "node",
-			"request": "launch",
-			"name": "Unit Tests (stdout)",
-			"program": "${workspaceFolder}/test/electron/index.js",
-			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
-			},
-			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
-			},
-			"outputCapture": "std",
-			"args": [
-				"--remote-debugging-port=9222"
-			],
-			"cwd": "${workspaceFolder}",
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			]
-		},
-		{
 			"name": "Launch Built-in Extension",
 			"type": "extensionHost",
 			"request": "launch",
@@ -147,14 +126,35 @@
 			"env": {
 				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
 			}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Run Unit Tests",
+			"program": "${workspaceFolder}/test/electron/index.js",
+			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
+			},
+			"outputCapture": "std",
+			"args": [
+				"--remote-debugging-port=9222"
+			],
+			"cwd": "${workspaceFolder}",
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
 		}
 	],
 	"compounds": [
 		{
-			"name": "Unit Tests",
+			"name": "Debug Unit Tests",
 			"configurations": [
 				"Attach to azuredatastudio",
-				"Unit Tests (stdout)"
+				"Run Unit Tests"
 			]
 		},
 		{
