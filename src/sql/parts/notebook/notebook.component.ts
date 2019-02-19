@@ -133,6 +133,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnDestroy() {
+		this.disconnect();
 		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
@@ -166,11 +167,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 		if (cell !== this.model.activeCell) {
 			if (this.model.activeCell) {
+				this.disconnect();
 				this.model.activeCell.active = false;
 			}
 			this._model.activeCell = cell;
 			this._model.activeCell.active = true;
 			this._changeRef.detectChanges();
+		}
+	}
+
+	private disconnect() {
+		if (this._model.defaultKernel.display_name === notebookConstants.SQL) {
+			if (this._model.activeCell && this._model.activeCell.cellType === CellTypes.Code && this._model.activeCell.cellUri) {
+				this.connectionManagementService.disconnect(this._model.activeCell.cellUri.toString()).catch(e => console.log(e));
+			}
 		}
 	}
 

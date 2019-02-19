@@ -13,6 +13,7 @@ import { localize } from 'vs/nls';
 import { IOutputChannel } from 'vs/workbench/parts/output/common/output';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 
 /**
@@ -77,6 +78,26 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 // Feature flag to enable Sql Notebook experience
 export function sqlNotebooksEnabled(contextKeyService: IContextKeyService) {
 	return contextKeyService.contextMatchesRules(ContextKeyExpr.equals('config.notebook.sqlKernelEnabled', true));
+}
+
+// In the Attach To dropdown, show the database name (if it exists) using the current connection
+// Example: myFakeServer (myDatabase)
+export function formatServerNameWithDatabaseNameForAttachTo(connectionProfile: ConnectionProfile): string {
+	if (connectionProfile && connectionProfile.serverName) {
+		return !connectionProfile.databaseName ? connectionProfile.serverName : connectionProfile.serverName + ' (' + connectionProfile.databaseName + ')';
+	}
+	return '';
+}
+
+// Extract server name from format used in Attach To: serverName (databaseName)
+export function getServerFromFormattedAttachToName(name: string): string {
+	return name.substring(0, name.lastIndexOf(' (')) ? name.substring(0, name.lastIndexOf(' (')) : name;
+}
+
+// Extract database name from format used in Attach To: serverName (databaseName)
+export function getDatabaseFromFormattedAttachToName(name: string): string {
+	return name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) ?
+	name.substring(name.lastIndexOf('(') + 1, name.lastIndexOf(')')) : '';
 }
 
 export interface IStandardKernelWithProvider {

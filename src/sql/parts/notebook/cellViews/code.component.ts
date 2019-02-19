@@ -9,7 +9,7 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
@@ -22,8 +22,6 @@ import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import URI from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -122,6 +120,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
+				if (isActive && this._model.defaultKernel.display_name === notebookConstants.SQL
+					&& this.cellModel.cellType === CellTypes.Code
+					&& this.cellModel.cellUri) {
+					this._model.notebookOptions.connectionService.connect(this._model.activeConnection, this.cellModel.cellUri.toString()).catch(e => console.log(e));
+				}
 				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
@@ -157,7 +160,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
-		let uri = this.createUri();
+		let uri = this.cellModel.cellUri;
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
@@ -210,14 +213,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		]);
 
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
-	}
-
-
-	private createUri(): URI {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
-		// Use this to set the internal (immutable) and public (shared with extension) uri properties
-		this.cellModel.cellUri = uri;
-		return uri;
 	}
 
 	/// Editor Functions

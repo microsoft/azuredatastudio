@@ -15,7 +15,7 @@ const localize = nls.loadMessageBundle();
 
 export class ExtractConfigPage extends DacFxConfigPage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
@@ -23,7 +23,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 	private form: sqlops.FormContainer;
 	private versionTextBox: sqlops.InputBoxComponent;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 		this.fileExtension = '.dacpac';
 	}
