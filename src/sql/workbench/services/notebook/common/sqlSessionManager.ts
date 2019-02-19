@@ -341,10 +341,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 	}
 
-	public handleBatchStart(start: any): void {
-		start;
-	}
-
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
