@@ -62,7 +62,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     sqltoolsservice: https://github.com/Microsoft/sqltoolsservice
     svg.js: https://github.com/svgdotjs/svg.js
     systemjs: https://github.com/systemjs/systemjs
-    temp-write: https://www.npmjs.com/package/temp-write
+    temp-write: https://github.com/sindresorhus/temp-write
     typemoq: https://github.com/florinn/typemoq
     underscore: https://github.com/jashkenas/underscore
     v8-profiler: https://github.com/node-inspector/v8-profiler
