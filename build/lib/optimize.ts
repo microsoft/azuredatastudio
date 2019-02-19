@@ -73,7 +73,7 @@ function loader(src: string, bundledFileHeader: string, bundleLoader: boolean): 
 					isFirst = false;
 					this.emit('data', new VinylFile({
 						path: 'fake',
-						base: '',
+						base: undefined,
 						contents: Buffer.from(bundledFileHeader)
 					}));
 					this.emit('data', data);
