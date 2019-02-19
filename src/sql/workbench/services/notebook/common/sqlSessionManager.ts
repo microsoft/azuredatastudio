@@ -373,7 +373,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IDbColumn[], d: QueryExecuteSubsetResult): IDataResource {
+	private convertToDataResource(columns: IDbColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({name: escape(column.columnName)});
@@ -382,7 +382,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
-			data: d.resultSubset.rows.map(row => {
+			data: subsetResult.resultSubset.rows.map(row => {
 				let rowObject: { [key: string]: any; } = {};
 				row.forEach((val, index) => {
 					rowObject[index] = val.displayValue;
