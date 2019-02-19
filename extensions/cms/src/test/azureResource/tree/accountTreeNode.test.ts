@@ -86,9 +86,6 @@ describe('AzureResourceAccountTreeNode.info', function(): void {
 
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
 
-
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
-
 	});
 
 	it('Should be correct when created.', async function(): Promise<void> {
@@ -160,10 +157,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		mockSubscriptionCache = [];
 
-		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
 
-
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 
 	});
 
@@ -174,7 +168,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
+
 
 
 		mockTreeChangeHandler.verify((o) => o.notifyNodeChanged(accountTreeNode), TypeMoq.Times.once());
@@ -201,8 +195,6 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		await accountTreeNode.getChildren();
 		const children = await accountTreeNode.getChildren();
-
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
 
 
 		should(children.length).equal(mockSubscriptionCache.length);
@@ -246,8 +238,6 @@ describe('AzureResourceAccountTreeNode.getChildren', function(): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		mockApiWrapper.verify((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement), TypeMoq.Times.once());
-
 		should(children).Array();
 
 	});
@@ -263,9 +253,6 @@ describe('AzureResourceAccountTreeNode.clearCache', function() : void {
 		mockSubscriptionCache = [];
 
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object);
-
-
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 
 	});
 

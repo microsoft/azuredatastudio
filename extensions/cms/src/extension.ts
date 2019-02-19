@@ -1,6 +1,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -47,6 +48,14 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	controllers.push(azureResourceController);
 	extensionContext.subscriptions.push(azureResourceController);
 	activations.push(azureResourceController.activate());
+
+	appContext.apiWrapper.registerCommand('cms.resource.connectsqlserver', () => {
+		appContext.apiWrapper.openConnectionDialog(['MSSQL']).then((connection) => {
+			if (connection) {
+				let ownerUri = sqlops.connection.getUriForConnection(connection.connectionId);
+			}
+		});
+	});
 
 	return {
 		provideResources() {

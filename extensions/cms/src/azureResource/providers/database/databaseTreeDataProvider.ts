@@ -37,10 +37,7 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 			return [this.createContainerNode()];
 		}
 
-		const tokens = await this._apiWrapper.getSecurityToken(element.account, AzureResource.ResourceManagement);
-		const credential = new TokenCredentials(tokens[element.tenantId].token, tokens[element.tenantId].tokenType);
-
-		const databases: AzureResourceDatabase[] = (await this._databaseService.getDatabases(element.subscription, credential)) || <AzureResourceDatabase[]>[];
+		const databases: AzureResourceDatabase[] = (await this._databaseService.getDatabases(element.subscription, null)) || <AzureResourceDatabase[]>[];
 
 		return databases.map((database) => <IAzureResourceDatabaseNode>{
 			account: element.account,

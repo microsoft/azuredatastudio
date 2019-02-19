@@ -18,6 +18,10 @@ import * as constants from './constants';
  * @class ApiWrapper
  */
 export class ApiWrapper {
+
+	private _cmsProvider: sqlops.CmsServiceProvider;
+	private _ownerUri: string;
+
 	// Data APIs
 	public registerConnectionProvider(provider: sqlops.ConnectionProvider): vscode.Disposable {
 		return sqlops.dataprotocol.registerConnectionProvider(provider);
@@ -207,16 +211,16 @@ export class ApiWrapper {
 		return sqlops.window.modelviewdialog.createTab(title);
 	}
 
-	// Account APIs
-	public getAllAccounts(): Thenable<sqlops.Account[]> {
-		return sqlops.accounts.getAllAccounts();
+	// CMS APIs
+	public getCmsProvider() {
+		if (!this._cmsProvider) {
+			this._cmsProvider = sqlops.dataprotocol.getProvider<sqlops.CmsServiceProvider>('MSSQL', sqlops.DataProviderType.CmsServiceProvider);
+		}
+		return this._cmsProvider;
 	}
 
-	public getSecurityToken(account: sqlops.Account, resource: sqlops.AzureResource): Thenable<{}> {
-		return sqlops.accounts.getSecurityToken(account, resource);
-	}
 
-	public readonly onDidChangeAccounts = sqlops.accounts.onDidChangeAccounts;
+
 
 	// Connection APIs
 	public openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {

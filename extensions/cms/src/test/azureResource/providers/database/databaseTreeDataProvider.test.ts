@@ -103,7 +103,6 @@ describe('AzureResourceDatabaseTreeDataProvider.getChildren', function(): void {
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 
-		mockApiWrapper.setup((o) => o.getSecurityToken(mockAccount, sqlops.AzureResource.ResourceManagement)).returns(() => Promise.resolve(mockTokens));
 		mockDatabaseService.setup((o) => o.getDatabases(mockSubscription, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockDatabases));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
