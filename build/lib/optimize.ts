@@ -113,7 +113,7 @@ function toConcatStream(src: string, bundledFileHeader: string, sources: bundle.
 
 	const treatedSources = sources.map(function (source) {
 		const root = source.path ? REPO_ROOT_PATH.replace(/\\/g, '/') : '';
-		const base = source.path ? root + `/${src}` : '';
+		const base = source.path ? root + `/${src}` : undefined;
 
 		return new VinylFile({
 			path: source.path ? root + '/' + source.path.replace(/\\/g, '/') : 'fake',
