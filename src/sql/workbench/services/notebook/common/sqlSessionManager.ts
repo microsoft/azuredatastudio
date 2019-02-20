@@ -7,6 +7,7 @@
 import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage } from 'sqlops';
 import { localize } from 'vs/nls';
+import * as strings from 'vs/base/common/strings';
 import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -19,6 +20,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
+import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
@@ -376,13 +378,18 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	public handleMessage(msg: IResultMessage): void {
+	public handleMessage(msg: IResultMessage | string): void {
 		if (this.ioHandler) {
 			let message;
-			if (msg.isError) {
-				message = this.convertToError(msg);
-			} else {
+			if (typeof msg === 'string') {
 				message = this.convertToDisplayMessage(msg);
+			}
+			else {
+				if (msg.isError) {
+					message = this.convertToError(msg);
+				} else {
+					message = this.convertToDisplayMessage(msg);
+				}
 			}
 			this.ioHandler.handle(message);
 		}
@@ -390,6 +397,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
+			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
 				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
