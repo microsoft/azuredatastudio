@@ -12,10 +12,8 @@ import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 
-import { AzureResourceDatabaseServerProvider } from './azureResource/providers/databaseServer/databaseServerProvider';
-import { AzureResourceDatabaseServerService } from './azureResource/providers/databaseServer/databaseServerService';
-import { AzureResourceDatabaseProvider } from './azureResource/providers/database/databaseProvider';
-import { AzureResourceDatabaseService } from './azureResource/providers/database/databaseService';
+import { AzureResourceDatabaseServerProvider } from './azureResource/providers/registeredServer/databaseServerProvider';
+import { AzureResourceDatabaseServerService } from './azureResource/providers/registeredServer/databaseServerService';
 
 let controllers: ControllerBase[] = [];
 
@@ -53,8 +51,10 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 		appContext.apiWrapper.openConnectionDialog(['MSSQL']).then( async (connection) => {
 			if (connection) {
 				appContext.apiWrapper.ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
-				let meme = appContext.apiWrapper.listRegisteredServers();
-				let meme2 = 'hi';
+				appContext.apiWrapper.listRegisteredServers().then((result) => {
+					let meme = result;
+				});
+
 			}
 		});
 	});
@@ -64,8 +64,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	return {
 		provideResources() {
 			return [
-				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext),
-				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), apiWrapper, extensionContext)
+				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext)
 			];
 		}
 	};

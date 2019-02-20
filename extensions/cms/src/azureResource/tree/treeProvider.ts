@@ -12,10 +12,8 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
-import { AzureResourceAccountTreeNode } from './accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { AzureResourceErrorMessageUtil } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { AzureResourceServiceNames } from '../constants';
 
@@ -53,13 +51,8 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 		}
 
 		try {
-			const accounts = await this.appContext.getService<any>(AzureResourceServiceNames.accountService).getAccounts();
+			return [new AzureResourceAccountNotSignedInTreeNode()];
 
-			if (accounts && accounts.length > 0) {
-				return accounts.map((account) => new AzureResourceAccountTreeNode(account, this.appContext, this));
-			} else {
-				return [new AzureResourceAccountNotSignedInTreeNode()];
-			}
 		} catch (error) {
 			return [];
 		}

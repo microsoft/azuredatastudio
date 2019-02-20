@@ -5,9 +5,9 @@
 
 'use strict';
 
-export interface AzureResourceDatabase {
+export interface CmsResourceRegisteredServer {
 	name: string;
-	serverName: string;
-	serverFullName: string;
+	fullName: string;
 	loginName: string;
+	defaultDatabaseName: string;
 }

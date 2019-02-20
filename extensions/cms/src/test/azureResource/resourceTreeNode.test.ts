@@ -11,40 +11,17 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { azureResource } from '../../azureResource/azure-resource';
+import { cmsResource } from '../../azureResource/cms-resource';
 import { AzureResourceService } from '../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeNode';
 
 const resourceService = AzureResourceService.getInstance();
 
-// Mock test data
-const mockAccount: sqlops.Account = {
-	key: {
-		accountId: 'mock_account',
-		providerId: 'mock_provider'
-	},
-	displayInfo: {
-		displayName: 'mock_account@test.com',
-		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
-	},
-	properties: undefined,
-	isStale: false
-};
-
-const mockSubscription: azureResource.AzureResourceSubscription = {
-	id: 'mock_subscription',
-	name: 'mock subscription'
-};
-
 const mockTenantId: string = 'mock_tenant';
 
 const mockResourceProviderId: string = 'mock_resource_provider';
 
-const mockResourceRootNode: azureResource.IAzureResourceNode = {
-	account: mockAccount,
-	subscription: mockSubscription,
-	tenantId: mockTenantId,
+const mockResourceRootNode: cmsResource.ICmsResourceNode = {
 	treeItem: {
 		id: 'mock_resource_root_node',
 		label: 'mock resource root node',
@@ -54,10 +31,7 @@ const mockResourceRootNode: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockResourceNode1: azureResource.IAzureResourceNode = {
-	account: mockAccount,
-	subscription: mockSubscription,
-	tenantId: mockTenantId,
+const mockResourceNode1: cmsResource.ICmsResourceNode = {
 	treeItem: {
 		id: 'mock_resource_node_1',
 		label: 'mock resource node 1',
@@ -67,10 +41,7 @@ const mockResourceNode1: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockResourceNode2: azureResource.IAzureResourceNode = {
-	account: mockAccount,
-	subscription: mockSubscription,
-	tenantId: mockTenantId,
+const mockResourceNode2: cmsResource.ICmsResourceNode = {
 	treeItem: {
 		id: 'mock_resource_node_2',
 		label: 'mock resource node 2',
@@ -80,18 +51,18 @@ const mockResourceNode2: azureResource.IAzureResourceNode = {
 	}
 };
 
-const mockResourceNodes: azureResource.IAzureResourceNode[] = [mockResourceNode1, mockResourceNode2];
+const mockResourceNodes: cmsResource.ICmsResourceNode[] = [mockResourceNode1, mockResourceNode2];
 
-let mockResourceTreeDataProvider: TypeMoq.IMock<azureResource.IAzureResourceTreeDataProvider>;
-let mockResourceProvider: TypeMoq.IMock<azureResource.IAzureResourceProvider>;
+let mockResourceTreeDataProvider: TypeMoq.IMock<cmsResource.ICmsResourceTreeDataProvider>;
+let mockResourceProvider: TypeMoq.IMock<cmsResource.ICmsResourceProvider>;
 
 describe('AzureResourceResourceTreeNode.info', function(): void {
 	beforeEach(() => {
-		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<cmsResource.ICmsResourceTreeDataProvider>();
 		mockResourceTreeDataProvider.setup((o) => o.getTreeItem(mockResourceRootNode)).returns(() => mockResourceRootNode.treeItem);
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
 
-		mockResourceProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
+		mockResourceProvider = TypeMoq.Mock.ofType<cmsResource.ICmsResourceProvider>();
 		mockResourceProvider.setup((o) => o.providerId).returns(() => mockResourceProviderId);
 		mockResourceProvider.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider.object);
 
@@ -125,10 +96,10 @@ describe('AzureResourceResourceTreeNode.info', function(): void {
 
 describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 	beforeEach(() => {
-		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceTreeDataProvider>();
+		mockResourceTreeDataProvider = TypeMoq.Mock.ofType<cmsResource.ICmsResourceTreeDataProvider>();
 		mockResourceTreeDataProvider.setup((o) => o.getChildren(mockResourceRootNode)).returns(() => Promise.resolve(mockResourceNodes));
 
-		mockResourceProvider = TypeMoq.Mock.ofType<azureResource.IAzureResourceProvider>();
+		mockResourceProvider = TypeMoq.Mock.ofType<cmsResource.ICmsResourceProvider>();
 		mockResourceProvider.setup((o) => o.providerId).returns(() => mockResourceProviderId);
 		mockResourceProvider.setup((o) => o.getTreeDataProvider()).returns(() => mockResourceTreeDataProvider.object);
 
@@ -158,8 +129,6 @@ describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 
 			const childNode = (child as AzureResourceResourceTreeNode).resourceNodeWithProviderId;
 			should(childNode.resourceProviderId).equal(mockResourceProviderId);
-			should(childNode.resourceNode.account).equal(mockAccount);
-			should(childNode.resourceNode.subscription).equal(mockSubscription);
 			should(childNode.resourceNode.tenantId).equal(mockTenantId);
 			should(childNode.resourceNode.treeItem.id).equal(mockResourceNodes[ix].treeItem.id);
 			should(childNode.resourceNode.treeItem.label).equal(mockResourceNodes[ix].treeItem.label);

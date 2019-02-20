@@ -14,10 +14,7 @@ import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
 import { AzureResourceTreeProvider } from '../../../azureResource/tree/treeProvider';
-import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accountTreeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
-import { AzureResourceServiceNames } from '../../../azureResource/constants';
-import { generateGuid } from '../../../azureResource/utils';
 
 // Mock services
 let mockAppContext: AppContext;
@@ -25,34 +22,6 @@ let mockAppContext: AppContext;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 
-// Mock test data
-const mockAccount1: sqlops.Account = {
-	key: {
-		accountId: 'mock_account_1',
-		providerId: 'mock_provider'
-	},
-	displayInfo: {
-		displayName: 'mock_account_1@test.com',
-		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
-	},
-	properties: undefined,
-	isStale: false
-};
-const mockAccount2: sqlops.Account = {
-	key: {
-		accountId: 'mock_account_2',
-		providerId: 'mock_provider'
-	},
-	displayInfo: {
-		displayName: 'mock_account_2@test.com',
-		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
-	},
-	properties: undefined,
-	isStale: false
-};
-const mockAccounts = [mockAccount1, mockAccount2];
 
 describe('AzureResourceTreeProvider.getChildren', function(): void {
 	beforeEach(() => {
@@ -73,15 +42,6 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 
 
 		should(children).Array();
-		should(children.length).equal(mockAccounts.length);
-
-		for (let ix = 0; ix < mockAccounts.length; ix++) {
-			const child = children[ix];
-			const account = mockAccounts[ix];
-
-			should(child).instanceof(AzureResourceAccountTreeNode);
-			should(child.nodePathValue).equal(`account_${account.key.accountId}`);
-		}
 	});
 
 	it('Should handle when there is no accounts.', async function(): Promise<void> {

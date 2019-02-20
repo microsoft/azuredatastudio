@@ -8,7 +8,7 @@
 import { extensions, TreeItem } from 'vscode';
 import { Account } from 'sqlops';
 
-import { azureResource } from './azure-resource';
+import { cmsResource } from './cms-resource';
 
 export class AzureResourceService {
 	private constructor() {
@@ -24,7 +24,7 @@ export class AzureResourceService {
 		return Object.keys(this._resourceProviders);
 	}
 
-	public registerResourceProvider(resourceProvider: azureResource.IAzureResourceProvider): void {
+	public registerResourceProvider(resourceProvider: cmsResource.ICmsResourceProvider): void {
 		this.doRegisterResourceProvider(resourceProvider);
 	}
 
@@ -34,7 +34,7 @@ export class AzureResourceService {
 		this._areResourceProvidersLoaded = false;
 	}
 
-	public async getRootChildren(resourceProviderId: string, account: Account, subscription: azureResource.AzureResourceSubscription, tenatId: string): Promise<any[]> {
+	public async getRootChildren(resourceProviderId: string): Promise<any[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -46,16 +46,13 @@ export class AzureResourceService {
 
 		return children.map((child) => <any>{
 			resourceProviderId: resourceProviderId,
-			resourceNode: <azureResource.IAzureResourceNode>{
-				account: account,
-				subscription: subscription,
-				tenantId: tenatId,
+			resourceNode: <cmsResource.ICmsResourceNode>{
 				treeItem: child.treeItem
 			}
 		});
 	}
 
-	public async getChildren(resourceProviderId: string, element: azureResource.IAzureResourceNode): Promise<any[]> {
+	public async getChildren(resourceProviderId: string, element: cmsResource.ICmsResourceNode): Promise<any[]> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -71,7 +68,7 @@ export class AzureResourceService {
 		});
 	}
 
-	public async getTreeItem(resourceProviderId: string, element?: azureResource.IAzureResourceNode): Promise<TreeItem> {
+	public async getTreeItem(resourceProviderId: string, element?: cmsResource.ICmsResourceNode): Promise<TreeItem> {
 		await this.ensureResourceProvidersRegistered();
 
 		if (!(resourceProviderId in this._resourceProviders)) {
@@ -105,7 +102,7 @@ export class AzureResourceService {
 				await extension.activate();
 
 				if (extension.exports && extension.exports.provideResources) {
-					for (const resourceProvider of <azureResource.IAzureResourceProvider[]>extension.exports.provideResources()) {
+					for (const resourceProvider of <cmsResource.ICmsResourceProvider[]>extension.exports.provideResources()) {
 						this.doRegisterResourceProvider(resourceProvider);
 					}
 				}
@@ -115,14 +112,14 @@ export class AzureResourceService {
 		this._areResourceProvidersLoaded = true;
 	}
 
-	private doRegisterResourceProvider(resourceProvider: azureResource.IAzureResourceProvider): void {
+	private doRegisterResourceProvider(resourceProvider: cmsResource.ICmsResourceProvider): void {
 		this._resourceProviders[resourceProvider.providerId] = resourceProvider;
 		this._treeDataProviders[resourceProvider.providerId] = resourceProvider.getTreeDataProvider();
 	}
 
 	private _areResourceProvidersLoaded: boolean = false;
-	private _resourceProviders: { [resourceProviderId: string]: azureResource.IAzureResourceProvider } = {};
-	private _treeDataProviders: { [resourceProviderId: string]: azureResource.IAzureResourceTreeDataProvider } = {};
+	private _resourceProviders: { [resourceProviderId: string]: cmsResource.ICmsResourceProvider } = {};
+	private _treeDataProviders: { [resourceProviderId: string]: cmsResource.ICmsResourceTreeDataProvider } = {};
 
 	private static readonly _instance = new AzureResourceService();
 }

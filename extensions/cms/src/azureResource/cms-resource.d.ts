@@ -6,23 +6,15 @@
 import { TreeDataProvider, TreeItem } from 'vscode';
 import { DataProvider, Account } from 'sqlops';
 
-export namespace azureResource {
-	export interface IAzureResourceProvider extends DataProvider {
-		getTreeDataProvider(): IAzureResourceTreeDataProvider;
+export namespace cmsResource {
+	export interface ICmsResourceProvider extends DataProvider {
+		getTreeDataProvider(): ICmsResourceTreeDataProvider;
 	}
 
-	export interface IAzureResourceTreeDataProvider extends TreeDataProvider<IAzureResourceNode> {
+	export interface ICmsResourceTreeDataProvider extends TreeDataProvider<ICmsResourceNode> {
 	}
 
-	export interface IAzureResourceNode {
-		readonly account: Account;
-		readonly subscription: AzureResourceSubscription;
-		readonly tenantId: string;
+	export interface ICmsResourceNode {
 		readonly treeItem: TreeItem;
-	}
-
-	export interface AzureResourceSubscription {
-		id: string;
-		name: string;
 	}
 }

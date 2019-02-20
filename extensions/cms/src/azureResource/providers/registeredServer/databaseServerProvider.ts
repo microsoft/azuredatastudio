@@ -8,30 +8,30 @@
 import { ExtensionContext } from 'vscode';
 import { ApiWrapper } from '../../../apiWrapper';
 
-import { azureResource } from '../../azure-resource';
-import { IAzureResourceDatabaseService } from './interfaces';
-import { AzureResourceDatabaseTreeDataProvider } from './databaseTreeDataProvider';
+import { cmsResource } from '../../cms-resource';
+import { ICmsResourceRegisteredServerService } from './interfaces';
+import { CmsRegisteredServerTreeDataProvider } from './databaseServerTreeDataProvider';
 
-export class AzureResourceDatabaseProvider implements azureResource.IAzureResourceProvider {
+export class AzureResourceDatabaseServerProvider implements cmsResource.ICmsResourceProvider {
 	public constructor(
-		databaseService: IAzureResourceDatabaseService,
+		databaseServerService: ICmsResourceRegisteredServerService,
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
 	) {
-		this._databaseService = databaseService;
+		this._databaseServerService = databaseServerService;
 		this._apiWrapper = apiWrapper;
 		this._extensionContext = extensionContext;
 	}
 
-	public getTreeDataProvider(): azureResource.IAzureResourceTreeDataProvider {
-		return new AzureResourceDatabaseTreeDataProvider(this._databaseService, this._apiWrapper, this._extensionContext);
+	public getTreeDataProvider(): cmsResource.ICmsResourceTreeDataProvider {
+		return new CmsRegisteredServerTreeDataProvider(this._databaseServerService, this._apiWrapper, this._extensionContext);
 	}
 
 	public get providerId(): string {
-		return 'azure.resource.providers.database';
+		return 'cms.resource.providers.registeredServer';
 	}
 
-	private _databaseService: IAzureResourceDatabaseService = undefined;
+	private _databaseServerService: ICmsResourceRegisteredServerService = undefined;
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 }

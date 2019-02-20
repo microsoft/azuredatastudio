@@ -32,15 +32,6 @@
 				}
 			}
 		],
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "cmsResource",
-					"title": "%cms.title%",
-					"icon": "resources/azure.svg"
-				}
-			]
-		},
 		"views": {
 			"cmsResource": [
 				{

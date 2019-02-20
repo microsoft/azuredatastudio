@@ -219,8 +219,8 @@ export class ApiWrapper {
 		return this._cmsProvider;
 	}
 
-	public listRegisteredServers() {
-		this.getCmsProvider().getRegisteredServers(this._ownerUri, '').then((result) => {
+	public async listRegisteredServers() {
+		return this.getCmsProvider().getRegisteredServers(this._ownerUri, '').then((result) => {
 			if (result && result.registeredServersList && result.registeredServersList.length > 0) {
 				return result;
 			}
