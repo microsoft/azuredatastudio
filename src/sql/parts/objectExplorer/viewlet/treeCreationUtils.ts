@@ -15,6 +15,7 @@ import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from '
 import { IController } from 'vs/base/parts/tree/browser/tree';
 import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/parts/objectExplorer/viewlet/dragAndDropController';
 import { RecentConnectionDataSource } from 'sql/parts/objectExplorer/viewlet/recentConnectionDataSource';
+import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 export class TreeCreationUtils {
 	/**
