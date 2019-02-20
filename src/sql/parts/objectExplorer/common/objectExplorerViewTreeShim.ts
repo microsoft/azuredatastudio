@@ -5,12 +5,13 @@
 'use strict';
 
 import { ITreeItem } from 'sql/workbench/common/views';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
-import { IConnectionManagementService, IConnectionDialogService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { Deferred } from 'sql/base/common/promise';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 import { IConnectionProfile } from 'sqlops';
 

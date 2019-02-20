@@ -13,10 +13,10 @@ import { distinct } from 'vs/base/common/arrays';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 // {{SQL CARBON EDIT}}
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
 import * as sqlops from 'sqlops';
 import { Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
 @extHostNamedCustomer(MainContext.MainThreadTreeViews)
 export class MainThreadTreeViews extends Disposable implements MainThreadTreeViewsShape {
