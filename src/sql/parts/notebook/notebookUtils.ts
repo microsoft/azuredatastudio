@@ -105,3 +105,14 @@ export interface IStandardKernelWithProvider {
 	readonly connectionProviderIds: string[];
 	readonly notebookProvider: string;
 }
+
+export function tryMatchCellMagic(input: string): string {
+	if (!input) {
+		return input;
+	}
+	let firstLine = input.trimLeft();
+	let magicRegex = /^%%(\w+)/g;
+	let match = magicRegex.exec(firstLine);
+	let magicName = match && match[1];
+	return magicName;
+}
