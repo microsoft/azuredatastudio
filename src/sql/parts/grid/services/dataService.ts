@@ -15,7 +15,7 @@ import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { ISaveRequest } from 'sql/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 /**
  * DataService handles the interactions between QueryModel and app.component. Thus, it handles

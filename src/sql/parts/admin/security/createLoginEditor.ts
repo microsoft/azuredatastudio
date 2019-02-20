@@ -16,7 +16,7 @@ import { CreateLoginModule } from 'sql/parts/admin/security/createLogin.module';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { bootstrapAngular, IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { CREATELOGIN_SELECTOR } from 'sql/parts/admin/security/createLogin.component';
 import { CancellationToken } from 'vs/base/common/cancellation';

@@ -8,9 +8,9 @@ import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { InsightActionContext } from 'sql/workbench/common/actions';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export class RunInsightQueryAction extends Action {

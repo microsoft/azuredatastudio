@@ -5,19 +5,19 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IBackupUiService } from 'sql/platform/backup/common/backupService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
-import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import * as Constants from 'sql/common/constants';
 import { Task } from 'sql/platform/tasks/common/tasks';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
 import { ObjectMetadata } from 'sqlops';
 

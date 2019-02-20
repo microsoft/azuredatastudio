@@ -114,9 +114,10 @@ import { EditorService } from 'vs/workbench/services/editor/browser/editorServic
 import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/platform/url/electron-browser/inactiveExtensionUrlHandler';
 
 // {{SQL CARBON EDIT}}
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
-import { ConnectionDialogService } from 'sql/parts/connection/connectionDialog/connectionDialogService';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ErrorMessageService } from 'sql/workbench/services/errorMessage/browser/errorMessageService';
 import { ServerGroupController } from 'sql/workbench/services/serverGroup/browser/serverGroupController';
@@ -127,31 +128,33 @@ import { ICapabilitiesService, CapabilitiesService } from 'sql/platform/capabili
 import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
-import { IObjectExplorerService, ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { ITaskService, TaskService } from 'sql/platform/taskHistory/common/taskService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
-import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 import { IQueryManagementService, QueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { IEditorDescriptorService, EditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
+import { IEditorDescriptorService, EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
 import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { IBackupService, IBackupUiService } from 'sql/platform/backup/common/backupService';
+import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
-import { BackupUiService } from 'sql/workbench/parts/backup/browser/backupUiService';
+import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import { BackupUiService } from 'sql/workbench/services/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/platform/restore/common/restoreService';
 import { RestoreService, RestoreDialogController } from 'sql/platform/restore/common/restoreServiceImpl';
-import { INewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/interface';
-import { NewDashboardTabDialogService } from 'sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialogService';
-import { IFileBrowserService, IFileBrowserDialogController } from 'sql/platform/fileBrowser/common/interfaces';
+import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/common/newDashboardTabDialog';
+import { NewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialogService';
+import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileBrowserService } from 'sql/platform/fileBrowser/common/fileBrowserService';
-import { FileBrowserDialogController } from 'sql/parts/fileBrowser/fileBrowserDialogController';
-import { IInsightsDialogService } from 'sql/parts/insights/common/interfaces';
-import { InsightsDialogService } from 'sql/parts/insights/insightsDialogService';
+import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
+import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IAccountManagementService } from 'sql/platform/accountManagement/common/interfaces';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
@@ -586,9 +589,7 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(INotebookService, notebookService);
 		serviceCollection.set(IAccountPickerService, this.instantiationService.createInstance(AccountPickerService));
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
-		// {{SQL CARBON EDIT}}
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
-		// {{SQL CARBON EDIT}}
 		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));

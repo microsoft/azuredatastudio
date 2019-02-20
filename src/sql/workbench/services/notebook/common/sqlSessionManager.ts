@@ -14,16 +14,19 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
-export const MAX_ROWS = 2000;
+export const MAX_ROWS = 5000;
+export const NotebookConfigSectionName = 'notebook';
+export const MaxTableRowsConfigName = 'maxTableRows';
 
 const sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
@@ -149,7 +152,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	constructor(@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this.initMagics();
@@ -240,7 +244,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count);
+		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
@@ -312,9 +316,17 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
+	private configuredMaxRows: number = MAX_ROWS;
 
-	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined) {
+	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
 		super();
+		let config = configurationService.getValue(NotebookConfigSectionName);
+		if (config) {
+			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
+			if (maxRows && maxRows > 0) {
+				this.configuredMaxRows = maxRows;
+			}
+		}
 	}
 
 	get inProgress(): boolean {
@@ -379,7 +391,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			for (let resultSet of batch.resultSetSummaries) {
-				let rowCount = resultSet.rowCount > MAX_ROWS ? MAX_ROWS : resultSet.rowCount;
+				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
 				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
 
 					let msg: nb.IIOPubMessage = {
