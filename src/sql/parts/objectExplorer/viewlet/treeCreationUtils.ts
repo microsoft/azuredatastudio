@@ -56,8 +56,7 @@ export class TreeCreationUtils {
 			{
 				indentPixels: 10,
 				twistiePixels: 20,
-				ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers"),
-				horizontalScrollMode: ScrollbarVisibility.Auto
+				ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers")
 			});
 	}
 }
