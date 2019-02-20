@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary } from 'sqlops';
+import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage } from 'sqlops';
 import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
@@ -246,8 +246,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		}));
 		this._register(queryRunner.addListener(EventType.MESSAGE, message => {
 			// TODO handle showing a messages output (should be updated with all messages, only changing 1 output in total)
-			if (message.isError) {
-				this._errorMessageService.showDialog(Severity.Error, sqlKernelError, message.message);
+			if (this._future) {
+				this._future.handleMessage(message);
 			}
 		}));
 		this._register(queryRunner.addListener(EventType.BATCH_COMPLETE, batch => {
@@ -261,24 +261,6 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		if (this._future) {
 			this._future.handleDone();
 		}
-		// let batches = this._queryRunner.batchSets;
-		// // currently only support 1 batch set 1 resultset
-		// if (batches.length > 0) {
-		// 	let batch = batches[0];
-		// 	if (batch.resultSetSummaries.length > 0
-		// 		&& batch.resultSetSummaries[0].rowCount > 0
-		// 	) {
-		// 		let resultset = batch.resultSetSummaries[0];
-		// 		this._columns = resultset.columnInfo;
-		// 		let rows: QueryExecuteSubsetResult;
-		// 		try {
-		// 			rows = await this._queryRunner.getQueryRows(0, resultset.rowCount, batch.id, resultset.id);
-		// 		} catch (e) {
-		// 			return Promise.reject(e);
-		// 		}
-		// 		this._rows = rows.resultSubset.rows;
-		// 	}
-		// }
 		// TODO issue #2746 should ideally show a warning inside the dialog if have no data
 	}
 }
@@ -338,6 +320,18 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 	setStdInHandler(handler: nb.MessageHandler<nb.IStdinMessage>): void {
 		// no-op
+	}
+
+	public handleMessage(msg: IResultMessage): void {
+		if (this.ioHandler) {
+			let message;
+			if (msg.isError) {
+				message = this.convertToError(msg);
+			} else {
+				message = this.convertToDisplayMessage(msg);
+			}
+			this.ioHandler.handle(message);
+		}
 	}
 
 	public handleBatchEnd(batch: BatchSummary): void {
@@ -423,6 +417,51 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 		let tableHtml = '<table>' + table.innerHTML + '</table>';
 		return tableHtml;
+	}
+
+	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
+		if (msg) {
+			let msgData = typeof msg === 'string' ? msg : msg.message;
+			return {
+				channel: 'iopub',
+				type: 'iopub',
+				header: <nb.IHeader>{
+					msg_id: undefined,
+					msg_type: 'display_data'
+				},
+				content: <nb.IDisplayData>{
+					output_type: 'display_data',
+					data: { 'text/html': msgData },
+					metadata: {}
+				},
+				metadata: undefined,
+				parent_header: undefined
+			};
+		}
+		return undefined;
+	}
+
+	private convertToError(msg: IResultMessage | string): nb.IIOPubMessage {
+		if (msg) {
+			let msgData = typeof msg === 'string' ? msg : msg.message;
+			return {
+				channel: 'iopub',
+				type: 'iopub',
+				header: <nb.IHeader>{
+					msg_id: undefined,
+					msg_type: 'error'
+				},
+				content: <nb.IErrorResult>{
+					output_type: 'error',
+					evalue: msgData,
+					ename: '',
+					traceback: []
+				},
+				metadata: undefined,
+				parent_header: undefined
+			};
+		}
+		return undefined;
 	}
 }
 

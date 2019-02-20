@@ -135,7 +135,7 @@ export interface IClientSession extends IDisposable {
 	 * This will optionally start a session if the kernel preferences
 	 * indicate this is desired
 	 */
-	initialize(connection?: IConnectionProfile): Promise<void>;
+	initialize(): Promise<void>;
 
 	/**
 	 * Change the current kernel associated with the document.
@@ -341,7 +341,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile): Promise<void>;
+	changeContext(host: string, connection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void>;
 
 	/**
 	 * Find a cell's index given its model

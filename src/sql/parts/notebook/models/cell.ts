@@ -484,15 +484,15 @@ export class CellModel implements ICellModel {
 		// Otherwise, default to python as the language
 		let languageInfo = this.languageInfo;
 		if (languageInfo) {
-			if (languageInfo.codemirror_mode) {
+			if (languageInfo.name) {
+				this._language = languageInfo.name;
+			} else if (languageInfo.codemirror_mode) {
 				let codeMirrorMode: nb.ICodeMirrorMode = <nb.ICodeMirrorMode>(languageInfo.codemirror_mode);
 				if (codeMirrorMode && codeMirrorMode.name) {
 					this._language = codeMirrorMode.name;
 				}
 			} else if (languageInfo.mimetype) {
 				this._language = languageInfo.mimetype;
-			} else if (languageInfo.name) {
-				this._language = languageInfo.name;
 			}
 		}
 

@@ -70,8 +70,9 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	public getClass(): string {
-		return (this.selectable && this.selected || this._hasFocus) ? 'model-card selected' :
-			'model-card unselected';
+		let cardClass = this.isListItemCard ? 'model-card-list-item' : 'model-card';
+		return (this.selectable && this.selected || this._hasFocus) ? `${cardClass} selected` :
+			`${cardClass} unselected`;
 	}
 
 	public onCardHoverChanged(event: any) {
@@ -93,11 +94,16 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 	}
 
 	public get iconClass(): string {
-		return this._iconClass + ' icon' + ' cardIcon';
+		if (this.isListItemCard) {
+			return this._iconClass + ' icon' + ' list-item-icon';
+		}
+		else {
+			return this._iconClass + ' icon' + ' cardIcon';
+		}
 	}
 
 	private get selectable(): boolean {
-		return this.cardType === 'VerticalButton';
+		return this.cardType === 'VerticalButton' || this.cardType === 'ListItem';
 	}
 
 	// CSS-bound properties
@@ -126,11 +132,15 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return !this.cardType || this.cardType === 'Details';
 	}
 
+	public get isListItemCard(): boolean {
+		return !this.cardType || this.cardType === 'ListItem';
+	}
+
 	public get isVerticalButton(): boolean {
 		return this.cardType === 'VerticalButton';
 	}
 
-	public get showRadioButton():boolean{
+	public get showRadioButton(): boolean {
 		return this.selectable && (this.selected || this._hasFocus);
 	}
 
@@ -138,6 +148,9 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return this.selectable && this.selected;
 	}
 
+	public get descriptions(): string[] {
+		return this.getPropertyOrDefault<CardProperties, string[]>((props) => props.descriptions, []);
+	}
 
 	public get actions(): ActionDescriptor[] {
 		return this.getPropertyOrDefault<CardProperties, ActionDescriptor[]>((props) => props.actions, []);

@@ -77,9 +77,10 @@ const sqlBuiltInExtensions = [
 	'agent',
 	'import',
 	'profiler',
-	'admin-pack'
+	'admin-pack',
+	'big-data-cluster'
 ];
-var azureExtensions =  [ 'azurecore', 'mssql'];
+var azureExtensions = ['azurecore', 'mssql'];
 
 const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.main'),
@@ -213,7 +214,7 @@ function getElectron(arch) {
 		});
 
 		return gulp.src('package.json')
-		.pipe(json({ name: product.nameShort }))
+			.pipe(json({ name: product.nameShort }))
 			.pipe(electron(electronOpts))
 			.pipe(filter(['**', '!**/app/package.json']))
 			.pipe(vfs.dest('.build/electron'));
@@ -262,21 +263,21 @@ function computeChecksum(filename) {
 
 function packageBuiltInExtensions() {
 	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
-			.map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			})
-			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-			.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
 	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
 		const packagePath = path.join(path.dirname(root), element.name + '.vsix');
 		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
 		vsce.createVSIX({
-				cwd: element.path,
-				packagePath: packagePath,
-				useYarn: true
+			cwd: element.path,
+			packagePath: packagePath,
+			useYarn: true
 		});
 	});
 }
@@ -398,7 +399,7 @@ function packageTask(platform, arch, opts) {
 
 		// TODO the API should be copied to `out` during compile, not here
 		const api = gulp.src('src/vs/vscode.d.ts').pipe(rename('out/vs/vscode.d.ts'));
-    // {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}}
 		const dataApi = gulp.src('src/vs/data.d.ts').pipe(rename('out/sql/data.d.ts'));
 
 		const depsSrc = [
@@ -516,7 +517,7 @@ gulp.task('clean-vscode-linux-x64', util.rimraf(path.join(buildRoot, 'azuredatas
 gulp.task('clean-vscode-linux-arm', util.rimraf(path.join(buildRoot, 'azuredatastudio-linux-arm')));
 
 gulp.task('vscode-win32-ia32', ['optimize-vscode', 'clean-vscode-win32-ia32'], packageTask('win32', 'ia32'));
-gulp.task('vscode-win32-x64',  ['vscode-win32-x64-azurecore', 'vscode-win32-x64-mssql', 'optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
+gulp.task('vscode-win32-x64', ['vscode-win32-x64-azurecore', 'vscode-win32-x64-mssql', 'optimize-vscode', 'clean-vscode-win32-x64'], packageTask('win32', 'x64'));
 gulp.task('vscode-darwin', ['vscode-darwin-azurecore', 'vscode-darwin-mssql', 'optimize-vscode', 'clean-vscode-darwin'], packageTask('darwin'));
 gulp.task('vscode-linux-ia32', ['optimize-vscode', 'clean-vscode-linux-ia32'], packageTask('linux', 'ia32'));
 gulp.task('vscode-linux-x64', ['vscode-linux-x64-azurecore', 'vscode-linux-x64-mssql', 'optimize-vscode', 'clean-vscode-linux-x64'], packageTask('linux', 'x64'));
@@ -572,9 +573,9 @@ gulp.task('vscode-translations-push-test', ['optimize-vscode'], function () {
 		gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
 		gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 		gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-	// {{SQL CARBON EDIT}}
-	// disable since function makes calls to VS Code Transifex API
-	// ).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
+		// {{SQL CARBON EDIT}}
+		// disable since function makes calls to VS Code Transifex API
+		// ).pipe(i18n.findObsoleteResources(apiHostname, apiName, apiToken)
 	).pipe(vfs.dest('../vscode-transifex-input'));
 });
 
@@ -656,7 +657,7 @@ function getSettingsSearchBuildId(packageJson) {
 		const branch = process.env.BUILD_SOURCEBRANCH;
 		const branchId = branch.indexOf('/release/') >= 0 ? 0 :
 			/\/master$/.test(branch) ? 1 :
-			2; // Some unexpected branch
+				2; // Some unexpected branch
 
 		const out = cp.execSync(`git rev-list HEAD --count`);
 		const count = parseInt(out.toString());
@@ -729,6 +730,6 @@ function installService() {
 }
 
 gulp.task('install-sqltoolsservice', () => {
-    return installService();
+	return installService();
 });
 
