@@ -18,7 +18,7 @@ import { CommonServiceInterface } from 'sql/services/common/commonServiceInterfa
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()">{{getValue()}}</p>`
+		<p [style.width]="getWidth()" [innerHTML]="getValue()"></p>`
 })
 export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -58,6 +58,29 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 	}
 
 	public getValue(): string {
-		return this.value;
+		let links = this.getPropertyOrDefault<sqlops.TextComponentProperties, sqlops.LinkArea[]>((props) => props.links, []);
+		let originalText = this.value;
+		if (links.length === 0) {
+			return originalText;
+		} else {
+			let currentPosition = 0;
+			links = links.sort((a, b) => a.startPosition - b.startPosition);
+			let sections: string[] = [];
+			for (let i: number = 0; i < links.length; i++) {
+				let link = links[i];
+				if (link.startPosition >= currentPosition && link.startPosition + link.length <= originalText.length) {
+					sections.push(originalText.slice(currentPosition, link.startPosition));
+					let linkTag = `<a href="${link.url}" tabIndex="0" target="blank">${originalText.slice(link.startPosition, link.startPosition + link.length)}</a>`;
+					sections.push(linkTag);
+					currentPosition = link.startPosition + link.length;
+				}
+			}
+
+			if (currentPosition <= originalText.length - 1) {
+				sections.push(originalText.slice(currentPosition));
+			}
+
+			return sections.join('');
+		}
 	}
 }

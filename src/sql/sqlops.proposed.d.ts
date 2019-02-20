@@ -543,6 +543,13 @@ declare module 'sqlops' {
 
 	export interface TextComponentProperties {
 		value?: string;
+		links?: LinkArea[];
+	}
+
+	export interface LinkArea {
+		startPosition: number;
+		length: number;
+		url: string;
 	}
 
 	export interface HyperlinkComponentProperties extends ComponentProperties {

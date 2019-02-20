@@ -430,7 +430,6 @@ export function createApiFactory(
 					return extHostModelViewDialog.createWizardPage(title);
 				},
 				createWizard(title: string): sqlops.window.Wizard {
-					console.warn('deprecated method');
 					return extHostModelViewDialog.createWizard(title);
 				},
 				MessageLevel: sqlExtHostTypes.MessageLevel

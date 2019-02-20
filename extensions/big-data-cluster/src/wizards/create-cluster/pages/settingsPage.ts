@@ -32,15 +32,25 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 		let dockerSettingsGroup = view.modelBuilder.groupContainer().withItems([]).withLayout({ header: localize('bdc-create.DockerSettingsText', 'Docker Settings'), collapsible: true }).component();
 
 		let acceptEulaCheckbox = view.modelBuilder.checkBox().component();
-		acceptEulaCheckbox.label = localize('bdc-create.AcceptEulaText', 'I accept the SQL Server EULA');
 		acceptEulaCheckbox.checked = false;
 
-		let eulaHyperlink = view.modelBuilder.hyperlink().withProperties({
-			label: localize('bdc-create.ViewEulaText', 'View Eula'),
+		let eulaLink: sqlops.LinkArea = {
+			startPosition: parseInt(localize('bdc-create.EulaLinkAreaStartPosition', '13')),
+			length: parseInt(localize('bdc-create.EulaLinkAreaLength', '17')),
 			url: 'https://docs.microsoft.com/en-us/sql/getting-started/about-the-sql-server-license-terms?view=sql-server-2014'
+		};
+		let privacyPolicyLink: sqlops.LinkArea = {
+			startPosition: parseInt(localize('bdc-create.PrivacyPolicyLinkAreaStartPosition', '35')),
+			length: parseInt(localize('bdc-create.PrivacyPolicyLinkAreaLength', '14')),
+			url: 'https://privacy.microsoft.com/en-us/privacystatement'
+		};
+
+		let checkboxText = view.modelBuilder.text().withProperties<sqlops.TextComponentProperties>({
+			value: localize('bdc-create.EulaText', 'I accept the License Agreement and Privacy Policy.'),
+			links: [privacyPolicyLink, eulaLink]
 		}).component();
 
-		let eulaContainer = this.createRow(view, [acceptEulaCheckbox, eulaHyperlink]);
+		let eulaContainer = this.createRow(view, [acceptEulaCheckbox, checkboxText]);
 
 		let form = formBuilder.withFormItems([
 			{
@@ -71,6 +81,6 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 	}
 
 	private createRow(view: sqlops.ModelView, items: sqlops.Component[]): sqlops.FlexContainer {
-		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'baseline' }).component();
+		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 	}
 }
