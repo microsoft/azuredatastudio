@@ -22,11 +22,6 @@
 					"default": "",
 					"description": "%notebook.pythonPath.description%"
 				},
-				"notebook.sqlKernelEnabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "%notebook.sqlKernelEnabled.description%"
-				},
 				"notebook.overrideEditorTheming": {
 					"type": "boolean",
 					"default": true,
