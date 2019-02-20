@@ -43,11 +43,12 @@ export class SchemaCompareDialog {
 	private targetDatabaseComponent: sqlops.FormComponent;
 	private targetDatabaseDropdown: sqlops.DropDownComponent;
 	private targetNoActiveConnectionsText: sqlops.FormComponent;
-
+	// private differencesTable: sqlops.TableComponent;
 	private formBuilder: sqlops.FormBuilder;
 
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
+	private database: string;
 	// Dialog Name for Telemetry
 	public dialogName: string;
 
@@ -60,7 +61,44 @@ export class SchemaCompareDialog {
 		this.dialog.content = [this.generalTab];
 	}
 
-	public async openDialog(dialogName?: string) {
+	public async openDialog(p: any, dialogName?: string) {
+		// let editor = sqlops.workspace.createModelViewEditor('Schema Compare');
+		// editor.registerContent(async view => {
+		// 	this.differencesTable = view.modelBuilder.table()
+		// 		.component();
+		// 	let formModel = view.modelBuilder.formContainer()
+		// 		.withFormItems([{
+		// 			component: this.differencesTable,
+		// 			title: 'Differences'
+		// 		}]).component();
+		// 	view.onClosed((params) => {
+		// 		vscode.window.showInformationMessage('The model view editor is closed.');
+		// 	});
+		// 	await view.initializeModel(formModel);
+
+		// 	this.differencesTable.updateProperties({
+		// 		data: [['source value', 'target value'], ['1', '2']],
+		// 		columns: [
+		// 			{
+		// 				value: localize('dacfx.settingColumn', 'Source'),
+		// 				cssClass: 'align-with-header'
+		// 			},
+		// 			{
+		// 				value: localize('dacfx.valueColumn', 'Target'),
+		// 				cssClass: 'align-with-header'
+		// 			}],
+		// 		width: 700,
+		// 		height: 200
+		// 	});
+		// });
+
+		// editor.openEditor();
+
+		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
+		if (profile) {
+			this.database = profile.databaseName;
+		}
+
 		console.error('opening dialog');
 		let event = dialogName ? dialogName : null;
 		this.dialog = sqlops.window.modelviewdialog.createDialog('Schema Compare', event);
@@ -137,11 +175,15 @@ export class SchemaCompareDialog {
 		console.error('result.areEqual is: ' + result.areEqual);
 		console.error('num of differences: ' + result.differences.length);
 
-		let sourceText: string;
-		let targetText: string;
+		let sourceText = '';
+		let targetText = '';
 		if(result.differences.length > 0) {
-			sourceText = result.differences[0].sourceScript === null ? '' : result.differences[0].sourceScript;
-			targetText = result.differences[0].targetScript === null ? '' : result.differences[0].targetScript;
+			sourceText = this.getAggregatedSourceScript(result.differences);
+			targetText = this.getAggregatedTargetScript(result.differences);
+			// result.differences.forEach(difference => {
+			// 	sourceText += difference.sourceScript === null ? '' : difference.sourceScript;
+			// 	targetText += difference.targetScript === null ? '' : difference.targetScript;
+			// });
 		} else {
 			sourceText = '\n';
 			targetText = '\n';
@@ -159,9 +201,38 @@ export class SchemaCompareDialog {
 			}
 		});
 
-		// const title =  localize('schemaCompare.objectDefinitionsTitle', 'Object Definitions(Target({0}) ⟷ Source({1}))', targetName, sourceName);
 		const title =  localize('schemaCompare.objectDefinitionsTitle', 'Object Definitions(Target ⟷ Source)');
 		vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('target:'), vscode.Uri.parse('source:'), title);
+	}
+
+	private getAggregatedSourceScript(differences: sqlops.DiffEntry[]) : string {
+		let sourceText = '';
+
+		if(differences === null) {
+			return '';
+		}
+
+		differences.forEach(difference => {
+			sourceText += difference.sourceScript === null ? '' : difference.sourceScript;
+			sourceText += this.getAggregatedSourceScript(difference.children);
+		});
+
+		return sourceText;
+	}
+
+	private getAggregatedTargetScript(differences: sqlops.DiffEntry[]) : string {
+		let targetText = '';
+
+		if(differences === null) {
+			return '';
+		}
+
+		differences.forEach(difference => {
+			targetText += difference.targetScript === null ? '' : difference.targetScript;
+			targetText += this.getAggregatedTargetScript(difference.children);
+		});
+
+		return targetText;
 	}
 
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
@@ -183,11 +254,6 @@ export class SchemaCompareDialog {
 				width: 275,
 			}).component();
 
-			this.sourceComponent = await this.createFileBrowser(view, false);
-			this.targetComponent = await this.createFileBrowser(view, true);
-			let sourceRadioButtons = await this.createSourceRadiobuttons(view);
-			let targetRadioButtons = await this.createTargetRadiobuttons(view);
-
 			this.sourceServerComponent = await this.createSourceServerDropdown(view);
 			await this.populateServerDropdown(false);
 
@@ -204,19 +270,36 @@ export class SchemaCompareDialog {
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId, true);
 			}
 
+			this.sourceComponent = await this.createFileBrowser(view, false);
+			this.targetComponent = await this.createFileBrowser(view, true);
+			let sourceRadioButtons = await this.createSourceRadiobuttons(view);
+			let targetRadioButtons = await this.createTargetRadiobuttons(view);
+
 			this.sourceNoActiveConnectionsText = await this.createNoActiveConnectionsText(view);
 			this.targetNoActiveConnectionsText = await this.createNoActiveConnectionsText(view);
 
-			this.formBuilder = view.modelBuilder.formContainer()
+			if (this.database) {
+				this.formBuilder = view.modelBuilder.formContainer()
 				.withFormItems([
 					sourceRadioButtons,
-					this.sourceComponent,
+					this.sourceServerComponent,
+					this.sourceDatabaseComponent,
 					targetRadioButtons,
 					this.targetComponent
 				], {
 						horizontal: true
 					});
-
+			} else {
+				this.formBuilder = view.modelBuilder.formContainer()
+					.withFormItems([
+						sourceRadioButtons,
+						this.sourceComponent,
+						targetRadioButtons,
+						this.targetComponent
+					], {
+							horizontal: true
+						});
+			}
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
 		});
@@ -297,9 +380,13 @@ export class SchemaCompareDialog {
 			this.formBuilder.removeFormItem(this.sourceComponent);
 		});
 
-		dacpacRadioButton.checked = true;
-		this.sourceIsDacpac = true;
-
+		if (this.database) {
+			databaseRadioButton.checked = true;
+			this.sourceIsDacpac = false;
+		} else {
+			dacpacRadioButton.checked = true;
+			this.sourceIsDacpac = true;
+		}
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([dacpacRadioButton, databaseRadioButton]
@@ -456,12 +543,25 @@ export class SchemaCompareDialog {
 	}
 
 	protected async getDatabaseValues(connectionId: string): Promise<{ displayName, name }[]> {
+		let idx = -1;
+		let count = -1;
 		let values = (await sqlops.connection.listDatabases(connectionId)).map(db => {
+			count++;
+			if (this.database && db === this.database) {
+				idx = count;
+			}
+
 			return {
 				displayName: db,
 				name: db
 			};
 		});
+
+		if (idx >= 0) {
+			let tmp = values[0];
+			values[0] = values[idx];
+			values[idx] = tmp;
+		}
 		return values;
 	}
 

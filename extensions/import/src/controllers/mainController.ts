@@ -51,6 +51,6 @@ export default class MainController extends ControllerBase {
 	}
 
 	private initializeSchemaCompareDialog() {
-		sqlops.tasks.registerTask('schemaCompare.start', () => new SchemaCompareDialog().openDialog());
+		sqlops.tasks.registerTask('schemaCompare.start', (profile: sqlops.IConnectionProfile) => new SchemaCompareDialog().openDialog(profile));
 	}
 }
