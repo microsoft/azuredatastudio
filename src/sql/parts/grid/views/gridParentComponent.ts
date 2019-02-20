@@ -25,7 +25,7 @@ import * as Services from 'sql/parts/grid/services/sharedServices';
 import * as GridContentEvents from 'sql/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/parts/query/common/queryContext';
 import { error } from 'sql/base/common/log';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 import { IAction } from 'vs/base/common/actions';

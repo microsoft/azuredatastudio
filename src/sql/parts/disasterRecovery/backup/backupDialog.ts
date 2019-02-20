@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BackupModule } from 'sql/parts/disasterRecovery/backup/backup.module';
 import { BACKUP_SELECTOR } from 'sql/parts/disasterRecovery/backup/backup.component';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 

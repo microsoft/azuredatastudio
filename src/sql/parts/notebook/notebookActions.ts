@@ -16,10 +16,11 @@ import { INotebookModel, IDefaultConnection } from 'sql/parts/notebook/models/mo
 import { CellType } from 'sql/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/parts/notebook/notebook.component';
 import { getErrorMessage, formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/parts/notebook/notebookUtils';
-import { IConnectionManagementService, IConnectionDialogService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 const msgLoading = localize('loading', 'Loading kernels...');
 const kernelLabel: string = localize('Kernel', 'Kernel: ');
@@ -115,7 +116,7 @@ export interface IActionStateData {
 
 export class IMultiStateData<T> {
 	private _stateMap = new Map<T, IActionStateData>();
-	constructor(mappings: { key: T, value: IActionStateData}[], private _state: T, private _baseClass?: string) {
+	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
 		if (mappings) {
 			mappings.forEach(s => this._stateMap.set(s.key, s.value));
 		}

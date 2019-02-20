@@ -22,7 +22,7 @@ import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connec
 const localize = nls.loadMessageBundle();
 
 export class SparkJobSubmissionDialog {
-	private _dialog: sqlops.window.modelviewdialog.Dialog;
+	private _dialog: sqlops.window.Dialog;
 	private _dataModel: SparkJobSubmissionModel;
 	private _sparkConfigTab: SparkConfigurationTab;
 	private _sparkAdvancedTab: SparkAdvancedTab;

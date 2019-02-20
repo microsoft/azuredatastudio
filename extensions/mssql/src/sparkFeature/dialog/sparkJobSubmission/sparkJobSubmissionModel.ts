@@ -39,7 +39,7 @@ export class SparkJobSubmissionModel {
 
 	constructor(
 		private readonly _sqlClusterConnection: SqlClusterConnection,
-		private readonly _dialog: sqlops.window.modelviewdialog.Dialog,
+		private readonly _dialog: sqlops.window.Dialog,
 		private readonly _appContext: AppContext,
 		requestService?: (args: any) => any) {
 
@@ -54,7 +54,7 @@ export class SparkJobSubmissionModel {
 
 	public get connection(): SqlClusterConnection { return this._sqlClusterConnection; }
 	public get dialogService(): SparkJobSubmissionService { return this._dialogService; }
-	public get dialog(): sqlops.window.modelviewdialog.Dialog { return this._dialog; }
+	public get dialog(): sqlops.window.Dialog { return this._dialog; }
 
 	public isJarFile(): boolean {
 		if (this.hdfsSubmitFilePath) {
@@ -65,15 +65,15 @@ export class SparkJobSubmissionModel {
 	}
 
 	public showDialogError(message: string): void {
-		let errorLevel = sqlops.window.modelviewdialog.MessageLevel ? sqlops.window.modelviewdialog.MessageLevel : 0;
+		let errorLevel = sqlops.window.MessageLevel ? sqlops.window.MessageLevel : 0;
 		this._dialog.message = {
 			text: message,
-			level: <sqlops.window.modelviewdialog.MessageLevel>errorLevel
+			level: <sqlops.window.MessageLevel>errorLevel
 		};
 	}
 
 	public showDialogInfo(message: string): void {
-		let infoLevel = sqlops.window.modelviewdialog.MessageLevel ? sqlops.window.modelviewdialog.MessageLevel.Information : 2;
+		let infoLevel = sqlops.window.MessageLevel ? sqlops.window.MessageLevel.Information : 2;
 		this._dialog.message = {
 			text: message,
 			level: infoLevel

@@ -22,7 +22,7 @@ import { GridParentComponent } from 'sql/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/parts/grid/views/editData/editDataGridActions';
 import { error } from 'sql/base/common/log';
 import { clone, mixin } from 'sql/base/common/objects';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';

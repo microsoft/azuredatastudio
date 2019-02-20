@@ -14,16 +14,19 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import Severity from 'vs/base/common/severity';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { Deferred } from 'sql/base/common/promise';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
 import { elapsedTimeLabel } from 'sql/parts/query/common/localizedConstants';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export const sqlKernel: string = localize('sqlKernel', 'SQL');
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
-export const MAX_ROWS = 2000;
+export const MAX_ROWS = 5000;
+export const NotebookConfigSectionName = 'notebook';
+export const MaxTableRowsConfigName = 'maxTableRows';
 
 let sqlKernelSpec: nb.IKernelSpec = ({
 	name: sqlKernel,
@@ -137,7 +140,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	constructor( @IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService) {
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IConfigurationService private _configurationService: IConfigurationService) {
 		super();
 	}
 
@@ -219,7 +223,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		// TODO verify this is "canonical" behavior
 		let count = canRun ? ++this._executionCount : undefined;
 
-		this._future = new SQLFuture(this._queryRunner, count);
+		this._future = new SQLFuture(this._queryRunner, count, this._configurationService);
 		if (!canRun) {
 			// Complete early
 			this._future.handleDone(new Error(localize('connectionRequired', 'A connection must be chosen to run notebook cells')));
@@ -272,9 +276,17 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	private ioHandler: nb.MessageHandler<nb.IIOPubMessage>;
 	private doneHandler: nb.MessageHandler<nb.IShellMessage>;
 	private doneDeferred = new Deferred<nb.IShellMessage>();
+	private configuredMaxRows: number = MAX_ROWS;
 
-	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined) {
+	constructor(private _queryRunner: QueryRunner, private _executionCount: number | undefined, private configurationService: IConfigurationService) {
 		super();
+		let config = configurationService.getValue(NotebookConfigSectionName);
+		if (config) {
+			let maxRows = config[MaxTableRowsConfigName] ? config[MaxTableRowsConfigName] : undefined;
+			if (maxRows && maxRows > 0) {
+				this.configuredMaxRows = maxRows;
+			}
+		}
 	}
 
 	get inProgress(): boolean {
@@ -345,9 +357,8 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		if (this.ioHandler) {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
 			for (let resultSet of batch.resultSetSummaries) {
-				let rowCount = resultSet.rowCount > MAX_ROWS ? MAX_ROWS : resultSet.rowCount;
+				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
 				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
-					let columns = resultSet.columnInfo;
 
 					let msg: nb.IIOPubMessage = {
 						channel: 'iopub',
@@ -360,7 +371,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 							output_type: 'execute_result',
 							metadata: {},
 							execution_count: this._executionCount,
-							data: { 'application/vnd.dataresource+json': this.convertToDataResource(columns, d), 'text/html': this.convertToHtmlTable(columns, d) }
+							data: { 'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, d), 'text/html': this.convertToHtmlTable(resultSet.columnInfo, d) }
 						},
 						metadata: undefined,
 						parent_header: undefined
@@ -382,7 +393,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IDbColumn[], d: QueryExecuteSubsetResult): IDataResource {
+	private convertToDataResource(columns: IDbColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({name: escape(column.columnName)});
@@ -391,7 +402,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
-			data: d.resultSubset.rows.map(row => {
+			data: subsetResult.resultSubset.rows.map(row => {
 				let rowObject: { [key: string]: any; } = {};
 				row.forEach((val, index) => {
 					rowObject[index] = val.displayValue;
@@ -402,29 +413,23 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
-		let data: SQLData = {
-			columns: columns.map(c => escape(c.columnName)),
-			rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-		};
-		let table: HTMLTableElement = document.createElement('table');
-		table.createTHead();
-		table.createTBody();
-		let hrow = <HTMLTableRowElement>table.insertRow();
-		// headers
-		for (let column of data.columns) {
-			let cell = hrow.insertCell();
-			cell.innerHTML = column;
-		}
-
-		for (let row in data.rows) {
-			let hrow = <HTMLTableRowElement>table.insertRow();
-			for (let column in data.columns) {
-				let cell = hrow.insertCell();
-				cell.innerHTML = escape(data.rows[row][column]);
+		let htmlString = '<table>';
+		if (columns.length > 0) {
+			htmlString += '<tr>';
+			for (let column of columns) {
+				htmlString += '<th>' + escape(column.columnName) + '</th>';
 			}
+			htmlString += '</tr>';
 		}
-		let tableHtml = '<table>' + table.innerHTML + '</table>';
-		return tableHtml;
+		for (let row in d.resultSubset.rows) {
+			htmlString += '<tr>';
+			for (let column in columns) {
+				htmlString += '<td>' + escape(d.resultSubset.rows[row][column].displayValue) + '</td>';
+			}
+			htmlString += '</tr>';
+		}
+		htmlString += '</table>';
+		return htmlString;
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {
