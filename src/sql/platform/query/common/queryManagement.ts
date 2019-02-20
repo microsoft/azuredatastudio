@@ -89,7 +89,7 @@ export class QueryManagementService implements IQueryManagementService {
 	public _serviceBrand: any;
 
 	private _requestHandlers = new Map<string, IQueryRequestHandler>();
-	private _onQueryRequestHandlerAddedEmitter = new Emitter<string>();
+	private _onHandlerAddedEmitter = new Emitter<string>();
 	// public for testing only
 	public _queryRunners = new Map<string, QueryRunner>();
 
@@ -140,7 +140,7 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public addQueryRequestHandler(queryType: string, handler: IQueryRequestHandler): IDisposable {
 		this._requestHandlers.set(queryType, handler);
-		this._onQueryRequestHandlerAddedEmitter.fire(queryType);
+		this._onHandlerAddedEmitter.fire(queryType);
 
 		return {
 			dispose: () => {
@@ -148,8 +148,8 @@ export class QueryManagementService implements IQueryManagementService {
 		};
 	}
 
-	public get onQueryRequestHandlerAdded(): Event<string> {
-		return this._onQueryRequestHandlerAddedEmitter.event;
+	public get onHandlerAdded(): Event<string> {
+		return this._onHandlerAddedEmitter.event;
 	}
 
 	public isProviderRegistered(providerId: string): boolean {

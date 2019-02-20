@@ -117,16 +117,14 @@ export class NotebookService extends Disposable implements INotebookService {
 			extensionService.whenInstalledExtensionsRegistered().then(() => {
 				this.cleanupProviders();
 
-				// If providers have already registered by this point, add them now (since onQueryResultHandlerAdded will never fire)
+				// If providers have already registered by this point, add them now (since onHandlerAdded will never fire)
 				if (this._queryManagementService.registeredProviders && this._queryManagementService.registeredProviders.length > 0) {
 					this.updateSQLRegistrationWithConnectionProviders();
 				}
 
-				this._queryManagementService.onQueryRequestHandlerAdded((queryType) => {
+				this._register(this._queryManagementService.onHandlerAdded((queryType) => {
 					this.updateSQLRegistrationWithConnectionProviders();
-					this._isRegistrationComplete = true;
-					this._registrationComplete.resolve();
-				});
+				}));
 			});
 		}
 		if (extensionManagementService) {
@@ -175,7 +173,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		let sqlNotebookProvider = this._providerToStandardKernels.get(notebookConstants.SQL);
 		if (sqlNotebookProvider) {
 			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
-			let provider = sqlNotebookProvider.find(p => p.name.toLowerCase() === notebookConstants.SQL.toLowerCase());
+			let provider = sqlNotebookProvider.find(p => p.name === notebookConstants.SQL);
 			if (provider) {
 				this._providerToStandardKernels.set(notebookConstants.SQL, [{
 					name: notebookConstants.SQL,
@@ -183,6 +181,8 @@ export class NotebookService extends Disposable implements INotebookService {
 				}]);
 			}
 		}
+		this._isRegistrationComplete = true;
+		this._registrationComplete.resolve();
 	}
 
 	private updateNotebookThemes() {
