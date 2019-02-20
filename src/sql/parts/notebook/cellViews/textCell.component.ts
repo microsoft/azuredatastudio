@@ -129,15 +129,15 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updatePreview() {
 		if (this._content !== this.cellModel.source || this.cellModel.source.length === 0) {
 			if (!this.cellModel.source && !this.isEditMode) {
-				(<HTMLElement>this.output.nativeElement).innerHTML = localize('doubleClickEdit', 'Double-click to edit');
+				this._content = localize('doubleClickEdit', 'Double-click to edit');
 			} else {
 				this._content = this.sanitizeContent(this.cellModel.source);
-				// todo: pass in the notebook filename instead of undefined value
-				this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
-					let outputElement = <HTMLElement>this.output.nativeElement;
-					outputElement.innerHTML = htmlcontent;
-				});
 			}
+			// todo: pass in the notebook filename instead of undefined value
+			this._commandService.executeCommand<string>('notebook.showPreview', undefined, this._content).then((htmlcontent) => {
+				let outputElement = <HTMLElement>this.output.nativeElement;
+				outputElement.innerHTML = htmlcontent;
+			});
 		}
 	}
 
