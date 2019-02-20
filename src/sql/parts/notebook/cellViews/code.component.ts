@@ -6,11 +6,10 @@ import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
-import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/parts/notebook/cellToggleMoreActions';
-import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
@@ -23,16 +22,18 @@ import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import URI from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
 import * as DOM from 'vs/base/browser/dom';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Emitter, debounceEvent } from 'vs/base/common/event';
+import { CellTypes } from 'sql/parts/notebook/models/contracts';
+import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
+import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 
 export const CODE_SELECTOR: string = 'code-component';
+const MARKDOWN_CLASS = 'markdown';
 
 @Component({
 	selector: CODE_SELECTOR,
@@ -42,12 +43,29 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@Input() cellModel: ICellModel;
+
+	public get cellModel(): ICellModel {
+		return this._cellModel;
+	}
+
+	@Input() public set cellModel(value: ICellModel) {
+		this._cellModel = value;
+		if (this.toolbarElement && value && value.cellType === CellTypes.Markdown) {
+			let nativeToolbar = <HTMLElement> this.toolbarElement.nativeElement;
+			DOM.addClass(nativeToolbar, MARKDOWN_CLASS);
+		}
+	}
 
 	@Output() public onContentChanged = new EventEmitter<void>();
 
 	@Input() set model(value: NotebookModel) {
 		this._model = value;
+		this._register(value.kernelChanged(() => {
+			// On kernel change, need to reevaluate the language for each cell
+			// Refresh based on the cell magic (since this is kernel-dependent) and then update using notebook language
+			this.checkForLanguageMagics();
+			this.updateLanguageMode();
+		}));
 	}
 
 	@Input() set activeCellId(value: string) {
@@ -62,31 +80,31 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
-
 	protected _actionBar: Taskbar;
 	private readonly _minimumHeight = 30;
+	private readonly _maximumHeight = 4000;
+	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
-	private _uri: string;
 	private _model: NotebookModel;
 	private _activeCellId: string;
 	private _cellToggleMoreActions: CellToggleMoreActions;
+	private _layoutEmitter = new Emitter<void>();
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IModelService) private _modelService: IModelService,
 		@Inject(IModeService) private _modeService: IModeService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(INotificationService) private notificationService: INotificationService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService
 	) {
 		super();
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
+		this._register(debounceEvent(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
+		(() => this.layout()));
+
 	}
 
 	ngOnInit() {
@@ -102,6 +120,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
+				if (isActive && this._model.defaultKernel.display_name === notebookConstants.SQL
+					&& this.cellModel.cellType === CellTypes.Code
+					&& this.cellModel.cellUri) {
+					this._model.notebookOptions.connectionService.connect(this._model.activeConnection, this.cellModel.cellUri.toString()).catch(e => console.log(e));
+				}
 				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
@@ -114,8 +137,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	ngAfterContentInit(): void {
 		this.createEditor();
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, e => {
-			this.layout();
+			this._layoutEmitter.fire();
 		}));
+	}
+
+	ngAfterViewInit(): void {
+		this._layoutEmitter.fire();
 	}
 
 	get model(): NotebookModel {
@@ -132,7 +159,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
-		let uri = this.createUri();
+		this._editor.setMaximumHeight(this._maximumHeight);
+		let uri = this.cellModel.cellUri;
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
 		this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
@@ -143,19 +171,26 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
 
+		// For markdown cells, don't show line numbers unless we're using editor defaults
+		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
+		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
+
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
+			this.checkForLanguageMagics();
+			// TODO see if there's a better way to handle reassessing size.
+			setTimeout(() => this._layoutEmitter.fire(), 250);
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap')) {
 				this._editor.setHeightToScrollHeight(true);
 			}
 		}));
-		this._register(this.model.layoutChanged(this.layout, this));
+		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire, this));
 		this.layout();
 	}
 
@@ -180,14 +215,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._cellToggleMoreActions.onInit(this.moreActionsElementRef, this.model, this.cellModel);
 	}
 
-
-	private createUri(): URI {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.cellModel.id}` });
-		// Use this to set the internal (immutable) and public (shared with extension) uri properties
-		this.cellModel.cellUri = uri;
-		return uri;
-	}
-
 	/// Editor Functions
 	private updateModel() {
 		if (this._editorModel) {
@@ -195,7 +222,31 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
-	private updateLanguageMode() {
+	private checkForLanguageMagics(): void {
+		try {
+			if (!this.cellModel || this.cellModel.cellType !== CellTypes.Code) {
+				return;
+			}
+			if (this._editorModel && this._editor && this._editorModel.getLineCount() > 1) {
+				// Only try to match once we've typed past the first line
+				let magicName = notebookUtils.tryMatchCellMagic(this._editorModel.getLineContent(1));
+				if (magicName) {
+					let kernelName = this._model.clientSession && this._model.clientSession.kernel ? this._model.clientSession.kernel.name : undefined;
+					let magic = this._model.notebookOptions.cellMagicMapper.toLanguageMagic(magicName, kernelName);
+					if (magic && this.cellModel.language !== magic.language) {
+						this.cellModel.setOverrideLanguage(magic.language);
+						this.updateLanguageMode();
+					}
+				} else {
+					this.cellModel.setOverrideLanguage(undefined);
+				}
+			}
+		} catch (err) {
+			// No-op for now. Should we log?
+		}
+	}
+
+	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
 			this._modeService.getOrCreateMode(this.cellModel.language).then((modeValue) => {
 				this._modelService.setMode(this._editorModel, modeValue);

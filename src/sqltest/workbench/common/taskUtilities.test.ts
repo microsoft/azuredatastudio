@@ -8,7 +8,7 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

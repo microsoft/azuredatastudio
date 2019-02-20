@@ -46,7 +46,7 @@ export function renderDataResource(
 	let rowNumberColumn = new RowNumberColumn({ numberOfRows: source.length });
 	columnsTransformed.unshift(rowNumberColumn.getColumnDefinition());
 
-	let transformedData = transformData(sourceObject.data, columns);
+	let transformedData = transformData(sourceObject.data, columnsTransformed);
 	tableResultsData.push(transformedData);
 
 	let detailTable = new Table(tableContainer, {
@@ -72,30 +72,31 @@ export function renderDataResource(
 }
 
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
-function transformData(rows: any[], columns: string[]): { [key: string]: string }[] {
-	return rows.map(row => {
-		let dataWithSchema = {};
-		Object.keys(row).forEach((val, index) => {
+function transformData(rows: any[], columns: Slick.Column<any>[]): { [key: string]: string }[] {
+    return rows.map(row => {
+        let dataWithSchema = {};
+        Object.keys(row).forEach((val, index) => {
 			let displayValue = String(Object.values(row)[index]);
-			dataWithSchema[columns[index]] = {
-				displayValue: displayValue,
-				ariaLabel: escape(displayValue),
-				isNull: false
-			};
-		});
-		return dataWithSchema;
-	});
+			// Since the columns[0] represents the row number, start at 1
+            dataWithSchema[columns[index + 1].field] = {
+                displayValue: displayValue,
+                ariaLabel: escape(displayValue),
+                isNull: false
+            };
+        });
+        return dataWithSchema;
+    });
 }
 
 function transformColumns(columns: string[]): Slick.Column<any>[] {
-	return columns.map(col => {
-		return <Slick.Column<any>>{
-			name: col,
-			id: col,
-			field: col,
-			formatter: textFormatter
-		};
-	});
+    return columns.map((col, index) => {
+        return <Slick.Column<any>>{
+            name: col,
+            id: col,
+            field: index.toString(),
+            formatter: textFormatter
+        };
+    });
 }
 
 /**

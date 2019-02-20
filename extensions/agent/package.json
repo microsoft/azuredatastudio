@@ -2,14 +2,14 @@
   "name": "agent",
   "displayName": "SQL Server Agent",
   "description": "Manage and troubleshoot SQL Server Agent jobs",
-  "version": "0.35.2",
+  "version": "0.36.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
   "icon": "images/sqlserver.png",
   "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
   "engines": {
-      "vscode": "0.10.x"
+    "vscode": "0.10.x"
   },
   "activationEvents": [
     "*"
@@ -45,7 +45,7 @@
     "vscode-nls": "^3.2.1"
   },
   "devDependencies": {
-		"mocha-junit-reporter": "^1.17.0",
-		"mocha-multi-reporters": "^1.1.7"
-	}
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7"
+  }
 }

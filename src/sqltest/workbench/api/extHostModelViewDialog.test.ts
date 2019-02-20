@@ -276,7 +276,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		// Create the wizard and add a validation that records that it has been called
 		let wizard = extHostModelViewDialog.createWizard('wizard_1');
 		extHostModelViewDialog.updateWizard(wizard);
-		let validationInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo;
+		let validationInfo: sqlops.window.WizardPageChangeInfo;
 		wizard.registerNavigationValidator(info => {
 			validationInfo = info;
 			return true;

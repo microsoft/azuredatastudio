@@ -1,5 +1,30 @@
 # Change Log
 
+## Version 1.4.5
+* Release date: February 13, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Added **Admin pack for SQL Server** extension pack to make it easier to install SQL Server admin-related extensions. This includes:
+    * [SQL Server Agent](https://docs.microsoft.com/en-us/sql/azure-data-studio/sql-server-agent-extension?view=sql-server-2017)
+    * [SQL Server Profiler](https://docs.microsoft.com/en-us/sql/azure-data-studio/sql-server-profiler-extension?view=sql-server-2017)
+    * [SQL Server Import](https://docs.microsoft.com/en-us/sql/azure-data-studio/sql-server-import-extension?view=sql-server-2017)
+* Added filtering extended event support in Profiler extension
+* Added Save as XML feature that can save T-SQL results as XML
+* Added Data-Tier Application Wizard improvements
+    * Added Generate script button
+    * Added view to give warnings of possible data loss during deployment
+* Updates to the [SQL Server 2019 Preview extension](https://docs.microsoft.com/sql/azure-data-studio/sql-server-2019-extension?view=sql-server-ver15)
+* Results streaming enabled by default for long running queries
+* Resolved [bugs and issues](https://github.com/Microsoft/azuredatastudio/milestone/23?closed=1).
+
+## Contributions and "thank you"
+We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
+
+* AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
+* sadedil for `Missing feature request: Save as XML #3729`
+* gbritton1 for `Removed reference to object explorer #3463`
+
 ## Version 1.3.8
 * Release date: January 9, 2019
 * Release status: General Availability

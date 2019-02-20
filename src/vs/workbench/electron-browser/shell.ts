@@ -100,7 +100,7 @@ import { MulitExtensionManagementService } from 'vs/platform/extensionManagement
 import { ExtensionManagementServerService } from 'vs/workbench/services/extensions/node/extensionManagementServerService';
 
 // {{SQL CARBON EDIT}}
-import { FileTelemetryService } from 'sql/platform/telemetry/fileTelemetryService';
+import { FileTelemetryService } from 'sql/workbench/services/telemetry/node/fileTelemetryService';
 
 /**
  * Services that we require for the Shell
@@ -386,7 +386,7 @@ export class WorkbenchShell extends Disposable {
 		if (this.environmentService.args['perf-test']) {
 			let telemetryOutput = this.environmentService.args['telemetry-output'];
 			this.telemetryService = new FileTelemetryService(telemetryOutput);
-		// Telemetry
+			// Telemetry
 		} else if (this.environmentService.isBuilt && !this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
 			const channel = getDelayedChannel<ITelemetryAppenderChannel>(sharedProcess.then(c => c.getChannel('telemetryAppender')));
 			const config: ITelemetryServiceConfig = {
@@ -516,7 +516,7 @@ export class WorkbenchShell extends Disposable {
 
 	// {{SQL CARBON EDIT}}
 	private diffInDays(nowDate: number, lastUseDate: number): number {
-		return (nowDate - lastUseDate)/(24*3600*1000);
+		return (nowDate - lastUseDate) / (24 * 3600 * 1000);
 	}
 
 	onUnexpectedError(error: any): void {

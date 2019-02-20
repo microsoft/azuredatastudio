@@ -48,8 +48,8 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private readonly EditOperatorDialog = 'EditOperatorDialogOpened';
 
 	// UI Components
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private notificationsTab: sqlops.window.modelviewdialog.DialogTab;
+	private generalTab: sqlops.window.DialogTab;
+	private notificationsTab: sqlops.window.DialogTab;
 
 	// General tab controls
 	private nameTextBox: sqlops.InputBoxComponent;
@@ -83,9 +83,9 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 		this.dialogName = this.isEdit ? this.EditOperatorDialog : this.NewOperatorDialog;
 	}
 
-	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
-		this.generalTab = sqlops.window.modelviewdialog.createTab(OperatorDialog.GeneralTabText);
-		this.notificationsTab = sqlops.window.modelviewdialog.createTab(OperatorDialog.NotificationsTabText);
+	protected async initializeDialog(dialog: sqlops.window.Dialog) {
+		this.generalTab = sqlops.window.createTab(OperatorDialog.GeneralTabText);
+		this.notificationsTab = sqlops.window.createTab(OperatorDialog.NotificationsTabText);
 
 		this.initializeGeneralTab();
 		this.initializeNotificationTab();

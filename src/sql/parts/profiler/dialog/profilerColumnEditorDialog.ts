@@ -5,8 +5,8 @@
 'use strict';
 import 'vs/css!sql/parts/profiler/media/profiler';
 
-import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Modal } from 'sql/workbench/browser/modal/modal';
+import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
