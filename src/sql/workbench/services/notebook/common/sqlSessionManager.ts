@@ -339,7 +339,6 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > MAX_ROWS ? MAX_ROWS : resultSet.rowCount;
 				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
-					let columns = resultSet.columnInfo;
 
 					let msg: nb.IIOPubMessage = {
 						channel: 'iopub',
@@ -352,7 +351,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 							output_type: 'execute_result',
 							metadata: {},
 							execution_count: this._executionCount,
-							data: { 'application/vnd.dataresource+json': this.convertToDataResource(columns, d), 'text/html': this.convertToHtmlTable(columns, d) }
+							data: { 'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, d), 'text/html': this.convertToHtmlTable(resultSet.columnInfo, d) }
 						},
 						metadata: undefined,
 						parent_header: undefined
@@ -374,7 +373,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		// no-op
 	}
 
-	private convertToDataResource(columns: IDbColumn[], d: QueryExecuteSubsetResult): IDataResource {
+	private convertToDataResource(columns: IDbColumn[], subsetResult: QueryExecuteSubsetResult): IDataResource {
 		let columnsResources: IDataResourceSchema[] = [];
 		columns.forEach(column => {
 			columnsResources.push({name: escape(column.columnName)});
@@ -383,7 +382,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		columnsFields.fields = columnsResources;
 		return {
 			schema: columnsFields,
-			data: d.resultSubset.rows.map(row => {
+			data: subsetResult.resultSubset.rows.map(row => {
 				let rowObject: { [key: string]: any; } = {};
 				row.forEach((val, index) => {
 					rowObject[index] = val.displayValue;
@@ -394,29 +393,23 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	}
 
 	private convertToHtmlTable(columns: IDbColumn[], d: QueryExecuteSubsetResult): string {
-		let data: SQLData = {
-			columns: columns.map(c => escape(c.columnName)),
-			rows: d.resultSubset.rows.map(r => r.map(c => c.displayValue))
-		};
-		let table: HTMLTableElement = document.createElement('table');
-		table.createTHead();
-		table.createTBody();
-		let hrow = <HTMLTableRowElement>table.insertRow();
-		// headers
-		for (let column of data.columns) {
-			let cell = hrow.insertCell();
-			cell.innerHTML = column;
-		}
-
-		for (let row in data.rows) {
-			let hrow = <HTMLTableRowElement>table.insertRow();
-			for (let column in data.columns) {
-				let cell = hrow.insertCell();
-				cell.innerHTML = escape(data.rows[row][column]);
+		let htmlString = '<table>';
+		if (columns.length > 0) {
+			htmlString += '<tr>';
+			for (let column of columns) {
+				htmlString += '<th>' + escape(column.columnName) + '</th>';
 			}
+			htmlString += '</tr>';
 		}
-		let tableHtml = '<table>' + table.innerHTML + '</table>';
-		return tableHtml;
+		for (let row in d.resultSubset.rows) {
+			htmlString += '<tr>';
+			for (let column in columns) {
+				htmlString += '<td>' + escape(d.resultSubset.rows[row][column].displayValue) + '</td>';
+			}
+			htmlString += '</tr>';
+		}
+		htmlString += '</table>';
+		return htmlString;
 	}
 
 	private convertToDisplayMessage(msg: IResultMessage | string): nb.IIOPubMessage {

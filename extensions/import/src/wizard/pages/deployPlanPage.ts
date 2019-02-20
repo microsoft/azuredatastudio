@@ -37,7 +37,7 @@ export class DeployPlanResult {
 }
 
 export class DeployPlanPage extends DacFxConfigPage {
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
@@ -50,7 +50,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private dataLossComponentGroup: sqlops.FormComponentGroup;
 	private noDataLossTextComponent: sqlops.FormComponent;
 
-	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	public constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super(instance, wizardPage, model, view);
 	}
 

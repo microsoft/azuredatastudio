@@ -341,7 +341,7 @@ export interface INotebookModel {
 	/**
 	 * Change the current context (if applicable)
 	 */
-	changeContext(host: string, connection?: IConnectionProfile): Promise<void>;
+	changeContext(host: string, connection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void>;
 
 	/**
 	 * Find a cell's index given its model

@@ -18,6 +18,7 @@ import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/mode
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
 
 
@@ -54,6 +55,7 @@ export class CellModel implements ICellModel {
 		} else {
 			this._isTrusted = false;
 		}
+		this.createUri();
 	}
 
 	public equals(other: ICellModel) {
@@ -484,15 +486,15 @@ export class CellModel implements ICellModel {
 		// Otherwise, default to python as the language
 		let languageInfo = this.languageInfo;
 		if (languageInfo) {
-			if (languageInfo.codemirror_mode) {
+			if (languageInfo.name) {
+				this._language = languageInfo.name;
+			} else if (languageInfo.codemirror_mode) {
 				let codeMirrorMode: nb.ICodeMirrorMode = <nb.ICodeMirrorMode>(languageInfo.codemirror_mode);
 				if (codeMirrorMode && codeMirrorMode.name) {
 					this._language = codeMirrorMode.name;
 				}
 			} else if (languageInfo.mimetype) {
 				this._language = languageInfo.mimetype;
-			} else if (languageInfo.name) {
-				this._language = languageInfo.name;
 			}
 		}
 
@@ -506,5 +508,11 @@ export class CellModel implements ICellModel {
 
 	private hasLanguage(): boolean {
 		return !!this._language;
+	}
+
+	private createUri(): void {
+		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		// Use this to set the internal (immutable) and public (shared with extension) uri properties
+		this.cellUri = uri;
 	}
 }

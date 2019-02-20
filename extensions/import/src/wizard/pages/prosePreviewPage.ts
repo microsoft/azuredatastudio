@@ -20,7 +20,7 @@ export class ProsePreviewPage extends ImportPage {
 	private form: sqlops.FormContainer;
 	private refresh: sqlops.ButtonComponent;
 
-	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
+	public constructor(instance: FlatFileWizard, wizardPage: sqlops.window.WizardPage, model: ImportDataModel, view: sqlops.ModelView, provider: FlatFileProvider) {
 		super(instance, wizardPage, model, view, provider);
 	}
 

@@ -11,7 +11,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { IInsightsView, IInsightData } from 'sql/parts/dashboard/widgets/insights/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { attachTableStyler } from 'sql/common/theme/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 @Component({

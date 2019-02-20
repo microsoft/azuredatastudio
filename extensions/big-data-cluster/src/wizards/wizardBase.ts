@@ -9,13 +9,13 @@ import { ExtensionContext } from 'vscode';
 
 export abstract class WizardBase<T> {
 
-	protected wizard: sqlops.window.modelviewdialog.Wizard;
+	protected wizard: sqlops.window.Wizard;
 
 	constructor(public model: T, public context: ExtensionContext, private title: string) {
 	}
 
 	public open(): Thenable<void> {
-		this.wizard = sqlops.window.modelviewdialog.createWizard(this.title);
+		this.wizard = sqlops.window.createWizard(this.title);
 		this.initialize();
 		return this.wizard.open();
 	}

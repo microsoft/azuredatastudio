@@ -16,7 +16,7 @@ const localize = nls.loadMessageBundle();
 
 export abstract class DacFxConfigPage extends BasePage {
 
-	protected readonly wizardPage: sqlops.window.modelviewdialog.WizardPage;
+	protected readonly wizardPage: sqlops.window.WizardPage;
 	protected readonly instance: DataTierApplicationWizard;
 	protected readonly model: DacFxDataModel;
 	protected readonly view: sqlops.ModelView;
@@ -28,7 +28,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected fileButton: sqlops.ButtonComponent;
 	protected fileExtension: string;
 
-	protected constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.modelviewdialog.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
+	protected constructor(instance: DataTierApplicationWizard, wizardPage: sqlops.window.WizardPage, model: DacFxDataModel, view: sqlops.ModelView) {
 		super();
 		this.instance = instance;
 		this.wizardPage = wizardPage;

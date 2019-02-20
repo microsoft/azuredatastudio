@@ -7,7 +7,7 @@
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
-	IConnectionManagementService, IConnectionDialogService, INewConnectionParams,
+	IConnectionManagementService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
 	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
@@ -46,7 +46,6 @@ import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/commo
 import * as platform from 'vs/platform/registry/common/platform';
 import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
@@ -56,9 +55,8 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
-import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -84,13 +82,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	constructor(
 		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
+		@IStorageService _storageService: IStorageService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
-		@ICommandService private _commandService: ICommandService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
-		@IStorageService private _storageService: IStorageService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		@ICredentialsService private _credentialsService: ICredentialsService,
@@ -99,7 +95,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
-		@IViewletService private _viewletService: IViewletService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
