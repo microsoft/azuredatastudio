@@ -12,14 +12,12 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     angular2-grid: https://github.com/BTMorton/angular2-grid
     angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
     applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
-    assert: https://github.com/browserify/commonjs-assert
     bootstrap: https://github.com/twbs/bootstrap
     chart.js: https://github.com/Timer/chartjs
     chokidar: https://github.com/paulmillr/chokidar
     comment-json: https://github.com/kaelzhang/node-comment-json
     core-js: https://github.com/zloirock/core-js
     decompress: https://github.com/kevva/decompress
-    DefinitelyTyped: https://github.com/DefinitelyTyped/DefinitelyTyped
     emmet: https://github.com/emmetio/emmet
     error-ex: https://github.com/Qix-/node-error-ex
     escape-string-regexp: https://github.com/sindresorhus/escape-string-regexp
@@ -41,9 +39,6 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     JupyterLab: https://github.com/jupyterlab/jupyterlab
     make-error: https://github.com/JsCommunity/make-error
     minimist: https://github.com/substack/minimist
-    mocha: https://github.com/mochajs/mocha
-    mocha-junit-reporter: https://github.com/michaelleeallen/mocha-junit-reporter
-    mocha-multi-reporters: https://github.com/stanleyhlng/mocha-multi-reporters
     moment: https://github.com/moment/moment
     native-keymap: https://github.com/Microsoft/node-native-keymap
     native-watchdog: https://github.com/Microsoft/node-native-watchdog
@@ -63,7 +58,6 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     svg.js: https://github.com/svgdotjs/svg.js
     systemjs: https://github.com/systemjs/systemjs
     temp-write: https://github.com/sindresorhus/temp-write
-    typemoq: https://github.com/florinn/typemoq
     underscore: https://github.com/jashkenas/underscore
     v8-profiler: https://github.com/node-inspector/v8-profiler
     vscode: https://github.com/microsoft/vscode
@@ -179,29 +173,6 @@ FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TOR
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF applicationinsights NOTICES AND INFORMATION
-
-%% assert NOTICES AND INFORMATION BEGIN HERE
-=========================================
-Copyright Joyent, Inc. and other Node contributors. All rights reserved.
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to
-deal in the Software without restriction, including without limitation the
-rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
-sell copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-IN THE SOFTWARE.
-=========================================
-END OF assert NOTICES AND INFORMATION
 
 %% bootstrap NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -343,19 +314,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF decompress NOTICES AND INFORMATION
-
-%% DefinitelyTyped NOTICES AND INFORMATION BEGIN HERE
-=========================================
-This project is licensed under the MIT license.
-Copyrights are respective of each contributor listed at the beginning of each definition file.
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-=========================================
-END OF DefinitelyTyped NOTICES AND INFORMATION
 
 %% emmet NOTICES AND INFORMATION BEGIN HERE
 =========================================
@@ -1311,78 +1269,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF minimist NOTICES AND INFORMATION
 
-%% mocha NOTICES AND INFORMATION BEGIN HERE
-=========================================
-(The MIT License)
-
-Copyright (c) 2011-2018 JS Foundation and contributors, https://js.foundation
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-=========================================
-END OF mocha NOTICES AND INFORMATION
-
-%% mocha-junit-reporter NOTICES AND INFORMATION BEGIN HERE
-=========================================
-MIT License
-Copyright (c) 2015 Michael Allen
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-=========================================
-END OF mocha-junit-reporter NOTICES AND INFORMATION
-
-%% mocha-multi-reporters NOTICES AND INFORMATION BEGIN HERE
-=========================================
-The MIT License (MIT)
-
-Copyright (c) 2015 Stanley Ng
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-=========================================
-END OF mocha-multi-reporters NOTICES AND INFORMATION
-
 %% moment NOTICES AND INFORMATION BEGIN HERE
 =========================================
 Copyright (c) JS Foundation and other contributors
@@ -2031,32 +1917,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =========================================
 END OF temp-write NOTICES AND INFORMATION
-
-%% typemoq NOTICES AND INFORMATION BEGIN HERE
-=========================================
-The MIT License (MIT)
-
-Copyright (c) 2015 Florin Nitoi <florin.nitoi@gmail.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-=========================================
-END OF typemoq NOTICES AND INFORMATION
 
 %% underscore NOTICES AND INFORMATION BEGIN HERE
 =========================================
