@@ -37,7 +37,8 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
-import { ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { ILanguageMagic, notebookConstants } from 'sql/parts/notebook/models/modelInterfaces';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -104,7 +105,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IEditorService private readonly _editorService: IEditorService,
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
-		@IThemeService private readonly _themeService: IThemeService
+		@IThemeService private readonly _themeService: IThemeService,
+		@IQueryManagementService private readonly _queryManagementService
 	) {
 		super();
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
@@ -113,8 +115,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (extensionService) {
 			extensionService.whenInstalledExtensionsRegistered().then(() => {
 				this.cleanupProviders();
-				this._isRegistrationComplete = true;
-				this._registrationComplete.resolve();
+
+				// If providers have already registered by this point, add them now (since onHandlerAdded will never fire)
+				if (this._queryManagementService.registeredProviders && this._queryManagementService.registeredProviders.length > 0) {
+					this.updateSQLRegistrationWithConnectionProviders();
+				}
+
+				this._register(this._queryManagementService.onHandlerAdded((queryType) => {
+					this.updateSQLRegistrationWithConnectionProviders();
+				}));
 			});
 		}
 		if (extensionManagementService) {
@@ -156,6 +165,23 @@ export class NotebookService extends Disposable implements INotebookService {
 				}
 			}));
 		}
+	}
+
+	private updateSQLRegistrationWithConnectionProviders() {
+		// Update the SQL extension
+		let sqlNotebookProvider = this._providerToStandardKernels.get(notebookConstants.SQL);
+		if (sqlNotebookProvider) {
+			let sqlConnectionTypes = this._queryManagementService.getRegisteredProviders();
+			let provider = sqlNotebookProvider.find(p => p.name === notebookConstants.SQL);
+			if (provider) {
+				this._providerToStandardKernels.set(notebookConstants.SQL, [{
+					name: notebookConstants.SQL,
+					connectionProviderIds: sqlConnectionTypes
+				}]);
+			}
+		}
+		this._isRegistrationComplete = true;
+		this._registrationComplete.resolve();
 	}
 
 	private updateNotebookThemes() {
