@@ -219,11 +219,24 @@ export class ApiWrapper {
 		return this._cmsProvider;
 	}
 
-
-
+	public listRegisteredServers() {
+		this.getCmsProvider().getRegisteredServers(this._ownerUri, '').then((result) => {
+			if (result && result.registeredServersList && result.registeredServersList.length > 0) {
+				return result;
+			}
+		});
+	}
 
 	// Connection APIs
 	public openConnectionDialog(providers: string[], initialConnectionProfile?: sqlops.IConnectionProfile, connectionCompletionOptions?: sqlops.IConnectionCompletionOptions): Thenable<sqlops.connection.Connection> {
 		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
+	}
+
+	public get ownerUri(): string {
+		return this._ownerUri;
+	}
+
+	public set ownerUri(value: string) {
+		this._ownerUri = value;
 	}
 }

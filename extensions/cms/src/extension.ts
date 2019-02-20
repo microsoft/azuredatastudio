@@ -50,12 +50,16 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	activations.push(azureResourceController.activate());
 
 	appContext.apiWrapper.registerCommand('cms.resource.connectsqlserver', () => {
-		appContext.apiWrapper.openConnectionDialog(['MSSQL']).then((connection) => {
+		appContext.apiWrapper.openConnectionDialog(['MSSQL']).then( async (connection) => {
 			if (connection) {
-				let ownerUri = sqlops.connection.getUriForConnection(connection.connectionId);
+				appContext.apiWrapper.ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
+				let meme = appContext.apiWrapper.listRegisteredServers();
+				let meme2 = 'hi';
 			}
 		});
 	});
+
+
 
 	return {
 		provideResources() {
