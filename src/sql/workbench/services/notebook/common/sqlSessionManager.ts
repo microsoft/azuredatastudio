@@ -7,7 +7,7 @@
 import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage } from 'sqlops';
 import { localize } from 'vs/nls';
-import { FutureInternal, LanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 import QueryRunner, { EventType } from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -31,7 +31,7 @@ const sqlKernelSpec: nb.IKernelSpec = ({
 	display_name: sqlKernel
 });
 
-const languageMagics: LanguageMagic[] = [{
+const languageMagics: ILanguageMagic[] = [{
 	language: 'Python',
 	magic: 'lang_python'
 }, {
@@ -518,6 +518,7 @@ class ExternalScriptMagic {
 
 	constructor(private language: string) {
 	}
+
 	public convertToExternalScript(script: string): string {
 		return `execute sp_execute_external_script
 		@language = N'${this.language}',

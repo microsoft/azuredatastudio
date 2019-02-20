@@ -6,13 +6,13 @@
 
 'use strict';
 
-import { ICellMagicMapper, LanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellMagicMapper, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 
 const defaultKernel = '*';
 export class CellMagicMapper implements ICellMagicMapper {
-	private kernelToMagicMap = new Map<string,LanguageMagic[]>();
+	private kernelToMagicMap = new Map<string,ILanguageMagic[]>();
 
-	constructor(languageMagics: LanguageMagic[]) {
+	constructor(languageMagics: ILanguageMagic[]) {
 		if (languageMagics) {
 			for (let magic of languageMagics) {
 				if (!magic.kernels || magic.kernels.length === 0) {
@@ -27,15 +27,14 @@ export class CellMagicMapper implements ICellMagicMapper {
 		}
 	}
 
-	private addKernelMapping(kernelId: string, magic: LanguageMagic): void {
+	private addKernelMapping(kernelId: string, magic: ILanguageMagic): void {
 		let magics = this.kernelToMagicMap.get(kernelId) || [];
 		magics.push(magic);
 		this.kernelToMagicMap.set(kernelId, magics);
-
 	}
 
-	private findMagicForKernel(searchText: string, kernelId: string): LanguageMagic | undefined {
-		if (kernelId === undefined) {
+	private findMagicForKernel(searchText: string, kernelId: string): ILanguageMagic | undefined {
+		if (kernelId === undefined || !searchText) {
 			return undefined;
 		}
 		searchText = searchText.toLowerCase();
@@ -46,7 +45,7 @@ export class CellMagicMapper implements ICellMagicMapper {
 		return undefined;
 	}
 
-	toLanguageMagic(magic: string, kernelId: string): LanguageMagic {
+	toLanguageMagic(magic: string, kernelId: string): ILanguageMagic {
 		let languageMagic = this.findMagicForKernel(magic, kernelId.toLowerCase());
 		if (!languageMagic) {
 			languageMagic = this.findMagicForKernel(magic, defaultKernel);

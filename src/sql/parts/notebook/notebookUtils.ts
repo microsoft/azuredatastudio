@@ -107,6 +107,9 @@ export interface IStandardKernelWithProvider {
 }
 
 export function tryMatchCellMagic(input: string): string {
+	if (!input) {
+		return input;
+	}
 	let firstLine = input.trimLeft();
 	let magicRegex = /^%%(\w+)/g;
 	let match = magicRegex.exec(firstLine);

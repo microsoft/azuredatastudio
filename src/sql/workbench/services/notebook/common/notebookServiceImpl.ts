@@ -38,7 +38,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorG
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { registerNotebookThemes } from 'sql/parts/notebook/notebookStyles';
-import { LanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
+import { ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -334,7 +334,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	get languageMagics(): LanguageMagic[] {
+	get languageMagics(): ILanguageMagic[] {
 		return notebookRegistry.languageMagics;
 	}
 

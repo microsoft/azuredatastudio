@@ -104,7 +104,7 @@ let notebookLanguageMagicType: IJSONSchema = {
 			type: 'string'
 		},
 		language: {
-			description: localize('carbon.extension.contributes.notebook.language', 'What language should the cell be if this cell magic is included?'),
+			description: localize('carbon.extension.contributes.notebook.language', 'The cell language to be used if this cell magic is included in the cell'),
 			type: 'string'
 		},
 		executionTarget: {

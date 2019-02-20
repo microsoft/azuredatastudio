@@ -242,7 +242,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				}
 			}
 		} catch (err) {
-			// No-op for now. Shouldw e log?
+			// No-op for now. Should we log?
 		}
 	}
 

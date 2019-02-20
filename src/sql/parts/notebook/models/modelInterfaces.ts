@@ -479,7 +479,7 @@ export interface INotebookModelOptions {
 	capabilitiesService: ICapabilitiesService;
 }
 
-export interface LanguageMagic {
+export interface ILanguageMagic {
 	magic: string;
 	language: string;
 	kernels?: string[];
@@ -487,13 +487,12 @@ export interface LanguageMagic {
 }
 
 export interface ICellMagicMapper {
-
 	/**
 	 * Tries to find a language mapping for an identified cell magic
 	 * @param magic a string defining magic. For example for %%sql the magic text is sql
 	 * @param kernelId the name of the current kernel to use when looking up magics
 	 */
-	toLanguageMagic(magic: string, kernelId: string): LanguageMagic | undefined;
+	toLanguageMagic(magic: string, kernelId: string): ILanguageMagic | undefined;
 }
 
 export namespace notebookConstants {
