@@ -11,9 +11,9 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { cmsResource } from '../../azureResource/cms-resource';
-import { AzureResourceService } from '../../azureResource/resourceService';
-import { AzureResourceResourceTreeNode } from '../../azureResource/resourceTreeNode';
+import { cmsResource } from '../../cmsResource/cms-resource';
+import { AzureResourceService } from '../../cmsResource/resourceService';
+import { AzureResourceResourceTreeNode } from '../../cmsResource/resourceTreeNode';
 
 const resourceService = AzureResourceService.getInstance();
 

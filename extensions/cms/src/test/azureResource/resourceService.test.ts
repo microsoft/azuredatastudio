@@ -11,25 +11,8 @@ import * as sqlops from 'sqlops';
 import 'mocha';
 import { fail } from 'assert';
 
-import { cmsResource } from '../../azureResource/cms-resource';
-import { AzureResourceService } from '../../azureResource/resourceService';
-
-// Mock test data
-const mockAccount: sqlops.Account = {
-	key: {
-		accountId: 'mock_account',
-		providerId: 'mock_provider'
-	},
-	displayInfo: {
-		displayName: 'mock_account@test.com',
-		accountType: 'Microsoft',
-		contextualDisplayName: 'test'
-	},
-	properties: undefined,
-	isStale: false
-};
-
-const mockTenantId: string = 'mock_tenant';
+import { cmsResource } from '../../cmsResource/cms-resource';
+import { AzureResourceService } from '../../cmsResource/resourceService';
 
 let mockResourceTreeDataProvider1: TypeMoq.IMock<cmsResource.ICmsResourceTreeDataProvider>;
 let mockResourceProvider1: TypeMoq.IMock<cmsResource.ICmsResourceProvider>;

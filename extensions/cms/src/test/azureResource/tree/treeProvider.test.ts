@@ -13,8 +13,8 @@ import 'mocha';
 import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
-import { AzureResourceTreeProvider } from '../../../azureResource/tree/treeProvider';
-import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
+import { AzureResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
+import { AzureResourceAccountNotSignedInTreeNode } from '../../../cmsResource/tree/accountNotSignedInTreeNode';
 
 // Mock services
 let mockAppContext: AppContext;

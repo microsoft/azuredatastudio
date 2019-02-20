@@ -6,7 +6,7 @@
 'use strict';
 
 import ControllerBase from './controllerBase';
-import { AzureResourceTreeProvider } from '../azureResource/tree/treeProvider';
+import { AzureResourceTreeProvider } from '../cmsResource/tree/treeProvider';
 
 export default class AzureResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {

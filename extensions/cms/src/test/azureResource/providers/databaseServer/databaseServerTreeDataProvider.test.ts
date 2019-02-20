@@ -11,12 +11,12 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { cmsResource } from '../../../../azureResource/cms-resource';
+import { cmsResource } from '../../../../cmsResource/cms-resource';
 import { ApiWrapper } from '../../../../apiWrapper';
-import { ICmsResourceRegisteredServerService } from '../../../../azureResource/providers/registeredServer/interfaces';
-import { CmsRegisteredServerTreeDataProvider } from '../../../../azureResource/providers/registeredServer/databaseServerTreeDataProvider';
-import { CmsResourceRegisteredServer } from '../../../../azureResource/providers/registeredServer/models';
-import { AzureResourceItemType } from '../../../../azureResource/constants';
+import { ICmsResourceRegisteredServerService } from '../../../../cmsResource/providers/registeredServer/interfaces';
+import { CmsRegisteredServerTreeDataProvider } from '../../../../cmsResource/providers/registeredServer/databaseServerTreeDataProvider';
+import { CmsResourceRegisteredServer } from '../../../../cmsResource/providers/registeredServer/models';
+import { AzureResourceItemType } from '../../../../cmsResource/constants';
 
 // Mock services
 let mockDatabaseServerService: TypeMoq.IMock<ICmsResourceRegisteredServerService>;

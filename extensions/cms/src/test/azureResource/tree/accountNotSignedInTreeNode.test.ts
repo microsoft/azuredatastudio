@@ -9,8 +9,8 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { AzureResourceItemType } from '../../../azureResource/constants';
-import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
+import { AzureResourceItemType } from '../../../cmsResource/constants';
+import { AzureResourceAccountNotSignedInTreeNode } from '../../../cmsResource/tree/accountNotSignedInTreeNode';
 
 describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
 	it('Should be correct.', async function(): Promise<void> {

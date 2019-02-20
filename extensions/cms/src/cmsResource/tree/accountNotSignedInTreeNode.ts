@@ -23,7 +23,7 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 		item.contextValue = AzureResourceItemType.message;
 		item.command = {
 			title: AzureResourceAccountNotSignedInTreeNode.signInLabel,
-			command: 'azure.resource.signin',
+			command: 'cms.resource.connectsqlserver',
 			arguments: [this]
 		};
 		return item;
@@ -44,8 +44,8 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 	}
 
 	public get nodePathValue(): string {
-		return 'message_accountNotSignedIn';
+		return 'message_cmsTreeNode';
 	}
 
-	private static readonly signInLabel = localize('azure.resource.tree.accountNotSignedInTreeNode.signInLabel', 'Sign in to Azure ...');
+	private static readonly signInLabel = localize('cms.resource.tree.CMSTreeNode.label', 'Central Management Servers');
 }

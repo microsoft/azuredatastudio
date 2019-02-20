@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 import { cmsResource } from '../../cms-resource';
 import { ICmsResourceRegisteredServerService, ICmsResourceRegisteredServerNode } from './interfaces';
 import { CmsResourceRegisteredServer } from './models';
-import { AzureResourceItemType } from '../../../azureResource/constants';
+import { AzureResourceItemType } from '../../../cmsResource/constants';
 import { ApiWrapper } from '../../../apiWrapper';
 
 export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsResourceTreeDataProvider {

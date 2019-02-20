@@ -22,14 +22,6 @@
 					"dark": "resources/dark/connect_to_inverse.svg",
 					"light": "resources/light/connect_to.svg"
 				}
-			},
-			{
-				"command": "cms.resource.connectsqldb",
-				"title": "%cms.resource.connectsqldb.title%",
-				"icon": {
-					"dark": "resources/dark/connect_to_inverse.svg",
-					"light": "resources/light/connect_to.svg"
-				}
 			}
 		],
 		"views": {
@@ -49,13 +41,6 @@
 			]
 		},
 		"menus": {
-			"view/title": [
-				{
-					"command": "cms.resource.connectsqlserver",
-					"when": "view == cmsResourceExplorer",
-					"group": "navigation@1"
-				}
-			],
 			"view/item/context": [
 				{
 					"command": "cms.resource.connectsqlserver",
