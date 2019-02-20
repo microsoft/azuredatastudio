@@ -29,7 +29,6 @@ import { getIdFromLocalExtensionId } from 'vs/platform/extensionManagement/commo
 import { Deferred } from 'sql/base/common/promise';
 import { SqlSessionManager } from 'sql/workbench/services/notebook/common/sqlSessionManager';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { sqlNotebooksEnabled } from 'sql/parts/notebook/notebookUtils';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -422,23 +421,13 @@ export class NotebookService extends Disposable implements INotebookService {
 	}
 
 	private registerBuiltInProvider() {
-		if (!sqlNotebooksEnabled(this._contextKeyService)) {
-			let defaultProvider = new BuiltinProvider();
-			this.registerProvider(defaultProvider.providerId, defaultProvider);
-			notebookRegistry.registerNotebookProvider({
-				provider: defaultProvider.providerId,
-				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				standardKernels: { name: noKernel, connectionProviderIds: [] }
-			});
-		} else {
-			let sqlProvider = new SqlNotebookProvider(this._instantiationService);
-			this.registerProvider(sqlProvider.providerId, sqlProvider);
-			notebookRegistry.registerNotebookProvider({
-				provider: sqlProvider.providerId,
-				fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
-				standardKernels: { name: 'SQL', connectionProviderIds: ['MSSQL'] }
-			});
-		}
+		let sqlProvider = new SqlNotebookProvider(this._instantiationService);
+		this.registerProvider(sqlProvider.providerId, sqlProvider);
+		notebookRegistry.registerNotebookProvider({
+			provider: sqlProvider.providerId,
+			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
+			standardKernels: { name: 'SQL', connectionProviderIds: ['MSSQL'] }
+		});
 	}
 
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
@@ -451,52 +440,6 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		});
 	}
-}
-
-export class BuiltinProvider implements INotebookProvider {
-	private manager: BuiltInNotebookManager;
-
-	constructor() {
-		this.manager = new BuiltInNotebookManager();
-	}
-
-	public get providerId(): string {
-		return DEFAULT_NOTEBOOK_PROVIDER;
-	}
-
-	getNotebookManager(notebookUri: URI): Thenable<INotebookManager> {
-		return Promise.resolve(this.manager);
-	}
-	handleNotebookClosed(notebookUri: URI): void {
-		// No-op
-	}
-}
-
-export class BuiltInNotebookManager implements INotebookManager {
-	private _contentManager: nb.ContentManager;
-	private _sessionManager: nb.SessionManager;
-
-	constructor() {
-		this._contentManager = new LocalContentManager();
-		this._sessionManager = new SessionManager();
-	}
-
-	public get providerId(): string {
-		return DEFAULT_NOTEBOOK_PROVIDER;
-	}
-
-	public get contentManager(): nb.ContentManager {
-		return this._contentManager;
-	}
-
-	public get serverManager(): nb.ServerManager {
-		return undefined;
-	}
-
-	public get sessionManager(): nb.SessionManager {
-		return this._sessionManager;
-	}
-
 }
 
 export class SqlNotebookProvider implements INotebookProvider {
