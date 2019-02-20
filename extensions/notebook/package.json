@@ -31,6 +31,11 @@
 					"type": "boolean",
 					"default": true,
 					"description": "%notebook.overrideEditorTheming.description%"
+				},
+				"notebook.maxTableRows": {
+					"type": "number",
+					"default": 5000,
+					"description": "%notebook.maxTableRows.description%"
 				}
 			}
 		},
@@ -124,6 +129,26 @@
 				"command": "notebook.command.addtext",
 				"key": "Ctrl+Shift+T",
 				"when": "notebookEditorVisible"
+			}
+		],
+        "notebook.languagemagics": [
+			{
+				"magic": "lang_python",
+				"language": "python",
+				"executionTarget": null,
+				"kernels": ["sql"]
+			},
+			{
+				"magic": "lang_r",
+				"language": "r",
+				"executionTarget": null,
+				"kernels": ["sql"]
+			},
+			{
+				"magic": "lang_java",
+				"language": "java",
+				"executionTarget": null,
+				"kernels": ["sql"]
 			}
 		]
 	},

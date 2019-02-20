@@ -96,6 +96,7 @@ describe('notebook model', function(): void {
             connectionService: queryConnectionService.object,
             providerId: 'SQL',
             standardKernels: [{ name: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
+            cellMagicMapper: undefined,
             defaultKernel: undefined,
             layoutChanged: undefined,
             capabilitiesService: capabilitiesService.object
