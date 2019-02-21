@@ -1,3 +1,7 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 'use strict';
 
 import * as download from './download';
@@ -6,7 +10,7 @@ import mkdirp = require('mkdirp');
 import * as path from 'path';
 import { Shell, Platform } from '../shell';
 import { Errorable, failed } from '../errorable';
-import { addPathToConfig, toolPathBaseKey, getUseWsl } from '../kubectl/config';
+import { addPathToConfig, toolPathBaseKey } from '../config/config';
 
 export async function installKubectl(shell: Shell): Promise<Errorable<null>> {
     const tool = 'kubectl';
@@ -46,8 +50,8 @@ async function getStableKubectlVersion(): Promise<Errorable<string>> {
     return { succeeded: true, result: version };
 }
 
-function getInstallFolder(shell: Shell, tool: string): string {
-    return path.join(shell.home(), `.sql-bdc/tools/${tool}`);
+export function getInstallFolder(shell: Shell, tool: string): string {
+    return path.join(shell.home(), `.mssql-bdc/tools/${tool}`);
 }
 
 function platformUrlString(platform: Platform, supported?: Platform[]): string | null {

@@ -1,6 +1,10 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as vscode from "vscode";
 import { Kubectl } from "./kubectl";
-import { kubeChannel } from "./kubeChannel";
 import { failed } from "../errorable";
 
 export interface KubectlContext {
@@ -56,7 +60,7 @@ export async function getCurrentClusterConfig(kubectl: Kubectl): Promise<Cluster
     if (!kubeConfig || !kubeConfig.clusters || !kubeConfig.contexts) {
         return undefined;
     }
-    const contextConfig = kubeConfig.contexts.find((context) => context.name === kubeConfig["current-context"])!;  // current-context should refer to an actual context
+    const contextConfig = kubeConfig.contexts.find((context) => context.name === kubeConfig["current-context"])!;
     const clusterConfig = kubeConfig.clusters.find((cluster) => cluster.name === contextConfig.context.cluster)!;
     return {
         server: clusterConfig.cluster.server,

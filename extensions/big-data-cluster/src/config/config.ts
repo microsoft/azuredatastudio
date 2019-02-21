@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as vscode from 'vscode';
-import { Host } from './host';
+import { Host } from '../kubectl/host';
 import { Shell, Platform } from '../shell';
 
-const EXTENSION_CONFIG_KEY = "sql-bdc";
-const KUBECONFIG_PATH_KEY = "sql-bdc.kubeconfig";
-const KNOWN_KUBECONFIGS_KEY = "sql-bdc.knownKubeconfigs";
+const EXTENSION_CONFIG_KEY = "mssql-bdc";
+const KUBECONFIG_PATH_KEY = "mssql-bdc.kubeconfig";
+const KNOWN_KUBECONFIGS_KEY = "mssql-bdc.knownKubeconfigs";
 
 export async function addPathToConfig(configKey: string, value: string): Promise<void> {
     await setConfigValue(configKey, value);
@@ -97,7 +102,7 @@ function getPathSetting(host: Host, shell: Shell, baseKey: string): string | und
 }
 
 export function toolPathBaseKey(tool: string): string {
-    return `sql-bdc.${tool}-path`;
+    return `mssql-bdc.${tool}-path`;
 }
 
 function osOverrideKey(os: Platform, baseKey: string): string {
@@ -113,26 +118,4 @@ function osKeyString(os: Platform): string | null {
         default: return null;
     }
 }
-
-// Auto cleanup on debug terminate
-
-const AUTO_CLEANUP_DEBUG_KEY = "vs-kubernetes.autoCleanupOnDebugTerminate";
-
-export function getAutoCompleteOnDebugTerminate(): boolean {
-    return vscode.workspace.getConfiguration(EXTENSION_CONFIG_KEY)[AUTO_CLEANUP_DEBUG_KEY];
-}
-
-export async function setAlwaysCleanUp(): Promise<void> {
-    await setConfigValue(AUTO_CLEANUP_DEBUG_KEY, true);
-}
-
-// Use WSL on Windows
-
-const USE_WSL_KEY = "use-wsl";
-
-export function getUseWsl(): boolean {
-    return vscode.workspace.getConfiguration(EXTENSION_CONFIG_KEY)[USE_WSL_KEY];
-}
-
-
 

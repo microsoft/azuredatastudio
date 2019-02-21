@@ -1,3 +1,8 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import * as path from 'path';
 import * as stream from 'stream';
 import * as tmp from 'tmp';
@@ -21,7 +26,7 @@ function ensureDownloadFunc() {
 }
 
 export async function toTempFile(sourceUrl: string): Promise<Errorable<string>> {
-    const tempFileObj = tmp.fileSync({ prefix: "sql-bdc-autoinstall-" });
+    const tempFileObj = tmp.fileSync({ prefix: "mssql-bdc-autoinstall-" });
     const downloadResult = await to(sourceUrl, tempFileObj.name);
     if (succeeded(downloadResult)) {
         return { succeeded: true, result: tempFileObj.name };

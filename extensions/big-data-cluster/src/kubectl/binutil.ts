@@ -1,4 +1,8 @@
-import * as config from './config';
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Shell } from '../shell';
 import { Host } from './host';
 import { FS } from '../fs';
@@ -57,7 +61,7 @@ function alertNoBin(host: Host, binName: string, failureReason: CheckPresentFail
                 (str) => {
                     switch (str) {
                         case 'Learn more':
-                            host.showInformationMessage(`Add ${binName} directory to path, or set "vs-kubernetes.${binName}-path" config to ${binName} binary.`);
+                            host.showInformationMessage(`Add ${binName} directory to path, or set "mssql-bdc.${binName}-path" config to ${binName} binary.`);
                             break;
                         case 'Install dependencies':
                             installDependencies();
@@ -95,7 +99,7 @@ export async function checkForBinary(context: BinCheckContext, bin: string | und
         return true;
     }
 
-    if (!config.getUseWsl()) {
+    if (context.shell.isWindows) {
         context.binFound = context.fs.existsSync(bin);
     } else {
         const sr = await context.shell.exec(`ls ${bin}`);

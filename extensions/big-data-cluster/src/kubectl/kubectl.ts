@@ -1,10 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 import { Host } from './host';
 import { FS } from '../fs';
 import { Shell, ShellResult } from '../shell';
 import * as binutil from './binutil';
 import { Errorable } from '../errorable';
 import * as compatibility from './compatibility';
-import { getToolPath } from './config';
+import { getToolPath } from '../config/config';
 
 export interface Kubectl {
     checkPresent(errorMessageMode: CheckPresentMessageMode): Promise<boolean>;
@@ -59,14 +64,14 @@ async function checkForKubectlInternal(context: Context, errorMessageMode: Check
 
     const contextMessage = getCheckKubectlContextMessage(errorMessageMode);
     const inferFailedMessage = `Could not find "${binName}" binary.${contextMessage}`;
-    const configuredFileMissingMessage = `${bin} does not exist! ${contextMessage}`;
+    const configuredFileMissingMessage = `${bin} is not installed. ${contextMessage}`;
 
     return await binutil.checkForBinary(context, bin, binName, inferFailedMessage, configuredFileMissingMessage, errorMessageMode !== CheckPresentMessageMode.Silent);
 }
 
 function getCheckKubectlContextMessage(errorMessageMode: CheckPresentMessageMode): string {
     if (errorMessageMode === CheckPresentMessageMode.Activation) {
-        return ' Kubernetes commands other than configuration will not function correctly.';
+        return ' MSSQL Big data cluster requires kubernetes.';
     } else if (errorMessageMode === CheckPresentMessageMode.Command) {
         return ' Cannot execute command.';
     }

@@ -4,21 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IKubeConfigParser } from '../../data/kubeConfigParser';
 import { ClusterInfo, TargetClusterType } from '../../interfaces';
-
+import { getContexts, KubectlContext }  from '../../kubectl/kubectlUtils';
+import { Kubectl } from '../../kubectl/kubectl';
 export class CreateClusterModel {
 
-	constructor(private _kubeConfigParser: IKubeConfigParser) {
+	constructor(private _kubectl : Kubectl) {
 	}
 
-	public loadClusters(configPath: string): ClusterInfo[] {
-		return this._kubeConfigParser.parse(configPath);
+	public async loadClusters(): Promise<KubectlContext[]> {
+		return await getContexts(this._kubectl);
 	}
 
 	public targetClusterType: TargetClusterType;
 
-	public selectedCluster: ClusterInfo;
+	public selectedCluster: KubectlContext;
 
 	public adminUserName: string;
 

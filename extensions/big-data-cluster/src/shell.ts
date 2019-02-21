@@ -1,16 +1,21 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
 'use strict';
 
 import * as vscode from 'vscode';
 import * as shelljs from 'shelljs';
 import * as path from 'path';
-import { getActiveKubeconfig, getToolPath, getUseWsl } from './kubectl/config';
+import { getActiveKubeconfig, getToolPath } from './config/config';
 import { host } from './kubectl/host';
 
 export enum Platform {
     Windows,
     MacOS,
     Linux,
-    Unsupported,  // shouldn't happen!
+    Unsupported,
 }
 
 export interface ExecCallback extends shelljs.ExecCallback {}
@@ -58,7 +63,7 @@ export interface ShellResult {
 export type ShellHandler = (code: number, stdout: string, stderr: string) => void;
 
 function isWindows(): boolean {
-    return (process.platform === WINDOWS) && !getUseWsl();
+    return (process.platform === WINDOWS);
 }
 
 function isUnix(): boolean {
@@ -66,9 +71,6 @@ function isUnix(): boolean {
 }
 
 function platform(): Platform {
-    if (getUseWsl()) {
-        return Platform.Linux;
-    }
     switch (process.platform) {
         case 'win32': return Platform.Windows;
         case 'darwin': return Platform.MacOS;
@@ -82,9 +84,6 @@ function concatIfBoth(s1: string | undefined, s2: string | undefined): string | 
 }
 
 function home(): string {
-    if (getUseWsl()) {
-        return shelljs.exec('wsl.exe echo ${HOME}').stdout.trim();
-    }
     return process.env['HOME'] ||
         concatIfBoth(process.env['HOMEDRIVE'], process.env['HOMEPATH']) ||
         process.env['USERPROFILE'] ||
@@ -136,9 +135,6 @@ async function exec(cmd: string, stdin?: string): Promise<ShellResult | undefine
 
 function execCore(cmd: string, opts: any, stdin?: string): Promise<ShellResult> {
     return new Promise<ShellResult>((resolve) => {
-        if (getUseWsl()) {
-            cmd = 'wsl ' + cmd;
-        }
         const proc = shelljs.exec(cmd, opts, (code, stdout, stderr) => resolve({code : code, stdout : stdout, stderr : stderr}));
         if (stdin) {
             proc.stdin.end(stdin);
@@ -189,37 +185,14 @@ function pathEntrySeparator() {
 }
 
 function which(bin: string): string | null {
-    if (getUseWsl()) {
-        const result = shelljs.exec(`wsl.exe which ${bin}`);
-        if (result.code !== 0) {
-            throw new Error(result.stderr);
-        }
-        return result.stdout;
-    }
     return shelljs.which(bin);
 }
 
 function cat(path: string): string {
-    if (getUseWsl()) {
-        const filePath = path.replace(/\\/g, '/');
-        const result = shelljs.exec(`wsl.exe cat ${filePath}`);
-        if (result.code !== 0) {
-            throw new Error(result.stderr);
-        }
-        return result.stdout;
-    }
     return shelljs.cat(path);
 }
 
 function ls(path: string): string[] {
-    if (getUseWsl()) {
-        const filePath = path.replace(/\\/g, '/');
-        const result = shelljs.exec(`wsl.exe ls ${filePath}`);
-        if (result.code !== 0) {
-            throw new Error(result.stderr);
-        }
-        return result.stdout.trim().split('\n');
-    }
     return shelljs.ls(path);
 }
 
