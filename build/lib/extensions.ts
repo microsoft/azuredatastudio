@@ -25,8 +25,69 @@ const webpackGulp = require('webpack-stream');
 
 const root = path.resolve(path.join(__dirname, '..', '..'));
 
-// {{SQL CARBON EDIT}} - Export fromLocal function
-export function fromLocal(extensionPath: string, sourceMappingURLBase?: string): Stream {
+// {{SQL CARBON EDIT}}
+import * as _ from 'underscore';
+import * as vfs from 'vinyl-fs';
+const deps = require('../dependencies');
+const extensionsRoot = path.join(root, 'extensions');
+const extensionsProductionDependencies = deps.getProductionDependencies(extensionsRoot);
+
+export function packageBuiltInExtensions() {
+	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
+		const packagePath = path.join(path.dirname(root), element.name + '.vsix');
+		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+		vsce.createVSIX({
+			cwd: element.path,
+			packagePath: packagePath,
+			useYarn: true
+		});
+	});
+}
+
+export function packageExtensionTask(extensionName: string, platform: string, arch: string) {
+	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
+	if (platform === 'darwin') {
+		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
+	} else {
+		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
+	}
+
+	platform = platform || process.platform;
+
+	return () => {
+		const root = path.resolve(path.join(__dirname, '../..'));
+		const localExtensionDescriptions = glob.sync('extensions/*/package.json')
+			.map(manifestPath => {
+				const extensionPath = path.dirname(path.join(root, manifestPath));
+				const extensionName = path.basename(extensionPath);
+				return { name: extensionName, path: extensionPath };
+			})
+			.filter(({ name }) => extensionName === name);
+
+		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
+			return fromLocal(extension.path);
+		}));
+
+		let result = localExtensions
+			.pipe(util2.skipDirectories())
+			.pipe(util2.fixWin32DirectoryPermissions())
+			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
+
+		return result.pipe(vfs.dest(destination));
+	};
+}
+// {{SQL CARBON EDIT}} - End
+
+function fromLocal(extensionPath: string, sourceMappingURLBase?: string): Stream {
 	const webpackFilename = path.join(extensionPath, 'extension.webpack.config.js');
 	if (fs.existsSync(webpackFilename)) {
 		return fromLocalWebpack(extensionPath, sourceMappingURLBase);
@@ -223,7 +284,22 @@ const excludedExtensions = [
 	'vscode-colorize-tests',
 	'ms-vscode.node-debug',
 	'ms-vscode.node-debug2',
+	// {{SQL CARBON EDIT}}
+	'integration-tests'
 ];
+
+// {{SQL CARBON EDIT}}
+const sqlBuiltInExtensions = [
+	// Add SQL built-in extensions here.
+	// the extension will be excluded from SQLOps package and will have separate vsix packages
+	'agent',
+	'import',
+	'profiler',
+	'admin-pack',
+	'big-data-cluster'
+];
+var azureExtensions = ['azurecore', 'mssql'];
+// {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {
 	name: string;
@@ -269,25 +345,40 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 		})
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 		.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
-		.filter(({ name }) => builtInExtensions.every(b => b.name !== name));
+		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+		// {{SQL CARBON EDIT}}
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1)
+		.filter(({ name }) => azureExtensions.indexOf(name) === -1);
 
 	const localExtensions = () => sequence([...localExtensionDescriptions.map(extension => () => {
 		return fromLocal(extension.path, opts.sourceMappingURLBase)
 			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 	})]);
 
-	const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });
+	// {{SQL CARBON EDIT}}
+	const extensionDepsSrc = [
+		..._.flatten(extensionsProductionDependencies.map((d: any) => path.relative(root, d.path)).map((d: any) => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
+	];
 
-	const marketplaceExtensions = () => es.merge(
-		...builtInExtensions
-			.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
-			.map(extension => {
-				return fromMarketplace(extension.name, extension.version, extension.metadata)
-					.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-			})
-	);
+	const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
+			.pipe(filter(['**', '!**/package-lock.json']))
+			.pipe(util2.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
+			.pipe(util2.cleanNodeModule('typescript', ['**/**'], undefined));
 
-	return sequence([localExtensions, localExtensionDependencies, marketplaceExtensions])
+	// Original code commented out here
+	// const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });
+
+	// const marketplaceExtensions = () => es.merge(
+	// 	...builtInExtensions
+	// 		.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
+	// 		.map(extension => {
+	// 			return fromMarketplace(extension.name, extension.version, extension.metadata)
+	// 				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+	// 		})
+	// );
+
+	return sequence([localExtensions, localExtensionDependencies, /*marketplaceExtensions*/])
 		.pipe(util2.setExecutableBit(['**/*.sh']))
 		.pipe(filter(['**', '!**/*.js.map']));
+	// {{SQL CARBON EDIT}} - End
 }

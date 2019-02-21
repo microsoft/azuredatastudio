@@ -43,8 +43,7 @@ const productionDependencies = deps.getProductionDependencies(path.dirname(__dir
 // @ts-ignore
 // {{SQL CARBON EDIT}}
 var del = require('del');
-const extensionsRoot = path.join(root, 'extensions');
-const extensionsProductionDependencies = deps.getProductionDependencies(extensionsRoot);
+
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
 // {{SQL CARBON EDIT}}
 const nodeModules = [
@@ -57,7 +56,6 @@ const nodeModules = [
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
-
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -250,60 +248,6 @@ function computeChecksum(filename) {
 	return hash;
 }
 
-function packageBuiltInExtensions() {
-	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
-		.map(manifestPath => {
-			const extensionPath = path.dirname(path.join(root, manifestPath));
-			const extensionName = path.basename(extensionPath);
-			return { name: extensionName, path: extensionPath };
-		})
-		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
-	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
-		const packagePath = path.join(path.dirname(root), element.name + '.vsix');
-		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-		vsce.createVSIX({
-			cwd: element.path,
-			packagePath: packagePath,
-			useYarn: true
-		});
-	});
-}
-
-function packageExtensionTask(extensionName, platform, arch) {
-	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
-	if (platform === 'darwin') {
-		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
-	} else {
-		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
-	}
-
-	platform = platform || process.platform;
-
-	return () => {
-		const root = path.resolve(path.join(__dirname, '..'));
-		const localExtensionDescriptions = glob.sync('extensions/*/package.json')
-			.map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			})
-			.filter(({ name }) => extensionName === name);
-
-		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
-			return ext.fromLocal(extension.path);
-		}));
-
-		let result = localExtensions
-			.pipe(util.skipDirectories())
-			.pipe(util.fixWin32DirectoryPermissions())
-			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
-
-		return result.pipe(vfs.dest(destination));
-	};
-}
-
 function packageTask(platform, arch, opts) {
 	opts = opts || {};
 
@@ -327,40 +271,13 @@ function packageTask(platform, arch, opts) {
 			.pipe(filter(['**', '!**/*.js.map']));
 
 		const root = path.resolve(path.join(__dirname, '..'));
-		// {{SQL CARBON EDIT}} - Replace extension sources call
-		const localExtensionDescriptions = glob.sync('extensions/*/package.json')
-			.map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			})
-			.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-			.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-			// {{SQL CARBON EDIT}}
-			.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1)
-			.filter(({ name }) => azureExtensions.indexOf(name) === -1);
-
-		packageBuiltInExtensions();
-
-		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
-			return ext.fromLocal(extension.path)
-				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-		}));
 
 		// {{SQL CARBON EDIT}}
-		const extensionDepsSrc = [
-			..._.flatten(extensionsProductionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
-		];
+		ext.packageBuiltInExtensions();
 
-		const localExtensionDependencies = gulp.src(extensionDepsSrc, { base: '.', dot: true })
-			.pipe(filter(['**', '!**/package-lock.json']))
-			.pipe(util.cleanNodeModule('account-provider-azure', ['node_modules/date-utils/doc/**', 'node_modules/adal_node/node_modules/**'], undefined))
-			.pipe(util.cleanNodeModule('typescript', ['**/**'], undefined));
-
-		const sources = es.merge(src, localExtensions, localExtensionDependencies)
-			.pipe(util.setExecutableBit(['**/*.sh']))
-			.pipe(filter(['**', '!**/*.js.map']));
-		// {{SQL CARBON EDIT}} - End
+		const sources = es.merge(src, ext.packageExtensionsStream({
+			sourceMappingURLBase: sourceMappingURLBase
+		}));
 
 		let version = packageJson.version;
 		// @ts-ignore JSON checking: quality is optional
@@ -543,13 +460,13 @@ function packageTask(platform, arch, opts) {
 const buildRoot = path.dirname(root);
 
 // {{SQL CARBON EDIT}}
-gulp.task('vscode-win32-x64-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'win32', 'x64'));
-gulp.task('vscode-darwin-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'darwin'));
-gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], packageExtensionTask('azurecore', 'linux', 'x64'));
+gulp.task('vscode-win32-x64-azurecore', ['optimize-vscode'], ext.packageExtensionTask('azurecore', 'win32', 'x64'));
+gulp.task('vscode-darwin-azurecore', ['optimize-vscode'], ext.packageExtensionTask('azurecore', 'darwin'));
+gulp.task('vscode-linux-x64-azurecore', ['optimize-vscode'], ext.packageExtensionTask('azurecore', 'linux', 'x64'));
 
-gulp.task('vscode-win32-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'win32', 'x64'));
-gulp.task('vscode-darwin-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'darwin'));
-gulp.task('vscode-linux-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], packageExtensionTask('mssql', 'linux', 'x64'));
+gulp.task('vscode-win32-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], ext.packageExtensionTask('mssql', 'win32', 'x64'));
+gulp.task('vscode-darwin-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], ext.packageExtensionTask('mssql', 'darwin'));
+gulp.task('vscode-linux-x64-mssql', ['vscode-linux-x64-azurecore', 'optimize-vscode'], ext.packageExtensionTask('mssql', 'linux', 'x64'));
 
 gulp.task('clean-vscode-win32-ia32', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-ia32')));
 gulp.task('clean-vscode-win32-x64', util.rimraf(path.join(buildRoot, 'azuredatastudio-win32-x64')));
