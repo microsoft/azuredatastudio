@@ -134,7 +134,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	private updateLanguageMode() {
 		if (this._editorModel && this._editor) {
 			this._languageMode = this.languageMode;
-			let languageSelection = this._modeService.create(this._languageMode)
+			let languageSelection = this._modeService.create(this._languageMode);
 			this._modelService.setMode(this._editorModel, languageSelection);
 		}
 	}

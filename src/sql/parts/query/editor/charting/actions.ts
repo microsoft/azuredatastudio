@@ -186,7 +186,7 @@ export class SaveImageAction extends Action {
 
 	private decodeBase64Image(data: string): Buffer {
 		let matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-		return new Buffer(matches[2], 'base64');
+		return Buffer.from(matches[2], 'base64');
 	}
 
 	private promptForFilepath(): TPromise<string> {
