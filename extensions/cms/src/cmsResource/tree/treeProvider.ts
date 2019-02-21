@@ -15,7 +15,6 @@ import { TreeNode } from '../treeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { AzureResourceServiceNames } from '../constants';
 
 export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public constructor(

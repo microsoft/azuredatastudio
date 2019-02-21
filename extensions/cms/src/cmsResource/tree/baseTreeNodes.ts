@@ -9,7 +9,6 @@ import { AppContext } from '../../appContext';
 
 import { TreeNode } from '../treeNode';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
-import { AzureResourceServiceNames } from '../constants';
 
 export abstract class AzureResourceTreeNodeBase extends TreeNode {
 	public constructor(

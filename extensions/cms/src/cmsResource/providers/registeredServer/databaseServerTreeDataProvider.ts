@@ -47,7 +47,7 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.None,
-				contextValue: AzureResourceItemType.databaseServer
+				contextValue: AzureResourceItemType.registeredServer
 			}
 		});
 	}
@@ -62,7 +62,7 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
+				contextValue: AzureResourceItemType.serverGroup
 			}
 		};
 	}

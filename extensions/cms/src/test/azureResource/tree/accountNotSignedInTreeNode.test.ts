@@ -9,7 +9,6 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { AzureResourceItemType } from '../../../cmsResource/constants';
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../cmsResource/tree/accountNotSignedInTreeNode';
 
 describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
@@ -22,7 +21,6 @@ describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
 
 		const treeItem = await treeNode.getTreeItem();
 		should(treeItem.label).equal(label);
-		should(treeItem.contextValue).equal(AzureResourceItemType.message);
 		should(treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.None);
 		should(treeItem.command).not.undefined();
 		should(treeItem.command.title).equal(label);
@@ -31,7 +29,5 @@ describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
 		const nodeInfo = treeNode.getNodeInfo();
 		should(nodeInfo.isLeaf).true();
 		should(nodeInfo.label).equal(label);
-		should(nodeInfo.nodeType).equal(AzureResourceItemType.message);
-		should(nodeInfo.iconType).equal(AzureResourceItemType.message);
 	});
 });

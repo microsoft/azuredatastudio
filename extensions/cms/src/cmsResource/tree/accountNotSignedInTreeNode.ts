@@ -20,7 +20,6 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		let item = new TreeItem(AzureResourceAccountNotSignedInTreeNode.signInLabel, TreeItemCollapsibleState.None);
-		item.contextValue = AzureResourceItemType.message;
 		item.command = {
 			title: AzureResourceAccountNotSignedInTreeNode.signInLabel,
 			command: 'cms.resource.connectsqlserver',
@@ -37,9 +36,9 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: AzureResourceItemType.message,
+			nodeType: AzureResourceItemType.serverGroup,
 			nodeSubType: undefined,
-			iconType: AzureResourceItemType.message
+			iconType: AzureResourceItemType.serverGroup
 		};
 	}
 

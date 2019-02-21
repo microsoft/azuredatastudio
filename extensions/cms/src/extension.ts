@@ -2,18 +2,16 @@
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
-import * as constants from './constants';
 
 import AzureResourceController from './controllers/azureResourceController';
 import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 
-import { AzureResourceDatabaseServerProvider } from './azureResource/providers/registeredServer/databaseServerProvider';
-import { AzureResourceDatabaseServerService } from './azureResource/providers/registeredServer/databaseServerService';
+import { AzureResourceDatabaseServerProvider } from './cmsResource/providers/registeredServer/databaseServerProvider';
+import { AzureResourceDatabaseServerService } from './cmsResource/providers/registeredServer/databaseServerService';
 
 let controllers: ControllerBase[] = [];
 
