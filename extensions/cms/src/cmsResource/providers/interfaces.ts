@@ -4,15 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
 import { cmsResource } from '../cms-resource';
-import { CmsRegisteredServer } from './models';
-
-export interface ICmsResourceService {
-	getRegisteredServers(): Promise<CmsRegisteredServer[]>;
-	getServerGroups();
-}
 
 export interface ICmsRegisteredServerNode extends cmsResource.ICmsResourceNode {
 	readonly registeredServer: CmsRegisteredServer;
+	readonly serverGroup: CmsServerGroup;
+}
+
+export interface CmsRegisteredServer {
+	name: string;
+	fullName: string;
+	loginName: string;
+	defaultDatabaseName: string;
+}
+
+export interface CmsServerGroup {
+	name: string;
+	fullName: string;
 }

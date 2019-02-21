@@ -12,7 +12,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
-import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
+import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
 import { CmsResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 
@@ -50,7 +50,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		}
 
 		try {
-			return [new AzureResourceAccountNotSignedInTreeNode()];
+			return [new CmsResourceEmptyTreeNode()];
 
 		} catch (error) {
 			return [];

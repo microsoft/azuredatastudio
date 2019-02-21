@@ -212,14 +212,14 @@ export class ApiWrapper {
 	}
 
 	// CMS APIs
-	public getCmsProvider() {
+	public getCmsProvider(): sqlops.CmsServiceProvider {
 		if (!this._cmsProvider) {
 			this._cmsProvider = sqlops.dataprotocol.getProvider<sqlops.CmsServiceProvider>('MSSQL', sqlops.DataProviderType.CmsServiceProvider);
 		}
 		return this._cmsProvider;
 	}
 
-	public async listRegisteredServers() {
+	public async listRegisteredServers(): Promise<sqlops.ListRegisteredServersResult> {
 		return this.getCmsProvider().getRegisteredServers(this._ownerUri, '').then((result) => {
 			if (result && result.registeredServersList && result.registeredServersList.length > 0) {
 				return result;

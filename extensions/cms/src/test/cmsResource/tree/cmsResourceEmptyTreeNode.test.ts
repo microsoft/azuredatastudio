@@ -9,13 +9,13 @@ import * as should from 'should';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { AzureResourceAccountNotSignedInTreeNode } from '../../../cmsResource/tree/accountNotSignedInTreeNode';
+import { CmsResourceEmptyTreeNode } from '../../../cmsResource/tree/cmsResourceEmptyTreeNode';
 
 describe('AzureResourceAccountNotSignedInTreeNode.info', function(): void {
 	it('Should be correct.', async function(): Promise<void> {
 		const label = 'Sign in to Azure ...';
 
-		const treeNode = new AzureResourceAccountNotSignedInTreeNode();
+		const treeNode = new CmsResourceEmptyTreeNode();
 
 		should(treeNode.nodePathValue).equal('message_accountNotSignedIn');
 

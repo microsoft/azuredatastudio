@@ -6,6 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as sqlops from 'sqlops';
 import { ApiWrapper } from './apiWrapper';
 
 /**
@@ -13,16 +14,21 @@ import { ApiWrapper } from './apiWrapper';
  */
 export class AppContext {
 
-	private serviceMap: Map<string, any> = new Map();
+	private _ownerUri: string;
+	private _cmsProvider: sqlops.CmsServiceProvider;
+
 	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
 		this.apiWrapper = apiWrapper || new ApiWrapper();
+		this._ownerUri = this.apiWrapper.ownerUri;
+		this._cmsProvider = this.apiWrapper.getCmsProvider();
 	}
 
-	public getService<T>(serviceName: string): T {
-		return this.serviceMap.get(serviceName) as T;
+	// Getters
+	public get ownerUri(): string {
+		return this._ownerUri;
 	}
 
-	public registerService<T>(serviceName: string, service: T): void {
-		this.serviceMap.set(serviceName, service);
+	public get cmsProvider(): sqlops.CmsServiceProvider {
+		return this._cmsProvider;
 	}
 }

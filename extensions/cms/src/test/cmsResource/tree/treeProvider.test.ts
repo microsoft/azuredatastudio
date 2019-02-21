@@ -14,7 +14,7 @@ import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
 import { CmsResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
-import { AzureResourceAccountNotSignedInTreeNode } from '../../../cmsResource/tree/accountNotSignedInTreeNode';
+import { CmsResourceEmptyTreeNode } from '../../../cmsResource/tree/cmsResourceEmptyTreeNode';
 
 // Mock services
 let mockAppContext: AppContext;
@@ -53,7 +53,7 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 
 		should(children).Array();
 		should(children.length).equal(1);
-		should(children[0]).instanceof(AzureResourceAccountNotSignedInTreeNode);
+		should(children[0]).instanceof(CmsResourceEmptyTreeNode);
 	});
 
 	it('Should handle errors.', async function(): Promise<void> {

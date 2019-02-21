@@ -13,17 +13,12 @@ import 'mocha';
 
 import { cmsResource } from '../../../cmsResource/cms-resource';
 import { ApiWrapper } from '../../../apiWrapper';
-import { ICmsResourceService } from '../../../cmsResource/providers/interfaces';
 import { CmsRegisteredServerTreeDataProvider } from '../../../cmsResource/providers/cmsRegisteredServerTreeDataProvider';
-import { CmsRegisteredServer } from '../../../cmsResource/providers/models';
 import { AzureResourceItemType } from '../../../cmsResource/constants';
 
 // Mock services
-let mockDatabaseServerService: TypeMoq.IMock<ICmsResourceService>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-
-const mockTenantId: string = 'mock_tenant';
 
 const mockResourceRootNode: cmsResource.ICmsResourceNode = {
 	treeItem: {
@@ -35,13 +30,7 @@ const mockResourceRootNode: cmsResource.ICmsResourceNode = {
 	}
 };
 
-const mockTokens = {};
-mockTokens[mockTenantId] = {
-	token: 'mock_token',
-	tokenType: 'Bearer'
-};
-
-const mockDatabaseServers: CmsRegisteredServer[] = [
+const mockDatabaseServers = [
 	{
 		name: 'mock database server 1',
 		fullName: 'mock database server full name 1',
@@ -58,13 +47,12 @@ const mockDatabaseServers: CmsRegisteredServer[] = [
 
 describe('AzureResourceDatabaseServerTreeDataProvider.info', function(): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<ICmsResourceService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
 
 	it('Should be correct when created.', async function(): Promise<void> {
-		const treeDataProvider = new CmsRegisteredServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new CmsRegisteredServerTreeDataProvider(mockApiWrapper.object, mockExtensionContext.object);
 
 		const treeItem = await treeDataProvider.getTreeItem(mockResourceRootNode);
 		should(treeItem.id).equal(mockResourceRootNode.treeItem.id);
@@ -76,15 +64,13 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function(): void {
 
 describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<ICmsResourceService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockDatabaseServerService.setup((o) => o.getRegisteredServers()).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
 	it('Should return container node when element is undefined.', async function(): Promise<void> {
-		const treeDataProvider = new CmsRegisteredServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new CmsRegisteredServerTreeDataProvider(mockApiWrapper.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren();
 
@@ -99,7 +85,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): 
 	});
 
 	it('Should return resource nodes when it is container node.', async function(): Promise<void> {
-		const treeDataProvider = new CmsRegisteredServerTreeDataProvider(mockDatabaseServerService.object, mockApiWrapper.object, mockExtensionContext.object);
+		const treeDataProvider = new CmsRegisteredServerTreeDataProvider(mockApiWrapper.object, mockExtensionContext.object);
 
 		const children = await treeDataProvider.getChildren(mockResourceRootNode);
 

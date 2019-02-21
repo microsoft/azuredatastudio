@@ -13,15 +13,15 @@ const localize = nls.loadMessageBundle();
 import { TreeNode } from '../treeNode';
 import { AzureResourceItemType } from '../constants';
 
-export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
+export class CmsResourceEmptyTreeNode extends TreeNode {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
 		return [];
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
-		let item = new TreeItem(AzureResourceAccountNotSignedInTreeNode.signInLabel, TreeItemCollapsibleState.None);
+		let item = new TreeItem(CmsResourceEmptyTreeNode.registerServerLabel, TreeItemCollapsibleState.None);
 		item.command = {
-			title: AzureResourceAccountNotSignedInTreeNode.signInLabel,
+			title: CmsResourceEmptyTreeNode.registerServerLabel,
 			command: 'cms.resource.connectsqlserver',
 			arguments: [this]
 		};
@@ -30,15 +30,15 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 
 	public getNodeInfo(): NodeInfo {
 		return {
-			label: AzureResourceAccountNotSignedInTreeNode.signInLabel,
-			isLeaf: true,
+			label: CmsResourceEmptyTreeNode.registerServerLabel,
+			isLeaf: false,
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
 			nodeType: AzureResourceItemType.serverGroup,
 			nodeSubType: undefined,
-			iconType: AzureResourceItemType.serverGroup
+			iconType: 'azure.resource.itemType.account'
 		};
 	}
 
@@ -46,5 +46,5 @@ export class AzureResourceAccountNotSignedInTreeNode extends TreeNode {
 		return 'message_cmsTreeNode';
 	}
 
-	private static readonly signInLabel = localize('cms.resource.tree.CMSTreeNode.label', 'Central Management Servers');
+	private static readonly registerServerLabel = localize('cms.resource.tree.CMSTreeNode.registerServerLabel', 'Register Central Management Server');
 }

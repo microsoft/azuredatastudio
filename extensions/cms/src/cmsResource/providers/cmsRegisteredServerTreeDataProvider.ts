@@ -10,18 +10,15 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { cmsResource } from '../cms-resource';
-import { ICmsResourceService, ICmsRegisteredServerNode } from './interfaces';
-import { CmsRegisteredServer } from './models';
 import { AzureResourceItemType } from '../constants';
 import { ApiWrapper } from '../../apiWrapper';
+import { CmsRegisteredServer, ICmsRegisteredServerNode } from './interfaces';
 
 export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsResourceTreeDataProvider {
 	public constructor(
-		databaseServerService: ICmsResourceService,
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
 	) {
-		this._databaseServerService = databaseServerService;
 		this._apiWrapper = apiWrapper;
 		this._extensionContext = extensionContext;
 	}
@@ -35,8 +32,8 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 			return [this.createContainerNode()];
 		}
 
-		const registeredServers: CmsRegisteredServer[] = (await this._databaseServerService.getRegisteredServers()) || <CmsRegisteredServer[]>[];
-
+		//const registeredServers: CmsRegisteredServer[] = (await this._apiWrapper.listRegisteredServers()) || <CmsRegisteredServer[]>[];
+		const registeredServers = [];
 		return registeredServers.map((registeredServer) => <ICmsRegisteredServerNode>{
 			registeredServer: registeredServer,
 			treeItem: {
@@ -67,7 +64,6 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 		};
 	}
 
-	private _databaseServerService: ICmsResourceService = undefined;
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 

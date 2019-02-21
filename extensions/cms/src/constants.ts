@@ -11,4 +11,4 @@ export enum BuiltInCommands {
 	SetContext = 'setContext'
 }
 
-export const extensionName = localize('extensionName', 'Central Management Servers');
+export const extensionName = localize('extensionName', 'cms');

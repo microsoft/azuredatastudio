@@ -11,7 +11,6 @@ import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 
 import { CmsResourceProvider } from './cmsResource/providers/cmsResourceProvider';
-import { CmsResourceService } from './cmsResource/providers/cmsResourceService';
 
 let controllers: ControllerBase[] = [];
 
@@ -49,19 +48,15 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 		appContext.apiWrapper.openConnectionDialog(['MSSQL']).then( async (connection) => {
 			if (connection) {
 				appContext.apiWrapper.ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
-				appContext.apiWrapper.listRegisteredServers().then((result) => {
-				});
 
 			}
 		});
 	});
 
-
-
 	return {
 		provideResources() {
 			return [
-				new CmsResourceProvider(new CmsResourceService(), apiWrapper, extensionContext)
+				new CmsResourceProvider(apiWrapper, extensionContext)
 			];
 		}
 	};
