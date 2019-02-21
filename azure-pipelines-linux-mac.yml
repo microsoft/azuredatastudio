@@ -29,6 +29,7 @@ steps:
   displayName: 'Scripts'
 
 - script: |
+    ./scripts/test.sh
     ./scripts/test.sh --reporter mocha-junit-reporter
   displayName: 'Tests'
 
