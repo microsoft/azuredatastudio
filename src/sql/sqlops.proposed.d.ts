@@ -547,8 +547,7 @@ declare module 'sqlops' {
 	}
 
 	export interface LinkArea {
-		startPosition: number;
-		length: number;
+		text: string;
 		url: string;
 	}
 

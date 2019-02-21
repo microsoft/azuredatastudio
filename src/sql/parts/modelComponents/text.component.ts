@@ -6,7 +6,7 @@
 import 'vs/css!./radioButton';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	OnDestroy, AfterViewInit, ElementRef
+	OnDestroy, AfterViewInit, ElementRef, SecurityContext
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -14,6 +14,7 @@ import * as sqlops from 'sqlops';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
 	selector: 'modelview-text',
@@ -27,7 +28,8 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(forwardRef(() => DomSanitizer)) private _domSanitizer: DomSanitizer) {
 		super(changeRef, el);
 	}
 
@@ -57,30 +59,16 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.value, '');
 	}
 
-	public getValue(): string {
+	public getValue(): SafeHtml {
 		let links = this.getPropertyOrDefault<sqlops.TextComponentProperties, sqlops.LinkArea[]>((props) => props.links, []);
-		let originalText = this.value;
-		if (links.length === 0) {
-			return originalText;
-		} else {
-			let currentPosition = 0;
-			links = links.sort((a, b) => a.startPosition - b.startPosition);
-			let sections: string[] = [];
+		let text = this._domSanitizer.sanitize(SecurityContext.HTML, this.value);
+		if (links.length !== 0) {
 			for (let i: number = 0; i < links.length; i++) {
 				let link = links[i];
-				if (link.startPosition >= currentPosition && link.startPosition + link.length <= originalText.length) {
-					sections.push(originalText.slice(currentPosition, link.startPosition));
-					let linkTag = `<a href="${link.url}" tabIndex="0" target="blank">${originalText.slice(link.startPosition, link.startPosition + link.length)}</a>`;
-					sections.push(linkTag);
-					currentPosition = link.startPosition + link.length;
-				}
+				let linkTag = `<a href="${this._domSanitizer.sanitize(SecurityContext.URL, link.url)}" tabIndex="0" target="blank">${this._domSanitizer.sanitize(SecurityContext.HTML, link.text)}</a>`;
+				text = text.replace(`{${i}}`, linkTag);
 			}
-
-			if (currentPosition <= originalText.length - 1) {
-				sections.push(originalText.slice(currentPosition));
-			}
-
-			return sections.join('');
 		}
+		return text;
 	}
 }
