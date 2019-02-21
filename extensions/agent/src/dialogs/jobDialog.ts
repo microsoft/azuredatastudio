@@ -233,7 +233,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 				}).component();
 
 			this.startStepDropdown = view.modelBuilder.dropDown().withProperties({ width: 180 }).component();
-			this.startStepDropdown.enabled = this.steps.length > 1 ? true : false;
+			this.startStepDropdown.enabled = this.steps.length >= 1;
 			this.steps.forEach((step) => {
 				this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
 			});
@@ -259,19 +259,21 @@ export class JobDialog extends AgentDialog<JobData>  {
 				width: 140
 			}).component();
 
-			let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
-			stepDialog.onSuccess((step) => {
-				let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
-				this.steps.push(stepInfo);
-				this.stepsTable.data = this.convertStepsToData(this.steps);
-				this.startStepDropdownValues = [];
-				this.steps.forEach((step) => {
-					this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
-				});
-				this.startStepDropdown.values = this.startStepDropdownValues;
-			});
 			this.newStepButton.onDidClick((e)=>{
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
+					let stepDialog = new JobStepDialog(this.model.ownerUri, '' , this.model, null, true);
+					stepDialog.onSuccess((step) => {
+						let stepInfo = JobStepData.convertToAgentJobStepInfo(step);
+						this.steps.push(stepInfo);
+						this.stepsTable.data = this.convertStepsToData(this.steps);
+						this.startStepDropdownValues = [];
+						this.steps.forEach((step) => {
+							this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
+						});
+						this.startStepDropdown.values = this.startStepDropdownValues;
+						this.startStepDropdown.enabled = true;
+						this.model.jobSteps = this.steps;
+					});
 					stepDialog.jobName = this.nameTextBox.value;
 					stepDialog.openDialog();
 				} else {
@@ -341,7 +343,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 							this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
 						});
 						this.startStepDropdown.values = this.startStepDropdownValues;
-
+						this.model.jobSteps = this.steps;
 					});
 					editStepDialog.openDialog();
 				}
@@ -374,7 +376,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 								this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
 							});
 							this.startStepDropdown.values = this.startStepDropdownValues;
+							this.startStepDropdown.enabled = this.steps.length >= 1;
 						}
+						this.model.jobSteps = this.steps;
 					});
 				}
 			});
@@ -690,7 +694,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.model.pageLevel = this.getActualConditionValue(this.pagerCheckBox, this.pagerConditionDropdown);
 		this.model.eventLogLevel = this.getActualConditionValue(this.eventLogCheckBox, this.eventLogConditionDropdown);
 		this.model.deleteLevel = this.getActualConditionValue(this.deleteJobCheckBox, this.deleteJobConditionDropdown);
-		this.model.startStepId = +this.getDropdownValue(this.startStepDropdown);
+        this.model.startStepId = this.startStepDropdown.enabled ? +this.getDropdownValue(this.startStepDropdown) : 1;
 		if (!this.model.jobSteps) {
 			this.model.jobSteps = [];
 		}

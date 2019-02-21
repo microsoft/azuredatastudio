@@ -27,7 +27,7 @@ suite('Cell Model', function (): void {
 
 	test('Should update values', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
-		cell.language = 'sql';
+		cell.setOverrideLanguage('sql');
 		should(cell.language).equal('sql');
 		cell.source = 'abcd';
 		should(cell.source).equal('abcd');

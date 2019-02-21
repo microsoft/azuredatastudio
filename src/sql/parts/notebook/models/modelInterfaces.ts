@@ -267,9 +267,13 @@ export interface INotebookModel {
 	 */
 	readonly clientSession: IClientSession;
 	/**
-	 * LanguageInfo saved in the query book
+	 * LanguageInfo saved in the notebook
 	 */
 	readonly languageInfo: nb.ILanguageInfo;
+	/**
+	 * Current default language for the notebook
+	 */
+	readonly language: string;
 
 	/**
 	 * All notebook managers applicable for a given notebook
@@ -421,7 +425,7 @@ export enum CellExecutionState {
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
-	language: string;
+	readonly language: string;
 	source: string;
 	cellType: CellType;
 	trustedMode: boolean;
@@ -435,6 +439,7 @@ export interface ICellModel {
 	setFuture(future: FutureInternal): void;
 	readonly executionState: CellExecutionState;
 	runCell(notificationService?: INotificationService): Promise<boolean>;
+	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 }
@@ -465,12 +470,29 @@ export interface INotebookModelOptions {
 	providerId: string;
 	standardKernels: IStandardKernelWithProvider[];
 	defaultKernel: nb.IKernelSpec;
+	cellMagicMapper: ICellMagicMapper;
 
 	layoutChanged: Event<void>;
 
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+}
+
+export interface ILanguageMagic {
+	magic: string;
+	language: string;
+	kernels?: string[];
+	executionTarget?: string;
+}
+
+export interface ICellMagicMapper {
+	/**
+	 * Tries to find a language mapping for an identified cell magic
+	 * @param magic a string defining magic. For example for %%sql the magic text is sql
+	 * @param kernelId the name of the current kernel to use when looking up magics
+	 */
+	toLanguageMagic(magic: string, kernelId: string): ILanguageMagic | undefined;
 }
 
 export namespace notebookConstants {

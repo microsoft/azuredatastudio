@@ -5,7 +5,7 @@
 		"target": "es6",
 		"outDir": "./out",
 		"lib": [
-			"es6", "es2015.promise"
+			"dom", "es6", "es2015.promise"
 		],
 		"typeRoots": [
 			"./node_modules/@types"

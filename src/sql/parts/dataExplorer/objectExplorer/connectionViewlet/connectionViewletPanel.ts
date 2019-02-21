@@ -111,7 +111,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	layoutBody(size: number): void {
 		this._searchBox.layout();
-		this._serverTreeView.layout(size); // account for search box
+		this._serverTreeView.layout(size - 46); // account for search box and horizontal scroll bar
 		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
 	}
 

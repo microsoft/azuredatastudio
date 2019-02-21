@@ -9,6 +9,11 @@ import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
+
+import { JupyterController } from './jupyter/jupyterController';
+import { AppContext } from './common/appContext';
+import { ApiWrapper } from './common/apiWrapper';
+
 const localize = nls.loadMessageBundle();
 
 const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
@@ -16,6 +21,8 @@ const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample c
 const noNotebookVisible = localize('noNotebookVisible', 'No notebook editor is active');
 
 let counter = 0;
+
+export let controller: JupyterController;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (connectionId?: string) => {
@@ -37,6 +44,9 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 		analyzeNotebook(explorerContext);
 	}));
 
+	let appContext = new AppContext(extensionContext, new ApiWrapper());
+	controller = new JupyterController(appContext);
+	controller.activate();
 }
 
 function newNotebook(connectionId: string) {
@@ -141,4 +151,7 @@ async function analyzeNotebook(oeContext?: sqlops.ObjectExplorerContext): Promis
 
 // this method is called when your extension is deactivated
 export function deactivate() {
+	if (controller) {
+		controller.deactivate();
+	}
 }
