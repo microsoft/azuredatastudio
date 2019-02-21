@@ -28,6 +28,6 @@ export interface IConnectionDialogService {
 	 * @param model
 	 * @param connectionResult
 	 */
-	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult): Thenable<IConnectionProfile>;
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Thenable<IConnectionProfile>;
 }
 

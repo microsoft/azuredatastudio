@@ -18,9 +18,6 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionPro
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-
-import * as sqlops from 'sqlops';
 
 const MAX_CONNECTIONS_DEFAULT = 25;
 
