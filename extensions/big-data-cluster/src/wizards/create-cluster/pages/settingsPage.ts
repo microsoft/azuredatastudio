@@ -35,18 +35,27 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 		acceptEulaCheckbox.checked = false;
 
 		let eulaLink: sqlops.LinkArea = {
-			startPosition: parseInt(localize('bdc-create.EulaLinkAreaStartPosition', '13')),
+			startPosition: parseInt(localize({
+				key: 'bdc-create.EulaLinkAreaStartPosition',
+				comment: ['Starting index for the EULA link area in the resource: bdc-create.EulaText , the index is zero based.']
+			}, '13')),
 			length: parseInt(localize('bdc-create.EulaLinkAreaLength', '17')),
 			url: 'https://docs.microsoft.com/en-us/sql/getting-started/about-the-sql-server-license-terms?view=sql-server-2014'
 		};
 		let privacyPolicyLink: sqlops.LinkArea = {
-			startPosition: parseInt(localize('bdc-create.PrivacyPolicyLinkAreaStartPosition', '35')),
+			startPosition: parseInt(localize({
+				key: 'bdc-create.PrivacyPolicyLinkAreaStartPosition',
+				comment: ['Starting index of the privacy policy link area in the resource: bdc-create.EulaText, the index is zero based.']
+			}, '35')),
 			length: parseInt(localize('bdc-create.PrivacyPolicyLinkAreaLength', '14')),
 			url: 'https://privacy.microsoft.com/en-us/privacystatement'
 		};
 
 		let checkboxText = view.modelBuilder.text().withProperties<sqlops.TextComponentProperties>({
-			value: localize('bdc-create.EulaText', 'I accept the License Agreement and Privacy Policy.'),
+			value: localize({
+				key: 'bdc-create.EulaText',
+				comment: ['When updating this resource, please make sure to update the following resources: bdc-create.EulaLinkAreaStartPosition, bdc-create.EulaLinkAreaLength, bdc-create.PrivacyPolicyLinkAreaStartPosition, bdc-create.PrivacyPolicyLinkAreaLength']
+			}, 'I accept the License Agreement and Privacy Policy.'),
 			links: [privacyPolicyLink, eulaLink]
 		}).component();
 
