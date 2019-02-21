@@ -33,15 +33,6 @@
           "light": "./images/light_icon.svg",
           "dark": "./images/dark_icon.svg"
         }
-      },
-      {
-        "command": "dacFx.start",
-        "title": "Data-tier Application Wizard",
-        "category": "Data-tier Application",
-        "icon": {
-          "light": "./images/light_icon.svg",
-          "dark": "./images/dark_icon.svg"
-        }
       }
     ],
     "keybindings": [
@@ -57,11 +48,6 @@
           "command": "flatFileImport.start",
           "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
           "group": "import"
-        },
-        {
-          "command": "dacFx.start",
-          "when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
-          "group": "export"
         }
       ]
     }
