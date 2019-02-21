@@ -129,6 +129,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	diffeditor(): azdata.ComponentBuilder<azdata.DiffEditorComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.DiffEditorComponent> = this.getComponentBuilder(new DiffEditorWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	button(): azdata.ComponentBuilder<azdata.ButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.ButtonComponent> = this.getComponentBuilder(new ButtonWrapper(this._proxy, this._handle, id), id);
@@ -900,6 +907,66 @@ class EditorWrapper extends ComponentWrapper implements azdata.EditorComponent {
 	}
 	public set content(v: string) {
 		this.setProperty('content', v);
+	}
+
+	public get languageMode(): string {
+		return this.properties['languageMode'];
+	}
+	public set languageMode(v: string) {
+		this.setProperty('languageMode', v);
+	}
+
+	public get editorUri(): string {
+		return this.properties['editorUri'];
+	}
+
+	public get isAutoResizable(): boolean {
+		return this.properties['isAutoResizable'];
+	}
+
+	public set isAutoResizable(v: boolean) {
+		this.setProperty('isAutoResizable', v);
+	}
+
+	public get minimumHeight(): number {
+		return this.properties['minimumHeight'];
+	}
+
+	public set minimumHeight(v: number) {
+		this.setProperty('minimumHeight', v);
+	}
+
+	public get onContentChanged(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
+		return emitter && emitter.event;
+	}
+
+	public get onEditorCreated(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onComponentCreated);
+		return emitter && emitter.event;
+	}
+}
+
+class DiffEditorWrapper extends ComponentWrapper implements azdata.DiffEditorComponent {
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.DiffEditor, id);
+		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onComponentCreated, new Emitter<any>());
+	}
+
+	public get contentLeft(): string {
+		return this.properties['contentLeft'];
+	}
+	public set contentLeft(v: string) {
+		this.setProperty('contentLeft', v);
+	}
+
+	public get contentRight(): string {
+		return this.properties['contentRight'];
+	}
+	public set contentRight(v: string) {
+		this.setProperty('contentRight', v);
 	}
 
 	public get languageMode(): string {
