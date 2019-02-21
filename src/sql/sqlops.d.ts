@@ -1033,11 +1033,11 @@ declare module 'sqlops' {
 		 */
 		iconType?: string | SqlThemeIcon;
 		/**
-		 * USED BY NEW OE VIEWLET
+		 * Informs who provides the children to a node, used by data explorer tree view api
 		 */
 		childProvider?: string;
 		/**
-		 * USED BY NEW OE VIEWLET
+		 * Holds the connection profile for nodes, used by data explorer tree view api
 		 */
 		payload?: any;
 	}
