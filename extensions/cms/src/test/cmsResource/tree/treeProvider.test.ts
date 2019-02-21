@@ -13,7 +13,7 @@ import 'mocha';
 import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 
-import { AzureResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
+import { CmsResourceTreeProvider } from '../../../cmsResource/tree/treeProvider';
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../cmsResource/tree/accountNotSignedInTreeNode';
 
 // Mock services
@@ -35,7 +35,7 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 
 	it('Should load accounts.', async function(): Promise<void> {
 
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
+		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;
 
 		const children = await treeProvider.getChildren(undefined);
@@ -46,7 +46,7 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 
 	it('Should handle when there is no accounts.', async function(): Promise<void> {
 
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
+		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;
 
 		const children = await treeProvider.getChildren(undefined);
@@ -60,7 +60,7 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 		const mockAccountError = 'Test account error';
 
 
-		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
+		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;
 
 		const children = await treeProvider.getChildren(undefined);

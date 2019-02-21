@@ -5,7 +5,7 @@
 
 'use strict';
 
-export interface CmsResourceRegisteredServer {
+export interface CmsRegisteredServer {
 	name: string;
 	fullName: string;
 	loginName: string;

@@ -7,15 +7,14 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
 import { cmsResource } from '../../cmsResource/cms-resource';
-import { AzureResourceService } from '../../cmsResource/resourceService';
-import { AzureResourceResourceTreeNode } from '../../cmsResource/resourceTreeNode';
+import { CmsResourceService } from '../../cmsResource/resourceService';
+import { CmsResourceResourceTreeNode } from '../../cmsResource/resourceTreeNode';
 
-const resourceService = AzureResourceService.getInstance();
+const resourceService = CmsResourceService.getInstance();
 
 const mockTenantId: string = 'mock_tenant';
 
@@ -73,7 +72,7 @@ describe('AzureResourceResourceTreeNode.info', function(): void {
 	});
 
 	it('Should be correct when created.', async function(): Promise<void> {
-		const resourceTreeNode = new AzureResourceResourceTreeNode({
+		const resourceTreeNode = new CmsResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceRootNode
 		}, undefined);
@@ -110,7 +109,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 	});
 
 	it('Should return resource nodes when it is container node.', async function(): Promise<void> {
-		const resourceTreeNode = new AzureResourceResourceTreeNode({
+		const resourceTreeNode = new CmsResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceRootNode
 		}, undefined);
@@ -125,9 +124,9 @@ describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 		for (let ix = 0; ix < children.length; ix++) {
 			const child = children[ix];
 
-			should(child).instanceOf(AzureResourceResourceTreeNode);
+			should(child).instanceOf(CmsResourceResourceTreeNode);
 
-			const childNode = (child as AzureResourceResourceTreeNode).resourceNodeWithProviderId;
+			const childNode = (child as CmsResourceResourceTreeNode).resourceNodeWithProviderId;
 			should(childNode.resourceProviderId).equal(mockResourceProviderId);
 			should(childNode.resourceNode.tenantId).equal(mockTenantId);
 			should(childNode.resourceNode.treeItem.id).equal(mockResourceNodes[ix].treeItem.id);
@@ -138,7 +137,7 @@ describe('AzureResourceResourceTreeNode.getChildren', function(): void {
 	});
 
 	it('Should return empty when it is leaf node.', async function(): Promise<void> {
-		const resourceTreeNode = new AzureResourceResourceTreeNode({
+		const resourceTreeNode = new CmsResourceResourceTreeNode({
 			resourceProviderId: mockResourceProviderId,
 			resourceNode: mockResourceNode1
 		}, undefined);

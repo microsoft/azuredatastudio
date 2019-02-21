@@ -9,15 +9,15 @@ import { TreeItem, TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { cmsResource } from '../../cms-resource';
-import { ICmsResourceRegisteredServerService, ICmsResourceRegisteredServerNode } from './interfaces';
-import { CmsResourceRegisteredServer } from './models';
-import { AzureResourceItemType } from '../../../cmsResource/constants';
-import { ApiWrapper } from '../../../apiWrapper';
+import { cmsResource } from '../cms-resource';
+import { ICmsResourceService, ICmsRegisteredServerNode } from './interfaces';
+import { CmsRegisteredServer } from './models';
+import { AzureResourceItemType } from '../constants';
+import { ApiWrapper } from '../../apiWrapper';
 
 export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsResourceTreeDataProvider {
 	public constructor(
-		databaseServerService: ICmsResourceRegisteredServerService,
+		databaseServerService: ICmsResourceService,
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
 	) {
@@ -35,9 +35,9 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 			return [this.createContainerNode()];
 		}
 
-		const registeredServers: CmsResourceRegisteredServer[] = (await this._databaseServerService.getDatabaseServers()) || <CmsResourceRegisteredServer[]>[];
+		const registeredServers: CmsRegisteredServer[] = (await this._databaseServerService.getRegisteredServers()) || <CmsRegisteredServer[]>[];
 
-		return registeredServers.map((registeredServer) => <ICmsResourceRegisteredServerNode>{
+		return registeredServers.map((registeredServer) => <ICmsRegisteredServerNode>{
 			registeredServer: registeredServer,
 			treeItem: {
 				id: `registeredServer_${registeredServer.name}`,
@@ -67,7 +67,7 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 		};
 	}
 
-	private _databaseServerService: ICmsResourceRegisteredServerService = undefined;
+	private _databaseServerService: ICmsResourceService = undefined;
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 

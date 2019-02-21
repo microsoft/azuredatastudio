@@ -6,13 +6,13 @@
 'use strict';
 
 import ControllerBase from './controllerBase';
-import { AzureResourceTreeProvider } from '../cmsResource/tree/treeProvider';
+import { CmsResourceTreeProvider } from '../cmsResource/tree/treeProvider';
 
-export default class AzureResourceController extends ControllerBase {
+export default class CmsResourceController extends ControllerBase {
 	public activate(): Promise<boolean> {
 
-		const azureResourceTree = new AzureResourceTreeProvider(this.appContext);
-		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('cmsResourceExplorer', azureResourceTree));
+		const cmsResourceTree = new CmsResourceTreeProvider(this.appContext);
+		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('cmsResourceExplorer', cmsResourceTree));
 
 		return Promise.resolve(true);
 	}

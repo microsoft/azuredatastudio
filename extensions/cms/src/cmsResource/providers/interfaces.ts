@@ -5,13 +5,14 @@
 
 'use strict';
 
-import { cmsResource } from '../../cms-resource';
-import { CmsResourceRegisteredServer } from './models';
+import { cmsResource } from '../cms-resource';
+import { CmsRegisteredServer } from './models';
 
-export interface ICmsResourceRegisteredServerService {
-	getDatabaseServers(): Promise<CmsResourceRegisteredServer[]>;
+export interface ICmsResourceService {
+	getRegisteredServers(): Promise<CmsRegisteredServer[]>;
+	getServerGroups();
 }
 
-export interface ICmsResourceRegisteredServerNode extends cmsResource.ICmsResourceNode {
-	readonly registeredServer: CmsResourceRegisteredServer;
+export interface ICmsRegisteredServerNode extends cmsResource.ICmsResourceNode {
+	readonly registeredServer: CmsRegisteredServer;
 }

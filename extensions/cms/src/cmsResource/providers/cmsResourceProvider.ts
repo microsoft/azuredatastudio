@@ -6,15 +6,15 @@
 'use strict';
 
 import { ExtensionContext } from 'vscode';
-import { ApiWrapper } from '../../../apiWrapper';
+import { ApiWrapper } from '../../apiWrapper';
 
-import { cmsResource } from '../../cms-resource';
-import { ICmsResourceRegisteredServerService } from './interfaces';
-import { CmsRegisteredServerTreeDataProvider } from './databaseServerTreeDataProvider';
+import { cmsResource } from '../cms-resource';
+import { ICmsResourceService } from './interfaces';
+import { CmsRegisteredServerTreeDataProvider } from './cmsRegisteredServerTreeDataProvider';
 
-export class AzureResourceDatabaseServerProvider implements cmsResource.ICmsResourceProvider {
+export class CmsResourceProvider implements cmsResource.ICmsResourceProvider {
 	public constructor(
-		databaseServerService: ICmsResourceRegisteredServerService,
+		databaseServerService: ICmsResourceService,
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
 	) {
@@ -31,7 +31,7 @@ export class AzureResourceDatabaseServerProvider implements cmsResource.ICmsReso
 		return 'cms.resource.providers.registeredServer';
 	}
 
-	private _databaseServerService: ICmsResourceRegisteredServerService = undefined;
+	private _databaseServerService: ICmsResourceService = undefined;
 	private _apiWrapper: ApiWrapper = undefined;
 	private _extensionContext: ExtensionContext = undefined;
 }

@@ -13,10 +13,10 @@ const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
 import { AzureResourceAccountNotSignedInTreeNode } from './accountNotSignedInTreeNode';
-import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
-import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
+import { CmsResourceContainerTreeNodeBase } from './baseTreeNodes';
+import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 
-export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
+export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 	public constructor(
 		public readonly appContext: AppContext
 	) {
@@ -44,7 +44,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 					// System not initialized yet
 					this.isSystemInitialized = false;
 				}
-			}, AzureResourceTreeProvider.loadingTimerInterval);
+			}, CmsResourceTreeProvider.loadingTimerInterval);
 
 			return [];
 		}
@@ -67,7 +67,7 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 
 	public async refresh(node: TreeNode, isClearingCache: boolean): Promise<void> {
 		if (isClearingCache) {
-			if ((node instanceof AzureResourceContainerTreeNodeBase)) {
+			if ((node instanceof CmsResourceContainerTreeNodeBase)) {
 				node.clearCache();
 			}
 		}
@@ -84,6 +84,6 @@ export class AzureResourceTreeProvider implements TreeDataProvider<TreeNode>, IA
 	private _loadingTimer: NodeJS.Timer = undefined;
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
-	private static readonly loadingLabel = localize('azure.resource.tree.treeProvider.loadingLabel', 'Loading ...');
+	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
 	private static readonly loadingTimerInterval = 5000;
 }

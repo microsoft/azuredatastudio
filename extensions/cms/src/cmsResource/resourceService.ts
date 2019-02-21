@@ -6,16 +6,15 @@
 'use strict';
 
 import { extensions, TreeItem } from 'vscode';
-import { Account } from 'sqlops';
 
 import { cmsResource } from './cms-resource';
 
-export class AzureResourceService {
+export class CmsResourceService {
 	private constructor() {
 	}
 
-	public static getInstance(): AzureResourceService {
-		return AzureResourceService._instance;
+	public static getInstance(): CmsResourceService {
+		return CmsResourceService._instance;
 	}
 
 	public async listResourceProviderIds(): Promise<string[]> {
@@ -121,5 +120,5 @@ export class AzureResourceService {
 	private _resourceProviders: { [resourceProviderId: string]: cmsResource.ICmsResourceProvider } = {};
 	private _treeDataProviders: { [resourceProviderId: string]: cmsResource.ICmsResourceTreeDataProvider } = {};
 
-	private static readonly _instance = new AzureResourceService();
+	private static readonly _instance = new CmsResourceService();
 }

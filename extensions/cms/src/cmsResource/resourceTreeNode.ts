@@ -11,10 +11,9 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from './treeNode';
-import { AzureResourceService } from './resourceService';
-import { AzureResourceErrorMessageUtil } from './utils';
+import { CmsResourceService } from './resourceService';
 
-export class AzureResourceResourceTreeNode extends TreeNode {
+export class CmsResourceResourceTreeNode extends TreeNode {
 	public constructor(
 		public readonly resourceNodeWithProviderId: any,
 		parent: TreeNode
@@ -39,7 +38,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.resourceNode.treeItem.id = `${this.resourceNodeWithProviderId.resourceNode.treeItem.id}.${child.resourceNode.treeItem.id}`;
-					return new AzureResourceResourceTreeNode(child, this);
+					return new CmsResourceResourceTreeNode(child, this);
 				});
 			}
 		} catch (error) {
@@ -71,7 +70,7 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 		return this.resourceNodeWithProviderId.resourceNode.treeItem.id;
 	}
 
-	private _resourceService = AzureResourceService.getInstance();
+	private _resourceService = CmsResourceService.getInstance();
 
-	private static readonly noResourcesLabel = localize('azure.resource.resourceTreeNode.noResourcesLabel', 'No Resources found.');
+	private static readonly noResourcesLabel = localize('cms.resource.resourceTreeNode.noResourcesLabel', 'No Resources found.');
 }

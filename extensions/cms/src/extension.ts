@@ -5,13 +5,13 @@ import * as sqlops from 'sqlops';
 import * as path from 'path';
 import * as os from 'os';
 
-import AzureResourceController from './controllers/azureResourceController';
+import AzureResourceController from './controllers/cmsResourceController';
 import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 
-import { AzureResourceDatabaseServerProvider } from './cmsResource/providers/registeredServer/databaseServerProvider';
-import { AzureResourceDatabaseServerService } from './cmsResource/providers/registeredServer/databaseServerService';
+import { CmsResourceProvider } from './cmsResource/providers/cmsResourceProvider';
+import { CmsResourceService } from './cmsResource/providers/cmsResourceService';
 
 let controllers: ControllerBase[] = [];
 
@@ -50,7 +50,6 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 			if (connection) {
 				appContext.apiWrapper.ownerUri = await sqlops.connection.getUriForConnection(connection.connectionId);
 				appContext.apiWrapper.listRegisteredServers().then((result) => {
-					let meme = result;
 				});
 
 			}
@@ -62,7 +61,7 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	return {
 		provideResources() {
 			return [
-				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), apiWrapper, extensionContext)
+				new CmsResourceProvider(new CmsResourceService(), apiWrapper, extensionContext)
 			];
 		}
 	};

@@ -12,7 +12,7 @@ import 'mocha';
 import { fail } from 'assert';
 
 import { cmsResource } from '../../cmsResource/cms-resource';
-import { AzureResourceService } from '../../cmsResource/resourceService';
+import { CmsResourceService } from '../../cmsResource/resourceService';
 
 let mockResourceTreeDataProvider1: TypeMoq.IMock<cmsResource.ICmsResourceTreeDataProvider>;
 let mockResourceProvider1: TypeMoq.IMock<cmsResource.ICmsResourceProvider>;
@@ -20,7 +20,7 @@ let mockResourceProvider1: TypeMoq.IMock<cmsResource.ICmsResourceProvider>;
 let mockResourceTreeDataProvider2: TypeMoq.IMock<cmsResource.ICmsResourceTreeDataProvider>;
 let mockResourceProvider2: TypeMoq.IMock<cmsResource.ICmsResourceProvider>;
 
-const resourceService: AzureResourceService = AzureResourceService.getInstance();
+const resourceService: CmsResourceService = CmsResourceService.getInstance();
 
 describe('AzureResourceService.listResourceProviderIds', function(): void {
 	beforeEach(() => {

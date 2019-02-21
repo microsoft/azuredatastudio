@@ -5,12 +5,12 @@
 
 'use strict';
 
-import { ICmsResourceRegisteredServerService } from './interfaces';
-import { CmsResourceRegisteredServer } from './models';
+import { ICmsResourceService } from './interfaces';
+import { CmsRegisteredServer } from './models';
 
-export class AzureResourceDatabaseServerService implements ICmsResourceRegisteredServerService {
-	public async getDatabaseServers(): Promise<CmsResourceRegisteredServer[]> {
-		const databaseServers: CmsResourceRegisteredServer[] = [];
+export class CmsResourceService implements ICmsResourceService {
+	public async getRegisteredServers(): Promise<CmsRegisteredServer[]> {
+		const databaseServers: CmsRegisteredServer[] = [];
 
 		const svrs = [];
 
@@ -22,5 +22,9 @@ export class AzureResourceDatabaseServerService implements ICmsResourceRegistere
 		}));
 
 		return databaseServers;
+	}
+
+	public getServerGroups() {
+
 	}
 }

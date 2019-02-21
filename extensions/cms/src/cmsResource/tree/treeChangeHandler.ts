@@ -7,6 +7,6 @@
 
 import { TreeNode } from '../treeNode';
 
-export interface IAzureResourceTreeChangeHandler {
+export interface ICmsResourceTreeChangeHandler {
 	notifyNodeChanged(node: TreeNode): void;
 }

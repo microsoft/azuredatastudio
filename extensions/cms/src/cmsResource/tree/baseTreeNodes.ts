@@ -8,12 +8,12 @@
 import { AppContext } from '../../appContext';
 
 import { TreeNode } from '../treeNode';
-import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
+import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 
-export abstract class AzureResourceTreeNodeBase extends TreeNode {
+export abstract class CmsResourceTreeNodeBase extends TreeNode {
 	public constructor(
 		public readonly appContext: AppContext,
-		public readonly treeChangeHandler: IAzureResourceTreeChangeHandler,
+		public readonly treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super();
@@ -22,10 +22,10 @@ export abstract class AzureResourceTreeNodeBase extends TreeNode {
 	}
 }
 
-export abstract class AzureResourceContainerTreeNodeBase extends AzureResourceTreeNodeBase {
+export abstract class CmsResourceContainerTreeNodeBase extends CmsResourceTreeNodeBase {
 	public constructor(
 		appContext: AppContext,
-		treeChangeHandler: IAzureResourceTreeChangeHandler,
+		treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super(appContext, treeChangeHandler, parent);

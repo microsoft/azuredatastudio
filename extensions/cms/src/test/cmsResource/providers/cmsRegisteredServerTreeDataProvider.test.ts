@@ -11,15 +11,15 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import 'mocha';
 
-import { cmsResource } from '../../../../cmsResource/cms-resource';
-import { ApiWrapper } from '../../../../apiWrapper';
-import { ICmsResourceRegisteredServerService } from '../../../../cmsResource/providers/registeredServer/interfaces';
-import { CmsRegisteredServerTreeDataProvider } from '../../../../cmsResource/providers/registeredServer/databaseServerTreeDataProvider';
-import { CmsResourceRegisteredServer } from '../../../../cmsResource/providers/registeredServer/models';
-import { AzureResourceItemType } from '../../../../cmsResource/constants';
+import { cmsResource } from '../../../cmsResource/cms-resource';
+import { ApiWrapper } from '../../../apiWrapper';
+import { ICmsResourceService } from '../../../cmsResource/providers/interfaces';
+import { CmsRegisteredServerTreeDataProvider } from '../../../cmsResource/providers/cmsRegisteredServerTreeDataProvider';
+import { CmsRegisteredServer } from '../../../cmsResource/providers/models';
+import { AzureResourceItemType } from '../../../cmsResource/constants';
 
 // Mock services
-let mockDatabaseServerService: TypeMoq.IMock<ICmsResourceRegisteredServerService>;
+let mockDatabaseServerService: TypeMoq.IMock<ICmsResourceService>;
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
@@ -41,7 +41,7 @@ mockTokens[mockTenantId] = {
 	tokenType: 'Bearer'
 };
 
-const mockDatabaseServers: CmsResourceRegisteredServer[] = [
+const mockDatabaseServers: CmsRegisteredServer[] = [
 	{
 		name: 'mock database server 1',
 		fullName: 'mock database server full name 1',
@@ -58,7 +58,7 @@ const mockDatabaseServers: CmsResourceRegisteredServer[] = [
 
 describe('AzureResourceDatabaseServerTreeDataProvider.info', function(): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<ICmsResourceRegisteredServerService>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<ICmsResourceService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	});
@@ -76,10 +76,10 @@ describe('AzureResourceDatabaseServerTreeDataProvider.info', function(): void {
 
 describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): void {
 	beforeEach(() => {
-		mockDatabaseServerService = TypeMoq.Mock.ofType<ICmsResourceRegisteredServerService>();
+		mockDatabaseServerService = TypeMoq.Mock.ofType<ICmsResourceService>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockDatabaseServerService.setup((o) => o.getDatabaseServers()).returns(() => Promise.resolve(mockDatabaseServers));
+		mockDatabaseServerService.setup((o) => o.getRegisteredServers()).returns(() => Promise.resolve(mockDatabaseServers));
 		mockExtensionContext.setup((o) => o.asAbsolutePath(TypeMoq.It.isAnyString())).returns(() => TypeMoq.It.isAnyString());
 	});
 
