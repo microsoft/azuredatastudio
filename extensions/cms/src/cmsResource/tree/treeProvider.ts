@@ -9,17 +9,23 @@ import { TreeDataProvider, EventEmitter, Event, TreeItem } from 'vscode';
 import { setInterval, clearInterval } from 'timers';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
+import * as sqlops from 'sqlops';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
 import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
 import { CmsResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
+import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
+
+	private _appContext: AppContext;
+
 	public constructor(
 		public readonly appContext: AppContext
 	) {
+		this._appContext = appContext;
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -30,7 +36,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 		if (!this.isSystemInitialized && !this._loadingTimer) {
 			this._loadingTimer = setInterval(async () => {
 				try {
-					// Call sqlops.accounts.getAllAccounts() to determine whether the system has been initialized.
+					// Call to collect all locally saved CMS servers
+					// to determine whether the system has been initialized.
+
 
 					// System has been initialized
 					this.isSystemInitialized = true;
@@ -45,15 +53,15 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 					this.isSystemInitialized = false;
 				}
 			}, CmsResourceTreeProvider.loadingTimerInterval);
-
-			return [];
+			return [CmsResourceMessageTreeNode.create(CmsResourceTreeProvider.loadingLabel, undefined)];
 		}
-
 		try {
-			return [new CmsResourceEmptyTreeNode()];
-
+			// let ownerUri = await this.appContext.apiWrapper.ownerUri;
+			// let meme = await this.appContext.apiWrapper.getRegisteredServers(ownerUri);
+			let emptyNode = new CmsResourceEmptyTreeNode();
+			return [emptyNode];
 		} catch (error) {
-			return [];
+			return [new CmsResourceEmptyTreeNode()];
 		}
 	}
 
@@ -85,5 +93,5 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
 	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
-	private static readonly loadingTimerInterval = 5000;
+	private static readonly loadingTimerInterval = 2500;
 }

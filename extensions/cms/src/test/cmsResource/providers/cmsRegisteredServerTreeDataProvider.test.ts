@@ -14,7 +14,7 @@ import 'mocha';
 import { cmsResource } from '../../../cmsResource/cms-resource';
 import { ApiWrapper } from '../../../apiWrapper';
 import { CmsRegisteredServerTreeDataProvider } from '../../../cmsResource/providers/cmsRegisteredServerTreeDataProvider';
-import { AzureResourceItemType } from '../../../cmsResource/constants';
+import { CmsResourceItemType } from '../../../cmsResource/constants';
 
 // Mock services
 let mockApiWrapper: TypeMoq.IMock<ApiWrapper>;
@@ -99,7 +99,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function(): 
 			should(child.treeItem.id).equal(`databaseServer_${databaseServer.name}`);
 			should(child.treeItem.label).equal(databaseServer.name);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.None);
-			should(child.treeItem.contextValue).equal(AzureResourceItemType.serverGroup);
+			should(child.treeItem.contextValue).equal(CmsResourceItemType.serverGroup);
 		}
 	});
 });

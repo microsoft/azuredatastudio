@@ -10,11 +10,15 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { cmsResource } from '../cms-resource';
-import { AzureResourceItemType } from '../constants';
+import { CmsResourceItemType } from '../constants';
 import { ApiWrapper } from '../../apiWrapper';
-import { CmsRegisteredServer, ICmsRegisteredServerNode } from './interfaces';
+import { ICmsRegisteredServerNode } from './interfaces';
 
 export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsResourceTreeDataProvider {
+
+	private _apiWrapper: ApiWrapper = undefined;
+	private _extensionContext: ExtensionContext = undefined;
+
 	public constructor(
 		apiWrapper: ApiWrapper,
 		extensionContext: ExtensionContext
@@ -44,7 +48,7 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.None,
-				contextValue: AzureResourceItemType.registeredServer
+				contextValue: CmsResourceItemType.registeredServer
 			}
 		});
 	}
@@ -59,13 +63,10 @@ export class CmsRegisteredServerTreeDataProvider implements cmsResource.ICmsReso
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.serverGroup
+				contextValue: CmsResourceItemType.serverGroup
 			}
 		};
 	}
-
-	private _apiWrapper: ApiWrapper = undefined;
-	private _extensionContext: ExtensionContext = undefined;
 
 	private static readonly containerId = 'cms.resource.providers.registeredServer.treeDataProvider.registeredServerContainer';
 	private static readonly containerLabel = localize('cms.resource.providers.registeredServer.treeDataProvider.registeredServerContainerLabel', 'Registered Servers');

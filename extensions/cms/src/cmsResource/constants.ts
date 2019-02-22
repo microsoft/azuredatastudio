@@ -5,7 +5,8 @@
 
 'use strict';
 
-export enum AzureResourceItemType {
+export enum CmsResourceItemType {
+	cmsNodeContainer = 'cms.resource.itemType.cmsNodeContainer',
 	registeredServer = 'cms.resource.itemType.registeredServer',
-	serverGroup = 'azure.resource.itemType.serverGroup'
+	serverGroup = 'cms.resource.itemType.serverGroup'
 }

@@ -13,6 +13,7 @@ export default class CmsResourceController extends ControllerBase {
 
 		const cmsResourceTree = new CmsResourceTreeProvider(this.appContext);
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerTreeDataProvider('cmsResourceExplorer', cmsResourceTree));
+		cmsResourceTree.notifyNodeChanged(undefined);
 
 		return Promise.resolve(true);
 	}

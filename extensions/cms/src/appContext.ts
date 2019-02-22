@@ -14,21 +14,9 @@ import { ApiWrapper } from './apiWrapper';
  */
 export class AppContext {
 
-	private _ownerUri: string;
 	private _cmsProvider: sqlops.CmsServiceProvider;
 
 	constructor(public readonly extensionContext: vscode.ExtensionContext, public readonly apiWrapper: ApiWrapper) {
 		this.apiWrapper = apiWrapper || new ApiWrapper();
-		this._ownerUri = this.apiWrapper.ownerUri;
-		this._cmsProvider = this.apiWrapper.getCmsProvider();
-	}
-
-	// Getters
-	public get ownerUri(): string {
-		return this._ownerUri;
-	}
-
-	public get cmsProvider(): sqlops.CmsServiceProvider {
-		return this._cmsProvider;
 	}
 }

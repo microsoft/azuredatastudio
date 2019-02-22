@@ -219,9 +219,9 @@ export class ApiWrapper {
 		return this._cmsProvider;
 	}
 
-	public async listRegisteredServers(): Promise<sqlops.ListRegisteredServersResult> {
-		return this.getCmsProvider().getRegisteredServers(this._ownerUri, '').then((result) => {
-			if (result && result.registeredServersList && result.registeredServersList.length > 0) {
+	public async getRegisteredServers(ownerUri: string): Promise<sqlops.ListRegisteredServersResult> {
+		return await this.getCmsProvider().getRegisteredServers(ownerUri, '').then((result) => {
+			if (result && result.registeredServersList && result.registeredServersList) {
 				return result;
 			}
 		});
@@ -232,11 +232,20 @@ export class ApiWrapper {
 		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
-	public get ownerUri(): string {
-		return this._ownerUri;
-	}
-
-	public set ownerUri(value: string) {
-		this._ownerUri = value;
+	public get ownerUri(): Thenable<string> {
+		if (!this._ownerUri) {
+			return this.openConnectionDialog(['MSSQL']).then((connection) => {
+				if (connection) {
+					return sqlops.connection.getUriForConnection(connection.connectionId).then((result) => {
+						this._ownerUri = result;
+						return this._ownerUri;
+					});
+				}
+			}).then((ownerUri) => {
+				return ownerUri;
+			});
+		} else {
+			return Promise.resolve(this._ownerUri);
+		}
 	}
 }

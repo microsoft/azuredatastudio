@@ -11,11 +11,11 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
-import { AzureResourceItemType } from '../constants';
+import { CmsResourceItemType } from '../constants';
 
 export class CmsResourceEmptyTreeNode extends TreeNode {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
-		return [];
+		return [new CmsResourceEmptyTreeNode()];
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
@@ -31,14 +31,13 @@ export class CmsResourceEmptyTreeNode extends TreeNode {
 	public getNodeInfo(): NodeInfo {
 		return {
 			label: CmsResourceEmptyTreeNode.registerServerLabel,
-			isLeaf: false,
+			isLeaf: true,
 			errorMessage: undefined,
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: AzureResourceItemType.serverGroup,
-			nodeSubType: undefined,
-			iconType: 'azure.resource.itemType.account'
+			nodeType: CmsResourceItemType.serverGroup,
+			nodeSubType: undefined
 		};
 	}
 

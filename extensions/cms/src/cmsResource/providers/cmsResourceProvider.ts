@@ -25,7 +25,7 @@ export class CmsResourceProvider implements cmsResource.ICmsResourceProvider {
 	}
 
 	public get providerId(): string {
-		return 'cms.resource.providers.registeredServer';
+		return 'cms.cmsProvider';
 	}
 
 	private _apiWrapper: ApiWrapper = undefined;
