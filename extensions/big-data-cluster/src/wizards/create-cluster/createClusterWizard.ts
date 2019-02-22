@@ -5,7 +5,7 @@
 'use strict';
 
 import { CreateClusterModel } from './createClusterModel';
-import { SelectTargetClusterPage } from './pages/selectExistingClusterPage';
+import { SelectExistingClusterPage } from './pages/selectExistingClusterPage';
 import { SummaryPage } from './pages/summaryPage';
 import { SettingsPage } from './pages/settingsPage';
 import { ClusterProfilePage } from './pages/clusterProfilePage';
@@ -27,7 +27,7 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
 	protected initialize(): void {
 		let settingsPage = new SettingsPage(this.model, this);
 		let clusterProfilePage = new ClusterProfilePage(this.model, this);
-		let selectTargetClusterPage = new SelectTargetClusterPage(this.model, this);
+		let selectTargetClusterPage = new SelectExistingClusterPage(this.model, this);
 		let summaryPage = new SummaryPage(this.model, this);
 		let targetClusterTypePage = new SelectTargetClusterTypePage(this.model, this);
 
