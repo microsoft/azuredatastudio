@@ -47,6 +47,7 @@ export default class JupyterServerInstallation {
 
 	private _pythonInstallationPath: string;
 	private _pythonExecutable: string;
+	private _pythonPackageDir: string;
 
 	// Allows dependencies to be installed even if an existing installation is already present
 	private _forceInstall: boolean;
@@ -115,7 +116,7 @@ export default class JupyterServerInstallation {
 		let pythonDownloadUrl = undefined;
 		switch (utils.getOSPlatform()) {
 			case utils.Platform.Windows:
-				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065977';
+				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2074021';
 				break;
 			case utils.Platform.Mac:
 				pythonDownloadUrl = 'https://go.microsoft.com/fwlink/?linkid=2065976';
@@ -206,6 +207,8 @@ export default class JupyterServerInstallation {
 		//Python source path up to bundle version
 		let pythonSourcePath = path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
 
+		this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
+
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
 
@@ -268,7 +271,8 @@ export default class JupyterServerInstallation {
 
 	private async installJupyterProsePackage(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
-			let installJupyterCommand = `${this._pythonExecutable} -m pip install pandas==0.22.0 jupyter prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net --no-warn-script-location`;
+			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
+			let installJupyterCommand = `${this._pythonExecutable} -m pip install --no-index -r ${requirements} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', 'Installing required packages to run Notebooks...'));
 			await utils.executeStreamedCommand(installJupyterCommand, this.outputChannel);
@@ -280,8 +284,8 @@ export default class JupyterServerInstallation {
 
 	private async installSparkMagic(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
-			let sparkMagicPath = path.join(this.extensionPath, 'wheels/sparkmagic-#sparkMagicVersion-py3-none-any.whl'.replace('#sparkMagicVersion', constants.sparkMagicVersion));
-			let installSparkMagic = `${this._pythonExecutable} -m pip install ${sparkMagicPath} --no-warn-script-location`;
+			let sparkWheel = path.join(this._pythonPackageDir, 'sparkmagic-0.12.6.1-py3-none-any.whl');
+			let installSparkMagic = `${this._pythonExecutable} -m pip install --no-index ${sparkWheel} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', 'Installing SparkMagic...'));
 			await utils.executeStreamedCommand(installSparkMagic, this.outputChannel);
