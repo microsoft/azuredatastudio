@@ -354,8 +354,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 		let env = this.getEnvWithConfigPaths();
 		// Setting the PATH variable here for the jupyter command. Apparently setting it above will cause the
 		// notebook process to die even though we don't override it with the for loop logic above.
-		delete env['Path'];
-		env['PATH'] = install.pythonEnvVarPath;
+		let pathVariableSeparator = process.platform === 'win32' ? ';' : ':';
+		env['PATH'] = install.pythonEnvVarPath + pathVariableSeparator + env['PATH'];
 
 		// 'MSHOST_TELEMETRY_ENABLED' and 'MSHOST_ENVIRONMENT' environment variables are set
 		// for telemetry purposes used by PROSE in the process where the Jupyter kernel runs

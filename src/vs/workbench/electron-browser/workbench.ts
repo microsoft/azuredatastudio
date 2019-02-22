@@ -184,6 +184,7 @@ import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService'
 import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-browser/workbenchThemeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { OEShimService, IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -575,6 +576,7 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(ITaskService, this.instantiationService.createInstance(TaskService));
 		serviceCollection.set(IMetadataService, this.instantiationService.createInstance(MetadataService));
 		serviceCollection.set(IObjectExplorerService, this.instantiationService.createInstance(ObjectExplorerService));
+		serviceCollection.set(IOEShimService, this.instantiationService.createInstance(OEShimService));
 		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
 		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
 		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));
