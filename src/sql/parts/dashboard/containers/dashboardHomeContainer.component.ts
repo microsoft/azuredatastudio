@@ -17,7 +17,7 @@ import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.d
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
 
 @Component({
 	selector: 'dashboard-home-container',

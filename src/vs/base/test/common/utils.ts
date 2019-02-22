@@ -3,39 +3,48 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as paths from 'vs/base/common/paths';
-import URI from 'vs/base/common/uri';
-import { TPromise, TValueCallback } from 'vs/base/common/winjs.base';
+import { URI } from 'vs/base/common/uri';
+import { canceled } from 'vs/base/common/errors';
 
-export class DeferredTPromise<T> extends TPromise<T> {
+export type ValueCallback<T = any> = (value: T | Thenable<T>) => void;
 
-	public canceled: boolean;
+export class DeferredPromise<T> {
 
-	private completeCallback: TValueCallback<T>;
+	private completeCallback: ValueCallback<T>;
 	private errorCallback: (err: any) => void;
 
-	constructor(oncancel?: any) {
-		let captured: any;
-		super((c, e) => {
-			captured = { c, e };
-		}, oncancel ? oncancel : () => this.oncancel);
-		this.canceled = false;
-		this.completeCallback = captured.c;
-		this.errorCallback = captured.e;
+	public p: Promise<any>;
+
+	constructor() {
+		this.p = new Promise<any>((c, e) => {
+			this.completeCallback = c;
+			this.errorCallback = e;
+		});
 	}
 
 	public complete(value: T) {
-		this.completeCallback(value);
+		return new Promise(resolve => {
+			process.nextTick(() => {
+				this.completeCallback(value);
+				resolve();
+			});
+		});
 	}
 
 	public error(err: any) {
-		this.errorCallback(err);
+		return new Promise(resolve => {
+			process.nextTick(() => {
+				this.errorCallback(err);
+				resolve();
+			});
+		});
 	}
 
-	private oncancel(): void {
-		this.canceled = true;
+	public cancel() {
+		process.nextTick(() => {
+			this.errorCallback(canceled());
+		});
 	}
 }
 

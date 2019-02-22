@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { dispose, Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { Dimension, show, hide, addClass } from 'vs/base/browser/dom';
@@ -15,7 +13,6 @@ import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IProgressService, LongRunningOperation } from 'vs/platform/progress/common/progress';
-import { toWinJsPromise } from 'vs/base/common/async';
 import { IEditorGroupView, DEFAULT_EDITOR_MIN_DIMENSIONS, DEFAULT_EDITOR_MAX_DIMENSIONS } from 'vs/workbench/browser/parts/editor/editor';
 import { Event, Emitter } from 'vs/base/common/event';
 
@@ -171,11 +168,11 @@ export class EditorControl extends Disposable {
 
 		// Show progress while setting input after a certain timeout. If the workbench is opening
 		// be more relaxed about progress showing by increasing the delay a little bit to reduce flicker.
-		const operation = this.editorOperation.start(this.partService.isCreated() ? 800 : 3200);
+		const operation = this.editorOperation.start(this.partService.isRestored() ? 800 : 3200);
 
 		// Call into editor control
 		const editorWillChange = !inputMatches;
-		return toWinJsPromise(control.setInput(editor, options, operation.token)).then(() => {
+		return TPromise.wrap(control.setInput(editor, options, operation.token)).then(() => {
 
 			// Focus (unless prevented or another operation is running)
 			if (operation.isCurrent()) {
@@ -231,12 +228,6 @@ export class EditorControl extends Disposable {
 		if (this._activeControl && this.dimension) {
 			this._activeControl.layout(this.dimension);
 		}
-	}
-
-	shutdown(): void {
-
-		// Forward to all editor controls
-		this.controls.forEach(editor => editor.shutdown());
 	}
 
 	dispose(): void {

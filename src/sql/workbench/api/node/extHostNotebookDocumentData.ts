@@ -7,7 +7,7 @@
 import * as sqlops from 'sqlops';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { ok } from 'vs/base/common/assert';
 import { Schemas } from 'vs/base/common/network';
 import { TPromise } from 'vs/base/common/winjs.base';

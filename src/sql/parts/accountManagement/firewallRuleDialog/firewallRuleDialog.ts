@@ -6,7 +6,7 @@
 'use strict';
 
 import 'vs/css!./media/firewallRuleDialog';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';

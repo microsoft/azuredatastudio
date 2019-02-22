@@ -187,7 +187,7 @@ export class DeleteJobAction extends Action {
 		let job = actionInfo.targetObject as sqlops.AgentJobInfo;
 		self._notificationService.prompt(
 			Severity.Info,
-			nls.localize('jobaction.deleteJobConfirm,', "Are you sure you'd like to delete the job '{0}'?", job.name),
+			nls.localize('jobaction.deleteJobConfirm', "Are you sure you'd like to delete the job '{0}'?", job.name),
 			[{
 				label: DeleteJobAction.LABEL,
 				run: () => {
@@ -254,7 +254,7 @@ export class DeleteStepAction extends Action {
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		self._notificationService.prompt(
 			Severity.Info,
-			nls.localize('jobaction.deleteStepConfirm,', "Are you sure you'd like to delete the step '{0}'?", step.stepName),
+			nls.localize('jobaction.deleteStepConfirm', "Are you sure you'd like to delete the step '{0}'?", step.stepName),
 			[{
 				label: DeleteStepAction.LABEL,
 				run: () => {
@@ -342,7 +342,7 @@ export class DeleteAlertAction extends Action {
 		let alert = actionInfo.targetObject as sqlops.AgentAlertInfo;
 		self._notificationService.prompt(
 			Severity.Info,
-			nls.localize('jobaction.deleteAlertConfirm,', "Are you sure you'd like to delete the alert '{0}'?", alert.name),
+			nls.localize('jobaction.deleteAlertConfirm', "Are you sure you'd like to delete the alert '{0}'?", alert.name),
 			[{
 				label: DeleteAlertAction.LABEL,
 				run: () => {
@@ -427,7 +427,7 @@ export class DeleteOperatorAction extends Action {
 		let operator = actionInfo.targetObject as sqlops.AgentOperatorInfo;
 		self._notificationService.prompt(
 			Severity.Info,
-			nls.localize('jobaction.deleteOperatorConfirm,', "Are you sure you'd like to delete the operator '{0}'?", operator.name),
+			nls.localize('jobaction.deleteOperatorConfirm', "Are you sure you'd like to delete the operator '{0}'?", operator.name),
 			[{
 				label: DeleteOperatorAction.LABEL,
 				run: () => {
@@ -513,7 +513,7 @@ export class DeleteProxyAction extends Action {
 		let proxy = actionInfo.targetObject as sqlops.AgentProxyInfo;
 		self._notificationService.prompt(
 			Severity.Info,
-			nls.localize('jobaction.deleteProxyConfirm,', "Are you sure you'd like to delete the proxy '{0}'?", proxy.accountName),
+			nls.localize('jobaction.deleteProxyConfirm', "Are you sure you'd like to delete the proxy '{0}'?", proxy.accountName),
 			[{
 				label: DeleteProxyAction.LABEL,
 				run: () => {

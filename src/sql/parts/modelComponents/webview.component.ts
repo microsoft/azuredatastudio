@@ -17,7 +17,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { WebviewElement, WebviewOptions } from 'vs/workbench/parts/webview/electron-browser/webviewElement';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
@@ -77,8 +77,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.contextKey,
-			this.findInputFocusContextKey,
 			{
 				allowScripts: true,
 				enableWrappedPostMessage: true

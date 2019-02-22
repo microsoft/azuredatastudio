@@ -27,6 +27,7 @@ import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/parts/dataExplorer/common/dataExplorerExtensionPoint';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
 import { Extensions as ViewContainerExtensions, ViewsRegistry, IViewDescriptor } from 'vs/workbench/common/views';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -71,13 +72,14 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 		@IStorageService storageService: IStorageService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IExtensionService extensionService: IExtensionService
+		@IExtensionService extensionService: IExtensionService,
+		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, partService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
+		super(VIEWLET_ID, `${VIEWLET_ID}.state`, true, configurationService, partService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 		this.disposables.push(this.viewletService.onDidViewletOpen(this.onViewletOpen, this, this.disposables));
 	}
 
-	create(parent: HTMLElement): TPromise<void> {
+	create(parent: HTMLElement): void {
 		addClass(parent, 'dataExplorer-viewlet');
 		this.root = parent;
 
@@ -88,16 +90,6 @@ export class DataExplorerViewlet extends ViewContainerViewlet  {
 
 	public updateStyles(): void {
 		super.updateStyles();
-	}
-
-	setVisible(visible: boolean): TPromise<void> {
-		const isVisibilityChanged = this.isVisible() !== visible;
-		return super.setVisible(visible).then(() => {
-			if (isVisibilityChanged) {
-				if (visible) {
-				}
-			}
-		});
 	}
 
 	focus(): void {

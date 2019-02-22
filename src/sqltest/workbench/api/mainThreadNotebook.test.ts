@@ -9,7 +9,7 @@ import * as TypeMoq from 'typemoq';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 
 import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';

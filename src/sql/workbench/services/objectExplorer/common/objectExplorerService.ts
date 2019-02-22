@@ -677,9 +677,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	*/
 	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this.getTreeNode(connectionId, nodePath).then(node => {
-			return this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node)).then((actions) => {
-				return actions.filter(action => action.label).map(action => action.label);
-			});
+			let actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
+			return actions.filter(action => action.label).map(action => action.label);
 		});
 	}
 

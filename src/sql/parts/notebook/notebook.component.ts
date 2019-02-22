@@ -19,7 +19,7 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { fillInActions, LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuItemActionItem';
 import { Schemas } from 'vs/base/common/network';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import * as paths from 'vs/base/common/paths';
 import { IWindowService } from 'vs/platform/windows/common/windows';
@@ -397,7 +397,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private getLastActiveFilePath(untitledResource: URI): string {
 		let fileName = untitledResource.path + '.' + DEFAULT_NOTEBOOK_FILETYPE.toLocaleLowerCase();
 
-		let lastActiveFile = this.historyService.getLastActiveFile();
+		let lastActiveFile = this.historyService.getLastActiveFile(Schemas.file);
 		if (lastActiveFile) {
 			return URI.file(paths.join(paths.dirname(lastActiveFile.fsPath), fileName)).fsPath;
 		}
@@ -564,7 +564,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			return cell.runCell(this.notificationService);
 		} else {
-			return Promise.reject<boolean>(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
 		}
 	}
 

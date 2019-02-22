@@ -18,7 +18,9 @@ File a single issue per problem and feature request.
 * Do not enumerate multiple bugs or feature requests in the same issue.
 * Do not add your issue as a comment to an existing issue unless it's for the identical input. Many issues look similar, but have different causes.
 
-The more information you can provide, the more likely someone will be successful reproducing the issue and finding a fix.
+The more information you can provide, the more likely someone will be successful at reproducing the issue and finding a fix.
+
+The built-in tool for reporting an issue, which you can access by using `Report Issue` in Azure Data Studio's Help menu, can help streamline this process by automatically providing the version of Azure Data Studio, all your installed extensions, and your system info.
 
 Please include the following with each issue.
 

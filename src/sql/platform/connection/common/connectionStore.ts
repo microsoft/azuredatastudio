@@ -12,8 +12,8 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IConnectionConfig } from './iconnectionConfig';
 import { ConnectionConfig } from './connectionConfig';
-import { Memento, Scope as MementoScope } from 'vs/workbench/common/memento';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { Memento } from 'vs/workbench/common/memento';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from './connectionProfileGroup';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
@@ -42,7 +42,7 @@ export class ConnectionStore {
 		private _connectionConfig?: IConnectionConfig
 	) {
 		if (_context) {
-			this._memento = this._context.getMemento(this._storageService, MementoScope.GLOBAL);
+			this._memento = this._context.getMemento(StorageScope.GLOBAL);
 		}
 		this._groupIdToFullNameMap = {};
 		this._groupFullNameToIdMap = {};

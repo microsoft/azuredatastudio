@@ -2,12 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vs/nls';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
 import { IStringDictionary } from 'vs/base/common/collections';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as Types from 'vs/base/common/types';
 import * as Objects from 'vs/base/common/objects';
 
@@ -47,7 +45,7 @@ namespace Configuration {
 		properties?: IJSONSchemaMap;
 	}
 
-	export function from(value: TaskDefinition, extensionId: string, messageCollector: ExtensionMessageCollector): Tasks.TaskDefinition {
+	export function from(value: TaskDefinition, extensionId: string, messageCollector: ExtensionMessageCollector): Tasks.TaskDefinition | undefined {
 		if (!value) {
 			return undefined;
 		}
@@ -76,7 +74,7 @@ const taskDefinitionsExtPoint = ExtensionsRegistry.registerExtensionPoint<Config
 });
 
 export interface ITaskDefinitionRegistry {
-	onReady(): TPromise<void>;
+	onReady(): Promise<void>;
 
 	get(key: string): Tasks.TaskDefinition;
 	all(): Tasks.TaskDefinition[];
@@ -86,12 +84,12 @@ export interface ITaskDefinitionRegistry {
 class TaskDefinitionRegistryImpl implements ITaskDefinitionRegistry {
 
 	private taskTypes: IStringDictionary<Tasks.TaskDefinition>;
-	private readyPromise: TPromise<void>;
+	private readyPromise: Promise<void>;
 	private _schema: IJSONSchema;
 
 	constructor() {
 		this.taskTypes = Object.create(null);
-		this.readyPromise = new TPromise<void>((resolve, reject) => {
+		this.readyPromise = new Promise<void>((resolve, reject) => {
 			taskDefinitionsExtPoint.setHandler((extensions) => {
 				try {
 					for (let extension of extensions) {
@@ -107,10 +105,10 @@ class TaskDefinitionRegistryImpl implements ITaskDefinitionRegistry {
 				}
 				resolve(undefined);
 			});
-		}, () => { });
+		});
 	}
 
-	public onReady(): TPromise<void> {
+	public onReady(): Promise<void> {
 		return this.readyPromise;
 	}
 
@@ -138,7 +136,7 @@ class TaskDefinitionRegistryImpl implements ITaskDefinitionRegistry {
 				} else {
 					schema.properties = Object.create(null);
 				}
-				schema.properties.type = {
+				schema.properties!.type = {
 					type: 'string',
 					enum: [definition.taskType]
 				};

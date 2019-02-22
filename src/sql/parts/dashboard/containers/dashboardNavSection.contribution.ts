@@ -7,7 +7,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { join } from 'path';
 import { createCSSRule } from 'vs/base/browser/dom';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 
 import { NavSectionConfig, IUserFriendlyIcon } from 'sql/parts/dashboard/common/dashboardWidget';

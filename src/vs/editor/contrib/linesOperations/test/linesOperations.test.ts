@@ -2,17 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-
 import * as assert from 'assert';
-import { Selection } from 'vs/editor/common/core/selection';
+import { CoreEditingCommands } from 'vs/editor/browser/controller/coreCommands';
+import { Cursor } from 'vs/editor/common/controller/cursor';
 import { Position } from 'vs/editor/common/core/position';
+import { Selection } from 'vs/editor/common/core/selection';
 import { Handler } from 'vs/editor/common/editorCommon';
 import { ITextModel } from 'vs/editor/common/model';
+import { DeleteAllLeftAction, DeleteAllRightAction, IndentLinesAction, InsertLineAfterAction, InsertLineBeforeAction, JoinLinesAction, LowerCaseAction, SortLinesAscendingAction, SortLinesDescendingAction, TransposeAction, UpperCaseAction, DeleteLinesAction } from 'vs/editor/contrib/linesOperations/linesOperations';
 import { withTestCodeEditor } from 'vs/editor/test/browser/testCodeEditor';
-import { DeleteAllLeftAction, JoinLinesAction, TransposeAction, UpperCaseAction, LowerCaseAction, DeleteAllRightAction, InsertLineBeforeAction, InsertLineAfterAction, IndentLinesAction, SortLinesAscendingAction, SortLinesDescendingAction } from 'vs/editor/contrib/linesOperations/linesOperations';
-import { Cursor } from 'vs/editor/common/controller/cursor';
-import { CoreEditingCommands } from 'vs/editor/browser/controller/coreCommands';
 import { createTextModel } from 'vs/editor/test/common/editorTestUtils';
 
 suite('Editor Contrib - Line Operations', () => {
@@ -447,7 +445,7 @@ suite('Editor Contrib - Line Operations', () => {
 		});
 	});
 
-	test('transpose', function () {
+	test('transpose', () => {
 		withTestCodeEditor(
 			[
 				'hello world',
@@ -774,7 +772,7 @@ suite('Editor Contrib - Line Operations', () => {
 		});
 	});
 
-	test('InsertLineBeforeAction', function () {
+	test('InsertLineBeforeAction', () => {
 		function testInsertLineBefore(lineNumber: number, column: number, callback: (model: ITextModel, cursor: Cursor) => void): void {
 			const TEXT = [
 				'First line',
@@ -880,5 +878,25 @@ suite('Editor Contrib - Line Operations', () => {
 		});
 
 		model.dispose();
+	});
+
+	test('issue #62112: Delete line does not work properly when multiple cursors are on line', () => {
+		const TEXT = [
+			'a',
+			'foo boo',
+			'too',
+			'c',
+		];
+		withTestCodeEditor(TEXT, {}, (editor, cursor) => {
+			editor.setSelections([
+				new Selection(2, 4, 2, 4),
+				new Selection(2, 8, 2, 8),
+				new Selection(3, 4, 3, 4),
+			]);
+			const deleteLinesAction = new DeleteLinesAction();
+			deleteLinesAction.run(null, editor);
+
+			assert.equal(editor.getValue(), 'a\nc');
+		});
 	});
 });

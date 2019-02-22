@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
-import { ViewContainer, TreeItemCollapsibleState, ITreeViewer, ITreeViewDataProvider, TreeViewItemHandleArg, ITreeItem as vsITreeItem } from 'vs/workbench/common/views';
-import { IProgressService2 } from 'vs/workbench/services/progress/common/progress';
+import { ViewContainer, TreeItemCollapsibleState, ITreeView, ITreeViewDataProvider, TreeViewItemHandleArg, ITreeItem as vsITreeItem } from 'vs/workbench/common/views';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/viewsViewlet';
@@ -22,7 +21,7 @@ import { MenuItemAction, IMenuService, MenuId } from 'vs/platform/actions/common
 import { ContextAwareMenuItemActionItem, fillInContextMenuActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IActionItemProvider, ActionBar, ActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { LIGHT, FileThemeIcon, FolderThemeIcon } from 'vs/platform/theme/common/themeService';
 import { basename } from 'vs/base/common/paths';
 import { ResourceLabel } from 'vs/workbench/browser/labels';
@@ -37,17 +36,20 @@ import { equalsIgnoreCase } from 'vs/base/common/strings';
 
 import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { ITreeItem } from 'sql/workbench/common/views';
+import { IProgressService2 } from 'vs/platform/progress/common/progress';
 
 class Root implements ITreeItem {
 	constructor(public readonly childProvider: string) { }
-	label = 'root';
+	label = {
+		label: 'root'
+	};
 	handle = '0';
 	parentHandle = null;
 	collapsibleState = TreeItemCollapsibleState.Expanded;
 	children = void 0;
 }
 
-export class CustomTreeViewer extends Disposable implements ITreeViewer {
+export class CustomTreeView extends Disposable implements ITreeView {
 
 	private isVisible: boolean = false;
 	private activated: boolean = false;
@@ -72,6 +74,12 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 
 	private _onDidChangeVisibility: Emitter<boolean> = this._register(new Emitter<boolean>());
 	readonly onDidChangeVisibility: Event<boolean> = this._onDidChangeVisibility.event;
+
+	private _onDidChangeActions: Emitter<void> = this._register(new Emitter<void>());
+	readonly onDidChangeActions: Event<void> = this._onDidChangeActions.event;
+
+	public showCollapseAllAction: boolean = false;
+	public message = undefined;
 
 	constructor(
 		private id: string,
@@ -112,6 +120,35 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 		return this.isVisible;
 	}
 
+	expand(itemOrItems: ITreeItem | ITreeItem[]): Thenable<void> {
+		if (this.tree) {
+			itemOrItems = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
+			return this.tree.expandAll(itemOrItems);
+		}
+		return Promise.arguments(null);
+	}
+
+	setSelection(items: ITreeItem[]): void {
+		if (this.tree) {
+			this.tree.setSelection(items, { source: 'api' });
+		}
+	}
+
+	setFocus(item: ITreeItem): void {
+		if (this.tree) {
+			this.focus();
+			this.tree.setFocus(item);
+		}
+	}
+
+	getPrimaryActions(): IAction[] {
+		return [];
+	}
+
+	getSecondaryActions(): IAction[] {
+		return [];
+	}
+
 	setVisibility(isVisible: boolean): void {
 		isVisible = !!isVisible;
 		if (this.isVisible === isVisible) {
@@ -150,7 +187,7 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 			// Make sure the current selected element is revealed
 			const selectedElement = this.tree.getSelection()[0];
 			if (selectedElement) {
-				this.tree.reveal(selectedElement, 0.5).done(null, errors.onUnexpectedError);
+				this.tree.reveal(selectedElement, 0.5).then(null, errors.onUnexpectedError);
 			}
 
 			// Pass Focus to Viewer
@@ -198,7 +235,7 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 		return 0;
 	}
 
-	refresh(elements?: ITreeItem[]): TPromise<void> {
+	refresh(elements?: ITreeItem[]): Promise<void> {
 		if (this.tree) {
 			elements = elements || [this.root];
 			for (const element of elements) {
@@ -210,22 +247,24 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 				this.elementsToRefresh.push(...elements);
 			}
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
-	reveal(item: ITreeItem, parentChain: ITreeItem[], options?: { select?: boolean, focus?: boolean }): TPromise<void> {
+	reveal(item: ITreeItem, parentChain?: ITreeItem[], options?: { select?: boolean, focus?: boolean }): Thenable<void> {
 		if (this.tree && this.isVisible) {
 			options = options ? options : { select: false, focus: false };
 			const select = isUndefinedOrNull(options.select) ? false : options.select;
 			const focus = isUndefinedOrNull(options.focus) ? false : options.focus;
 
 			const root: Root = this.tree.getInput();
-			const promise = root.children ? TPromise.as(null) : this.refresh(); // Refresh if root is not populated
+			const promise = root.children ? Promise.resolve(null) : this.refresh(); // Refresh if root is not populated
 			return promise.then(() => {
 				var result = TPromise.as(null);
-				parentChain.forEach((e) => {
-					result = result.then(() => this.tree.expand(e));
-				});
+				if (parentChain) {
+					parentChain.forEach((e) => {
+						result = result.then(() => this.tree.expand(e));
+					});
+				}
 				return result.then(() => this.tree.reveal(item))
 					.then(() => {
 						if (select) {
@@ -238,7 +277,7 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 					});
 			});
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	private activate() {
@@ -248,11 +287,11 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 		}
 	}
 
-	private doRefresh(elements: ITreeItem[]): TPromise<void> {
+	private doRefresh(elements: ITreeItem[]): Promise<void> {
 		if (this.tree) {
-			return TPromise.join(elements.map(e => this.tree.refresh(e))).then(() => null);
+			return Promise.all(elements.map(e => this.tree.refresh(e))).then(() => null);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
 	private onSelection({ payload }: any): void {
@@ -293,7 +332,7 @@ class TreeDataSource implements IDataSource {
 
 	getChildren(tree: ITree, node: ITreeItem): TPromise<any[]> {
 		if (this.objectExplorerService.providerExists(node.childProvider)) {
-			return TPromise.wrap(this.progressService.withProgress({ location: this.container }, () => {
+			return TPromise.wrap(this.progressService.withProgress({ location: this.container.id }, () => {
 				// this is replicating what vscode does when calling initial children
 				if (node instanceof Root) {
 					node = deepClone(node);
@@ -364,8 +403,8 @@ class TreeRenderer implements IRenderer {
 
 	renderElement(tree: ITree, node: ITreeItem, templateId: string, templateData: ITreeExplorerTemplateData): void {
 		const resource = node.resourceUri ? URI.revive(node.resourceUri) : null;
-		const label = node.label ? node.label : resource ? basename(resource.path) : '';
-		let icon = this.themeService.getTheme().type === LIGHT ? node.icon : node.iconDark;
+		const label = node.label ? node.label.label : resource ? basename(resource.path) : '';
+		let icon = this.themeService.getTheme().type === LIGHT ? node.icon.path : node.iconDark.path;
 		const title = node.tooltip ? node.tooltip : resource ? void 0 : label;
 
 		// reset
@@ -496,9 +535,7 @@ class TreeController extends WorkbenchTreeController {
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => anchor,
 
-			getActions: () => {
-				return TPromise.as(actions);
-			},
+			getActions: () => actions,
 
 			getActionItem: (action) => {
 				const keybinding = this._keybindingService.lookupKeybinding(action.id);

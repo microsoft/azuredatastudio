@@ -3,11 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { TernarySearchTree } from 'vs/base/common/map';
-import URI from 'vs/base/common/uri';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { URI } from 'vs/base/common/uri';
 import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, isConfigurationOverrides } from 'vs/platform/configuration/common/configuration';
 
 export class TestConfigurationService implements IConfigurationService {
@@ -17,24 +14,27 @@ export class TestConfigurationService implements IConfigurationService {
 
 	private configurationByRoot: TernarySearchTree<any> = TernarySearchTree.forPaths<any>();
 
-	public reloadConfiguration<T>(): TPromise<T> {
-		return TPromise.as(this.getValue());
+	public reloadConfiguration<T>(): Promise<T> {
+		return Promise.resolve(this.getValue());
 	}
 
 	public getValue(arg1?: any, arg2?: any): any {
-		if (arg1 && typeof arg1 === 'string') {
-			return this.inspect(<string>arg1).value;
-		}
+		let configuration;
 		const overrides = isConfigurationOverrides(arg1) ? arg1 : isConfigurationOverrides(arg2) ? arg2 : void 0;
-		if (overrides && overrides.resource) {
-			const configForResource = this.configurationByRoot.findSubstr(overrides.resource.fsPath);
-			return configForResource || this.configuration;
+		if (overrides) {
+			if (overrides.resource) {
+				configuration = this.configurationByRoot.findSubstr(overrides.resource.fsPath);
+			}
 		}
-		return this.configuration;
+		configuration = configuration ? configuration : this.configuration;
+		if (arg1 && typeof arg1 === 'string') {
+			return getConfigurationValue(configuration, arg1);
+		}
+		return configuration;
 	}
 
-	public updateValue(key: string, overrides?: IConfigurationOverrides): TPromise<void> {
-		return TPromise.as(null);
+	public updateValue(key: string, overrides?: IConfigurationOverrides): Promise<void> {
+		return Promise.resolve(void 0);
 	}
 
 	public setUserConfiguration(key: any, value: any, root?: URI): Thenable<void> {
@@ -46,7 +46,7 @@ export class TestConfigurationService implements IConfigurationService {
 			this.configuration[key] = value;
 		}
 
-		return TPromise.as(null);
+		return Promise.resolve(void 0);
 	}
 
 	public onDidChangeConfiguration() {
@@ -56,8 +56,8 @@ export class TestConfigurationService implements IConfigurationService {
 	public inspect<T>(key: string, overrides?: IConfigurationOverrides): {
 		default: T,
 		user: T,
-		workspace: T,
-		workspaceFolder: T
+		workspace?: T,
+		workspaceFolder?: T
 		value: T,
 	} {
 		const config = this.getValue(undefined, overrides);
@@ -66,8 +66,8 @@ export class TestConfigurationService implements IConfigurationService {
 			value: getConfigurationValue<T>(config, key),
 			default: getConfigurationValue<T>(config, key),
 			user: getConfigurationValue<T>(config, key),
-			workspace: null,
-			workspaceFolder: null
+			workspace: undefined,
+			workspaceFolder: undefined
 		};
 	}
 

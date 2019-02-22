@@ -28,6 +28,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { Dimension } from 'vs/base/browser/dom';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 import { PROFILER_MAX_MATCHES } from 'sql/parts/profiler/editor/controller/profilerFindWidget';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IStatusbarService, StatusbarAlignment, IStatusbarEntry } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
 
@@ -62,9 +63,10 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService,
 		@IStatusbarService private _statusbarService: IStatusbarService
 	) {
-		super(ProfilerTableEditor.ID, telemetryService, _themeService);
+		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(ProfilerFindPrevious, this);
 		this._showStatusBarItem = true;
