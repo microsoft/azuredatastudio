@@ -3,11 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vs/nls';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { registerEditorAction, EditorAction, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
@@ -33,10 +30,10 @@ class ShowEmmetCommandsAction extends EditorAction {
 		});
 	}
 
-	public run(accessor: ServicesAccessor, editor: ICodeEditor): TPromise<void> {
+	public run(accessor: ServicesAccessor, editor: ICodeEditor): Promise<void> {
 		const quickOpenService = accessor.get(IQuickOpenService);
 		quickOpenService.show(EMMET_COMMANDS_PREFIX);
-		return TPromise.as(null);
+		return Promise.resolve(void 0);
 	}
 }
 

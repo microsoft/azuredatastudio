@@ -11,7 +11,7 @@
 import { nb } from 'sqlops';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/parts/notebook/models/contracts';

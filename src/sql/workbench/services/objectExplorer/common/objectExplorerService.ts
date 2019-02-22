@@ -90,6 +90,10 @@ export interface IObjectExplorerService {
 	getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 
 	getSessionConnectionProfile(sessionId: string): sqlops.IConnectionProfile;
+
+	getSession(sessionId: string): sqlops.ObjectExplorerSession;
+
+	providerRegistered(providerId: string): boolean;
 }
 
 interface SessionStatus {
@@ -150,6 +154,19 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._providers = {};
 		this._nodeProviders = {};
 		this._onSelectionOrFocusChange = new Emitter<void>();
+	}
+
+	public getSession(sessionId: string): sqlops.ObjectExplorerSession {
+		let session = this._sessions[sessionId];
+		if (!session) {
+			return undefined;
+		}
+		let node = this._activeObjectExplorerNodes[session.connection.id];
+		return node ? node.getSession() : undefined;
+	}
+
+	public providerRegistered(providerId: string): boolean {
+		return !!this._providers[providerId];
 	}
 
 	public get onUpdateObjectExplorerNodes(): Event<ObjectExplorerNodeEventArgs> {
@@ -576,13 +593,16 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			}
 		}
 
-		return new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
+		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
 			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
 				getChildren: treeNode => this.getChildren(treeNode),
 				isExpanded: treeNode => this.isExpanded(treeNode),
 				setNodeExpandedState: (treeNode, expandedState) => this.setNodeExpandedState(treeNode, expandedState),
 				setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
 			});
+		node.childProvider = nodeInfo.childProvider;
+		node.payload = nodeInfo.payload;
+		return node;
 	}
 
 	public registerServerTreeView(view: ServerTreeView): void {
@@ -657,9 +677,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	*/
 	public getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
 		return this.getTreeNode(connectionId, nodePath).then(node => {
-			return this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node)).then((actions) => {
-				return actions.filter(action => action.label).map(action => action.label);
-			});
+			let actions = this._serverTreeView.treeActionProvider.getActions(this._serverTreeView.tree, this.getTreeItem(node));
+			return actions.filter(action => action.label).map(action => action.label);
 		});
 	}
 
@@ -683,6 +702,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private async setNodeExpandedState(treeNode: TreeNode, expandedState: TreeItemCollapsibleState): Promise<void> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
+		if (!treeNode) {
+			return Promise.resolve();
+		}
 		let expandNode = this.getTreeItem(treeNode);
 		if (expandedState === TreeItemCollapsibleState.Expanded) {
 			await this._serverTreeView.reveal(expandNode);
@@ -692,6 +714,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private async setNodeSelected(treeNode: TreeNode, selected: boolean, clearOtherSelections: boolean = undefined): Promise<void> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
+		if (!treeNode) {
+			return Promise.resolve();
+		}
 		let selectNode = this.getTreeItem(treeNode);
 		if (selected) {
 			await this._serverTreeView.reveal(selectNode);
@@ -701,6 +726,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private async getChildren(treeNode: TreeNode): Promise<TreeNode[]> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
+		if (!treeNode) {
+			return Promise.resolve([]);
+		}
 		if (treeNode.isAlwaysLeaf) {
 			return [];
 		}
@@ -712,6 +740,9 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 	private async isExpanded(treeNode: TreeNode): Promise<boolean> {
 		treeNode = await this.getUpdatedTreeNode(treeNode);
+		if (!treeNode) {
+			return false;
+		}
 		do {
 			let expandNode = this.getTreeItem(treeNode);
 			if (!this._serverTreeView.isExpanded(expandNode)) {
@@ -734,7 +765,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private getUpdatedTreeNode(treeNode: TreeNode): Promise<TreeNode> {
 		return this.getTreeNode(treeNode.getConnectionProfile().id, treeNode.nodePath).then(treeNode => {
 			if (!treeNode) {
-				throw new Error(nls.localize('treeNodeNoLongerExists', 'The given tree node no longer exists'));
+				// throw new Error(nls.localize('treeNodeNoLongerExists', 'The given tree node no longer exists'));
+				return undefined;
 			}
 			return treeNode;
 		});

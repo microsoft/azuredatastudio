@@ -13,7 +13,6 @@ const es = require('event-stream');
 const util = require('./lib/util');
 const remote = require('gulp-remote-src');
 const zip = require('gulp-vinyl-zip');
-const assign = require('object-assign');
 
 // {{SQL CARBON EDIT}}
 const jeditor = require('gulp-json-editor');

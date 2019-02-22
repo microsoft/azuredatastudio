@@ -5,7 +5,6 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { $ } from 'vs/base/browser/builder';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -24,6 +23,8 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { $ } from 'sql/base/browser/builder';
 
 export class DashboardEditor extends BaseEditor {
 
@@ -37,9 +38,10 @@ export class DashboardEditor extends BaseEditor {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IDashboardService private _dashboardService: IDashboardService,
-		@IConnectionManagementService private _connMan: IConnectionManagementService
+		@IConnectionManagementService private _connMan: IConnectionManagementService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(DashboardEditor.ID, telemetryService, themeService);
+		super(DashboardEditor.ID, telemetryService, themeService, storageService);
 	}
 
 	public get input(): DashboardInput {

@@ -273,6 +273,7 @@ export interface IConnectionManagementService {
 	 */
 	buildConnectionInfo(connectionString: string, provider?: string): Thenable<sqlops.ConnectionInfo>;
 
+	providerRegistered(providerId: string): boolean;
 	/**
 	 * Get connection profile by id
 	 */

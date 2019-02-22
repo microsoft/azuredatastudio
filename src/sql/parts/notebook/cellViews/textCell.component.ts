@@ -12,7 +12,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Emitter } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';

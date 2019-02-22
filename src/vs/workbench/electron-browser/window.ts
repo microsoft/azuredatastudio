@@ -3,13 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vs/nls';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import * as errors from 'vs/base/common/errors';
-import { TPromise } from 'vs/base/common/winjs.base';
-import * as arrays from 'vs/base/common/arrays';
 import * as objects from 'vs/base/common/objects';
 import * as DOM from 'vs/base/browser/dom';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -19,10 +15,10 @@ import { toResource, IUntitledResourceInput } from 'vs/workbench/common/editor';
 import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/common/editorService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IWindowsService, IWindowService, IWindowSettings, IPath, IOpenFileRequest, IWindowsConfiguration, IAddFoldersRequest, IRunActionInWindowRequest } from 'vs/platform/windows/common/windows';
+import { IWindowsService, IWindowService, IWindowSettings, IOpenFileRequest, IWindowsConfiguration, IAddFoldersRequest, IRunActionInWindowRequest, IPathData } from 'vs/platform/windows/common/windows';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { ITitleService } from 'vs/workbench/services/title/common/titleService';
-import { IWorkbenchThemeService, VS_HC_THEME, VS_DARK_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IWorkbenchThemeService, VS_HC_THEME } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as browser from 'vs/base/browser/browser';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IResourceInput } from 'vs/platform/editor/common/editor';
@@ -42,18 +38,16 @@ import { AccessibilitySupport, isRootUser, isWindows, isMacintosh } from 'vs/bas
 import product from 'vs/platform/node/product';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
-import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 
 const TextInputActions: IAction[] = [
-	new Action('undo', nls.localize('undo', "Undo"), null, true, () => document.execCommand('undo') && TPromise.as(true)),
-	new Action('redo', nls.localize('redo', "Redo"), null, true, () => document.execCommand('redo') && TPromise.as(true)),
+	new Action('undo', nls.localize('undo', "Undo"), null, true, () => document.execCommand('undo') && Promise.resolve(true)),
+	new Action('redo', nls.localize('redo', "Redo"), null, true, () => document.execCommand('redo') && Promise.resolve(true)),
 	new Separator(),
-	new Action('editor.action.clipboardCutAction', nls.localize('cut', "Cut"), null, true, () => document.execCommand('cut') && TPromise.as(true)),
-	new Action('editor.action.clipboardCopyAction', nls.localize('copy', "Copy"), null, true, () => document.execCommand('copy') && TPromise.as(true)),
-	new Action('editor.action.clipboardPasteAction', nls.localize('paste', "Paste"), null, true, () => document.execCommand('paste') && TPromise.as(true)),
+	new Action('editor.action.clipboardCutAction', nls.localize('cut', "Cut"), null, true, () => document.execCommand('cut') && Promise.resolve(true)),
+	new Action('editor.action.clipboardCopyAction', nls.localize('copy', "Copy"), null, true, () => document.execCommand('copy') && Promise.resolve(true)),
+	new Action('editor.action.clipboardPasteAction', nls.localize('paste', "Paste"), null, true, () => document.execCommand('paste') && Promise.resolve(true)),
 	new Separator(),
-	new Action('editor.action.selectAll', nls.localize('selectAll', "Select All"), null, true, () => document.execCommand('selectAll') && TPromise.as(true))
+	new Action('editor.action.selectAll', nls.localize('selectAll', "Select All"), null, true, () => document.execCommand('selectAll') && Promise.resolve(true))
 ];
 
 export class ElectronWindow extends Themable {
@@ -77,9 +71,7 @@ export class ElectronWindow extends Themable {
 		@IWorkbenchThemeService protected themeService: IWorkbenchThemeService,
 		@INotificationService private notificationService: INotificationService,
 		@ICommandService private commandService: ICommandService,
-		@IExtensionService private extensionService: IExtensionService,
 		@IContextMenuService private contextMenuService: IContextMenuService,
-		@IKeybindingService private keybindingService: IKeybindingService,
 		@ITelemetryService private telemetryService: ITelemetryService,
 		@IWorkspaceEditingService private workspaceEditingService: IWorkspaceEditingService,
 		@IFileService private fileService: IFileService,
@@ -112,7 +104,7 @@ export class ElectronWindow extends Themable {
 
 		// Support runAction event
 		ipc.on('vscode:runAction', (event: any, request: IRunActionInWindowRequest) => {
-			const args: any[] = [];
+			const args: any[] = request.args || [];
 
 			// If we run an action from the touchbar, we fill in the currently active resource
 			// as payload because the touch bar items are context aware depending on the editor
@@ -128,7 +120,7 @@ export class ElectronWindow extends Themable {
 				args.push({ from: request.from }); // TODO@telemetry this is a bit weird to send this to every action?
 			}
 
-			this.commandService.executeCommand(request.id, ...args).done(_ => {
+			this.commandService.executeCommand(request.id, ...args).then(_ => {
 				/* __GDPR__
 					"commandExecuted" : {
 						"id" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
@@ -141,22 +133,7 @@ export class ElectronWindow extends Themable {
 			});
 		});
 
-		// Support resolve keybindings event
-		ipc.on('vscode:resolveKeybindings', (event: any, rawActionIds: string) => {
-			let actionIds: string[] = [];
-			try {
-				actionIds = JSON.parse(rawActionIds);
-			} catch (error) {
-				// should not happen
-			}
-			// Resolve keys using the keybinding service and send back to browser process
-			this.resolveKeybindings(actionIds).done(keybindings => {
-				if (keybindings.length) {
-					ipc.send('vscode:keybindingsResolved', JSON.stringify(keybindings));
-				}
-			}, () => errors.onUnexpectedError);
-		});
-
+		// Error reporting from main
 		ipc.on('vscode:reportError', (event: any, error: string) => {
 			if (error) {
 				const errorParsed = JSON.parse(error);
@@ -178,13 +155,13 @@ export class ElectronWindow extends Themable {
 
 		// Fullscreen Events
 		ipc.on('vscode:enterFullScreen', () => {
-			this.lifecycleService.when(LifecyclePhase.Running).then(() => {
+			this.lifecycleService.when(LifecyclePhase.Ready).then(() => {
 				browser.setFullscreen(true);
 			});
 		});
 
 		ipc.on('vscode:leaveFullScreen', () => {
-			this.lifecycleService.when(LifecyclePhase.Running).then(() => {
+			this.lifecycleService.when(LifecyclePhase.Ready).then(() => {
 				browser.setFullscreen(false);
 			});
 		});
@@ -193,7 +170,7 @@ export class ElectronWindow extends Themable {
 		ipc.on('vscode:enterHighContrast', () => {
 			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
 			if (windowConfig && windowConfig.autoDetectHighContrast) {
-				this.lifecycleService.when(LifecyclePhase.Running).then(() => {
+				this.lifecycleService.when(LifecyclePhase.Ready).then(() => {
 					this.themeService.setColorTheme(VS_HC_THEME, null);
 				});
 			}
@@ -202,8 +179,8 @@ export class ElectronWindow extends Themable {
 		ipc.on('vscode:leaveHighContrast', () => {
 			const windowConfig = this.configurationService.getValue<IWindowSettings>('window');
 			if (windowConfig && windowConfig.autoDetectHighContrast) {
-				this.lifecycleService.when(LifecyclePhase.Running).then(() => {
-					this.themeService.setColorTheme(VS_DARK_THEME, null);
+				this.lifecycleService.when(LifecyclePhase.Ready).then(() => {
+					this.themeService.restoreColorTheme();
 				});
 			}
 		});
@@ -230,7 +207,7 @@ export class ElectronWindow extends Themable {
 		window.document.addEventListener('contextmenu', e => this.onContextMenu(e));
 	}
 
-	private onContextMenu(e: PointerEvent): void {
+	private onContextMenu(e: MouseEvent): void {
 		if (e.target instanceof HTMLElement) {
 			const target = <HTMLElement>e.target;
 			if (target.nodeName && (target.nodeName.toLowerCase() === 'input' || target.nodeName.toLowerCase() === 'textarea')) {
@@ -238,7 +215,7 @@ export class ElectronWindow extends Themable {
 
 				this.contextMenuService.showContextMenu({
 					getAnchor: () => e,
-					getActions: () => TPromise.as(TextInputActions),
+					getActions: () => TextInputActions,
 					onHide: () => target.focus() // fixes https://github.com/Microsoft/vscode/issues/52948
 				});
 			}
@@ -280,16 +257,16 @@ export class ElectronWindow extends Themable {
 			return null;
 		};
 
-		// Emit event when vscode has loaded
-		this.lifecycleService.when(LifecyclePhase.Running).then(() => {
-			ipc.send('vscode:workbenchLoaded', this.windowService.getCurrentWindowId());
+		// Emit event when vscode is ready
+		this.lifecycleService.when(LifecyclePhase.Ready).then(() => {
+			ipc.send('vscode:workbenchReady', this.windowService.getCurrentWindowId());
 		});
 
 		// Integrity warning
 		this.integrityService.isPure().then(res => this.titleService.updateProperties({ isPure: res.isPure }));
 
 		// Root warning
-		this.lifecycleService.when(LifecyclePhase.Running).then(() => {
+		this.lifecycleService.when(LifecyclePhase.Restored).then(() => {
 			let isAdminPromise: Promise<boolean>;
 			if (isWindows) {
 				isAdminPromise = import('native-is-elevated').then(isElevated => isElevated());
@@ -375,28 +352,6 @@ export class ElectronWindow extends Themable {
 		}
 	}
 
-	private resolveKeybindings(actionIds: string[]): TPromise<{ id: string; label: string, isNative: boolean; }[]> {
-		return TPromise.join([this.lifecycleService.when(LifecyclePhase.Running), this.extensionService.whenInstalledExtensionsRegistered()]).then(() => {
-			return arrays.coalesce(actionIds.map(id => {
-				const binding = this.keybindingService.lookupKeybinding(id);
-				if (!binding) {
-					return null;
-				}
-				// first try to resolve a native accelerator
-				const electronAccelerator = binding.getElectronAccelerator();
-				if (electronAccelerator) {
-					return { id, label: electronAccelerator, isNative: true };
-				}
-				// we need this fallback to support keybindings that cannot show in electron menus (e.g. chords)
-				const acceleratorLabel = binding.getLabel();
-				if (acceleratorLabel) {
-					return { id, label: acceleratorLabel, isNative: false };
-				}
-				return null;
-			}));
-		});
-	}
-
 	private onAddFoldersRequest(request: IAddFoldersRequest): void {
 
 		// Buffer all pending requests
@@ -417,12 +372,12 @@ export class ElectronWindow extends Themable {
 
 		this.pendingFoldersToAdd = [];
 
-		this.workspaceEditingService.addFolders(foldersToAdd).done(null, errors.onUnexpectedError);
+		this.workspaceEditingService.addFolders(foldersToAdd);
 	}
 
 	private onOpenFiles(request: IOpenFileRequest): void {
 		const inputs: IResourceEditor[] = [];
-		const diffMode = (request.filesToDiff.length === 2);
+		const diffMode = request.filesToDiff && (request.filesToDiff.length === 2);
 
 		if (!diffMode && request.filesToOpen) {
 			inputs.push(...this.toInputs(request.filesToOpen, false));
@@ -437,26 +392,26 @@ export class ElectronWindow extends Themable {
 		}
 
 		if (inputs.length) {
-			this.openResources(inputs, diffMode).then(null, errors.onUnexpectedError);
+			this.openResources(inputs, diffMode);
 		}
 
 		if (request.filesToWait && inputs.length) {
 			// In wait mode, listen to changes to the editors and wait until the files
 			// are closed that the user wants to wait for. When this happens we delete
 			// the wait marker file to signal to the outside that editing is done.
-			const resourcesToWaitFor = request.filesToWait.paths.map(p => URI.file(p.filePath));
+			const resourcesToWaitFor = request.filesToWait.paths.map(p => URI.revive(p.fileUri));
 			const waitMarkerFile = URI.file(request.filesToWait.waitMarkerFilePath);
 			const unbind = this.editorService.onDidCloseEditor(() => {
 				if (resourcesToWaitFor.every(resource => !this.editorService.isOpen({ resource }))) {
 					unbind.dispose();
-					this.fileService.del(waitMarkerFile).done(null, errors.onUnexpectedError);
+					this.fileService.del(waitMarkerFile);
 				}
 			});
 		}
 	}
 
 	private openResources(resources: (IResourceInput | IUntitledResourceInput)[], diffMode: boolean): Thenable<any> {
-		return this.lifecycleService.when(LifecyclePhase.Running).then((): TPromise<any> => {
+		return this.lifecycleService.when(LifecyclePhase.Ready).then(() => {
 
 			// In diffMode we open 2 resources as diff
 			if (diffMode && resources.length === 2) {
@@ -473,9 +428,9 @@ export class ElectronWindow extends Themable {
 		});
 	}
 
-	private toInputs(paths: IPath[], isNew: boolean): IResourceEditor[] {
+	private toInputs(paths: IPathData[], isNew: boolean): IResourceEditor[] {
 		return paths.map(p => {
-			const resource = URI.file(p.filePath);
+			const resource = URI.revive(p.fileUri);
 			let input: IResourceInput | IUntitledResourceInput;
 			if (isNew) {
 				input = { filePath: resource.fsPath, options: { pinned: true } } as IUntitledResourceInput;

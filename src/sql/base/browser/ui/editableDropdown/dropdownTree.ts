@@ -8,9 +8,9 @@ import * as TreeDefaults from 'vs/base/parts/tree/browser/treeDefaults';
 import { Promise, TPromise } from 'vs/base/common/winjs.base';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
-import { $ } from 'vs/base/browser/builder';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { $ } from 'sql/base/browser/builder';
 
 export interface Template {
 	label: HTMLElement;
@@ -72,7 +72,7 @@ export class DropdownDataSource implements tree.IDataSource {
 		}
 	}
 
-	public getChildren(tree: tree.ITree, element: Resource | DropdownModel): Promise<any, any> {
+	public getChildren(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
 			return TPromise.as(this.options);
 		} else {
@@ -80,7 +80,7 @@ export class DropdownDataSource implements tree.IDataSource {
 		}
 	}
 
-	public getParent(tree: tree.ITree, element: Resource | DropdownModel): Promise<any, any> {
+	public getParent(tree: tree.ITree, element: Resource | DropdownModel): Promise<any> {
 		if (element instanceof DropdownModel) {
 			return TPromise.as(undefined);
 		} else {

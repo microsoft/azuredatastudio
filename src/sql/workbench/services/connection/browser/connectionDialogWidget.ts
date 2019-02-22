@@ -25,7 +25,7 @@ import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/theme
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { ICancelableEvent } from 'vs/base/parts/tree/browser/treeDefaults';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';

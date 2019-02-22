@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ILogService, LogLevel, AbstractLogService } from 'vs/platform/log/common/log';
 
 interface ILog {

@@ -205,11 +205,11 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): TPromise<IAction[]> {
+	protected getTableActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditProxyAction));
 		actions.push(this._instantiationService.createInstance(DeleteProxyAction));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

@@ -3,9 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import Uri from 'vs/base/common/uri';
+import { URI as Uri } from 'vs/base/common/uri';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IResolveContentOptions, IUpdateContentOptions, ITextSnapshot } from 'vs/platform/files/common/files';
@@ -33,7 +31,7 @@ export interface IBackupFileService {
 	 * @param resource The resource that is backed up.
 	 * @return The backup resource if any.
 	 */
-	loadBackupResource(resource: Uri): TPromise<Uri>;
+	loadBackupResource(resource: Uri): TPromise<Uri | undefined>;
 
 	/**
 	 * Given a resource, returns the associated backup resource.
@@ -65,7 +63,7 @@ export interface IBackupFileService {
 	 * @param value The contents from a backup resource as stream.
 	 * @return The backup file's backed up content as text buffer factory.
 	 */
-	resolveBackupContent(backup: Uri): TPromise<ITextBufferFactory>;
+	resolveBackupContent(backup: Uri): TPromise<ITextBufferFactory | undefined>;
 
 	/**
 	 * Discards the backup associated with a resource if it exists..

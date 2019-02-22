@@ -12,7 +12,7 @@ import {
 
 import * as sqlops from 'sqlops';
 import * as DOM from 'vs/base/browser/dom';
-import { $, Builder } from 'vs/base/browser/builder';
+import { $, Builder } from 'sql/base/browser/builder';
 
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
