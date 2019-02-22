@@ -1,0 +1,40 @@
+{
+	"kernel_python_credentials": {
+		"url": "",
+		"auth": "None"
+	},
+	"kernel_scala_credentials": {
+		"url": "",
+		"auth": "None"
+	},
+	"kernel_r_credentials": {
+		"url": "",
+		"auth": "None"
+	},
+	"ignore_ssl_errors": true,
+	"logging_config": {
+		"version": 1,
+		"formatters": {
+			"magicsFormatter": {
+				"format": "%(asctime)s\t%(levelname)s\t%(message)s",
+				"datefmt": ""
+			}
+		},
+		"handlers": {
+			"magicsHandler": {
+				"class": "hdijupyterutils.filehandler.MagicsFileHandler",
+				"formatter": "magicsFormatter",
+				"home_path": ""
+			}
+		},
+		"loggers": {
+			"magicsLogger": {
+				"handlers": [
+					"magicsHandler"
+				],
+				"level": "DEBUG",
+				"propagate": 0
+			}
+		}
+	}
+}

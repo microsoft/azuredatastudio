@@ -3,18 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Event, Emitter } from 'vs/base/common/event';
-import { Throttler } from 'vs/base/common/async';
+import { timeout } from 'vs/base/common/async';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILifecycleService } from 'vs/platform/lifecycle/electron-main/lifecycleMain';
 import product from 'vs/platform/node/product';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IUpdateService, State, StateType, AvailableForDownload, UpdateType } from 'vs/platform/update/common/update';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IRequestService } from 'vs/platform/request/node/request';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export function createUpdateURL(platform: string, quality: string): string {
 	return `${product.updateUrl}/api/update/${platform}/${quality}/${product.commit}`;
@@ -27,7 +25,6 @@ export abstract class AbstractUpdateService implements IUpdateService {
 	protected readonly url: string | undefined;
 
 	private _state: State = State.Uninitialized;
-	private throttler: Throttler = new Throttler();
 
 	private _onStateChange = new Emitter<State>();
 	get onStateChange(): Event<State> { return this._onStateChange.event; }
@@ -75,77 +72,71 @@ export abstract class AbstractUpdateService implements IUpdateService {
 		this.setState(State.Idle(this.getUpdateType()));
 
 		// Start checking for updates after 30 seconds
-		this.scheduleCheckForUpdates(30 * 1000)
-			.done(null, err => this.logService.error(err));
+		this.scheduleCheckForUpdates(30 * 1000).then(undefined, err => this.logService.error(err));
 	}
 
-	private getProductQuality(): string {
+	private getProductQuality(): string | undefined {
 		const quality = this.configurationService.getValue<string>('update.channel');
-		return quality === 'none' ? null : product.quality;
+		return quality === 'none' ? undefined : product.quality;
 	}
 
-	private scheduleCheckForUpdates(delay = 60 * 60 * 1000): TPromise<void> {
-		return TPromise.timeout(delay)
+	private scheduleCheckForUpdates(delay = 60 * 60 * 1000): Thenable<void> {
+		return timeout(delay)
 			.then(() => this.checkForUpdates(null))
-			.then(update => {
-				if (update) {
-					// Update found, no need to check more
-					return TPromise.as(null);
-				}
-
+			.then(() => {
 				// Check again after 1 hour
 				return this.scheduleCheckForUpdates(60 * 60 * 1000);
 			});
 	}
 
-	checkForUpdates(context: any): TPromise<void> {
+	async checkForUpdates(context: any): Promise<void> {
 		this.logService.trace('update#checkForUpdates, state = ', this.state.type);
 
 		if (this.state.type !== StateType.Idle) {
-			return TPromise.as(null);
+			return;
 		}
 
-		return this.throttler.queue(() => TPromise.as(this.doCheckForUpdates(context)));
+		this.doCheckForUpdates(context);
 	}
 
-	downloadUpdate(): TPromise<void> {
+	async downloadUpdate(): Promise<void> {
 		this.logService.trace('update#downloadUpdate, state = ', this.state.type);
 
 		if (this.state.type !== StateType.AvailableForDownload) {
-			return TPromise.as(null);
+			return;
 		}
 
-		return this.doDownloadUpdate(this.state);
+		await this.doDownloadUpdate(this.state);
 	}
 
-	protected doDownloadUpdate(state: AvailableForDownload): TPromise<void> {
-		return TPromise.as(null);
+	protected async doDownloadUpdate(state: AvailableForDownload): Promise<void> {
+		// noop
 	}
 
-	applyUpdate(): TPromise<void> {
+	async applyUpdate(): Promise<void> {
 		this.logService.trace('update#applyUpdate, state = ', this.state.type);
 
 		if (this.state.type !== StateType.Downloaded) {
-			return TPromise.as(null);
+			return;
 		}
 
-		return this.doApplyUpdate();
+		await this.doApplyUpdate();
 	}
 
-	protected doApplyUpdate(): TPromise<void> {
-		return TPromise.as(null);
+	protected async doApplyUpdate(): Promise<void> {
+		// noop
 	}
 
-	quitAndInstall(): TPromise<void> {
+	quitAndInstall(): Thenable<void> {
 		this.logService.trace('update#quitAndInstall, state = ', this.state.type);
 
 		if (this.state.type !== StateType.Ready) {
-			return TPromise.as(null);
+			return Promise.resolve(void 0);
 		}
 
 		this.logService.trace('update#quitAndInstall(): before lifecycle quit()');
 
-		this.lifecycleService.quit(true /* from update */).done(vetod => {
+		this.lifecycleService.quit(true /* from update */).then(vetod => {
 			this.logService.trace(`update#quitAndInstall(): after lifecycle quit() with veto: ${vetod}`);
 			if (vetod) {
 				return;
@@ -155,14 +146,14 @@ export abstract class AbstractUpdateService implements IUpdateService {
 			this.doQuitAndInstall();
 		});
 
-		return TPromise.as(null);
+		return Promise.resolve(void 0);
 	}
 
-	isLatestVersion(): TPromise<boolean | undefined> {
+	isLatestVersion(): Thenable<boolean | undefined> {
 		if (!this.url) {
-			return TPromise.as(undefined);
+			return Promise.resolve(undefined);
 		}
-		return this.requestService.request({ url: this.url }).then(context => {
+		return this.requestService.request({ url: this.url }, CancellationToken.None).then(context => {
 			// The update server replies with 204 (No Content) when no
 			// update is available - that's all we want to know.
 			if (context.res.statusCode === 204) {

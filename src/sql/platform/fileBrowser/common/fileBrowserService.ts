@@ -7,8 +7,8 @@
 
 import * as sqlops from 'sqlops';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
-import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
+import { FileBrowserTree } from 'sql/workbench/services/fileBrowser/common/fileBrowserTree';
+import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import * as Constants from 'sql/common/constants';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';

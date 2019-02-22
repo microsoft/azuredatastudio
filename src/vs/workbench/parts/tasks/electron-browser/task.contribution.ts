@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import 'vs/css!./media/task.contribution';
 
@@ -13,11 +12,11 @@ import { QuickOpenHandler } from 'vs/workbench/parts/tasks/browser/taskQuickOpen
 import { TPromise } from 'vs/base/common/winjs.base';
 import Severity from 'vs/base/common/severity';
 import * as Objects from 'vs/base/common/objects';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { Action } from 'vs/base/common/actions';
 import * as Dom from 'vs/base/browser/dom';
-import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, toDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as Types from 'vs/base/common/types';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -30,8 +29,8 @@ import { LinkedMap, Touch } from 'vs/base/common/map';
 import { OcticonLabel } from 'vs/base/browser/ui/octiconLabel/octiconLabel';
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { MenuRegistry, MenuId, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IMarkerService, MarkerStatistics } from 'vs/platform/markers/common/markers';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -42,7 +41,7 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProblemMatcherRegistry, NamedProblemMatcher } from 'vs/workbench/parts/tasks/common/problemMatcher';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { IProgressService2, IProgressOptions, ProgressLocation } from 'vs/workbench/services/progress/common/progress';
+import { IProgressService2, IProgressOptions, ProgressLocation } from 'vs/platform/progress/common/progress';
 
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWindowService } from 'vs/platform/windows/common/windows';
@@ -54,10 +53,10 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import * as jsonContributionRegistry from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
-import { IStatusbarItem, IStatusbarRegistry, Extensions as StatusbarExtensions, StatusbarItemDescriptor, StatusbarAlignment } from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { IStatusbarItem, IStatusbarRegistry, Extensions as StatusbarExtensions, StatusbarItemDescriptor } from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { IQuickOpenRegistry, Extensions as QuickOpenExtensions, QuickOpenHandlerDescriptor } from 'vs/workbench/browser/quickopen';
 
-import { IQuickOpenService, IPickOpenEntry, IPickOpenAction, IPickOpenItem } from 'vs/platform/quickOpen/common/quickOpen';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import Constants from 'vs/workbench/parts/markers/electron-browser/constants';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
@@ -71,13 +70,13 @@ import { Scope, IActionBarRegistry, Extensions as ActionBarExtensions } from 'vs
 
 import { ITerminalService } from 'vs/workbench/parts/terminal/common/terminal';
 
-import { ITaskSystem, ITaskResolver, ITaskSummary, TaskExecuteKind, TaskError, TaskErrors, TaskTerminateResponse, TaskSystemInfo } from 'vs/workbench/parts/tasks/common/taskSystem';
+import { ITaskSystem, ITaskResolver, ITaskSummary, TaskExecuteKind, TaskError, TaskErrors, TaskTerminateResponse, TaskSystemInfo, ITaskExecuteResult } from 'vs/workbench/parts/tasks/common/taskSystem';
 import {
 	Task, CustomTask, ConfiguringTask, ContributedTask, InMemoryTask, TaskEvent,
 	TaskEventKind, TaskSet, TaskGroup, GroupType, ExecutionEngine, JsonSchemaVersion, TaskSourceKind,
-	TaskSorter, TaskIdentifier, KeyedTaskIdentifier, TASK_RUNNING_STATE
+	TaskSorter, TaskIdentifier, KeyedTaskIdentifier, TASK_RUNNING_STATE, TaskRunSource
 } from 'vs/workbench/parts/tasks/common/tasks';
-import { ITaskService, ITaskProvider, RunOptions, CustomizationProperties, TaskFilter } from 'vs/workbench/parts/tasks/common/taskService';
+import { ITaskService, ITaskProvider, ProblemMatcherRunOptions, CustomizationProperties, TaskFilter, WorkspaceFolderTaskResult } from 'vs/workbench/parts/tasks/common/taskService';
 import { getTemplates as getTaskTemplates } from 'vs/workbench/parts/tasks/common/taskTemplates';
 
 import { KeyedTaskIdentifier as NKeyedTaskIdentifier, TaskDefinition } from 'vs/workbench/parts/tasks/node/tasks';
@@ -90,8 +89,23 @@ import { QuickOpenActionContributor } from '../browser/quickOpen';
 
 import { Themable, STATUS_BAR_FOREGROUND, STATUS_BAR_NO_FOLDER_FOREGROUND } from 'vs/workbench/common/theme';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IQuickInputService, IQuickPickItem, QuickPickInput } from 'vs/platform/quickinput/common/quickInput';
+
+import { TaskDefinitionRegistry } from 'vs/workbench/parts/tasks/common/taskDefinitionRegistry';
+import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
+import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
+import { RunAutomaticTasks, AllowAutomaticTaskRunning, DisallowAutomaticTaskRunning } from 'vs/workbench/parts/tasks/electron-browser/runAutomaticTasks';
 
 let tasksCategory = nls.localize('tasksCategory', "Tasks");
+
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+workbenchRegistry.registerWorkbenchContribution(RunAutomaticTasks, LifecyclePhase.Eventually);
+
+const actionRegistry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
+actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(AllowAutomaticTaskRunning, AllowAutomaticTaskRunning.ID, AllowAutomaticTaskRunning.LABEL), 'Tasks: Allow Automatic Tasks in Folder', tasksCategory);
+actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(DisallowAutomaticTaskRunning, DisallowAutomaticTaskRunning.ID, DisallowAutomaticTaskRunning.LABEL), 'Tasks: Disallow Automatic Tasks in Folder', tasksCategory);
+
 
 namespace ConfigureTaskAction {
 	export const ID = 'workbench.action.tasks.configureTaskRunner';
@@ -367,18 +381,6 @@ class ProblemReporter implements TaskConfig.IProblemReporter {
 	}
 }
 
-interface WorkspaceTaskResult {
-	set: TaskSet;
-	configurations: {
-		byIdentifier: IStringDictionary<ConfiguringTask>;
-	};
-	hasErrors: boolean;
-}
-
-interface WorkspaceFolderTaskResult extends WorkspaceTaskResult {
-	workspaceFolder: IWorkspaceFolder;
-}
-
 interface WorkspaceFolderConfigurationResult {
 	workspaceFolder: IWorkspaceFolder;
 	config: TaskConfig.ExternalTaskRunnerConfiguration;
@@ -424,15 +426,14 @@ class TaskMap {
 	}
 }
 
-interface TaskQuickPickEntry extends IPickOpenEntry {
+interface TaskQuickPickEntry extends IQuickPickItem {
 	task: Task;
 }
 
-class TaskService implements ITaskService {
+class TaskService extends Disposable implements ITaskService {
 
 	// private static autoDetectTelemetryName: string = 'taskServer.autoDetect';
 	private static readonly RecentlyUsedTasks_Key = 'workbench.tasks.recentlyUsedTasks';
-	private static readonly RanTaskBefore_Key = 'workbench.tasks.ranTaskBefore';
 	private static readonly IgnoreTask010DonotShowAgain_key = 'workbench.tasks.ignoreTask010Shown';
 
 	private static CustomizationTelemetryEventName: string = 'taskService.customize';
@@ -441,6 +442,8 @@ class TaskService implements ITaskService {
 	public _serviceBrand: any;
 	public static OutputChannelId: string = 'tasks';
 	public static OutputChannelLabel: string = nls.localize('tasks', "Tasks");
+
+	private static nextHandle: number = 0;
 
 	private _configHasErrors: boolean;
 	private _schemaVersion: JsonSchemaVersion;
@@ -474,7 +477,7 @@ class TaskService implements ITaskService {
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IModelService private modelService: IModelService,
 		@IExtensionService private extensionService: IExtensionService,
-		@IQuickOpenService private quickOpenService: IQuickOpenService,
+		@IQuickInputService private quickInputService: IQuickInputService,
 		@IConfigurationResolverService private configurationResolverService: IConfigurationResolverService,
 		@ITerminalService private terminalService: ITerminalService,
 		@IStorageService private storageService: IStorageService,
@@ -484,8 +487,9 @@ class TaskService implements ITaskService {
 		@IDialogService private dialogService: IDialogService,
 		@INotificationService private notificationService: INotificationService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-
 	) {
+		super();
+
 		this._configHasErrors = false;
 		this._workspaceTasksPromise = undefined;
 		this._taskSystem = undefined;
@@ -493,12 +497,9 @@ class TaskService implements ITaskService {
 		this._outputChannel = this.outputService.getChannel(TaskService.OutputChannelId);
 		this._providers = new Map<number, ITaskProvider>();
 		this._taskSystemInfos = new Map<string, TaskSystemInfo>();
-		this.configurationService.onDidChangeConfiguration(() => {
+		this._register(this.contextService.onDidChangeWorkspaceFolders(() => {
 			if (!this._taskSystem && !this._workspaceTasksPromise) {
 				return;
-			}
-			if (!this._taskSystem || this._taskSystem instanceof TerminalTaskSystem) {
-				this._outputChannel.clear();
 			}
 			let folderSetup = this.computeWorkspaceFolderSetup();
 			if (this.executionEngine !== folderSetup[2]) {
@@ -512,7 +513,8 @@ class TaskService implements ITaskService {
 						[{
 							label: nls.localize('reloadWindow', "Reload Window"),
 							run: () => this._windowService.reloadWindow()
-						}]
+						}],
+						{ sticky: true }
 					);
 					return;
 				} else {
@@ -522,10 +524,20 @@ class TaskService implements ITaskService {
 			}
 			this.updateSetup(folderSetup);
 			this.updateWorkspaceTasks();
-		});
+		}));
+		this._register(this.configurationService.onDidChangeConfiguration(() => {
+			if (!this._taskSystem && !this._workspaceTasksPromise) {
+				return;
+			}
+			if (!this._taskSystem || this._taskSystem instanceof TerminalTaskSystem) {
+				this._outputChannel.clear();
+			}
+			this.updateWorkspaceTasks(TaskRunSource.ConfigurationChange);
+		}));
 		this._taskRunningState = TASK_RUNNING_STATE.bindTo(contextKeyService);
-		lifecycleService.onWillShutdown(event => event.veto(this.beforeShutdown()));
-		this._onDidStateChange = new Emitter();
+		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown())));
+		this._register(storageService.onWillSaveState(() => this.saveState()));
+		this._onDidStateChange = this._register(new Emitter());
 		this.registerCommands();
 	}
 
@@ -540,6 +552,10 @@ class TaskService implements ITaskService {
 	private registerCommands(): void {
 		CommandsRegistry.registerCommand('workbench.action.tasks.runTask', (accessor, arg) => {
 			this.runTaskCommand(arg);
+		});
+
+		CommandsRegistry.registerCommand('workbench.action.tasks.reRunTask', (accessor, arg) => {
+			this.reRunTaskCommand(arg);
 		});
 
 		CommandsRegistry.registerCommand('workbench.action.tasks.restartTask', (accessor, arg) => {
@@ -654,8 +670,10 @@ class TaskService implements ITaskService {
 		this._schemaVersion = setup[3];
 	}
 
-	private showOutput(): void {
-		this.outputService.showChannel(this._outputChannel.id, true);
+	private showOutput(runSource: TaskRunSource = TaskRunSource.User): void {
+		if (runSource === TaskRunSource.User) {
+			this.outputService.showChannel(this._outputChannel.id, true);
+		}
 	}
 
 	private disposeTaskSystemListeners(): void {
@@ -664,15 +682,19 @@ class TaskService implements ITaskService {
 		}
 	}
 
-	public registerTaskProvider(handle: number, provider: ITaskProvider): void {
+	public registerTaskProvider(provider: ITaskProvider): IDisposable {
 		if (!provider) {
-			return;
+			return {
+				dispose: () => { }
+			};
 		}
+		let handle = TaskService.nextHandle++;
 		this._providers.set(handle, provider);
-	}
-
-	public unregisterTaskProvider(handle: number): boolean {
-		return this._providers.delete(handle);
+		return {
+			dispose: () => {
+				this._providers.delete(handle);
+			}
+		};
 	}
 
 	public registerTaskSystem(key: string, info: TaskSystemInfo): void {
@@ -778,8 +800,8 @@ class TaskService implements ITaskService {
 		return this._recentlyUsedTasks;
 	}
 
-	private saveRecentlyUsedTasks(): void {
-		if (!this._recentlyUsedTasks) {
+	private saveState(): void {
+		if (!this._taskSystem || !this._recentlyUsedTasks) {
 			return;
 		}
 		let values = this._recentlyUsedTasks.values();
@@ -827,7 +849,7 @@ class TaskService implements ITaskService {
 		});
 	}
 
-	public run(task: Task, options?: RunOptions): TPromise<ITaskSummary> {
+	public run(task: Task, options?: ProblemMatcherRunOptions): TPromise<ITaskSummary> {
 		return this.getGroupedTasks().then((grouped) => {
 			if (!task) {
 				throw new TaskError(Severity.Info, nls.localize('TaskServer.noTask', 'Requested task {0} to execute not found.', task.name), TaskErrors.TaskNotFound);
@@ -871,12 +893,12 @@ class TaskService implements ITaskService {
 	}
 
 	private attachProblemMatcher(task: ContributedTask | CustomTask): TPromise<Task> {
-		interface ProblemMatcherPickEntry extends IPickOpenEntry {
+		interface ProblemMatcherPickEntry extends IQuickPickItem {
 			matcher: NamedProblemMatcher;
 			never?: boolean;
 			learnMore?: boolean;
 		}
-		let entries: ProblemMatcherPickEntry[] = [];
+		let entries: QuickPickInput<ProblemMatcherPickEntry>[] = [];
 		for (let key of ProblemMatcherRegistry.keys()) {
 			let matcher = ProblemMatcherRegistry.get(key);
 			if (matcher.deprecated) {
@@ -894,15 +916,14 @@ class TaskService implements ITaskService {
 		}
 		if (entries.length > 0) {
 			entries = entries.sort((a, b) => a.label.localeCompare(b.label));
-			entries[0].separator = { border: true, label: nls.localize('TaskService.associate', 'associate') };
+			entries.unshift({ type: 'separator', label: nls.localize('TaskService.associate', 'associate') });
 			entries.unshift(
 				{ label: nls.localize('TaskService.attachProblemMatcher.continueWithout', 'Continue without scanning the task output'), matcher: undefined },
 				{ label: nls.localize('TaskService.attachProblemMatcher.never', 'Never scan the task output'), matcher: undefined, never: true },
 				{ label: nls.localize('TaskService.attachProblemMatcher.learnMoreAbout', 'Learn more about scanning the task output'), matcher: undefined, learnMore: true }
 			);
-			return this.quickOpenService.pick(entries, {
+			return this.quickInputService.pick(entries, {
 				placeHolder: nls.localize('selectProblemMatcher', 'Select for which kind of errors and warnings to scan the task output'),
-				autoFocus: { autoFocusFirstEntry: true }
 			}).then((selected) => {
 				if (selected) {
 					if (selected.learnMore) {
@@ -1073,7 +1094,7 @@ class TaskService implements ITaskService {
 		});
 	}
 
-	private writeConfiguration(workspaceFolder: IWorkspaceFolder, key: string, value: any): TPromise<void, any> {
+	private writeConfiguration(workspaceFolder: IWorkspaceFolder, key: string, value: any): TPromise<void> {
 		if (this.contextService.getWorkbenchState() === WorkbenchState.FOLDER) {
 			return this.configurationService.updateValue(key, value, { resource: workspaceFolder.uri }, ConfigurationTarget.WORKSPACE);
 		} else if (this.contextService.getWorkbenchState() === WorkbenchState.WORKSPACE) {
@@ -1083,8 +1104,13 @@ class TaskService implements ITaskService {
 		}
 	}
 
-	public openConfig(task: CustomTask): TPromise<void> {
-		let resource = Task.getWorkspaceFolder(task).toResource(task._source.config.file);
+	public openConfig(task: CustomTask | undefined): TPromise<void> {
+		let resource: URI;
+		if (task) {
+			resource = Task.getWorkspaceFolder(task).toResource(task._source.config.file);
+		} else {
+			resource = (this._workspaceFolders && (this._workspaceFolders.length > 0)) ? this._workspaceFolders[0].toResource('.vscode/tasks.json') : undefined;
+		}
 		return this.editorService.openEditor({
 			resource,
 			options: {
@@ -1158,7 +1184,8 @@ class TaskService implements ITaskService {
 				type: 'inMemory',
 				name: id,
 				identifier: id,
-				dependsOn: extensionTasks.map((task) => { return { workspaceFolder: Task.getWorkspaceFolder(task), task: task._id }; })
+				dependsOn: extensionTasks.map((task) => { return { workspaceFolder: Task.getWorkspaceFolder(task), task: task._id }; }),
+				runOptions: { reevaluateOnRerun: true },
 			};
 			return { task, resolver };
 		}
@@ -1204,42 +1231,44 @@ class TaskService implements ITaskService {
 	}
 
 	private executeTask(task: Task, resolver: ITaskResolver): TPromise<ITaskSummary> {
-		if (!this.storageService.get(TaskService.RanTaskBefore_Key, StorageScope.GLOBAL)) {
-			this.storageService.store(TaskService.RanTaskBefore_Key, true, StorageScope.GLOBAL);
-		}
 		return ProblemMatcherRegistry.onReady().then(() => {
 			return this.textFileService.saveAll().then((value) => { // make sure all dirty files are saved
 				let executeResult = this.getTaskSystem().run(task, resolver);
-				let key = Task.getRecentlyUsedKey(task);
-				if (key) {
-					this.getRecentlyUsedTasks().set(key, key, Touch.AsOld);
-				}
-				if (executeResult.kind === TaskExecuteKind.Active) {
-					let active = executeResult.active;
-					if (active.same) {
-						let message;
-						if (active.background) {
-							message = nls.localize('TaskSystem.activeSame.background', 'The task \'{0}\' is already active and in background mode.', Task.getQualifiedLabel(task));
-						} else {
-							message = nls.localize('TaskSystem.activeSame.noBackground', 'The task \'{0}\' is already active.', Task.getQualifiedLabel(task));
-						}
-						this.notificationService.prompt(Severity.Info, message,
-							[{
-								label: nls.localize('terminateTask', "Terminate Task"),
-								run: () => this.terminate(task)
-							},
-							{
-								label: nls.localize('restartTask', "Restart Task"),
-								run: () => this.restart(task)
-							}]
-						);
-					} else {
-						throw new TaskError(Severity.Warning, nls.localize('TaskSystem.active', 'There is already a task running. Terminate it first before executing another task.'), TaskErrors.RunningTask);
-					}
-				}
-				return executeResult.promise;
+				return this.handleExecuteResult(executeResult);
 			});
 		});
+	}
+
+	private handleExecuteResult(executeResult: ITaskExecuteResult): TPromise<ITaskSummary> {
+		let key = Task.getRecentlyUsedKey(executeResult.task);
+		if (key) {
+			this.getRecentlyUsedTasks().set(key, key, Touch.AsOld);
+		}
+		if (executeResult.kind === TaskExecuteKind.Active) {
+			let active = executeResult.active;
+			if (active.same) {
+				let message;
+				if (active.background) {
+					message = nls.localize('TaskSystem.activeSame.background', 'The task \'{0}\' is already active and in background mode.', Task.getQualifiedLabel(executeResult.task));
+				} else {
+					message = nls.localize('TaskSystem.activeSame.noBackground', 'The task \'{0}\' is already active.', Task.getQualifiedLabel(executeResult.task));
+				}
+				this.notificationService.prompt(Severity.Info, message,
+					[{
+						label: nls.localize('terminateTask', "Terminate Task"),
+						run: () => this.terminate(executeResult.task)
+					},
+					{
+						label: nls.localize('restartTask', "Restart Task"),
+						run: () => this.restart(executeResult.task)
+					}],
+					{ sticky: true }
+				);
+			} else {
+				throw new TaskError(Severity.Warning, nls.localize('TaskSystem.active', 'There is already a task running. Terminate it first before executing another task.'), TaskErrors.RunningTask);
+			}
+		}
+		return executeResult.promise;
 	}
 
 	public restart(task: Task): void {
@@ -1248,7 +1277,9 @@ class TaskService implements ITaskService {
 		}
 		this._taskSystem.terminate(task).then((response) => {
 			if (response.success) {
-				this.run(task);
+				this.run(task).then(undefined, reason => {
+					// eat the error, it has already been surfaced to the user and we don't care about it here
+				});
 			} else {
 				this.notificationService.warn(nls.localize('TaskSystem.restartFailed', 'Failed to terminate and restart task {0}', Types.isString(task) ? task : task.name));
 			}
@@ -1307,7 +1338,7 @@ class TaskService implements ITaskService {
 		return TPromise.join([this.extensionService.activateByEvent('onCommand:workbench.action.tasks.runTask'), TaskDefinitionRegistry.onReady()]).then(() => {
 			let validTypes: IStringDictionary<boolean> = Object.create(null);
 			TaskDefinitionRegistry.all().forEach(definition => validTypes[definition.taskType] = true);
-			return new TPromise<TaskSet[]>((resolve, reject) => {
+			return new Promise<TaskSet[]>(resolve => {
 				let result: TaskSet[] = [];
 				let counter: number = 0;
 				let done = (value: TaskSet) => {
@@ -1320,10 +1351,13 @@ class TaskService implements ITaskService {
 				};
 				let error = (error: any) => {
 					try {
-						if (Types.isString(error.message)) {
+						if (error && Types.isString(error.message)) {
 							this._outputChannel.append('Error: ');
 							this._outputChannel.append(error.message);
 							this._outputChannel.append('\n');
+							this.outputService.showChannel(this._outputChannel.id, true);
+						} else {
+							this._outputChannel.append('Unknown error received while collecting tasks from providers.\n');
 							this.outputService.showChannel(this._outputChannel.id, true);
 						}
 					} finally {
@@ -1335,7 +1369,7 @@ class TaskService implements ITaskService {
 				if (this.schemaVersion === JsonSchemaVersion.V2_0_0 && this._providers.size > 0) {
 					this._providers.forEach((provider) => {
 						counter++;
-						provider.provideTasks(validTypes).done(done, error);
+						provider.provideTasks(validTypes).then(done, error);
 					});
 				} else {
 					resolve(result);
@@ -1467,16 +1501,16 @@ class TaskService implements ITaskService {
 		return result;
 	}
 
-	private getWorkspaceTasks(): TPromise<Map<string, WorkspaceFolderTaskResult>> {
+	public getWorkspaceTasks(runSource: TaskRunSource = TaskRunSource.User): TPromise<Map<string, WorkspaceFolderTaskResult>> {
 		if (this._workspaceTasksPromise) {
 			return this._workspaceTasksPromise;
 		}
-		this.updateWorkspaceTasks();
+		this.updateWorkspaceTasks(runSource);
 		return this._workspaceTasksPromise;
 	}
 
-	private updateWorkspaceTasks(): void {
-		this._workspaceTasksPromise = this.computeWorkspaceTasks().then(value => {
+	private updateWorkspaceTasks(runSource: TaskRunSource = TaskRunSource.User): void {
+		this._workspaceTasksPromise = this.computeWorkspaceTasks(runSource).then(value => {
 			if (this.executionEngine === ExecutionEngine.Process && this._taskSystem instanceof ProcessTaskSystem) {
 				// We can only have a process engine if we have one folder.
 				value.forEach((value) => {
@@ -1488,13 +1522,13 @@ class TaskService implements ITaskService {
 		});
 	}
 
-	private computeWorkspaceTasks(): TPromise<Map<string, WorkspaceFolderTaskResult>> {
+	private computeWorkspaceTasks(runSource: TaskRunSource = TaskRunSource.User): TPromise<Map<string, WorkspaceFolderTaskResult>> {
 		if (this.workspaceFolders.length === 0) {
 			return TPromise.as(new Map<string, WorkspaceFolderTaskResult>());
 		} else {
 			let promises: TPromise<WorkspaceFolderTaskResult>[] = [];
 			for (let folder of this.workspaceFolders) {
-				promises.push(this.computeWorkspaceFolderTasks(folder).then((value) => value, () => undefined));
+				promises.push(this.computeWorkspaceFolderTasks(folder, runSource).then((value) => value, () => undefined));
 			}
 			return TPromise.join(promises).then((values) => {
 				let result = new Map<string, WorkspaceFolderTaskResult>();
@@ -1508,7 +1542,7 @@ class TaskService implements ITaskService {
 		}
 	}
 
-	private computeWorkspaceFolderTasks(workspaceFolder: IWorkspaceFolder): TPromise<WorkspaceFolderTaskResult> {
+	private computeWorkspaceFolderTasks(workspaceFolder: IWorkspaceFolder, runSource: TaskRunSource = TaskRunSource.User): TPromise<WorkspaceFolderTaskResult> {
 		return (this.executionEngine === ExecutionEngine.Process
 			? this.computeLegacyConfiguration(workspaceFolder)
 			: this.computeConfiguration(workspaceFolder)).
@@ -1523,7 +1557,7 @@ class TaskService implements ITaskService {
 					let hasErrors = false;
 					if (!parseResult.validationStatus.isOK()) {
 						hasErrors = true;
-						this.showOutput();
+						this.showOutput(runSource);
 					}
 					if (problemReporter.status.isFatal()) {
 						problemReporter.fatal(nls.localize('TaskSystem.configurationErrors', 'Error: the provided task configuration has validation errors and can\'t not be used. Please correct the errors first.'));
@@ -1695,7 +1729,6 @@ class TaskService implements ITaskService {
 		if (!this._taskSystem) {
 			return false;
 		}
-		this.saveRecentlyUsedTasks();
 		if (!this._taskSystem.isActiveSync()) {
 			return false;
 		}
@@ -1720,7 +1753,7 @@ class TaskService implements ITaskService {
 			if (res.confirmed) {
 				return this._taskSystem.terminateAll().then((responses) => {
 					let success = true;
-					let code: number = undefined;
+					let code: number | undefined = undefined;
 					for (let response of responses) {
 						success = success && response.success;
 						// We only have a code in the old output runner which only has one task
@@ -1791,7 +1824,7 @@ class TaskService implements ITaskService {
 		return true;
 	}
 
-	private createTaskQuickPickEntries(tasks: Task[], group: boolean = false, sort: boolean = false): TaskQuickPickEntry[] {
+	private createTaskQuickPickEntries(tasks: Task[], group: boolean = false, sort: boolean = false, selectedEntry?: TaskQuickPickEntry): TaskQuickPickEntry[] {
 		if (tasks === void 0 || tasks === null || tasks.length === 0) {
 			return [];
 		}
@@ -1805,33 +1838,18 @@ class TaskService implements ITaskService {
 			}
 			return { label: task._label, description, task };
 		};
-		let taskService = this;
-		let action = new class extends Action implements IPickOpenAction {
-			constructor() {
-				super('configureAction', 'Configure Task', 'quick-open-task-configure', true);
+		function fillEntries(entries: QuickPickInput<TaskQuickPickEntry>[], tasks: Task[], groupLabel: string): void {
+			if (tasks.length) {
+				entries.push({ type: 'separator', label: groupLabel });
 			}
-			public run(item: IPickOpenItem): TPromise<boolean> {
-				let task: Task = item.getPayload();
-				taskService.quickOpenService.close();
-				if (ContributedTask.is(task)) {
-					taskService.customize(task, undefined, true);
-				} else if (CustomTask.is(task)) {
-					taskService.openConfig(task);
-				}
-				return TPromise.as(false);
-			}
-		};
-		function fillEntries(entries: TaskQuickPickEntry[], tasks: Task[], groupLabel: string, withBorder: boolean = false): void {
-			let first = true;
 			for (let task of tasks) {
 				let entry: TaskQuickPickEntry = TaskQuickPickEntry(task);
-				if (first) {
-					first = false;
-					entry.separator = { label: groupLabel, border: withBorder };
+				entry.buttons = [{ iconClass: 'quick-open-task-configure', tooltip: nls.localize('configureTask', "Configure Task") }];
+				if (selectedEntry && (task === selectedEntry.task)) {
+					entries.unshift(selectedEntry);
+				} else {
+					entries.push(entry);
 				}
-				entry.action = action;
-				entry.payload = task;
-				entries.push(entry);
 			}
 		}
 		let entries: TaskQuickPickEntry[];
@@ -1868,13 +1886,11 @@ class TaskService implements ITaskService {
 					}
 				}
 				const sorter = this.createSorter();
-				let hasRecentlyUsed: boolean = recent.length > 0;
 				fillEntries(entries, recent, nls.localize('recentlyUsed', 'recently used tasks'));
 				configured = configured.sort((a, b) => sorter.compare(a, b));
-				let hasConfigured = configured.length > 0;
-				fillEntries(entries, configured, nls.localize('configured', 'configured tasks'), hasRecentlyUsed);
+				fillEntries(entries, configured, nls.localize('configured', 'configured tasks'));
 				detected = detected.sort((a, b) => sorter.compare(a, b));
-				fillEntries(entries, detected, nls.localize('detected', 'detected tasks'), hasRecentlyUsed || hasConfigured);
+				fillEntries(entries, detected, nls.localize('detected', 'detected tasks'));
 			}
 		} else {
 			if (sort) {
@@ -1886,20 +1902,32 @@ class TaskService implements ITaskService {
 		return entries;
 	}
 
-	private showQuickPick(tasks: TPromise<Task[]> | Task[], placeHolder: string, defaultEntry?: TaskQuickPickEntry, group: boolean = false, sort: boolean = false): TPromise<Task> {
+	private showQuickPick(tasks: TPromise<Task[]> | Task[], placeHolder: string, defaultEntry?: TaskQuickPickEntry, group: boolean = false, sort: boolean = false, selectedEntry?: TaskQuickPickEntry): TPromise<Task> {
 		let _createEntries = (): TPromise<TaskQuickPickEntry[]> => {
 			if (Array.isArray(tasks)) {
-				return TPromise.as(this.createTaskQuickPickEntries(tasks, group, sort));
+				return TPromise.as(this.createTaskQuickPickEntries(tasks, group, sort, selectedEntry));
 			} else {
-				return tasks.then((tasks) => this.createTaskQuickPickEntries(tasks, group, sort));
+				return tasks.then((tasks) => this.createTaskQuickPickEntries(tasks, group, sort, selectedEntry));
 			}
 		};
-		return this.quickOpenService.pick(_createEntries().then((entries) => {
-			if (entries.length === 0 && defaultEntry) {
+		return this.quickInputService.pick(_createEntries().then((entries) => {
+			if ((entries.length === 0) && defaultEntry) {
 				entries.push(defaultEntry);
 			}
 			return entries;
-		}), { placeHolder, autoFocus: { autoFocusFirstEntry: true }, matchOnDescription: true }).then(entry => entry ? entry.task : undefined);
+		}), {
+				placeHolder,
+				matchOnDescription: true,
+				onDidTriggerItemButton: context => {
+					let task = context.item.task;
+					this.quickInputService.cancel();
+					if (ContributedTask.is(task)) {
+						this.customize(task, undefined, true);
+					} else if (CustomTask.is(task)) {
+						this.openConfig(task);
+					}
+				}
+			}).then(entry => entry ? entry.task : undefined);
 	}
 
 	private showIgnoredFoldersMessage(): TPromise<void> {
@@ -1935,7 +1963,9 @@ class TaskService implements ITaskService {
 				for (let folder of folders) {
 					let task = resolver.resolve(folder, identifier);
 					if (task) {
-						this.run(task);
+						this.run(task).then(undefined, reason => {
+							// eat the error, it has already been surfaced to the user and we don't care about it here
+						});
 						return;
 					}
 				}
@@ -1964,9 +1994,29 @@ class TaskService implements ITaskService {
 					if (task === null) {
 						this.runConfigureTasks();
 					} else {
-						this.run(task, { attachProblemMatcher: true });
+						this.run(task, { attachProblemMatcher: true }).then(undefined, reason => {
+							// eat the error, it has already been surfaced to the user and we don't care about it here
+						});
 					}
 				});
+		});
+	}
+
+	private reRunTaskCommand(arg?: any): void {
+		if (!this.canRunCommand()) {
+			return;
+		}
+
+		ProblemMatcherRegistry.onReady().then(() => {
+			return this.textFileService.saveAll().then((value) => { // make sure all dirty files are saved
+				let executeResult = this.getTaskSystem().rerun();
+				if (executeResult) {
+					return this.handleExecuteResult(executeResult);
+				} else {
+					this.doRunTaskCommand();
+					return undefined;
+				}
+			});
 		});
 	}
 
@@ -2002,7 +2052,9 @@ class TaskService implements ITaskService {
 			if (tasks.length > 0) {
 				let { defaults, users } = this.splitPerGroupType(tasks);
 				if (defaults.length === 1) {
-					this.run(defaults[0]);
+					this.run(defaults[0]).then(undefined, reason => {
+						// eat the error, it has already been surfaced to the user and we don't care about it here
+					});
 					return;
 				} else if (defaults.length + users.length > 0) {
 					tasks = defaults.concat(users);
@@ -2023,7 +2075,9 @@ class TaskService implements ITaskService {
 							this.runConfigureDefaultBuildTask();
 							return;
 						}
-						this.run(task, { attachProblemMatcher: true });
+						this.run(task, { attachProblemMatcher: true }).then(undefined, reason => {
+							// eat the error, it has already been surfaced to the user and we don't care about it here
+						});
 					});
 			});
 		});
@@ -2046,7 +2100,9 @@ class TaskService implements ITaskService {
 			if (tasks.length > 0) {
 				let { defaults, users } = this.splitPerGroupType(tasks);
 				if (defaults.length === 1) {
-					this.run(defaults[0]);
+					this.run(defaults[0]).then(undefined, reason => {
+						// eat the error, it has already been surfaced to the user and we don't care about it here
+					});
 					return;
 				} else if (defaults.length + users.length > 0) {
 					tasks = defaults.concat(users);
@@ -2067,7 +2123,9 @@ class TaskService implements ITaskService {
 						this.runConfigureTasks();
 						return;
 					}
-					this.run(task);
+					this.run(task).then(undefined, reason => {
+						// eat the error, it has already been surfaced to the user and we don't care about it here
+					});
 				});
 			});
 		});
@@ -2205,7 +2263,7 @@ class TaskService implements ITaskService {
 				if (stat) {
 					return stat.resource;
 				}
-				return this.quickOpenService.pick(getTaskTemplates(), { placeHolder: nls.localize('TaskService.template', 'Select a Task Template') }).then((selection) => {
+				return this.quickInputService.pick(getTaskTemplates(), { placeHolder: nls.localize('TaskService.template', 'Select a Task Template') }).then((selection) => {
 					if (!selection) {
 						return undefined;
 					}
@@ -2252,8 +2310,8 @@ class TaskService implements ITaskService {
 			}
 		};
 
-		function isTaskEntry(value: IPickOpenEntry): value is IPickOpenEntry & { task: Task } {
-			let candidate: IPickOpenEntry & { task: Task } = value as any;
+		function isTaskEntry(value: IQuickPickItem): value is IQuickPickItem & { task: Task } {
+			let candidate: IQuickPickItem & { task: Task } = value as any;
 			return candidate && !!candidate.task;
 		}
 
@@ -2265,8 +2323,8 @@ class TaskService implements ITaskService {
 		let openLabel = nls.localize('TaskService.openJsonFile', 'Open tasks.json file');
 		let entries = TPromise.join(stats).then((stats) => {
 			return taskPromise.then((taskMap) => {
-				type EntryType = (IPickOpenEntry & { task: Task; }) | (IPickOpenEntry & { folder: IWorkspaceFolder; });
-				let entries: EntryType[] = [];
+				type EntryType = (IQuickPickItem & { task: Task; }) | (IQuickPickItem & { folder: IWorkspaceFolder; });
+				let entries: QuickPickInput<EntryType>[] = [];
 				if (this.contextService.getWorkbenchState() === WorkbenchState.FOLDER) {
 					let tasks = taskMap.all();
 					let needsCreateOrOpen: boolean = true;
@@ -2281,7 +2339,10 @@ class TaskService implements ITaskService {
 					}
 					if (needsCreateOrOpen) {
 						let label = stats[0] !== void 0 ? openLabel : createLabel;
-						entries.push({ label, folder: this.contextService.getWorkspace().folders[0], separator: entries.length > 0 ? { border: true } : undefined });
+						if (entries.length) {
+							entries.push({ type: 'separator' });
+						}
+						entries.push({ label, folder: this.contextService.getWorkspace().folders[0] });
 					}
 				} else {
 					let folders = this.contextService.getWorkspace().folders;
@@ -2293,14 +2354,14 @@ class TaskService implements ITaskService {
 							for (let i = 0; i < tasks.length; i++) {
 								let entry: EntryType = { label: tasks[i]._label, task: tasks[i], description: folder.name };
 								if (i === 0) {
-									entry.separator = { label: folder.name, border: index > 0 };
+									entries.push({ type: 'separator', label: folder.name });
 								}
 								entries.push(entry);
 							}
 						} else {
 							let label = stats[index] !== void 0 ? openLabel : createLabel;
 							let entry: EntryType = { label, folder: folder };
-							entry.separator = { label: folder.name, border: index > 0 };
+							entries.push({ type: 'separator', label: folder.name });
 							entries.push(entry);
 						}
 						index++;
@@ -2310,8 +2371,8 @@ class TaskService implements ITaskService {
 			});
 		});
 
-		this.quickOpenService.pick(entries,
-			{ placeHolder: nls.localize('TaskService.pickTask', 'Select a task to configure'), autoFocus: { autoFocusFirstEntry: true } }).
+		this.quickInputService.pick(entries,
+			{ placeHolder: nls.localize('TaskService.pickTask', 'Select a task to configure') }).
 			then((selection) => {
 				if (!selection) {
 					return;
@@ -2334,33 +2395,36 @@ class TaskService implements ITaskService {
 					this.runConfigureTasks();
 					return;
 				}
-				let defaultTask: Task;
-				let defaultEntry: TaskQuickPickEntry;
+				let selectedTask: Task;
+				let selectedEntry: TaskQuickPickEntry;
 				for (let task of tasks) {
 					if (task.group === TaskGroup.Build && task.groupType === GroupType.default) {
-						defaultTask = task;
+						selectedTask = task;
 						break;
 					}
 				}
-				if (defaultTask) {
-					tasks = [];
-					defaultEntry = {
-						label: nls.localize('TaskService.defaultBuildTaskExists', '{0} is already marked as the default build task', Task.getQualifiedLabel(defaultTask)),
-						task: defaultTask
+				if (selectedTask) {
+					selectedEntry = {
+						label: nls.localize('TaskService.defaultBuildTaskExists', '{0} is already marked as the default build task', Task.getQualifiedLabel(selectedTask)),
+						task: selectedTask
 					};
 				}
 				this.showIgnoredFoldersMessage().then(() => {
 					this.showQuickPick(tasks,
-						nls.localize('TaskService.pickDefaultBuildTask', 'Select the task to be used as the default build task'), defaultEntry, true).
+						nls.localize('TaskService.pickDefaultBuildTask', 'Select the task to be used as the default build task'), undefined, true, false, selectedEntry).
 						then((task) => {
 							if (task === void 0) {
 								return;
 							}
-							if (task === defaultTask && CustomTask.is(task)) {
+							if (task === selectedTask && CustomTask.is(task)) {
 								this.openConfig(task);
 							}
 							if (!InMemoryTask.is(task)) {
-								this.customize(task, { group: { kind: 'build', isDefault: true } }, true);
+								this.customize(task, { group: { kind: 'build', isDefault: true } }, true).then(() => {
+									if (selectedTask && (task !== selectedTask) && !InMemoryTask.is(selectedTask)) {
+										this.customize(selectedTask, { group: 'build' }, true);
+									}
+								});
 							}
 						});
 				});
@@ -2378,27 +2442,41 @@ class TaskService implements ITaskService {
 			this.tasks().then((tasks => {
 				if (tasks.length === 0) {
 					this.runConfigureTasks();
+					return;
 				}
-				let defaultTask: Task;
+				let selectedTask: Task;
+				let selectedEntry: TaskQuickPickEntry;
+
 				for (let task of tasks) {
 					if (task.group === TaskGroup.Test && task.groupType === GroupType.default) {
-						defaultTask = task;
+						selectedTask = task;
 						break;
 					}
 				}
-				if (defaultTask) {
-					this.notificationService.info(nls.localize('TaskService.defaultTestTaskExists', '{0} is already marked as the default test task.', Task.getQualifiedLabel(defaultTask)));
-					return;
+				if (selectedTask) {
+					selectedEntry = {
+						label: nls.localize('TaskService.defaultTestTaskExists', '{0} is already marked as the default test task.', Task.getQualifiedLabel(selectedTask)),
+						task: selectedTask
+					};
 				}
+
 				this.showIgnoredFoldersMessage().then(() => {
-					this.showQuickPick(tasks, nls.localize('TaskService.pickDefaultTestTask', 'Select the task to be used as the default test task'), undefined, true).then((task) => {
-						if (!task) {
-							return;
-						}
-						if (!InMemoryTask.is(task)) {
-							this.customize(task, { group: { kind: 'test', isDefault: true } }, true);
-						}
-					});
+					this.showQuickPick(tasks,
+						nls.localize('TaskService.pickDefaultTestTask', 'Select the task to be used as the default test task'), undefined, true, false, selectedEntry).then((task) => {
+							if (!task) {
+								return;
+							}
+							if (task === selectedTask && CustomTask.is(task)) {
+								this.openConfig(task);
+							}
+							if (!InMemoryTask.is(task)) {
+								this.customize(task, { group: { kind: 'test', isDefault: true } }, true).then(() => {
+									if (selectedTask && (task !== selectedTask) && !InMemoryTask.is(selectedTask)) {
+										this.customize(selectedTask, { group: 'test' }, true);
+									}
+								});
+							}
+						});
 				});
 			}));
 		} else {
@@ -2426,8 +2504,8 @@ class TaskService implements ITaskService {
 	}
 }
 
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '1_run',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '2_run',
 	command: {
 		id: 'workbench.action.tasks.runTask',
 		title: nls.localize({ key: 'miRunTask', comment: ['&& denotes a mnemonic'] }, "&&Run Task...")
@@ -2435,11 +2513,10 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
 	order: 1
 });
 
-// Removing all gulp task runner commands for carbon
+// {{SQL CARBON EDIT}} - Removing all gulp task runner commands
 /*
-
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '1_run',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '2_run',
 	command: {
 		id: 'workbench.action.tasks.build',
 		title: nls.localize({ key: 'miBuildTask', comment: ['&& denotes a mnemonic'] }, "Run &&Build Task...")
@@ -2448,8 +2525,8 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
 });
 
 // Manage Tasks
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '2_manage',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '3_manage',
 	command: {
 		precondition: TASK_RUNNING_STATE,
 		id: 'workbench.action.tasks.showTasks',
@@ -2458,8 +2535,8 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
 	order: 1
 });
 
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '2_manage',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '3_manage',
 	command: {
 		precondition: TASK_RUNNING_STATE,
 		id: 'workbench.action.tasks.restartTask',
@@ -2468,8 +2545,8 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
 	order: 2
 });
 
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '2_manage',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '3_manage',
 	command: {
 		precondition: TASK_RUNNING_STATE,
 		id: 'workbench.action.tasks.terminate',
@@ -2479,16 +2556,16 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
 });
 
 // Configure Tasks
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '3_configure',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '4_configure',
 	command: {
 		title: nls.localize({ key: 'miConfigureTask', comment: ['&& denotes a mnemonic'] }, "&&Configure Tasks...")
 	},
 	order: 1
 });
 
-MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
-	group: '3_configure',
+MenuRegistry.appendMenuItem(MenuId.MenubarTerminalMenu, {
+	group: '4_configure',
 	command: {
 		id: 'workbench.action.tasks.configureDefaultBuildTask',
 		title: nls.localize({ key: 'miConfigureBuildTask', comment: ['&& denotes a mnemonic'] }, "Configure De&&fault Build Task...")
@@ -2500,6 +2577,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarTasksMenu, {
 MenuRegistry.addCommand({ id: ConfigureTaskAction.ID, title: { value: ConfigureTaskAction.TEXT, original: 'Configure Task' }, category: { value: tasksCategory, original: 'Tasks' } });
 MenuRegistry.addCommand({ id: 'workbench.action.tasks.showLog', title: { value: nls.localize('ShowLogAction.label', "Show Task Log"), original: 'Show Task Log' }, category: { value: tasksCategory, original: 'Tasks' } });
 MenuRegistry.addCommand({ id: 'workbench.action.tasks.runTask', title: { value: nls.localize('RunTaskAction.label', "Run Task"), original: 'Run Task' }, category: { value: tasksCategory, original: 'Tasks' } });
+MenuRegistry.addCommand({ id: 'workbench.action.tasks.reRunTask', title: { value: nls.localize('ReRunTaskAction.label', "Rerun Last Task"), original: 'Rerun Last Task' }, category: { value: tasksCategory, original: 'Tasks' } });
 MenuRegistry.addCommand({ id: 'workbench.action.tasks.restartTask', title: { value: nls.localize('RestartTaskAction.label', "Restart Running Task"), original: 'Restart Running Task' }, category: { value: tasksCategory, original: 'Tasks' } });
 MenuRegistry.addCommand({ id: 'workbench.action.tasks.showTasks', title: { value: nls.localize('ShowTasksAction.label', "Show Running Tasks"), original: 'Show Running Tasks' }, category: { value: tasksCategory, original: 'Tasks' } });
 MenuRegistry.addCommand({ id: 'workbench.action.tasks.terminate', title: { value: nls.localize('TerminateAction.label', "Terminate Task"), original: 'Terminate Task' }, category: { value: tasksCategory, original: 'Tasks' } });
@@ -2515,11 +2593,11 @@ MenuRegistry.addCommand({ id: 'workbench.action.tasks.configureDefaultTestTask',
 
 // Tasks Output channel. Register it before using it in Task Service.
 let outputChannelRegistry = Registry.as<IOutputChannelRegistry>(OutputExt.OutputChannels);
-outputChannelRegistry.registerChannel(TaskService.OutputChannelId, TaskService.OutputChannelLabel);
+outputChannelRegistry.registerChannel({ id: TaskService.OutputChannelId, label: TaskService.OutputChannelLabel, log: false });
 
 
 // Task Service
-registerSingleton(ITaskService, TaskService);
+registerSingleton(ITaskService, TaskService, true);
 
 // Register Quick Open
 const quickOpenRegistry = (Registry.as<IQuickOpenRegistry>(QuickOpenExtensions.Quickopen));
@@ -2568,8 +2646,6 @@ let schema: IJSONSchema = {
 
 import schemaVersion1 from './jsonSchema_v1';
 import schemaVersion2 from './jsonSchema_v2';
-import { TaskDefinitionRegistry } from 'vs/workbench/parts/tasks/common/taskDefinitionRegistry';
-import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 schema.definitions = {
 	...schemaVersion1.definitions,
 	...schemaVersion2.definitions,

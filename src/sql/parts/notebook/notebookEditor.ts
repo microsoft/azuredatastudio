@@ -8,7 +8,6 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
-import { $ } from 'vs/base/browser/builder';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -17,6 +16,8 @@ import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { NotebookModule } from 'sql/parts/notebook/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/parts/notebook/notebook.component';
 import { INotebookParams, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { $ } from 'sql/base/browser/builder';
 
 export class NotebookEditor extends BaseEditor {
 
@@ -27,8 +28,9 @@ export class NotebookEditor extends BaseEditor {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(NotebookEditor.ID, telemetryService, themeService);
+		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 	}
 
 	public get notebookInput(): NotebookInput {

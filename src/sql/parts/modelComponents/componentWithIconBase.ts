@@ -10,7 +10,7 @@ import {
 
 import { IComponent, IComponentDescriptor, IModelStore, IComponentEventArgs, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import * as sqlops from 'sqlops';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';

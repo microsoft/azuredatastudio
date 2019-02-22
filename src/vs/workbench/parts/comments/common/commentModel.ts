@@ -3,14 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IRange } from 'vs/editor/common/core/range';
 import { Comment, CommentThread, CommentThreadChangedEvent } from 'vs/editor/common/modes';
 import { groupBy, firstIndex, flatten } from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { values } from 'vs/base/common/map';
+
+export interface ICommentThreadChangedEvent extends CommentThreadChangedEvent {
+	owner: string;
+}
 
 export class CommentNode {
 	threadId: string;
@@ -55,19 +57,19 @@ export class ResourceWithCommentThreads {
 
 export class CommentsModel {
 	resourceCommentThreads: ResourceWithCommentThreads[];
-	commentThreadsMap: Map<number, ResourceWithCommentThreads[]>;
+	commentThreadsMap: Map<string, ResourceWithCommentThreads[]>;
 
 	constructor() {
 		this.resourceCommentThreads = [];
-		this.commentThreadsMap = new Map<number, ResourceWithCommentThreads[]>();
+		this.commentThreadsMap = new Map<string, ResourceWithCommentThreads[]>();
 	}
 
-	public setCommentThreads(owner: number, commentThreads: CommentThread[]): void {
+	public setCommentThreads(owner: string, commentThreads: CommentThread[]): void {
 		this.commentThreadsMap.set(owner, this.groupByResource(commentThreads));
 		this.resourceCommentThreads = flatten(values(this.commentThreadsMap));
 	}
 
-	public updateCommentThreads(event: CommentThreadChangedEvent): boolean {
+	public updateCommentThreads(event: ICommentThreadChangedEvent): boolean {
 		const { owner, removed, changed, added } = event;
 		if (!this.commentThreadsMap.has(owner)) {
 			return false;
@@ -129,7 +131,7 @@ export class CommentsModel {
 	}
 
 	private groupByResource(commentThreads: CommentThread[]): ResourceWithCommentThreads[] {
-		const resourceCommentThreads = [];
+		const resourceCommentThreads: ResourceWithCommentThreads[] = [];
 		const commentThreadsByResource = new Map<string, ResourceWithCommentThreads>();
 		for (const group of groupBy(commentThreads, CommentsModel._compareURIs)) {
 			commentThreadsByResource.set(group[0].resource, new ResourceWithCommentThreads(URI.parse(group[0].resource), group));

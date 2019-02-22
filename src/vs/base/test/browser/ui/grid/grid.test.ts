@@ -6,6 +6,7 @@
 import * as assert from 'assert';
 
 suite('Grid', function () {
+	// {{SQL CARBON EDIT}}
 	test('getRelativeLocation', function () {
 		assert.equal(0, 0);
 	});

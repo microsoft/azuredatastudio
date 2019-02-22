@@ -2,7 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-/* Disabled pending next vscode merge which allows electron module to be imported during test runs
+import * as sqlops from 'sqlops';
+ /* Disabled pending next vscode merge which allows electron module to be imported during test runs
+ NOTE: Import added above to prevent tests from failing due to the file being empty. Remove when reenabling the tests
 
 'use strict';
 
@@ -16,9 +18,9 @@ import { EnvironmentService } from 'vs/platform/environment/node/environmentServ
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { QueryEditorService } from 'sql/parts/query/services/queryEditorService';
+import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionStore } from 'sql/platform/connection/common/connectionStore';
 import { TestConnectionManagementService } from 'sqltest/stubs/connectionManagementService.test';

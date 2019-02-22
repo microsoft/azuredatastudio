@@ -6,7 +6,7 @@
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Dimension, EventType, $, addDisposableListener } from 'vs/base/browser/dom';
-import { $ as qb } from 'vs/base/browser/builder';
+import { $ as qb } from 'sql/base/browser/builder';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -36,6 +36,7 @@ export interface IPanelTab {
 interface IInternalPanelTab extends IPanelTab {
 	header: HTMLElement;
 	label: HTMLElement;
+	body: HTMLElement;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -155,15 +156,25 @@ export class TabbedPanel extends Disposable implements IThemable {
 			this._tabMap.get(this._shownTab).header.setAttribute('aria-selected', 'false');
 		}
 
+		let prevTab = this._tabMap.get(this._shownTab);
+		if (prevTab) {
+			prevTab.body.remove();
+		}
+
 		this._shownTab = id;
 		this.tabHistory.push(id);
-		qb(this.body).empty();
 		let tab = this._tabMap.get(this._shownTab);
+		if (!tab.body) {
+			tab.body = $('.tab-container');
+			tab.body.style.width = '100%';
+			tab.body.style.height = '100%';
+			tab.view.render(tab.body);
+		}
+		this.body.appendChild(tab.body);
 		this.body.setAttribute('aria-labelledby', tab.identifier);
 		qb(tab.label).addClass('active');
 		qb(tab.header).addClass('active');
 		tab.header.setAttribute('aria-selected', 'true');
-		tab.view.render(this.body);
 		this._onTabChange.fire(id);
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
@@ -172,11 +183,11 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	public removeTab(tab: PanelTabIdentifier) {
 		let actualTab = this._tabMap.get(tab);
-		qb(actualTab.header).destroy();
 		if (actualTab.view.remove) {
 			actualTab.view.remove();
 		}
-		qb(this._tabMap.get(tab).header).destroy();
+		qb(actualTab.header).destroy();
+		qb(actualTab.body).destroy();
 		this._tabMap.delete(tab);
 		if (this._shownTab === tab) {
 			this._shownTab = undefined;
@@ -219,7 +230,10 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	private _layoutCurrentTab(dimension: Dimension): void {
 		if (this._shownTab) {
-			this._tabMap.get(this._shownTab).view.layout(dimension);
+			let tab = this._tabMap.get(this._shownTab);
+			tab.body.style.width = dimension.width + 'px';
+			tab.body.style.height = dimension.height + 'px';
+			tab.view.layout(dimension);
 		}
 	}
 

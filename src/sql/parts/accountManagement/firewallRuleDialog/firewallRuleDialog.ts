@@ -6,7 +6,7 @@
 'use strict';
 
 import 'vs/css!./media/firewallRuleDialog';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -24,9 +24,9 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import * as sqlops from 'sqlops';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { Modal } from 'sql/base/browser/ui/modal/modal';
+import { Modal } from 'sql/workbench/browser/modal/modal';
 import { FirewallRuleViewModel } from 'sql/parts/accountManagement/firewallRuleDialog/firewallRuleViewModel';
-import { attachModalDialogStyler, attachButtonStyler } from 'sql/common/theme/styler';
+import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/platform/accountManagement/common/accountPicker';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';

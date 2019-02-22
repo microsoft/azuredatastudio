@@ -7,7 +7,7 @@
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import {
-	IConnectionManagementService, IConnectionDialogService, INewConnectionParams,
+	IConnectionManagementService, INewConnectionParams,
 	ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionCallbacks,
 	IConnectionParams, IConnectionResult, RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
@@ -46,19 +46,17 @@ import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/commo
 import * as platform from 'vs/platform/registry/common/platform';
 import { Memento } from 'vs/workbench/common/memento';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConfigurationEditingService } from 'vs/workbench/services/configuration/node/configurationEditingService';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
-import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
-import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
-import { ICommandService } from 'vs/platform/commands/common/commands';
+import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -84,22 +82,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	constructor(
 		private _connectionMemento: Memento,
 		private _connectionStore: ConnectionStore,
+		@IStorageService _storageService: IStorageService,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
-		@ICommandService private _commandService: ICommandService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
-		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
-		@IStorageService private _storageService: IStorageService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
 		@IWorkspaceConfigurationService private _workspaceConfigurationService: IWorkspaceConfigurationService,
 		@ICredentialsService private _credentialsService: ICredentialsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IQuickOpenService private _quickOpenService: IQuickOpenService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@IStatusbarService private _statusBarService: IStatusbarService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
-		@IViewletService private _viewletService: IViewletService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
@@ -110,7 +105,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		// _connectionMemento and _connectionStore are in constructor to enable this class to be more testable
 		if (!this._connectionMemento) {
-			this._connectionMemento = new Memento('ConnectionManagement');
+			this._connectionMemento = new Memento('ConnectionManagement', _storageService);
 		}
 		if (!this._connectionStore) {
 			this._connectionStore = new ConnectionStore(_storageService, this._connectionMemento,
@@ -120,7 +115,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// Register Statusbar item
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			ConnectionStatusbarItem,
-			statusbar.StatusbarAlignment.RIGHT,
+			StatusbarAlignment.RIGHT,
 			100 /* High Priority */
 		));
 
@@ -146,6 +141,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onConnectionChanged(() => this.refreshEditorTitles());
 		this.onConnect(() => this.refreshEditorTitles());
 		this.onDisconnect(() => this.refreshEditorTitles());
+	}
+
+	public providerRegistered(providerId: string): boolean {
+		return !!this._providers.get(providerId);
 	}
 
 	// Event Emitters
@@ -592,7 +591,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
 					editor.connectionProfile.databaseName = profile.databaseName;
 					this._editorService.openEditor(editor)
-						.done(() => {
+						.then(() => {
 							if (!profile.databaseName || Utils.isMaster(profile)) {
 								this._angularEventing.sendAngularEvent(editor.uri, AngularEventType.NAV_SERVER);
 							} else {
@@ -1051,7 +1050,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				{ key: nls.localize('connectionService.no', 'No'), value: false }
 			];
 
-			self._quickOpenService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});
