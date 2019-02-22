@@ -5,7 +5,7 @@
 'use strict';
 
 import { CreateClusterModel } from './createClusterModel';
-import { SelectTargetClusterPage } from './pages/targetClusterPage';
+import { SelectTargetClusterPage } from './pages/selectExistingClusterPage';
 import { SummaryPage } from './pages/summaryPage';
 import { SettingsPage } from './pages/settingsPage';
 import { ClusterProfilePage } from './pages/clusterProfilePage';
@@ -13,6 +13,7 @@ import { TestKubeConfigParser } from '../../data/kubeConfigParser';
 import { ExtensionContext } from 'vscode';
 import { WizardBase } from '../wizardBase';
 import * as nls from 'vscode-nls';
+import { SelectTargetClusterTypePage } from './pages/selectTargetClusterTypePage';
 
 const localize = nls.loadMessageBundle();
 
@@ -28,8 +29,10 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel> {
 		let clusterProfilePage = new ClusterProfilePage(this.model, this);
 		let selectTargetClusterPage = new SelectTargetClusterPage(this.model, this);
 		let summaryPage = new SummaryPage(this.model, this);
+		let targetClusterTypePage = new SelectTargetClusterTypePage(this.model, this);
 
 		this.wizard.pages = [
+			targetClusterTypePage.page,
 			settingsPage.page,
 			clusterProfilePage.page,
 			selectTargetClusterPage.page,
