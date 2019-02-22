@@ -12,7 +12,7 @@ import * as sqlops from 'sqlops';
 
 import { ComponentWithIconBase } from 'sql/parts/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
-import { attachButtonStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_TITLE_FOREGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';

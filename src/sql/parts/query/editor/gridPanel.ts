@@ -6,7 +6,7 @@
 
 import * as pretty from 'pretty-data';
 
-import { attachTableStyler } from 'sql/common/theme/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -194,7 +194,7 @@ export class GridPanel extends ViewletPanel {
 				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
 			}
 			return p;
-		}, []).reverse());
+		}, []));
 		this.maximumBodySize = this.tables.reduce((p, c) => {
 			return p + c.maximumSize;
 		}, 0);

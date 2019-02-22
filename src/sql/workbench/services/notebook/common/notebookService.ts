@@ -16,7 +16,7 @@ import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, INotebookModel, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -24,6 +24,7 @@ export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
+export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
 
 export interface INotebookService {
 	_serviceBrand: any;
@@ -34,6 +35,7 @@ export interface INotebookService {
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
+	readonly languageMagics: ILanguageMagic[];
 	/**
 	 * Register a metadata provider
 	 */
@@ -93,6 +95,7 @@ export interface INotebookParams extends IBootstrapParams {
 	isTrusted: boolean;
 	profile?: IConnectionProfile;
 	modelFactory?: ModelFactory;
+	connectionProfileId?: string;
 }
 
 export interface INotebookEditor {

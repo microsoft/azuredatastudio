@@ -6,24 +6,10 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { FileBrowserTree } from 'sql/parts/fileBrowser/common/fileBrowserTree';
-import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
+import { FileBrowserTree } from 'sql/workbench/services/fileBrowser/common/fileBrowserTree';
+import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-
-export const IFileBrowserDialogController = createDecorator<IFileBrowserDialogController>('fileBrowserDialogService');
-export interface IFileBrowserDialogController {
-	_serviceBrand: any;
-	/**
-	 * Show file browser dialog
-	 */
-	showDialog(ownerUri: string,
-		expandPath: string,
-		fileFilters: { label: string, filters: string[] }[],
-		fileValidationServiceType: string,
-		isWide: boolean,
-		handleOnOk: (path: string) => void): void;
-}
 
 export const IFileBrowserService = createDecorator<IFileBrowserService>('fileBrowserService');
 export interface IFileBrowserService {

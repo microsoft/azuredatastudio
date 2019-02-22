@@ -96,12 +96,13 @@ describe('notebook model', function(): void {
             connectionService: queryConnectionService.object,
             providerId: 'SQL',
             standardKernels: [{ name: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
+            cellMagicMapper: undefined,
             defaultKernel: undefined,
             layoutChanged: undefined,
             capabilitiesService: capabilitiesService.object
         };
         mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
-        mockClientSession.setup(c => c.initialize(TypeMoq.It.isAny())).returns(() => {
+        mockClientSession.setup(c => c.initialize()).returns(() => {
             return Promise.resolve();
         });
         mockClientSession.setup(c => c.ready).returns(() => sessionReady.promise);
@@ -203,10 +204,12 @@ describe('notebook model', function(): void {
         mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContentOneCell));
         notebookManagers[0].contentManager = mockContentManager.object;
         let kernelChangedEmitter: Emitter<nb.IKernelChangedArgs> = new Emitter<nb.IKernelChangedArgs>();
+        let statusChangedEmitter: Emitter<nb.ISession> = new Emitter<nb.ISession>();
 
         mockClientSession.setup(c => c.isInErrorState).returns(() => false);
         mockClientSession.setup(c => c.isReady).returns(() => true);
         mockClientSession.setup(c => c.kernelChanged).returns(() => kernelChangedEmitter.event);
+        mockClientSession.setup(c => c.statusChanged).returns(() => statusChangedEmitter.event);
 
         queryConnectionService.setup(c => c.getActiveConnections(TypeMoq.It.isAny())).returns(() => null);
 

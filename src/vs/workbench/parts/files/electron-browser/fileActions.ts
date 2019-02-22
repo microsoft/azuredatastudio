@@ -54,8 +54,8 @@ import { CLOSE_EDITORS_AND_GROUP_COMMAND_ID } from 'vs/workbench/browser/parts/e
 
 // {{SQL CARBON EDIT}}
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 
 export interface IEditableData {

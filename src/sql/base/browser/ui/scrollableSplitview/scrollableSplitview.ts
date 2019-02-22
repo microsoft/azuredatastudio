@@ -221,6 +221,7 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 
 		this.state = State.Busy;
 
+		let currentIndex = index;
 		for (let i = 0; i < views.length; i++) {
 			let size: number | Sizing;
 			if (Array.isArray(sizes)) {
@@ -267,9 +268,9 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 			}
 
 			const item: IViewItem = { onAdd, onRemove, view, container, size: viewSize, layout, disposable, height: viewSize, top: 0, width: 0 };
-			this.viewItems.splice(index, 0, item);
+			this.viewItems.splice(currentIndex, 0, item);
 
-			this.onInsertItems(new ArrayIterator([item]), index > 0 ? this.viewItems[index - 1].view.id : undefined);
+			this.onInsertItems(new ArrayIterator([item]), currentIndex > 0 ? this.viewItems[currentIndex - 1].view.id : undefined);
 
 			// Add sash
 			if (this.options.enableResizing && this.viewItems.length > 1) {
@@ -296,10 +297,11 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 				const disposable = combinedDisposable([onStartDisposable, onChangeDisposable, onEndDisposable, onDidResetDisposable, sash]);
 				const sashItem: ISashItem = { sash, disposable };
 
-				this.sashItems.splice(index - 1, 0, sashItem);
+				this.sashItems.splice(currentIndex - 1, 0, sashItem);
 			}
 
 			container.appendChild(view.element);
+			currentIndex++;
 		}
 
 		let highPriorityIndex: number | undefined;
@@ -314,6 +316,14 @@ export class ScrollableSplitView extends HeightMap implements IDisposable {
 		if (!types.isArray(sizes) && sizes.type === 'distribute') {
 			this.distributeViewSizes();
 		}
+
+		// Re-render the views. Set lastRenderTop and lastRenderHeight to undefined since
+		// this isn't actually scrolling up or down
+		let scrollTop = this.lastRenderTop;
+		let viewHeight = this.lastRenderHeight;
+		this.lastRenderTop = undefined;
+		this.lastRenderHeight = undefined;
+		this.render(scrollTop, viewHeight);
 	}
 
 	addView(view: IView, size: number | Sizing, index = this.viewItems.length): void {

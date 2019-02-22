@@ -74,11 +74,11 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	// UI Components
 
 	// Dialogs
-	private fileBrowserDialog: sqlops.window.modelviewdialog.Dialog;
+	private fileBrowserDialog: sqlops.window.Dialog;
 
 	// Dialog tabs
-	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private advancedTab: sqlops.window.modelviewdialog.DialogTab;
+	private generalTab: sqlops.window.DialogTab;
+	private advancedTab: sqlops.window.DialogTab;
 
 	//Input boxes
 	private nameTextBox: sqlops.InputBoxComponent;
@@ -138,8 +138,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	}
 
 	private initializeUIComponents() {
-		this.generalTab = sqlops.window.modelviewdialog.createTab(this.GeneralTabText);
-		this.advancedTab = sqlops.window.modelviewdialog.createTab(this.AdvancedTabText);
+		this.generalTab = sqlops.window.createTab(this.GeneralTabText);
+		this.advancedTab = sqlops.window.createTab(this.AdvancedTabText);
 		this.dialog.content = [this.generalTab, this.advancedTab];
 	}
 
@@ -425,8 +425,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 	private openFileBrowserDialog() {
 		let fileBrowserTitle = this.FileBrowserDialogTitle + `${this.server}`;
-		this.fileBrowserDialog = sqlops.window.modelviewdialog.createDialog(fileBrowserTitle);
-		let fileBrowserTab = sqlops.window.modelviewdialog.createTab('File Browser');
+		this.fileBrowserDialog = sqlops.window.createModelViewDialog(fileBrowserTitle);
+		let fileBrowserTab = sqlops.window.createTab('File Browser');
 		this.fileBrowserDialog.content =  [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this.fileBrowserTree = view.modelBuilder.fileBrowserTree()
@@ -470,7 +470,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		});
 		this.fileBrowserDialog.okButton.label = this.OkButtonText;
 		this.fileBrowserDialog.cancelButton.label = this.CancelButtonText;
-		sqlops.window.modelviewdialog.openDialog(this.fileBrowserDialog);
+		sqlops.window.openDialog(this.fileBrowserDialog);
 	}
 
 	private createTSQLOptions(view) {

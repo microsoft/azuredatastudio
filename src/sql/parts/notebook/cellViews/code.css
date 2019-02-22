@@ -19,6 +19,10 @@ code-component .toolbar {
 	orientation: portrait
 }
 
+code-component .toolbar.markdown {
+	display: none;
+}
+
 code-component .toolbar .carbon-taskbar {
 	position: sticky;
 	top: 0px;

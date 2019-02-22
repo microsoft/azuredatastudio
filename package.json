@@ -1,6 +1,6 @@
 {
   "name": "azuredatastudio",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "distro": "8c3e97e3425cc9814496472ab73e076de2ba99ee",
   "author": {
     "name": "Microsoft Corporation"
@@ -50,7 +50,7 @@
     "gc-signals": "^0.0.1",
     "getmac": "1.4.1",
     "graceful-fs": "4.1.11",
-    "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.4",
+    "html-query-plan": "git://github.com/anthonydresser/html-query-plan.git#2.6",
     "http-proxy-agent": "^2.1.0",
     "https-proxy-agent": "^2.2.1",
     "iconv-lite": "0.4.23",

@@ -12,9 +12,9 @@ import * as sqlops from 'sqlops';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/parts/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { FileBrowserViewModel } from '../fileBrowser/fileBrowserViewModel';
-import { FileNode } from 'sql/parts/fileBrowser/common/fileNode';
-import { FileBrowserTreeView } from '../fileBrowser/fileBrowserTreeView';
+import { FileBrowserViewModel } from 'sql/workbench/services/fileBrowser/common/fileBrowserViewModel';
+import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
+import { FileBrowserTreeView } from 'sql/workbench/services/fileBrowser/browser/fileBrowserTreeView';
 
 @Component({
 	selector: 'modelview-fileBrowserTree',

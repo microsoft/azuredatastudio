@@ -18,6 +18,7 @@ import { CellTypes, CellType, NotebookChangeType } from 'sql/parts/notebook/mode
 import { ICellModel } from 'sql/parts/notebook/models/modelInterfaces';
 import { NotebookModel } from 'sql/parts/notebook/models/notebookModel';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
 
 
@@ -48,12 +49,12 @@ export class CellModel implements ICellModel {
 			this._source = '';
 		}
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
-		this.ensureDefaultLanguage();
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
 		} else {
 			this._isTrusted = false;
 		}
+		this.createUri();
 	}
 
 	public equals(other: ICellModel) {
@@ -148,10 +149,16 @@ export class CellModel implements ICellModel {
 	}
 
 	public get language(): string {
-		return this._language;
+		if (this._cellType === CellTypes.Markdown) {
+			return 'markdown';
+		}
+		if (this._language) {
+			return this._language;
+		}
+		return this.options.notebook.language;
 	}
 
-	public set language(newLanguage: string) {
+	public setOverrideLanguage(newLanguage: string) {
 		this._language = newLanguage;
 	}
 
@@ -201,7 +208,7 @@ export class CellModel implements ICellModel {
 					}, false);
 					this.setFuture(future as FutureInternal);
 					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
-					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any> await future.done;
+					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
 					if (result && result.content) {
 						this.executionCount = result.content.execution_count;
 						if (result.content.status !== 'ok') {
@@ -252,7 +259,7 @@ export class CellModel implements ICellModel {
 
 	private sendNotification(notificationService: INotificationService, severity: Severity, message: string): void {
 		if (notificationService) {
-			notificationService.notify({ severity: severity, message: message});
+			notificationService.notify({ severity: severity, message: message });
 		}
 	}
 
@@ -380,7 +387,7 @@ export class CellModel implements ICellModel {
 					}
 				}
 			}
-			catch (e) {}
+			catch (e) { }
 		}
 		return output;
 	}
@@ -399,7 +406,7 @@ export class CellModel implements ICellModel {
 		};
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language,
-			cellJson.outputs = this._outputs;
+				cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount;
 		}
 		return cellJson as nb.ICellContents;
@@ -435,76 +442,20 @@ export class CellModel implements ICellModel {
 		this._outputs.push(output);
 	}
 
-  /**
-   * Normalize an output.
-   */
-  private _normalize(value: nb.ICellOutput): void {
-	if (notebookUtils.isStream(value)) {
-	  if (Array.isArray(value.text)) {
-		value.text = (value.text as string[]).join('\n');
-	  }
-	}
-  }
-
-	private get languageInfo(): nb.ILanguageInfo {
-		if (this._options && this._options.notebook && this._options.notebook.languageInfo) {
-			return this._options.notebook.languageInfo;
-		}
-		return undefined;
-	}
-
 	/**
-	 * Ensures there is a default language set, if none was already defined.
-	 * Will read information from the overall Notebook (passed as options to the model), or
-	 * if all else fails default back to python.
-	 *
+	 * Normalize an output.
 	 */
-	private ensureDefaultLanguage(): void {
-		// See if language is already set / is known based on cell type
-		if (this.hasLanguage()) {
-			return;
-		}
-		if (this._cellType === CellTypes.Markdown) {
-			this._language = 'markdown';
-			return;
-		}
-
-		// try set it based on overall Notebook language
-		this.trySetLanguageFromLangInfo();
-
-		// fallback to python
-		if (!this._language) {
-			this._language = 'python';
-		}
-	}
-
-	private trySetLanguageFromLangInfo() {
-		// In languageInfo, set the language to the "name" property
-		// If the "name" property isn't defined, check the "mimeType" property
-		// Otherwise, default to python as the language
-		let languageInfo = this.languageInfo;
-		if (languageInfo) {
-			if (languageInfo.codemirror_mode) {
-				let codeMirrorMode: nb.ICodeMirrorMode = <nb.ICodeMirrorMode>(languageInfo.codemirror_mode);
-				if (codeMirrorMode && codeMirrorMode.name) {
-					this._language = codeMirrorMode.name;
-				}
-			} else if (languageInfo.mimetype) {
-				this._language = languageInfo.mimetype;
-			} else if (languageInfo.name) {
-				this._language = languageInfo.name;
-			}
-		}
-
-		if (this._language) {
-			let mimeTypePrefix = 'x-';
-			if (this._language.includes(mimeTypePrefix)) {
-				this._language = this._language.replace(mimeTypePrefix, '');
+	private _normalize(value: nb.ICellOutput): void {
+		if (notebookUtils.isStream(value)) {
+			if (Array.isArray(value.text)) {
+				value.text = (value.text as string[]).join('\n');
 			}
 		}
 	}
 
-	private hasLanguage(): boolean {
-		return !!this._language;
+	private createUri(): void {
+		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
+		// Use this to set the internal (immutable) and public (shared with extension) uri properties
+		this.cellUri = uri;
 	}
 }

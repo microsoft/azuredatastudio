@@ -149,13 +149,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionManagementService = new ConnectionManagementService(
 			undefined,
 			connectionStore.object,
+			undefined,
 			connectionDialogService.object,
 			undefined,
 			undefined,
-			undefined,
 			workbenchEditorService.object,
-			undefined,
-			undefined,
 			undefined,
 			workspaceConfigurationServiceMock.object,
 			undefined,
@@ -164,7 +162,6 @@ suite('SQL ConnectionManagementService tests', () => {
 			editorGroupService.object,
 			undefined,
 			resourceProviderStubMock.object,
-			undefined,
 			undefined,
 			accountManagementService.object
 		);
