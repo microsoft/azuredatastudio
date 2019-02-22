@@ -20,6 +20,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { bootstrapAngular, IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { CREATELOGIN_SELECTOR } from 'sql/parts/admin/security/createLogin.component';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export class CreateLoginEditor extends BaseEditor {
 
@@ -32,9 +33,10 @@ export class CreateLoginEditor extends BaseEditor {
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IMetadataService private _metadataService: IMetadataService,
 		@IScriptingService private _scriptingService: IScriptingService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(CreateLoginEditor.ID, telemetryService, themeService);
+		super(CreateLoginEditor.ID, telemetryService, themeService, storageService);
 	}
 
 	/**

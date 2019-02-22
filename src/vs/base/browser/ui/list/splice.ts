@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { ISpliceable } from 'vs/base/common/sequence';
 
 export interface ISpreadSpliceable<T> {

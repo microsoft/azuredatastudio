@@ -59,7 +59,7 @@ export class OEAction extends ExecuteCommandAction {
 		super(id, label, commandService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
 
@@ -178,7 +178,7 @@ export class OEScriptSelectAction extends ScriptSelectAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -213,7 +213,7 @@ export class OEEditDataAction extends EditDataAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -247,7 +247,7 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -283,7 +283,7 @@ export class OEScriptExecuteAction extends ScriptExecuteAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -319,7 +319,7 @@ export class OEScriptAlterAction extends ScriptAlterAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks
@@ -355,7 +355,7 @@ export class OEScriptDeleteAction extends ScriptDeleteAction {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
 
-	public async run(actionContext: any): TPromise<boolean> {
+	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			//set objectExplorerTreeNode for context menu clicks

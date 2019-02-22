@@ -39,7 +39,7 @@ export class SqlClusterConnection {
 	public get connection(): sqlops.connection.Connection { return this._connection; }
 	public get profile(): sqlops.IConnectionProfile { return this._profile; }
 	public get host(): string { return this._host; }
-	public get port(): string { return this._port || constants.defaultKnoxPort; }
+	public get port(): number { return this._port ? Number.parseInt(this._port) : constants.defaultKnoxPort; }
 	public get user(): string { return this._user; }
 	public get password(): string { return this._password; }
 

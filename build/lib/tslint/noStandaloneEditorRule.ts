@@ -43,7 +43,8 @@ class NoStandaloneEditorRuleWalker extends Lint.RuleWalker {
 		}
 	}
 
-	private _validateImport(path: string, node: ts.Node): void {
+	// {{SQL CARBON EDIT}} - Rename node argument to _node to prevent errors since it is not used
+	private _validateImport(path: string, _node: ts.Node): void {
 		// remove quotes
 		path = path.slice(1, -1);
 

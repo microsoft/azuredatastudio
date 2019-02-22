@@ -11,11 +11,10 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/node/extHostTypes';
 import { localize } from 'vs/nls';
-import URI, { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { ExtHostNotebookShape, MainThreadNotebookShape, SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { Event, Emitter } from 'vs/base/common/event';
 
 type Adapter = sqlops.nb.NotebookProvider | sqlops.nb.NotebookManager | sqlops.nb.ISession | sqlops.nb.IKernel | sqlops.nb.IFuture;
 

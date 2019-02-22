@@ -3,22 +3,20 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as arrays from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { Event, chain, anyEvent, debounceEvent } from 'vs/base/common/event';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, IExtensionTipsService, IExtensionIdentifier, EnablementState } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, IExtensionTipsService, IExtensionIdentifier, EnablementState, InstallOperation } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { areSameExtensions, adoptToGalleryExtensionId, getGalleryExtensionIdFromLocal } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { getIdAndVersionFromLocalExtensionId } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 import { Severity, INotificationService } from 'vs/platform/notification/common/notification';
+import product from 'vs/platform/node/product';
 
 export interface IExtensionStatus {
 	identifier: IExtensionIdentifier;
@@ -41,13 +39,13 @@ export class KeymapExtensions implements IWorkbenchContribution {
 		this.disposables.push(
 			lifecycleService.onShutdown(() => this.dispose()),
 			instantiationService.invokeFunction(onExtensionChanged)((identifiers => {
-				TPromise.join(identifiers.map(identifier => this.checkForOtherKeymaps(identifier)))
+				Promise.all(identifiers.map(identifier => this.checkForOtherKeymaps(identifier)))
 					.then(null, onUnexpectedError);
 			}))
 		);
 	}
 
-	private checkForOtherKeymaps(extensionIdentifier: IExtensionIdentifier): TPromise<void> {
+	private checkForOtherKeymaps(extensionIdentifier: IExtensionIdentifier): Promise<void> {
 		return this.instantiationService.invokeFunction(getInstalledExtensions).then(extensions => {
 			const keymaps = extensions.filter(extension => isKeymapExtension(this.tipsService, extension));
 			const extension = arrays.first(keymaps, extension => stripVersion(extension.identifier.id) === extensionIdentifier.id);
@@ -77,7 +75,7 @@ export class KeymapExtensions implements IWorkbenchContribution {
 			*/
 			this.telemetryService.publicLog('disableOtherKeymaps', telemetryData);
 			if (confirmed) {
-				TPromise.join(oldKeymaps.map(keymap => {
+				Promise.all(oldKeymaps.map(keymap => {
 					return this.extensionEnablementService.setEnablement(keymap.local, EnablementState.Disabled);
 				}));
 			}
@@ -102,8 +100,11 @@ export class KeymapExtensions implements IWorkbenchContribution {
 export function onExtensionChanged(accessor: ServicesAccessor): Event<IExtensionIdentifier[]> {
 	const extensionService = accessor.get(IExtensionManagementService);
 	const extensionEnablementService = accessor.get(IExtensionEnablementService);
+	const onDidInstallExtension = chain(extensionService.onDidInstallExtension)
+		.filter(e => e.operation === InstallOperation.Install)
+		.event;
 	return debounceEvent<IExtensionIdentifier, IExtensionIdentifier[]>(anyEvent(
-		chain(anyEvent(extensionService.onDidInstallExtension, extensionService.onDidUninstallExtension))
+		chain(anyEvent(onDidInstallExtension, extensionService.onDidUninstallExtension))
 			.map(e => ({ id: stripVersion(e.identifier.id), uuid: e.identifier.uuid }))
 			.event,
 		extensionEnablementService.onEnablementChanged
@@ -117,7 +118,7 @@ export function onExtensionChanged(accessor: ServicesAccessor): Event<IExtension
 	});
 }
 
-export function getInstalledExtensions(accessor: ServicesAccessor): TPromise<IExtensionStatus[]> {
+export function getInstalledExtensions(accessor: ServicesAccessor): Promise<IExtensionStatus[]> {
 	const extensionService = accessor.get(IExtensionManagementService);
 	const extensionEnablementService = accessor.get(IExtensionEnablementService);
 	return extensionService.getInstalled().then(extensions => {
@@ -141,4 +142,9 @@ export function isKeymapExtension(tipsService: IExtensionTipsService, extension:
 
 function stripVersion(id: string): string {
 	return getIdAndVersionFromLocalExtensionId(id).id;
+}
+
+export function getKeywordsForExtension(extension: string): string[] {
+	const keywords = product.extensionKeywords || {};
+	return keywords[extension] || [];
 }

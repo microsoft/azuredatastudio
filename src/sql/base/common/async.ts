@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { ITask } from 'vs/base/common/async';
+import { ITask, createCancelablePromise, CancelablePromise } from 'vs/base/common/async';
 import { Promise, TPromise, ValueCallback } from 'vs/base/common/winjs.base';
 
 /**
@@ -16,8 +16,8 @@ import { Promise, TPromise, ValueCallback } from 'vs/base/common/winjs.base';
  */
 export class MultipleRequestDelayer<T> {
 
-	private timeout: number;
-	private completionPromise: Promise;
+	private timeout: NodeJS.Timer;
+	private completionPromise: CancelablePromise<any>;
 	private onSuccess: ValueCallback;
 	private requests: number = 0;
 	private task: ITask<T>;
@@ -39,18 +39,14 @@ export class MultipleRequestDelayer<T> {
 		}
 
 		if (!this.completionPromise) {
-			this.completionPromise = new TPromise((c) => {
-				this.onSuccess = c;
-			}, () => {
-				// no-op
-			}).then(() => {
+			this.completionPromise = createCancelablePromise<T>(() => new Promise(resolve => this.onSuccess = resolve).then(() => {
 				this.completionPromise = null;
 				this.onSuccess = null;
 				const task = this.task;
 				this.task = null;
 
 				return task();
-			});
+			}));
 		}
 
 		this.timeout = setTimeout(() => {

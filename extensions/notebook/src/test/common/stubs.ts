@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 
 export class MockExtensionContext implements vscode.ExtensionContext {
 	logger: undefined;
-	logDirectory: './';
+	logPath: './';
 	subscriptions: { dispose(): any; }[];
 	workspaceState: vscode.Memento;
 	globalState: vscode.Memento;

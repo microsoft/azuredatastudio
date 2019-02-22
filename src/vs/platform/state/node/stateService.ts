@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as path from 'path';
 import * as fs from 'fs';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -15,19 +13,20 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 export class FileStorage {
 
-	private database: object = null;
+	private _lazyDatabase: object | null = null;
 
 	constructor(private dbPath: string, private onError: (error) => void) { }
 
-	private ensureLoaded(): void {
-		if (!this.database) {
-			this.database = this.loadSync();
+	private get database(): object {
+		if (!this._lazyDatabase) {
+			this._lazyDatabase = this.loadSync();
 		}
+		return this._lazyDatabase;
 	}
 
-	getItem<T>(key: string, defaultValue?: T): T {
-		this.ensureLoaded();
-
+	getItem<T>(key: string, defaultValue: T): T;
+	getItem<T>(key: string, defaultValue?: T): T | undefined;
+	getItem<T>(key: string, defaultValue?: T): T | undefined {
 		const res = this.database[key];
 		if (isUndefinedOrNull(res)) {
 			return defaultValue;
@@ -37,8 +36,6 @@ export class FileStorage {
 	}
 
 	setItem(key: string, data: any): void {
-		this.ensureLoaded();
-
 		// Remove an item when it is undefined or null
 		if (isUndefinedOrNull(data)) {
 			return this.removeItem(key);
@@ -56,8 +53,6 @@ export class FileStorage {
 	}
 
 	removeItem(key: string): void {
-		this.ensureLoaded();
-
 		// Only update if the key is actually present (not undefined)
 		if (!isUndefined(this.database[key])) {
 			this.database[key] = void 0;
@@ -96,7 +91,9 @@ export class StateService implements IStateService {
 		this.fileStorage = new FileStorage(path.join(environmentService.userDataPath, 'storage.json'), error => logService.error(error));
 	}
 
-	getItem<T>(key: string, defaultValue?: T): T {
+	getItem<T>(key: string, defaultValue: T): T;
+	getItem<T>(key: string, defaultValue: T | undefined): T | undefined;
+	getItem<T>(key: string, defaultValue?: T): T | undefined {
 		return this.fileStorage.getItem(key, defaultValue);
 	}
 

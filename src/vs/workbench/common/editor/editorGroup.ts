@@ -3,11 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { Event, Emitter, once } from 'vs/base/common/event';
 import { Extensions, IEditorInputFactoryRegistry, EditorInput, toResource, IEditorIdentifier, IEditorCloseEvent, GroupIdentifier, SideBySideEditorInput, CloseDirection } from 'vs/workbench/common/editor';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { dispose, IDisposable, Disposable } from 'vs/base/common/lifecycle';
@@ -632,13 +630,13 @@ export class EditorGroup extends Disposable {
 		editors.forEach(e => {
 			let factory = registry.getEditorInputFactory(e.getTypeId());
 			if (factory) {
-
 				// {{SQL CARBON EDIT}}
 				// don't serialize unmodified unitited files
 				if (e instanceof UntitledEditorInput && !e.isDirty()
 						&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
+				// {{SQL CARBON EDIT}} - End
 
 				let value = factory.serialize(e);
 				if (typeof value === 'string') {

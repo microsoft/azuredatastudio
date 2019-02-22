@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import { extHostCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Disposable } from 'vs/base/common/lifecycle';

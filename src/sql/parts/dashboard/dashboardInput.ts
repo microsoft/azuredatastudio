@@ -6,7 +6,7 @@
 import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { IDisposable } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 
@@ -47,7 +47,7 @@ export class DashboardInput extends EditorInput {
 		// vscode has a comment that Mode's will eventually be removed (not sure the state of this comment)
 		// so this might be able to be undone when that happens
 		if (!model.getModel(this.getResource())) {
-			model.createModel('', modeService.getMode('dashboard'), this.getResource());
+			model.createModel('', modeService.create('dashboard'), this.getResource());
 		}
 		this._initializedPromise = _connectionService.connectIfNotConnected(_connectionProfile, 'dashboard').then(
 			u => {

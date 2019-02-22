@@ -248,9 +248,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
-			this._modeService.getOrCreateMode(this.cellModel.language).then((modeValue) => {
-				this._modelService.setMode(this._editorModel, modeValue);
-			});
+			let modeValue = this._modeService.create(this.cellModel.language);
+			this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
 

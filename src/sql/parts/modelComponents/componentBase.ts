@@ -18,8 +18,8 @@ import { DashboardServiceInterface } from 'sql/parts/dashboard/services/dashboar
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ModelComponentWrapper } from 'sql/parts/modelComponents/modelComponentWrapper.component';
-import URI from 'vs/base/common/uri';
-import { Builder } from 'vs/base/browser/builder';
+import { URI } from 'vs/base/common/uri';
+import { Builder } from 'sql/base/browser/builder';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 import { createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';

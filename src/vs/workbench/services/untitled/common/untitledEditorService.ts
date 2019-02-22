@@ -2,9 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { createDecorator, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as arrays from 'vs/base/common/arrays';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -189,7 +188,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 			.map(i => i.getResource());
 	}
 
-	loadOrCreate(options: IModelLoadOrCreateOptions = Object.create(null)): TPromise<UntitledEditorModel> {
+	loadOrCreate(options: IModelLoadOrCreateOptions = Object.create(null)): Thenable<UntitledEditorModel> {
 		return this.createOrGet(options.resource, options.modeId, options.initialValue, options.encoding, options.useResourcePath).resolve();
 	}
 

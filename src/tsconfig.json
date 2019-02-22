@@ -17,6 +17,9 @@
 		"outDir": "../out",
 		"typeRoots": [
 			"typings"
+		],
+		"types": [
+			"mocha"
 		]
 	},
 	"exclude": [

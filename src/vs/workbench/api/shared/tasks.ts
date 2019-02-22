@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { UriComponents } from 'vs/base/common/uri';
 
@@ -17,6 +16,11 @@ export interface TaskPresentationOptionsDTO {
 	focus?: boolean;
 	panel?: number;
 	showReuseMessage?: boolean;
+	clear?: boolean;
+}
+
+export interface RunOptionsDTO {
+	reevaluateOnRerun?: boolean;
 }
 
 export interface ExecutionOptionsDTO {
@@ -82,6 +86,7 @@ export interface TaskDTO {
 	presentationOptions: TaskPresentationOptionsDTO;
 	problemMatchers: string[];
 	hasDefinedMatchers: boolean;
+	runOptions: RunOptionsDTO;
 }
 
 export interface TaskExecutionDTO {
@@ -107,7 +112,6 @@ export interface TaskFilterDTO {
 
 export interface TaskSystemInfoDTO {
 	scheme: string;
-	host: string;
-	port: number;
+	authority: string;
 	platform: string;
 }

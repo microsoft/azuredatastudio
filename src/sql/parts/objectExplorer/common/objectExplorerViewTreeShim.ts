@@ -21,6 +21,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { hash } from 'vs/base/common/hash';
 import { generateUuid } from 'vs/base/common/uuid';
+import { URI } from 'vs/base/common/uri';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -137,9 +138,11 @@ export class OEShimService implements IOEShimService {
 			parentHandle: node.parent.id,
 			handle,
 			collapsibleState: node.isAlwaysLeaf ? TreeItemCollapsibleState.None : TreeItemCollapsibleState.Collapsed,
-			label: node.label,
-			icon,
-			iconDark,
+			label: {
+				label: node.label
+			},
+			icon: URI.parse(icon),
+			iconDark: URI.parse(iconDark),
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
 			payload: node.payload || parentNode.payload,

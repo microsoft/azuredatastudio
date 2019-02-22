@@ -158,6 +158,11 @@ export default class CommandHandler implements vscode.Disposable {
 		let navigationResult = await this.findConflictForNavigation(editor, direction);
 
 		if (!navigationResult) {
+			// Check for autoNavigateNextConflict, if it's enabled(which indicating no conflict remain), then do not show warning
+			const mergeConflictConfig = vscode.workspace.getConfiguration('merge-conflict');
+			if (mergeConflictConfig.get<boolean>('autoNavigateNextConflict.enabled')) {
+				return;
+			}
 			vscode.window.showWarningMessage(localize('noConflicts', 'No merge conflicts found in this file'));
 			return;
 		}
@@ -196,6 +201,13 @@ export default class CommandHandler implements vscode.Disposable {
 		// Tracker can forget as we know we are going to do an edit
 		this.tracker.forget(editor.document);
 		conflict.commitEdit(type, editor);
+
+		// navigate to the next merge conflict
+		const mergeConflictConfig = vscode.workspace.getConfiguration('merge-conflict');
+		if (mergeConflictConfig.get<boolean>('autoNavigateNextConflict.enabled')) {
+			this.navigateNext(editor);
+		}
+
 	}
 
 	private async acceptAll(type: interfaces.CommitType, editor: vscode.TextEditor): Promise<void> {
