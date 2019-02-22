@@ -33,7 +33,7 @@ steps:
   displayName: 'Scripts'
 
 - script: |
-    ./scripts/test.sh --reporter mocha-junit-reporter
+    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
   displayName: 'Tests'
 
 - task: PublishTestResults@2
