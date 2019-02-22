@@ -37,6 +37,7 @@ import { equalsIgnoreCase } from 'vs/base/common/strings';
 
 import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { ITreeItem } from 'sql/workbench/common/views';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 
 class Root implements ITreeItem {
 	constructor(public readonly childProvider: string) { }
@@ -77,6 +78,7 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 		private id: string,
 		private container: ViewContainer,
 		@IExtensionService private extensionService: IExtensionService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IWorkbenchThemeService private themeService: IWorkbenchThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
@@ -168,7 +170,14 @@ export class CustomTreeViewer extends Disposable implements ITreeViewer {
 	private createTree() {
 		this.treeContainer = DOM.$('.tree-explorer-viewlet-tree-view');
 		const actionItemProvider = (action: IAction) => action instanceof MenuItemAction ? this.instantiationService.createInstance(ContextAwareMenuItemActionItem, action) : undefined;
-		const menus = this.instantiationService.createInstance(TreeMenus, this.id);
+
+		const servicesCollection: ServiceCollection = new ServiceCollection();
+		const scopedContext = this.contextKeyService.createScoped();
+		scopedContext.createKey('viewlet', 'dataExplorer');
+		servicesCollection.set(IContextKeyService, scopedContext);
+		const menuinstant = this.instantiationService.createChild(servicesCollection);
+
+		const menus = menuinstant.createInstance(TreeMenus, this.id);
 		const dataSource = this.instantiationService.createInstance(TreeDataSource, this.container);
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, menus, actionItemProvider);
 		const controller = this.instantiationService.createInstance(TreeController, this.id, menus);
