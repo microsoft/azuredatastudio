@@ -41,8 +41,6 @@ declare module 'sqlops' {
 
 		export function registerDacFxServicesProvider(provider: DacFxServicesProvider): vscode.Disposable;
 
-		export function registerCmsServiceProvider(provider: CmsServiceProvider): vscode.Disposable;
-
 		/**
 		 * An [event](#Event) which fires when the specific flavor of a language used in DMP
 		 * connections has changed. And example is for a SQL connection, the flavor changes
@@ -1703,20 +1701,6 @@ declare module 'sqlops' {
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
-	export interface CmsServiceProvider extends DataProvider {
-		createCmsServer(name: string, description: string, connectiondetails: ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
-
-		getRegisteredServers(ownerUri: string, relativePath: string): Thenable<ListRegisteredServersResult>;
-
-		addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: ConnectionInfo): Thenable<boolean>;
-
-		removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string):Thenable<boolean>;
-
-		addServerGroup(ownerUri: string, relativePath: string, name: string, description:string):Thenable<boolean>;
-
-		removeServerGroup(ownerUri: string, relativePath: string, name: string):Thenable<boolean>;
-	}
-
 	// Security service interfaces ------------------------------------------------------------------------
 	export interface CredentialInfo {
 		id: number;
@@ -2416,27 +2400,4 @@ declare module 'sqlops' {
 		*/
 		export function registerTask(task: string, callback: ITaskHandler, thisArg?: any): vscode.Disposable;
 	}
-
-	// CMS interfaces -------------------------------------------------------------------------------------------
-
-	export interface RegisteredServerResult {
-		name: string;
-		serverName: string;
-		description: string;
-		connectionDetails: ConnectionInfo;
-		relativePath: string;
-	}
-
-	export interface ServerGroupResult {
-		name: string;
-		description: string;
-		relativePath: string;
-	}
-
-	export interface ListRegisteredServersResult {
-		registeredServersList: Array<RegisteredServerResult>;
-		servergroupsList: Array<ServerGroupResult>;
-	}
-
-	//CMS interfaces ---------------------------------------------------------------------------------------
 }

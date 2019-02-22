@@ -185,8 +185,6 @@ import { WorkbenchThemeService } from 'vs/workbench/services/themes/electron-bro
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IUriDisplayService, UriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
 import { OEShimService, IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { ICmsService } from 'sql/platform/cms/interfaces';
-import { CmsService } from 'sql/platform/cms/cmsService';
 
 interface WorkbenchParams {
 	configuration: IWindowConfiguration;
@@ -595,7 +593,6 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(IProfilerService, this.instantiationService.createInstance(ProfilerService));
 		serviceCollection.set(ICommandLineProcessing, this.instantiationService.createInstance(CommandLineService));
 		serviceCollection.set(IDacFxService, this.instantiationService.createInstance(DacFxService));
-		serviceCollection.set(ICmsService, this.instantiationService.createInstance(CmsService));
 
 		this._register(toDisposable(() => connectionManagementService.shutdown()));
 		this._register(toDisposable(() => accountManagementService.shutdown()));

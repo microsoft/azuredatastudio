@@ -342,10 +342,6 @@ export function createApiFactory(
 				return extHostDataProvider.$registerDacFxServiceProvider(provider);
 			};
 
-			let registerCmsServiceProvider = (provider: sqlops.CmsServiceProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerCmsServiceProvider(provider);
-			};
-
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
 				registerBackupProvider,
@@ -363,7 +359,6 @@ export function createApiFactory(
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
-				registerCmsServiceProvider,
 				onDidChangeLanguageFlavor(listener: (e: sqlops.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
