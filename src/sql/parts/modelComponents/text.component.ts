@@ -6,7 +6,7 @@
 import 'vs/css!./radioButton';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
-	OnDestroy, AfterViewInit, ElementRef
+	OnDestroy, AfterViewInit, ElementRef, SecurityContext
 } from '@angular/core';
 
 import * as sqlops from 'sqlops';
@@ -14,11 +14,12 @@ import * as sqlops from 'sqlops';
 import { ComponentBase } from 'sql/parts/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/parts/modelComponents/interfaces';
 import { CommonServiceInterface } from 'sql/services/common/commonServiceInterface.service';
+import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()">{{getValue()}}</p>`
+		<p [style.width]="getWidth()" [innerHTML]="getValue()"></p>`
 })
 export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -27,7 +28,8 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _commonService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
-		@Inject(forwardRef(() => ElementRef)) el: ElementRef) {
+		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
+		@Inject(forwardRef(() => DomSanitizer)) private _domSanitizer: DomSanitizer) {
 		super(changeRef, el);
 	}
 
@@ -57,7 +59,16 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 		return this.getPropertyOrDefault<sqlops.TextComponentProperties, string>((props) => props.value, '');
 	}
 
-	public getValue(): string {
-		return this.value;
+	public getValue(): SafeHtml {
+		let links = this.getPropertyOrDefault<sqlops.TextComponentProperties, sqlops.LinkArea[]>((props) => props.links, []);
+		let text = this._domSanitizer.sanitize(SecurityContext.HTML, this.value);
+		if (links.length !== 0) {
+			for (let i: number = 0; i < links.length; i++) {
+				let link = links[i];
+				let linkTag = `<a href="${this._domSanitizer.sanitize(SecurityContext.URL, link.url)}" tabIndex="0" target="blank">${this._domSanitizer.sanitize(SecurityContext.HTML, link.text)}</a>`;
+				text = text.replace(`{${i}}`, linkTag);
+			}
+		}
+		return text;
 	}
 }
