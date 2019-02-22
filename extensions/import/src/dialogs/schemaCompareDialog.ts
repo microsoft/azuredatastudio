@@ -26,7 +26,7 @@ export class SchemaCompareDialog {
 
 	public dialog: sqlops.window.modelviewdialog.Dialog;
 	private generalTab: sqlops.window.modelviewdialog.DialogTab;
-	private sourceComponent: sqlops.FormComponent;
+	private sourceDacpacComponent: sqlops.FormComponent;
 	private sourceTextBox: sqlops.InputBoxComponent;
 	private sourceFileButton: sqlops.ButtonComponent;
 	private sourceServerComponent: sqlops.FormComponent;
@@ -34,7 +34,7 @@ export class SchemaCompareDialog {
 	private sourceDatabaseComponent: sqlops.FormComponent;
 	private sourceDatabaseDropdown: sqlops.DropDownComponent;
 	private sourceNoActiveConnectionsText: sqlops.FormComponent;
-	private targetComponent: sqlops.FormComponent;
+	private targetDacpacComponent: sqlops.FormComponent;
 	private targetTextBox: sqlops.InputBoxComponent;
 	private targetFileButton: sqlops.ButtonComponent;
 	private targetServerComponent: sqlops.FormComponent;
@@ -46,17 +46,22 @@ export class SchemaCompareDialog {
 	private loader: sqlops.LoadingComponent;
 	private formBuilder: sqlops.FormBuilder;
 	private editor: sqlops.workspace.ModelViewEditor;
+	private diffEditor: sqlops.DiffEditorComponent;
+	private flexModel: sqlops.FlexContainer;
+	private sourceLabel: sqlops.TextComponent;
+	private targetLabel: sqlops.TextComponent;
+	private noDifferencesLabel: sqlops.TextComponent;
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
 	private database: string;
 	public dialogName: string;
-	private SchemaCompareActionMap:Map<Number, string>;
+	private SchemaCompareActionMap: Map<Number, string>;
 
 	constructor(public ownerUri?: string) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[0] = localize('schemaCompare.deleteAction', 'Delete');
-		this.SchemaCompareActionMap[1] = localize('schemaCompare.changeAction', 'Change');
-		this.SchemaCompareActionMap[2] = localize('schemaCompare.addAction', 'Add');
+		this.SchemaCompareActionMap[0] = localize('schemaCompare.deleteAction', '❌ Delete');
+		this.SchemaCompareActionMap[1] = localize('schemaCompare.changeAction', '✎ Change');
+		this.SchemaCompareActionMap[2] = localize('schemaCompare.addAction', '➕ Add');
 	}
 
 	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
@@ -66,18 +71,35 @@ export class SchemaCompareDialog {
 	}
 
 	public async openDialog(p: any, dialogName?: string) {
-		this.editor = sqlops.workspace.createModelViewEditor('Schema Compare Results');
-		this.editor.registerContent(async view => {
-			this.differencesTable = view.modelBuilder.table()
-				.component();
-			this.loader = view.modelBuilder.loadingComponent().withItem(this.differencesTable).component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.loader,
-					title: ''
-				}]).component();
+		this.editor = sqlops.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
-			await view.initializeModel(formModel);
+		this.editor.registerContent(async view => {
+			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+				contentLeft: '\n',
+				contentRight: '\n',
+			}).component();
+
+			this.differencesTable = view.modelBuilder.table().withProperties({
+				data: [],
+				height: 400
+			}).component();
+
+			this.loader = view.modelBuilder.loadingComponent().component();
+			this.sourceLabel = view.modelBuilder.text().component();
+			this.targetLabel = view.modelBuilder.text().component();
+			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
+				value: localize('schemaCompare.noDifferences', 'No schema differences were found')
+			}).component();
+
+			this.flexModel = view.modelBuilder.flexContainer().component();
+			this.flexModel.addItem(this.loader);
+			this.flexModel.setLayout({
+				flexFlow: 'column',
+				alignItems: 'stretch',
+				height: '100%'
+			});
+
+			await view.initializeModel(this.flexModel);
 		});
 
 		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
@@ -85,7 +107,6 @@ export class SchemaCompareDialog {
 			this.database = profile.databaseName;
 		}
 
-		console.error('opening dialog');
 		let event = dialogName ? dialogName : null;
 		this.dialog = sqlops.window.modelviewdialog.createDialog('Schema Compare', event);
 
@@ -103,13 +124,11 @@ export class SchemaCompareDialog {
 	protected async execute() {
 		let service = await SchemaCompareDialog.getService('MSSQL');
 		this.editor.openEditor();
-
 		let sourceName: string;
 		let targetName: string;
 
 		let sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo;
 		if (this.sourceIsDacpac) {
-			console.error('source is ' + this.sourceTextBox.value);
 			sourceName = this.sourceTextBox.value;
 			sourceEndpointInfo = {
 				endpointType: sqlops.SchemaCompareEndpointType.dacpac,
@@ -118,7 +137,6 @@ export class SchemaCompareDialog {
 				packageFilePath: this.sourceTextBox.value
 			};
 		} else {
-			console.error('source db is ' + (<sqlops.CategoryValue>this.sourceDatabaseDropdown.value).name);
 			sourceName = (<sqlops.CategoryValue>this.sourceDatabaseDropdown.value).name;
 			let ownerUri = await sqlops.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
@@ -179,19 +197,33 @@ export class SchemaCompareDialog {
 				{
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header'
-				}],
-			width: 700,
-			height: 600
+				}]
 		});
+
+		this.sourceLabel.updateProperties({
+			value: localize('schemaCompare.source', 'Source: {0}', sourceName)
+		});
+		this.targetLabel.updateProperties({
+			value: localize('schemaCompare.target', 'Target: {0}', targetName)
+		});
+
 		this.loader.loading = false;
+		this.flexModel.removeItem(this.loader);
+		if (result.differences.length > 0) {
+			this.flexModel.addItem(this.sourceLabel, { flex: '1' });
+			this.flexModel.addItem(this.targetLabel, { flex: '1' });
+			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
+			this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
+		} else {
+			this.flexModel.addItem(this.noDifferencesLabel);
+		}
 
 		this.differencesTable.onRowSelected(e => {
 			let difference = result.differences[this.differencesTable.selectedRows[0]];
-			sourceText = this.getAggregatedSourceScript(difference);
-			targetText = this.getAggregatedTargetScript(difference);
-			let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
-			const title =  localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
-			vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
+			sourceText = difference.sourceScript === null ? '' : difference.sourceScript;
+			targetText = difference.targetScript === null ? '' : difference.targetScript;
+			this.diffEditor.contentLeft = sourceText;
+			this.diffEditor.contentRight = targetText;
 		});
 
 		let sourceText = '';
@@ -208,37 +240,6 @@ export class SchemaCompareDialog {
 				return targetText;
 			}
 		});
-	}
-
-	private getAggregatedSourceScript(difference: sqlops.DiffEntry) : string {
-		let sourceText = '';
-
-		if(difference === null) {
-			return '';
-		}
-
-		sourceText += difference.sourceScript === null ? '' : difference.sourceScript;
-
-		difference.children.forEach(child => {
-			sourceText += this.getAggregatedSourceScript(child);
-		});
-
-		return sourceText;
-	}
-
-	private getAggregatedTargetScript(difference: sqlops.DiffEntry) : string {
-		let targetText = '';
-
-		if(difference === null) {
-			return '';
-		}
-		targetText += difference.targetScript === null ? '' : difference.targetScript;
-
-		difference.children.forEach(child => {
-			targetText += this.getAggregatedTargetScript(child);
-		});
-
-		return targetText;
 	}
 
 	private getAllDifferences(differences: sqlops.DiffEntry[]): string[][] {
@@ -277,7 +278,7 @@ export class SchemaCompareDialog {
 			await this.populateServerDropdown(false);
 
 			this.sourceDatabaseComponent = await this.createSourceDatabaseDropdown(view);
-			if((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
+			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
 				await this.populateDatabaseDropdown((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId, false);
 			}
 
@@ -285,12 +286,12 @@ export class SchemaCompareDialog {
 			await this.populateServerDropdown(true);
 
 			this.targetDatabaseComponent = await this.createTargetDatabaseDropdown(view);
-			if((this.targetServerDropdown.value as ConnectionDropdownValue)) {
+			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId, true);
 			}
 
-			this.sourceComponent = await this.createFileBrowser(view, false);
-			this.targetComponent = await this.createFileBrowser(view, true);
+			this.sourceDacpacComponent = await this.createFileBrowser(view, false);
+			this.targetDacpacComponent = await this.createFileBrowser(view, true);
 			let sourceRadioButtons = await this.createSourceRadiobuttons(view);
 			let targetRadioButtons = await this.createTargetRadiobuttons(view);
 
@@ -299,22 +300,22 @@ export class SchemaCompareDialog {
 
 			if (this.database) {
 				this.formBuilder = view.modelBuilder.formContainer()
-				.withFormItems([
-					sourceRadioButtons,
-					this.sourceServerComponent,
-					this.sourceDatabaseComponent,
-					targetRadioButtons,
-					this.targetComponent
-				], {
-						horizontal: true
-					});
+					.withFormItems([
+						sourceRadioButtons,
+						this.sourceServerComponent,
+						this.sourceDatabaseComponent,
+						targetRadioButtons,
+						this.targetDacpacComponent
+					], {
+							horizontal: true
+						});
 			} else {
 				this.formBuilder = view.modelBuilder.formContainer()
 					.withFormItems([
 						sourceRadioButtons,
-						this.sourceComponent,
+						this.sourceDacpacComponent,
 						targetRadioButtons,
-						this.targetComponent
+						this.targetDacpacComponent
 					], {
 							horizontal: true
 						});
@@ -385,18 +386,18 @@ export class SchemaCompareDialog {
 			this.formBuilder.removeFormItem(this.sourceNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.sourceServerComponent);
 			this.formBuilder.removeFormItem(this.sourceDatabaseComponent);
-			this.formBuilder.insertFormItem(this.sourceComponent, 2, { horizontal: true });
+			this.formBuilder.insertFormItem(this.sourceDacpacComponent, 1, { horizontal: true });
 		});
 
 		databaseRadioButton.onDidClick(() => {
 			this.sourceIsDacpac = false;
-			if((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
-				this.formBuilder.insertFormItem(this.sourceServerComponent, 2, { horizontal: true, componentWidth: 300 });
-				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 3, { horizontal: true, componentWidth: 300 });
+			if ((this.sourceServerDropdown.value as ConnectionDropdownValue)) {
+				this.formBuilder.insertFormItem(this.sourceServerComponent, 1, { horizontal: true, componentWidth: 300 });
+				this.formBuilder.insertFormItem(this.sourceDatabaseComponent, 2, { horizontal: true, componentWidth: 300 });
 			} else {
-				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 2, { horizontal: true});
+				this.formBuilder.insertFormItem(this.sourceNoActiveConnectionsText, 1, { horizontal: true });
 			}
-			this.formBuilder.removeFormItem(this.sourceComponent);
+			this.formBuilder.removeFormItem(this.sourceDacpacComponent);
 		});
 
 		if (this.database) {
@@ -435,17 +436,17 @@ export class SchemaCompareDialog {
 			this.formBuilder.removeFormItem(this.targetNoActiveConnectionsText);
 			this.formBuilder.removeFormItem(this.targetServerComponent);
 			this.formBuilder.removeFormItem(this.targetDatabaseComponent);
-			this.formBuilder.addFormItem(this.targetComponent, { horizontal: true });
+			this.formBuilder.addFormItem(this.targetDacpacComponent, { horizontal: true });
 		});
 
 		databaseRadioButton.onDidClick(() => {
 			this.targetIsDacpac = false;
-			this.formBuilder.removeFormItem(this.targetComponent);
-			if((this.targetServerDropdown.value as ConnectionDropdownValue)) {
+			this.formBuilder.removeFormItem(this.targetDacpacComponent);
+			if ((this.targetServerDropdown.value as ConnectionDropdownValue)) {
 				this.formBuilder.addFormItem(this.targetServerComponent, { horizontal: true, componentWidth: 300 });
 				this.formBuilder.addFormItem(this.targetDatabaseComponent, { horizontal: true, componentWidth: 300 });
 			} else {
-				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, {horizontal: true});
+				this.formBuilder.addFormItem(this.targetNoActiveConnectionsText, { horizontal: true });
 			}
 		});
 
@@ -585,7 +586,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async createNoActiveConnectionsText(view: sqlops.ModelView): Promise<sqlops.FormComponent> {
-		let noActiveConnectionsText = view.modelBuilder.text().withProperties({value: SchemaCompareDialog.NoActiveConnectionsLabel}).component();
+		let noActiveConnectionsText = view.modelBuilder.text().withProperties({ value: SchemaCompareDialog.NoActiveConnectionsLabel }).component();
 
 		return {
 			component: noActiveConnectionsText,
