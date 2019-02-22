@@ -143,6 +143,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this.onDisconnect(() => this.refreshEditorTitles());
 	}
 
+	public providerRegistered(providerId: string): boolean {
+		return !!this._providers.get(providerId);
+	}
+
 	// Event Emitters
 	public get onAddConnectionProfile(): Event<IConnectionProfile> {
 		return this._onAddConnectionProfile.event;

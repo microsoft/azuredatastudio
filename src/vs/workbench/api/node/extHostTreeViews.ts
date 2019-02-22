@@ -21,6 +21,8 @@ import { IExtensionDescription, checkProposedApiEnabled } from 'vs/workbench/ser
 import * as typeConvert from 'vs/workbench/api/node/extHostTypeConverters';
 
 // {{SQL CARBON EDIT}}
+import * as sqlops from 'sqlops';
+import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
 export type TreeItemHandle = string;
 
 function toTreeItemLabel(label: any, extension: IExtensionDescription): ITreeItemLabel {
@@ -434,7 +436,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	// {{SQL CARBON EDIT}}
-	protected createTreeItem(element: T, extensionTreeItem: vscode.TreeItem, parent?: TreeNode): ITreeItem {
+	protected createTreeItem(element: T, extensionTreeItem: sqlops.TreeItem, parent?: TreeNode): sqlITreeItem {
 
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
@@ -450,7 +452,10 @@ export class ExtHostTreeView<T> extends Disposable {
 			icon,
 			iconDark: this.getDarkIconPath(extensionTreeItem) || icon,
 			themeIcon: extensionTreeItem.iconPath instanceof ThemeIcon ? { id: extensionTreeItem.iconPath.id } : void 0,
-			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState
+			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState,
+			// {{SQL CARBON EDIT}}
+			payload: extensionTreeItem.payload,
+			childProvider: extensionTreeItem.childProvider
 		};
 
 		return item;

@@ -174,6 +174,7 @@ import { NotebookService } from 'sql/workbench/services/notebook/common/notebook
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
 import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
+import { OEShimService, IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 // {{SQL CARBON EDIT}} - End
 import { IExtensionUrlHandler, ExtensionUrlHandler } from 'vs/workbench/services/extensions/electron-browser/inactiveExtensionUrlHandler';
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
@@ -566,6 +567,7 @@ export class Workbench extends Disposable implements IPartService {
 		serviceCollection.set(ITaskService, this.instantiationService.createInstance(TaskService));
 		serviceCollection.set(IMetadataService, this.instantiationService.createInstance(MetadataService));
 		serviceCollection.set(IObjectExplorerService, this.instantiationService.createInstance(ObjectExplorerService));
+		serviceCollection.set(IOEShimService, this.instantiationService.createInstance(OEShimService));
 		serviceCollection.set(IScriptingService, this.instantiationService.createInstance(ScriptingService));
 		serviceCollection.set(IAdminService, this.instantiationService.createInstance(AdminService));
 		serviceCollection.set(IJobManagementService, this.instantiationService.createInstance(JobManagementService));

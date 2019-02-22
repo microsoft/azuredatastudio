@@ -45,6 +45,9 @@ import * as vscode from 'vscode';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { ResolvedAuthority } from 'vs/platform/remote/common/remoteAuthorityResolver';
 
+// {{SQL CARBON EDIT}}
+import { ITreeItem as sqlITreeItem } from 'sql/workbench/common/views';
+
 export interface IEnvironment {
 	isExtensionDevelopmentDebug: boolean;
 	appRoot: URI;
@@ -705,7 +708,8 @@ export interface ExtHostDocumentsAndEditorsShape {
 }
 
 export interface ExtHostTreeViewsShape {
-	$getChildren(treeViewId: string, treeItemHandle?: string): Thenable<ITreeItem[]>;
+	// {{SQL CARBON EDIT}}
+	$getChildren(treeViewId: string, treeItemHandle?: string): Thenable<sqlITreeItem[]>;
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
 	$setVisible(treeViewId: string, visible: boolean): void;
