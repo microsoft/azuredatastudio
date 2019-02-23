@@ -44,11 +44,11 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 	extensionContext.subscriptions.push(azureResourceController);
 	activations.push(azureResourceController.activate());
 
-	// appContext.apiWrapper.registerCommand('cms.resource.connectsqlserver', () => {
-	// 	let ownerUri = appContext.apiWrapper.ownerUri;
-
-
-	// });
+	appContext.apiWrapper.registerCommand('cms.resource.registerServer', () => {
+		appContext.apiWrapper.createCmsServer('test server from ads', 'meme server').then((result) => {
+			let meme = result;
+		});
+	});
 
 	return {
 		provideResources() {

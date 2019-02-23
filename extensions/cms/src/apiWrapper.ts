@@ -20,6 +20,7 @@ import * as constants from './constants';
 export class ApiWrapper {
 
 	private _cmsProvider: sqlops.CmsServiceProvider;
+	private _connection: sqlops.connection.Connection;
 	private _ownerUri: string;
 
 	// Data APIs
@@ -232,20 +233,35 @@ export class ApiWrapper {
 		return sqlops.connection.openConnectionDialog(providers, initialConnectionProfile, connectionCompletionOptions);
 	}
 
-	public get ownerUri(): Thenable<string> {
-		if (!this._ownerUri) {
+	public createCmsServer(name: string, description: string) {
+		let provider = this.getCmsProvider();
+		const self = this;
+		return this.connection.then((connection) => {
+			return provider.createCmsServer(name, description, connection, self.ownerUri).then((result) => {
+				if (result) {
+					return result;
+				}
+			});
+		});
+	}
+
+	public get connection(): Thenable<sqlops.connection.Connection> {
+		if (!this._connection) {
 			return this.openConnectionDialog(['MSSQL']).then((connection) => {
 				if (connection) {
-					return sqlops.connection.getUriForConnection(connection.connectionId).then((result) => {
-						this._ownerUri = result;
-						return this._ownerUri;
+					this._connection = connection;
+					return sqlops.connection.getUriForConnection(connection.connectionId).then((uri) => {
+						this._ownerUri = uri;
+						return this._connection;
 					});
 				}
-			}).then((ownerUri) => {
-				return ownerUri;
 			});
 		} else {
-			return Promise.resolve(this._ownerUri);
+			return Promise.resolve(this._connection);
 		}
+	}
+
+	public get ownerUri(): string {
+		return this._ownerUri;
 	}
 }

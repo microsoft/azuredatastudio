@@ -93,5 +93,5 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 	private _onDidChangeTreeData = new EventEmitter<TreeNode>();
 
 	private static readonly loadingLabel = localize('cms.resource.tree.treeProvider.loadingLabel', 'Loading ...');
-	private static readonly loadingTimerInterval = 2500;
+	private static readonly loadingTimerInterval = 5000;
 }

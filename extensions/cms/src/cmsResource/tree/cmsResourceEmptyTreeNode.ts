@@ -15,14 +15,14 @@ import { CmsResourceItemType } from '../constants';
 
 export class CmsResourceEmptyTreeNode extends TreeNode {
 	public getChildren(): TreeNode[] | Promise<TreeNode[]> {
-		return [new CmsResourceEmptyTreeNode()];
+		return [];
 	}
 
 	public getTreeItem(): TreeItem | Promise<TreeItem> {
 		let item = new TreeItem(CmsResourceEmptyTreeNode.registerServerLabel, TreeItemCollapsibleState.None);
 		item.command = {
 			title: CmsResourceEmptyTreeNode.registerServerLabel,
-			command: 'cms.resource.connectsqlserver',
+			command: 'cms.resource.registerServer',
 			arguments: [this]
 		};
 		return item;
