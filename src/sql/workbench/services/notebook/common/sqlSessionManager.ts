@@ -5,7 +5,7 @@
 'use strict';
 
 import * as os from 'os';
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage } from 'sqlops';
+import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'sqlops';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
@@ -400,27 +400,43 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
-				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
-
-					let msg: nb.IIOPubMessage = {
-						channel: 'iopub',
-						type: 'iopub',
-						header: <nb.IHeader>{
-							msg_id: undefined,
-							msg_type: 'execute_result'
-						},
-						content: <nb.IExecuteResult>{
-							output_type: 'execute_result',
-							metadata: {},
-							execution_count: this._executionCount,
-							data: { 'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, d), 'text/html': this.convertToHtmlTable(resultSet.columnInfo, d) }
-						},
-						metadata: undefined,
-						parent_header: undefined
-					};
-					this.ioHandler.handle(msg);
-				});
+				// TODO should we chain the promises so that result sets are guaranteed to show in serial? What if backend processes #2 before #1?
+				this.sendResultSetAsIOPub(rowCount, resultSet);
 			}
+		}
+	}
+
+	private async sendResultSetAsIOPub(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+		try {
+			let subsetResult: QueryExecuteSubsetResult;
+			if (rowCount > 0) {
+				subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
+			} else {
+				subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] }};
+			}
+			let msg: nb.IIOPubMessage = {
+				channel: 'iopub',
+				type: 'iopub',
+				header: <nb.IHeader>{
+					msg_id: undefined,
+					msg_type: 'execute_result'
+				},
+				content: <nb.IExecuteResult>{
+					output_type: 'execute_result',
+					metadata: {},
+					execution_count: this._executionCount,
+					data: {
+						'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, subsetResult),
+						'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
+					}
+				},
+				metadata: undefined,
+				parent_header: undefined
+			};
+			this.ioHandler.handle(msg);
+		} catch (err) {
+			// TODO should we output this somewhere else?
+			console.log(`Error getting query rows for notebook: ${err}`);
 		}
 	}
 

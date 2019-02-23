@@ -81,6 +81,7 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.hideCursorInOverviewRuler = true;
 			if (!this._selected) {
 				options.renderLineHighlight = 'none';
+				options.parameterHints = { enabled: false };
 			}
 			if (this._hideLineNumbers) {
 				options.lineNumbers = 'off';

@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
@@ -67,6 +67,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this.checkForLanguageMagics();
 			this.updateLanguageMode();
 		}));
+		this._register(value.onValidConnectionSelected(() => {
+			this.updateConnectionState(this.isActive());
+		}));
 	}
 
 	@Input() set activeCellId(value: string) {
@@ -105,6 +108,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 		this._register(debounceEvent(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
 		(() => this.layout()));
+		// Handle disconnect on removal of the cell, if it was the active cell
+		this._register({ dispose: () => this.updateConnectionState(false) });
 
 	}
 
@@ -121,11 +126,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
-				if (isActive && this._model.defaultKernel.display_name === notebookConstants.SQL
-					&& this.cellModel.cellType === CellTypes.Code
-					&& this.cellModel.cellUri) {
-					this._model.notebookOptions.connectionService.connect(this._model.activeConnection, this.cellModel.cellUri.toString()).catch(e => console.log(e));
-				}
+				this.updateConnectionState(isActive);
 				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
@@ -133,6 +134,23 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				break;
 			}
 		}
+	}
+
+	private updateConnectionState(isConnected: boolean) {
+		if (this.isSqlCodeCell()) {
+			let cellUri = this.cellModel.cellUri.toString();
+			if (!isConnected && this._model.notebookOptions.connectionService.isConnected(cellUri)) {
+				this._model.notebookOptions.connectionService.disconnect(cellUri).catch(e => console.log(e));
+			} else if (this._model.activeConnection && this._model.activeConnection.id !== '-1') {
+				this._model.notebookOptions.connectionService.connect(this._model.activeConnection, cellUri).catch(e => console.log(e));
+			}
+		}
+	}
+
+	private isSqlCodeCell() {
+		return this._model.defaultKernel.display_name === notebookConstants.SQL
+			&& this.cellModel.cellType === CellTypes.Code
+			&& this.cellModel.cellUri;
 	}
 
 	ngAfterContentInit(): void {
