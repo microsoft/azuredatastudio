@@ -6,31 +6,30 @@
 
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
-import { CreateClusterModel } from '../createClusterModel';
-import { WizardBase } from '../../wizardBase';
 import * as nls from 'vscode-nls';
 import { ClusterPorts, ContainerRegistryInfo } from '../../../interfaces';
+import { CreateClusterWizard } from '../createClusterWizard';
 
 const localize = nls.loadMessageBundle();
 const UserNameInputWidth = '300px';
 const PortInputWidth = '100px';
 
-export class SettingsPage extends WizardPageBase<CreateClusterModel> {
-	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
+export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
+	constructor(wizard: CreateClusterWizard) {
 		super(localize('bdc-create.settingsPageTitle', 'Settings'),
 			localize('bdc-create.settingsPageDescription', 'Configure the settings required for deploying SQL Server big data cluster'),
-			model, wizard);
+			wizard);
 	}
 
 	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let clusterPorts: ClusterPorts;
 		let containerRegistryInfo: ContainerRegistryInfo;
 
-		let clusterPortsPromise = this.model.getDefaultPorts().then(ports => {
+		let clusterPortsPromise = this.wizard.model.getDefaultPorts().then(ports => {
 			clusterPorts = ports;
 		});
 
-		let containerRegistryPromise = this.model.getDefaultContainerRegistryInfo().then(containerRegistry => {
+		let containerRegistryPromise = this.wizard.model.getDefaultContainerRegistryInfo().then(containerRegistry => {
 			containerRegistryInfo = containerRegistry;
 		});
 		return Promise.all([clusterPortsPromise, containerRegistryPromise]).then(() => {
@@ -38,51 +37,51 @@ export class SettingsPage extends WizardPageBase<CreateClusterModel> {
 
 			//User settings
 			let adminUserNameInput = this.createInputWithLabel(view, localize('bdc-create.AdminUsernameText', 'Admin username'), true, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
-				this.model.adminUserName = inputBox.value;
+				this.wizard.model.adminUserName = inputBox.value;
 			});
 			let adminPasswordInput = this.createInputWithLabel(view, localize('bdc-create.AdminUserPasswordText', 'Password'), true, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
-				this.model.adminPassword = inputBox.value;
+				this.wizard.model.adminPassword = inputBox.value;
 			}, 'password');
 
 			// Port settings
 			let sqlPortInput = this.createInputWithLabel(view, localize('bdc-create.SQLPortText', 'SQL Master port'), true, PortInputWidth, clusterPorts.sql, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.sqlPort = inputBox.value;
+				this.wizard.model.sqlPort = inputBox.value;
 			});
 			let knoxPortInput = this.createInputWithLabel(view, localize('bdc-create.KnoxPortText', 'Knox port'), true, PortInputWidth, clusterPorts.knox, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.knoxPort = inputBox.value;
+				this.wizard.model.knoxPort = inputBox.value;
 			});
 			let controllerPortInput = this.createInputWithLabel(view, localize('bdc-create.ControllerPortText', 'Controller port'), true, PortInputWidth, clusterPorts.controller, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.controllerPort = inputBox.value;
+				this.wizard.model.controllerPort = inputBox.value;
 			});
 			let proxyPortInput = this.createInputWithLabel(view, localize('bdc-create.ProxyPortText', 'Proxy port'), true, PortInputWidth, clusterPorts.proxy, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.proxyPort = inputBox.value;
+				this.wizard.model.proxyPort = inputBox.value;
 			});
 			let grafanaPortInput = this.createInputWithLabel(view, localize('bdc-create.GrafanaPortText', 'Grafana port'), true, PortInputWidth, clusterPorts.grafana, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.grafanaPort = inputBox.value;
+				this.wizard.model.grafanaPort = inputBox.value;
 			});
 			let kibanaPortInput = this.createInputWithLabel(view, localize('bdc-create.KibanaPortText', 'Kibana port'), true, PortInputWidth, clusterPorts.kibana, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.kibanaPort = inputBox.value;
+				this.wizard.model.kibanaPort = inputBox.value;
 			});
 
 			// Container Registry Settings
 			let registryInput = this.createInputWithLabel(view, localize('bdc-create.RegistryText', 'Registry'), true, UserNameInputWidth, containerRegistryInfo.registry, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.containerRegistry = inputBox.value;
+				this.wizard.model.containerRegistry = inputBox.value;
 			});
 
 			let repositoryInput = this.createInputWithLabel(view, localize('bdc-create.RepositoryText', 'Repository'), true, UserNameInputWidth, containerRegistryInfo.repository, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.containerRepository = inputBox.value;
+				this.wizard.model.containerRepository = inputBox.value;
 			});
 
 			let imageTagInput = this.createInputWithLabel(view, localize('bdc-create.ImageTagText', 'Image tag'), true, UserNameInputWidth, containerRegistryInfo.imageTag, (inputBox: sqlops.InputBoxComponent) => {
-				this.model.containerRegistry = inputBox.value;
+				this.wizard.model.containerRegistry = inputBox.value;
 			});
 
 			let registryUserNameInput = this.createInputWithLabel(view, localize('bdc-create.RegistryUserNameText', 'Username'), false, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
-				this.model.containerRegistryUserName = inputBox.value;
+				this.wizard.model.containerRegistryUserName = inputBox.value;
 			});
 
 			let registryPasswordInput = this.createInputWithLabel(view, localize('bdc-create.RegistryPasswordText', 'Password'), false, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
-				this.model.containerRegistryPassword = inputBox.value;
+				this.wizard.model.containerRegistryPassword = inputBox.value;
 			});
 
 			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([adminUserNameInput, adminPasswordInput]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();

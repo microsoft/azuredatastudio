@@ -5,7 +5,6 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import { WizardBase } from './wizardBase';
 
 export abstract class WizardPageBase<T> {
 	private _page: sqlops.window.WizardPage;
@@ -14,11 +13,11 @@ export abstract class WizardPageBase<T> {
 		return this._page;
 	}
 
-	public get wizard(): WizardBase<T> {
+	public get wizard(): T {
 		return this._wizard;
 	}
 
-	constructor(title: string, description: string, protected model: T, private _wizard: WizardBase<T>) {
+	constructor(title: string, description: string, private _wizard: T) {
 		this._page = sqlops.window.createWizardPage(title);
 		this._page.description = description;
 		this._page.registerContent((view: sqlops.ModelView) => {

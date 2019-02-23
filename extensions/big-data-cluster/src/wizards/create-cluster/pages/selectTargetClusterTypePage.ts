@@ -5,38 +5,62 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
-import * as vscode from 'vscode';
-import * as os from 'os';
 import { WizardPageBase } from '../../wizardPageBase';
-import { CreateClusterModel } from '../createClusterModel';
-import { WizardBase } from '../../wizardBase';
-import { TargetClusterType, TargetClusterTypeInfo } from '../../../interfaces';
+import { TargetClusterTypeInfo } from '../../../interfaces';
 import * as nls from 'vscode-nls';
+import { CreateClusterWizard } from '../createClusterWizard';
 
 const localize = nls.loadMessageBundle();
 
-export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterModel> {
+export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWizard> {
 	private cards: sqlops.CardComponent[];
+	private toolsTable: sqlops.TableComponent;
+	private toolsContainer: sqlops.FormComponent;
+	private formBuilder: sqlops.FormBuilder;
+	private form: sqlops.FormContainer;
 
-	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
+	constructor(wizard: CreateClusterWizard) {
 		super(localize('bdc-create.selectTargetClusterTypePageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
 			localize('bdc-create.selectTargetClusterTypePageDescription', 'Choose the target environment and then install the required tools.'),
-			model, wizard);
+			wizard);
 	}
-
 
 	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let self = this;
-		return this.model.getTargetClusterTypes().then((clusterTypes) => {
-			this.cards = [];
+		return self.wizard.model.getTargetClusterTypeInfo().then((clusterTypes) => {
+			self.cards = [];
 
 			clusterTypes.forEach(clusterType => {
 				let card = self.createCard(view, clusterType);
-				this.cards.push(card);
+				self.cards.push(card);
 			});
-			let cardsContainer = view.modelBuilder.flexContainer().withItems(this.cards, { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
+			let cardsContainer = view.modelBuilder.flexContainer().withItems(self.cards, { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 
-			let formBuilder = view.modelBuilder.formContainer().withFormItems(
+			let toolColumn: sqlops.TableColumn = {
+				value: localize('bdc-create.toolNameColumnHeader', 'Tool'),
+				width: 100
+			};
+			let descriptionColumn: sqlops.TableColumn = {
+				value: localize('bdc-create.toolDescriptionColumnHeader', 'Description'),
+				width: 200
+			};
+			let statusColumn: sqlops.TableColumn = {
+				value: localize('bdc-create.toolStatusColumnHeader', 'Status'),
+				width: 100
+			};
+			self.toolsTable = view.modelBuilder.table().withProperties<sqlops.TableComponentProperties>({
+				height: 200,
+				data: [],
+				columns: [toolColumn, descriptionColumn, statusColumn],
+				width: 850
+			}).component();
+
+			self.toolsContainer = {
+				title: localize('bdc-create.RequiredToolsText', 'Required tools'),
+				component: self.toolsTable
+			};
+
+			self.formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
 						component: cardsContainer,
@@ -46,10 +70,11 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterMod
 				{
 					horizontal: false
 				}
-			).withLayout({ width: '100%', height: '100%' });
+			);
 
-			let form = formBuilder.component();
-			return view.initializeModel(form);
+
+			self.form = self.formBuilder.withLayout({ width: '100%' }).component();
+			return view.initializeModel(self.form);
 		});
 	}
 
@@ -58,19 +83,30 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterMod
 		let card = view.modelBuilder.card().withProperties<sqlops.CardProperties>({
 			cardType: sqlops.CardType.VerticalButton,
 			iconPath: {
-				dark: this.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.dark),
-				light: this.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.light)
+				dark: self.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.dark),
+				light: self.wizard.context.asAbsolutePath(targetClusterTypeInfo.iconPath.light)
 			},
 			label: targetClusterTypeInfo.name
 		}).component();
 		card.onCardSelectedChanged(() => {
 			if (card.selected) {
+				self.wizard.model.targetClusterType = targetClusterTypeInfo.type;
 				self.cards.forEach(c => {
 					if (c !== card) {
 						c.selected = false;
 					}
 				});
-				self.model.targetClusterType = targetClusterTypeInfo.type;
+
+				let tableData = targetClusterTypeInfo.requiredTools.map(tool => {
+					return [tool.name, tool.description, tool.isInstalled ? 'Installed' : 'Not Installed']
+				});
+
+				self.wizard.installToolsButton.hidden = targetClusterTypeInfo.requiredTools.filter(tool => !tool.isInstalled).length === 0;
+
+				self.toolsTable.data = tableData;
+				if (self.form.items.length === 1) {
+					self.formBuilder.addFormItem(self.toolsContainer);
+				}
 			}
 		});
 		return card;

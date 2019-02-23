@@ -44,7 +44,7 @@ export class CreateClusterModel {
 		return promise;
 	}
 
-	public getTargetClusterTypes(): Thenable<TargetClusterTypeInfo[]> {
+	public getTargetClusterTypeInfo(): Thenable<TargetClusterTypeInfo[]> {
 		let promise = new Promise<TargetClusterTypeInfo[]>(resolve => {
 			let kubeCtl = {
 				name: 'KUBECTL',
@@ -59,7 +59,7 @@ export class CreateClusterModel {
 			let azureCli = {
 				name: 'AzureCLI',
 				description: 'AzureCLI',
-				isInstalled: true
+				isInstalled: false
 			};
 			let aksCluster: TargetClusterTypeInfo = {
 				type: TargetClusterType.NewAksCluster,
