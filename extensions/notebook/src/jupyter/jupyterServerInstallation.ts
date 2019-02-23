@@ -284,7 +284,7 @@ export default class JupyterServerInstallation {
 
 	private async installSparkMagic(): Promise<void> {
 		if (process.platform === constants.winPlatform) {
-			let sparkWheel = path.join(this._pythonPackageDir, 'sparkmagic-0.12.6.1-py3-none-any.whl');
+			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
 			let installSparkMagic = `${this._pythonExecutable} -m pip install --no-index ${sparkWheel} --find-links ${this._pythonPackageDir} --no-warn-script-location`;
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', 'Installing SparkMagic...'));
