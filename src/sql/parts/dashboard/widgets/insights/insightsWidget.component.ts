@@ -107,7 +107,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 								this.queryObv = Observable.fromPromise(TPromise.as<SimpleExecuteResult>(error));
 							}
 						}
-					);
+					).then(() => this._cd.detectChanges());
 				});
 				this._register(toDisposable(() => cancelablePromise.cancel()));
 			}
@@ -183,6 +183,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 				let storedResult: IStorageResult = JSON.parse(storage);
 				let date = new Date(storedResult.date);
 				this.lastUpdated = nls.localize('insights.lastUpdated', "Last Updated: {0} {1}", date.toLocaleTimeString(), date.toLocaleDateString());
+				this._loading = false;
 				if (this._init) {
 					this._updateChild(storedResult.results);
 					this.setupInterval();
