@@ -37,9 +37,10 @@ export interface TargetClusterTypeInfo {
 		dark: string,
 		light: string
 	};
-	requiredTools: {
-		name: string,
-		description: string,
-		isInstalled: boolean
-	}[];
+}
+
+export interface ToolInfo {
+	name: string,
+	description: string,
+	isInstalled: boolean
 }

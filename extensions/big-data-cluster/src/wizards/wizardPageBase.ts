@@ -9,7 +9,7 @@ import * as sqlops from 'sqlops';
 export abstract class WizardPageBase<T> {
 	private _page: sqlops.window.WizardPage;
 
-	public get page(): sqlops.window.WizardPage {
+	public get pageObject(): sqlops.window.WizardPage {
 		return this._page;
 	}
 
@@ -26,4 +26,8 @@ export abstract class WizardPageBase<T> {
 	}
 
 	protected abstract initialize(view: sqlops.ModelView): Thenable<void>;
+
+	public onEnter(): void { }
+
+	public onLeave(): void { }
 }

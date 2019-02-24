@@ -5,12 +5,14 @@
 'use strict';
 
 import { IKubeConfigParser } from '../../data/kubeConfigParser';
-import { ClusterInfo, TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo } from '../../interfaces';
+import { ClusterInfo, TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo } from '../../interfaces';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
 export class CreateClusterModel {
+
+	private _tmp_tools_installed: boolean = false;
 
 	constructor(private _kubeConfigParser: IKubeConfigParser) {
 	}
@@ -44,35 +46,15 @@ export class CreateClusterModel {
 		return promise;
 	}
 
-	public getTargetClusterTypeInfo(): Thenable<TargetClusterTypeInfo[]> {
+	public getAllTargetClusterTypeInfo(): Thenable<TargetClusterTypeInfo[]> {
 		let promise = new Promise<TargetClusterTypeInfo[]>(resolve => {
-			let kubeCtl = {
-				name: 'KUBECTL',
-				description: 'KUBECTL',
-				isInstalled: true
-			};
-			let mssqlCtl = {
-				name: 'MSSQLCTL',
-				description: 'MSSQLCTL',
-				isInstalled: true
-			};
-			let azureCli = {
-				name: 'AzureCLI',
-				description: 'AzureCLI',
-				isInstalled: false
-			};
 			let aksCluster: TargetClusterTypeInfo = {
 				type: TargetClusterType.NewAksCluster,
 				name: localize('bdc-create.AKSClusterCardText', 'New AKS Cluster'),
 				iconPath: {
 					dark: 'images/cluster_inverse.svg',
 					light: 'images/cluster.svg'
-				},
-				requiredTools: [
-					kubeCtl,
-					mssqlCtl,
-					azureCli
-				]
+				}
 			};
 
 			let existingCluster: TargetClusterTypeInfo = {
@@ -81,13 +63,44 @@ export class CreateClusterModel {
 				iconPath: {
 					dark: 'images/cluster_inverse.svg',
 					light: 'images/cluster.svg'
-				},
-				requiredTools: [
-					kubeCtl,
-					mssqlCtl
-				]
+				}
 			};
 			resolve([aksCluster, existingCluster]);
+		});
+		return promise;
+	}
+
+	public getRequiredToolStatus(): Thenable<ToolInfo[]> {
+		let kubeCtl = {
+			name: 'KUBECTL',
+			description: 'KUBECTL',
+			isInstalled: true
+		};
+		let mssqlCtl = {
+			name: 'MSSQLCTL',
+			description: 'MSSQLCTL',
+			isInstalled: true
+		};
+		let azureCli = {
+			name: 'AzureCLI',
+			description: 'AzureCLI',
+			isInstalled: this._tmp_tools_installed
+		};
+		let promise = new Promise<ToolInfo[]>(resolve => {
+			setTimeout(() => {
+				let tools = this.targetClusterType === TargetClusterType.ExistingKubernetesCluster ? [kubeCtl, mssqlCtl] : [kubeCtl, mssqlCtl, azureCli];
+				resolve(tools);
+			}, 3000);
+		});
+		return promise;
+	}
+
+	public installTools(): Thenable<void> {
+		let promise = new Promise<void>(resolve => {
+			setTimeout(() => {
+				this._tmp_tools_installed = true;
+				resolve();
+			}, 10000)
 		});
 		return promise;
 	}
