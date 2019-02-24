@@ -14,7 +14,7 @@ import { Dropdown, IDropdownOptions } from 'sql/base/browser/ui/editableDropdown
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-import { attachEditableDropdownStyler } from 'sql/common/theme/styler';
+import { attachEditableDropdownStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 @Component({

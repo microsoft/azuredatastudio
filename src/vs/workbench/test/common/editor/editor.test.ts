@@ -3,14 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, toResource } from 'vs/workbench/common/editor';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService, UntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
@@ -35,8 +32,8 @@ class FileEditorInput extends EditorInput {
 		return this.resource;
 	}
 
-	resolve(): TPromise<IEditorModel> {
-		return TPromise.as(null);
+	resolve(): Thenable<IEditorModel> {
+		return Promise.resolve(null);
 	}
 }
 
@@ -55,7 +52,7 @@ suite('Workbench editor', () => {
 		accessor.untitledEditorService.dispose();
 	});
 
-	test('toResource', function () {
+	test('toResource', () => {
 		const service = accessor.untitledEditorService;
 
 		assert.ok(!toResource(null));

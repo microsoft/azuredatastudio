@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/accountPicker';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { Event, Emitter } from 'vs/base/common/event';
 import { List } from 'vs/base/browser/ui/list/listWidget';
@@ -21,7 +21,7 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
 import * as sqlops from 'sqlops';
 import { DropdownList } from 'sql/base/browser/ui/dropdownList/dropdownList';
-import { attachDropdownStyler } from 'sql/common/theme/styler';
+import { attachDropdownStyler } from 'sql/platform/theme/common/styler';
 import { AddAccountAction, RefreshAccountAction } from 'sql/parts/accountManagement/common/accountActions';
 import { AccountPickerListRenderer, AccountListDelegate } from 'sql/parts/accountManagement/common/accountListRenderer';
 import { AccountPickerViewModel } from 'sql/platform/accountManagement/common/accountPickerViewModel';

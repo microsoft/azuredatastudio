@@ -106,4 +106,8 @@ export class WorkbenchEditorTestService implements IEditorService {
 	invokeWithinEditorContext<T>(fn: (accessor: ServicesAccessor) => T): T {
 		return undefined;
 	}
+
+	getOpened(editor: IResourceInput | IUntitledResourceInput, group?: IEditorGroup | GroupIdentifier): IEditorInput {
+		return undefined;
+	}
 }

@@ -38,12 +38,11 @@ class ResultsView extends Disposable implements IPanelView {
 		this.messagePanel = this._register(this.instantiationService.createInstance(MessagePanel, { title: nls.localize('messagePanel', 'Messages'), minimumBodySize: 0, id: 'messagePanel' }));
 		this.gridPanel.render();
 		this.messagePanel.render();
-		this.panelViewlet.create(this.container).then(() => {
-			this.gridPanel.setVisible(false);
-			this.panelViewlet.addPanels([
-				{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
-			]);
-		});
+		this.panelViewlet.create(this.container);
+		this.gridPanel.setVisible(false);
+		this.panelViewlet.addPanels([
+			{ panel: this.messagePanel, size: this.messagePanel.minimumSize, index: 1 }
+		]);
 		anyEvent(this.gridPanel.onDidChange, this.messagePanel.onDidChange)(e => {
 			let size = this.gridPanel.maximumBodySize;
 			if (size < 1 && this.gridPanel.isVisible()) {

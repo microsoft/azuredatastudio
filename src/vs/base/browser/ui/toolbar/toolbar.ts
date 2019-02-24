@@ -3,16 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./toolbar';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action, IActionRunner, IAction } from 'vs/base/common/actions';
 import { ActionBar, ActionsOrientation, IActionItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IContextMenuProvider, DropdownMenuActionItem } from 'vs/base/browser/ui/dropdown/dropdown';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 
 export const CONTEXT = 'context.toolbar';
 
@@ -22,6 +20,8 @@ export interface IToolBarOptions {
 	ariaLabel?: string;
 	getKeyBinding?: (action: IAction) => ResolvedKeybinding;
 	actionRunner?: IActionRunner;
+	toggleMenuTitle?: string;
+	anchorAlignmentProvider?: () => AnchorAlignment;
 }
 
 /**
@@ -41,7 +41,7 @@ export class ToolBar extends Disposable {
 		this.options = options;
 		this.lookupKeybindings = typeof this.options.getKeyBinding === 'function';
 
-		this.toggleMenuAction = this._register(new ToggleMenuAction(() => this.toggleMenuActionItem && this.toggleMenuActionItem.show()));
+		this.toggleMenuAction = this._register(new ToggleMenuAction(() => this.toggleMenuActionItem && this.toggleMenuActionItem.show(), options.toggleMenuTitle));
 
 		let element = document.createElement('div');
 		element.className = 'monaco-toolbar';
@@ -69,7 +69,8 @@ export class ToolBar extends Disposable {
 						this.options.actionItemProvider,
 						this.actionRunner,
 						this.options.getKeyBinding,
-						'toolbar-toggle-more'
+						'toolbar-toggle-more',
+						this.options.anchorAlignmentProvider
 					);
 					this.toggleMenuActionItem.setActionContext(this.actionBar.context);
 
@@ -170,16 +171,17 @@ class ToggleMenuAction extends Action {
 	private _menuActions: IAction[];
 	private toggleDropdownMenu: () => void;
 
-	constructor(toggleDropdownMenu: () => void) {
-		super(ToggleMenuAction.ID, nls.localize('moreActions', "More Actions..."), null, true);
+	constructor(toggleDropdownMenu: () => void, title?: string) {
+		title = title || nls.localize('moreActions', "More Actions...");
+		super(ToggleMenuAction.ID, title, null, true);
 
 		this.toggleDropdownMenu = toggleDropdownMenu;
 	}
 
-	run(): TPromise<any> {
+	run(): Promise<any> {
 		this.toggleDropdownMenu();
 
-		return TPromise.as(true);
+		return Promise.resolve(true);
 	}
 
 	get menuActions() {

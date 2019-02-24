@@ -286,7 +286,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		this._proxy.$updateWizardPageInfo(handle, wizard.pages.map(page => this._wizardPageHandles.get(page)), wizard.currentPage);
 	}
 
-	private validateNavigation(handle: number, info: sqlops.window.modelviewdialog.WizardPageChangeInfo): Thenable<boolean> {
+	private validateNavigation(handle: number, info: sqlops.window.WizardPageChangeInfo): Thenable<boolean> {
 		return this._proxy.$validateNavigation(handle, info);
 	}
 

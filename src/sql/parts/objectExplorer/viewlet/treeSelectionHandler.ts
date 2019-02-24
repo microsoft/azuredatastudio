@@ -6,7 +6,7 @@
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
 import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/parts/objectExplorer/common/treeNode';
@@ -16,7 +16,7 @@ export class TreeSelectionHandler {
 	progressRunner: IProgressRunner;
 
 	private _clicks: number = 0;
-	private _doubleClickTimeoutId: number = -1;
+	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
 
 	constructor( @IProgressService private _progressService: IProgressService) {
 
@@ -47,8 +47,8 @@ export class TreeSelectionHandler {
 		}
 
 		// clear pending click timeouts to avoid sending multiple events on double-click
-		if (this._doubleClickTimeoutId !== -1) {
-			clearTimeout(this._doubleClickTimeoutId);
+		if (this._doubleClickTimeoutTimer) {
+			clearTimeout(this._doubleClickTimeoutTimer);
 		}
 
 		let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
@@ -56,14 +56,14 @@ export class TreeSelectionHandler {
 		// grab the current selection for use later
 		let selection = tree.getSelection();
 
-		this._doubleClickTimeoutId = setTimeout(() => {
+		this._doubleClickTimeoutTimer = setTimeout(() => {
 			// don't send tree update events while dragging
 			if (!TreeUpdateUtils.isInDragAndDrop) {
 				let isDoubleClick = this._clicks > 1;
 				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
 			}
 			this._clicks = 0;
-			this._doubleClickTimeoutId = -1;
+			this._doubleClickTimeoutTimer = undefined;
 		}, 300);
 	}
 

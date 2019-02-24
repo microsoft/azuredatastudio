@@ -6,7 +6,7 @@
 'use strict';
 import * as sqlops from 'sqlops';
 import { TaskNode, TaskStatus, TaskExecutionMode } from 'sql/parts/taskHistory/common/taskNode';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
@@ -62,7 +62,7 @@ export class TaskService implements ITaskService {
 		this._onTaskComplete = new Emitter<TaskNode>();
 		this._onAddNewTask = new Emitter<TaskNode>();
 
-		lifecycleService.onWillShutdown(event => event.veto(this.beforeShutdown()));
+		lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown()));
 
 	}
 
@@ -161,23 +161,23 @@ export class TaskService implements ITaskService {
 		return new TPromise<boolean>((resolve, reject) => {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
-				this.dialogService.show(Severity.Warning, message, options).done(choice => {
+				this.dialogService.show(Severity.Warning, message, options).then(choice => {
 					switch (choice) {
 						case 0:
-							let timeoutId: number;
+							let timeout: NodeJS.Timer;
 							let isTimeout = false;
 							this.cancelAllTasks().then(() => {
-								clearTimeout(timeoutId);
+								clearTimeout(timeout);
 								if (!isTimeout) {
 									resolve(false);
 								}
 							}, error => {
-								clearTimeout(timeoutId);
+								clearTimeout(timeout);
 								if (!isTimeout) {
 									resolve(false);
 								}
 							});
-							timeoutId = setTimeout(function () {
+							timeout = setTimeout(function () {
 								isTimeout = true;
 								resolve(false);
 							}, 2000);

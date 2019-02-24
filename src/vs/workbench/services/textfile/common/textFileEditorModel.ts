@@ -2,18 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as path from 'vs/base/common/paths';
 import * as nls from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise, TValueCallback, ErrorCallback } from 'vs/base/common/winjs.base';
-import { onUnexpectedError } from 'vs/base/common/errors';
+import { TPromise } from 'vs/base/common/winjs.base';
 import { guessMimeTypes } from 'vs/base/common/mime';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { IMode } from 'vs/editor/common/modes';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ITextFileService, IAutoSaveConfiguration, ModelState, ITextFileEditorModel, ISaveOptions, ISaveErrorHandler, ISaveParticipant, StateChange, SaveReason, IRawTextContent, ILoadOptions, LoadReason } from 'vs/workbench/services/textfile/common/textfiles';
@@ -22,10 +19,10 @@ import { BaseTextEditorModel } from 'vs/workbench/common/editor/textEditorModel'
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { IFileService, IFileStat, FileOperationError, FileOperationResult, CONTENT_CHANGE_EVENT_BUFFER_DELAY, FileChangesEvent, FileChangeType } from 'vs/platform/files/common/files';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IModeService } from 'vs/editor/common/services/modeService';
+import { IModeService, ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { RunOnceScheduler } from 'vs/base/common/async';
+import { RunOnceScheduler, timeout } from 'vs/base/common/async';
 import { ITextBufferFactory } from 'vs/editor/common/model';
 import { IHashService } from 'vs/workbench/services/hash/common/hashService';
 import { createTextBufferFactory } from 'vs/editor/common/model/textModel';
@@ -33,7 +30,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { isLinux } from 'vs/base/common/platform';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
-import { isEqual, isEqualOrParent, hasToIgnoreCase } from 'vs/base/common/resources';
+import { isEqual, isEqualOrParent } from 'vs/base/common/resources';
+import { onUnexpectedError } from 'vs/base/common/errors';
 
 /**
  * The text file editor model listens to changes to its underlying code editor model and saves these changes through the file service back to the disk.
@@ -153,13 +151,13 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 
 		if (fileEventImpactsModel && this.inOrphanMode !== newInOrphanModeGuess) {
-			let checkOrphanedPromise: TPromise<boolean>;
+			let checkOrphanedPromise: Thenable<boolean>;
 			if (newInOrphanModeGuess) {
 				// We have received reports of users seeing delete events even though the file still
 				// exists (network shares issue: https://github.com/Microsoft/vscode/issues/13665).
 				// Since we do not want to mark the model as orphaned, we have to check if the
 				// file is really gone and not just a faulty file event.
-				checkOrphanedPromise = TPromise.timeout(100).then(() => {
+				checkOrphanedPromise = timeout(100).then(() => {
 					if (this.disposed) {
 						return true;
 					}
@@ -167,10 +165,10 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 					return this.fileService.existsFile(this.resource).then(exists => !exists);
 				});
 			} else {
-				checkOrphanedPromise = TPromise.as(false);
+				checkOrphanedPromise = Promise.resolve(false);
 			}
 
-			checkOrphanedPromise.done(newInOrphanModeValidated => {
+			checkOrphanedPromise.then(newInOrphanModeValidated => {
 				if (this.inOrphanMode !== newInOrphanModeValidated && !this.disposed) {
 					this.setOrphaned(newInOrphanModeValidated);
 				}
@@ -198,9 +196,9 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 
 		const firstLineText = this.getFirstLineText(this.textEditorModel);
-		const mode = this.getOrCreateMode(this.modeService, void 0, firstLineText);
+		const languageSelection = this.getOrCreateMode(this.modeService, void 0, firstLineText);
 
-		this.modelService.setMode(this.textEditorModel, mode);
+		this.modelService.setMode(this.textEditorModel, languageSelection);
 	}
 
 	getVersionId(): number {
@@ -357,7 +355,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 			if (settingsType) {
 				/* __GDPR__
 					"settingsRead" : {
-						"settingsType": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+						"settingsType": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 					}
 				*/
 				this.telemetryService.publicLog('settingsRead', { settingsType }); // Do not log read to user settings.json and .vscode folder as a fileGet event as it ruins our JSON usage data
@@ -494,8 +492,8 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		return this.backupFileService.resolveBackupContent(backup).then(backupContent => backupContent, error => null /* ignore errors */);
 	}
 
-	protected getOrCreateMode(modeService: IModeService, preferredModeIds: string, firstLineText?: string): TPromise<IMode> {
-		return modeService.getOrCreateModeByFilenameOrFirstLine(this.resource.fsPath, firstLineText);
+	protected getOrCreateMode(modeService: IModeService, preferredModeIds: string, firstLineText?: string): ILanguageSelection {
+		return modeService.createByFilepathOrFirstLine(this.resource.fsPath, firstLineText);
 	}
 
 	private onModelContentChanged(): void {
@@ -570,7 +568,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 			// Only trigger save if the version id has not changed meanwhile
 			if (versionId === this.versionId) {
-				this.doSave(versionId, { reason: SaveReason.AUTO }).done(null, onUnexpectedError); // Very important here to not return the promise because if the timeout promise is canceled it will bubble up the error otherwise - do not change
+				this.doSave(versionId, { reason: SaveReason.AUTO }); // Very important here to not return the promise because if the timeout promise is canceled it will bubble up the error otherwise - do not change
 			}
 		}, this.autoSaveAfterMillies);
 
@@ -719,7 +717,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 				if (settingsType) {
 					/* __GDPR__
 						"settingsWritten" : {
-							"settingsType": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
+							"settingsType": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 						}
 					*/
 					this.telemetryService.publicLog('settingsWritten', { settingsType }); // Do not log write to user settings.json and .vscode folder as a filePUT event as it ruins our JSON usage data
@@ -795,7 +793,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 
 		// Check for snippets
-		if (isEqualOrParent(this.resource, URI.file(path.join(this.environmentService.appSettingsHome, 'snippets')), hasToIgnoreCase(this.resource))) {
+		if (isEqualOrParent(this.resource, URI.file(path.join(this.environmentService.appSettingsHome, 'snippets')))) {
 			return 'snippets';
 		}
 
@@ -803,7 +801,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		const folders = this.contextService.getWorkspace().folders;
 		for (let i = 0; i < folders.length; i++) {
 			// {{SQL CARBON EDIT}}
-			if (isEqualOrParent(this.resource, folders[i].toResource('.azuredatastudio'), hasToIgnoreCase(this.resource))) {
+			if (isEqualOrParent(this.resource, folders[i].toResource('.azuredatastudio'))) {
 				const filename = path.basename(this.resource.fsPath);
 				if (TextFileEditorModel.WHITELIST_WORKSPACE_JSON.indexOf(filename) > -1) {
 					// {{SQL CARBON EDIT}}
@@ -850,7 +848,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 			// Updated resolved stat with updated stat since touching it might have changed mtime
 			this.updateLastResolvedDiskStat(stat);
-		}, () => void 0 /* gracefully ignore errors if just touching */));
+		}, error => onUnexpectedError(error) /* just log any error but do not notify the user since the file was not dirty */));
 	}
 
 	private setDirty(dirty: boolean): () => void {
@@ -963,7 +961,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 			}
 
 			if (!this.inConflictMode) {
-				this.save({ overwriteEncoding: true }).done(null, onUnexpectedError);
+				this.save({ overwriteEncoding: true });
 			}
 		}
 
@@ -980,7 +978,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 			// Load
 			this.load({
 				forceReadFromDisk: true	// because encoding has changed
-			}).done(null, onUnexpectedError);
+			});
 		}
 	}
 
@@ -1043,14 +1041,14 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 interface IPendingSave {
 	versionId: number;
-	promise: TPromise<void>;
+	promise: Thenable<void>;
 }
 
 interface ISaveOperation {
-	promise: TPromise<void>;
-	promiseValue: TValueCallback<void>;
-	promiseError: ErrorCallback;
-	run: () => TPromise<void>;
+	promise: Thenable<void>;
+	promiseResolve: () => void;
+	promiseReject: (error: Error) => void;
+	run: () => Thenable<void>;
 }
 
 export class SaveSequentializer {
@@ -1069,14 +1067,14 @@ export class SaveSequentializer {
 		return !!this._pendingSave;
 	}
 
-	get pendingSave(): TPromise<void> {
+	get pendingSave(): Thenable<void> {
 		return this._pendingSave ? this._pendingSave.promise : void 0;
 	}
 
-	setPending(versionId: number, promise: TPromise<void>): TPromise<void> {
+	setPending(versionId: number, promise: Thenable<void>): Thenable<void> {
 		this._pendingSave = { versionId, promise };
 
-		promise.done(() => this.donePending(versionId), () => this.donePending(versionId));
+		promise.then(() => this.donePending(versionId), () => this.donePending(versionId));
 
 		return promise;
 	}
@@ -1098,28 +1096,28 @@ export class SaveSequentializer {
 			this._nextSave = void 0;
 
 			// Run next save and complete on the associated promise
-			saveOperation.run().done(saveOperation.promiseValue, saveOperation.promiseError);
+			saveOperation.run().then(saveOperation.promiseResolve, saveOperation.promiseReject);
 		}
 	}
 
-	setNext(run: () => TPromise<void>): TPromise<void> {
+	setNext(run: () => Thenable<void>): Thenable<void> {
 
 		// this is our first next save, so we create associated promise with it
 		// so that we can return a promise that completes when the save operation
 		// has completed.
 		if (!this._nextSave) {
-			let promiseValue: TValueCallback<void>;
-			let promiseError: ErrorCallback;
-			const promise = new TPromise<void>((c, e) => {
-				promiseValue = c;
-				promiseError = e;
+			let promiseResolve: () => void;
+			let promiseReject: (error: Error) => void;
+			const promise = new Promise<void>((resolve, reject) => {
+				promiseResolve = resolve;
+				promiseReject = reject;
 			});
 
 			this._nextSave = {
 				run,
 				promise,
-				promiseValue,
-				promiseError
+				promiseResolve: promiseResolve,
+				promiseReject: promiseReject
 			};
 		}
 

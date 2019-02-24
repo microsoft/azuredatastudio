@@ -2,16 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as strings from 'vs/base/common/strings';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorInput, EditorModel, ITextEditorModel } from 'vs/workbench/common/editor';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IReference, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { telemetryURIDescriptor } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { marked } from 'vs/base/common/marked/marked';
+import * as marked from 'vs/base/common/marked/marked';
 import { Schemas } from 'vs/base/common/network';
 import { IHashService } from 'vs/workbench/services/hash/common/hashService';
 
@@ -52,7 +50,7 @@ export class WalkThroughInput extends EditorInput {
 
 	private disposables: IDisposable[] = [];
 
-	private promise: TPromise<WalkThroughModel>;
+	private promise: Thenable<WalkThroughModel>;
 
 	private maxTopScroll = 0;
 	private maxBottomScroll = 0;
@@ -102,7 +100,7 @@ export class WalkThroughInput extends EditorInput {
 		return this.options.onReady;
 	}
 
-	resolve(): TPromise<WalkThroughModel> {
+	resolve(): Thenable<WalkThroughModel> {
 		if (!this.promise) {
 			this.promise = this.textModelResolverService.createModelReference(this.options.resource)
 				.then(ref => {
@@ -110,7 +108,7 @@ export class WalkThroughInput extends EditorInput {
 						return new WalkThroughModel(ref, []);
 					}
 
-					const snippets: TPromise<IReference<ITextEditorModel>>[] = [];
+					const snippets: Thenable<IReference<ITextEditorModel>>[] = [];
 					let i = 0;
 					const renderer = new marked.Renderer();
 					renderer.code = (code, lang) => {
@@ -122,7 +120,7 @@ export class WalkThroughInput extends EditorInput {
 					const markdown = ref.object.textEditorModel.getLinesContent().join('\n');
 					marked(markdown, { renderer });
 
-					return TPromise.join(snippets)
+					return Promise.all(snippets)
 						.then(refs => new WalkThroughModel(ref, refs));
 				});
 		}

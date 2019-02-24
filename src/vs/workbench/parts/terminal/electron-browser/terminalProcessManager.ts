@@ -7,7 +7,6 @@ import * as platform from 'vs/base/common/platform';
 import * as terminalEnvironment from 'vs/workbench/parts/terminal/node/terminalEnvironment';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ProcessState, ITerminalProcessManager, IShellLaunchConfig, ITerminalConfigHelper } from 'vs/workbench/parts/terminal/common/terminal';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
@@ -17,6 +16,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { TerminalProcess } from 'vs/workbench/parts/terminal/node/terminalProcess';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { IWindowService } from 'vs/platform/windows/common/windows';
+import { Schemas } from 'vs/base/common/network';
+import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 
 /** The amount of time to consider terminal errors to be related to the launch */
 const LAUNCHING_DURATION = 500;
@@ -31,7 +33,7 @@ const LAUNCHING_DURATION = 500;
  */
 export class TerminalProcessManager implements ITerminalProcessManager {
 	public processState: ProcessState = ProcessState.UNINITIALIZED;
-	public ptyProcessReady: TPromise<void>;
+	public ptyProcessReady: Promise<void>;
 	public shellProcessId: number;
 	public initialCwd: string;
 
@@ -55,9 +57,10 @@ export class TerminalProcessManager implements ITerminalProcessManager {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@ILogService private readonly _logService: ILogService,
 		@IWorkspaceContextService private readonly _workspaceContextService: IWorkspaceContextService,
-		@IConfigurationResolverService private readonly _configurationResolverService: IConfigurationResolverService
+		@IConfigurationResolverService private readonly _configurationResolverService: IConfigurationResolverService,
+		@IWindowService private readonly _windowService: IWindowService
 	) {
-		this.ptyProcessReady = new TPromise<void>(c => {
+		this.ptyProcessReady = new Promise<void>(c => {
 			this.onProcessReady(() => {
 				this._logService.debug(`Terminal process ready (shellProcessId: ${this.shellProcessId})`);
 				c(void 0);
@@ -65,13 +68,13 @@ export class TerminalProcessManager implements ITerminalProcessManager {
 		});
 	}
 
-	public dispose(): void {
+	public dispose(immediate?: boolean): void {
 		if (this._process) {
 			// If the process was still connected this dispose came from
 			// within VS Code, not the process, so mark the process as
 			// killed by the user.
 			this.processState = ProcessState.KILLED_BY_USER;
-			this._process.shutdown();
+			this._process.shutdown(immediate);
 			this._process = null;
 		}
 		this._disposables.forEach(d => d.dispose());
@@ -87,19 +90,19 @@ export class TerminalProcessManager implements ITerminalProcessManager {
 		cols: number,
 		rows: number
 	): void {
-		const extensionHostOwned = (<any>this._configHelper.config).extHostProcess;
-		if (extensionHostOwned) {
-			this._process = this._instantiationService.createInstance(TerminalProcessExtHostProxy, this._terminalId, shellLaunchConfig, cols, rows);
+		if (this._windowService.getConfiguration().remoteAuthority) {
+			const activeWorkspaceRootUri = this._historyService.getLastActiveWorkspaceRoot(REMOTE_HOST_SCHEME);
+			this._process = this._instantiationService.createInstance(TerminalProcessExtHostProxy, this._terminalId, shellLaunchConfig, activeWorkspaceRootUri, cols, rows);
 		} else {
 			if (!shellLaunchConfig.executable) {
 				this._configHelper.mergeDefaultShellPathAndArgs(shellLaunchConfig);
 			}
-
-			const lastActiveWorkspaceRootUri = this._historyService.getLastActiveWorkspaceRoot('file');
-			this.initialCwd = terminalEnvironment.getCwd(shellLaunchConfig, lastActiveWorkspaceRootUri, this._configHelper);
+			// TODO: @daniel
+			const activeWorkspaceRootUri = this._historyService.getLastActiveWorkspaceRoot(Schemas.file);
+			this.initialCwd = terminalEnvironment.getCwd(shellLaunchConfig, activeWorkspaceRootUri, this._configHelper.config.cwd);
 
 			// Resolve env vars from config and shell
-			const lastActiveWorkspaceRoot = this._workspaceContextService.getWorkspaceFolder(lastActiveWorkspaceRootUri);
+			const lastActiveWorkspaceRoot = this._workspaceContextService.getWorkspaceFolder(activeWorkspaceRootUri);
 			const platformKey = platform.isWindows ? 'windows' : (platform.isMacintosh ? 'osx' : 'linux');
 			const envFromConfig = terminalEnvironment.resolveConfigurationVariables(this._configurationResolverService, { ...this._configHelper.config.env[platformKey] }, lastActiveWorkspaceRoot);
 			const envFromShell = terminalEnvironment.resolveConfigurationVariables(this._configurationResolverService, { ...shellLaunchConfig.env }, lastActiveWorkspaceRoot);

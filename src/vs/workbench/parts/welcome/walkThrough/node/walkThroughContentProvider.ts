@@ -3,17 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { TPromise } from 'vs/base/common/winjs.base';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { ITextModelService, ITextModelContentProvider } from 'vs/editor/common/services/resolverService';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { ITextModel, DefaultEndOfLine, EndOfLinePreference, ITextBufferFactory } from 'vs/editor/common/model';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { marked } from 'vs/base/common/marked/marked';
+import * as marked from 'vs/base/common/marked/marked';
 import { Schemas } from 'vs/base/common/network';
 import { Range } from 'vs/editor/common/core/range';
 
@@ -28,9 +25,9 @@ export class WalkThroughContentProvider implements ITextModelContentProvider, IW
 		this.textModelResolverService.registerTextModelContentProvider(Schemas.walkThrough, this);
 	}
 
-	public provideTextContent(resource: URI): TPromise<ITextModel> {
+	public provideTextContent(resource: URI): Thenable<ITextModel> {
 		const query = resource.query ? JSON.parse(resource.query) : {};
-		const content: TPromise<string | ITextBufferFactory> = (query.moduleId ? new TPromise<string>((resolve, reject) => {
+		const content: Thenable<string | ITextBufferFactory> = (query.moduleId ? new Promise<string>((resolve, reject) => {
 			require([query.moduleId], content => {
 				try {
 					resolve(content.default());
@@ -42,7 +39,7 @@ export class WalkThroughContentProvider implements ITextModelContentProvider, IW
 		return content.then(content => {
 			let codeEditorModel = this.modelService.getModel(resource);
 			if (!codeEditorModel) {
-				codeEditorModel = this.modelService.createModel(content, this.modeService.getOrCreateModeByFilenameOrFirstLine(resource.fsPath), resource);
+				codeEditorModel = this.modelService.createModel(content, this.modeService.createByFilepathOrFirstLine(resource.fsPath), resource);
 			} else {
 				this.modelService.updateModel(codeEditorModel, content);
 			}
@@ -63,7 +60,7 @@ export class WalkThroughSnippetContentProvider implements ITextModelContentProvi
 		this.textModelResolverService.registerTextModelContentProvider(Schemas.walkThroughSnippet, this);
 	}
 
-	public provideTextContent(resource: URI): TPromise<ITextModel> {
+	public provideTextContent(resource: URI): Thenable<ITextModel> {
 		return this.textFileService.resolveTextContent(URI.file(resource.fsPath)).then(content => {
 			let codeEditorModel = this.modelService.getModel(resource);
 			if (!codeEditorModel) {
@@ -87,9 +84,9 @@ export class WalkThroughSnippetContentProvider implements ITextModelContentProvi
 				const markdown = textBuffer.getValueInRange(range, EndOfLinePreference.TextDefined);
 				marked(markdown, { renderer });
 
-				const modeId = this.modeService.getModeIdForLanguageName(languageName);
-				const mode = this.modeService.getOrCreateMode(modeId);
-				codeEditorModel = this.modelService.createModel(codeSnippet, mode, resource);
+				const languageId = this.modeService.getModeIdForLanguageName(languageName);
+				const languageSelection = this.modeService.create(languageId);
+				codeEditorModel = this.modelService.createModel(codeSnippet, languageSelection, resource);
 			} else {
 				this.modelService.updateModel(codeEditorModel, content.value);
 			}

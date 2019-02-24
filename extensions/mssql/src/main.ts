@@ -191,7 +191,7 @@ async function handleNewNotebookTask(oeContext?: sqlops.ObjectExplorerContext, p
 		let hdfsPath: string = oeContext.nodeInfo.nodePath.substring(oeContext.nodeInfo.nodePath.indexOf('/HDFS') + '/HDFS'.length);
 		if (hdfsPath.length > 0) {
 			let analyzeCommand = '#' + msgSampleCodeDataFrame + os.EOL + 'df = (spark.read.option("inferSchema", "true")'
-				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv(\'{0}\'))' + os.EOL + 'df.show(10)';
+				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
 			editor.edit(editBuilder => {
 				editBuilder.replace(0, {
 					cell_type: 'code',

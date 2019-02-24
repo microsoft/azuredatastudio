@@ -42,7 +42,7 @@ export class GridActionProvider {
 	/**
 	 * Return actions given a click on a grid
 	 */
-	public getGridActions(): TPromise<IAction[]> {
+	public getGridActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveFormat.CSV, this._dataService));
 		actions.push(new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveFormat.JSON, this._dataService));
@@ -52,17 +52,17 @@ export class GridActionProvider {
 		actions.push(new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false, this._dataService));
 		actions.push(new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true, this._dataService));
 
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	/**
 	 * Return actions given a click on a messages pane
 	 */
-	public getMessagesActions(dataService: DataService, selectAllCallback: () => void): TPromise<IAction[]> {
+	public getMessagesActions(dataService: DataService, selectAllCallback: () => void): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(CopyMessagesAction, CopyMessagesAction.ID, CopyMessagesAction.LABEL));
 		actions.push(new SelectAllMessagesAction(SelectAllMessagesAction.ID, SelectAllMessagesAction.LABEL, selectAllCallback));
-		return TPromise.as(actions);
+		return actions;
 	}
 }
 

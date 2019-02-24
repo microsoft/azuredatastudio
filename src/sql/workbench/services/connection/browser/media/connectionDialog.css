@@ -1,0 +1,136 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.connection-label {
+	width: 80px;
+	padding-bottom: 5px;
+}
+
+.connection-input {
+	width: 200px;
+	padding-bottom: 5px;
+}
+
+.connection-dialog {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.connection-dialog .tabbedPanel {
+	border-top-color: transparent;
+	flex: 1 1;
+	min-height: 120px;
+	overflow: hidden;
+	margin: 0px 11px;
+}
+
+.connection-dialog .tab-container {
+	overflow: hidden;
+	flex: 1 1;
+	display: flex;
+	flex-direction: column;
+}
+
+.connection-recent, .connection-saved {
+	margin: 5px;
+	flex: 1 1;
+	overflow-y: auto;
+}
+
+.no-recent-connections, .no-saved-connections {
+	font-size: 12px;
+	padding-top: 5px;
+}
+
+.connection-history-label {
+	font-size: 15px;
+	display: inline;
+	text-align: left;
+}
+
+.recent-titles-container {
+	display: flex;
+	justify-content: space-between;
+	margin: 5px;
+	flex: 0 0 auto;
+}
+
+.connection-provider-info {
+	overflow-y: hidden;
+	margin: 15px;
+}
+
+.connection-recent-content {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.connection-recent-content .server-explorer-viewlet {
+	flex: 1 1;
+}
+
+.connection-table-content {
+	width:100%;
+	table-layout: fixed;
+}
+
+.connection-saved-content {
+	height: 100%;
+}
+
+.connection-type {
+	flex: 0 0 auto;
+	overflow: hidden;
+	margin: 0px 13px;
+}
+
+.vs-dark .connection-dialog .connection-history-actions .action-label.icon,
+.hc-black .connection-dialog .connection-history-actions .action-label.icon,
+.connection-dialog .connection-history-actions .action-label.icon {
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	min-width: 20px;
+	background-size: 16px;
+	background-position: 2px center;
+	background-repeat: no-repeat;
+	padding-left: 25px;
+}
+
+.search-action.clear-search-results {
+	background: url('clear-search-results.svg');
+}
+
+.vs-dark .search-action.clear-search-results,
+.hc-black .search-action.clear-search-results {
+	background: url('clear-search-results-dark.svg');
+}
+
+.connection-details-title {
+	font-size: 14px;
+	margin: 5px 0px;
+	padding: 5px 15px;
+	font-weight: 600;
+}
+
+.hide-azure-accounts .azure-account-row {
+	display: none;
+}
+
+.hide-username-password .username-password-row {
+	display: none;
+}
+
+.hide-refresh-link .azure-account-row.refresh-credentials-link {
+	display: none;
+}
+
+.hide-azure-tenants .azure-tenant-row {
+	display: none;
+}

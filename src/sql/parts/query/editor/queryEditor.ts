@@ -43,11 +43,12 @@ import {
 	ActualQueryPlanAction
 } from 'sql/parts/query/execution/queryActions';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { IEditorDescriptorService } from 'sql/parts/query/editor/editorDescriptorService';
+import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -99,9 +100,10 @@ export class QueryEditor extends BaseEditor {
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(QueryEditor.ID, _telemetryService, themeService);
+		super(QueryEditor.ID, _telemetryService, themeService, storageService);
 
 		this._orientation = Orientation.HORIZONTAL;
 

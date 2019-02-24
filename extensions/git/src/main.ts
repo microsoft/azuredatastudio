@@ -3,11 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-import { ExtensionContext, workspace, window, Disposable, commands, OutputChannel } from 'vscode';
+
+import { ExtensionContext, workspace, window, Disposable, commands, OutputChannel } from 'vscode'; // {{SQL CARBON EDIT}} - remove unused imports
 import { findGit, Git, IGit } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';
@@ -16,8 +15,12 @@ import { GitDecorations } from './decorationProvider';
 import { Askpass } from './askpass';
 import { toDisposable, filterEvent, eventToPromise } from './util';
 import TelemetryReporter from 'vscode-extension-telemetry';
-import { API, NoopAPIImpl, APIImpl } from './api';
+import { GitExtension } from './api/git';
 import { GitProtocolHandler } from './protocolHandler';
+import { GitExtensionImpl } from './api/extension';
+// {{SQL CARBON EDIT}} - remove unused imports
+// import * as path from 'path';
+// import * as fs from 'fs';
 
 const deactivateTasks: { (): Promise<any>; }[] = [];
 
@@ -69,7 +72,57 @@ async function createModel(context: ExtensionContext, outputChannel: OutputChann
 	return model;
 }
 
-export async function activate(context: ExtensionContext): Promise<API> {
+// {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
+// async function isGitRepository(folder: WorkspaceFolder): Promise<boolean> {
+// 	if (folder.uri.scheme !== 'file') {
+// 		return false;
+// 	}
+
+// 	const dotGit = path.join(folder.uri.fsPath, '.git');
+
+// 	try {
+// 		const dotGitStat = await new Promise<fs.Stats>((c, e) => fs.stat(dotGit, (err, stat) => err ? e(err) : c(stat)));
+// 		return dotGitStat.isDirectory();
+// 	} catch (err) {
+// 		return false;
+// 	}
+// }
+
+// {{SQL CARBON EDIT}} - Comment out function that is unused due to our edit below
+// async function warnAboutMissingGit(): Promise<void> {
+// 	const config = workspace.getConfiguration('git');
+// 	const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
+
+// 	if (shouldIgnore) {
+// 		return;
+// 	}
+
+// 	if (!workspace.workspaceFolders) {
+// 		return;
+// 	}
+
+// 	const areGitRepositories = await Promise.all(workspace.workspaceFolders.map(isGitRepository));
+
+// 	if (areGitRepositories.every(isGitRepository => !isGitRepository)) {
+// 		return;
+// 	}
+
+// 	const download = localize('downloadgit', "Download Git");
+// 	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
+// 	const choice = await window.showWarningMessage(
+// 		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
+// 		download,
+// 		neverShowAgain
+// 	);
+
+// 	if (choice === download) {
+// 		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
+// 	} else if (choice === neverShowAgain) {
+// 		await config.update('ignoreMissingGitWarning', true, true);
+// 	}
+// }
+
+export async function activate(context: ExtensionContext): Promise<GitExtension> {
 	const disposables: Disposable[] = [];
 	context.subscriptions.push(new Disposable(() => Disposable.from(...disposables).dispose()));
 
@@ -77,7 +130,7 @@ export async function activate(context: ExtensionContext): Promise<API> {
 	commands.registerCommand('git.showOutput', () => outputChannel.show());
 	disposables.push(outputChannel);
 
-	const { name, version, aiKey } = require(context.asAbsolutePath('./package.json')) as { name: string, version: string, aiKey: string };
+	const { name, version, aiKey } = require('../package.json') as { name: string, version: string, aiKey: string };
 	const telemetryReporter = new TelemetryReporter(name, version, aiKey);
 	deactivateTasks.push(() => telemetryReporter.dispose());
 
@@ -87,46 +140,32 @@ export async function activate(context: ExtensionContext): Promise<API> {
 	if (!enabled) {
 		const onConfigChange = filterEvent(workspace.onDidChangeConfiguration, e => e.affectsConfiguration('git'));
 		const onEnabled = filterEvent(onConfigChange, () => workspace.getConfiguration('git', null).get<boolean>('enabled') === true);
-		await eventToPromise(onEnabled);
+		const result = new GitExtensionImpl();
+
+		eventToPromise(onEnabled).then(async () => result.model = await createModel(context, outputChannel, telemetryReporter, disposables));
+		return result;
 	}
 
 	try {
 		const model = await createModel(context, outputChannel, telemetryReporter, disposables);
-		return new APIImpl(model);
+		return new GitExtensionImpl(model);
 	} catch (err) {
 		if (!/Git installation not found/.test(err.message || '')) {
 			throw err;
 		}
 
 		// {{SQL CARBON EDIT}} turn-off Git missing prompt
-		//const config = workspace.getConfiguration('git');
-		//const shouldIgnore = config.get<boolean>('ignoreMissingGitWarning') === true;
+		// console.warn(err.message);
+		// outputChannel.appendLine(err.message);
 
-		// if (!shouldIgnore) {
-		// 	console.warn(err.message);
-		// 	outputChannel.appendLine(err.message);
-		// 	outputChannel.show();
+		// warnAboutMissingGit();
 
-		// 	const download = localize('downloadgit', "Download Git");
-		// 	const neverShowAgain = localize('neverShowAgain', "Don't Show Again");
-		// 	const choice = await window.showWarningMessage(
-		// 		localize('notfound', "Git not found. Install it or configure it using the 'git.path' setting."),
-		// 		download,
-		// 		neverShowAgain
-		// 	);
-
-		// 	if (choice === download) {
-		// 		commands.executeCommand('vscode.open', Uri.parse('https://git-scm.com/'));
-		// 	} else if (choice === neverShowAgain) {
-		// 		await config.update('ignoreMissingGitWarning', true, true);
-		// 	}
-		// }
-
-		return new NoopAPIImpl();
+		return new GitExtensionImpl();
 	}
 }
 
-async function checkGitVersion(info: IGit): Promise<void> {
+// {{SQL CARBON EDIT}} - Rename info to _info to prevent error due to unused variable
+async function checkGitVersion(_info: IGit): Promise<void> {
 
 	// {{SQL CARBON EDIT}}
 	// remove Git version check for azuredatastudio

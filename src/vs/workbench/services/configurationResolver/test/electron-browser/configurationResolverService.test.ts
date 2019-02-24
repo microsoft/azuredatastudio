@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import uri from 'vs/base/common/uri';
+import { URI as uri } from 'vs/base/common/uri';
 import * as platform from 'vs/base/common/platform';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService, getConfigurationValue, IConfigurationOverrides } from 'vs/platform/configuration/common/configuration';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
@@ -15,6 +14,9 @@ import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { TestEnvironmentService, TestEditorService, TestContextService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IQuickInputService, IQuickPickItem, QuickPickInput, IPickOptions, Omit, IInputOptions, IQuickInputButton, IQuickPick, IInputBox, IQuickNavigateConfiguration } from 'vs/platform/quickinput/common/quickInput';
+import { CancellationToken } from 'vscode';
+import * as Types from 'vs/base/common/types';
 
 suite('Configuration Resolver Service', () => {
 	let configurationResolverService: IConfigurationResolverService;
@@ -22,17 +24,19 @@ suite('Configuration Resolver Service', () => {
 	let mockCommandService: MockCommandService;
 	let editorService: TestEditorService;
 	let workspace: IWorkspaceFolder;
+	let quickInputService: MockQuickInputService;
 
 	setup(() => {
 		mockCommandService = new MockCommandService();
 		editorService = new TestEditorService();
+		quickInputService = new MockQuickInputService();
 		workspace = {
 			uri: uri.parse('file:///VSCode/workspaceLocation'),
 			name: 'hey',
 			index: 0,
 			toResource: () => null
 		};
-		configurationResolverService = new ConfigurationResolverService(envVariables, editorService, TestEnvironmentService, new TestConfigurationService(), mockCommandService, new TestContextService());
+		configurationResolverService = new ConfigurationResolverService(envVariables, editorService, TestEnvironmentService, new MockInputsConfigurationService(), mockCommandService, new TestContextService(), quickInputService);
 	});
 
 	teardown(() => {
@@ -117,7 +121,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 		assert.strictEqual(service.resolve(workspace, 'abc ${config:editor.fontFamily} xyz'), 'abc foo xyz');
 	});
 
@@ -134,7 +138,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 		assert.strictEqual(service.resolve(workspace, 'abc ${config:editor.fontFamily} ${config:terminal.integrated.fontFamily} xyz'), 'abc foo bar xyz');
 	});
 
@@ -151,7 +155,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 		if (platform.isWindows) {
 			assert.strictEqual(service.resolve(workspace, 'abc ${config:editor.fontFamily} ${workspaceFolder} ${env:key1} xyz'), 'abc foo \\VSCode\\workspaceLocation Value for key1 xyz');
 		} else {
@@ -172,7 +176,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 		if (platform.isWindows) {
 			assert.strictEqual(service.resolve(workspace, '${config:editor.fontFamily} ${config:terminal.integrated.fontFamily} ${workspaceFolder} - ${workspaceFolder} ${env:key1} - ${env:key2}'), 'foo bar \\VSCode\\workspaceLocation - \\VSCode\\workspaceLocation Value for key1 - Value for key2');
 		} else {
@@ -206,7 +210,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 		assert.strictEqual(service.resolve(workspace, 'abc ${config:editor.fontFamily} ${config:editor.lineNumbers} ${config:editor.insertSpaces} xyz'), 'abc foo 123 false xyz');
 	});
 
@@ -216,7 +220,7 @@ suite('Configuration Resolver Service', () => {
 			editor: {}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 		assert.strictEqual(service.resolve(workspace, 'abc ${unknownVariable} xyz'), 'abc ${unknownVariable} xyz');
 		assert.strictEqual(service.resolve(workspace, 'abc ${env:unknownVariable} xyz'), 'abc  xyz');
 	});
@@ -229,7 +233,7 @@ suite('Configuration Resolver Service', () => {
 			}
 		});
 
-		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService());
+		let service = new ConfigurationResolverService(envVariables, new TestEditorService(), TestEnvironmentService, configurationService, mockCommandService, new TestContextService(), quickInputService);
 
 		assert.throws(() => service.resolve(workspace, 'abc ${env} xyz'));
 		assert.throws(() => service.resolve(workspace, 'abc ${env:} xyz'));
@@ -252,7 +256,7 @@ suite('Configuration Resolver Service', () => {
 			'outDir': null
 		};
 
-		return configurationResolverService.resolveWithCommands(undefined, configuration).then(result => {
+		return configurationResolverService.resolveWithInteractionReplace(undefined, configuration).then(result => {
 
 			assert.deepEqual(result, {
 				'name': 'Attach to Process',
@@ -281,7 +285,7 @@ suite('Configuration Resolver Service', () => {
 		const commandVariables = Object.create(null);
 		commandVariables['commandVariable1'] = 'command1';
 
-		return configurationResolverService.resolveWithCommands(undefined, configuration, commandVariables).then(result => {
+		return configurationResolverService.resolveWithInteractionReplace(undefined, configuration, undefined, commandVariables).then(result => {
 
 			assert.deepEqual(result, {
 				'name': 'Attach to Process',
@@ -314,7 +318,7 @@ suite('Configuration Resolver Service', () => {
 		const commandVariables = Object.create(null);
 		commandVariables['commandVariable1'] = 'command1';
 
-		return configurationResolverService.resolveWithCommands(undefined, configuration, commandVariables).then(result => {
+		return configurationResolverService.resolveWithInteractionReplace(undefined, configuration, undefined, commandVariables).then(result => {
 
 			assert.deepEqual(result, {
 				'name': 'Attach to Process',
@@ -345,7 +349,7 @@ suite('Configuration Resolver Service', () => {
 		const commandVariables = Object.create(null);
 		commandVariables['commandVariable1'] = 'command1';
 
-		return configurationResolverService.resolveWithCommands(undefined, configuration, commandVariables).then(result => {
+		return configurationResolverService.resolveWithInteractionReplace(undefined, configuration, undefined, commandVariables).then(result => {
 
 			assert.deepEqual(result, {
 				'name': 'Attach to Process',
@@ -353,6 +357,87 @@ suite('Configuration Resolver Service', () => {
 				'request': 'attach',
 				'processId': 'Value for key1',
 				'value': 'Value for key1'
+			});
+
+			assert.equal(1, mockCommandService.callCount);
+		});
+	});
+	test('a single prompt input variable', () => {
+
+		const configuration = {
+			'name': 'Attach to Process',
+			'type': 'node',
+			'request': 'attach',
+			'processId': '${input:input1}',
+			'port': 5858,
+			'sourceMaps': false,
+			'outDir': null
+		};
+
+		return configurationResolverService.resolveWithInteractionReplace(workspace, configuration, 'tasks').then(result => {
+
+			assert.deepEqual(result, {
+				'name': 'Attach to Process',
+				'type': 'node',
+				'request': 'attach',
+				'processId': 'resolvedEnterinput1',
+				'port': 5858,
+				'sourceMaps': false,
+				'outDir': null
+			});
+
+			assert.equal(0, mockCommandService.callCount);
+		});
+	});
+	test('a single pick input variable', () => {
+
+		const configuration = {
+			'name': 'Attach to Process',
+			'type': 'node',
+			'request': 'attach',
+			'processId': '${input:input2}',
+			'port': 5858,
+			'sourceMaps': false,
+			'outDir': null
+		};
+
+		return configurationResolverService.resolveWithInteractionReplace(workspace, configuration, 'tasks').then(result => {
+
+			assert.deepEqual(result, {
+				'name': 'Attach to Process',
+				'type': 'node',
+				'request': 'attach',
+				'processId': 'selectedPick',
+				'port': 5858,
+				'sourceMaps': false,
+				'outDir': null
+			});
+
+			assert.equal(0, mockCommandService.callCount);
+		});
+	});
+	test('several input variables and command', () => {
+
+		const configuration = {
+			'name': '${input:input3}',
+			'type': '${command:command1}',
+			'request': '${input:input1}',
+			'processId': '${input:input2}',
+			'port': 5858,
+			'sourceMaps': false,
+			'outDir': null
+		};
+
+		return configurationResolverService.resolveWithInteractionReplace(workspace, configuration, 'tasks').then(result => {
+
+			assert.deepEqual(result, {
+				'name': 'resolvedEnterinput3',
+				'type': 'command1-result',
+				'request': 'resolvedEnterinput1',
+				'processId': 'selectedPick',
+				'port': 5858,
+				'sourceMaps': false,
+				'outDir': null
 			});
 
 			assert.equal(1, mockCommandService.callCount);
@@ -381,7 +466,7 @@ class MockConfigurationService implements IConfigurationService {
 
 		return object;
 	}
-	public updateValue(): TPromise<void> { return null; }
+	public updateValue(): Promise<void> { return null; }
 	public getConfigurationData(): any { return null; }
 	public onDidChangeConfiguration() { return { dispose() { } }; }
 	public reloadConfiguration() { return null; }
@@ -393,7 +478,7 @@ class MockCommandService implements ICommandService {
 	public callCount = 0;
 
 	onWillExecuteCommand = () => Disposable.None;
-	public executeCommand(commandId: string, ...args: any[]): TPromise<any> {
+	public executeCommand(commandId: string, ...args: any[]): Promise<any> {
 		this.callCount++;
 
 		let result = `${commandId}-result`;
@@ -403,6 +488,90 @@ class MockCommandService implements ICommandService {
 			}
 		}
 
-		return TPromise.as(result);
+		return Promise.resolve(result);
+	}
+}
+
+class MockQuickInputService implements IQuickInputService {
+	_serviceBrand: any;
+
+	public pick<T extends IQuickPickItem>(picks: Thenable<QuickPickInput<T>[]> | QuickPickInput<T>[], options?: IPickOptions<T> & { canPickMany: true }, token?: CancellationToken): Promise<T[]>;
+	public pick<T extends IQuickPickItem>(picks: Thenable<QuickPickInput<T>[]> | QuickPickInput<T>[], options?: IPickOptions<T> & { canPickMany: false }, token?: CancellationToken): Promise<T>;
+	public pick<T extends IQuickPickItem>(picks: Thenable<QuickPickInput<T>[]> | QuickPickInput<T>[], options?: Omit<IPickOptions<T>, 'canPickMany'>, token?: CancellationToken): Promise<T> {
+		if (Types.isArray(picks)) {
+			return Promise.resolve(<T>{ label: 'selectedPick', description: 'pick description' });
+		} else {
+			return Promise.resolve(undefined);
+		}
+	}
+
+	public input(options?: IInputOptions, token?: CancellationToken): Promise<string> {
+		return Promise.resolve('resolved' + options.prompt);
+	}
+
+	backButton: IQuickInputButton;
+
+	createQuickPick<T extends IQuickPickItem>(): IQuickPick<T> {
+		throw new Error('not implemented.');
+	}
+
+	createInputBox(): IInputBox {
+		throw new Error('not implemented.');
+	}
+
+	focus(): void {
+		throw new Error('not implemented.');
+	}
+
+	toggle(): void {
+		throw new Error('not implemented.');
+	}
+
+	navigate(next: boolean, quickNavigate?: IQuickNavigateConfiguration): void {
+		throw new Error('not implemented.');
+	}
+
+	accept(): Promise<void> {
+		throw new Error('not implemented.');
+	}
+
+	back(): Promise<void> {
+		throw new Error('not implemented.');
+	}
+
+	cancel(): Promise<void> {
+		throw new Error('not implemented.');
+	}
+}
+
+class MockInputsConfigurationService extends TestConfigurationService {
+	public getValue(arg1?: any, arg2?: any): any {
+		let configuration;
+		if (arg1 === 'tasks') {
+			configuration = {
+				inputs: [
+					{
+						id: 'input1',
+						type: 'promptString',
+						description: 'Enterinput1',
+						default: 'default input1'
+					},
+					{
+						id: 'input2',
+						type: 'pickString',
+						description: 'Enterinput1',
+						default: 'option2',
+						options: ['option1', 'option2', 'option3']
+					},
+					{
+						id: 'input3',
+						type: 'promptString',
+						description: 'Enterinput3',
+						default: 'default input3'
+					}
+				]
+			};
+		}
+		return configuration;
 	}
 }

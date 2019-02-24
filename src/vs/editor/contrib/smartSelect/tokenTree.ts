@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
@@ -11,7 +10,25 @@ import { LineTokens } from 'vs/editor/common/core/lineTokens';
 import { ignoreBracketsInToken } from 'vs/editor/common/modes/supports';
 import { BracketsUtils, RichEditBrackets } from 'vs/editor/common/modes/supports/richEditBrackets';
 import { LanguageConfigurationRegistry } from 'vs/editor/common/modes/languageConfigurationRegistry';
-import { LanguageId, StandardTokenType } from 'vs/editor/common/modes';
+import { LanguageId, StandardTokenType, SelectionRangeProvider } from 'vs/editor/common/modes';
+
+export class TokenTreeSelectionRangeProvider implements SelectionRangeProvider {
+
+	provideSelectionRanges(model: ITextModel, position: Position): Range[] {
+		let tree = build(model);
+		let node = find(tree, position);
+		let ranges: Range[] = [];
+		let lastRange: Range | undefined;
+		while (node) {
+			if (!lastRange || !Range.equalsRange(lastRange, node.range)) {
+				ranges.push(node.range);
+			}
+			lastRange = node.range;
+			node = node.parent;
+		}
+		return ranges;
+	}
+}
 
 export const enum TokenTreeBracket {
 	None = 0,
@@ -61,7 +78,7 @@ export class NodeList extends Node {
 		return !this.hasChildren && !this.parent;
 	}
 
-	public append(node: Node): boolean {
+	public append(node: Node | null): boolean {
 		if (!node) {
 			return false;
 		}
@@ -106,9 +123,9 @@ class Token {
 
 	readonly range: Range;
 	readonly bracket: TokenTreeBracket;
-	readonly bracketType: string;
+	readonly bracketType: string | null;
 
-	constructor(range: Range, bracket: TokenTreeBracket, bracketType: string) {
+	constructor(range: Range, bracket: TokenTreeBracket, bracketType: string | null) {
 		this.range = range;
 		this.bracket = bracket;
 		this.bracketType = bracketType;
@@ -149,7 +166,7 @@ class ModelRawTokenScanner {
 	private _versionId: number;
 	private _lineNumber: number;
 	private _tokenIndex: number;
-	private _lineTokens: LineTokens;
+	private _lineTokens: LineTokens | null;
 
 	constructor(model: ITextModel) {
 		this._model = model;
@@ -174,14 +191,14 @@ class ModelRawTokenScanner {
 			this._model.forceTokenization(this._lineNumber);
 			this._lineTokens = this._model.getLineTokens(this._lineNumber);
 			this._tokenIndex = 0;
-			if (this._lineTokens.getCount() === 0) {
+			if (this._lineTokens.getLineContent().length === 0) {
 				// Skip empty lines
 				this._lineTokens = null;
 			}
 		}
 	}
 
-	public next(): RawToken {
+	public next(): RawToken | null {
 		if (!this._lineTokens) {
 			return null;
 		}
@@ -200,7 +217,7 @@ class TokenScanner {
 	private _rawTokenScanner: ModelRawTokenScanner;
 	private _nextBuff: Token[];
 
-	private _cachedLanguageBrackets: RichEditBrackets;
+	private _cachedLanguageBrackets: RichEditBrackets | null;
 	private _cachedLanguageId: LanguageId;
 
 	constructor(model: ITextModel) {
@@ -210,9 +227,9 @@ class TokenScanner {
 		this._cachedLanguageId = -1;
 	}
 
-	next(): Token {
+	next(): Token | null {
 		if (this._nextBuff.length > 0) {
-			return this._nextBuff.shift();
+			return this._nextBuff.shift()!;
 		}
 
 		const token = this._rawTokenScanner.next();
@@ -239,7 +256,7 @@ class TokenScanner {
 			);
 		}
 
-		let foundBracket: Range;
+		let foundBracket: Range | null;
 		do {
 			foundBracket = BracketsUtils.findNextBracketInToken(modeBrackets.forwardRegex, lineNumber, lineText, startOffset, endOffset);
 			if (foundBracket) {
@@ -280,7 +297,7 @@ class TokenScanner {
 			));
 		}
 
-		return this._nextBuff.shift();
+		return this._nextBuff.shift() || null;
 	}
 }
 
@@ -310,7 +327,7 @@ class TokenTreeBuilder {
 		let accepted = condt(token);
 		if (!accepted) {
 			this._stack.push(token);
-			this._currentToken = null;
+			// this._currentToken = null;
 		} else {
 			this._currentToken = token;
 			//			console.log('accepted: ' + token.__debugContent);
@@ -327,7 +344,7 @@ class TokenTreeBuilder {
 		return ret;
 	}
 
-	private _line(): Node {
+	private _line(): Node | null {
 		let node = new NodeList();
 		let lineNumber: number;
 
@@ -352,16 +369,16 @@ class TokenTreeBuilder {
 		}
 	}
 
-	private _token(): Node {
+	private _token(): Node | null {
 		if (!this._accept(token => token.bracket === TokenTreeBracket.None)) {
 			return null;
 		}
 		return newNode(this._currentToken);
 	}
 
-	private _block(): Node {
+	private _block(): Node | null {
 
-		let bracketType: string;
+		let bracketType: string | null;
 		let accepted: boolean;
 
 		accepted = this._accept(token => {
@@ -390,7 +407,7 @@ class TokenTreeBuilder {
 		return bracket;
 	}
 
-	private _any(): Node {
+	private _any(): Node | null {
 		if (!this._accept(_ => true)) {
 			return null;
 		}
@@ -409,7 +426,7 @@ export function build(model: ITextModel): Node {
 	return node;
 }
 
-export function find(node: Node, position: Position): Node {
+export function find(node: Node, position: Position): Node | null {
 	if (node instanceof NodeList && node.isEmpty) {
 		return null;
 	}
@@ -418,7 +435,7 @@ export function find(node: Node, position: Position): Node {
 		return null;
 	}
 
-	let result: Node;
+	let result: Node | null = null;
 
 	if (node instanceof NodeList) {
 		if (node.hasChildren) {
@@ -428,7 +445,7 @@ export function find(node: Node, position: Position): Node {
 		}
 
 	} else if (node instanceof Block) {
-		result = find(node.open, position) || find(node.elements, position) || find(node.close, position);
+		result = find(node.elements, position) || find(node.open, position) || find(node.close, position);
 	}
 
 	return result || node;

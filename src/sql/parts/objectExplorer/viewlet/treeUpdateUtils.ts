@@ -7,7 +7,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { IConnectionManagementService, IConnectionCompletionOptions, IConnectionCallbacks } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/parts/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { NodeType } from 'sql/parts/objectExplorer/common/nodeType';
 
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -44,7 +44,7 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 
-		tree.setInput(treeInput).done(() => {
+		tree.setInput(treeInput).then(() => {
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
 				tree.expandAll(targetsToExpand);

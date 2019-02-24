@@ -2,10 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import URI from 'vs/base/common/uri';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 
 export interface IEditorModel {
@@ -18,7 +16,7 @@ export interface IEditorModel {
 	/**
 	 * Loads the model.
 	 */
-	load(): TPromise<IEditorModel>;
+	load(): Thenable<IEditorModel>;
 
 	/**
 	 * Dispose associated resources
@@ -42,6 +40,15 @@ export interface IBaseResourceInput {
 	 * Description to show for the diff editor
 	 */
 	description?: string;
+
+	/**
+	 * Hint to indicate that this input should be treated as a file
+	 * that opens in an editor capable of showing file content.
+	 *
+	 * Without this hint, the editor service will make a guess by
+	 * looking at the scheme of the resource(s).
+	 */
+	forceFile?: boolean;
 }
 
 export interface IResourceInput extends IBaseResourceInput {

@@ -3,9 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { ILocalExtension, IGalleryExtension, EXTENSION_IDENTIFIER_REGEX, IExtensionIdentifier, IReportedExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { ILocalExtension, IGalleryExtension, IExtensionIdentifier, IReportedExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { compareIgnoreCase } from 'vs/base/common/strings';
 
 export function areSameExtensions(a: IExtensionIdentifier, b: IExtensionIdentifier): boolean {
 	if (a.uuid && b.uuid) {
@@ -14,7 +13,11 @@ export function areSameExtensions(a: IExtensionIdentifier, b: IExtensionIdentifi
 	if (a.id === b.id) {
 		return true;
 	}
-	return adoptToGalleryExtensionId(a.id) === adoptToGalleryExtensionId(b.id);
+	return compareIgnoreCase(a.id, b.id) === 0;
+}
+
+export function adoptToGalleryExtensionId(id: string): string {
+	return id.toLocaleLowerCase();
 }
 
 export function getGalleryExtensionId(publisher: string, name: string): string {
@@ -33,10 +36,6 @@ export function getIdFromLocalExtensionId(localExtensionId: string): string {
 		return adoptToGalleryExtensionId(matches[1]);
 	}
 	return adoptToGalleryExtensionId(localExtensionId);
-}
-
-export function adoptToGalleryExtensionId(id: string): string {
-	return id.replace(EXTENSION_IDENTIFIER_REGEX, (match, publisher: string, name: string) => getGalleryExtensionId(publisher, name));
 }
 
 export function getLocalExtensionId(id: string, version: string): string {
@@ -99,12 +98,11 @@ export function getGalleryExtensionTelemetryData(extension: IGalleryExtension): 
 		publisherId: extension.publisherId,
 		publisherName: extension.publisher,
 		publisherDisplayName: extension.publisherDisplayName,
-		dependencies: extension.properties.dependencies.length > 0,
+		dependencies: !!(extension.properties.dependencies && extension.properties.dependencies.length > 0),
 		...extension.telemetryData
 	};
 }
 
-export const BetterMergeDisabledNowKey = 'extensions/bettermergedisablednow';
 export const BetterMergeId = 'pprice.better-merge';
 
 export function getMaliciousExtensionsSet(report: IReportedExtension[]): Set<string> {

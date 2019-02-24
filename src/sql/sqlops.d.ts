@@ -234,20 +234,20 @@ declare module 'sqlops' {
 	}
 
 	/**
- 	* Options for the actions that could happen after connecting is complete
- 	*/
+	* Options for the actions that could happen after connecting is complete
+	*/
 	export interface IConnectionCompletionOptions {
 		/**
 		 * Save the connection to MRU and settings (only save to setting if profile.saveProfile is set to true)
 		 * Default is true.
-	 	*/
+		 */
 		saveConnection: boolean;
 
 		/**
 		 * If true, open the dashboard after connection is complete.
 		 * If undefined / false, dashboard won't be opened after connection completes.
 		 * Default is false.
-	 	*/
+		 */
 		showDashboard?: boolean;
 
 		/**
@@ -1032,6 +1032,14 @@ declare module 'sqlops' {
 		 * will be used instead.
 		 */
 		iconType?: string | SqlThemeIcon;
+		/**
+		 * Informs who provides the children to a node, used by data explorer tree view api
+		 */
+		childProvider?: string;
+		/**
+		 * Holds the connection profile for nodes, used by data explorer tree view api
+		 */
+		payload?: any;
 	}
 
 	/**
@@ -2352,7 +2360,7 @@ declare module 'sqlops' {
 
 	export namespace window {
 		/**
-		 * creates a dialog
+		 * @deprecated this method has been deprecated and will be removed in a future release, please use sqlops.window.createWebViewDialog instead.
 		 * @param title
 		 */
 		export function createDialog(
@@ -2375,6 +2383,11 @@ declare module 'sqlops' {
 	export interface DashboardDocument {
 		profile: IConnectionProfile;
 		serverInfo: ServerInfo;
+	}
+
+	export class TreeItem extends vscode.TreeItem {
+		payload?: IConnectionProfile;
+		childProvider?: string;
 	}
 
 	export namespace tasks {

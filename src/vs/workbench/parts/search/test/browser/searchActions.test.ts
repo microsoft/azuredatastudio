@@ -2,10 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-
 import * as assert from 'assert';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService, stubFunction } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { Match, FileMatch, FileMatchOrMatch } from 'vs/workbench/parts/search/common/searchModel';
 import { ReplaceAction } from 'vs/workbench/parts/search/browser/searchActions';
@@ -43,9 +41,9 @@ suite('Search Actions', () => {
 		let target = data[2];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(data[4], actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(data[4], actual);
+		});
 	});
 
 	test('get next element to focus after removing a match when it does not have next sibling match', function () {
@@ -56,9 +54,9 @@ suite('Search Actions', () => {
 		let target = data[5];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(data[4], actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(data[4], actual);
+		});
 	});
 
 	test('get next element to focus after removing a match when it does not have next sibling match and previous match is file match', function () {
@@ -69,9 +67,9 @@ suite('Search Actions', () => {
 		let target = data[4];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(data[2], actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(data[2], actual);
+		});
 	});
 
 	test('get next element to focus after removing a match when it is the only match', function () {
@@ -81,9 +79,9 @@ suite('Search Actions', () => {
 		let target = data[1];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(void 0, actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(void 0, actual);
+		});
 	});
 
 	test('get next element to focus after removing a file match when it has next sibling', function () {
@@ -95,9 +93,9 @@ suite('Search Actions', () => {
 		let target = data[2];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(data[4], actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(data[4], actual);
+		});
 	});
 
 	test('get next element to focus after removing a file match when it has no next sibling', function () {
@@ -109,9 +107,9 @@ suite('Search Actions', () => {
 		let target = data[4];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(data[3], actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(data[3], actual);
+		});
 	});
 
 	test('get next element to focus after removing a file match when it is only match', function () {
@@ -121,21 +119,37 @@ suite('Search Actions', () => {
 		let target = data[0];
 		let testObject: ReplaceAction = instantiationService.createInstance(ReplaceAction, tree, target, null);
 
-		let actual = testObject.getElementToFocusAfterRemoved(tree, target);
-
-		assert.equal(void 0, actual);
+		return testObject.getElementToFocusAfterRemoved(tree, target).then(actual => {
+			assert.equal(void 0, actual);
+		});
 	});
 
 	function aFileMatch(): FileMatch {
 		let rawMatch: IFileMatch = {
 			resource: URI.file('somepath' + ++counter),
-			lineMatches: []
+			results: []
 		};
-		return instantiationService.createInstance(FileMatch, null, null, null, rawMatch);
+		return instantiationService.createInstance(FileMatch, null, null, null, null, rawMatch);
 	}
 
 	function aMatch(fileMatch: FileMatch): Match {
-		let match = new Match(fileMatch, 'some match', ++counter, 0, 2);
+		const line = ++counter;
+		let match = new Match(
+			fileMatch,
+			['some match'],
+			{
+				startLineNumber: 0,
+				startColumn: 0,
+				endLineNumber: 0,
+				endColumn: 2
+			},
+			{
+				startLineNumber: line,
+				startColumn: 0,
+				endLineNumber: line,
+				endColumn: 2
+			}
+		);
 		fileMatch.add(match);
 		return match;
 	}

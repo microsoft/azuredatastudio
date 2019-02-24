@@ -3,20 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import URI from 'vs/base/common/uri';
-import { TPromise } from 'vs/base/common/winjs.base';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
+import { URI } from 'vs/base/common/uri';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import * as errors from 'vs/base/common/errors';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IResourceInput } from 'vs/platform/editor/common/editor';
-import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { Schemas } from 'vs/base/common/network';
 import { ILifecycleService, LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { IFileService } from 'vs/platform/files/common/files';
 import { IUntitledResourceInput } from 'vs/workbench/common/editor';
 
 export class BackupRestorer implements IWorkbenchContribution {
@@ -26,23 +19,18 @@ export class BackupRestorer implements IWorkbenchContribution {
 	private static readonly UNTITLED_REGEX = /Untitled-\d+/;
 
 	constructor(
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
 		@IEditorService private editorService: IEditorService,
 		@IBackupFileService private backupFileService: IBackupFileService,
-		@ITextFileService private textFileService: ITextFileService,
-		@ILifecycleService private lifecycleService: ILifecycleService,
-		@IFileService private fileService: IFileService
+		@ILifecycleService private lifecycleService: ILifecycleService
 	) {
 		this.restoreBackups();
 	}
 
 	private restoreBackups(): void {
-		this.lifecycleService.when(LifecyclePhase.Running).then(() => {
-			this.doRestoreBackups().done(null, errors.onUnexpectedError);
-		});
+		this.lifecycleService.when(LifecyclePhase.Restored).then(() => this.doRestoreBackups());
 	}
 
-	private doRestoreBackups(): TPromise<URI[]> {
+	private doRestoreBackups(): Thenable<URI[]> {
 
 		// Find all files and untitled with backups
 		return this.backupFileService.getWorkspaceFileBackups().then(backups => {
@@ -60,26 +48,23 @@ export class BackupRestorer implements IWorkbenchContribution {
 		});
 	}
 
-	private doResolveOpenedBackups(backups: URI[]): TPromise<URI[]> {
-		const restorePromises: TPromise<any>[] = [];
+	private doResolveOpenedBackups(backups: URI[]): Thenable<URI[]> {
+		const restorePromises: Thenable<any>[] = [];
 		const unresolved: URI[] = [];
 
 		backups.forEach(backup => {
-			if (this.editorService.isOpen({ resource: backup })) {
-				if (this.fileService.canHandleResource(backup)) {
-					restorePromises.push(this.textFileService.models.loadOrCreate(backup).then(null, () => unresolved.push(backup)));
-				} else if (backup.scheme === Schemas.untitled) {
-					restorePromises.push(this.untitledEditorService.loadOrCreate({ resource: backup }).then(null, () => unresolved.push(backup)));
-				}
+			const openedEditor = this.editorService.getOpened({ resource: backup });
+			if (openedEditor) {
+				restorePromises.push(openedEditor.resolve().then(null, () => unresolved.push(backup)));
 			} else {
 				unresolved.push(backup);
 			}
 		});
 
-		return TPromise.join(restorePromises).then(() => unresolved, () => unresolved);
+		return Promise.all(restorePromises).then(() => unresolved, () => unresolved);
 	}
 
-	private doOpenEditors(resources: URI[]): TPromise<void> {
+	private doOpenEditors(resources: URI[]): Thenable<void> {
 		const hasOpenedEditors = this.editorService.visibleEditors.length > 0;
 		const inputs = resources.map((resource, index) => this.resolveInput(resource, index, hasOpenedEditors));
 

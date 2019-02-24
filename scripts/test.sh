@@ -29,13 +29,12 @@ test -d node_modules || yarn
 node build/lib/electron.js || ./node_modules/.bin/gulp electron
 
 # Unit Tests
-export ELECTRON_RUN_AS_NODE=1
 if [[ "$OSTYPE" == "darwin"* ]] || [[ "$AGENT_OS" == "Darwin"* ]]; then
 	cd $ROOT ; ulimit -n 4096 ; \
 		"$CODE" \
-		node_modules/mocha/bin/_mocha "$@"
+		test/electron/index.js "$@"
 else
 	cd $ROOT ; \
 		"$CODE" \
-		node_modules/mocha/bin/_mocha "$@"
+		test/electron/index.js "$@"
 fi

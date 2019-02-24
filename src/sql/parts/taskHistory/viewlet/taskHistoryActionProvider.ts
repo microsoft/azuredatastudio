@@ -30,18 +30,18 @@ export class TaskHistoryActionProvider extends ContributableActionProvider {
 	/**
 	 * Return actions given an element in the tree
 	 */
-	public getActions(tree: ITree, element: any): TPromise<IAction[]> {
+	public getActions(tree: ITree, element: any): IAction[] {
 		if (element instanceof TaskNode) {
-			return TPromise.as(this.getTaskHistoryActions(tree, element));
+			return this.getTaskHistoryActions(tree, element);
 		}
-		return TPromise.as([]);
+		return [];
 	}
 
 	public hasSecondaryActions(tree: ITree, element: any): boolean {
 		return false;
 	}
 
-	public getSecondaryActions(tree: ITree, element: any): TPromise<IAction[]> {
+	public getSecondaryActions(tree: ITree, element: any): IAction[] {
 		return super.getSecondaryActions(tree, element);
 	}
 
