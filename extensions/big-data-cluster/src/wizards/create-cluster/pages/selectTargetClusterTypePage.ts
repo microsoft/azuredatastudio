@@ -106,7 +106,6 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 			}).component();
 
 			self.toolsLoadingWrapper = view.modelBuilder.loadingComponent().withItem(self.toolsTable).component();
-			//self.toolsLoadingWrapper.loading = false;
 			self.formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
