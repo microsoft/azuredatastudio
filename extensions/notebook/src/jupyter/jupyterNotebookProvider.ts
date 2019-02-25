@@ -27,10 +27,10 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 		if (!notebookUri) {
 			return Promise.reject(localize('errNotebookUriMissing', 'A notebook path is required'));
 		}
-		return this.doGetNotebookManager(notebookUri);
+		return Promise.resolve(this.doGetNotebookManager(notebookUri));
 	}
 
-	private doGetNotebookManager(notebookUri: vscode.Uri): Promise<nb.NotebookManager> {
+	private doGetNotebookManager(notebookUri: vscode.Uri): nb.NotebookManager {
 		let uriString = notebookUri.toString();
 		let manager = this.managerTracker.get(uriString);
 		if (!manager) {
@@ -38,7 +38,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 			manager = new JupyterNotebookManager(serverManager);
 			this.managerTracker.set(uriString, manager);
 		}
-		return Promise.resolve(manager);
+		return manager;
 	}
 
 	handleNotebookClosed(notebookUri: vscode.Uri): void {

@@ -2,9 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-
-import { TPromise } from 'vs/base/common/winjs.base';
 
 import * as assert from 'assert';
 import * as os from 'os';
@@ -18,7 +15,7 @@ import { timeout } from 'vs/base/common/async';
 
 suite('PFS', () => {
 
-	test('writeFile', function () {
+	test('writeFile', () => {
 		const id = uuid.generateUuid();
 		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
 		const newDir = path.join(parentDir, 'pfs', id);
@@ -48,7 +45,7 @@ suite('PFS', () => {
 		return pfs.mkdirp(newDir, 493).then(() => {
 			assert.ok(fs.existsSync(newDir));
 
-			return TPromise.join([
+			return Promise.all([
 				pfs.writeFile(testFile1, 'Hello World 1', null),
 				pfs.writeFile(testFile2, 'Hello World 2', null),
 				pfs.writeFile(testFile3, 'Hello World 3', null),
@@ -75,7 +72,7 @@ suite('PFS', () => {
 		return pfs.mkdirp(newDir, 493).then(() => {
 			assert.ok(fs.existsSync(newDir));
 
-			return TPromise.join([
+			return Promise.all([
 				pfs.writeFile(testFile, 'Hello World 1', null),
 				pfs.writeFile(testFile, 'Hello World 2', null),
 				timeout(10).then(() => pfs.writeFile(testFile, 'Hello World 3', null)),
@@ -118,6 +115,40 @@ suite('PFS', () => {
 
 			return pfs.rimraf(newDir).then(() => {
 				assert.ok(!fs.existsSync(newDir));
+			});
+		});
+	});
+
+	test('unlinkIgnoreError', function () {
+		const id = uuid.generateUuid();
+		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
+		const newDir = path.join(parentDir, 'extfs', id);
+
+		return pfs.mkdirp(newDir, 493).then(() => {
+			return pfs.unlinkIgnoreError(path.join(newDir, 'foo')).then(() => {
+
+				return pfs.del(parentDir, os.tmpdir());
+			}, error => {
+				assert.fail(error);
+
+				return Promise.reject(error);
+			});
+		});
+	});
+
+	test('moveIgnoreError', function () {
+		const id = uuid.generateUuid();
+		const parentDir = path.join(os.tmpdir(), 'vsctests', id);
+		const newDir = path.join(parentDir, 'extfs', id);
+
+		return pfs.mkdirp(newDir, 493).then(() => {
+			return pfs.renameIgnoreError(path.join(newDir, 'foo'), path.join(newDir, 'bar')).then(() => {
+
+				return pfs.del(parentDir, os.tmpdir());
+			}, error => {
+				assert.fail(error);
+
+				return Promise.reject(error);
 			});
 		});
 	});

@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { GettingStarted } from './gettingStarted';
@@ -19,7 +18,7 @@ import { EnablePreviewFeatures } from 'sql/workbench/electron-browser/enablePrev
 
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(GettingStarted, LifecyclePhase.Running);
+	.registerWorkbenchContribution(GettingStarted, LifecyclePhase.Restored);
 
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)

@@ -7,7 +7,6 @@ import { CancelablePromise } from 'vs/base/common/async';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { escapeRegExpCharacters } from 'vs/base/common/strings';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { EditorAction, EditorCommand, ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 import { IBulkEditService } from 'vs/editor/browser/services/bulkEditService';
@@ -94,7 +93,7 @@ export class QuickFixController implements IEditorContribution {
 			// Triggered for specific scope
 			// Apply if we only have one action or requested autoApply, otherwise show menu
 			e.actions.then(fixes => {
-				if (e.trigger.autoApply === CodeActionAutoApply.First || (e.trigger.autoApply === CodeActionAutoApply.IfSingle && fixes.length === 1)) {
+				if (fixes.length > 0 && e.trigger.autoApply === CodeActionAutoApply.First || (e.trigger.autoApply === CodeActionAutoApply.IfSingle && fixes.length === 1)) {
 					this._onApplyCodeAction(fixes[0]);
 				} else {
 					this._codeActionContextMenu.show(e.actions, e.position);
@@ -124,7 +123,7 @@ export class QuickFixController implements IEditorContribution {
 	}
 
 	private _handleLightBulbSelect(coords: { x: number, y: number }): void {
-		if (this._lightBulbWidget.model.actions) {
+		if (this._lightBulbWidget.model && this._lightBulbWidget.model.actions) {
 			this._codeActionContextMenu.show(this._lightBulbWidget.model.actions, coords);
 		}
 	}
@@ -144,8 +143,8 @@ export class QuickFixController implements IEditorContribution {
 		this._lightBulbWidget.title = title;
 	}
 
-	private _onApplyCodeAction(action: CodeAction): TPromise<void> {
-		return TPromise.wrap(applyCodeAction(action, this._bulkEditService, this._commandService, this._editor));
+	private _onApplyCodeAction(action: CodeAction): Promise<void> {
+		return applyCodeAction(action, this._bulkEditService, this._commandService, this._editor);
 	}
 }
 

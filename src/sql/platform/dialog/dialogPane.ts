@@ -17,7 +17,7 @@ import { DialogModule } from 'sql/platform/dialog/dialog.module';
 import { DialogComponentParams, LayoutRequestParams } from 'sql/platform/dialog/dialogContainer.component';
 
 import * as DOM from 'vs/base/browser/dom';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

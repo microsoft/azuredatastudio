@@ -5,7 +5,6 @@
 
 import 'vs/css!./media/output';
 import * as nls from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IActionItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
@@ -25,10 +24,12 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IWindowService } from 'vs/platform/windows/common/windows';
 
 export class OutputPanel extends AbstractTextResourceEditor {
 	private actions: IAction[];
 	private scopedInstantiationService: IInstantiationService;
+	private _focus: boolean;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -41,9 +42,10 @@ export class OutputPanel extends AbstractTextResourceEditor {
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@ITextFileService textFileService: ITextFileService,
-		@IEditorService editorService: IEditorService
+		@IEditorService editorService: IEditorService,
+		@IWindowService windowService: IWindowService
 	) {
-		super(OUTPUT_PANEL_ID, telemetryService, instantiationService, storageService, textResourceConfigurationService, themeService, editorGroupService, textFileService, editorService);
+		super(OUTPUT_PANEL_ID, telemetryService, instantiationService, storageService, textResourceConfigurationService, themeService, editorGroupService, textFileService, editorService, windowService);
 
 		this.scopedInstantiationService = instantiationService;
 	}
@@ -111,15 +113,21 @@ export class OutputPanel extends AbstractTextResourceEditor {
 	}
 
 	public setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Thenable<void> {
+		this._focus = !options.preserveFocus;
 		if (input.matches(this.input)) {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 
 		if (this.input) {
 			// Dispose previous input (Output panel is not a workbench editor)
 			this.input.dispose();
 		}
-		return super.setInput(input, options, token).then(() => this.revealLastLine(false));
+		return super.setInput(input, options, token).then(() => {
+			if (this._focus) {
+				this.focus();
+			}
+			this.revealLastLine(false);
+		});
 	}
 
 	public clearInput(): void {

@@ -2,13 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICommandService, ICommandEvent, CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event, Emitter, filterEvent, toPromise } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -30,38 +28,42 @@ export class CommandService extends Disposable implements ICommandService {
 		this._extensionService.whenInstalledExtensionsRegistered().then(value => this._extensionHostIsReady = value);
 	}
 
-	executeCommand<T>(id: string, ...args: any[]): TPromise<T> {
+	executeCommand<T>(id: string, ...args: any[]): Promise<T> {
 		this._logService.trace('CommandService#executeCommand', id);
 
 		// we always send an activation event, but
 		// we don't wait for it when the extension
 		// host didn't yet start and the command is already registered
 
-		const activation = this._extensionService.activateByEvent(`onCommand:${id}`);
+		const activation: Thenable<any> = this._extensionService.activateByEvent(`onCommand:${id}`);
 		const commandIsRegistered = !!CommandsRegistry.getCommand(id);
 
 		if (!this._extensionHostIsReady && commandIsRegistered) {
 			return this._tryExecuteCommand(id, args);
 		} else {
-			let waitFor: TPromise<any> = activation;
+			let waitFor = activation;
 			if (!commandIsRegistered) {
-				waitFor = TPromise.join([activation, this._extensionService.activateByEvent(`*`)]);
+				waitFor = Promise.race<any>([
+					// race activation events against command registration
+					Promise.all([activation, this._extensionService.activateByEvent(`*`)]),
+					toPromise(filterEvent(CommandsRegistry.onDidRegisterCommand, e => e === id)),
+				]);
 			}
-			return waitFor.then(_ => this._tryExecuteCommand(id, args));
+			return (waitFor as Promise<any>).then(_ => this._tryExecuteCommand(id, args));
 		}
 	}
 
-	private _tryExecuteCommand(id: string, args: any[]): TPromise<any> {
+	private _tryExecuteCommand(id: string, args: any[]): Promise<any> {
 		const command = CommandsRegistry.getCommand(id);
 		if (!command) {
-			return TPromise.wrapError(new Error(`command '${id}' not found`));
+			return Promise.reject(new Error(`command '${id}' not found`));
 		}
 		try {
 			this._onWillExecuteCommand.fire({ commandId: id });
 			const result = this._instantiationService.invokeFunction.apply(this._instantiationService, [command.handler].concat(args));
-			return TPromise.as(result);
+			return Promise.resolve(result);
 		} catch (err) {
-			return TPromise.wrapError(err);
+			return Promise.reject(err);
 		}
 	}
 }

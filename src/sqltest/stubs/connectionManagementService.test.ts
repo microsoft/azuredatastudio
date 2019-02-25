@@ -266,6 +266,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 		return undefined;
 	}
 
+	providerRegistered(providerId: string): boolean {
+		return undefined;
+	}
+
 	getConnectionProfileById(profileId: string): IConnectionProfile {
 		return undefined;
 	}

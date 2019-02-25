@@ -2,14 +2,13 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as json from 'vs/base/common/json';
 import { ResourceMap } from 'vs/base/common/map';
 import * as arrays from 'vs/base/common/arrays';
 import * as types from 'vs/base/common/types';
 import * as objects from 'vs/base/common/objects';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { OVERRIDE_PROPERTY_PATTERN } from 'vs/platform/configuration/common/configurationRegistry';
 import { IOverrides, overrideIdentifierFromKey, addToValueTree, toValuesTree, IConfigurationModel, getConfigurationValue, IConfigurationOverrides, IConfigurationData, getDefaultValues, getConfigurationKeys, IConfigurationChangeEvent, ConfigurationTarget, removeFromValueTree, toOverrides } from 'vs/platform/configuration/common/configuration';
 import { Workspace } from 'vs/platform/workspace/common/workspace';
@@ -37,7 +36,7 @@ export class ConfigurationModel implements IConfigurationModel {
 		return this.checkAndFreeze(this._keys);
 	}
 
-	getValue<V>(section: string): V {
+	getValue<V>(section: string | undefined): V {
 		return section ? getConfigurationValue<any>(this.contents, section) : this.contents;
 	}
 
@@ -192,7 +191,7 @@ export class DefaultConfigurationModel extends ConfigurationModel {
 
 export class ConfigurationModelParser {
 
-	private _configurationModel: ConfigurationModel = null;
+	private _configurationModel: ConfigurationModel | null = null;
 	private _parseErrors: any[] = [];
 
 	constructor(protected readonly _name: string) { }
@@ -213,7 +212,7 @@ export class ConfigurationModelParser {
 
 	protected parseContent(content: string): any {
 		let raw: any = {};
-		let currentProperty: string = null;
+		let currentProperty: string | null = null;
 		let currentParent: any = [];
 		let previousParents: any[] = [];
 		let parseErrors: json.ParseError[] = [];
@@ -251,8 +250,8 @@ export class ConfigurationModelParser {
 				currentParent = previousParents.pop();
 			},
 			onLiteralValue: onValue,
-			onError: (error: json.ParseErrorCode) => {
-				parseErrors.push({ error: error });
+			onError: (error: json.ParseErrorCode, offset: number, length: number) => {
+				parseErrors.push({ error, offset, length });
 			}
 		};
 		if (content) {
@@ -278,7 +277,7 @@ export class ConfigurationModelParser {
 
 export class Configuration {
 
-	private _workspaceConsolidatedConfiguration: ConfigurationModel = null;
+	private _workspaceConsolidatedConfiguration: ConfigurationModel | null = null;
 	private _foldersConsolidatedConfigurations: ResourceMap<ConfigurationModel> = new ResourceMap<ConfigurationModel>();
 
 	constructor(
@@ -291,7 +290,7 @@ export class Configuration {
 		private _freeze: boolean = true) {
 	}
 
-	getValue(section: string, overrides: IConfigurationOverrides, workspace: Workspace): any {
+	getValue(section: string | undefined, overrides: IConfigurationOverrides, workspace: Workspace | null): any {
 		const consolidateConfigurationModel = this.getConsolidateConfigurationModel(overrides, workspace);
 		return consolidateConfigurationModel.getValue(section);
 	}
@@ -319,11 +318,11 @@ export class Configuration {
 		}
 	}
 
-	inspect<C>(key: string, overrides: IConfigurationOverrides, workspace: Workspace): {
+	inspect<C>(key: string, overrides: IConfigurationOverrides, workspace: Workspace | null): {
 		default: C,
 		user: C,
-		workspace: C,
-		workspaceFolder: C
+		workspace?: C,
+		workspaceFolder?: C
 		memory?: C
 		value: C,
 	} {
@@ -340,13 +339,13 @@ export class Configuration {
 		};
 	}
 
-	keys(workspace: Workspace): {
+	keys(workspace: Workspace | null): {
 		default: string[];
 		user: string[];
 		workspace: string[];
 		workspaceFolder: string[];
 	} {
-		const folderConfigurationModel = this.getFolderConfigurationModelForResource(null, workspace);
+		const folderConfigurationModel = this.getFolderConfigurationModelForResource(undefined, workspace);
 		return {
 			default: this._defaultConfiguration.freeze().keys,
 			user: this._userConfiguration.freeze().keys,
@@ -399,12 +398,12 @@ export class Configuration {
 		return this._folderConfigurations;
 	}
 
-	private getConsolidateConfigurationModel(overrides: IConfigurationOverrides, workspace: Workspace): ConfigurationModel {
+	private getConsolidateConfigurationModel(overrides: IConfigurationOverrides, workspace: Workspace | null): ConfigurationModel {
 		let configurationModel = this.getConsolidatedConfigurationModelForResource(overrides, workspace);
 		return overrides.overrideIdentifier ? configurationModel.override(overrides.overrideIdentifier) : configurationModel;
 	}
 
-	private getConsolidatedConfigurationModelForResource({ resource }: IConfigurationOverrides, workspace: Workspace): ConfigurationModel {
+	private getConsolidatedConfigurationModelForResource({ resource }: IConfigurationOverrides, workspace: Workspace | null): ConfigurationModel {
 		let consolidateConfiguration = this.getWorkspaceConsolidatedConfiguration();
 
 		if (workspace && resource) {
@@ -449,7 +448,7 @@ export class Configuration {
 		return folderConsolidatedConfiguration;
 	}
 
-	private getFolderConfigurationModelForResource(resource: URI, workspace: Workspace): ConfigurationModel {
+	private getFolderConfigurationModelForResource(resource: URI | undefined, workspace: Workspace | null): ConfigurationModel | null {
 		if (workspace && resource) {
 			const root = workspace.getFolder(resource);
 			if (root) {

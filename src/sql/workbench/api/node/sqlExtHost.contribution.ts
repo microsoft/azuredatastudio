@@ -44,5 +44,5 @@ export class SqlExtHostContribution implements IWorkbenchContribution {
 // Register File Tracker
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(
 	SqlExtHostContribution,
-	LifecyclePhase.Running
+	LifecyclePhase.Restored
 );

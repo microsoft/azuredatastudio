@@ -10,7 +10,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IPartService, Parts } from 'vs/workbench/services/part/common/partService';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -38,9 +38,6 @@ export class WebViewDialog extends Modal {
 	public onClosed: Event<void> = this._onClosed.event;
 	private contentDisposables: IDisposable[] = [];
 	private _onMessage = new Emitter<any>();
-
-	protected contextKey: IContextKey<boolean>;
-	protected findInputFocusContextKey: IContextKey<boolean>;
 
 	constructor(
 		@IThemeService themeService: IThemeService,
@@ -93,8 +90,6 @@ export class WebViewDialog extends Modal {
 
 			this._webview = this._instantiationService.createInstance(WebviewElement,
 				this._webViewPartService.getContainer(Parts.EDITOR_PART),
-				this.contextKey,
-				this.findInputFocusContextKey,
 				{
 					enableWrappedPostMessage: true,
 					allowScripts: true

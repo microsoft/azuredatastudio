@@ -99,7 +99,6 @@ export class JupyterController implements vscode.Disposable {
 		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(jupyterInstaller); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
-			{ scheme: 'file', language: '*' },
 			{ scheme: 'untitled', language: '*' }
 		];
 		this.extensionContext.subscriptions.push(this.apiWrapper.registerCompletionItemProvider(supportedFileFilter, new NotebookCompletionItemProvider(notebookProvider)));

@@ -9,7 +9,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 import * as nls from 'vs/nls';
 import { generateUuid } from 'vs/base/common/uuid';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 import * as vscode from 'vscode';
 import * as sqlops from 'sqlops';
@@ -18,6 +18,7 @@ import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogS
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Inject } from '@angular/core';
+import { IExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 
 const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
 const CANCEL_LABEL = nls.localize('dialogCancelLabel', 'Cancel');
@@ -35,7 +36,7 @@ class ModelViewPanelImpl implements sqlops.window.ModelViewPanel {
 	constructor(private _viewType: string,
 		protected _extHostModelViewDialog: ExtHostModelViewDialog,
 		protected _extHostModelView: ExtHostModelViewShape,
-		protected _extensionLocation: URI) {
+		protected _extension: IExtensionDescription) {
 		this._onValidityChanged = this._extHostModelViewDialog.getValidityChangedEvent(this);
 		this._onValidityChanged(valid => this._valid = valid);
 	}
@@ -47,7 +48,7 @@ class ModelViewPanelImpl implements sqlops.window.ModelViewPanel {
 			this._extHostModelView.$registerProvider(viewId, modelView => {
 				this._modelView = modelView;
 				handler(modelView);
-			}, this._extensionLocation);
+			}, this._extension);
 		}
 	}
 
@@ -83,12 +84,12 @@ class ModelViewEditorImpl extends ModelViewPanelImpl implements sqlops.workspace
 	constructor(
 		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
-		extensionLocation: URI,
+		extension: IExtensionDescription,
 		private _proxy: MainThreadModelViewDialogShape,
 		private _title: string,
 		private _options: sqlops.ModelViewEditorOptions
 	) {
-		super('modelViewEditor', extHostModelViewDialog, extHostModelView, extensionLocation);
+		super('modelViewEditor', extHostModelViewDialog, extHostModelView, extension);
 		this._isDirty = false;
 	}
 
@@ -132,8 +133,8 @@ class DialogImpl extends ModelViewPanelImpl implements sqlops.window.Dialog {
 	constructor(extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
 		extHostTaskManagement: ExtHostBackgroundTaskManagementShape,
-		extensionLocation: URI) {
-		super('modelViewDialog', extHostModelViewDialog, extHostModelView, extensionLocation);
+		extension: IExtensionDescription) {
+		super('modelViewDialog', extHostModelViewDialog, extHostModelView, extension);
 		this.okButton = this._extHostModelViewDialog.createButton(DONE_LABEL);
 		this.cancelButton = this._extHostModelViewDialog.createButton(CANCEL_LABEL);
 		this._operationHandler = new BackgroundOperationHandler('dialog', extHostTaskManagement);
@@ -185,8 +186,8 @@ class TabImpl extends ModelViewPanelImpl implements sqlops.window.DialogTab {
 	constructor(
 		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
-		extensionLocation: URI) {
-		super('modelViewDialogTab', extHostModelViewDialog, extHostModelView, extensionLocation);
+		extension: IExtensionDescription) {
+		super('modelViewDialogTab', extHostModelViewDialog, extHostModelView, extension);
 	}
 
 	public title: string;
@@ -281,8 +282,8 @@ class WizardPageImpl extends ModelViewPanelImpl implements sqlops.window.WizardP
 	constructor(public title: string,
 		extHostModelViewDialog: ExtHostModelViewDialog,
 		extHostModelView: ExtHostModelViewShape,
-		extensionLocation: URI) {
-		super('modelViewWizardPage', extHostModelViewDialog, extHostModelView, extensionLocation);
+		extension: IExtensionDescription) {
+		super('modelViewWizardPage', extHostModelViewDialog, extHostModelView, extension);
 	}
 
 	public get enabled(): boolean {
@@ -523,8 +524,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$closeDialog(handle);
 	}
 
-	public createModelViewEditor(title: string, extensionLocation: URI, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
-		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extensionLocation, this._proxy, title, options);
+	public createModelViewEditor(title: string, extension: IExtensionDescription, options?: sqlops.ModelViewEditorOptions): sqlops.workspace.ModelViewEditor {
+		let editor = new ModelViewEditorImpl(this, this._extHostModelView, extension, this._proxy, title, options);
 		editor.handle = this.getHandle(editor);
 		return editor;
 	}
@@ -572,8 +573,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._onClickCallbacks.set(handle, callback);
 	}
 
-	public createDialog(title: string, dialogName?: string, extensionLocation?: URI): sqlops.window.Dialog {
-		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extensionLocation);
+	public createDialog(title: string, dialogName?: string, extension?: IExtensionDescription): sqlops.window.Dialog {
+		let dialog = new DialogImpl(this, this._extHostModelView, this._extHostTaskManagement, extension);
 		if (dialogName) {
 			dialog.dialogName = dialogName;
 		}
@@ -582,8 +583,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		return dialog;
 	}
 
-	public createTab(title: string, extensionLocation?: URI): sqlops.window.DialogTab {
-		let tab = new TabImpl(this, this._extHostModelView, extensionLocation);
+	public createTab(title: string, extension?: IExtensionDescription): sqlops.window.DialogTab {
+		let tab = new TabImpl(this, this._extHostModelView, extension);
 		tab.title = title;
 		tab.handle = this.getHandle(tab);
 		return tab;
@@ -612,8 +613,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._pageInfoChangedCallbacks.set(handle, callback);
 	}
 
-	public createWizardPage(title: string, extensionLocation?: URI): sqlops.window.WizardPage {
-		let page = new WizardPageImpl(title, this, this._extHostModelView, extensionLocation);
+	public createWizardPage(title: string, extension?: IExtensionDescription): sqlops.window.WizardPage {
+		let page = new WizardPageImpl(title, this, this._extHostModelView, extension);
 		page.handle = this.getHandle(page);
 		return page;
 	}

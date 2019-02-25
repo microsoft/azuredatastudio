@@ -12,7 +12,7 @@ import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from '
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { CustomTreeViewPanel, CustomTreeViewer } from 'vs/workbench/browser/parts/views/customView';
+import { CustomTreeViewPanel, CustomTreeView } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { viewsContainersExtensionPoint } from 'vs/workbench/api/browser/viewsContainersExtensionPoint';
@@ -121,7 +121,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
-							treeViewer: this.instantiationService.createInstance(CustomTreeViewer, item.id, container)
+							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, container)
 						};
 
 						viewIds.push(viewDescriptor.id);

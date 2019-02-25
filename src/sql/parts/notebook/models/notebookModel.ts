@@ -21,7 +21,7 @@ import { NotebookContexts } from 'sql/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotification, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 

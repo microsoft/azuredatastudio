@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
 import { tmpdir } from 'os';
 import * as path from 'path';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { distinct } from 'vs/base/common/arrays';
-import { getErrorMessage, isPromiseCanceledError } from 'vs/base/common/errors';
-import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionManifest, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { getErrorMessage, isPromiseCanceledError, canceled } from 'vs/base/common/errors';
+import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionManifest, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation, IGalleryExtensionVersion } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { assign, getOrDefault } from 'vs/base/common/objects';
 import { IRequestService } from 'vs/platform/request/node/request';
@@ -27,6 +25,9 @@ import { values } from 'vs/base/common/map';
 // {{SQL CARBON EDIT}}
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ExtensionsPolicy, ExtensionsPolicyKey } from 'vs/workbench/parts/extensions/common/extensions';
+// {{SQL CARBON EDIT}} - End
+import { CancellationToken } from 'vs/base/common/cancellation';
+import { ILogService } from 'vs/platform/log/common/log';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -121,7 +122,8 @@ const AssetType = {
 const PropertyType = {
 	Dependency: 'Microsoft.VisualStudio.Code.ExtensionDependencies',
 	ExtensionPack: 'Microsoft.VisualStudio.Code.ExtensionPack',
-	Engine: 'Microsoft.VisualStudio.Code.Engine'
+	Engine: 'Microsoft.VisualStudio.Code.Engine',
+	LocalizedLanguages: 'Microsoft.VisualStudio.Code.LocalizedLanguages'
 };
 
 interface ICriterium {
@@ -296,18 +298,23 @@ function getEngine(version: IRawGalleryExtensionVersion): string {
 	return (values.length > 0 && values[0].value) || '';
 }
 
+function getLocalizedLanguages(version: IRawGalleryExtensionVersion): string[] {
+	const values = version.properties ? version.properties.filter(p => p.key === PropertyType.LocalizedLanguages) : [];
+	const value = (values.length > 0 && values[0].value) || '';
+	return value ? value.split(',') : [];
+}
+
 function getIsPreview(flags: string): boolean {
 	return flags.indexOf('preview') !== -1;
 }
 
-function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUrl: string, index: number, query: Query, querySource?: string): IGalleryExtension {
-	const [version] = galleryExtension.versions;
+function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGalleryExtensionVersion, index: number, query: Query, querySource?: string): IGalleryExtension {
 	const assets = {
 		manifest: getVersionAsset(version, AssetType.Manifest),
 		readme: getVersionAsset(version, AssetType.Details),
 		changelog: getVersionAsset(version, AssetType.Changelog),
 		download: getVersionAsset(version, AssetType.VSIX),
-		// {{SQL CARBON EDIT}}
+		// {{SQL CARBON EDIT}} - Add downloadPage
 		downloadPage: getVersionAsset(version, AssetType.DownloadPage),
 		icon: getVersionAsset(version, AssetType.Icon),
 		license: getVersionAsset(version, AssetType.License),
@@ -335,7 +342,8 @@ function toExtension(galleryExtension: IRawGalleryExtension, extensionsGalleryUr
 		properties: {
 			dependencies: getExtensions(version, PropertyType.Dependency),
 			extensionPack: getExtensions(version, PropertyType.ExtensionPack),
-			engine: getEngine(version)
+			engine: getEngine(version),
+			localizedLanguages: getLocalizedLanguages(version)
 		},
 		/* __GDPR__FRAGMENT__
 			"GalleryExtensionTelemetryData2" : {
@@ -365,10 +373,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	private extensionsGalleryUrl: string;
 	private extensionsControlUrl: string;
 
-	private readonly commonHeadersPromise: TPromise<{ [key: string]: string; }>;
+	private readonly commonHeadersPromise: Promise<{ [key: string]: string; }>;
 
 	constructor(
 		@IRequestService private requestService: IRequestService,
+		@ILogService private logService: ILogService,
 		@IEnvironmentService private environmentService: IEnvironmentService,
 		@ITelemetryService private telemetryService: ITelemetryService,
 		// {{SQL CARBON EDIT}}
@@ -389,9 +398,34 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return !!this.extensionsGalleryUrl;
 	}
 
-	query(options: IQueryOptions = {}): TPromise<IPager<IGalleryExtension>> {
+	getExtension({ id, uuid }: IExtensionIdentifier, version?: string): Promise<IGalleryExtension> {
+		let query = new Query()
+			.withFlags(Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
+			.withPage(1, 1)
+			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
+			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
+
+		if (uuid) {
+			query = query.withFilter(FilterType.ExtensionId, uuid);
+		} else {
+			query = query.withFilter(FilterType.ExtensionName, id);
+		}
+
+		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions }) => {
+			if (galleryExtensions.length) {
+				const galleryExtension = galleryExtensions[0];
+				const versionAsset = version ? galleryExtension.versions.filter(v => v.version === version)[0] : galleryExtension.versions[0];
+				if (versionAsset) {
+					return toExtension(galleryExtension, versionAsset, 0, query);
+				}
+			}
+			return null;
+		});
+	}
+
+	query(options: IQueryOptions = {}): Promise<IPager<IGalleryExtension>> {
 		if (!this.isEnabled()) {
-			return TPromise.wrapError<IPager<IGalleryExtension>>(new Error('No extension gallery service configured.'));
+			return Promise.reject(new Error('No extension gallery service configured.'));
 		}
 
 		const type = options.names ? 'ids' : (options.text ? 'text' : 'all');
@@ -449,18 +483,21 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			query = query.withSortOrder(options.sortOrder);
 		}
 
-		return this.queryGallery(query).then(({ galleryExtensions, total }) => {
-			const extensions = galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, query, options.source));
-
+		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions, total }) => {
+			const extensions = galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, query, options.source));
 			// {{SQL CARBON EDIT}}
 			const pageSize = extensions.length;
-			const getPage = (pageIndex: number) => {
+			const getPage = (pageIndex: number, ct: CancellationToken) => {
+				if (ct.isCancellationRequested) {
+					return Promise.reject(canceled());
+				}
+
 				const nextPageQuery = query.withPage(pageIndex + 1);
-				return this.queryGallery(nextPageQuery)
-					.then(({ galleryExtensions }) => galleryExtensions.map((e, index) => toExtension(e, this.extensionsGalleryUrl, index, nextPageQuery, options.source)));
+				return this.queryGallery(nextPageQuery, ct)
+					.then(({ galleryExtensions }) => galleryExtensions.map((e, index) => toExtension(e, e.versions[0], index, nextPageQuery, options.source)));
 			};
 
-			return { firstPage: extensions, total, pageSize, getPage };
+			return { firstPage: extensions, total, pageSize, getPage } as IPager<IGalleryExtension>;
 		});
 	}
 
@@ -544,7 +581,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return a[fieldName] < b[fieldName] ? -1 : 1;
 	}
 
-	private queryGallery(query: Query): TPromise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
+	private queryGallery(query: Query, token: CancellationToken): Promise<{ galleryExtensions: IRawGalleryExtension[], total: number; }> {
 		return this.commonHeadersPromise.then(commonHeaders => {
 			const data = JSON.stringify(query.raw);
 			const headers = assign({}, commonHeaders, {
@@ -560,7 +597,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				url: this.api('/extensionquery'),
 				data,
 				headers
-			}).then(context => {
+			}, token).then(context => {
 
 				// {{SQL CARBON EDIT}}
 				let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
@@ -583,9 +620,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): TPromise<void> {
+	reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void> {
 		if (!this.isEnabled()) {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 
 		return this.commonHeadersPromise.then(commonHeaders => {
@@ -595,79 +632,101 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				type: 'POST',
 				url: this.api(`/publishers/${publisher}/extensions/${name}/${version}/stats?statType=${type}`),
 				headers
-			}).then(null, () => null);
+			}, CancellationToken.None).then(null, () => null);
 		});
 	}
 
-	download(extension: IGalleryExtension, operation: InstallOperation): TPromise<string> {
-		return this.loadCompatibleVersion(extension)
-			.then(extension => {
-				if (!extension) {
-					return TPromise.wrapError(new Error(localize('notCompatibleDownload', "Unable to download because the extension compatible with current version '{0}' of VS Code is not found.", pkg.version)));
-				}
-				const zipPath = path.join(tmpdir(), generateUuid());
-				const data = getGalleryExtensionTelemetryData(extension);
-				const startTime = new Date().getTime();
-				/* __GDPR__
-					"galleryService:downloadVSIX" : {
-						"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
-						"${include}": [
-							"${GalleryExtensionTelemetryData}"
-						]
-					}
-				*/
-				const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
+	download(extension: IGalleryExtension, operation: InstallOperation): Promise<string> {
+		this.logService.trace('ExtensionGalleryService#download', extension.identifier.id);
+		const zipPath = path.join(tmpdir(), generateUuid());
+		const data = getGalleryExtensionTelemetryData(extension);
+		const startTime = new Date().getTime();
+		/* __GDPR__
+			"galleryService:downloadVSIX" : {
+				"duration": { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
+				"${include}": [
+					"${GalleryExtensionTelemetryData}"
+				]
+			}
+		*/
+		const log = (duration: number) => this.telemetryService.publicLog('galleryService:downloadVSIX', assign(data, { duration }));
 
-				// {{SQL Carbon Edit}} - Don't append install or update on to the URL
-				// const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
-				const operationParam = undefined;
-				const downloadAsset = operationParam ? {
-					uri: `${extension.assets.download.uri}&${operationParam}=true`,
-					fallbackUri: `${extension.assets.download.fallbackUri}?${operationParam}=true`
-				} : extension.assets.download;
+		// {{SQL Carbon Edit}} - Don't append install or update on to the URL
+		// const operationParam = operation === InstallOperation.Install ? 'install' : operation === InstallOperation.Update ? 'update' : '';
+		const operationParam = undefined;
+		const downloadAsset = operationParam ? {
+			uri: `${extension.assets.download.uri}&${operationParam}=true`,
+			fallbackUri: `${extension.assets.download.fallbackUri}?${operationParam}=true`
+		} : extension.assets.download;
 
-				return this.getAsset(downloadAsset)
-					.then(context => download(zipPath, context))
-					.then(() => log(new Date().getTime() - startTime))
-					.then(() => zipPath);
-			});
+		return this.getAsset(downloadAsset)
+			.then(context => download(zipPath, context))
+			.then(() => log(new Date().getTime() - startTime))
+			.then(() => zipPath);
 	}
 
-	getReadme(extension: IGalleryExtension): TPromise<string> {
-		return this.getAsset(extension.assets.readme)
+	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
+		return this.getAsset(extension.assets.readme, {}, token)
 			.then(asText);
 	}
 
-	getManifest(extension: IGalleryExtension): TPromise<IExtensionManifest> {
-		return this.getAsset(extension.assets.manifest)
+	getManifest(extension: IGalleryExtension, token: CancellationToken): Promise<IExtensionManifest> {
+		return this.getAsset(extension.assets.manifest, {}, token)
 			.then(asText)
 			.then(JSON.parse);
 	}
 
-	getCoreTranslation(extension: IGalleryExtension, languageId: string): TPromise<ITranslation> {
+	getCoreTranslation(extension: IGalleryExtension, languageId: string): Promise<ITranslation> {
 		const asset = extension.assets.coreTranslations[languageId.toUpperCase()];
 		if (asset) {
 			return this.getAsset(asset)
 				.then(asText)
 				.then(JSON.parse);
 		}
-		return TPromise.as(null);
+		return Promise.resolve(null);
 	}
 
-	getChangelog(extension: IGalleryExtension): TPromise<string> {
-		return this.getAsset(extension.assets.changelog)
+	getChangelog(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
+		return this.getAsset(extension.assets.changelog, {}, token)
 			.then(asText);
 	}
 
-	loadAllDependencies(extensions: IExtensionIdentifier[]): TPromise<IGalleryExtension[]> {
-		return this.getDependenciesReccursively(extensions.map(e => e.id), []);
+	loadAllDependencies(extensions: IExtensionIdentifier[], token: CancellationToken): Promise<IGalleryExtension[]> {
+		return this.getDependenciesReccursively(extensions.map(e => e.id), [], token);
 	}
 
-	loadCompatibleVersion(extension: IGalleryExtension): TPromise<IGalleryExtension> {
-		if (extension.properties.engine && isEngineValid(extension.properties.engine)) {
-			return TPromise.wrap(extension);
+	getAllVersions(extension: IGalleryExtension, compatible: boolean): Promise<IGalleryExtensionVersion[]> {
+		let query = new Query()
+			.withFlags(Flags.IncludeVersions, Flags.IncludeFiles, Flags.IncludeVersionProperties)
+			.withPage(1, 1)
+			.withFilter(FilterType.Target, 'Microsoft.VisualStudio.Code')
+			.withFilter(FilterType.ExcludeWithFlags, flagsToString(Flags.Unpublished));
+
+		if (extension.identifier.uuid) {
+			query = query.withFilter(FilterType.ExtensionId, extension.identifier.uuid);
+		} else {
+			query = query.withFilter(FilterType.ExtensionName, extension.identifier.id);
 		}
 
+		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions }) => {
+			if (galleryExtensions.length) {
+				if (compatible) {
+					return Promise.all(galleryExtensions[0].versions.map(v => this.getEngine(v).then(engine => isEngineValid(engine) ? v : null)))
+						.then(versions => versions
+							.filter(v => !!v)
+							.map(v => ({ version: v.version, date: v.lastUpdated })));
+				} else {
+					return galleryExtensions[0].versions.map(v => ({ version: v.version, date: v.lastUpdated }));
+				}
+			}
+			return [];
+		});
+	}
+
+	loadCompatibleVersion(extension: IGalleryExtension, fromVersion: string = extension.version): Promise<IGalleryExtension> {
+		if (extension.version === fromVersion && extension.properties.engine && isEngineValid(extension.properties.engine)) {
+			return Promise.resolve(extension);
+		}
 		const query = new Query()
 			.withFlags(Flags.IncludeVersions, Flags.IncludeFiles, Flags.IncludeVersionProperties)
 			.withPage(1, 1)
@@ -676,7 +735,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withAssetTypes(AssetType.Manifest, AssetType.VSIX)
 			.withFilter(FilterType.ExtensionId, extension.identifier.uuid);
 
-		return this.queryGallery(query)
+		return this.queryGallery(query, CancellationToken.None)
 			.then(({ galleryExtensions }) => {
 				const [rawExtension] = galleryExtensions;
 
@@ -684,25 +743,43 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					return null;
 				}
 
-				return this.getLastValidExtensionVersion(rawExtension, rawExtension.versions)
+				const versions: IRawGalleryExtensionVersion[] = this.getVersionsFrom(rawExtension.versions, fromVersion);
+				if (!versions.length) {
+					return null;
+				}
+
+				return this.getLastValidExtensionVersion(rawExtension, versions)
 					.then(rawVersion => {
 						if (rawVersion) {
-							extension.properties.dependencies = getExtensions(rawVersion, PropertyType.Dependency);
-							extension.properties.engine = getEngine(rawVersion);
-							// {{SQL CARBON EDIT}}
-							extension.assets.download = getVersionAsset(rawVersion, AssetType.VSIX);
-							extension.assets.downloadPage = getVersionAsset(rawVersion, AssetType.DownloadPage);
-							extension.version = rawVersion.version;
-							return extension;
+							return toExtension(rawExtension, rawVersion, 0, query);
 						}
 						return null;
 					});
 			});
 	}
 
-	private loadDependencies(extensionNames: string[]): TPromise<IGalleryExtension[]> {
+	private getVersionsFrom(versions: IRawGalleryExtensionVersion[], version: string): IRawGalleryExtensionVersion[] {
+		if (versions[0].version === version) {
+			return versions;
+		}
+		const result: IRawGalleryExtensionVersion[] = [];
+		let currentVersion: IRawGalleryExtensionVersion = null;
+		for (const v of versions) {
+			if (!currentVersion) {
+				if (v.version === version) {
+					currentVersion = v;
+				}
+			}
+			if (currentVersion) {
+				result.push(v);
+			}
+		}
+		return result;
+	}
+
+	private loadDependencies(extensionNames: string[], token: CancellationToken): Promise<IGalleryExtension[]> {
 		if (!extensionNames || extensionNames.length === 0) {
-			return TPromise.as([]);
+			return Promise.resolve([]);
 		}
 
 		let query = new Query()
@@ -713,14 +790,14 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			.withAssetTypes(AssetType.Icon, AssetType.License, AssetType.Details, AssetType.Manifest, AssetType.VSIX)
 			.withFilter(FilterType.ExtensionName, ...extensionNames);
 
-		return this.queryGallery(query).then(result => {
-			const dependencies = [];
-			const ids = [];
+		return this.queryGallery(query, token).then(result => {
+			const dependencies: IGalleryExtension[] = [];
+			const ids: string[] = [];
 
 			for (let index = 0; index < result.galleryExtensions.length; index++) {
 				const rawExtension = result.galleryExtensions[index];
 				if (ids.indexOf(rawExtension.extensionId) === -1) {
-					dependencies.push(toExtension(rawExtension, this.extensionsGalleryUrl, index, query, 'dependencies'));
+					dependencies.push(toExtension(rawExtension, rawExtension.versions[0], index, query, 'dependencies'));
 					ids.push(rawExtension.extensionId);
 				}
 			}
@@ -728,16 +805,16 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	private getDependenciesReccursively(toGet: string[], result: IGalleryExtension[]): TPromise<IGalleryExtension[]> {
+	private getDependenciesReccursively(toGet: string[], result: IGalleryExtension[], token: CancellationToken): Promise<IGalleryExtension[]> {
 		if (!toGet || !toGet.length) {
-			return TPromise.wrap(result);
+			return Promise.resolve(result);
 		}
 		toGet = result.length ? toGet.filter(e => !ExtensionGalleryService.hasExtensionByName(result, e)) : toGet;
 		if (!toGet.length) {
-			return TPromise.wrap(result);
+			return Promise.resolve(result);
 		}
 
-		return this.loadDependencies(toGet)
+		return this.loadDependencies(toGet, token)
 			.then(loadedDependencies => {
 				const dependenciesSet = new Set<string>();
 				for (const dep of loadedDependencies) {
@@ -748,11 +825,11 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				result = distinct(result.concat(loadedDependencies), d => d.identifier.uuid);
 				const dependencies: string[] = [];
 				dependenciesSet.forEach(d => !ExtensionGalleryService.hasExtensionByName(result, d) && dependencies.push(d));
-				return this.getDependenciesReccursively(dependencies, result);
+				return this.getDependenciesReccursively(dependencies, result, token);
 			});
 	}
 
-	private getAsset(asset: IGalleryExtensionAsset, options: IRequestOptions = {}): TPromise<IRequestContext> {
+	private getAsset(asset: IGalleryExtensionAsset, options: IRequestOptions = {}, token: CancellationToken = CancellationToken.None): Promise<IRequestContext> {
 		return this.commonHeadersPromise.then(commonHeaders => {
 			const baseOptions = { type: 'GET' };
 			const headers = assign({}, commonHeaders, options.headers || {});
@@ -762,18 +839,18 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			const fallbackUrl = asset.fallbackUri;
 			const firstOptions = assign({}, options, { url });
 
-			return this.requestService.request(firstOptions)
+			return this.requestService.request(firstOptions, token)
 				.then(context => {
 					if (context.res.statusCode === 200) {
-						return TPromise.as(context);
+						return Promise.resolve(context);
 					}
 
 					return asText(context)
-						.then(message => TPromise.wrapError<IRequestContext>(new Error(`Expected 200, got back ${context.res.statusCode} instead.\n\n${message}`)));
+						.then(message => Promise.reject(new Error(`Expected 200, got back ${context.res.statusCode} instead.\n\n${message}`)));
 				})
 				.then(null, err => {
 					if (isPromiseCanceledError(err)) {
-						return TPromise.wrapError<IRequestContext>(err);
+						return Promise.reject(err);
 					}
 
 					const message = getErrorMessage(err);
@@ -794,9 +871,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					this.telemetryService.publicLog('galleryService:cdnFallback', { url, message });
 
 					const fallbackOptions = assign({}, options, { url: fallbackUrl });
-					return this.requestService.request(fallbackOptions).then(null, err => {
+					return this.requestService.request(fallbackOptions, token).then(null, err => {
 						if (isPromiseCanceledError(err)) {
-							return TPromise.wrapError<IRequestContext>(err);
+							return Promise.reject(err);
 						}
 
 						const message = getErrorMessage(err);
@@ -808,13 +885,13 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 							}
 						*/
 						this.telemetryService.publicLog('galleryService:requestError', { url: fallbackUrl, cdn: false, message });
-						return TPromise.wrapError<IRequestContext>(err);
+						return Promise.reject(err);
 					});
 				});
 		});
 	}
 
-	private getLastValidExtensionVersion(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): TPromise<IRawGalleryExtensionVersion> {
+	private getLastValidExtensionVersion(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> {
 		const version = this.getLastValidExtensionVersionFromProperties(extension, versions);
 		if (version) {
 			return version;
@@ -822,39 +899,47 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.getLastValidExtensionVersionReccursively(extension, versions);
 	}
 
-	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): TPromise<IRawGalleryExtensionVersion> {
+	private getLastValidExtensionVersionFromProperties(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> {
 		for (const version of versions) {
 			const engine = getEngine(version);
 			if (!engine) {
 				return null;
 			}
 			if (isEngineValid(engine)) {
-				return TPromise.wrap(version);
+				return Promise.resolve(version);
 			}
 		}
 		return null;
 	}
 
-	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): TPromise<IRawGalleryExtensionVersion> {
-		if (!versions.length) {
-			return null;
+	private getEngine(version: IRawGalleryExtensionVersion): Promise<string> {
+		const engine = getEngine(version);
+		if (engine) {
+			return Promise.resolve(engine);
 		}
 
-		const version = versions[0];
 		const asset = getVersionAsset(version, AssetType.Manifest);
 		const headers = { 'Accept-Encoding': 'gzip' };
 
 		return this.getAsset(asset, { headers })
 			.then(context => asJson<IExtensionManifest>(context))
-			.then(manifest => {
-				const engine = manifest.engines.vscode;
+			.then(manifest => manifest.engines.vscode);
+	}
 
+	private getLastValidExtensionVersionReccursively(extension: IRawGalleryExtension, versions: IRawGalleryExtensionVersion[]): Promise<IRawGalleryExtensionVersion> {
+		if (!versions.length) {
+			return null;
+		}
+
+		const version = versions[0];
+		return this.getEngine(version)
+			.then(engine => {
 				if (!isEngineValid(engine)) {
 					return this.getLastValidExtensionVersionReccursively(extension, versions.slice(1));
 				}
 
 				version.properties = version.properties || [];
-				version.properties.push({ key: PropertyType.Engine, value: manifest.engines.vscode });
+				version.properties.push({ key: PropertyType.Engine, value: engine });
 				return version;
 			});
 	}
@@ -868,18 +953,18 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return false;
 	}
 
-	getExtensionsReport(): TPromise<IReportedExtension[]> {
+	getExtensionsReport(): Promise<IReportedExtension[]> {
 		if (!this.isEnabled()) {
-			return TPromise.wrapError(new Error('No extension gallery service configured.'));
+			return Promise.reject(new Error('No extension gallery service configured.'));
 		}
 
 		if (!this.extensionsControlUrl) {
-			return TPromise.as([]);
+			return Promise.resolve([]);
 		}
 
-		return this.requestService.request({ type: 'GET', url: this.extensionsControlUrl }).then(context => {
+		return this.requestService.request({ type: 'GET', url: this.extensionsControlUrl }, CancellationToken.None).then(context => {
 			if (context.res.statusCode !== 200) {
-				return TPromise.wrapError(new Error('Could not get extensions report.'));
+				return Promise.reject(new Error('Could not get extensions report.'));
 			}
 
 			return asJson<IRawExtensionsReport>(context).then(result => {
@@ -891,13 +976,13 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					map.set(id, ext);
 				}
 
-				return TPromise.as(values(map));
+				return Promise.resolve(values(map));
 			});
 		});
 	}
 }
 
-export function resolveMarketplaceHeaders(environmentService: IEnvironmentService): TPromise<{ [key: string]: string; }> {
+export function resolveMarketplaceHeaders(environmentService: IEnvironmentService): Promise<{ [key: string]: string; }> {
 	const marketplaceMachineIdFile = path.join(environmentService.userDataPath, 'machineid');
 
 	return readFile(marketplaceMachineIdFile, 'utf8').then(contents => {
@@ -905,9 +990,9 @@ export function resolveMarketplaceHeaders(environmentService: IEnvironmentServic
 			return contents;
 		}
 
-		return TPromise.wrap(null); // invalid marketplace UUID
+		return Promise.resolve(null); // invalid marketplace UUID
 	}, error => {
-		return TPromise.wrap(null); // error reading ID file
+		return Promise.resolve(null); // error reading ID file
 	}).then(uuid => {
 		if (!uuid) {
 			uuid = generateUuid();

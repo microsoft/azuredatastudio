@@ -27,7 +27,7 @@ import * as nls from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
-import { $, Builder } from 'vs/base/browser/builder';
+import { $, Builder } from 'sql/base/browser/builder';
 import * as DOM from 'vs/base/browser/dom';
 import { CommandsRegistry, ICommand, ICommandService } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, ICommandAction } from 'vs/platform/actions/common/actions';

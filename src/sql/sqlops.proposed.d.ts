@@ -545,6 +545,12 @@ declare module 'sqlops' {
 
 	export interface TextComponentProperties {
 		value?: string;
+		links?: LinkArea[];
+	}
+
+	export interface LinkArea {
+		text: string;
+		url: string;
 	}
 
 	export interface HyperlinkComponentProperties extends ComponentProperties {

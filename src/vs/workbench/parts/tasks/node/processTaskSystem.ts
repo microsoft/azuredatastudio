@@ -2,13 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as nls from 'vs/nls';
 import * as Objects from 'vs/base/common/objects';
 import * as Types from 'vs/base/common/types';
 import * as Platform from 'vs/base/common/platform';
-import { TPromise, Promise } from 'vs/base/common/winjs.base';
 import * as Async from 'vs/base/common/async';
 import Severity from 'vs/base/common/severity';
 import * as Strings from 'vs/base/common/strings';
@@ -52,7 +50,7 @@ export class ProcessTaskSystem implements ITaskSystem {
 	private errorsShown: boolean;
 	private childProcess: LineProcess;
 	private activeTask: CustomTask;
-	private activeTaskPromise: TPromise<ITaskSummary>;
+	private activeTaskPromise: Promise<ITaskSummary>;
 
 	private readonly _onDidStateChange: Emitter<TaskEvent>;
 
@@ -76,8 +74,8 @@ export class ProcessTaskSystem implements ITaskSystem {
 		return this._onDidStateChange.event;
 	}
 
-	public isActive(): TPromise<boolean> {
-		return TPromise.as(!!this.childProcess);
+	public isActive(): Promise<boolean> {
+		return Promise.resolve(!!this.childProcess);
 	}
 
 	public isActiveSync(): boolean {
@@ -94,7 +92,7 @@ export class ProcessTaskSystem implements ITaskSystem {
 
 	public run(task: Task): ITaskExecuteResult {
 		if (this.activeTask) {
-			return { kind: TaskExecuteKind.Active, active: { same: this.activeTask._id === task._id, background: this.activeTask.isBackground }, promise: this.activeTaskPromise };
+			return { kind: TaskExecuteKind.Active, task, active: { same: this.activeTask._id === task._id, background: this.activeTask.isBackground }, promise: this.activeTaskPromise };
 		}
 		return this.executeTask(task);
 	}
@@ -118,14 +116,14 @@ export class ProcessTaskSystem implements ITaskSystem {
 		return true;
 	}
 
-	public terminate(task: Task): TPromise<TaskTerminateResponse> {
+	public terminate(task: Task): Promise<TaskTerminateResponse> {
 		if (!this.activeTask || Task.getMapKey(this.activeTask) !== Task.getMapKey(task)) {
-			return TPromise.as<TaskTerminateResponse>({ success: false, task: undefined });
+			return Promise.resolve<TaskTerminateResponse>({ success: false, task: undefined });
 		}
 		return this.terminateAll().then(values => values[0]);
 	}
 
-	public terminateAll(): TPromise<TaskTerminateResponse[]> {
+	public terminateAll(): Promise<TaskTerminateResponse[]> {
 		if (this.childProcess) {
 			let task = this.activeTask;
 			return this.childProcess.terminate().then((response) => {
@@ -134,12 +132,12 @@ export class ProcessTaskSystem implements ITaskSystem {
 				return [result];
 			});
 		}
-		return TPromise.as<TaskTerminateResponse[]>([{ success: true, task: undefined }]);
+		return Promise.resolve<TaskTerminateResponse[]>([{ success: true, task: undefined }]);
 	}
 
 	private executeTask(task: Task, trigger: string = Triggers.command): ITaskExecuteResult {
 		if (!CustomTask.is(task)) {
-			throw new Error('The process task system can only execute custom tasks.');
+			throw new Error(nls.localize('version1_0', 'The task system is configured for version 0.1.0 (see tasks.json file), which can only execute custom tasks. Upgrade to version 2.0.0 to run the task: {0}', task._label));
 		}
 		let telemetryEvent: TelemetryEvent = {
 			trigger: trigger,
@@ -170,7 +168,7 @@ export class ProcessTaskSystem implements ITaskSystem {
 					}
 				*/
 				this.telemetryService.publicLog(ProcessTaskSystem.TelemetryEventName, telemetryEvent);
-				return TPromise.wrapError<ITaskSummary>(err);
+				return Promise.reject<ITaskSummary>(err);
 			});
 			return result;
 		} catch (err) {
@@ -194,6 +192,10 @@ export class ProcessTaskSystem implements ITaskSystem {
 				throw new TaskError(Severity.Error, nls.localize('TaskRunnerSystem.unknownError', 'A unknown error has occurred while executing a task. See task output log for details.'), TaskErrors.UnknownError);
 			}
 		}
+	}
+
+	public rerun(): ITaskExecuteResult | undefined {
+		return undefined;
 	}
 
 	private doExecuteTask(task: CustomTask, telemetryEvent: TelemetryEvent): ITaskExecuteResult {
@@ -303,8 +305,8 @@ export class ProcessTaskSystem implements ITaskSystem {
 				return this.handleError(task, error);
 			});
 			let result: ITaskExecuteResult = (<any>task).tscWatch
-				? { kind: TaskExecuteKind.Started, started: { restartOnFileChanges: '**/*.ts' }, promise: this.activeTaskPromise }
-				: { kind: TaskExecuteKind.Started, started: {}, promise: this.activeTaskPromise };
+				? { kind: TaskExecuteKind.Started, task, started: { restartOnFileChanges: '**/*.ts' }, promise: this.activeTaskPromise }
+				: { kind: TaskExecuteKind.Started, task, started: {}, promise: this.activeTaskPromise };
 			return result;
 		} else {
 			this._onDidStateChange.fire(TaskEvent.create(TaskEventKind.Start, task));
@@ -347,7 +349,7 @@ export class ProcessTaskSystem implements ITaskSystem {
 				this._onDidStateChange.fire(TaskEvent.create(TaskEventKind.End, task));
 				return this.handleError(task, error);
 			});
-			return { kind: TaskExecuteKind.Started, started: {}, promise: this.activeTaskPromise };
+			return { kind: TaskExecuteKind.Started, task, started: {}, promise: this.activeTaskPromise };
 		}
 	}
 
@@ -357,11 +359,11 @@ export class ProcessTaskSystem implements ITaskSystem {
 		this.activeTaskPromise = null;
 	}
 
-	private handleError(task: CustomTask, errorData: ErrorData): Promise {
+	private handleError(task: CustomTask, errorData: ErrorData): Promise<ITaskSummary> {
 		let makeVisible = false;
 		if (errorData.error && !errorData.terminated) {
 			let args: string = task.command.args ? task.command.args.join(' ') : '';
-			this.log(nls.localize('TaskRunnerSystem.childProcessError', 'Failed to launch external program {0} {1}.', task.command.name, args));
+			this.log(nls.localize('TaskRunnerSystem.childProcessError', 'Failed to launch external program {0} {1}.', JSON.stringify(task.command.name), args));
 			this.outputChannel.append(errorData.error.message);
 			makeVisible = true;
 		}
@@ -383,7 +385,7 @@ export class ProcessTaskSystem implements ITaskSystem {
 		error.stderr = errorData.stderr;
 		error.stdout = errorData.stdout;
 		error.terminated = errorData.terminated;
-		return TPromise.wrapError(error);
+		return Promise.reject(error);
 	}
 
 	private checkTerminated(task: Task, data: SuccessData | ErrorData): boolean {

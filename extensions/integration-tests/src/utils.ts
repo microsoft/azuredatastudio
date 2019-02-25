@@ -34,5 +34,5 @@ export async function connectToServer(server: TestServerProfile) {
 }
 
 export async function ensureConnectionViewOpened() {
-	await vscode.commands.executeCommand('workbench.view.connections');
+	await vscode.commands.executeCommand('workbench.view.dataExplorer');
 }

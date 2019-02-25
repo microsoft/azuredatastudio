@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import URI from 'vs/base/common/uri';
-import { TPromise } from 'vs/base/common/winjs.base';
+import { URI } from 'vs/base/common/uri';
 import { IInstantiationService, createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP_TYPE, SIDE_GROUP_TYPE } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService, IEditorGroup } from 'vs/workbench/services/group/common/editorGroupsService';
@@ -35,6 +34,7 @@ export interface IWebviewEditorService {
 
 	reviveWebview(
 		viewType: string,
+		id: number,
 		title: string,
 		iconPath: { light: URI, dark: URI } | undefined,
 		state: any,
@@ -65,7 +65,7 @@ export interface WebviewReviver {
 
 	reviveWebview(
 		webview: WebviewEditorInput
-	): TPromise<void>;
+	): Promise<void>;
 }
 
 export interface WebviewEvents {
@@ -107,7 +107,7 @@ export class WebviewEditorService implements IWebviewEditorService {
 		extensionLocation: URI,
 		events: WebviewEvents
 	): WebviewEditorInput {
-		const webviewInput = this._instantiationService.createInstance(WebviewEditorInput, viewType, title, options, {}, events, extensionLocation, undefined);
+		const webviewInput = this._instantiationService.createInstance(WebviewEditorInput, viewType, undefined, title, options, {}, events, extensionLocation, undefined);
 		this._editorService.openEditor(webviewInput, { pinned: true, preserveFocus: showOptions.preserveFocus }, showOptions.group);
 		return webviewInput;
 	}
@@ -126,25 +126,26 @@ export class WebviewEditorService implements IWebviewEditorService {
 
 	reviveWebview(
 		viewType: string,
+		id: number,
 		title: string,
 		iconPath: { light: URI, dark: URI } | undefined,
 		state: any,
 		options: WebviewInputOptions,
 		extensionLocation: URI
 	): WebviewEditorInput {
-		const webviewInput = this._instantiationService.createInstance(WebviewEditorInput, viewType, title, options, state, {}, extensionLocation, {
+		const webviewInput = this._instantiationService.createInstance(WebviewEditorInput, viewType, id, title, options, state, {}, extensionLocation, {
 			canRevive: (_webview) => {
 				return true;
 			},
-			reviveWebview: (webview: WebviewEditorInput): TPromise<void> => {
-				return TPromise.wrap(this.tryRevive(webview)).then(didRevive => {
+			reviveWebview: (webview: WebviewEditorInput): Promise<void> => {
+				return this.tryRevive(webview).then(didRevive => {
 					if (didRevive) {
-						return TPromise.as(void 0);
+						return Promise.resolve(void 0);
 					}
 
 					// A reviver may not be registered yet. Put into queue and resolve promise when we can revive
 					let resolve: (value: void) => void;
-					const promise = new TPromise<void>(r => { resolve = r; });
+					const promise = new Promise<void>(r => { resolve = r; });
 					this._awaitingRevival.push({ input: webview, resolve });
 					return promise;
 				});

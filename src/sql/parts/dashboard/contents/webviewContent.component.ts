@@ -40,17 +40,12 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	private _webview: WebviewElement;
 	private _html: string;
 
-	protected contextKey: IContextKey<boolean>;
-	protected findInputFocusContextKey: IContextKey<boolean>;
-
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
 		@Inject(IPartService) private partService: IPartService,
-		@Inject(IEnvironmentService) private environmentService: IEnvironmentService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super();
@@ -113,8 +108,6 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			this.partService.getContainer(Parts.EDITOR_PART),
-			this.contextKey,
-			this.findInputFocusContextKey,
 			{
 				enableWrappedPostMessage: true,
 				allowScripts: true

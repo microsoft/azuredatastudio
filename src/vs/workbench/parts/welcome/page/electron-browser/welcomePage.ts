@@ -2,11 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import 'vs/css!./welcomePage';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
+import * as strings from 'vs/base/common/strings';
 import * as path from 'path';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as arrays from 'vs/base/common/arrays';
 import { WalkThroughInput } from 'vs/workbench/parts/welcome/walkThrough/node/walkThroughInput';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
@@ -15,7 +16,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { onUnexpectedError, isPromiseCanceledError } from 'vs/base/common/errors';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
@@ -33,14 +34,14 @@ import { registerThemingParticipant } from 'vs/platform/theme/common/themeServic
 import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { getExtraColor } from 'vs/workbench/parts/welcome/walkThrough/node/walkThroughUtils';
 import { IExtensionsWorkbenchService } from 'vs/workbench/parts/extensions/common/extensions';
-import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IWorkspaceIdentifier, getWorkspaceLabel, ISingleFolderWorkspaceIdentifier, isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
+import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier, isSingleFolderWorkspaceIdentifier, isWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
 import { getIdAndVersionFromLocalExtensionId } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { IUriDisplayService } from 'vs/platform/uriDisplay/common/uriDisplay';
+import { ILabelService } from 'vs/platform/label/common/label';
+import { IFileService } from 'vs/platform/files/common/files';
 
 used();
 
@@ -55,17 +56,49 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IEditorService editorService: IEditorService,
 		@IBackupFileService backupFileService: IBackupFileService,
-		@ITelemetryService telemetryService: ITelemetryService,
+		@IFileService fileService: IFileService,
+		@IWorkspaceContextService contextService: IWorkspaceContextService,
 		@ILifecycleService lifecycleService: ILifecycleService,
-		@IStorageService storageService: IStorageService
+		@ICommandService private commandService: ICommandService,
 	) {
-		const enabled = isWelcomePageEnabled(configurationService);
+		const enabled = isWelcomePageEnabled(configurationService, contextService);
 		if (enabled && lifecycleService.startupKind !== StartupKind.ReloadedWindow) {
 			backupFileService.hasBackups().then(hasBackups => {
 				const activeEditor = editorService.activeEditor;
 				if (!activeEditor && !hasBackups) {
-					return instantiationService.createInstance(WelcomePage)
-						.openEditor();
+					const openWithReadme = configurationService.getValue(configurationKey) === 'readme';
+					if (openWithReadme) {
+						return Promise.all(contextService.getWorkspace().folders.map(folder => {
+							const folderUri = folder.uri;
+							return fileService.readFolder(folderUri)
+								.then(files => {
+									const file = arrays.find(files.sort(), file => strings.startsWith(file.toLowerCase(), 'readme'));
+									if (file) {
+										return folderUri.with({
+											path: path.posix.join(folderUri.path, file)
+										});
+									}
+									return undefined;
+								}, onUnexpectedError);
+						})).then(results => results.filter(result => !!result))
+							.then<any>(readmes => {
+								if (!editorService.activeEditor) {
+									if (readmes.length) {
+										const isMarkDown = (readme: URI) => strings.endsWith(readme.path.toLowerCase(), '.md');
+										return Promise.all([
+											this.commandService.executeCommand('markdown.showPreview', null, readmes.filter(isMarkDown), { locked: true }),
+											editorService.openEditors(readmes.filter(readme => !isMarkDown(readme))
+												.map(readme => ({ resource: readme }))),
+										]);
+									} else {
+										return instantiationService.createInstance(WelcomePage).openEditor();
+									}
+								}
+								return undefined;
+							});
+					} else {
+						return instantiationService.createInstance(WelcomePage).openEditor();
+					}
 				}
 				return undefined;
 			}).then(null, onUnexpectedError);
@@ -73,7 +106,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 	}
 }
 
-function isWelcomePageEnabled(configurationService: IConfigurationService) {
+function isWelcomePageEnabled(configurationService: IConfigurationService, contextService: IWorkspaceContextService) {
 	const startupEditor = configurationService.inspect(configurationKey);
 	if (!startupEditor.user && !startupEditor.workspace) {
 		const welcomeEnabled = configurationService.inspect(oldConfigurationKey);
@@ -81,7 +114,7 @@ function isWelcomePageEnabled(configurationService: IConfigurationService) {
 			return welcomeEnabled.value;
 		}
 	}
-	return startupEditor.value === 'welcomePage';
+	return startupEditor.value === 'welcomePage' || startupEditor.value === 'readme' || startupEditor.value === 'welcomePageInEmptyWorkbench' && contextService.getWorkbenchState() === WorkbenchState.EMPTY;
 }
 
 export class WelcomePageAction extends Action {
@@ -226,7 +259,7 @@ class WelcomePage {
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IEnvironmentService private environmentService: IEnvironmentService,
-		@IUriDisplayService private uriDisplayService: IUriDisplayService,
+		@ILabelService private labelService: ILabelService,
 		@INotificationService private notificationService: INotificationService,
 		@IExtensionEnablementService private extensionEnablementService: IExtensionEnablementService,
 		@IExtensionGalleryService private extensionGalleryService: IExtensionGalleryService,
@@ -258,8 +291,8 @@ class WelcomePage {
 		return this.editorService.openEditor(this.editorInput, { pinned: false });
 	}
 
-	private onReady(container: HTMLElement, recentlyOpened: TPromise<{ files: string[]; workspaces: (IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier)[]; }>, installedExtensions: TPromise<IExtensionStatus[]>): void {
-		const enabled = isWelcomePageEnabled(this.configurationService);
+	private onReady(container: HTMLElement, recentlyOpened: TPromise<{ files: URI[]; workspaces: (IWorkspaceIdentifier | ISingleFolderWorkspaceIdentifier)[]; }>, installedExtensions: TPromise<IExtensionStatus[]>): void {
+		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const showOnStartup = <HTMLInputElement>container.querySelector('#showOnStartup');
 		if (enabled) {
 			showOnStartup.setAttribute('checked', 'checked');
@@ -283,9 +316,9 @@ class WelcomePage {
 				let resource: URI;
 				if (isSingleFolderWorkspaceIdentifier(workspace)) {
 					resource = workspace;
-					label = getWorkspaceLabel(workspace, this.environmentService, this.uriDisplayService);
+					label = this.labelService.getWorkspaceLabel(workspace);
 				} else if (isWorkspaceIdentifier(workspace)) {
-					label = getWorkspaceLabel(workspace, this.environmentService, this.uriDisplayService);
+					label = this.labelService.getWorkspaceLabel(workspace);
 					resource = URI.file(workspace.configPath);
 				} else {
 					label = getBaseLabel(workspace);
@@ -307,7 +340,7 @@ class WelcomePage {
 					}
 					parentFolderPath = tildify(parentFolder, this.environmentService.userHome);
 				} else {
-					parentFolderPath = this.uriDisplayService.getLabel(resource);
+					parentFolderPath = this.labelService.getUriLabel(resource);
 				}
 
 
@@ -423,7 +456,7 @@ class WelcomePage {
 				this.notificationService.info(strings.alreadyInstalled.replace('{0}', extensionSuggestion.name));
 				return;
 			}
-			const foundAndInstalled = installedExtension ? TPromise.as(installedExtension.local) : this.extensionGalleryService.query({ names: [extensionSuggestion.id], source: telemetryFrom })
+			const foundAndInstalled = installedExtension ? Promise.resolve(installedExtension.local) : this.extensionGalleryService.query({ names: [extensionSuggestion.id], source: telemetryFrom })
 				.then(result => {
 					const [extension] = result.firstPage;
 					if (!extension) {
@@ -593,8 +626,13 @@ export class WelcomeInputFactory implements IEditorInputFactory {
 
 export const buttonBackground = registerColor('welcomePage.buttonBackground', { dark: null, light: null, hc: null }, localize('welcomePage.buttonBackground', 'Background color for the buttons on the Welcome page.'));
 export const buttonHoverBackground = registerColor('welcomePage.buttonHoverBackground', { dark: null, light: null, hc: null }, localize('welcomePage.buttonHoverBackground', 'Hover background color for the buttons on the Welcome page.'));
+export const welcomePageBackground = registerColor('welcomePage.background', { light: null, dark: null, hc: null }, localize('welcomePage.background', 'Background color for the Welcome page.'));
 
 registerThemingParticipant((theme, collector) => {
+	const backgroundColor = theme.getColor(welcomePageBackground);
+	if (backgroundColor) {
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePageContainer { background-color: ${backgroundColor}; }`);
+	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
 		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .caption { color: ${foregroundColor}; }`);
@@ -605,11 +643,11 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const buttonColor = getExtraColor(theme, buttonBackground, { dark: 'rgba(0, 0, 0, .2)', extra_dark: 'rgba(200, 235, 255, .042)', light: 'rgba(0,0,0,.04)', hc: 'black' });
 	if (buttonColor) {
-		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands li button { background: ${buttonColor}; }`);
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands .item button { background: ${buttonColor}; }`);
 	}
 	const buttonHoverColor = getExtraColor(theme, buttonHoverBackground, { dark: 'rgba(200, 235, 255, .072)', extra_dark: 'rgba(200, 235, 255, .072)', light: 'rgba(0,0,0,.10)', hc: null });
 	if (buttonHoverColor) {
-		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands li button:hover { background: ${buttonHoverColor}; }`);
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands .item button:hover { background: ${buttonHoverColor}; }`);
 	}
 	const link = theme.getColor(textLinkForeground);
 	if (link) {
@@ -626,10 +664,10 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const border = theme.getColor(contrastBorder);
 	if (border) {
-		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands li button { border-color: ${border}; }`);
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands .item button { border-color: ${border}; }`);
 	}
 	const activeBorder = theme.getColor(activeContrastBorder);
 	if (activeBorder) {
-		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands li button:hover { outline-color: ${activeBorder}; }`);
+		collector.addRule(`.monaco-workbench > .part.editor > .content .welcomePage .commands .item button:hover { outline-color: ${activeBorder}; }`);
 	}
 });

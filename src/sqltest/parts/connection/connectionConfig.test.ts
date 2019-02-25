@@ -21,7 +21,6 @@ import { ProviderFeatures, ICapabilitiesService } from 'sql/platform/capabilitie
 import * as sqlops from 'sqlops';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { StorageService, InMemoryLocalStorage } from 'vs/platform/storage/common/storageService';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 
 suite('SQL ConnectionConfig tests', () => {
@@ -267,12 +266,11 @@ suite('SQL ConnectionConfig tests', () => {
 
 		workspaceConfigurationServiceMock = TypeMoq.Mock.ofType(WorkspaceConfigurationTestService);
 		workspaceConfigurationServiceMock.setup(x => x.reloadConfiguration())
-			.returns(() => TPromise.as(null));
+			.returns(() => Promise.resolve(undefined));
 
 		configEditingServiceMock = TypeMoq.Mock.ofType(ConfigurationEditingService);
-		let nothing: void;
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).returns(() => TPromise.as<void>(nothing));
-		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.WORKSPACE, TypeMoq.It.isAny())).returns(() => TPromise.as<void>(nothing));
+		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
+		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.WORKSPACE, TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 	});
 
 	function groupsAreEqual(groups1: IConnectionProfileGroup[], groups2: IConnectionProfileGroup[]): Boolean {
@@ -776,7 +774,7 @@ suite('SQL ConnectionConfig tests', () => {
 		let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService> = TypeMoq.Mock.ofType(ConfigurationEditingService);
 		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).callback((x: any, val: any) => {
 			calledValue = val.value as IConnectionProfileStore[];
-		}).returns(() => TPromise.as<void>(nothing));
+		}).returns(() => Promise.resolve(undefined));
 		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
@@ -804,7 +802,7 @@ suite('SQL ConnectionConfig tests', () => {
 		let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService> = TypeMoq.Mock.ofType(ConfigurationEditingService);
 		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).callback((x: any, val: any) => {
 			calledValue = val.value as IConnectionProfileStore[];
-		}).returns(() => TPromise.as<void>(nothing));
+		}).returns(() => Promise.resolve(undefined));
 		workspaceConfigurationServiceMock.setup(x => x.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[]>(
 			Constants.connectionGroupsArrayName))
 			.returns(() => configValueToConcat);
@@ -855,10 +853,10 @@ suite('SQL ConnectionConfig tests', () => {
 		let configEditingServiceMock: TypeMoq.Mock<ConfigurationEditingService> = TypeMoq.Mock.ofType(ConfigurationEditingService);
 		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.USER, TypeMoq.It.isAny())).callback((x: any, val: any) => {
 			calledValue = val.value as IConnectionProfileStore[];
-		}).returns(() => TPromise.as<void>(nothing));
+		}).returns(() => Promise.resolve(undefined));
 		configEditingServiceMock.setup(x => x.writeConfiguration(ConfigurationTarget.WORKSPACE, TypeMoq.It.isAny())).callback((x: any, val: any) => {
 
-		}).returns(() => TPromise.as<void>(nothing));
+		}).returns(() => Promise.resolve(undefined));
 
 		let config = new ConnectionConfig(configEditingServiceMock.object, workspaceConfigurationServiceMock.object, capabilitiesService.object);
 		config.changeGroupIdForConnection(connectionProfile, newId).then(() => {
