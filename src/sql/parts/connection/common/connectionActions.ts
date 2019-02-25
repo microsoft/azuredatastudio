@@ -7,7 +7,6 @@ import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotificationService, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -18,6 +17,7 @@ import { QueryInput } from 'sql/parts/query/common/queryInput';
 import { EditDataInput } from 'sql/parts/editData/common/editDataInput';
 import { DashboardInput } from 'sql/parts/dashboard/dashboardInput';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
 /**
@@ -39,7 +39,7 @@ export class ClearRecentConnectionsAction extends Action {
 		label: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@INotificationService private _notificationService: INotificationService,
-		@IQuickOpenService private _quickOpenService: IQuickOpenService,
+		@IQuickInputService private _quickInputService: IQuickInputService,
 		@IDialogService private _dialogService: IDialogService,
 	) {
 		super(id, label, ClearRecentConnectionsAction.ICON);
@@ -83,7 +83,7 @@ export class ClearRecentConnectionsAction extends Action {
 				{ key: nls.localize('connectionAction.no', 'No'), value: false }
 			];
 
-			self._quickOpenService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', 'Clear List'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', 'Clear List'), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});

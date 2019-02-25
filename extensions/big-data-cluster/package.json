@@ -82,7 +82,8 @@
     ]
   },
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^3.2.1",
+    "download": "^6.2.5"
   },
   "devDependencies": {
     "mocha-junit-reporter": "^1.17.0",

@@ -66,6 +66,63 @@
 			{
 				"command": "notebook.command.addtext",
 				"title": "%notebook.command.addtext%"
+			},
+			{
+				"command": "jupyter.cmd.analyzeNotebook",
+				"title": "%title.analyzeJupyterNotebook%"
+			},
+			{
+				"command": "jupyter.task.newNotebook",
+				"title": "%title.newJupyterNotebook%",
+				"icon": {
+					"dark": "resources/dark/new_notebook_inverse.svg",
+					"light": "resources/light/new_notebook.svg"
+				}
+			},
+			{
+				"command": "jupyter.task.openNotebook",
+				"title": "%title.openJupyterNotebook%",
+				"icon": {
+					"dark": "resources/dark/open_notebook_inverse.svg",
+					"light": "resources/light/open_notebook.svg"
+				}
+			},
+			{
+				"command": "jupyter.cmd.newNotebook",
+				"title": "%title.newJupyterNotebook%",
+				"icon": {
+					"dark": "resources/dark/new_notebook_inverse.svg",
+					"light": "resources/light/new_notebook.svg"
+				}
+			},
+			{
+				"command": "jupyter.cmd.installPackages",
+				"title": "%title.installPackages%",
+				"icon": {
+					"dark": "resources/dark/manage_inverse.svg",
+					"light": "resources/light/manage.svg"
+				}
+			},
+			{
+				"command": "jupyter.cmd.configurePython",
+				"title": "%title.configurePython%"
+			},
+			{
+				"command": "jupyter.reinstallDependencies",
+				"title": "%title.reinstallNotebookDependencies%"
+			}
+		],
+		"languages": [
+			{
+				"id": "jupyter-notebook",
+				"extensions": [
+					".ipynb"
+				],
+				"aliases": [
+					"Jupyter Notebook",
+					"IPython Notebook",
+					"ipy"
+				]
 			}
 		],
 		"menus": {
@@ -90,6 +147,26 @@
 				{
 					"command": "notebook.command.addtext",
 					"when": "notebookEditorVisible"
+				},
+				{
+					"command": "jupyter.task.newNotebook",
+					"when": "false"
+				},
+				{
+					"command": "jupyter.cmd.newNotebook",
+					"when": "false"
+				},
+				{
+					"command": "jupyter.cmd.analyzeNotebook",
+					"when": "false"
+				},
+				{
+					"command": "jupyter.task.openNotebook",
+					"when": "false"
+				},
+				{
+					"command": "jupyter.cmd.installPackages",
+					"when": "false"
 				}
 			],
 			"objectExplorer/item/context": [
@@ -102,6 +179,22 @@
 					"command": "notebook.command.analyzeNotebook",
 					"when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
 					"group": "1notebook@1"
+				},
+				{
+					"command": "jupyter.cmd.newNotebook",
+					"when": "connectionProvider == HADOOP_KNOX && nodeType && nodeType == Server",
+					"group": "1root@1"
+				},
+				{
+					"command": "jupyter.cmd.analyzeNotebook",
+					"when": "nodeType=~/^hdfs/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == hdfs:file",
+					"group": "1notebook@1"
+				}
+			],
+			"notebook/toolbar": [
+				{
+					"command": "jupyter.cmd.installPackages",
+					"when": "providerId == jupyter"
 				}
 			]
 		},
@@ -126,31 +219,95 @@
 				"when": "notebookEditorVisible"
 			}
 		],
-        "notebook.languagemagics": [
+		"notebook.languagemagics": [
 			{
 				"magic": "lang_python",
 				"language": "python",
 				"executionTarget": null,
-				"kernels": ["sql"]
+				"kernels": [
+					"sql"
+				]
 			},
 			{
 				"magic": "lang_r",
 				"language": "r",
 				"executionTarget": null,
-				"kernels": ["sql"]
+				"kernels": [
+					"sql"
+				]
 			},
 			{
 				"magic": "lang_java",
 				"language": "java",
 				"executionTarget": null,
-				"kernels": ["sql"]
+				"kernels": [
+					"sql"
+				]
 			}
-		]
+		],
+		"notebook.providers": {
+			"provider": "jupyter",
+			"fileExtensions": [
+				"IPYNB"
+			],
+			"standardKernels": [
+				{
+					"name": "Python 3",
+					"connectionProviderIds": []
+				},
+				{
+					"name": "PySpark",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "PySpark3",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "Spark | R",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				},
+				{
+					"name": "Spark | Scala",
+					"connectionProviderIds": [
+						"HADOOP_KNOX",
+						"MSSQL"
+					]
+				}
+			]
+		}
 	},
 	"dependencies": {
-		"vscode-nls": "^4.0.0"
+		"@jupyterlab/services": "^3.2.1",
+		"decompress": "^4.2.0",
+		"error-ex": "^1.3.1",
+		"figures": "^2.0.0",
+		"fs-extra": "^5.0.0",
+		"node-fetch": "^2.3.0",
+		"process-nextick-args": "^2.0.0",
+		"request": "^2.88.0",
+		"temp-write": "^3.4.0",
+		"vscode-languageclient": "^5.3.0-next.1",
+		"vscode-nls": "2.0.2"
 	},
 	"devDependencies": {
-		"@types/node": "8.0.33"
-	}
+		"@types/mocha": "^5.2.5",
+		"@types/node": "^11.9.3",
+		"assert": "^1.4.1",
+		"mocha": "^5.2.0",
+		"mocha-junit-reporter": "^1.17.0",
+		"mocha-multi-reporters": "^1.1.7",
+		"typemoq": "^2.1.0",
+		"vscode": "1.1.5"
+	},
+	"enableProposedApi": true
 }

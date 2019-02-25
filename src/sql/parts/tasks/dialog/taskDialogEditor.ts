@@ -19,6 +19,7 @@ import { TaskDialogModule } from 'sql/parts/tasks/dialog/taskDialog.module';
 import { TASKDIALOG_SELECTOR } from 'sql/parts/tasks/dialog/taskDialog.component';
 import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 export class TaskDialogEditor extends BaseEditor {
 
@@ -27,9 +28,10 @@ export class TaskDialogEditor extends BaseEditor {
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(TaskDialogEditor.ID, telemetryService, themeService);
+		super(TaskDialogEditor.ID, telemetryService, themeService, storageService);
 	}
 
 	/**

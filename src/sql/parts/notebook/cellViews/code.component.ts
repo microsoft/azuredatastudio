@@ -4,7 +4,7 @@
 *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
+import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventEmitter, OnChanges, SimpleChange } from '@angular/core';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { QueryTextEditor } from 'sql/parts/modelComponents/queryTextEditor';
@@ -31,6 +31,8 @@ import { Emitter, debounceEvent } from 'vs/base/common/event';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -65,6 +67,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			// Refresh based on the cell magic (since this is kernel-dependent) and then update using notebook language
 			this.checkForLanguageMagics();
 			this.updateLanguageMode();
+		}));
+		this._register(value.onValidConnectionSelected(() => {
+			this.updateConnectionState(this.isActive());
 		}));
 	}
 
@@ -104,6 +109,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
 		this._register(debounceEvent(this._layoutEmitter.event, (l, e) => e, 250, /*leading=*/false)
 		(() => this.layout()));
+		// Handle disconnect on removal of the cell, if it was the active cell
+		this._register({ dispose: () => this.updateConnectionState(false) });
 
 	}
 
@@ -120,11 +127,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
-				if (isActive && this._model.defaultKernel.display_name === notebookConstants.SQL
-					&& this.cellModel.cellType === CellTypes.Code
-					&& this.cellModel.cellUri) {
-					this._model.notebookOptions.connectionService.connect(this._model.activeConnection, this.cellModel.cellUri.toString()).catch(e => console.log(e));
-				}
+				this.updateConnectionState(isActive);
 				this.toggleMoreActionsButton(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
@@ -132,6 +135,28 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				break;
 			}
 		}
+	}
+
+	private updateConnectionState(isConnected: boolean) {
+		if (this.isSqlCodeCell()) {
+			let cellUri = this.cellModel.cellUri.toString();
+			let connectionService = this.connectionService;
+			if (!isConnected && connectionService && connectionService.isConnected(cellUri)) {
+				connectionService.disconnect(cellUri).catch(e => console.log(e));
+			} else if (this._model.activeConnection && this._model.activeConnection.id !== '-1') {
+				connectionService.connect(this._model.activeConnection, cellUri).catch(e => console.log(e));
+			}
+		}
+	}
+
+	private get connectionService(): IConnectionManagementService {
+		return this._model && this._model.notebookOptions && this._model.notebookOptions.connectionService;
+	}
+
+	private isSqlCodeCell() {
+		return this._model.defaultKernel.display_name === notebookConstants.SQL
+			&& this.cellModel.cellType === CellTypes.Code
+			&& this.cellModel.cellUri;
 	}
 
 	ngAfterContentInit(): void {
@@ -153,7 +178,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		return this._activeCellId;
 	}
 
-	private createEditor(): void {
+	private async createEditor(): Promise<void> {
 		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
@@ -162,12 +187,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setMaximumHeight(this._maximumHeight);
 		let uri = this.cellModel.cellUri;
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
-		this._editor.setInput(this._editorInput, undefined);
+		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
-		this._editorInput.resolve().then(model => {
-			this._editorModel = model.textEditorModel;
+		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
+		if (untitledEditorModel) {
+			this._editorModel = untitledEditorModel.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);
-		});
+		}
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
 
@@ -177,20 +203,22 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 		this._register(this._editor);
 		this._register(this._editorInput);
-		this._register(this._editorModel.onDidChangeContent(e => {
-			this._editor.setHeightToScrollHeight();
-			this.cellModel.source = this._editorModel.getValue();
-			this.onContentChanged.emit();
-			this.checkForLanguageMagics();
-			// TODO see if there's a better way to handle reassessing size.
-			setTimeout(() => this._layoutEmitter.fire(), 250);
-		}));
+		if (this._editorModel) {
+			this._register(this._editorModel.onDidChangeContent(e => {
+				this._editor.setHeightToScrollHeight();
+				this.cellModel.source = this._editorModel.getValue();
+				this.onContentChanged.emit();
+				this.checkForLanguageMagics();
+				// TODO see if there's a better way to handle reassessing size.
+				setTimeout(() => this._layoutEmitter.fire(), 250);
+			}));
+		}
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap')) {
 				this._editor.setHeightToScrollHeight(true);
 			}
 		}));
-		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire, this));
+		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
 		this.layout();
 	}
 
@@ -248,9 +276,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private updateLanguageMode(): void {
 		if (this._editorModel && this._editor) {
-			this._modeService.getOrCreateMode(this.cellModel.language).then((modeValue) => {
-				this._modelService.setMode(this._editorModel, modeValue);
-			});
+			let modeValue = this._modeService.create(this.cellModel.language);
+			this._modelService.setMode(this._editorModel, modeValue);
 		}
 	}
 

@@ -73,7 +73,7 @@ export class InsightsDialogController {
 							filePathArray = filePathArray.filter(i => !!i);
 							let folder = this._workspaceContextService.getWorkspace().folders.find(i => i.name === filePathArray[0]);
 							if (!folder) {
-								return Promise.reject<void>(new Error(`Could not find workspace folder ${filePathArray[0]}`));
+								return Promise.reject(new Error(`Could not find workspace folder ${filePathArray[0]}`));
 							}
 							// remove the folder name from the filepath
 							filePathArray.shift();

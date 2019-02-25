@@ -5,7 +5,7 @@
 'use strict';
 
 import * as os from 'os';
-import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage } from 'sqlops';
+import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'sqlops';
 import { localize } from 'vs/nls';
 import * as strings from 'vs/base/common/strings';
 import { FutureInternal, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
@@ -398,30 +398,49 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
+			this.processResultSets(batch);
+		}
+	}
+
+	private async processResultSets(batch: BatchSummary): Promise<void> {
+		try {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
-				this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id).then(d => {
-
-					let msg: nb.IIOPubMessage = {
-						channel: 'iopub',
-						type: 'iopub',
-						header: <nb.IHeader>{
-							msg_id: undefined,
-							msg_type: 'execute_result'
-						},
-						content: <nb.IExecuteResult>{
-							output_type: 'execute_result',
-							metadata: {},
-							execution_count: this._executionCount,
-							data: { 'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, d), 'text/html': this.convertToHtmlTable(resultSet.columnInfo, d) }
-						},
-						metadata: undefined,
-						parent_header: undefined
-					};
-					this.ioHandler.handle(msg);
-				});
+				await this.sendResultSetAsIOPub(rowCount, resultSet);
 			}
+		} catch (err) {
+			// TODO should we output this somewhere else?
+			console.log(`Error outputting result sets from Notebook query: ${err}`);
 		}
+	}
+
+	private async sendResultSetAsIOPub(rowCount: number, resultSet: ResultSetSummary): Promise<void> {
+		let subsetResult: QueryExecuteSubsetResult;
+		if (rowCount > 0) {
+			subsetResult = await this._queryRunner.getQueryRows(0, rowCount, resultSet.batchId, resultSet.id);
+		} else {
+			subsetResult = { message: '', resultSubset: { rowCount: 0, rows: [] }};
+		}
+		let msg: nb.IIOPubMessage = {
+			channel: 'iopub',
+			type: 'iopub',
+			header: <nb.IHeader>{
+				msg_id: undefined,
+				msg_type: 'execute_result'
+			},
+			content: <nb.IExecuteResult>{
+				output_type: 'execute_result',
+				metadata: {},
+				execution_count: this._executionCount,
+				data: {
+					'application/vnd.dataresource+json': this.convertToDataResource(resultSet.columnInfo, subsetResult),
+					'text/html': this.convertToHtmlTable(resultSet.columnInfo, subsetResult)
+				}
+			},
+			metadata: undefined,
+			parent_header: undefined
+		};
+		this.ioHandler.handle(msg);
 	}
 
 	setIOPubHandler(handler: nb.MessageHandler<nb.IIOPubMessage>): void {

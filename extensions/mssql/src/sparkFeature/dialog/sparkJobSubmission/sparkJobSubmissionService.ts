@@ -157,7 +157,7 @@ export class SparkJobSubmissionInput {
 		private readonly _pyFileList: string,
 		private readonly _otherFileList: string,
 		private _host?: string,
-		private _port?: string,
+		private _port?: number,
 		private _livyPath?: string,
 		private _user?: string,
 		private _passWord?: string) {
@@ -171,7 +171,7 @@ export class SparkJobSubmissionInput {
 	public get otherFileList(): string { return this._otherFileList; }
 	public get pyFileList(): string { return this._pyFileList; }
 	public get host(): string { return this._host; }
-	public get port(): string { return this._port; }
+	public get port(): number { return this._port; }
 	public get livyPath(): string { return this._livyPath; }
 	public get user(): string { return this._user; }
 	public get password(): string { return this._passWord; }

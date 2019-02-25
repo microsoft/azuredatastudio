@@ -859,11 +859,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 	}
 
-	protected getTableActions(): TPromise<IAction[]> {
+	protected getTableActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditJobAction));
 		actions.push(this._instantiationService.createInstance(DeleteJobAction));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	protected convertStepsToStepInfos(steps: sqlops.AgentJobStep[], job: sqlops.AgentJobInfo): sqlops.AgentJobStepInfo[] {

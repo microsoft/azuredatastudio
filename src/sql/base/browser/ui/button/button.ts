@@ -15,26 +15,25 @@ export interface IButtonStyles extends vsIButtonStyles {
 export class Button extends vsButton {
 	private buttonFocusOutline: Color;
 
-	constructor(container: any, options?: IButtonOptions) {
+	constructor(container: HTMLElement, options?: IButtonOptions) {
 		super(container, options);
 		this.buttonFocusOutline = null;
 
-		this.$el.on(DOM.EventType.FOCUS, (e) => {
-			this.$el.style('outline-color', this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null);
-			this.$el.style('outline-width', '1px');
-		});
+		this._register(DOM.addDisposableListener(this.element, DOM.EventType.FOCUS, () => {
+			this.element.style.outlineColor = this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null;
+			this.element.style.outlineWidth = '1px';
+		}));
 
-		this.$el.on(DOM.EventType.MOUSE_DOWN, (e) => {
-			const mouseEvent = e as MouseEvent;
-			if (!this.$el.hasClass('disabled') && mouseEvent.button === 0) {
-				this.$el.addClass('active');
+		this._register(DOM.addDisposableListener(this.element, DOM.EventType.MOUSE_DOWN, e => {
+			if (!DOM.hasClass(this.element, 'disabled') && e.button === 0) {
+				DOM.addClass(this.element, 'active');
 			}
-		});
+		}));
 
-		this.$el.on([DOM.EventType.MOUSE_UP], (e) => {
+		this._register(DOM.addDisposableListener(this.element, DOM.EventType.MOUSE_UP, e => {
 			DOM.EventHelper.stop(e);
-			this.$el.removeClass('active');
-		});
+			DOM.removeClass(this.element, 'active');
+		}));
 	}
 
 	public style(styles: IButtonStyles): void {
@@ -43,14 +42,14 @@ export class Button extends vsButton {
 	}
 
 	public set title(value: string) {
-		this.$el.title(value);
+		this.element.title = value;
 	}
 
 	public setHeight(value: string) {
-		this.$el.style('height', value);
+		this.element.style.height = value;
 	}
 
 	public setWidth(value: string) {
-		this.$el.style('width', value);
+		this.element.style.width = value;
 	}
 }

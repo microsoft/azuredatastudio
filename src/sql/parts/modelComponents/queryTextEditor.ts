@@ -24,6 +24,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
+import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IWorkspaceConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
 
 /**
@@ -50,12 +51,13 @@ export class QueryTextEditor extends BaseTextEditor {
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
+		@IWindowService windowService: IWindowService,
 		@IWorkspaceConfigurationService private workspaceConfigurationService: IWorkspaceConfigurationService
 
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, textFileService, editorService, editorGroupService);
+			configurationService, themeService, textFileService, editorService, editorGroupService, windowService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
@@ -79,6 +81,8 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.hideCursorInOverviewRuler = true;
 			if (!this._selected) {
 				options.renderLineHighlight = 'none';
+				options.parameterHints = { enabled: false };
+				options.matchBrackets = false;
 			}
 			if (this._hideLineNumbers) {
 				options.lineNumbers = 'off';

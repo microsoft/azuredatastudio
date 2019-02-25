@@ -11,7 +11,7 @@ import { Action } from 'vs/base/common/actions';
 import pkg from 'vs/platform/node/package';
 import product from 'vs/platform/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { AbstractShowReleaseNotesAction } from 'vs/workbench/parts/update/electron-browser/update';
 

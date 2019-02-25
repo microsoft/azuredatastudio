@@ -5,7 +5,7 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryActions';
 import * as nls from 'vs/nls';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
 import { EventEmitter } from 'sql/base/common/eventEmitter';

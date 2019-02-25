@@ -19,7 +19,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/parts/objectExplorer/viewlet/serverTreeView';
@@ -111,7 +111,7 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	layoutBody(size: number): void {
 		this._searchBox.layout();
-		this._serverTreeView.layout(size); // account for search box
+		this._serverTreeView.layout(size - 46); // account for search box and horizontal scroll bar
 		DOM.toggleClass(this._root, 'narrow', this._root.clientWidth < 300);
 	}
 

@@ -6,11 +6,10 @@
 import * as nls from 'vs/nls';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as strings from 'vs/base/common/strings';
 import * as objects from 'vs/base/common/objects';
-import uri from 'vs/base/common/uri';
-import * as paths from 'vs/base/common/paths';
+import { URI as uri } from 'vs/base/common/uri';
+import * as resources from 'vs/base/common/resources';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { ITextModel } from 'vs/editor/common/model';
 import { IEditor } from 'vs/workbench/common/editor';
@@ -22,10 +21,9 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, IWorkspaceFolder, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { IDebugConfigurationProvider, ICompound, IDebugConfiguration, IConfig, IGlobalConfig, IConfigurationManager, ILaunch, IAdapterExecutable, IDebugAdapterProvider, IDebugAdapter, ITerminalSettings, ITerminalLauncher } from 'vs/workbench/parts/debug/common/debug';
+import { IDebugConfigurationProvider, ICompound, IDebugConfiguration, IConfig, IGlobalConfig, IConfigurationManager, ILaunch, IDebugAdapterDescriptorFactory, IDebugAdapter, ITerminalSettings, ITerminalLauncher, IDebugSession, IAdapterDescriptor, CONTEXT_DEBUG_CONFIGURATION_TYPE, IDebugAdapterFactory, IDebugAdapterTrackerFactory } from 'vs/workbench/parts/debug/common/debug';
 import { Debugger } from 'vs/workbench/parts/debug/node/debugger';
 import { IEditorService, ACTIVE_GROUP, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
-import { IQuickOpenService } from 'vs/platform/quickOpen/common/quickOpen';
 import { isCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { launchSchemaId } from 'vs/workbench/services/configuration/common/configuration';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
@@ -33,6 +31,8 @@ import { TerminalLauncher } from 'vs/workbench/parts/debug/electron-browser/term
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/platform/jsonschemas/common/jsonContributionRegistry';
 import { launchSchema, debuggersExtPoint, breakpointsExtPoint } from 'vs/workbench/parts/debug/common/debugSchemas';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 const jsonRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);
 jsonRegistry.registerSchema(launchSchemaId, launchSchema);
@@ -48,59 +48,180 @@ export class ConfigurationManager implements IConfigurationManager {
 	private selectedLaunch: ILaunch;
 	private toDispose: IDisposable[];
 	private _onDidSelectConfigurationName = new Emitter<void>();
-	private providers: IDebugConfigurationProvider[];
-	private debugAdapterProviders: Map<string, IDebugAdapterProvider>;
+	private configProviders: IDebugConfigurationProvider[];
+	private adapterProviders: IDebugAdapterDescriptorFactory[];
+	private adapterTrackerFactories: IDebugAdapterTrackerFactory[];
+	private debugAdapterFactories: Map<string, IDebugAdapterFactory>;
 	private terminalLauncher: ITerminalLauncher;
-
+	private debugConfigurationTypeContext: IContextKey<string>;
 
 	constructor(
 		@IWorkspaceContextService private contextService: IWorkspaceContextService,
 		@IEditorService private editorService: IEditorService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@IQuickOpenService private quickOpenService: IQuickOpenService,
+		@IQuickInputService private quickInputService: IQuickInputService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
 		@IStorageService private storageService: IStorageService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IExtensionService private extensionService: IExtensionService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		this.providers = [];
+		this.configProviders = [];
+		this.adapterProviders = [];
+		this.adapterTrackerFactories = [];
 		this.debuggers = [];
 		this.toDispose = [];
 		this.registerListeners(lifecycleService);
 		this.initLaunches();
 		const previousSelectedRoot = this.storageService.get(DEBUG_SELECTED_ROOT, StorageScope.WORKSPACE);
 		const previousSelectedLaunch = this.launches.filter(l => l.uri.toString() === previousSelectedRoot).pop();
+		this.debugConfigurationTypeContext = CONTEXT_DEBUG_CONFIGURATION_TYPE.bindTo(contextKeyService);
+		this.debugAdapterFactories = new Map();
 		if (previousSelectedLaunch) {
 			this.selectConfiguration(previousSelectedLaunch, this.storageService.get(DEBUG_SELECTED_CONFIG_NAME_KEY, StorageScope.WORKSPACE));
 		}
-		this.debugAdapterProviders = new Map<string, IDebugAdapterProvider>();
 	}
 
-	public registerDebugConfigurationProvider(handle: number, debugConfigurationProvider: IDebugConfigurationProvider): void {
-		if (!debugConfigurationProvider) {
-			return;
+	// debuggers
+
+	public registerDebugAdapterFactory(debugTypes: string[], debugAdapterLauncher: IDebugAdapterFactory): IDisposable {
+		debugTypes.forEach(debugType => this.debugAdapterFactories.set(debugType, debugAdapterLauncher));
+		return {
+			dispose: () => {
+				debugTypes.forEach(debugType => this.debugAdapterFactories.delete(debugType));
+			}
+		};
+	}
+
+	public createDebugAdapter(session: IDebugSession): IDebugAdapter {
+		let dap = this.debugAdapterFactories.get(session.configuration.type);
+		if (dap) {
+			return dap.createDebugAdapter(session);
+		}
+		return undefined;
+	}
+
+	public substituteVariables(debugType: string, folder: IWorkspaceFolder, config: IConfig): Promise<IConfig> {
+		let dap = this.debugAdapterFactories.get(debugType);
+		if (dap) {
+			return dap.substituteVariables(folder, config);
+		}
+		return Promise.resolve(config);
+	}
+
+	public runInTerminal(debugType: string, args: DebugProtocol.RunInTerminalRequestArguments, config: ITerminalSettings): Promise<number | undefined> {
+		let tl: ITerminalLauncher = this.debugAdapterFactories.get(debugType);
+		if (!tl) {
+			if (!this.terminalLauncher) {
+				this.terminalLauncher = this.instantiationService.createInstance(TerminalLauncher);
+			}
+			tl = this.terminalLauncher;
+		}
+		return tl.runInTerminal(args, config);
+	}
+
+	// debug adapter
+
+	public registerDebugAdapterDescriptorFactory(debugAdapterProvider: IDebugAdapterDescriptorFactory): IDisposable {
+		this.adapterProviders.push(debugAdapterProvider);
+		return {
+			dispose: () => {
+				this.unregisterDebugAdapterDescriptorFactory(debugAdapterProvider);
+			}
+		};
+	}
+
+	public unregisterDebugAdapterDescriptorFactory(debugAdapterProvider: IDebugAdapterDescriptorFactory): void {
+		const ix = this.adapterProviders.indexOf(debugAdapterProvider);
+		if (ix >= 0) {
+			this.configProviders.splice(ix, 1);
+		}
+	}
+
+	public provideDebugAdapter(session: IDebugSession): Promise<IAdapterDescriptor | undefined> {
+
+		const config = session.configuration;
+
+		// first try legacy proposed API: DebugConfigurationProvider.debugAdapterExecutable
+		const providers0 = this.configProviders.filter(p => p.type === config.type && p.debugAdapterExecutable);
+		if (providers0.length === 1) {
+			return providers0[0].debugAdapterExecutable(session.root ? session.root.uri : undefined);
+		} else {
+			// TODO@AW handle n > 1 case
 		}
 
-		debugConfigurationProvider.handle = handle;
-		this.providers = this.providers.filter(p => p.handle !== handle);
-		this.providers.push(debugConfigurationProvider);
-		const dbg = this.getDebugger(debugConfigurationProvider.type);
-		// Check if the provider contributes provideDebugConfigurations method
-		if (dbg && debugConfigurationProvider.provideDebugConfigurations) {
-			dbg.hasConfigurationProvider = true;
+		// try new proposed API
+		const providers = this.adapterProviders.filter(p => p.type === config.type && p.createDebugAdapterDescriptor);
+		if (providers.length === 1) {
+			return providers[0].createDebugAdapterDescriptor(session);
+		} else {
+			// TODO@AW handle n > 1 case
+		}
+		return Promise.resolve(undefined);
+	}
+
+	// debug adapter trackers
+
+	public registerDebugAdapterTrackerFactory(debugAdapterTrackerFactory: IDebugAdapterTrackerFactory): IDisposable {
+		this.adapterTrackerFactories.push(debugAdapterTrackerFactory);
+		return {
+			dispose: () => {
+				this.unregisterDebugAdapterTrackerFactory(debugAdapterTrackerFactory);
+			}
+		};
+	}
+
+	public unregisterDebugAdapterTrackerFactory(debugAdapterTrackerFactory: IDebugAdapterTrackerFactory): void {
+		const ix = this.adapterTrackerFactories.indexOf(debugAdapterTrackerFactory);
+		if (ix >= 0) {
+			this.configProviders.splice(ix, 1);
 		}
 	}
 
-	public unregisterDebugConfigurationProvider(handle: number): void {
-		this.providers = this.providers.filter(p => p.handle !== handle);
+	// debug configurations
+
+	public registerDebugConfigurationProvider(debugConfigurationProvider: IDebugConfigurationProvider): IDisposable {
+		this.configProviders.push(debugConfigurationProvider);
+		return {
+			dispose: () => {
+				this.unregisterDebugConfigurationProvider(debugConfigurationProvider);
+			}
+		};
 	}
 
-	public resolveConfigurationByProviders(folderUri: uri | undefined, type: string | undefined, debugConfiguration: IConfig): TPromise<IConfig> {
-		return this.extensionService.activateByEvent(`onDebugResolve:${type}`).then(() => {
+	public unregisterDebugConfigurationProvider(debugConfigurationProvider: IDebugConfigurationProvider): void {
+		const ix = this.configProviders.indexOf(debugConfigurationProvider);
+		if (ix >= 0) {
+			this.configProviders.splice(ix, 1);
+		}
+	}
+
+	public hasDebugConfigurationProvider(debugType: string): boolean {
+		// check if there are providers for the given type that contribute a provideDebugConfigurations method
+		const providers = this.configProviders.filter(p => p.provideDebugConfigurations && (p.type === debugType));
+		return providers.length > 0;
+	}
+
+	public needsToRunInExtHost(debugType: string): boolean {
+
+		// if the given debugType matches any registered tracker factory we need to run the DA in the EH
+		const providers = this.adapterTrackerFactories.filter(p => p.type === debugType || p.type === '*');
+		if (providers.length > 0) {
+			return true;
+		}
+
+		// TODO@AW deprecated
+		// if the given debugType matches any registered provider that has a provideTracker method, we need to run the DA in the EH
+		const providers2 = this.configProviders.filter(p => p.hasTracker && (p.type === debugType || p.type === '*'));
+		return providers2.length > 0;
+	}
+
+	public resolveConfigurationByProviders(folderUri: uri | undefined, type: string | undefined, debugConfiguration: IConfig): Thenable<IConfig> {
+		return this.activateDebuggers('onDebugResolve', type).then(() => {
 			// pipe the config through the promises sequentially. append at the end the '*' types
-			const providers = this.providers.filter(p => p.type === type && p.resolveDebugConfiguration)
-				.concat(this.providers.filter(p => p.type === '*' && p.resolveDebugConfiguration));
+			const providers = this.configProviders.filter(p => p.type === type && p.resolveDebugConfiguration)
+				.concat(this.configProviders.filter(p => p.type === '*' && p.resolveDebugConfiguration));
 
 			return providers.reduce((promise, provider) => {
 				return promise.then(config => {
@@ -110,63 +231,17 @@ export class ConfigurationManager implements IConfigurationManager {
 						return Promise.resolve(config);
 					}
 				});
-			}, TPromise.as(debugConfiguration));
+			}, Promise.resolve(debugConfiguration));
 		});
 	}
 
-	public provideDebugConfigurations(folderUri: uri | undefined, type: string): TPromise<any[]> {
-		return TPromise.join(this.providers.filter(p => p.type === type && p.provideDebugConfigurations).map(p => p.provideDebugConfigurations(folderUri)))
-			.then(results => results.reduce((first, second) => first.concat(second), []));
+	public provideDebugConfigurations(folderUri: uri | undefined, type: string): Thenable<any[]> {
+		return this.activateDebuggers('onDebugInitialConfigurations')
+			.then(() => Promise.all(this.configProviders.filter(p => p.type === type && p.provideDebugConfigurations).map(p => p.provideDebugConfigurations(folderUri)))
+				.then(results => results.reduce((first, second) => first.concat(second), [])));
 	}
 
-	public debugAdapterExecutable(folderUri: uri | undefined, type: string): TPromise<IAdapterExecutable | undefined> {
-		const providers = this.providers.filter(p => p.type === type && p.debugAdapterExecutable);
-		if (providers.length === 1) {
-			return providers[0].debugAdapterExecutable(folderUri);
-		}
-		return TPromise.as(undefined);
-	}
-
-	public registerDebugAdapterProvider(debugTypes: string[], debugAdapterLauncher: IDebugAdapterProvider): IDisposable {
-		debugTypes.forEach(debugType => this.debugAdapterProviders.set(debugType, debugAdapterLauncher));
-		return {
-			dispose: () => {
-				debugTypes.forEach(debugType => this.debugAdapterProviders.delete(debugType));
-			}
-		};
-	}
-
-	private getDebugAdapterProvider(type: string): IDebugAdapterProvider | undefined {
-		return this.debugAdapterProviders.get(type);
-	}
-
-	public createDebugAdapter(debugType: string, adapterExecutable: IAdapterExecutable, debugPort: number): IDebugAdapter | undefined {
-		let dap = this.getDebugAdapterProvider(debugType);
-		if (dap) {
-			return dap.createDebugAdapter(debugType, adapterExecutable, debugPort);
-		}
-		return undefined;
-	}
-
-	public substituteVariables(debugType: string, folder: IWorkspaceFolder, config: IConfig): TPromise<IConfig> {
-		let dap = this.getDebugAdapterProvider(debugType);
-		if (dap) {
-			return dap.substituteVariables(folder, config);
-		}
-		return TPromise.as(config);
-	}
-
-	public runInTerminal(debugType: string, args: DebugProtocol.RunInTerminalRequestArguments, config: ITerminalSettings): TPromise<void> {
-
-		let tl: ITerminalLauncher = this.getDebugAdapterProvider(debugType);
-		if (!tl) {
-			if (!this.terminalLauncher) {
-				this.terminalLauncher = this.instantiationService.createInstance(TerminalLauncher);
-			}
-			tl = this.terminalLauncher;
-		}
-		return tl.runInTerminal(args, config);
-	}
+	///////////////////////////////////////////////////////////
 
 	private registerListeners(lifecycleService: ILifecycleService): void {
 		debuggersExtPoint.setHandler((extensions) => {
@@ -226,7 +301,7 @@ export class ConfigurationManager implements IConfigurationManager {
 			}
 		}));
 
-		this.toDispose.push(lifecycleService.onShutdown(this.store, this));
+		this.toDispose.push(this.storageService.onWillSaveState(this.saveState, this));
 	}
 
 	private initLaunches(): void {
@@ -297,6 +372,12 @@ export class ConfigurationManager implements IConfigurationManager {
 		if (names.indexOf(this.selectedName) === -1) {
 			this.selectedName = names.length ? names[0] : undefined;
 		}
+		if (this.selectedLaunch && this.selectedName) {
+			const configuration = this.selectedLaunch.getConfiguration(this.selectedName);
+			this.debugConfigurationTypeContext.set(configuration ? configuration.type : undefined);
+		} else {
+			this.debugConfigurationTypeContext.reset();
+		}
 
 		if (this.selectedLaunch !== previousLaunch || this.selectedName !== previousName) {
 			this._onDidSelectConfigurationName.fire();
@@ -320,37 +401,37 @@ export class ConfigurationManager implements IConfigurationManager {
 		return this.debuggers.filter(dbg => strings.equalsIgnoreCase(dbg.type, type)).pop();
 	}
 
-	public guessDebugger(type?: string): TPromise<Debugger> {
-		return this.activateDebuggers().then(() => {
+	public guessDebugger(type?: string): Thenable<Debugger> {
+		if (type) {
+			const adapter = this.getDebugger(type);
+			return Promise.resolve(adapter);
+		}
 
-			if (type) {
-				const adapter = this.getDebugger(type);
-				return TPromise.as(adapter);
+		const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
+		let candidates: Thenable<Debugger[]>;
+		if (isCodeEditor(activeTextEditorWidget)) {
+			const model = activeTextEditorWidget.getModel();
+			const language = model ? model.getLanguageIdentifier().language : undefined;
+			const adapters = this.debuggers.filter(a => a.languages && a.languages.indexOf(language) >= 0);
+			if (adapters.length === 1) {
+				return Promise.resolve(adapters[0]);
 			}
-
-			const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
-			let candidates: Debugger[];
-			if (isCodeEditor(activeTextEditorWidget)) {
-				const model = activeTextEditorWidget.getModel();
-				const language = model ? model.getLanguageIdentifier().language : undefined;
-				const adapters = this.debuggers.filter(a => a.languages && a.languages.indexOf(language) >= 0);
-				if (adapters.length === 1) {
-					return TPromise.as(adapters[0]);
-				}
-				if (adapters.length > 1) {
-					candidates = adapters;
-				}
+			if (adapters.length > 1) {
+				candidates = Promise.resolve(adapters);
 			}
+		}
 
-			if (!candidates) {
-				candidates = this.debuggers.filter(a => a.hasInitialConfiguration() || a.hasConfigurationProvider);
-			}
+		if (!candidates) {
+			candidates = this.activateDebuggers('onDebugInitialConfigurations').then(() => this.debuggers.filter(dbg => dbg.hasInitialConfiguration() || dbg.hasConfigurationProvider()));
+		}
 
-			candidates = candidates.sort((first, second) => first.label.localeCompare(second.label));
-			return this.quickOpenService.pick([...candidates, { label: 'More...', separator: { border: true } }], { placeHolder: nls.localize('selectDebug', "Select Environment") })
+		return candidates.then(debuggers => {
+			debuggers.sort((first, second) => first.label.localeCompare(second.label));
+			const picks = debuggers.map(c => ({ label: c.label, debugger: c }));
+			return this.quickInputService.pick<(typeof picks)[0]>([...picks, { type: 'separator' }, { label: 'More...', debugger: undefined }], { placeHolder: nls.localize('selectDebug', "Select Environment") })
 				.then(picked => {
-					if (picked instanceof Debugger) {
-						return picked;
+					if (picked && picked.debugger) {
+						return picked.debugger;
 					}
 					if (picked) {
 						this.commandService.executeCommand('debug.installAdditionalDebuggers');
@@ -360,11 +441,20 @@ export class ConfigurationManager implements IConfigurationManager {
 		});
 	}
 
-	public activateDebuggers(): TPromise<void> {
-		return this.extensionService.activateByEvent('onDebugInitialConfigurations').then(() => this.extensionService.activateByEvent('onDebug'));
+	public activateDebuggers(activationEvent: string, debugType?: string): Thenable<void> {
+		const thenables: Thenable<any>[] = [
+			this.extensionService.activateByEvent(activationEvent),
+			this.extensionService.activateByEvent('onDebug')
+		];
+		if (debugType) {
+			thenables.push(this.extensionService.activateByEvent(`${activationEvent}:${debugType}`));
+		}
+		return Promise.all(thenables).then(_ => {
+			return void 0;
+		});
 	}
 
-	private store(): void {
+	private saveState(): void {
 		this.storageService.store(DEBUG_SELECTED_CONFIG_NAME_KEY, this.selectedName, StorageScope.WORKSPACE);
 		if (this.selectedLaunch) {
 			this.storageService.store(DEBUG_SELECTED_ROOT, this.selectedLaunch.uri.toString(), StorageScope.WORKSPACE);
@@ -390,7 +480,7 @@ class Launch implements ILaunch {
 	}
 
 	public get uri(): uri {
-		return this.workspace.uri.with({ path: paths.join(this.workspace.uri.path, '/.vscode/launch.json') });
+		return resources.joinPath(this.workspace.uri, '/.vscode/launch.json');
 	}
 
 	public get name(): string {
@@ -441,32 +531,30 @@ class Launch implements ILaunch {
 		return config.configurations.filter(config => config && config.name === name).shift();
 	}
 
-	public openConfigFile(sideBySide: boolean, type?: string): TPromise<{ editor: IEditor, created: boolean }> {
+	public openConfigFile(sideBySide: boolean, preserveFocus: boolean, type?: string): Thenable<{ editor: IEditor, created: boolean }> {
 		const resource = this.uri;
 		let created = false;
 
 		return this.fileService.resolveContent(resource).then(content => content.value, err => {
 			// launch.json not found: create one by collecting launch configs from debugConfigProviders
-			return this.configurationManager.activateDebuggers().then(() => {
-				return this.configurationManager.guessDebugger(type).then(adapter => {
-					if (adapter) {
-						return this.configurationManager.provideDebugConfigurations(this.workspace.uri, adapter.type).then(initialConfigs => {
-							return adapter.getInitialConfigurationContent(initialConfigs);
-						});
-					} else {
-						return undefined;
-					}
-				}).then(content => {
-
-					if (!content) {
-						return undefined;
-					}
-
-					created = true; // pin only if config file is created #8727
-					return this.fileService.updateContent(resource, content).then(() => {
-						// convert string into IContent; see #32135
-						return content;
+			return this.configurationManager.guessDebugger(type).then(adapter => {
+				if (adapter) {
+					return this.configurationManager.provideDebugConfigurations(this.workspace.uri, adapter.type).then(initialConfigs => {
+						return adapter.getInitialConfigurationContent(initialConfigs);
 					});
+				} else {
+					return undefined;
+				}
+			}).then(content => {
+
+				if (!content) {
+					return undefined;
+				}
+
+				created = true; // pin only if config file is created #8727
+				return this.fileService.updateContent(resource, content).then(() => {
+					// convert string into IContent; see #32135
+					return content;
 				});
 			});
 		}).then(content => {
@@ -482,14 +570,15 @@ class Launch implements ILaunch {
 			}
 			const selection = startLineNumber > 1 ? { startLineNumber, startColumn: 4 } : undefined;
 
-			return this.editorService.openEditor({
+			return Promise.resolve(this.editorService.openEditor({
 				resource,
 				options: {
 					selection,
+					preserveFocus,
 					pinned: created,
 					revealIfVisible: true
 				},
-			}, sideBySide ? SIDE_GROUP : ACTIVE_GROUP).then(editor => ({ editor, created }));
+			}, sideBySide ? SIDE_GROUP : ACTIVE_GROUP).then(editor => ({ editor, created })));
 		}, (error) => {
 			throw new Error(nls.localize('DebugConfig.failed', "Unable to create 'launch.json' file inside the '.vscode' folder ({0}).", error));
 		});
@@ -520,8 +609,11 @@ class WorkspaceLaunch extends Launch implements ILaunch {
 		return this.configurationService.inspect<IGlobalConfig>('launch').workspace;
 	}
 
-	openConfigFile(sideBySide: boolean, type?: string): TPromise<{ editor: IEditor, created: boolean }> {
-		return this.editorService.openEditor({ resource: this.contextService.getWorkspace().configuration }).then(editor => ({ editor, created: false }));
+	openConfigFile(sideBySide: boolean, preserveFocus: boolean, type?: string): Thenable<{ editor: IEditor, created: boolean }> {
+		return this.editorService.openEditor({
+			resource: this.contextService.getWorkspace().configuration,
+			options: { preserveFocus }
+		}, sideBySide ? SIDE_GROUP : ACTIVE_GROUP).then(editor => ({ editor, created: false }));
 	}
 }
 
@@ -554,7 +646,7 @@ class UserLaunch extends Launch implements ILaunch {
 		return this.configurationService.inspect<IGlobalConfig>('launch').user;
 	}
 
-	openConfigFile(sideBySide: boolean, type?: string): TPromise<{ editor: IEditor, created: boolean }> {
-		return this.preferencesService.openGlobalSettings().then(editor => ({ editor, created: false }));
+	openConfigFile(sideBySide: boolean, preserveFocus: boolean, type?: string): Thenable<{ editor: IEditor, created: boolean }> {
+		return this.preferencesService.openGlobalSettings(false, { preserveFocus }).then(editor => ({ editor, created: false }));
 	}
 }

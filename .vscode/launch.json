@@ -9,14 +9,12 @@
 			"stopOnEntry": true,
 			"args": [
 				"hygiene"
-			],
-			"cwd": "${workspaceFolder}"
+			]
 		},
 		{
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Extension Host",
-			"protocol": "inspector",
 			"port": 5870,
 			"restart": true,
 			"outFiles": [
@@ -24,19 +22,15 @@
 			]
 		},
 		{
-			"type": "node",
+			"type": "chrome",
 			"request": "attach",
 			"name": "Attach to Shared Process",
-			"protocol": "inspector",
-			"port": 5871,
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			]
+			"port": 9222,
+			"urlFilter": "*"
 		},
 		{
 			"type": "node",
 			"request": "attach",
-			"protocol": "inspector",
 			"name": "Attach to Search Process",
 			"port": 5876,
 			"outFiles": [
@@ -47,7 +41,6 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to CLI Process",
-			"protocol": "inspector",
 			"port": 5874,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -57,7 +50,6 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Main Process",
-			"protocol": "inspector",
 			"port": 5875,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -82,9 +74,9 @@
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
-			"urlFilter": "*index.html*",
+			"urlFilter": "*workbench.html*",
 			"runtimeArgs": [
-				"--inspect=5875"
+				"--inspect=5875", "--no-cached-data"
 			],
 			"skipFiles": [
 				"**/winjs*.js"
@@ -117,34 +109,6 @@
 			"timeout": 45000
 		},
 		{
-			"type": "node",
-			"request": "launch",
-			"name": "Unit Tests",
-			"protocol": "inspector",
-			"program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
-			"windows": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
-			},
-			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
-			},
-			"stopOnEntry": false,
-			"outputCapture": "std",
-			"args": [
-				"--delay",
-				"--timeout",
-				"2000"
-			],
-			"cwd": "${workspaceFolder}",
-			"env": {
-				"ELECTRON_RUN_AS_NODE": "true"
-			},
-			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
-			]
-		},
-		{
 			"name": "Launch Built-in Extension",
 			"type": "extensionHost",
 			"request": "launch",
@@ -162,9 +126,37 @@
 			"env": {
 				"BUILD_ARTIFACTSTAGINGDIRECTORY": "${workspaceFolder}"
 			}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Run Unit Tests",
+			"program": "${workspaceFolder}/test/electron/index.js",
+			"runtimeExecutable": "${workspaceFolder}/.build/electron/Azure Data Studio.app/Contents/MacOS/Electron",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio.exe"
+			},
+			"linux": {
+				"runtimeExecutable": "${workspaceFolder}/.build/electron/azuredatastudio"
+			},
+			"outputCapture": "std",
+			"args": [
+				"--remote-debugging-port=9222"
+			],
+			"cwd": "${workspaceFolder}",
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			]
 		}
 	],
 	"compounds": [
+		{
+			"name": "Debug Unit Tests",
+			"configurations": [
+				"Attach to azuredatastudio",
+				"Run Unit Tests"
+			]
+		},
 		{
 			"name": "Debug azuredatastudio Main and Renderer",
 			"configurations": [

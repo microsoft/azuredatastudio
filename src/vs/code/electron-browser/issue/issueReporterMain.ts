@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'vs/css!./media/issueReporter';
-import { shell, ipcRenderer, webFrame, remote, clipboard } from 'electron';
+import { shell, ipcRenderer, webFrame, clipboard } from 'electron';
 import { localize } from 'vs/nls';
 import { $ } from 'vs/base/browser/dom';
 import * as collections from 'vs/base/common/collections';
@@ -19,25 +17,24 @@ import { debounce } from 'vs/base/common/decorators';
 import * as platform from 'vs/base/common/platform';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { Client as ElectronIPCClient } from 'vs/base/parts/ipc/electron-browser/ipc.electron-browser';
-import { getDelayedChannel } from 'vs/base/parts/ipc/common/ipc';
+import { getDelayedChannel } from 'vs/base/parts/ipc/node/ipc';
 import { connect as connectNet } from 'vs/base/parts/ipc/node/ipc.net';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IWindowConfiguration, IWindowsService } from 'vs/platform/windows/common/windows';
 import { NullTelemetryService, combinedAppender, LogAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { ITelemetryServiceConfig, TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-import { ITelemetryAppenderChannel, TelemetryAppenderClient } from 'vs/platform/telemetry/common/telemetryIpc';
+import { TelemetryAppenderClient } from 'vs/platform/telemetry/node/telemetryIpc';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
-import { WindowsChannelClient } from 'vs/platform/windows/common/windowsIpc';
+import { WindowsChannelClient } from 'vs/platform/windows/node/windowsIpc';
 import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IssueReporterModel } from 'vs/code/electron-browser/issue/issueReporterModel';
-import { IssueReporterData, IssueReporterStyles, IssueType, ISettingsSearchIssueReporterData, IssueReporterFeatures } from 'vs/platform/issue/common/issue';
+import { IssueReporterData, IssueReporterStyles, IssueType, ISettingsSearchIssueReporterData, IssueReporterFeatures, IssueReporterExtensionData } from 'vs/platform/issue/common/issue';
 import BaseHtml from 'vs/code/electron-browser/issue/issueReporterPage';
-import { ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { createSpdLogService } from 'vs/platform/log/node/spdlogService';
-import { LogLevelSetterChannelClient, FollowerLogService } from 'vs/platform/log/common/logIpc';
+import { LogLevelSetterChannelClient, FollowerLogService } from 'vs/platform/log/node/logIpc';
 import { ILogService, getLogLevel } from 'vs/platform/log/common/log';
 import { OcticonLabel } from 'vs/base/browser/ui/octiconLabel/octiconLabel';
 import { normalizeGitHubUrl } from 'vs/code/electron-browser/issue/issueReporterUtil';
@@ -72,6 +69,7 @@ export class IssueReporter extends Disposable {
 	private receivedSystemInfo = false;
 	private receivedPerformanceInfo = false;
 	private shouldQueueSearch = false;
+	private hasBeenSubmitted = false;
 
 	private previewButton: Button;
 
@@ -91,7 +89,7 @@ export class IssueReporter extends Disposable {
 
 		this.previewButton = new Button(document.getElementById('issue-reporter'));
 
-		ipcRenderer.on('issuePerformanceInfoResponse', (event, info) => {
+		ipcRenderer.on('vscode:issuePerformanceInfoResponse', (event, info) => {
 			this.logService.trace('issueReporter: Received performance data');
 			this.issueReporterModel.update(info);
 			this.receivedPerformanceInfo = true;
@@ -102,7 +100,7 @@ export class IssueReporter extends Disposable {
 			this.updatePreviewButtonState();
 		});
 
-		ipcRenderer.on('issueSystemInfoResponse', (event, info) => {
+		ipcRenderer.on('vscode:issueSystemInfoResponse', (event, info) => {
 			this.logService.trace('issueReporter: Received system data');
 			this.issueReporterModel.update({ systemInfo: info });
 			this.receivedSystemInfo = true;
@@ -111,9 +109,9 @@ export class IssueReporter extends Disposable {
 			this.updatePreviewButtonState();
 		});
 
-		ipcRenderer.send('issueSystemInfoRequest');
+		ipcRenderer.send('vscode:issueSystemInfoRequest');
 		if (configuration.data.issueType === IssueType.PerformanceIssue) {
-			ipcRenderer.send('issuePerformanceInfoRequest');
+			ipcRenderer.send('vscode:issuePerformanceInfoRequest');
 		}
 		this.logService.trace('issueReporter: Sent data requests');
 
@@ -213,11 +211,9 @@ export class IssueReporter extends Disposable {
 		document.body.style.color = styles.color;
 	}
 
-	private handleExtensionData(extensions: ILocalExtension[]) {
+	private handleExtensionData(extensions: IssueReporterExtensionData[]) {
 		const { nonThemes, themes } = collections.groupBy(extensions, ext => {
-			const manifestKeys = ext.manifest.contributes ? Object.keys(ext.manifest.contributes) : [];
-			const onlyTheme = !ext.manifest.activationEvents && manifestKeys.length === 1 && manifestKeys[0] === 'themes';
-			return onlyTheme ? 'themes' : 'nonThemes';
+			return ext.isTheme ? 'themes' : 'nonThemes';
 		});
 
 		const numberOfThemeExtesions = themes && themes.length;
@@ -288,7 +284,7 @@ export class IssueReporter extends Disposable {
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
 		if (!this.environmentService.isExtensionDevelopment && !this.environmentService.args['disable-telemetry'] && !!product.enableTelemetry) {
-			const channel = getDelayedChannel<ITelemetryAppenderChannel>(sharedProcess.then(c => c.getChannel('telemetryAppender')));
+			const channel = getDelayedChannel(sharedProcess.then(c => c.getChannel('telemetryAppender')));
 			const appender = combinedAppender(new TelemetryAppenderClient(channel), new LogAppender(logService));
 			const commonProperties = resolveCommonProperties(product.commit, pkg.version, configuration.machineId, this.environmentService.installSourcePath);
 			const piiPaths = [this.environmentService.appRoot, this.environmentService.extensionsPath];
@@ -308,7 +304,7 @@ export class IssueReporter extends Disposable {
 			const issueType = parseInt((<HTMLInputElement>event.target).value);
 			this.issueReporterModel.update({ issueType: issueType });
 			if (issueType === IssueType.PerformanceIssue && !this.receivedPerformanceInfo) {
-				ipcRenderer.send('issuePerformanceInfoRequest');
+				ipcRenderer.send('vscode:issuePerformanceInfoRequest');
 			}
 			this.updatePreviewButtonState();
 			this.render();
@@ -383,15 +379,19 @@ export class IssueReporter extends Disposable {
 
 		this.previewButton.onDidClick(() => this.createIssue());
 
+		function sendWorkbenchCommand(commandId: string) {
+			ipcRenderer.send('vscode:workbenchCommand', { id: commandId, from: 'issueReporter' });
+		}
+
 		this.addEventListener('disableExtensions', 'click', () => {
-			ipcRenderer.send('workbenchCommand', 'workbench.action.reloadWindowWithExtensionsDisabled');
+			sendWorkbenchCommand('workbench.action.reloadWindowWithExtensionsDisabled');
 		});
 
 		this.addEventListener('disableExtensions', 'keydown', (e: KeyboardEvent) => {
 			e.stopPropagation();
 			if (e.keyCode === 13 || e.keyCode === 32) {
-				ipcRenderer.send('workbenchCommand', 'workbench.extensions.action.disableAll');
-				ipcRenderer.send('workbenchCommand', 'workbench.action.reloadWindow');
+				sendWorkbenchCommand('workbench.extensions.action.disableAll');
+				sendWorkbenchCommand('workbench.action.reloadWindow');
 			}
 		});
 
@@ -400,7 +400,21 @@ export class IssueReporter extends Disposable {
 			// Cmd/Ctrl+Enter previews issue and closes window
 			if (cmdOrCtrlKey && e.keyCode === 13) {
 				if (this.createIssue()) {
-					remote.getCurrentWindow().close();
+					ipcRenderer.send('vscode:closeIssueReporter');
+				}
+			}
+
+			// Cmd/Ctrl + w closes issue window
+			if (cmdOrCtrlKey && e.keyCode === 87) {
+				e.stopPropagation();
+				e.preventDefault();
+
+				const issueTitle = (<HTMLInputElement>document.getElementById('issue-title'))!.value;
+				const { issueDescription } = this.issueReporterModel.getData();
+				if (!this.hasBeenSubmitted && (issueTitle || issueDescription)) {
+					ipcRenderer.send('vscode:issueReporterConfirmClose');
+				} else {
+					ipcRenderer.send('vscode:closeIssueReporter');
 				}
 			}
 
@@ -459,12 +473,12 @@ export class IssueReporter extends Disposable {
 
 	private getExtensionRepositoryUrl(): string {
 		const selectedExtension = this.issueReporterModel.getData().selectedExtension;
-		return selectedExtension && selectedExtension.manifest && selectedExtension.manifest.repository && selectedExtension.manifest.repository.url;
+		return selectedExtension && selectedExtension.repositoryUrl;
 	}
 
 	private getExtensionBugsUrl(): string {
 		const selectedExtension = this.issueReporterModel.getData().selectedExtension;
-		return selectedExtension && selectedExtension.manifest && selectedExtension.manifest.bugs && selectedExtension.manifest.bugs.url;
+		return selectedExtension && selectedExtension.bugsUrl;
 	}
 
 	private searchVSCodeIssues(title: string, issueDescription: string): void {
@@ -775,6 +789,7 @@ export class IssueReporter extends Disposable {
 			}
 		*/
 		this.telemetryService.publicLog('issueReporterSubmit', { issueType: this.issueReporterModel.getData().issueType, numSimilarIssuesDisplayed: this.numberOfSearchResultsDisplayed });
+		this.hasBeenSubmitted = true;
 
 		const baseUrl = this.getIssueUrlWithTitle((<HTMLInputElement>document.getElementById('issue-title')).value);
 		const issueBody = this.issueReporterModel.serialize();
@@ -785,7 +800,7 @@ export class IssueReporter extends Disposable {
 			url = baseUrl + `&body=${encodeURIComponent(localize('pasteData', "We have written the needed data into your clipboard because it was too large to send. Please paste."))}`;
 		}
 
-		shell.openExternal(url);
+		ipcRenderer.send('vscode:openExternal', url);
 		return true;
 	}
 
@@ -834,7 +849,7 @@ export class IssueReporter extends Disposable {
 		target.innerHTML = `<table>${tableHtml}</table>`;
 	}
 
-	private updateExtensionSelector(extensions: ILocalExtension[]): void {
+	private updateExtensionSelector(extensions: IssueReporterExtensionData[]): void {
 		interface IOption {
 			name: string;
 			id: string;
@@ -842,8 +857,8 @@ export class IssueReporter extends Disposable {
 
 		const extensionOptions: IOption[] = extensions.map(extension => {
 			return {
-				name: extension.manifest.displayName || extension.manifest.name || '',
-				id: extension.identifier.id
+				name: extension.displayName || extension.name || '',
+				id: extension.id
 			};
 		});
 
@@ -869,7 +884,7 @@ export class IssueReporter extends Disposable {
 		this.addEventListener('extension-selector', 'change', (e: Event) => {
 			const selectedExtensionId = (<HTMLInputElement>e.target).value;
 			const extensions = this.issueReporterModel.getData().allExtensions;
-			const matches = extensions.filter(extension => extension.identifier.id === selectedExtensionId);
+			const matches = extensions.filter(extension => extension.id === selectedExtensionId);
 			if (matches.length) {
 				this.issueReporterModel.update({ selectedExtension: matches[0] });
 
@@ -891,7 +906,7 @@ export class IssueReporter extends Disposable {
 		document.querySelector('.block-workspace .block-info code').textContent = '\n' + state.workspaceInfo;
 	}
 
-	private updateExtensionTable(extensions: ILocalExtension[], numThemeExtensions: number): void {
+	private updateExtensionTable(extensions: IssueReporterExtensionData[], numThemeExtensions: number): void {
 		const target = document.querySelector('.block-extensions .block-info');
 
 		if (this.environmentService.disableExtensions) {
@@ -911,7 +926,7 @@ export class IssueReporter extends Disposable {
 		target.innerHTML = `<table>${table}</table>${themeExclusionStr}`;
 	}
 
-	private updateSearchedExtensionTable(extensions: ILocalExtension[]): void {
+	private updateSearchedExtensionTable(extensions: IssueReporterExtensionData[]): void {
 		const target = document.querySelector('.block-searchedExtensions .block-info');
 
 		if (!extensions.length) {
@@ -923,7 +938,7 @@ export class IssueReporter extends Disposable {
 		target.innerHTML = `<table>${table}</table>`;
 	}
 
-	private getExtensionTableHtml(extensions: ILocalExtension[]): string {
+	private getExtensionTableHtml(extensions: IssueReporterExtensionData[]): string {
 		let table = `
 			<tr>
 				<th>Extension</th>
@@ -934,9 +949,9 @@ export class IssueReporter extends Disposable {
 		table += extensions.map(extension => {
 			return `
 				<tr>
-					<td>${extension.manifest.name}</td>
-					<td>${extension.manifest.publisher.substr(0, 3)}</td>
-					<td>${extension.manifest.version}</td>
+					<td>${extension.name}</td>
+					<td>${extension.publisher.substr(0, 3)}</td>
+					<td>${extension.version}</td>
 				</tr>`;
 		}).join('');
 

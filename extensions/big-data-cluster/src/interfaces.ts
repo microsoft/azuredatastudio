@@ -12,7 +12,6 @@ export interface ClusterInfo {
 
 export enum TargetClusterType {
 	ExistingKubernetesCluster,
-	NewLocalCluster,
 	NewAksCluster
 }
 
@@ -34,4 +33,33 @@ export function succeeded<T>(e: Errorable<T>): e is Succeeded<T> {
 
 export function failed<T>(e: Errorable<T>): e is Failed {
     return !e.succeeded;
+}
+export interface ClusterPorts {
+	sql: string;
+	knox: string;
+	controller: string;
+	proxy: string;
+	grafana: string;
+	kibana: string;
+}
+
+export interface ContainerRegistryInfo {
+	registry: string;
+	repository: string;
+	imageTag: string;
+}
+
+export interface TargetClusterTypeInfo {
+	type: TargetClusterType;
+	name: string;
+	iconPath: {
+		dark: string,
+		light: string
+	};
+}
+
+export interface ToolInfo {
+	name: string,
+	description: string,
+	isInstalled: boolean
 }

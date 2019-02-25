@@ -7,7 +7,7 @@
 import * as OptionsDialogHelper from 'sql/workbench/browser/modal/optionsDialogHelper';
 import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as sqlops from 'sqlops';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';

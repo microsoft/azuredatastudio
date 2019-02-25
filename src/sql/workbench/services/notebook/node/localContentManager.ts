@@ -11,7 +11,7 @@ import { nb } from 'sqlops';
 
 import * as json from 'vs/base/common/json';
 import * as pfs from 'vs/base/node/pfs';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import { JSONObject } from 'sql/parts/notebook/models/jsonext';
@@ -40,7 +40,7 @@ export class LocalContentManager implements nb.ContentManager {
 				return v3.readNotebook(<any>contents);
 			}
 			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat, contents.nbformat_minor));
+				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
 			}
 		} else if (stringContents === '' || stringContents === undefined) {
 			// Empty?

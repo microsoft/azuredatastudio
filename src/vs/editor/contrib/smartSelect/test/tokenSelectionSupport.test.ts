@@ -2,19 +2,21 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-
 import * as assert from 'assert';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { Range } from 'vs/editor/common/core/range';
 import { Position } from 'vs/editor/common/core/position';
 import { LanguageIdentifier } from 'vs/editor/common/modes';
-import { IndentAction } from 'vs/editor/common/modes/languageConfiguration';
-import { TokenSelectionSupport } from 'vs/editor/contrib/smartSelect/tokenSelectionSupport';
-import { MockMode } from 'vs/editor/test/common/mocks/mockMode';
+import { MockMode, StaticLanguageSelector } from 'vs/editor/test/common/mocks/mockMode';
 import { LanguageConfigurationRegistry } from 'vs/editor/common/modes/languageConfigurationRegistry';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { javascriptOnEnterRules } from 'vs/editor/test/common/modes/supports/javascriptOnEnterRules';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { isLinux, isMacintosh } from 'vs/base/common/platform';
+import { TokenTreeSelectionRangeProvider } from 'vs/editor/contrib/smartSelect/tokenTree';
+import { MarkerService } from 'vs/platform/markers/common/markerService';
 
 class MockJSMode extends MockMode {
 
@@ -30,47 +32,19 @@ class MockJSMode extends MockMode {
 				['[', ']']
 			],
 
-			onEnterRules: [
-				{
-					// e.g. /** | */
-					beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
-					afterText: /^\s*\*\/$/,
-					action: { indentAction: IndentAction.IndentOutdent, appendText: ' * ' }
-				},
-				{
-					// e.g. /** ...|
-					beforeText: /^\s*\/\*\*(?!\/)([^\*]|\*(?!\/))*$/,
-					action: { indentAction: IndentAction.None, appendText: ' * ' }
-				},
-				{
-					// e.g.  * ...|
-					beforeText: /^(\t|(\ \ ))*\ \*(\ ([^\*]|\*(?!\/))*)?$/,
-					action: { indentAction: IndentAction.None, appendText: '* ' }
-				},
-				{
-					// e.g.  */|
-					beforeText: /^(\t|(\ \ ))*\ \*\/\s*$/,
-					action: { indentAction: IndentAction.None, removeText: 1 }
-				},
-				{
-					// e.g.  *-----*/|
-					beforeText: /^(\t|(\ \ ))*\ \*[^/]*\*\/\s*$/,
-					action: { indentAction: IndentAction.None, removeText: 1 }
-				}
-			]
+			onEnterRules: javascriptOnEnterRules
 		}));
 	}
 }
 
 suite('TokenSelectionSupport', () => {
 
-	let modelService: ModelServiceImpl = null;
-	let tokenSelectionSupport: TokenSelectionSupport;
-	let mode: MockJSMode = null;
+	let modelService: ModelServiceImpl;
+	let mode: MockJSMode;
 
 	setup(() => {
-		modelService = new ModelServiceImpl(null, new TestConfigurationService());
-		tokenSelectionSupport = new TokenSelectionSupport(modelService);
+		const configurationService = new TestConfigurationService();
+		modelService = new ModelServiceImpl(new MarkerService(), configurationService, new TestTextResourcePropertiesService(configurationService));
 		mode = new MockJSMode();
 	});
 
@@ -81,12 +55,13 @@ suite('TokenSelectionSupport', () => {
 
 	function assertGetRangesToPosition(text: string[], lineNumber: number, column: number, ranges: Range[]): void {
 		let uri = URI.file('test.js');
-		modelService.createModel(text.join('\n'), mode, uri);
+		let model = modelService.createModel(text.join('\n'), new StaticLanguageSelector(mode.getLanguageIdentifier()), uri);
 
-		let actual = tokenSelectionSupport.getRangesToPositionSync(uri, new Position(lineNumber, column));
+		let actual = new TokenTreeSelectionRangeProvider().provideSelectionRanges(model, new Position(lineNumber, column));
 
-		let actualStr = actual.map(r => new Range(r.range.startLineNumber, r.range.startColumn, r.range.endLineNumber, r.range.endColumn).toString());
-		let desiredStr = ranges.map(r => String(r));
+
+		let actualStr = actual.map(r => new Range(r.startLineNumber, r.startColumn, r.endLineNumber, r.endColumn).toString());
+		let desiredStr = ranges.reverse().map(r => String(r));
 
 		assert.deepEqual(actualStr, desiredStr);
 
@@ -95,7 +70,7 @@ suite('TokenSelectionSupport', () => {
 
 	test('getRangesToPosition #1', () => {
 
-		assertGetRangesToPosition([
+		return assertGetRangesToPosition([
 			'function a(bar, foo){',
 			'\tif (bar) {',
 			'\t\treturn (bar + (2 * foo))',
@@ -115,4 +90,99 @@ suite('TokenSelectionSupport', () => {
 				// new Range(3, 19, 3, 20)
 			]);
 	});
+
+	test('getRangesToPosition #56886. Skip empty lines correctly.', () => {
+
+		return assertGetRangesToPosition([
+			'function a(bar, foo){',
+			'\tif (bar) {',
+			'',
+			'\t}',
+			'}'
+		], 3, 1, [
+				new Range(1, 1, 5, 2),
+				new Range(1, 21, 5, 2),
+				new Range(2, 1, 4, 3),
+				new Range(2, 11, 4, 3)
+			]);
+	});
+
+	test('getRangesToPosition #56886. Do not skip lines with only whitespaces.', () => {
+
+		return assertGetRangesToPosition([
+			'function a(bar, foo){',
+			'\tif (bar) {',
+			' ',
+			'\t}',
+			'}'
+		], 3, 1, [
+				new Range(1, 1, 5, 2),
+				new Range(1, 21, 5, 2),
+				new Range(2, 1, 4, 3),
+				new Range(2, 11, 4, 3),
+				new Range(3, 1, 4, 2),
+				new Range(3, 1, 3, 2)
+			]);
+	});
+
+	test('getRangesToPosition #40658. Cursor at first position inside brackets should select line inside.', () => {
+
+		return assertGetRangesToPosition([
+			' [ ]',
+			' { } ',
+			'( ) '
+		], 2, 3, [
+				new Range(1, 1, 3, 5),
+				new Range(2, 1, 2, 6),
+				new Range(2, 2, 2, 5),
+				new Range(2, 3, 2, 4)
+			]);
+	});
+
+	test('getRangesToPosition #40658. Cursor in empty brackets should reveal brackets first.', () => {
+
+		return assertGetRangesToPosition([
+			' [] ',
+			' { } ',
+			'  ( ) '
+		], 1, 3, [
+				new Range(1, 1, 3, 7),
+				new Range(1, 1, 1, 5),
+				new Range(1, 2, 1, 4)
+			]);
+	});
+
+	test('getRangesToPosition #40658. Tokens before bracket will be revealed first.', () => {
+
+		return assertGetRangesToPosition([
+			'  [] ',
+			' { } ',
+			'selectthis( ) '
+		], 3, 11, [
+				new Range(1, 1, 3, 15),
+				new Range(3, 1, 3, 15),
+				new Range(3, 1, 3, 11)
+			]);
+	});
 });
+
+class TestTextResourcePropertiesService implements ITextResourcePropertiesService {
+
+	_serviceBrand: any;
+
+	constructor(
+		@IConfigurationService private configurationService: IConfigurationService,
+	) {
+	}
+
+	getEOL(resource: URI): string {
+		const filesConfiguration = this.configurationService.getValue<{ eol: string }>('files');
+		if (filesConfiguration && filesConfiguration.eol) {
+			if (filesConfiguration.eol !== 'auto') {
+				return filesConfiguration.eol;
+			}
+		}
+		return (isLinux || isMacintosh) ? '\n' : '\r\n';
+	}
+}
+

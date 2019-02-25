@@ -55,7 +55,7 @@ export class AccountListStatusbarItem extends Themable implements IStatusbarItem
 		if (!this._manageLinkedAccountAction) {
 			this._manageLinkedAccountAction = this._instantiationService.createInstance(ManageLinkedAccountAction, ManageLinkedAccountAction.ID, ManageLinkedAccountAction.LABEL);
 		}
-		this._manageLinkedAccountAction.run().done(null, onUnexpectedError);
+		this._manageLinkedAccountAction.run().then(null, onUnexpectedError);
 	}
 }
 
