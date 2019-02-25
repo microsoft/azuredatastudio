@@ -194,7 +194,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				this._editor.setHeightToScrollHeight(true);
 			}
 		}));
-		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire, this));
+		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
 		this.layout();
 	}
 
