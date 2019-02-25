@@ -5,12 +5,12 @@
 
 import * as vscode from "vscode";
 
-export interface IKubeChannel {
+export interface ISqlServerBigDataClusterChannel {
     showOutput(message: any, title?: string): void;
 }
 
-class KubeChannel implements IKubeChannel {
-    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel("Kubernetes");
+class SqlServerBigDataCluster implements ISqlServerBigDataClusterChannel {
+    private readonly channel: vscode.OutputChannel = vscode.window.createOutputChannel("SQL Server big data cluster");
 
     showOutput(message: any, title?: string): void {
         if (title) {
@@ -23,4 +23,4 @@ class KubeChannel implements IKubeChannel {
     }
 }
 
-export const kubeChannel: IKubeChannel = new KubeChannel();
+export const sqlserverbigdataclusterchannel: ISqlServerBigDataClusterChannel = new SqlServerBigDataCluster();

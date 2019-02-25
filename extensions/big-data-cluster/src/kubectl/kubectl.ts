@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Host } from './host';
-import { FS } from '../fs';
-import { Shell, ShellResult } from '../shell';
+import { FS } from '../utility/fs';
+import { Shell, ShellResult } from '../utility/shell';
 import * as binutil from './binutil';
-import { Errorable } from '../errorable';
+import { Errorable } from '../interfaces';
 import * as compatibility from './compatibility';
 import { getToolPath } from '../config/config';
 
@@ -71,7 +71,7 @@ async function checkForKubectlInternal(context: Context, errorMessageMode: Check
 
 function getCheckKubectlContextMessage(errorMessageMode: CheckPresentMessageMode): string {
     if (errorMessageMode === CheckPresentMessageMode.Activation) {
-        return ' MSSQL Big data cluster requires kubernetes.';
+        return ' SQL Server Big data cluster requires kubernetes.';
     } else if (errorMessageMode === CheckPresentMessageMode.Command) {
         return ' Cannot execute command.';
     }

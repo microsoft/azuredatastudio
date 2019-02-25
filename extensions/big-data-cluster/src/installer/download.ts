@@ -7,7 +7,7 @@ import * as path from 'path';
 import * as stream from 'stream';
 import * as tmp from 'tmp';
 
-import { succeeded, Errorable } from '../errorable';
+import { succeeded, Errorable } from '../interfaces';
 
 type DownloadFunc =
     (url: string, destination?: string, options?: any)

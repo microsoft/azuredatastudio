@@ -5,7 +5,7 @@
 
 import * as vscode from "vscode";
 import { Kubectl } from "./kubectl";
-import { failed } from "../errorable";
+import { failed } from "../interfaces";
 
 export interface KubectlContext {
     readonly clusterName: string;

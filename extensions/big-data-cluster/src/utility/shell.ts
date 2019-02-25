@@ -8,8 +8,8 @@
 import * as vscode from 'vscode';
 import * as shelljs from 'shelljs';
 import * as path from 'path';
-import { getActiveKubeconfig, getToolPath } from './config/config';
-import { host } from './kubectl/host';
+import { getActiveKubeconfig, getToolPath } from '../config/config';
+import { host } from '../kubectl/host';
 
 export enum Platform {
     Windows,

@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Shell } from '../shell';
+import { Shell } from '../utility/shell';
 import { Host } from './host';
-import { FS } from '../fs';
+import { FS } from '../utility/fs';
 
 export interface BinCheckContext {
     readonly host: Host;

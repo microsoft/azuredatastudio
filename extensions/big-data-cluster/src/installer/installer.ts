@@ -8,8 +8,8 @@ import * as download from './download';
 import * as fs from 'fs';
 import mkdirp = require('mkdirp');
 import * as path from 'path';
-import { Shell, Platform } from '../shell';
-import { Errorable, failed } from '../errorable';
+import { Shell, Platform } from '../utility/shell';
+import { Errorable, failed } from '../interfaces';
 import { addPathToConfig, toolPathBaseKey } from '../config/config';
 
 export async function installKubectl(shell: Shell): Promise<Errorable<null>> {

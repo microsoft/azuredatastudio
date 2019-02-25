@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import { Host } from '../kubectl/host';
-import { Shell, Platform } from '../shell';
+import { Shell, Platform } from '../utility/shell';
 
 const EXTENSION_CONFIG_KEY = "mssql-bdc";
 const KUBECONFIG_PATH_KEY = "mssql-bdc.kubeconfig";

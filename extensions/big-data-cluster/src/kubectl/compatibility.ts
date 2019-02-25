@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Errorable, failed } from '../errorable';
+import { Errorable, failed } from '../interfaces';
 
 interface CompatibilityGuaranteed {
     readonly guaranteed: true;
