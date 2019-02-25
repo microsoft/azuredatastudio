@@ -8,27 +8,24 @@ import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { WizardPageBase } from '../../wizardPageBase';
-import { CreateClusterModel } from '../createClusterModel';
-import { WizardBase } from '../../wizardBase';
+import { CreateClusterWizard } from '../createClusterWizard';
 import { TargetClusterType } from '../../../interfaces';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 const ClusterTypeRadioButtonGroupName = 'SelectClusterType';
 
-export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> {
-	constructor(model: CreateClusterModel, wizard: WizardBase<CreateClusterModel>) {
+export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizard> {
+	constructor(wizard: CreateClusterWizard) {
 		super(localize('bdc-create.selectTargetClusterPageTitle', 'Where do you want to deploy this SQL Server big data cluster?'),
 			localize('bdc-create.selectTargetClusterPageDescription', 'Select an existing Kubernetes cluster or choose a cluster type you want to deploy'),
-			model, wizard);
+			wizard);
 	}
 
 	private existingClusterOption: sqlops.RadioButtonComponent;
-	private createLocalClusterOption: sqlops.RadioButtonComponent;
 	private createAksClusterOption: sqlops.RadioButtonComponent;
 	private pageContainer: sqlops.DivContainer;
 	private existingClusterControl: sqlops.FlexContainer;
-	private createLocalClusterControl: sqlops.FlexContainer;
 	private createAksClusterControl: sqlops.FlexContainer;
 	private clusterContextsLabel: sqlops.TextComponent;
 	private errorLoadingClustersLabel: sqlops.TextComponent;
@@ -38,33 +35,25 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 
 	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let self = this;
-		this.model.targetClusterType = TargetClusterType.ExistingKubernetesCluster;
+		this.wizard.model.targetClusterType = TargetClusterType.ExistingKubernetesCluster;
 		this.existingClusterOption = this.createTargetTypeRadioButton(view, localize('bdc-create.existingK8sCluster', 'Existing Kubernetes cluster'), true);
-		this.createLocalClusterOption = this.createTargetTypeRadioButton(view, localize('bdc-create.createLocalCluster', 'Create new local cluster'));
 		this.createAksClusterOption = this.createTargetTypeRadioButton(view, localize('bdc-create.createAksCluster', 'Create new Azure Kubernetes Service cluster'));
 
 		this.existingClusterOption.onDidClick(() => {
 			self.pageContainer.clearItems();
 			self.pageContainer.addItem(self.existingClusterControl);
-			self.model.targetClusterType = TargetClusterType.ExistingKubernetesCluster;
-		});
-
-		this.createLocalClusterOption.onDidClick(() => {
-			self.pageContainer.clearItems();
-			self.pageContainer.addItem(self.createLocalClusterControl);
-			self.model.targetClusterType = TargetClusterType.NewLocalCluster;
+			self.wizard.model.targetClusterType = TargetClusterType.ExistingKubernetesCluster;
 		});
 
 		this.createAksClusterOption.onDidClick(() => {
 			self.pageContainer.clearItems();
 			self.pageContainer.addItem(self.createAksClusterControl);
-			self.model.targetClusterType = TargetClusterType.NewAksCluster;
+			self.wizard.model.targetClusterType = TargetClusterType.NewAksCluster;
 		});
 
-		let optionGroup = view.modelBuilder.divContainer().withItems([this.existingClusterOption, this.createLocalClusterOption, this.createAksClusterOption],
+		let optionGroup = view.modelBuilder.divContainer().withItems([this.existingClusterOption, this.createAksClusterOption],
 			{ CSSStyles: { 'margin-right': '30px' } }).withLayout({ width: 'auto' }).component();
 		this.initExistingClusterControl(view);
-		this.initLocalClusterControl(view);
 		this.initAksClusterControl(view);
 		this.pageContainer = view.modelBuilder.divContainer().withItems([this.existingClusterControl]).withLayout({ width: '100%' }).component();
 		let container = view.modelBuilder.flexContainer().withItems([optionGroup, this.pageContainer], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
@@ -126,11 +115,11 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 
 			configFileInput.value = fileUri.fsPath;
 
-			let clusters = self.model.loadClusters(fileUri.fsPath);
+			let clusters = self.wizard.model.loadClusters(fileUri.fsPath);
 
 			self.cards = [];
 			if (clusters.length !== 0) {
-				self.model.selectedCluster = clusters[0];
+				self.wizard.model.selectedCluster = clusters[0];
 				for (let i = 0; i < clusters.length; i++) {
 					let cluster = clusters[i];
 					let card = view.modelBuilder.card().withProperties({
@@ -150,7 +139,7 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 									c.selected = false;
 								}
 							});
-							self.model.selectedCluster = cluster;
+							self.wizard.model.selectedCluster = cluster;
 						}
 					});
 					self.cards.push(card);
@@ -162,11 +151,6 @@ export class SelectTargetClusterPage extends WizardPageBase<CreateClusterModel> 
 				self.clusterContextContainer.addItem(this.errorLoadingClustersLabel);
 			}
 		});
-	}
-
-	private initLocalClusterControl(view: sqlops.ModelView): void {
-		let placeholder = view.modelBuilder.text().withProperties({ value: 'create local cluster place holder' }).component();
-		this.createLocalClusterControl = view.modelBuilder.divContainer().withItems([placeholder]).component();
 	}
 
 	private initAksClusterControl(view: sqlops.ModelView): void {
