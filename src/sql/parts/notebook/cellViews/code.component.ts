@@ -32,6 +32,7 @@ import { CellTypes } from 'sql/parts/notebook/models/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -139,12 +140,17 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private updateConnectionState(isConnected: boolean) {
 		if (this.isSqlCodeCell()) {
 			let cellUri = this.cellModel.cellUri.toString();
-			if (!isConnected && this._model.notebookOptions.connectionService.isConnected(cellUri)) {
-				this._model.notebookOptions.connectionService.disconnect(cellUri).catch(e => console.log(e));
+			let connectionService = this.connectionService;
+			if (!isConnected && connectionService && connectionService.isConnected(cellUri)) {
+				connectionService.disconnect(cellUri).catch(e => console.log(e));
 			} else if (this._model.activeConnection && this._model.activeConnection.id !== '-1') {
-				this._model.notebookOptions.connectionService.connect(this._model.activeConnection, cellUri).catch(e => console.log(e));
+				connectionService.connect(this._model.activeConnection, cellUri).catch(e => console.log(e));
 			}
 		}
+	}
+
+	private get connectionService(): IConnectionManagementService {
+		return this._model && this._model.notebookOptions && this._model.notebookOptions.connectionService;
 	}
 
 	private isSqlCodeCell() {

@@ -398,11 +398,11 @@ export class SQLFuture extends Disposable implements FutureInternal {
 	public handleBatchEnd(batch: BatchSummary): void {
 		if (this.ioHandler) {
 			this.handleMessage(strings.format(elapsedTimeLabel, batch.executionElapsed));
-			this.processResultsSets(batch);
+			this.processResultSets(batch);
 		}
 	}
 
-	private async processResultsSets(batch: BatchSummary): Promise<void> {
+	private async processResultSets(batch: BatchSummary): Promise<void> {
 		try {
 			for (let resultSet of batch.resultSetSummaries) {
 				let rowCount = resultSet.rowCount > this.configuredMaxRows ? this.configuredMaxRows : resultSet.rowCount;
