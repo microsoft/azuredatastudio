@@ -9,18 +9,17 @@ import { SelectExistingClusterPage } from './pages/selectExistingClusterPage';
 import { SummaryPage } from './pages/summaryPage';
 import { SettingsPage } from './pages/settingsPage';
 import { ClusterProfilePage } from './pages/clusterProfilePage';
-import { TestKubeConfigParser } from '../../data/kubeConfigParser';
 import { ExtensionContext } from 'vscode';
 import { WizardBase } from '../wizardBase';
 import * as nls from 'vscode-nls';
+import { Kubectl } from '../../kubectl/kubectl';
 import { SelectTargetClusterTypePage } from './pages/selectTargetClusterTypePage';
 
 const localize = nls.loadMessageBundle();
 
 export class CreateClusterWizard extends WizardBase<CreateClusterModel, CreateClusterWizard> {
-	constructor(context: ExtensionContext) {
-		let configParser = new TestKubeConfigParser();
-		let model = new CreateClusterModel(configParser);
+	constructor(context: ExtensionContext, kubectl: Kubectl) {
+		let model = new CreateClusterModel(kubectl);
 		super(model, context, localize('bdc-create.wizardTitle', 'Create a big data cluster'));
 	}
 

@@ -6,6 +6,8 @@
 
 import { IKubeConfigParser } from '../../data/kubeConfigParser';
 import { ClusterInfo, TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo } from '../../interfaces';
+import { getContexts, KubectlContext }  from '../../kubectl/kubectlUtils';
+import { Kubectl } from '../../kubectl/kubectl';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -14,11 +16,11 @@ export class CreateClusterModel {
 
 	private _tmp_tools_installed: boolean = false;
 
-	constructor(private _kubeConfigParser: IKubeConfigParser) {
+	constructor(private _kubectl : Kubectl) {
 	}
 
-	public loadClusters(configPath: string): ClusterInfo[] {
-		return this._kubeConfigParser.parse(configPath);
+	public async loadClusters(): Promise<KubectlContext[]> {
+		return await getContexts(this._kubectl);
 	}
 
 	public getDefaultPorts(): Thenable<ClusterPorts> {
@@ -107,7 +109,7 @@ export class CreateClusterModel {
 
 	public targetClusterType: TargetClusterType;
 
-	public selectedCluster: ClusterInfo;
+	public selectedCluster: KubectlContext;
 
 	public adminUserName: string;
 

@@ -10,6 +10,8 @@ import * as os from 'os';
 import { WizardPageBase } from '../../wizardPageBase';
 import { CreateClusterWizard } from '../createClusterWizard';
 import { TargetClusterType } from '../../../interfaces';
+import { setActiveKubeconfig } from '../../../config/config';
+
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -101,7 +103,7 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 					defaultUri: vscode.Uri.file(os.homedir()),
 					openLabel: localize('bdc-selectKubeConfigFileText', 'Select'),
 					filters: {
-						'KubeConfig Files': ['kubeconfig'],
+						'KubeConfig Files': ['*'],
 					}
 				}
 			);
@@ -114,8 +116,9 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 			let fileUri = fileUris[0];
 
 			configFileInput.value = fileUri.fsPath;
+			await setActiveKubeconfig(fileUri.fsPath);
 
-			let clusters = self.wizard.model.loadClusters(fileUri.fsPath);
+			let clusters = await self.wizard.model.loadClusters();
 
 			self.cards = [];
 			if (clusters.length !== 0) {
@@ -124,8 +127,8 @@ export class SelectExistingClusterPage extends WizardPageBase<CreateClusterWizar
 					let cluster = clusters[i];
 					let card = view.modelBuilder.card().withProperties({
 						selected: i === 0,
-						label: cluster.name,
-						descriptions: [cluster.displayName, cluster.user],
+						label: cluster.clusterName,
+						descriptions: [cluster.clusterName, cluster.userName],
 						cardType: sqlops.CardType.ListItem,
 						iconPath: {
 							dark: self.wizard.context.asAbsolutePath('images/cluster_inverse.svg'),
