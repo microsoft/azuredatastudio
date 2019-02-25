@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
 import * as os from 'os';
+import { SchemaCompareResult } from './schemaCompareResult';
 
 const localize = nls.loadMessageBundle();
 
@@ -42,66 +43,22 @@ export class SchemaCompareDialog {
 	private targetDatabaseComponent: sqlops.FormComponent;
 	private targetDatabaseDropdown: sqlops.DropDownComponent;
 	private targetNoActiveConnectionsText: sqlops.FormComponent;
-	private differencesTable: sqlops.TableComponent;
-	private loader: sqlops.LoadingComponent;
 	private formBuilder: sqlops.FormBuilder;
-	private editor: sqlops.workspace.ModelViewEditor;
-	private diffEditor: sqlops.DiffEditorComponent;
-	private flexModel: sqlops.FlexContainer;
-	private sourceLabel: sqlops.TextComponent;
-	private targetLabel: sqlops.TextComponent;
-	private noDifferencesLabel: sqlops.TextComponent;
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
 	private database: string;
 	public dialogName: string;
-	private SchemaCompareActionMap: Map<Number, string>;
 
 	constructor(public ownerUri?: string) {
-		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[0] = localize('schemaCompare.deleteAction', '❌ Delete');
-		this.SchemaCompareActionMap[1] = localize('schemaCompare.changeAction', '✎ Change');
-		this.SchemaCompareActionMap[2] = localize('schemaCompare.addAction', '➕ Add');
 	}
 
-	protected async initializeDialog(dialog: sqlops.window.modelviewdialog.Dialog) {
+	protected async initializeDialog() {
 		this.generalTab = sqlops.window.modelviewdialog.createTab(SchemaCompareDialog.GeneralTabText);
 		this.initializeGeneralTab();
 		this.dialog.content = [this.generalTab];
 	}
 
 	public async openDialog(p: any, dialogName?: string) {
-		this.editor = sqlops.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
-
-		this.editor.registerContent(async view => {
-			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: '\n',
-				contentRight: '\n',
-			}).component();
-
-			this.differencesTable = view.modelBuilder.table().withProperties({
-				data: [],
-				height: 400
-			}).component();
-
-			this.loader = view.modelBuilder.loadingComponent().component();
-			this.sourceLabel = view.modelBuilder.text().component();
-			this.targetLabel = view.modelBuilder.text().component();
-			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.noDifferences', 'No schema differences were found')
-			}).component();
-
-			this.flexModel = view.modelBuilder.flexContainer().component();
-			this.flexModel.addItem(this.loader);
-			this.flexModel.setLayout({
-				flexFlow: 'column',
-				alignItems: 'stretch',
-				height: '100%'
-			});
-
-			await view.initializeModel(this.flexModel);
-		});
-
 		let profile = p ? <sqlops.IConnectionProfile>p.connectionProfile : undefined;
 		if (profile) {
 			this.database = profile.databaseName;
@@ -110,7 +67,7 @@ export class SchemaCompareDialog {
 		let event = dialogName ? dialogName : null;
 		this.dialog = sqlops.window.modelviewdialog.createDialog('Schema Compare', event);
 
-		await this.initializeDialog(this.dialog);
+		await this.initializeDialog();
 
 		this.dialog.okButton.label = SchemaCompareDialog.CompareButtonText;
 		this.dialog.okButton.onClick(async () => await this.execute());
@@ -122,8 +79,6 @@ export class SchemaCompareDialog {
 	}
 
 	protected async execute() {
-		let service = await SchemaCompareDialog.getService('MSSQL');
-		this.editor.openEditor();
 		let sourceName: string;
 		let targetName: string;
 
@@ -137,7 +92,7 @@ export class SchemaCompareDialog {
 				packageFilePath: this.sourceTextBox.value
 			};
 		} else {
-			sourceName = (<sqlops.CategoryValue>this.sourceDatabaseDropdown.value).name;
+			sourceName = (this.sourceServerDropdown.value as ConnectionDropdownValue).name + '.' + (<sqlops.CategoryValue>this.sourceDatabaseDropdown.value).name;
 			let ownerUri = await sqlops.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			sourceEndpointInfo = {
@@ -158,7 +113,7 @@ export class SchemaCompareDialog {
 				packageFilePath: this.targetTextBox.value
 			};
 		} else {
-			targetName = (<sqlops.CategoryValue>this.targetDatabaseDropdown.value).name;
+			targetName = (this.targetServerDropdown.value as ConnectionDropdownValue).name + '.' + (<sqlops.CategoryValue>this.targetDatabaseDropdown.value).name;
 			let ownerUri = await sqlops.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			targetEndpointInfo = {
@@ -169,95 +124,8 @@ export class SchemaCompareDialog {
 			};
 		}
 
-		let result = await service.schemaCompare(sourceEndpointInfo, targetEndpointInfo, sqlops.TaskExecutionMode.execute);
-		if (!result || !result.success) {
-			vscode.window.showErrorMessage(
-				localize('schemaCompare.compareErrorMessage', "Schema Compare failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
-		}
-
-		let data = this.getAllDifferences(result.differences);
-
-		this.differencesTable.updateProperties({
-			data: data,
-			columns: [
-				{
-					value: localize('schemaCompare.actionColumn', 'Action'),
-					cssClass: 'align-with-header',
-					width: 30
-				},
-				{
-					value: localize('schemaCompare.typeColumn', 'Type'),
-					cssClass: 'align-with-header',
-					width: 50
-				},
-				{
-					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
-					cssClass: 'align-with-header'
-				},
-				{
-					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
-					cssClass: 'align-with-header'
-				}]
-		});
-
-		this.sourceLabel.updateProperties({
-			value: localize('schemaCompare.source', 'Source: {0}', sourceName)
-		});
-		this.targetLabel.updateProperties({
-			value: localize('schemaCompare.target', 'Target: {0}', targetName)
-		});
-
-		this.loader.loading = false;
-		this.flexModel.removeItem(this.loader);
-		if (result.differences.length > 0) {
-			this.flexModel.addItem(this.sourceLabel, { flex: '1' });
-			this.flexModel.addItem(this.targetLabel, { flex: '1' });
-			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
-			this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
-		} else {
-			this.flexModel.addItem(this.noDifferencesLabel);
-		}
-
-		this.differencesTable.onRowSelected(e => {
-			let difference = result.differences[this.differencesTable.selectedRows[0]];
-			sourceText = difference.sourceScript === null ? '' : difference.sourceScript;
-			targetText = difference.targetScript === null ? '' : difference.targetScript;
-			this.diffEditor.contentLeft = sourceText;
-			this.diffEditor.contentRight = targetText;
-		});
-
-		let sourceText = '';
-		let targetText = '';
-
-		vscode.workspace.registerTextDocumentContentProvider('source', {
-			provideTextDocumentContent() {
-				return sourceText;
-			}
-		});
-
-		vscode.workspace.registerTextDocumentContentProvider('target', {
-			provideTextDocumentContent() {
-				return targetText;
-			}
-		});
-	}
-
-	private getAllDifferences(differences: sqlops.DiffEntry[]): string[][] {
-		let data = [];
-		differences.forEach(difference => {
-			if (difference.differenceType === sqlops.SchemaDifferenceType.Object) {
-				if (difference.sourceValue !== null || difference.targetValue !== null) {
-					data.push([this.SchemaCompareActionMap[difference.updateAction], difference.name, difference.sourceValue, difference.targetValue]);
-				}
-			}
-		});
-
-		return data;
-	}
-
-	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
-		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);
-		return service;
+		let schemaCompareResult = new SchemaCompareResult(sourceName, targetName, sourceEndpointInfo, targetEndpointInfo);
+		schemaCompareResult.start();
 	}
 
 	protected async cancel() {
@@ -525,7 +393,7 @@ export class SchemaCompareDialog {
 			return {
 				connection: c,
 				displayName: finalName,
-				name: c.connectionId
+				name: srv
 			};
 		});
 
