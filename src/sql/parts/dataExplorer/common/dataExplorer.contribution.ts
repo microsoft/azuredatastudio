@@ -14,8 +14,25 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { Extensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
-import { OpenConnectionsViewletAction } from 'sql/parts/objectExplorer/common/registeredServer.contribution';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { ToggleViewletAction } from 'vs/workbench/browser/parts/activitybar/activitybarActions';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { IPartService } from 'vs/workbench/services/part/common/partService';
+
+// Viewlet Action
+export class OpenDataExplorerViewletAction extends ToggleViewletAction {
+	public static ID = VIEWLET_ID;
+	public static LABEL = 'Show Data Explorer';
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewletService viewletService: IViewletService,
+		@IPartService partService: IPartService
+	) {
+		super(viewletDescriptor, partService, viewletService);
+	}
+}
 
 // Data Explorer Viewlet
 const viewletDescriptor = new ViewletDescriptor(
@@ -34,9 +51,9 @@ if (process.env.NODE_ENV === 'development') {
 	const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 	registry.registerWorkbenchAction(
 		new SyncActionDescriptor(
-			OpenConnectionsViewletAction,
-			OpenConnectionsViewletAction.ID,
-			OpenConnectionsViewletAction.LABEL,
+			OpenDataExplorerViewletAction,
+			OpenDataExplorerViewletAction.ID,
+			OpenDataExplorerViewletAction.LABEL,
 			{ primary: KeyMod.CtrlCmd | KeyCode.Shift | KeyCode.KEY_C }),
 		'View: Show Servers',
 		localize('registeredServers.view', "View")
