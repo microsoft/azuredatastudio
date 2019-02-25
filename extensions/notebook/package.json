@@ -219,24 +219,30 @@
 				"when": "notebookEditorVisible"
 			}
 		],
-        "notebook.languagemagics": [
+		"notebook.languagemagics": [
 			{
 				"magic": "lang_python",
 				"language": "python",
 				"executionTarget": null,
-				"kernels": ["sql"]
+				"kernels": [
+					"sql"
+				]
 			},
 			{
 				"magic": "lang_r",
 				"language": "r",
 				"executionTarget": null,
-				"kernels": ["sql"]
+				"kernels": [
+					"sql"
+				]
 			},
 			{
 				"magic": "lang_java",
 				"language": "java",
 				"executionTarget": null,
-				"kernels": ["sql"]
+				"kernels": [
+					"sql"
+				]
 			}
 		],
 		"notebook.providers": {
@@ -288,6 +294,7 @@
 		"fs-extra": "^5.0.0",
 		"node-fetch": "^2.3.0",
 		"process-nextick-args": "^2.0.0",
+		"request": "^2.88.0",
 		"temp-write": "^3.4.0",
 		"vscode-languageclient": "^5.3.0-next.1",
 		"vscode-nls": "2.0.2"

@@ -31,6 +31,7 @@ import { Emitter, debounceEvent } from 'vs/base/common/event';
 import { CellTypes } from 'sql/parts/notebook/models/contracts';
 import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
 import * as notebookUtils from 'sql/parts/notebook/notebookUtils';
+import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -153,7 +154,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		return this._activeCellId;
 	}
 
-	private createEditor(): void {
+	private async createEditor(): Promise<void> {
 		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
@@ -162,12 +163,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setMaximumHeight(this._maximumHeight);
 		let uri = this.cellModel.cellUri;
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
-		this._editor.setInput(this._editorInput, undefined);
+		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
-		this._editorInput.resolve().then(model => {
-			this._editorModel = model.textEditorModel;
+		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
+		if (untitledEditorModel) {
+			this._editorModel = untitledEditorModel.textEditorModel;
 			this._modelService.updateModel(this._editorModel, this.cellModel.source);
-		});
+		}
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
 
@@ -177,20 +179,22 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 		this._register(this._editor);
 		this._register(this._editorInput);
-		this._register(this._editorModel.onDidChangeContent(e => {
-			this._editor.setHeightToScrollHeight();
-			this.cellModel.source = this._editorModel.getValue();
-			this.onContentChanged.emit();
-			this.checkForLanguageMagics();
-			// TODO see if there's a better way to handle reassessing size.
-			setTimeout(() => this._layoutEmitter.fire(), 250);
-		}));
+		if (this._editorModel) {
+			this._register(this._editorModel.onDidChangeContent(e => {
+				this._editor.setHeightToScrollHeight();
+				this.cellModel.source = this._editorModel.getValue();
+				this.onContentChanged.emit();
+				this.checkForLanguageMagics();
+				// TODO see if there's a better way to handle reassessing size.
+				setTimeout(() => this._layoutEmitter.fire(), 250);
+			}));
+		}
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap')) {
 				this._editor.setHeightToScrollHeight(true);
 			}
 		}));
-		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire, this));
+		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
 		this.layout();
 	}
 
