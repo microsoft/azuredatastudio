@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as path from 'path';
 import * as pfs from 'vs/base/node/pfs';
@@ -51,7 +50,7 @@ export class LanguagePackCachedDataCleaner {
 	}
 
 	private _manageCachedDataSoon(): void {
-		let handle = setTimeout(async () => {
+		let handle: any = setTimeout(async () => {
 			handle = undefined;
 			this._logService.info('Starting to clean up unused language packs.');
 			const maxAge = product.nameLong.indexOf('Insiders') >= 0

@@ -6,7 +6,7 @@
 import 'vs/css!./media/serverTreeActions';
 import * as errors from 'vs/base/common/errors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import * as builder from 'vs/base/browser/builder';
+import * as builder from 'sql/base/browser/builder';
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -100,7 +100,7 @@ export class ServerTreeView {
 		if (!this._connectionManagementService.hasRegisteredServers()) {
 			this._activeConnectionsFilterAction.enabled = false;
 			this._buttonSection = $('div.button-section').appendTo(container);
-			var connectButton = new Button(this._buttonSection);
+			var connectButton = new Button(this._buttonSection.getHTMLElement());
 			connectButton.label = localize('serverTree.addConnection', 'Add Connection');
 			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
 			this._toDispose.push(connectButton.onDidClick(() => {
@@ -221,7 +221,7 @@ export class ServerTreeView {
 						this._treeSelectionHandler.onTreeActionStateChange(false);
 					});
 				});
-			}).done(null, errors.onUnexpectedError);
+			}).then(null, errors.onUnexpectedError);
 		}
 	}
 
@@ -313,7 +313,7 @@ export class ServerTreeView {
 			} else {
 				treeInput = filteredResults[0];
 			}
-			this._tree.setInput(treeInput).done(() => {
+			this._tree.setInput(treeInput).then(() => {
 				if (this.messages.isHidden()) {
 					self._tree.getFocus();
 					self._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
@@ -346,7 +346,7 @@ export class ServerTreeView {
 		// Add all connections to tree root and set tree input
 		let treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
-		this._tree.setInput(treeInput).done(() => {
+		this._tree.setInput(treeInput).then(() => {
 			if (this.messages.isHidden()) {
 				self._tree.getFocus();
 				self._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));

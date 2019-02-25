@@ -19,7 +19,7 @@ if (context.RunTest) {
 			let nodes = <sqlops.objectexplorer.ObjectExplorerNode[]>await sqlops.objectexplorer.getActiveConnectionNodes();
 			assert(nodes.length === 1, `expecting 1 active connection, actual: ${nodes.length}`);
 			let actions = await sqlops.objectexplorer.getNodeActions(nodes[0].connectionId, nodes[0].nodePath);
-			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'Launch Profiler'];
+			const expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Launch Profiler'];
 
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');

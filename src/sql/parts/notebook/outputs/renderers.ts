@@ -6,7 +6,7 @@
 import { default as AnsiUp } from 'ansi_up';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { URLExt } from './common/url';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 
 
 /**

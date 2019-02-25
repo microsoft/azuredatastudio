@@ -3,10 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as arrays from 'vs/base/common/arrays';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
 import { ThrottledDelayer } from 'vs/base/common/async';
 import * as types from 'vs/base/common/types';
@@ -20,10 +17,11 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IWorkbenchSearchConfiguration } from 'vs/workbench/parts/search/common/search';
 import { IRange } from 'vs/editor/common/core/range';
 import { compareItemsByScore, scoreItem, ScorerCache, prepareQuery } from 'vs/base/parts/quickopen/common/quickOpenScorer';
-
-export import OpenSymbolHandler = openSymbolHandler.OpenSymbolHandler; // OpenSymbolHandler is used from an extension and must be in the main bundle file so it can load
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
+import { CancellationToken } from 'vs/base/common/cancellation';
+
+export import OpenSymbolHandler = openSymbolHandler.OpenSymbolHandler; // OpenSymbolHandler is used from an extension and must be in the main bundle file so it can load
 
 interface ISearchWithRange {
 	search: string;
@@ -36,15 +34,13 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 
 	private static readonly LINE_COLON_PATTERN = /[#|:|\(](\d*)([#|:|,](\d*))?\)?$/;
 
-	private static readonly FILE_SEARCH_DELAY = 300;
-	private static readonly SYMBOL_SEARCH_DELAY = 500; // go easier on those symbols!
+	private static readonly TYPING_SEARCH_DELAY = 200; // This delay accommodates for the user typing a word and then stops typing to start searching
 
 	private static readonly MAX_DISPLAYED_RESULTS = 512;
 
 	private openSymbolHandler: OpenSymbolHandler;
 	private openFileHandler: OpenFileHandler;
 	private searchDelayer: ThrottledDelayer<QuickOpenModel>;
-	private pendingSearch: TPromise<QuickOpenModel>;
 	private isClosed: boolean;
 	private scorerCache: ScorerCache;
 	private includeSymbols: boolean;
@@ -57,7 +53,7 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 		super();
 
 		this.scorerCache = Object.create(null);
-		this.searchDelayer = new ThrottledDelayer<QuickOpenModel>(OpenAnythingHandler.FILE_SEARCH_DELAY);
+		this.searchDelayer = new ThrottledDelayer<QuickOpenModel>(OpenAnythingHandler.TYPING_SEARCH_DELAY);
 
 		this.openSymbolHandler = instantiationService.createInstance(OpenSymbolHandler);
 		this.openFileHandler = instantiationService.createInstance(OpenFileHandler);
@@ -87,8 +83,7 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 		});
 	}
 
-	getResults(searchValue: string): TPromise<QuickOpenModel> {
-		this.cancelPendingSearch();
+	getResults(searchValue: string, token: CancellationToken): Thenable<QuickOpenModel> {
 		this.isClosed = false; // Treat this call as the handler being in use
 
 		// Find a suitable range from the pattern looking for ":" and "#"
@@ -100,33 +95,32 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 		// Prepare search for scoring
 		const query = prepareQuery(searchValue);
 		if (!query.value) {
-			return TPromise.as(new QuickOpenModel()); // Respond directly to empty search
+			return Promise.resolve(new QuickOpenModel()); // Respond directly to empty search
 		}
 
 		// The throttler needs a factory for its promises
-		const promiseFactory = () => {
-			const resultPromises: TPromise<QuickOpenModel | FileQuickOpenModel>[] = [];
+		const resultsPromise = () => {
+			const resultPromises: Thenable<QuickOpenModel | FileQuickOpenModel>[] = [];
 
 			// File Results
-			const filePromise = this.openFileHandler.getResults(query.original, OpenAnythingHandler.MAX_DISPLAYED_RESULTS);
+			const filePromise = this.openFileHandler.getResults(query.original, token, OpenAnythingHandler.MAX_DISPLAYED_RESULTS);
 			resultPromises.push(filePromise);
 
 			// Symbol Results (unless disabled or a range or absolute path is specified)
 			if (this.includeSymbols && !searchWithRange) {
-				resultPromises.push(this.openSymbolHandler.getResults(query.original));
+				resultPromises.push(this.openSymbolHandler.getResults(query.original, token));
 			}
 
 			// Join and sort unified
-			this.pendingSearch = TPromise.join(resultPromises).then(results => {
-				this.pendingSearch = null;
+			return Promise.all(resultPromises).then(results => {
 
 				// If the quick open widget has been closed meanwhile, ignore the result
-				if (this.isClosed) {
-					return TPromise.as<QuickOpenModel>(new QuickOpenModel());
+				if (this.isClosed || token.isCancellationRequested) {
+					return Promise.resolve<QuickOpenModel>(new QuickOpenModel());
 				}
 
 				// Combine results.
-				const mergedResults = [].concat(...results.map(r => r.entries));
+				const mergedResults: QuickOpenEntry[] = [].concat(...results.map(r => r.entries));
 
 				// Sort
 				const compare = (elementA: QuickOpenEntry, elementB: QuickOpenEntry) => compareItemsByScore(elementA, elementB, query, true, QuickOpenItemAccessor, this.scorerCache);
@@ -142,26 +136,25 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 					}
 				});
 
-				return TPromise.as<QuickOpenModel>(new QuickOpenModel(viewResults));
+				return Promise.resolve<QuickOpenModel>(new QuickOpenModel(viewResults));
 			}, error => {
-				this.pendingSearch = null;
-
 				if (!isPromiseCanceledError(error)) {
-					if (error && error[0] && error[0].message) {
-						this.notificationService.error(error[0].message.replace(/[\*_\[\]]/g, '\\$&'));
+					let message: Error | string;
+					if (error.message) {
+						message = error.message.replace(/[\*_\[\]]/g, '\\$&');
 					} else {
-						this.notificationService.error(error);
+						message = error;
 					}
+
+					this.notificationService.error(message);
 				}
 
 				return null;
 			});
-
-			return this.pendingSearch;
 		};
 
 		// Trigger through delayer to prevent accumulation while the user is typing (except when expecting results to come from cache)
-		return this.hasShortResponseTime() ? promiseFactory() : this.searchDelayer.trigger(promiseFactory, this.includeSymbols ? OpenAnythingHandler.SYMBOL_SEARCH_DELAY : OpenAnythingHandler.FILE_SEARCH_DELAY);
+		return this.hasShortResponseTime() ? resultsPromise() : this.searchDelayer.trigger(resultsPromise, OpenAnythingHandler.TYPING_SEARCH_DELAY);
 	}
 
 	hasShortResponseTime(): boolean {
@@ -177,7 +170,7 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 			return null;
 		}
 
-		let range: IRange = null;
+		let range: IRange | null = null;
 
 		// Find Line/Column number from search value using RegExp
 		const patternMatch = OpenAnythingHandler.LINE_COLON_PATTERN.exec(value);
@@ -246,21 +239,11 @@ export class OpenAnythingHandler extends QuickOpenHandler {
 	onClose(canceled: boolean): void {
 		this.isClosed = true;
 
-		// Cancel any pending search
-		this.cancelPendingSearch();
-
 		// Clear Cache
 		this.scorerCache = Object.create(null);
 
 		// Propagate
 		this.openSymbolHandler.onClose(canceled);
 		this.openFileHandler.onClose(canceled);
-	}
-
-	private cancelPendingSearch(): void {
-		if (this.pendingSearch) {
-			this.pendingSearch.cancel();
-			this.pendingSearch = null;
-		}
 	}
 }

@@ -72,7 +72,7 @@ export interface IHttpAuthentication {
 }
 export interface IHdfsOptions {
 	host?: string;
-	port?: string;
+	port?: number;
 	protocol?: string;
 	user?: string;
 	path?: string;
@@ -224,7 +224,7 @@ export class FileSourceFactory {
 		let optionsHost: string = options.host;
 		if (options.host.indexOf(delimeter) > -1) {
 			options.host = options.host.slice(0, options.host.indexOf(delimeter));
-			options.port = optionsHost.replace(options.host + delimeter, '');
+			options.port = Number.parseInt(optionsHost.replace(options.host + delimeter, ''));
 		}
 		return options;
 	}

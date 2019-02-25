@@ -21,6 +21,7 @@ import { bootstrapAngular } from 'sql/services/bootstrap/bootstrapService';
 import { IQueryPlanParams } from 'sql/services/bootstrap/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/parts/queryPlan/queryPlan.component';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 
 declare let QP;
 
@@ -35,9 +36,10 @@ export class QueryPlanEditor extends BaseEditor {
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
 		@IMetadataService private _metadataService: IMetadataService,
 		@IScriptingService private _scriptingService: IScriptingService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IStorageService private storageService: IStorageService
 	) {
-		super(QueryPlanEditor.ID, telemetryService, themeService);
+		super(QueryPlanEditor.ID, telemetryService, themeService, storageService);
 	}
 
 	/**

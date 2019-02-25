@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as assert from 'assert';
+
+// {{SQL CARBON EDIT}} - Remove tests
 
 suite('Editor service', () => {
 	test('basics', function () {

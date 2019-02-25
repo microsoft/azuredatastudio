@@ -28,7 +28,9 @@ import { TreeViewDataProvider } from './treeViewDataProvider';
 import { getContentHeight, getContentWidth } from 'vs/base/browser/dom';
 
 class Root implements ITreeComponentItem {
-	label = 'root';
+	label = {
+		label: 'root'
+	};
 	handle = '0';
 	parentHandle = null;
 	collapsibleState = 2;

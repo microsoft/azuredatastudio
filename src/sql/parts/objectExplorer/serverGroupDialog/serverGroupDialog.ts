@@ -5,7 +5,7 @@
 
 'use strict';
 import 'vs/css!./media/serverGroupDialog';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { Checkbox } from 'vs/base/browser/ui/checkbox/checkbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';

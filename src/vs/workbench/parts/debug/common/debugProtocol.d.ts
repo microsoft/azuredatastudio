@@ -191,7 +191,7 @@ declare module DebugProtocol {
 				Values: 'changed', 'new', 'removed', etc.
 			*/
 			reason: string;
-			/** The breakpoint. */
+			/** The 'id' attribute is used to find the target breakpoint and the other attributes are used as the new values. */
 			breakpoint: Breakpoint;
 		};
 	}
@@ -284,6 +284,8 @@ declare module DebugProtocol {
 		body: {
 			/** The process ID. */
 			processId?: number;
+			/** The process ID of the terminal shell. */
+			shellProcessId?: number;
 		};
 	}
 
@@ -409,7 +411,7 @@ declare module DebugProtocol {
 	}
 
 	/** Disconnect request; value of command field is 'disconnect'.
-		The 'disconnect' request is sent from the client to the debug adapter in order to stop debugging. It asks the debug adapter to disconnect from the debuggee and to terminate the debug adapter. If the debuggee has been started with the 'launch' request, the 'disconnect' request terminates the debuggee. If the 'attach' request was used to connect to the debuggee, 'disconnect' does not terminate the debuggee. This behavior can be controlled with the 'terminateDebuggee' (if supported by the debug adapter).
+		The 'disconnect' request is sent from the client to the debug adapter in order to stop debugging. It asks the debug adapter to disconnect from the debuggee and to terminate the debug adapter. If the debuggee has been started with the 'launch' request, the 'disconnect' request terminates the debuggee. If the 'attach' request was used to connect to the debuggee, 'disconnect' does not terminate the debuggee. This behavior can be controlled with the 'terminateDebuggee' argument (if supported by the debug adapter).
 	*/
 	export interface DisconnectRequest extends Request {
 		// command: 'disconnect';
@@ -418,6 +420,8 @@ declare module DebugProtocol {
 
 	/** Arguments for 'disconnect' request. */
 	export interface DisconnectArguments {
+		/** A value of true indicates that this 'disconnect' request is part of a restart sequence. */
+		restart?: boolean;
 		/** Indicates whether the debuggee should be terminated when the debugger is disconnected.
 			If unspecified, the debug adapter is free to do whatever it thinks is best.
 			A client can only rely on this attribute being properly honored if a debug adapter returns true for the 'supportTerminateDebuggee' capability.
@@ -430,7 +434,7 @@ declare module DebugProtocol {
 	}
 
 	/** Terminate request; value of command field is 'terminate'.
-		The 'terminate' request is sent from the client to the debug adapter in order to give the debuggee a chance to terminate itself.
+		The 'terminate' request is sent from the client to the debug adapter in order to give the debuggee a chance for terminating itself.
 	*/
 	export interface TerminateRequest extends Request {
 		// command: 'terminate';
@@ -439,6 +443,8 @@ declare module DebugProtocol {
 
 	/** Arguments for 'terminate' request. */
 	export interface TerminateArguments {
+		/** A value of true indicates that this 'terminate' request is part of a restart sequence. */
+		restart?: boolean;
 	}
 
 	/** Response to 'terminate' request. This is just an acknowledgement, so no body field is required. */
@@ -1454,7 +1460,7 @@ declare module DebugProtocol {
 
 	/** Information about a Breakpoint created in setBreakpoints or setFunctionBreakpoints. */
 	export interface Breakpoint {
-		/** An optional unique identifier for the breakpoint. */
+		/** An optional identifier for the breakpoint. It is needed if breakpoint events are used to update or remove breakpoints. */
 		id?: number;
 		/** If true breakpoint could be set (but not necessarily at the desired location). */
 		verified: boolean;

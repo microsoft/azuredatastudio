@@ -1,7 +1,7 @@
 [
 	{
 		"c": "from",
-		"t": "source.python keyword.control.flow.python",
+		"t": "source.python keyword.control.import.python",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,
@@ -5072,7 +5072,7 @@
 	},
 	{
 		"c": "*",
-		"t": "source.python meta.function-call.python keyword.operator.unpacking.arguments.python",
+		"t": "source.python meta.function-call.python meta.function-call.arguments.python keyword.operator.unpacking.arguments.python",
 		"r": {
 			"dark_plus": null,
 			"light_plus": null,

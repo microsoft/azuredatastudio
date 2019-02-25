@@ -21,7 +21,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { escape } from 'sql/base/common/strings';
 import * as types from 'vs/base/common/types';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
 import { FilterData } from 'sql/parts/profiler/service/profilerFilter';
 

@@ -2,21 +2,20 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import { localize } from 'vs/nls';
-import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IRequestOptions, IRequestContext } from 'vs/base/node/request';
 import { IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export const IRequestService = createDecorator<IRequestService>('requestService2');
 
 export interface IRequestService {
 	_serviceBrand: any;
 
-	request(options: IRequestOptions): TPromise<IRequestContext>;
+	request(options: IRequestOptions, token: CancellationToken): Promise<IRequestContext>;
 }
 
 export interface IHTTPConfiguration {
@@ -48,6 +47,17 @@ Registry.as<IConfigurationRegistry>(Extensions.Configuration)
 				type: ['null', 'string'],
 				default: null,
 				description: localize('proxyAuthorization', "The value to send as the 'Proxy-Authorization' header for every network request.")
+			},
+			'http.proxySupport': {
+				type: 'string',
+				enum: ['off', 'on', 'override'],
+				enumDescriptions: [
+					localize('proxySupportOff', "Disable proxy support for extensions."),
+					localize('proxySupportOn', "Enable proxy support for extensions."),
+					localize('proxySupportOverride', "Enable proxy support for extensions, override request options."),
+				],
+				default: 'off',
+				description: localize('proxySupport', "Experimental setting: Use the proxy support for extensions.")
 			}
 		}
 	});

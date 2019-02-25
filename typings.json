@@ -17,7 +17,6 @@
     "rxjs": "npm:rxjs/Rx.d.ts"
   },
   "globalDependencies": {
-    "core-js": "registry:dt/core-js#0.9.7+20161130133742",
     "systemjs": "registry:dt/systemjs#0.19.29+20161215140219",
     "underscore": "registry:dt/underscore#1.8.3+20161123125004",
     "zone.js": "npm:zone.js\\dist\\zone.js.d.ts"

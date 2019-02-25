@@ -5,7 +5,7 @@
 'use strict';
 
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -28,7 +28,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		let previewFeaturesEnabled = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled || storageService.get(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN)) {
+		if (previewFeaturesEnabled || storageService.get(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
 		}
 		Promise.all([
@@ -48,7 +48,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 					label: localize('enablePreviewFeatures.yes', "Yes"),
 					run: () => {
 						configurationService.updateValue('workbench.enablePreviewFeatures', true);
-						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
+						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
@@ -59,7 +59,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
 						configurationService.updateValue('workbench.enablePreviewFeatures', false);
-						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true);
+						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					},
 					isSecondary: true
 				}]
