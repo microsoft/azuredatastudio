@@ -10,23 +10,34 @@ import * as vscode from 'vscode';
 
 const localize = nls.loadMessageBundle();
 
+enum TableRowIndex {
+	Type,
+	SourceName,
+	Action,
+	TargetName
+}
+
 export class SchemaCompareResult {
 	private differencesTable: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
 	private editor: sqlops.workspace.ModelViewEditor;
 	private diffEditor: sqlops.DiffEditorComponent;
 	private flexModel: sqlops.FlexContainer;
-	private sourceLabel: sqlops.TextComponent;
-	private targetLabel: sqlops.TextComponent;
 	private noDifferencesLabel: sqlops.TextComponent;
-	public dialogName: string;
+	private webViewComponent: sqlops.WebViewComponent;
+	private sourceDropdown: sqlops.DropDownComponent;
+	private targetDropdown: sqlops.DropDownComponent;
+	private sourceTargetFlexLayout: sqlops.FlexContainer;
+	private switchButton: sqlops.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
+	private switched: boolean;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, private targetEndpointInfo: sqlops.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
-		this.SchemaCompareActionMap[0] = localize('schemaCompare.deleteAction', 'Delete');
-		this.SchemaCompareActionMap[1] = localize('schemaCompare.changeAction', 'Change');
-		this.SchemaCompareActionMap[2] = localize('schemaCompare.addAction', 'Add');
+		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
+		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
+		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
+		this.switched = false;
 
 		this.editor = sqlops.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
@@ -41,19 +52,46 @@ export class SchemaCompareResult {
 				height: 400
 			}).component();
 
+			this.webViewComponent = view.modelBuilder.webView().withProperties({
+				html: '<html> <div style="border:3px; border-style:solid; padding: 1em;">Source</div><div style="border:3px; border-style:solid; padding: 1em;">Target</div></html>'
+			}).component();
+
+			this.sourceDropdown = view.modelBuilder.dropDown().withProperties({
+				values: [sourceName],
+				enabled: false
+			}).component();
+
+			this.targetDropdown = view.modelBuilder.dropDown().withProperties({
+				values: [targetName],
+				enabled: false
+			}).component();
+
+			this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
+				.withProperties({
+					flexFlow: 'column',
+					alignItems: 'stretch',
+					horizontal: true
+				}).component();
+
+			this.switchButton = this.createSwitchButton(view);
+
+			this.sourceTargetFlexLayout.addItem(this.sourceDropdown, { CSSStyles: { 'width': '45%', 'margin': '1em' } });
+			this.sourceTargetFlexLayout.addItem(this.switchButton, { CSSStyles: { 'width': '3em', 'margin': '1em' } });
+			this.sourceTargetFlexLayout.addItem(this.targetDropdown, { CSSStyles: { 'width': '45%', 'margin': '1em' } });
+
 			this.loader = view.modelBuilder.loadingComponent().component();
-			this.sourceLabel = view.modelBuilder.text().component();
-			this.targetLabel = view.modelBuilder.text().component();
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
 				value: localize('schemaCompare.noDifferences', 'No schema differences were found')
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
+			// this.flexModel.addItem(this.webViewComponent);
+			this.flexModel.addItem(this.sourceTargetFlexLayout);
 			this.flexModel.addItem(this.loader);
 			this.flexModel.setLayout({
 				flexFlow: 'column',
-				alignItems: 'stretch',
-				height: '100%'
+				// alignItems: 'stretch',
+				// height: '100%'
 			});
 
 			await view.initializeModel(this.flexModel);
@@ -76,11 +114,6 @@ export class SchemaCompareResult {
 			data: data,
 			columns: [
 				{
-					value: localize('schemaCompare.actionColumn', 'Action'),
-					cssClass: 'align-with-header',
-					width: 30
-				},
-				{
 					value: localize('schemaCompare.typeColumn', 'Type'),
 					cssClass: 'align-with-header',
 					width: 50
@@ -90,23 +123,20 @@ export class SchemaCompareResult {
 					cssClass: 'align-with-header'
 				},
 				{
+					value: localize('schemaCompare.actionColumn', 'Action'),
+					cssClass: 'align-with-header',
+					width: 30
+				},
+				{
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header'
 				}]
 		});
 
-		this.sourceLabel.updateProperties({
-			value: localize('schemaCompare.source', 'Source: {0}', this.sourceName)
-		});
-		this.targetLabel.updateProperties({
-			value: localize('schemaCompare.target', 'Target: {0}', this.targetName)
-		});
-
 		this.loader.loading = false;
 		this.flexModel.removeItem(this.loader);
+		this.switchButton.enabled = true;
 		if (result.differences.length > 0) {
-			this.flexModel.addItem(this.sourceLabel, { flex: '1' });
-			this.flexModel.addItem(this.targetLabel, { flex: '1' });
 			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
 			this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
 		} else {
@@ -115,10 +145,17 @@ export class SchemaCompareResult {
 
 		this.differencesTable.onRowSelected(e => {
 			let difference = result.differences[this.differencesTable.selectedRows[0]];
-			sourceText = difference.sourceScript === null ? '' : difference.sourceScript;
-			targetText = difference.targetScript === null ? '' : difference.targetScript;
+			sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
+			targetText = difference.targetScript === null ? '\n' : difference.targetScript;
+			if(this.switched) {
+				[sourceText, targetText] = [targetText, sourceText];
+			}
 			this.diffEditor.contentLeft = sourceText;
 			this.diffEditor.contentRight = targetText;
+
+			let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
+			const title = localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
+			vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
 		});
 
 		let sourceText = '';
@@ -142,12 +179,44 @@ export class SchemaCompareResult {
 		differences.forEach(difference => {
 			if (difference.differenceType === sqlops.SchemaDifferenceType.Object) {
 				if (difference.sourceValue !== null || difference.targetValue !== null) {
-					data.push([this.SchemaCompareActionMap[difference.updateAction], difference.name, difference.sourceValue, difference.targetValue]);
+					data.push([difference.name, difference.sourceValue, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
 				}
 			}
 		});
 
 		return data;
+	}
+
+	private switchSourceAndTarget() {
+		let differences = this.differencesTable.data;
+		differences.forEach(difference => {
+			this.switched = !this.switched;
+			[difference[TableRowIndex.SourceName], difference[TableRowIndex.TargetName]] = [difference[TableRowIndex.TargetName], difference[TableRowIndex.SourceName]];
+
+			if (difference[TableRowIndex.Action] === this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete]) {
+				difference[TableRowIndex.Action] = this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add];
+			} else if (difference[TableRowIndex.Action] === this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add]) {
+				difference[TableRowIndex.Action] = this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete];
+			}
+		});
+
+		this.differencesTable.updateProperties({ data: differences });
+	}
+
+
+	private createSwitchButton(view: sqlops.ModelView, ): sqlops.ButtonComponent {
+		this.switchButton = view.modelBuilder.button().withProperties({
+			label: '⇄',
+			enabled: false
+		}).component();
+
+		this.switchButton.onDidClick(async (click) => {
+			// switch source and target
+			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
+			this.switchSourceAndTarget();
+		});
+
+		return this.switchButton;
 	}
 
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
