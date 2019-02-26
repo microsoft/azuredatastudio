@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
@@ -17,6 +17,7 @@ export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
 	}
 	public trustedMode: boolean;
+	language: string;
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._languageInfo;
@@ -69,7 +70,7 @@ export class NotebookModelStub implements INotebookModel {
     changeKernel(displayName: string): void {
         throw new Error('Method not implemented.');
     }
-    changeContext(host: string, connection?: IConnectionProfile): Promise<void> {
+    changeContext(host: string, connection?: IConnectionProfile, hideErrorMessage?: boolean): Promise<void> {
         throw new Error('Method not implemented.');
     }
     findCellIndex(cellModel: ICellModel): number {

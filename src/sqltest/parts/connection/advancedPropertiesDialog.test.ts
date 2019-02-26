@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import { OptionsDialog } from 'sql/base/browser/ui/modal/optionsDialog';
+import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
 import * as sqlops from 'sqlops';
 import * as TypeMoq from 'typemoq';

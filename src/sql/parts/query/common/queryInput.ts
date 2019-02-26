@@ -7,7 +7,7 @@ import { TPromise } from 'vs/base/common/winjs.base';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -16,7 +16,7 @@ import { IEditorViewState } from 'vs/editor/common/editorCommon';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/parts/query/common/queryResultsInput';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { IQueryEditorService } from 'sql/parts/query/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 import { ISelectionData, ExecutionPlanOptions } from 'sqlops';
 

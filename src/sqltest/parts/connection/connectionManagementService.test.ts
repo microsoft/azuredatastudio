@@ -100,6 +100,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny())).returns(() => TPromise.as(none));
 
 		connectionStore.setup(x => x.addActiveConnection(TypeMoq.It.isAny())).returns(() => Promise.resolve());
+		connectionStore.setup(x => x.addActiveConnection(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		connectionStore.setup(x => x.saveProfile(TypeMoq.It.isAny())).returns(() => Promise.resolve(connectionProfile));
 		workbenchEditorService.setup(x => x.openEditor(undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => TPromise.as(undefined));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
@@ -149,13 +150,11 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionManagementService = new ConnectionManagementService(
 			undefined,
 			connectionStore.object,
+			undefined,
 			connectionDialogService.object,
 			undefined,
 			undefined,
-			undefined,
 			workbenchEditorService.object,
-			undefined,
-			undefined,
 			undefined,
 			workspaceConfigurationServiceMock.object,
 			undefined,
@@ -164,7 +163,6 @@ suite('SQL ConnectionManagementService tests', () => {
 			editorGroupService.object,
 			undefined,
 			resourceProviderStubMock.object,
-			undefined,
 			undefined,
 			accountManagementService.object
 		);

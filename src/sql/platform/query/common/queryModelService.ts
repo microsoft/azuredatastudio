@@ -28,6 +28,7 @@ import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 const selectionSnippetMaxLen = 100;
 
@@ -89,24 +90,24 @@ export class QueryModelService implements IQueryModelService {
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			TimeElapsedStatusBarItem,
-			statusbar.StatusbarAlignment.RIGHT,
+			StatusbarAlignment.RIGHT,
 			100 /* Should appear to the right of the SQL editor status */
 		));
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			RowCountStatusBarItem,
-			statusbar.StatusbarAlignment.RIGHT,
+			StatusbarAlignment.RIGHT,
 			100 /* Should appear to the right of the SQL editor status */
 		));
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			QueryStatusbarItem,
-			statusbar.StatusbarAlignment.RIGHT,
+			StatusbarAlignment.RIGHT,
 			100 /* High Priority */
 		));
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			SqlFlavorStatusbarItem,
-			statusbar.StatusbarAlignment.RIGHT,
+			StatusbarAlignment.RIGHT,
 			90 /* Should appear to the right of the SQL editor status */
 		));
 

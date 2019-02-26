@@ -26,6 +26,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ResultSerializer } from 'sql/platform/node/resultSerializer';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { URI } from 'vs/base/common/uri';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -113,7 +115,8 @@ export default class QueryRunner extends Disposable {
 		@INotificationService private _notificationService: INotificationService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IInstantiationService private instantiationService: IInstantiationService,
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
 	}
@@ -597,8 +600,7 @@ export default class QueryRunner extends Disposable {
 	}
 
 	private getEolString(): string {
-		const { eol } = this._configurationService.getValue<{ eol: string }>('files');
-		return eol;
+		return this._textResourcePropertiesService.getEOL(URI.parse(this.uri), 'sql');
 	}
 
 	private shouldIncludeHeaders(includeHeaders: boolean): boolean {

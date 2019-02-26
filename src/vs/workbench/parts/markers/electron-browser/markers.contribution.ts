@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import { clipboard } from 'electron';
 import { CommandsRegistry, ICommandHandler } from 'vs/platform/commands/common/commands';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -21,9 +20,14 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { ToggleMarkersPanelAction, ShowProblemsPanelAction } from 'vs/workbench/parts/markers/electron-browser/markersPanelActions';
 import Constants from 'vs/workbench/parts/markers/electron-browser/constants';
 import Messages from 'vs/workbench/parts/markers/electron-browser/messages';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { IMarkersWorkbenchService, MarkersWorkbenchService, ActivityUpdater } from 'vs/workbench/parts/markers/electron-browser/markers';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
-import './markers';
 import './markersFileDecorations';
+
+registerSingleton(IMarkersWorkbenchService, MarkersWorkbenchService, false);
 
 KeybindingsRegistry.registerCommandAndKeybindingRule({
 	id: Constants.MARKER_OPEN_SIDE_ACTION_ID,
@@ -75,6 +79,10 @@ Registry.as<PanelRegistry>(PanelExtensions.Panels).registerPanel(new PanelDescri
 	ToggleMarkersPanelAction.ID
 ));
 
+// workbench
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+workbenchRegistry.registerWorkbenchContribution(ActivityUpdater, LifecyclePhase.Restored);
+
 // actions
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleMarkersPanelAction, ToggleMarkersPanelAction.ID, ToggleMarkersPanelAction.LABEL, {
@@ -123,6 +131,30 @@ registerAction({
 		group: 'navigation'
 	}
 });
+registerAction({
+	id: Constants.FOCUS_PROBLEMS_FROM_FILTER,
+	handler(accessor) {
+		focusProblemsView(accessor.get(IPanelService));
+	},
+	keybinding: {
+		when: Constants.MarkerPanelFilterFocusContextKey,
+		keys: {
+			primary: KeyMod.CtrlCmd | KeyCode.DownArrow
+		},
+	}
+});
+registerAction({
+	id: Constants.MARKERS_PANEL_FOCUS_FILTER,
+	handler(accessor) {
+		focusProblemsFilter(accessor.get(IPanelService));
+	},
+	keybinding: {
+		when: Constants.MarkerPanelFocusContextKey,
+		keys: {
+			primary: KeyMod.CtrlCmd | KeyCode.KEY_F
+		},
+	}
+});
 
 
 function copyMarker(panelService: IPanelService) {
@@ -140,7 +172,7 @@ function copyMessage(panelService: IPanelService) {
 	if (activePanel instanceof MarkersPanel) {
 		const element = (<MarkersPanel>activePanel).getFocusElement();
 		if (element instanceof Marker) {
-			clipboard.writeText(element.raw.message);
+			clipboard.writeText(element.marker.message);
 		}
 	}
 }
@@ -155,12 +187,26 @@ function copyRelatedInformationMessage(panelService: IPanelService) {
 	}
 }
 
+function focusProblemsView(panelService: IPanelService) {
+	const activePanel = panelService.getActivePanel();
+	if (activePanel instanceof MarkersPanel) {
+		activePanel.focus();
+	}
+}
+
+function focusProblemsFilter(panelService: IPanelService) {
+	const activePanel = panelService.getActivePanel();
+	if (activePanel instanceof MarkersPanel) {
+		activePanel.focusFilter();
+	}
+}
+
 interface IActionDescriptor {
 	id: string;
 	handler: ICommandHandler;
 
 	// ICommandUI
-	title: string;
+	title?: string;
 	category?: string;
 	f1?: boolean;
 

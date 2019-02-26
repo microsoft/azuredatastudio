@@ -7,7 +7,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import * as Platform from 'vs/base/common/platform';
-import { StandardMouseWheelEvent } from 'vs/base/browser/mouseEvent';
+import { StandardWheelEvent, IMouseWheelEvent } from 'vs/base/browser/mouseEvent';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { mixin } from 'vs/base/common/objects';
 
@@ -36,15 +36,15 @@ export class MouseWheelSupport implements Slick.Plugin<any> {
 	public init(grid: Slick.Grid<any>): void {
 		this.canvas = grid.getCanvasNode();
 		this.viewport = this.canvas.parentElement;
-		let onMouseWheel = (browserEvent: MouseWheelEvent) => {
-			let e = new StandardMouseWheelEvent(browserEvent);
+		let onMouseWheel = (browserEvent: IMouseWheelEvent) => {
+			let e = new StandardWheelEvent(browserEvent);
 			this._onMouseWheel(e);
 		};
 		this._disposables.push(DOM.addDisposableListener(this.viewport, 'mousewheel', onMouseWheel));
 		this._disposables.push(DOM.addDisposableListener(this.viewport, 'DOMMouseScroll', onMouseWheel));
 	}
 
-	private _onMouseWheel(e: StandardMouseWheelEvent) {
+	private _onMouseWheel(e: StandardWheelEvent) {
 		if (e.deltaY || e.deltaX) {
 			let deltaY = e.deltaY * this.options.scrollSpeed;
 			let deltaX = e.deltaX * this.options.scrollSpeed;

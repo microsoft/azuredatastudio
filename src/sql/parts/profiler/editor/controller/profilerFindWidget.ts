@@ -88,7 +88,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _resizeSash: Sash;
 
-	private searchTimeoutHandle: number;
+	private searchTimeoutHandle: NodeJS.Timer;
 
 	constructor(
 		tableController: ITableController,
@@ -329,13 +329,13 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	private _onFindInputKeyDown(e: IKeyboardEvent): void {
 
 		if (e.equals(KeyCode.Enter)) {
-			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().done(null, onUnexpectedError);
+			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			e.preventDefault();
 			return;
 		}
 
 		if (e.equals(KeyMod.Shift | KeyCode.Enter)) {
-			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().done(null, onUnexpectedError);
+			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			e.preventDefault();
 			return;
 		}
@@ -376,7 +376,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _buildFindPart(): HTMLElement {
 		// Find input
-		this._findInput = this._register(new FindInput(null, this._contextViewProvider, {
+		this._findInput = this._register(new FindInput(null, this._contextViewProvider, true, {
 			width: FIND_INPUT_AREA_WIDTH,
 			label: NLS_FIND_INPUT_LABEL,
 			placeholder: NLS_FIND_INPUT_PLACEHOLDER,
@@ -434,7 +434,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			label: NLS_PREVIOUS_MATCH_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.PreviousMatchFindAction),
 			className: 'previous',
 			onTrigger: () => {
-				this._tableController.getAction(ACTION_IDS.FIND_PREVIOUS).run().done(null, onUnexpectedError);
+				this._tableController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
 			},
 			onKeyDown: (e) => { }
 		}));
@@ -444,7 +444,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			label: NLS_NEXT_MATCH_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.NextMatchFindAction),
 			className: 'next',
 			onTrigger: () => {
-				this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().done(null, onUnexpectedError);
+				this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			},
 			onKeyDown: (e) => { }
 		}));

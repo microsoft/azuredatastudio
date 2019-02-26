@@ -2,17 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import 'vs/css!./media/editorpicker';
-import { TPromise } from 'vs/base/common/winjs.base';
 import * as nls from 'vs/nls';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IIconLabelValueOptions } from 'vs/base/browser/ui/iconLabel/iconLabel';
 import { IAutoFocus, Mode, IEntryRunContext, IQuickNavigateConfiguration, IModel } from 'vs/base/parts/quickopen/common/quickOpen';
 import { QuickOpenModel, QuickOpenEntry, QuickOpenEntryGroup, QuickOpenItemAccessor } from 'vs/base/parts/quickopen/browser/quickOpenModel';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { getIconClasses } from 'vs/workbench/browser/labels';
+import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { QuickOpenHandler } from 'vs/workbench/browser/quickopen';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -20,6 +18,7 @@ import { IEditorGroupsService, IEditorGroup, EditorsOrder, GroupsOrder } from 'v
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { EditorInput, toResource } from 'vs/workbench/common/editor';
 import { compareItemsByScore, scoreItem, ScorerCache, prepareQuery } from 'vs/base/parts/quickopen/common/quickOpenScorer';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 export class EditorPickerEntry extends QuickOpenEntryGroup {
 
@@ -91,10 +90,10 @@ export abstract class BaseEditorPicker extends QuickOpenHandler {
 		this.scorerCache = Object.create(null);
 	}
 
-	getResults(searchValue: string): TPromise<QuickOpenModel> {
+	getResults(searchValue: string, token: CancellationToken): Thenable<QuickOpenModel> {
 		const editorEntries = this.getEditorEntries();
 		if (!editorEntries.length) {
-			return TPromise.as(null);
+			return Promise.resolve(null);
 		}
 
 		// Prepare search for scoring
@@ -117,7 +116,7 @@ export abstract class BaseEditorPicker extends QuickOpenHandler {
 
 		// Sorting
 		if (query.value) {
-			const groups = this.editorGroupService.getGroups(GroupsOrder.CREATION_TIME);
+			const groups = this.editorGroupService.getGroups(GroupsOrder.GRID_APPEARANCE);
 			entries.sort((e1, e2) => {
 				if (e1.group !== e2.group) {
 					return groups.indexOf(e1.group) - groups.indexOf(e2.group); // older groups first
@@ -139,7 +138,7 @@ export abstract class BaseEditorPicker extends QuickOpenHandler {
 			});
 		}
 
-		return TPromise.as(new QuickOpenModel(entries));
+		return Promise.resolve(new QuickOpenModel(entries));
 	}
 
 	onClose(canceled: boolean): void {
@@ -206,7 +205,7 @@ export class AllEditorsPicker extends BaseEditorPicker {
 	protected getEditorEntries(): EditorPickerEntry[] {
 		const entries: EditorPickerEntry[] = [];
 
-		this.editorGroupService.getGroups(GroupsOrder.CREATION_TIME).forEach(group => {
+		this.editorGroupService.getGroups(GroupsOrder.GRID_APPEARANCE).forEach(group => {
 			group.editors.forEach(editor => {
 				entries.push(this.instantiationService.createInstance(EditorPickerEntry, editor, group));
 			});

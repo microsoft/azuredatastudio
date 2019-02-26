@@ -5,7 +5,7 @@
 
 import 'vs/css!sql/parts/query/editor/media/queryActions';
 import * as nls from 'vs/nls';
-import { Builder, $ } from 'vs/base/browser/builder';
+import { Builder, $ } from 'sql/base/browser/builder';
 import { Dropdown } from 'sql/base/browser/ui/editableDropdown/dropdown';
 import { Action, IActionItem, IActionRunner } from 'vs/base/common/actions';
 import { EventEmitter } from 'sql/base/common/eventEmitter';
@@ -13,7 +13,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { TPromise } from 'vs/base/common/winjs.base';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/common/theme/styler';
+import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 
 import { ISelectionData } from 'sqlops';
 import {

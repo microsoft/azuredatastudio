@@ -36,7 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { tableBackground, cellBackground, cellBorderColor } from 'sql/common/theme/colors';
+import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
@@ -859,11 +859,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 	}
 
-	protected getTableActions(): TPromise<IAction[]> {
+	protected getTableActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(EditJobAction));
 		actions.push(this._instantiationService.createInstance(DeleteJobAction));
-		return TPromise.as(actions);
+		return actions;
 	}
 
 	protected convertStepsToStepInfos(steps: sqlops.AgentJobStep[], job: sqlops.AgentJobInfo): sqlops.AgentJobStepInfo[] {

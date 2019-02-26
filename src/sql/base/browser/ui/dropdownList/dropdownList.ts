@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-import 'vs/css!sql/base/browser/ui/dropdownList/media/dropdownList';
+import 'vs/css!./media/dropdownList';
 import * as DOM from 'vs/base/browser/dom';
 import { Dropdown, IDropdownOptions } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -15,10 +15,10 @@ import { EventType as GestureEventType } from 'vs/base/browser/touch';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/common/theme/styler';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 export interface IDropdownStyles {
 	backgroundColor?: Color;

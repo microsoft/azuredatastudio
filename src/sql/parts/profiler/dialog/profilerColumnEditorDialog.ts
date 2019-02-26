@@ -5,8 +5,8 @@
 'use strict';
 import 'vs/css!sql/parts/profiler/media/profiler';
 
-import { Modal } from 'sql/base/browser/ui/modal/modal';
-import { attachModalDialogStyler } from 'sql/common/theme/styler';
+import { Modal } from 'sql/workbench/browser/modal/modal';
+import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { ProfilerInput } from 'sql/parts/profiler/editor/profilerInput';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
@@ -14,7 +14,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IPartService } from 'vs/workbench/services/part/common/partService';
 import * as nls from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { SelectBox } from 'vs/base/browser/ui/selectBox/selectBox';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';

@@ -584,10 +584,10 @@ electron-download@^3.0.1:
     semver "^5.3.0"
     sumchecker "^1.2.0"
 
-electron@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/electron/-/electron-2.0.6.tgz#8e5c1bd2ebc08fa7a6ee906de3753c1ece9d7300"
-  integrity sha512-1UHBWHF2EMjjVyTvcdcUBmISnoxElY4cUgkFVslw5pM1HxTVzi2vev+8NBohdLLFGbIbPyNua5vcBg+bxo1rqw==
+electron@^2.0.12:
+  version "2.0.12"
+  resolved "https://registry.yarnpkg.com/electron/-/electron-2.0.12.tgz#04b11ef3246cd2a5839a8f16314051341dc5c449"
+  integrity sha512-mw8hoM/GPtFPP8FGiJcVNe8Rx63YJ7O8bf7McQj21HAvrXGAwReGFrpIe5xN6ec10fDXNSNyfzRucjFXtOtLcg==
   dependencies:
     "@types/node" "^8.0.24"
     electron-download "^3.0.1"
@@ -2132,10 +2132,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@2.5.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.5.2.tgz#038a95f7d9bbb420b1bf35ba31d4c5c1dd3ffe34"
-  integrity sha1-A4qV99m7tCCxvzW6MdTFwd0//jQ=
+typescript@2.9.2:
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
+  integrity sha512-Gr4p6nFNaoufRIY4NMdpQRNmgxVIGMs4Fcu/ujdYk3nAZqk7supzBE9idmvfZIlH/Cuj//dvi+019qEue9lV0w==
 
 uid-number@^0.0.6:
   version "0.0.6"

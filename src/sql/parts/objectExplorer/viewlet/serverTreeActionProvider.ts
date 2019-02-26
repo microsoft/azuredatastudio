@@ -59,29 +59,29 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	/**
 	 * Return actions given an element in the tree
 	 */
-	public getActions(tree: ITree, element: any): TPromise<IAction[]> {
+	public getActions(tree: ITree, element: any): IAction[] {
 		if (element instanceof ConnectionProfile) {
-			return TPromise.as(this.getConnectionActions(tree, element));
+			return this.getConnectionActions(tree, element);
 		}
 		if (element instanceof ConnectionProfileGroup) {
-			return TPromise.as(this.getConnectionProfileGroupActions(tree, element));
+			return this.getConnectionProfileGroupActions(tree, element);
 		}
 		if (element instanceof TreeNode) {
-			return TPromise.as(this.getObjectExplorerNodeActions({
+			return this.getObjectExplorerNodeActions({
 				tree: tree,
 				profile: element.getConnectionProfile(),
 				treeNode: element
-			}));
+			});
 		}
 
-		return TPromise.as([]);
+		return [];
 	}
 
 	public hasSecondaryActions(tree: ITree, element: any): boolean {
 		return false;
 	}
 
-	public getSecondaryActions(tree: ITree, element: any): TPromise<IAction[]> {
+	public getSecondaryActions(tree: ITree, element: any): IAction[] {
 		return super.getSecondaryActions(tree, element);
 	}
 

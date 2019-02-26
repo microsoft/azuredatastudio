@@ -9,7 +9,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { attachTableStyler } from 'sql/common/theme/styler';
+import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IProfilerStateChangedEvent } from './profilerState';
 import { ProfilerTableEditor, ProfilerTableViewState } from './controller/profilerTableEditor';
 import * as Actions from 'sql/parts/profiler/contrib/profilerActions';
@@ -17,12 +17,11 @@ import { CONTEXT_PROFILER_EDITOR, PROFILER_TABLE_COMMAND_SEARCH } from './interf
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { textFormatter } from 'sql/parts/grid/services/sharedServices';
 import { ProfilerResourceEditor } from './profilerResourceEditor';
-
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { ITextModel } from 'vs/editor/common/model';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
@@ -38,6 +37,7 @@ import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { DARK, HIGH_CONTRAST } from 'vs/platform/theme/common/themeService';
 import { IEditorGroupsService } from 'vs/workbench/services/group/common/editorGroupsService';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IView, SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import * as DOM from 'vs/base/browser/dom';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
@@ -158,9 +158,10 @@ export class ProfilerEditor extends BaseEditor {
 		@IProfilerService private _profilerService: IProfilerService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
-		@IEditorService editorService: IEditorService
+		@IEditorService editorService: IEditorService,
+		@IStorageService storageService: IStorageService
 	) {
-		super(ProfilerEditor.ID, telemetryService, themeService);
+		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
 		if (editorService) {
@@ -462,7 +463,8 @@ export class ProfilerEditor extends BaseEditor {
 					seedSearchStringFromGlobalClipboard: false,
 					seedSearchStringFromSelection: (controller.getState().searchString.length === 0),
 					shouldFocus: FindStartFocusAction.FocusFindInput,
-					shouldAnimate: true
+					shouldAnimate: true,
+					updateSearchScope: false
 				});
 			}
 		} else {

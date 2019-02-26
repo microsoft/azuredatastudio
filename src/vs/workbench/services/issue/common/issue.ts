@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
-import { TPromise } from 'vs/base/common/winjs.base';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IssueReporterData } from 'vs/platform/issue/common/issue';
 
@@ -13,6 +10,6 @@ export const IWorkbenchIssueService = createDecorator<IWorkbenchIssueService>('w
 
 export interface IWorkbenchIssueService {
 	_serviceBrand: any;
-	openReporter(dataOverrides?: Partial<IssueReporterData>): TPromise<void>;
-	openProcessExplorer(): TPromise<void>;
+	openReporter(dataOverrides?: Partial<IssueReporterData>): Thenable<void>;
+	openProcessExplorer(): Thenable<void>;
 }

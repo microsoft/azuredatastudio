@@ -5,14 +5,13 @@
 
 import { IThemable } from 'vs/platform/theme/common/styler';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Dimension, EventType, $, addDisposableListener } from 'vs/base/browser/dom';
-import { $ as qb } from 'vs/base/browser/builder';
+import * as DOM from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import './panelStyles';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export interface IPanelStyles {
 }
@@ -23,7 +22,7 @@ export interface IPanelOptions {
 
 export interface IPanelView {
 	render(container: HTMLElement): void;
-	layout(dimension: Dimension): void;
+	layout(dimension: DOM.Dimension): void;
 	remove?(): void;
 }
 
@@ -35,7 +34,9 @@ export interface IPanelTab {
 
 interface IInternalPanelTab extends IPanelTab {
 	header: HTMLElement;
+	disposables: IDisposable[];
 	label: HTMLElement;
+	body: HTMLElement;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -53,7 +54,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 	private body: HTMLElement;
 	private parent: HTMLElement;
 	private _actionbar: ActionBar;
-	private _currentDimensions: Dimension;
+	private _currentDimensions: DOM.Dimension;
 	private _collapsed = false;
 	private _headerVisible: boolean;
 
@@ -64,14 +65,14 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	constructor(container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
-		this.parent = $('.tabbedPanel');
+		this.parent = DOM.$('.tabbedPanel');
 		container.appendChild(this.parent);
-		this.header = $('.composite.title');
-		this.tabList = $('.tabList');
+		this.header = DOM.$('.composite.title');
+		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
 		this.tabList.style.height = this.headersize + 'px';
 		this.header.appendChild(this.tabList);
-		let actionbarcontainer = $('.title-actions');
+		let actionbarcontainer = DOM.$('.title-actions');
 		this._actionbar = new ActionBar(actionbarcontainer);
 		this.header.appendChild(actionbarcontainer);
 		if (options.showHeaderWhenSingleView) {
@@ -80,7 +81,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 		} else {
 			this._headerVisible = false;
 		}
-		this.body = $('.tabBody');
+		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
 		this.body.setAttribute('tabindex', '0');
 		this.parent.appendChild(this.body);
@@ -99,6 +100,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	public pushTab(tab: IPanelTab): PanelTabIdentifier {
 		let internalTab = tab as IInternalPanelTab;
+		internalTab.disposables = [];
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab);
 		if (!this._shownTab) {
@@ -121,24 +123,24 @@ export class TabbedPanel extends Disposable implements IThemable {
 	}
 
 	private _createTab(tab: IInternalPanelTab): void {
-		let tabHeaderElement = $('.tab-header');
+		let tabHeaderElement = DOM.$('.tab-header');
 		tabHeaderElement.setAttribute('tabindex', '0');
 		tabHeaderElement.setAttribute('role', 'tab');
 		tabHeaderElement.setAttribute('aria-selected', 'false');
 		tabHeaderElement.setAttribute('aria-controls', tab.identifier);
-		let tabElement = $('.tab');
+		let tabElement = DOM.$('.tab');
 		tabHeaderElement.appendChild(tabElement);
-		let tabLabel = $('a.tabLabel');
+		let tabLabel = DOM.$('a.tabLabel');
 		tabLabel.innerText = tab.title;
 		tabElement.appendChild(tabLabel);
-		addDisposableListener(tabHeaderElement, EventType.CLICK, e => this.showTab(tab.identifier));
-		addDisposableListener(tabHeaderElement, EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => this.showTab(tab.identifier)));
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.showTab(tab.identifier);
 				e.stopImmediatePropagation();
 			}
-		});
+		}));
 		this.tabList.appendChild(tabHeaderElement);
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
@@ -150,33 +152,44 @@ export class TabbedPanel extends Disposable implements IThemable {
 		}
 
 		if (this._shownTab) {
-			qb(this._tabMap.get(this._shownTab).label).removeClass('active');
-			qb(this._tabMap.get(this._shownTab).header).removeClass('active');
+			DOM.removeClass(this._tabMap.get(this._shownTab).label, 'active');
+			DOM.removeClass(this._tabMap.get(this._shownTab).header, 'active');
 			this._tabMap.get(this._shownTab).header.setAttribute('aria-selected', 'false');
+		}
+
+		let prevTab = this._tabMap.get(this._shownTab);
+		if (prevTab) {
+			prevTab.body.remove();
 		}
 
 		this._shownTab = id;
 		this.tabHistory.push(id);
-		qb(this.body).empty();
 		let tab = this._tabMap.get(this._shownTab);
+		if (!tab.body) {
+			tab.body = DOM.$('.tab-container');
+			tab.body.style.width = '100%';
+			tab.body.style.height = '100%';
+			tab.view.render(tab.body);
+		}
+		this.body.appendChild(tab.body);
 		this.body.setAttribute('aria-labelledby', tab.identifier);
-		qb(tab.label).addClass('active');
-		qb(tab.header).addClass('active');
+		DOM.addClass(tab.label, 'active');
+		DOM.addClass(tab.header, 'active');
 		tab.header.setAttribute('aria-selected', 'true');
-		tab.view.render(this.body);
 		this._onTabChange.fire(id);
 		if (this._currentDimensions) {
-			this._layoutCurrentTab(new Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
+			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {
 		let actualTab = this._tabMap.get(tab);
-		qb(actualTab.header).destroy();
 		if (actualTab.view.remove) {
 			actualTab.view.remove();
 		}
-		qb(this._tabMap.get(tab).header).destroy();
+		actualTab.header.remove();
+		actualTab.body.remove();
+		dispose(actualTab.disposables);
 		this._tabMap.delete(tab);
 		if (this._shownTab === tab) {
 			this._shownTab = undefined;
@@ -204,7 +217,7 @@ export class TabbedPanel extends Disposable implements IThemable {
 
 	}
 
-	public layout(dimension: Dimension): void {
+	public layout(dimension: DOM.Dimension): void {
 		if (dimension) {
 			this._currentDimensions = dimension;
 			this.parent.style.height = dimension.height + 'px';
@@ -213,13 +226,16 @@ export class TabbedPanel extends Disposable implements IThemable {
 			this.body.style.width = dimension.width + 'px';
 			const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
 			this.body.style.height = bodyHeight + 'px';
-			this._layoutCurrentTab(new Dimension(dimension.width, bodyHeight));
+			this._layoutCurrentTab(new DOM.Dimension(dimension.width, bodyHeight));
 		}
 	}
 
-	private _layoutCurrentTab(dimension: Dimension): void {
+	private _layoutCurrentTab(dimension: DOM.Dimension): void {
 		if (this._shownTab) {
-			this._tabMap.get(this._shownTab).view.layout(dimension);
+			let tab = this._tabMap.get(this._shownTab);
+			tab.body.style.width = dimension.width + 'px';
+			tab.body.style.height = dimension.height + 'px';
+			tab.view.layout(dimension);
 		}
 	}
 

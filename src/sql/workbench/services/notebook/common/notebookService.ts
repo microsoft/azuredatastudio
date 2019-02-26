@@ -9,14 +9,14 @@ import * as sqlops from 'sqlops';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IBootstrapParams } from 'sql/services/bootstrap/bootstrapService';
 import { RenderMimeRegistry } from 'sql/parts/notebook/outputs/registry';
 import { ModelFactory } from 'sql/parts/notebook/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/parts/notebook/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel } from 'sql/parts/notebook/models/modelInterfaces';
+import { ICellModel, INotebookModel, ILanguageMagic } from 'sql/parts/notebook/models/modelInterfaces';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -35,6 +35,7 @@ export interface INotebookService {
 
 	readonly isRegistrationComplete: boolean;
 	readonly registrationComplete: Promise<void>;
+	readonly languageMagics: ILanguageMagic[];
 	/**
 	 * Register a metadata provider
 	 */

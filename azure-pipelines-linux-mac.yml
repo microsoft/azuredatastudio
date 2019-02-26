@@ -12,9 +12,13 @@ steps:
   displayName: 'preinstall'
 
 - script: |
-    export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:99.0
-    sh -e /etc/init.d/xvfb start
-    sleep 3
+    export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
+    sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+    sudo chmod +x /etc/init.d/xvfb
+    sudo update-rc.d xvfb defaults
+    sudo service xvfb start
+    # sh -e /etc/init.d/xvfb start
+    # sleep 3
   displayName: 'Linux preinstall'
   condition: eq(variables['Agent.OS'], 'Linux')
 
@@ -23,13 +27,13 @@ steps:
   displayName:  'Install'
 
 - script: |
-    node_modules/.bin/gulp electron --silent
-    node_modules/.bin/gulp compile --silent --max_old_space_size=4096
-    node_modules/.bin/gulp optimize-vscode --silent --max_old_space_size=4096
+    node_modules/.bin/gulp electron
+    node_modules/.bin/gulp compile --max_old_space_size=4096
+    node_modules/.bin/gulp optimize-vscode --max_old_space_size=4096
   displayName: 'Scripts'
 
 - script: |
-    ./scripts/test.sh --reporter mocha-junit-reporter
+    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
   displayName: 'Tests'
 
 - task: PublishTestResults@2

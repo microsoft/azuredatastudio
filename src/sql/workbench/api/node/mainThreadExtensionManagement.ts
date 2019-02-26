@@ -8,7 +8,8 @@ import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbenc
 import { IExtHostContext } from 'vs/workbench/api/node/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/electron-browser/extHostCustomers';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { URI } from 'vs/base/common/uri';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
 export class MainThreadExtensionManagement implements MainThreadExtensionManagementShape {
@@ -27,6 +28,6 @@ export class MainThreadExtensionManagement implements MainThreadExtensionManagem
 	}
 
 	public $install(vsixPath: string): Thenable<string> {
-		return this._extensionService.install(vsixPath).then((value: void) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
+		return this._extensionService.install(URI.parse(vsixPath)).then((value: IExtensionIdentifier) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
 	}
 }

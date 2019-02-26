@@ -57,3 +57,12 @@ export function countToArray(fromOrTo: number, to?: number): number[] {
 
 	return result;
 }
+// {{END SQL CARBON EDIT}}
+
+export class Counter {
+	private _next = 0;
+
+	getNext(): number {
+		return this._next++;
+	}
+}

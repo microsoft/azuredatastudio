@@ -20,9 +20,9 @@ const localize = nls.loadMessageBundle();
 
 export class FlatFileWizard {
 	private readonly provider: FlatFileProvider;
-	private wizard: sqlops.window.modelviewdialog.Wizard;
+	private wizard: sqlops.window.Wizard;
 
-	private importAnotherFileButton: sqlops.window.modelviewdialog.Button;
+	private importAnotherFileButton: sqlops.window.Button;
 
 	constructor(provider: FlatFileProvider) {
 		this.provider = provider;
@@ -46,11 +46,11 @@ export class FlatFileWizard {
 			return;
 		}
 
-		this.wizard = sqlops.window.modelviewdialog.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
-		let page1 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page1Name', 'Specify Input File'));
-		let page2 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page2Name', 'Preview Data'));
-		let page3 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page3Name', 'Modify Columns'));
-		let page4 = sqlops.window.modelviewdialog.createWizardPage(localize('flatFileImport.page4Name', 'Summary'));
+		this.wizard = sqlops.window.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
+		let page1 = sqlops.window.createWizardPage(localize('flatFileImport.page1Name', 'Specify Input File'));
+		let page2 = sqlops.window.createWizardPage(localize('flatFileImport.page2Name', 'Preview Data'));
+		let page3 = sqlops.window.createWizardPage(localize('flatFileImport.page3Name', 'Modify Columns'));
+		let page4 = sqlops.window.createWizardPage(localize('flatFileImport.page4Name', 'Summary'));
 
 		let fileConfigPage: FileConfigPage;
 
@@ -86,7 +86,7 @@ export class FlatFileWizard {
 		});
 
 
-		this.importAnotherFileButton = sqlops.window.modelviewdialog.createButton(localize('flatFileImport.importNewFile', 'Import new file'));
+		this.importAnotherFileButton = sqlops.window.createButton(localize('flatFileImport.importNewFile', 'Import new file'));
 		this.importAnotherFileButton.onClick(() => {
 			//TODO replace this with proper cleanup for all the pages
 			this.wizard.close();
@@ -129,7 +129,7 @@ export class FlatFileWizard {
 		this.importAnotherFileButton.hidden = !visibility;
 	}
 
-	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.modelviewdialog.WizardPageChangeInfo) => boolean) {
+	public registerNavigationValidator(validator: (pageChangeInfo: sqlops.window.WizardPageChangeInfo) => boolean) {
 		this.wizard.registerNavigationValidator(validator);
 	}
 

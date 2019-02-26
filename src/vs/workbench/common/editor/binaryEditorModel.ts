@@ -2,14 +2,12 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import { TPromise } from 'vs/base/common/winjs.base';
 import { EditorModel } from 'vs/workbench/common/editor';
-import URI from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { IFileService } from 'vs/platform/files/common/files';
 import { Schemas } from 'vs/base/common/network';
-import { DataUri } from 'vs/workbench/common/resources';
+import { DataUri } from 'vs/base/common/resources';
 
 /**
  * An editor model that just represents a resource that can be loaded.
@@ -76,7 +74,7 @@ export class BinaryEditorModel extends EditorModel {
 		return this.etag;
 	}
 
-	load(): TPromise<EditorModel> {
+	load(): Thenable<EditorModel> {
 
 		// Make sure to resolve up to date stat for file resources
 		if (this.fileService.canHandleResource(this.resource)) {
@@ -88,6 +86,6 @@ export class BinaryEditorModel extends EditorModel {
 			});
 		}
 
-		return TPromise.wrap(this);
+		return Promise.resolve(this);
 	}
 }

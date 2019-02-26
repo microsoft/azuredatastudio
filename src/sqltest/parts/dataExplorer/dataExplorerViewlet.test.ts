@@ -15,7 +15,7 @@ suite('Data Explorer Viewlet', () => {
 	class DataExplorerTestViewlet extends Viewlet {
 
 		constructor() {
-			super('dataExplorer', null, null, null);
+			super('dataExplorer', null, null, null, null, null);
 		}
 
 		public layout(dimension: any): void {

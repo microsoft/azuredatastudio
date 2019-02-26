@@ -10,7 +10,7 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 
 import { Dimension } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { Builder } from 'vs/base/browser/builder';
+import { Builder } from 'sql/base/browser/builder';
 import { dispose, Disposable } from 'vs/base/common/lifecycle';
 
 export class QueryPlanState {
