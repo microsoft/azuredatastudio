@@ -2,5 +2,5 @@
     daysAfterClose: 45,
     daysSinceLastUpdate: 3,
     ignoredLabels: [],
-    perform: true
+    perform: false
 }
