@@ -36,7 +36,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		return Promise.all([clusterPortsPromise, containerRegistryPromise]).then(() => {
 			let formBuilder = view.modelBuilder.formContainer();
 
-			//User settings
+			// User settings
 			let adminUserNameInput = this.createInputWithLabel(view, {
 				label: localize('bdc-create.AdminUsernameText', 'Admin username'),
 				isRequiredField: true,
@@ -116,7 +116,6 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			});
 
 			// Container Registry Settings
-
 			const registryUserNamePasswordHintText = localize('bdc-create.RegistryUserNamePasswordHintText', 'only required for private registries');
 			let registryInput = this.createInputWithLabel(view, {
 				label: localize('bdc-create.RegistryText', 'Registry'),
