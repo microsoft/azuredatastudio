@@ -24,6 +24,10 @@ import { ObjectExplorerActionsContext } from 'sql/parts/objectExplorer/viewlet/o
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { ConnectionViewletPanel } from 'sql/parts/dataExplorer/objectExplorer/connectionViewlet/connectionViewletPanel';
+import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 
 export class RefreshAction extends Action {
 
@@ -379,6 +383,44 @@ export class DeleteConnectionAction extends Action {
 		return TPromise.as(true);
 	}
 }
+
+
+class DisconnectProfileAction extends Action {
+
+	constructor(
+		@IConnectionManagementService private connectionManagementService: ConnectionManagementService
+	) {
+		super(DisconnectConnectionAction.ID);
+	}
+	run(profile: IConnectionProfile): Promise<boolean> {
+		if (!profile) {
+			return Promise.resolve(true);
+		}
+		if (this.connectionManagementService.isProfileConnected(profile)) {
+			return this.connectionManagementService.disconnect(profile).then(() => {
+				return true;
+			});
+		} else {
+			return Promise.resolve(true);
+		}
+	}
+}
+
+CommandsRegistry.registerCommand({
+	id: DisconnectConnectionAction.ID,
+	handler: (accessor, profile: IConnectionProfile) => {
+		accessor.get(IInstantiationService).createInstance(DisconnectProfileAction).run(profile);
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 4,
+	command: {
+		id: DisconnectConnectionAction.ID,
+		title: DisconnectConnectionAction.LABEL
+	}
+});
 
 /**
  * Action to clear search results
