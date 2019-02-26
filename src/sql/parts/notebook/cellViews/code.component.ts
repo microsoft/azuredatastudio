@@ -154,7 +154,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private isSqlCodeCell() {
-		return this._model.defaultKernel.display_name === notebookConstants.SQL
+		return this._model
+			&& this._model.defaultKernel
+			&& this._model.defaultKernel.display_name === notebookConstants.SQL
 			&& this.cellModel.cellType === CellTypes.Code
 			&& this.cellModel.cellUri;
 	}
