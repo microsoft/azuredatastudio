@@ -39,6 +39,12 @@ We would like to thank all our users who raised issues, and in particular the fo
 *	flyfishingdba for Add square brackets for ms_foreachdb call (#1023)
 *	Peter-Schneider for Changed the stored procedure call to work on case sensitive instances (#1809)
 
+## What's new in Server Reports v1.5?
+* Add VDI_CLIENT_OTHER to the ignore list in the script used by the wait counts widget
+
+## What's new in Server Reports v1.4?
+* Add PREEMPTIVE_OS_FLUSHFILEBUFFERS to the ignore list in the script used by the wait counts widget
+
 ## What's new in Server Reports v1.3?
 * Changed the stored procedure call to work on case sensitive instances
 
