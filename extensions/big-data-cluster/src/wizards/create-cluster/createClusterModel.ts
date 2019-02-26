@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IKubeConfigParser } from '../../data/kubeConfigParser';
-import { ClusterInfo, TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo } from '../../interfaces';
-import { getContexts, KubectlContext }  from '../../kubectl/kubectlUtils';
+import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
+import { getContexts, KubectlContext } from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import * as nls from 'vscode-nls';
 
@@ -16,7 +15,7 @@ export class CreateClusterModel {
 
 	private _tmp_tools_installed: boolean = false;
 
-	constructor(private _kubectl : Kubectl) {
+	constructor(private _kubectl: Kubectl) {
 	}
 
 	public async loadClusters(): Promise<KubectlContext[]> {
@@ -40,8 +39,8 @@ export class CreateClusterModel {
 	public getDefaultContainerRegistryInfo(): Thenable<ContainerRegistryInfo> {
 		let promise = new Promise<ContainerRegistryInfo>(resolve => {
 			resolve({
-				registry: 'http://repo.corp.microsoft.com/',
-				repository: 'aris-p-master-dsmain-standard',
+				registry: 'private-repo.microsoft.com',
+				repository: 'mssql-private-preview',
 				imageTag: 'latest'
 			});
 		});
@@ -74,19 +73,19 @@ export class CreateClusterModel {
 
 	public getRequiredToolStatus(): Thenable<ToolInfo[]> {
 		let kubeCtl = {
-			name: 'KUBECTL',
-			description: 'KUBECTL',
-			isInstalled: true
+			name: 'kubectl',
+			description: 'Tool used for managing the Kubernetes cluster',
+			status: ToolInstallationStatus.Installed
 		};
 		let mssqlCtl = {
-			name: 'MSSQLCTL',
-			description: 'MSSQLCTL',
-			isInstalled: true
+			name: 'mssqlctl',
+			description: 'Command-line tool for installing and managing the SQL Server big data cluster',
+			status: ToolInstallationStatus.Installed
 		};
 		let azureCli = {
-			name: 'AzureCLI',
-			description: 'AzureCLI',
-			isInstalled: this._tmp_tools_installed
+			name: 'Azure CLI',
+			description: 'Tool used for managing Azure services',
+			status: this._tmp_tools_installed ? ToolInstallationStatus.Installed : ToolInstallationStatus.NotInstalled
 		};
 		let promise = new Promise<ToolInfo[]>(resolve => {
 			setTimeout(() => {
