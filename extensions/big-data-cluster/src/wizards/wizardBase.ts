@@ -6,19 +6,40 @@
 
 import * as sqlops from 'sqlops';
 import { ExtensionContext } from 'vscode';
+import { WizardPageBase } from './wizardPageBase';
 
-export abstract class WizardBase<T> {
+export abstract class WizardBase<T,W> {
 
-	protected wizard: sqlops.window.Wizard;
+	public wizardObject: sqlops.window.Wizard;
+	private customButtons: sqlops.window.Button[];
+	private pages: WizardPageBase<W>[];
 
 	constructor(public model: T, public context: ExtensionContext, private title: string) {
+		this.customButtons = [];
 	}
 
 	public open(): Thenable<void> {
-		this.wizard = sqlops.window.createWizard(this.title);
+		this.wizardObject = sqlops.window.createWizard(this.title);
 		this.initialize();
-		return this.wizard.open();
+		this.wizardObject.customButtons = this.customButtons;
+		this.wizardObject.onPageChanged((e) => {
+			let previousPage = this.pages[e.lastPage];
+			let newPage = this.pages[e.newPage];
+			previousPage.onLeave();
+			newPage.onEnter();
+		});
+		return this.wizardObject.open();
+
 	}
 
 	protected abstract initialize(): void;
+
+	public addButton(button: sqlops.window.Button) {
+		this.customButtons.push(button);
+	}
+
+	protected setPages(pages: WizardPageBase<W>[]) {
+		this.wizardObject.pages = pages.map(p => p.pageObject);
+		this.pages = pages;
+	}
 }
