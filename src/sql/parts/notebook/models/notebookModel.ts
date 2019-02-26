@@ -620,6 +620,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async handleClosed(): Promise<void> {
 		try {
+			if (this.activeConnection && this.activeConnection.id !== '-1' ) {
+				this._notebookOptions.connectionService.disconnect(this.activeConnection).catch(err => console.log(err));
+			}
 			if (this._activeClientSession) {
 				try {
 					await this._activeClientSession.ready;
