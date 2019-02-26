@@ -20,7 +20,6 @@ const kubectl = kubectlCreate(host, fs, shell, installDependencies);
 export let controller: MainController;
 
 export function activate(context: vscode.ExtensionContext) {
-    kubectl.checkPresent(CheckPresentMessageMode.Activation);
 	controller = new MainController(context, kubectl);
 	controller.activate();
 }

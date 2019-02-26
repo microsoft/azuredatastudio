@@ -6,7 +6,7 @@
 
 import * as sqlops from 'sqlops';
 import { WizardPageBase } from '../../wizardPageBase';
-import { TargetClusterTypeInfo } from '../../../interfaces';
+import { TargetClusterTypeInfo, ToolInstallationStatus } from '../../../interfaces';
 import * as nls from 'vscode-nls';
 import { CreateClusterWizard } from '../createClusterWizard';
 
@@ -184,13 +184,26 @@ export class SelectTargetClusterTypePage extends WizardPageBase<CreateClusterWiz
 			this.isLoading = false;
 			this.toolsLoadingWrapper.loading = false;
 			this.refreshToolsButton.enabled = true;
-			this.installToolsButton.enabled = tools.filter(tool => !tool.isInstalled).length !== 0;
+			this.installToolsButton.enabled = tools.filter(tool => tool.status !== ToolInstallationStatus.Installed).length !== 0;
 			this.isValid = !this.installToolsButton.enabled;
 			this.wizard.wizardObject.message = null;
 			let tableData = tools.map(tool => {
-				return [tool.name, tool.description, tool.isInstalled ? localize('bdc-create.InstalledText', 'Installed') : localize('bdc-create.NotInstalledText', 'Not Installed')];
+				return [tool.name, tool.description, this.getStatusText(tool.status)];
 			});
 			this.toolsTable.data = tableData;
 		});
+	}
+
+	private getStatusText(status: ToolInstallationStatus): string {
+		switch (status) {
+			case ToolInstallationStatus.Installed:
+				return localize('bdc-create.InstalledText', 'Installed');
+			case ToolInstallationStatus.NotInstalled:
+				return localize('bdc-create.NotInstalledText', 'Not Installed');
+			case ToolInstallationStatus.Installing:
+				return localize('bdc-create.InstallingText', 'Installing');
+			default:
+				return 'unknown status';
+		}
 	}
 }
