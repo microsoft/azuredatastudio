@@ -730,7 +730,6 @@ export function createApiFactory(
 			version: product.vscodeVersion,
 			// namespaces
 			commands,
-			// {{SQL CARBON EDIT}}
 			debug,
 			env,
 			extensions,
@@ -755,7 +754,6 @@ export function createApiFactory(
 			CompletionList: extHostTypes.CompletionList,
 			CompletionTriggerKind: extHostTypes.CompletionTriggerKind,
 			ConfigurationTarget: extHostTypes.ConfigurationTarget,
-			// {{SQL CARBON EDIT}}
 			DebugAdapterExecutable: extHostTypes.DebugAdapterExecutable,
 			DebugAdapterServer: extHostTypes.DebugAdapterServer,
 			DecorationRangeBehavior: extHostTypes.DecorationRangeBehavior,
