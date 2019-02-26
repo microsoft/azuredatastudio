@@ -111,21 +111,6 @@ export class OEShimService implements IOEShimService {
 	}
 
 	private mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
-		let icon: string;
-		let iconDark: string;
-		if (node.iconType) {
-			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
-		} else {
-			icon = node.nodeTypeId;
-			if (node.nodeStatus) {
-				icon = node.nodeTypeId + '_' + node.nodeStatus;
-			}
-			if (node.nodeSubType) {
-				icon = node.nodeTypeId + '_' + node.nodeSubType;
-			}
-		}
-		icon = icon.toLowerCase();
-		iconDark = icon;
 		let handle = generateUuid();
 		this.nodeIdMap.set(handle, node.nodePath);
 		return {
@@ -135,8 +120,6 @@ export class OEShimService implements IOEShimService {
 			label: {
 				label: node.label
 			},
-			// icon: URI.parse(icon),
-			// iconDark: URI.parse(iconDark),
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
 			payload: node.payload || parentNode.payload,
