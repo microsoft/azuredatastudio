@@ -49,11 +49,14 @@ export class SchemaCompareResult {
 
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 400
+				height: 700
 			}).component();
 
 			this.webViewComponent = view.modelBuilder.webView().withProperties({
-				html: '<html> <div style="border:3px; border-style:solid; padding: 1em;">Source</div><div style="border:3px; border-style:solid; padding: 1em;">Target</div></html>'
+				html: '<html> <div style="border:3px; border-style:solid; padding: 1em;">Source</div><div style="border:3px; border-style:solid; padding: 1em;">Target</div></html>',
+				options: {
+					enableScripts: true
+				}
 			}).component();
 
 			this.sourceDropdown = view.modelBuilder.dropDown().withProperties({
@@ -99,9 +102,12 @@ export class SchemaCompareResult {
 	}
 
 	public async start() {
-		let service = await SchemaCompareResult.getService('MSSQL');
 		this.editor.openEditor();
+		this.execute();
+	}
 
+	private async execute() {
+		let service = await SchemaCompareResult.getService('MSSQL');
 		let result = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, sqlops.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
@@ -133,34 +139,34 @@ export class SchemaCompareResult {
 				}]
 		});
 
-		this.loader.loading = false;
 		this.flexModel.removeItem(this.loader);
 		this.switchButton.enabled = true;
 		if (result.differences.length > 0) {
 			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
-			this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
+			// this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel);
 		}
 
 		this.differencesTable.onRowSelected(e => {
 			let difference = result.differences[this.differencesTable.selectedRows[0]];
-			sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
-			targetText = difference.targetScript === null ? '\n' : difference.targetScript;
-			if(this.switched) {
-				[sourceText, targetText] = [targetText, sourceText];
-			}
-			this.diffEditor.contentLeft = sourceText;
-			this.diffEditor.contentRight = targetText;
+			if (difference !== undefined) {
+				sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
+				targetText = difference.targetScript === null ? '\n' : difference.targetScript;
+				// if (this.switched) {
+				// 	[sourceText, targetText] = [targetText, sourceText];
+				// }
+				this.diffEditor.contentLeft = sourceText;
+				this.diffEditor.contentRight = targetText;
 
-			let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
-			const title = localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
-			vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
+				let objectName = difference.sourceValue === null ? difference.targetValue : difference.sourceValue;
+				const title = localize('schemaCompare.objectDefinitionsTitle', '{0} (Source ⟷ Target)', objectName);
+				vscode.commands.executeCommand('vscode.diff', vscode.Uri.parse('source:'), vscode.Uri.parse('target:'), title);
+			}
 		});
 
 		let sourceText = '';
 		let targetText = '';
-
 		vscode.workspace.registerTextDocumentContentProvider('source', {
 			provideTextDocumentContent() {
 				return sourceText;
@@ -191,8 +197,10 @@ export class SchemaCompareResult {
 		let differences = this.differencesTable.data;
 		differences.forEach(difference => {
 			this.switched = !this.switched;
+			// switch source and target names
 			[difference[TableRowIndex.SourceName], difference[TableRowIndex.TargetName]] = [difference[TableRowIndex.TargetName], difference[TableRowIndex.SourceName]];
 
+			// swap delete and add actions
 			if (difference[TableRowIndex.Action] === this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete]) {
 				difference[TableRowIndex.Action] = this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add];
 			} else if (difference[TableRowIndex.Action] === this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add]) {
@@ -213,7 +221,13 @@ export class SchemaCompareResult {
 		this.switchButton.onDidClick(async (click) => {
 			// switch source and target
 			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
-			this.switchSourceAndTarget();
+			// this.switchSourceAndTarget();
+			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
+			this.flexModel.removeItem(this.differencesTable);
+			this.flexModel.removeItem(this.noDifferencesLabel);
+			this.flexModel.addItem(this.loader);
+			this.switchButton.enabled = false;
+			this.execute();
 		});
 
 		return this.switchButton;
