@@ -13,6 +13,7 @@ import { CreateClusterWizard } from '../createClusterWizard';
 const localize = nls.loadMessageBundle();
 const UserNameInputWidth = '300px';
 const PortInputWidth = '100px';
+const RestoreDefaultValuesText = localize('bdc-create.RestoreDefaultValuesText', 'Restore Default Values');
 
 export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 	constructor(wizard: CreateClusterWizard) {
@@ -62,6 +63,18 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			let kibanaPortInput = this.createInputWithLabel(view, localize('bdc-create.KibanaPortText', 'Kibana port'), true, PortInputWidth, clusterPorts.kibana, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.kibanaPort = inputBox.value;
 			});
+			let restorePortSettingsButton = view.modelBuilder.button().withProperties<sqlops.ButtonProperties>({
+				label: RestoreDefaultValuesText,
+				width: 200
+			}).component();
+			restorePortSettingsButton.onDidClick(() => {
+				sqlPortInput.input.value = clusterPorts.sql;
+				knoxPortInput.input.value = clusterPorts.knox;
+				controllerPortInput.input.value = clusterPorts.controller;
+				proxyPortInput.input.value = clusterPorts.proxy;
+				grafanaPortInput.input.value = clusterPorts.grafana;
+				kibanaPortInput.input.value = clusterPorts.kibana;
+			});
 
 			// Container Registry Settings
 			let registryInput = this.createInputWithLabel(view, localize('bdc-create.RegistryText', 'Registry'), true, UserNameInputWidth, containerRegistryInfo.registry, (inputBox: sqlops.InputBoxComponent) => {
@@ -83,10 +96,19 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			let registryPasswordInput = this.createInputWithLabel(view, localize('bdc-create.RegistryPasswordText', 'Password'), false, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.containerRegistryPassword = inputBox.value;
 			});
+			let restoreContainerSettingsButton = view.modelBuilder.button().withProperties<sqlops.ButtonProperties>({
+				label: RestoreDefaultValuesText,
+				width: 200
+			}).component();
+			restoreContainerSettingsButton.onDidClick(() => {
+				registryInput.input.value = containerRegistryInfo.registry;
+				repositoryInput.input.value = containerRegistryInfo.repository;
+				imageTagInput.input.value = containerRegistryInfo.imageTag;
+			});
 
-			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([adminUserNameInput, adminPasswordInput]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();
-			let containerSettingsGroup = view.modelBuilder.groupContainer().withItems([registryInput, repositoryInput, imageTagInput, registryUserNameInput, registryPasswordInput]).withLayout({ header: localize('bdc-create.ContainerRegistrySettings', 'Container Registry Settings'), collapsible: true }).component();
-			let portSettingsGroup = view.modelBuilder.groupContainer().withItems([sqlPortInput, knoxPortInput, controllerPortInput, proxyPortInput, grafanaPortInput, kibanaPortInput]).withLayout({ header: localize('bdc-create.PortSettings', 'Port Settings (Optional)'), collapsible: true, collapsed: true }).component();
+			let basicSettingsGroup = view.modelBuilder.groupContainer().withItems([adminUserNameInput.row, adminPasswordInput.row]).withLayout({ header: localize('bdc-create.BasicSettingsText', 'Basic Settings'), collapsible: true }).component();
+			let containerSettingsGroup = view.modelBuilder.groupContainer().withItems([registryInput.row, repositoryInput.row, imageTagInput.row, registryUserNameInput.row, registryPasswordInput.row, restoreContainerSettingsButton]).withLayout({ header: localize('bdc-create.ContainerRegistrySettings', 'Container Registry Settings'), collapsible: true }).component();
+			let portSettingsGroup = view.modelBuilder.groupContainer().withItems([sqlPortInput.row, knoxPortInput.row, controllerPortInput.row, proxyPortInput.row, grafanaPortInput.row, kibanaPortInput.row, restorePortSettingsButton]).withLayout({ header: localize('bdc-create.PortSettings', 'Port Settings (Optional)'), collapsible: true, collapsed: true }).component();
 
 			let acceptEulaCheckbox = view.modelBuilder.checkBox().component();
 			acceptEulaCheckbox.checked = false;
@@ -129,7 +151,7 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		});
 	}
 
-	private createInputWithLabel(view: sqlops.ModelView, label: string, isRequiredField: boolean, inputWidth: string, initialValue: string, textChangedHandler: (inputBox: sqlops.InputBoxComponent) => void, inputType: string = 'text'): sqlops.FlexContainer {
+	private createInputWithLabel(view: sqlops.ModelView, label: string, isRequiredField: boolean, inputWidth: string, initialValue: string, textChangedHandler: (inputBox: sqlops.InputBoxComponent) => void, inputType: string = 'text'): { row: sqlops.FlexContainer, input: sqlops.InputBoxComponent } {
 		let input = view.modelBuilder.inputBox().withProperties({
 			required: isRequiredField,
 			inputType: inputType
@@ -141,7 +163,11 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			textChangedHandler(input);
 		});
 		input.value = initialValue;
-		return this.createRow(view, [text, input]);
+		let row = this.createRow(view, [text, input]);
+		return {
+			input: input,
+			row: row
+		};
 	}
 
 	private createRow(view: sqlops.ModelView, items: sqlops.Component[]): sqlops.FlexContainer {
