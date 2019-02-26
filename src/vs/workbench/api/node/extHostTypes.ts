@@ -1986,7 +1986,6 @@ export class DebugAdapterServer implements vscode.DebugAdapterServer {
 	}
 }
 
-// {{SQL CARBON EDIT}}
 /*
 export class DebugAdapterImplementation implements vscode.DebugAdapterImplementation {
 	readonly implementation: any;
