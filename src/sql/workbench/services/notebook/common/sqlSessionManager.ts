@@ -127,7 +127,8 @@ export class SqlSession implements nb.ISession {
 	}
 
 	changeKernel(kernelInfo: nb.IKernelSpec): Thenable<nb.IKernel> {
-		return Promise.resolve(this.kernel);
+		this._kernel = this._instantiationService.createInstance(SqlKernel);
+		return Promise.resolve(this._kernel);
 	}
 
 	configureKernel(kernelInfo: nb.IKernelSpec): Thenable<void> {
