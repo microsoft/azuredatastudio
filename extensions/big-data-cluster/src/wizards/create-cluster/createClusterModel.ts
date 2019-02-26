@@ -91,7 +91,7 @@ export class CreateClusterModel {
 			setTimeout(() => {
 				let tools = this.targetClusterType === TargetClusterType.ExistingKubernetesCluster ? [kubeCtl, mssqlCtl] : [kubeCtl, mssqlCtl, azureCli];
 				resolve(tools);
-			}, 3000);
+			}, 2000);
 		});
 		return promise;
 	}
@@ -101,7 +101,7 @@ export class CreateClusterModel {
 			setTimeout(() => {
 				this._tmp_tools_installed = true;
 				resolve();
-			}, 10000)
+			}, 2000);
 		});
 		return promise;
 	}

@@ -36,31 +36,70 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		return Promise.all([clusterPortsPromise, containerRegistryPromise]).then(() => {
 			let formBuilder = view.modelBuilder.formContainer();
 
-			//User settings
-			let adminUserNameInput = this.createInputWithLabel(view, localize('bdc-create.AdminUsernameText', 'Admin username'), true, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
+			// User settings
+			let adminUserNameInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.AdminUsernameText', 'Admin username'),
+				isRequiredField: true,
+				inputWidth: UserNameInputWidth
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.adminUserName = inputBox.value;
 			});
-			let adminPasswordInput = this.createInputWithLabel(view, localize('bdc-create.AdminUserPasswordText', 'Password'), true, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
+			let adminPasswordInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.AdminUserPasswordText', 'Password'),
+				isRequiredField: true,
+				inputType: 'password',
+				inputWidth: UserNameInputWidth
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.adminPassword = inputBox.value;
-			}, 'password');
+			});
 
 			// Port settings
-			let sqlPortInput = this.createInputWithLabel(view, localize('bdc-create.SQLPortText', 'SQL Server master'), true, PortInputWidth, clusterPorts.sql, (inputBox: sqlops.InputBoxComponent) => {
+			let sqlPortInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.SQLPortText', 'SQL Server master'),
+				isRequiredField: true,
+				inputWidth: PortInputWidth,
+				initialValue: clusterPorts.sql
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.sqlPort = inputBox.value;
 			});
-			let knoxPortInput = this.createInputWithLabel(view, localize('bdc-create.KnoxPortText', 'Knox'), true, PortInputWidth, clusterPorts.knox, (inputBox: sqlops.InputBoxComponent) => {
+			let knoxPortInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.KnoxPortText', 'Knox'),
+				isRequiredField: true,
+				inputWidth: PortInputWidth,
+				initialValue: clusterPorts.knox
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.knoxPort = inputBox.value;
 			});
-			let controllerPortInput = this.createInputWithLabel(view, localize('bdc-create.ControllerPortText', 'Controller'), true, PortInputWidth, clusterPorts.controller, (inputBox: sqlops.InputBoxComponent) => {
+			let controllerPortInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.ControllerPortText', 'Controller'),
+				isRequiredField: true,
+				inputWidth: PortInputWidth,
+				initialValue: clusterPorts.controller
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.controllerPort = inputBox.value;
 			});
-			let proxyPortInput = this.createInputWithLabel(view, localize('bdc-create.ProxyPortText', 'Proxy'), true, PortInputWidth, clusterPorts.proxy, (inputBox: sqlops.InputBoxComponent) => {
+			let proxyPortInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.ProxyPortText', 'Proxy'),
+				isRequiredField: true,
+				inputWidth: PortInputWidth,
+				initialValue: clusterPorts.proxy
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.proxyPort = inputBox.value;
 			});
-			let grafanaPortInput = this.createInputWithLabel(view, localize('bdc-create.GrafanaPortText', 'Grafana dashboard'), true, PortInputWidth, clusterPorts.grafana, (inputBox: sqlops.InputBoxComponent) => {
+			let grafanaPortInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.GrafanaPortText', 'Grafana dashboard'),
+				isRequiredField: true,
+				inputWidth: PortInputWidth,
+				initialValue: clusterPorts.grafana
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.grafanaPort = inputBox.value;
 			});
-			let kibanaPortInput = this.createInputWithLabel(view, localize('bdc-create.KibanaPortText', 'Kibana dashboard'), true, PortInputWidth, clusterPorts.kibana, (inputBox: sqlops.InputBoxComponent) => {
+			let kibanaPortInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.KibanaPortText', 'Kibana dashboard'),
+				isRequiredField: true,
+				inputWidth: PortInputWidth,
+				initialValue: clusterPorts.kibana
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.kibanaPort = inputBox.value;
 			});
 			let restorePortSettingsButton = view.modelBuilder.button().withProperties<sqlops.ButtonProperties>({
@@ -77,23 +116,50 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 			});
 
 			// Container Registry Settings
-			let registryInput = this.createInputWithLabel(view, localize('bdc-create.RegistryText', 'Registry'), true, UserNameInputWidth, containerRegistryInfo.registry, (inputBox: sqlops.InputBoxComponent) => {
+			const registryUserNamePasswordHintText = localize('bdc-create.RegistryUserNamePasswordHintText', 'only required for private registries');
+			let registryInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.RegistryText', 'Registry'),
+				isRequiredField: true,
+				inputWidth: UserNameInputWidth,
+				initialValue: containerRegistryInfo.registry
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.containerRegistry = inputBox.value;
 			});
 
-			let repositoryInput = this.createInputWithLabel(view, localize('bdc-create.RepositoryText', 'Repository'), true, UserNameInputWidth, containerRegistryInfo.repository, (inputBox: sqlops.InputBoxComponent) => {
+			let repositoryInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.RepositoryText', 'Repository'),
+				isRequiredField: true,
+				inputWidth: UserNameInputWidth,
+				initialValue: containerRegistryInfo.repository
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.containerRepository = inputBox.value;
 			});
 
-			let imageTagInput = this.createInputWithLabel(view, localize('bdc-create.ImageTagText', 'Image tag'), true, UserNameInputWidth, containerRegistryInfo.imageTag, (inputBox: sqlops.InputBoxComponent) => {
+			let imageTagInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.ImageTagText', 'Image tag'),
+				isRequiredField: true,
+				inputWidth: UserNameInputWidth,
+				initialValue: containerRegistryInfo.imageTag
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.containerRegistry = inputBox.value;
 			});
 
-			let registryUserNameInput = this.createInputWithLabel(view, localize('bdc-create.RegistryUserNameText', 'Username'), false, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
+			let registryUserNameInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.RegistryUserNameText', 'Username'),
+				isRequiredField: false,
+				inputWidth: UserNameInputWidth,
+				placeHolder: registryUserNamePasswordHintText
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.containerRegistryUserName = inputBox.value;
 			});
 
-			let registryPasswordInput = this.createInputWithLabel(view, localize('bdc-create.RegistryPasswordText', 'Password'), false, UserNameInputWidth, '', (inputBox: sqlops.InputBoxComponent) => {
+			let registryPasswordInput = this.createInputWithLabel(view, {
+				label: localize('bdc-create.RegistryPasswordText', 'Password'),
+				isRequiredField: false,
+				inputWidth: UserNameInputWidth,
+				placeHolder: registryUserNamePasswordHintText,
+				inputType: 'password'
+			}, (inputBox: sqlops.InputBoxComponent) => {
 				this.wizard.model.containerRegistryPassword = inputBox.value;
 			});
 			let restoreContainerSettingsButton = view.modelBuilder.button().withProperties<sqlops.ButtonProperties>({
@@ -151,18 +217,27 @@ export class SettingsPage extends WizardPageBase<CreateClusterWizard> {
 		});
 	}
 
-	private createInputWithLabel(view: sqlops.ModelView, label: string, isRequiredField: boolean, inputWidth: string, initialValue: string, textChangedHandler: (inputBox: sqlops.InputBoxComponent) => void, inputType: string = 'text'): { row: sqlops.FlexContainer, input: sqlops.InputBoxComponent } {
+	private createInputWithLabel(view: sqlops.ModelView, options: {
+		label: string,
+		isRequiredField: boolean,
+		inputWidth: string,
+		inputType?: string,
+		initialValue?: string,
+		placeHolder?: string
+	}, textChangedHandler: (inputBox: sqlops.InputBoxComponent) => void): { row: sqlops.FlexContainer, input: sqlops.InputBoxComponent } {
+		let inputType = !!options.inputType ? options.inputType : 'text';
 		let input = view.modelBuilder.inputBox().withProperties({
-			required: isRequiredField,
+			required: options.isRequiredField,
 			inputType: inputType
 		}).component();
-		let text = view.modelBuilder.text().withProperties({ value: label }).component();
-		input.width = inputWidth;
+		let text = view.modelBuilder.text().withProperties({ value: options.label }).component();
+		input.width = options.inputWidth;
 		text.width = '150px';
+		input.placeHolder = options.placeHolder;
 		input.onTextChanged(() => {
 			textChangedHandler(input);
 		});
-		input.value = initialValue;
+		input.value = options.initialValue;
 		let row = this.createRow(view, [text, input]);
 		return {
 			input: input,
