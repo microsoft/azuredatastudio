@@ -128,14 +128,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.4",
-							"lastUpdated": "2/15/2019",
+							"version": "0.1.5",
+							"lastUpdated": "2/27/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.1.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.1.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
