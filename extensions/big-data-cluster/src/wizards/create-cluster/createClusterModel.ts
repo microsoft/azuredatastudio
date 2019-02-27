@@ -138,22 +138,40 @@ export class CreateClusterModel implements Scriptable {
 
 	public containerRegistryPassword: string;
 
-	public getScriptProperties() : ScriptingDictionary<String> {
+	public getScriptProperties() : ScriptingDictionary<string> {
 
-		this.scriptingProperties['MSSQL_SA_PASSWORD'] = this.adminPassword;
+		// Cluster settings
+		this.scriptingProperties['CLUSTER_NAME'] = this.selectedCluster.clusterName;
+		this.scriptingProperties['CLUSTER_PLATFORM'] = 'AKS'; // TODO this needs to be detected
+
+		// Default pool count for now. TODO: Update from user input
+		this.scriptingProperties['CLUSTER_DATA_POOL_REPLICAS'] = '1';
+		this.scriptingProperties['CLUSTER_COMPUTE_POOL_REPLICAS'] = '2';
+		this.scriptingProperties['CLUSTER_STORAGE_POOL_REPLICAS'] = '3';
+
+		// SQL Server settings
 		this.scriptingProperties['CONTROLLER_USERNAME'] = this.adminUserName;
-		this.scriptingProperties['KNOX_PASSWORD'] = this.adminPassword;
 		this.scriptingProperties['CONTROLLER_PASSWORD'] =  this.adminPassword;
+		this.scriptingProperties['KNOX_PASSWORD'] = this.adminPassword;
+		this.scriptingProperties['MSSQL_SA_PASSWORD'] = this.adminPassword;
+
+		// docker settings
 		this.scriptingProperties['DOCKER_REPOSITORY'] = this.containerRepository;
 		this.scriptingProperties['DOCKER_REGISTRY' ] = this.containerRegistry;
 		this.scriptingProperties['DOCKER_PASSWORD'] = this.containerRegistryPassword;
 		this.scriptingProperties['DOCKER_USERNAME'] = this.containerRegistryUserName;
 		this.scriptingProperties['DOCKER_IMAGE_TAG'] = this.containerImageTag;
 
+		// port settings
+		this.scriptingProperties['MASTER_SQL_PORT'] = this.sqlPort;
+		this.scriptingProperties['KNOX_PORT'] = this.knoxPort;
+		this.scriptingProperties['GRAFANA_PORT'] = this.grafanaPort;
+		this.scriptingProperties['KIBANA_PORT'] = this.kibanaPort;
+
 		return this.scriptingProperties;
 	}
 
-	public getScriptTargetClusterName() : String {
+	public getScriptTargetClusterName() : string {
 		return this.selectedCluster.clusterName;
 	}
 }

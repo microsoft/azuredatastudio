@@ -11,8 +11,8 @@ import { Kubectl } from '../kubectl/kubectl';
 
 
  export interface Scriptable {
-		getScriptProperties(): ScriptingDictionary<String>;
-		getScriptTargetClusterName() : String;
+		getScriptProperties(): ScriptingDictionary<string>;
+		getScriptTargetClusterName() : string;
  }
 
  export interface ScriptingDictionary<V> {
@@ -31,20 +31,23 @@ export class ScriptGenerator {
 	}
 
 	public async generateDeploymentScript(scriptable: Scriptable) : Promise<void> {
-		let envVars = "";
-		let propertiesDict = scriptable.getScriptProperties();
-		for (let key in propertiesDict) {
-			let value = propertiesDict[key];
-			envVars += this._shell.isWindows() ? `Set ${key}=${value}\n` : `export ${key}=${value}\n`;
-		}
 		let clusterName = scriptable.getScriptTargetClusterName();
 		let timestamp = new Date().getTime();
 		let deployFolder = this.getDeploymentFolder(this._shell);
 		let deployFileSuffix = this._shell.isWindows() ? `.bat` : `.sh`;
 		let deployFileName = `${deployFilePrefix}-${clusterName}-${timestamp}${deployFileSuffix}`;
+		let deployFilePath = path.join(deployFolder, deployFileName);
 
-		mkdirp.sync(deployFolder);
-		await fs.writeFile(path.join(deployFolder, deployFileName), envVars, handleError);
+		let envVars = "";
+		let propertiesDict = scriptable.getScriptProperties();
+		for (let key in propertiesDict) {
+			let value = propertiesDict[key];
+			envVars += this._shell.isWindows() ? `Set ${key} = ${value}\n` : `export ${key} = ${value}\n`;
+		}
+		envVars += '\n';
+
+		let deployCommand = `mssqlctl create cluster ${clusterName}\n`;
+		await fs.writeFile(deployFilePath, envVars + deployCommand, handleError);
 	}
 
 	public getDeploymentFolder(shell: Shell): string {
