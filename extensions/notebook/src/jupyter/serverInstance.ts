@@ -178,7 +178,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private async createInstanceFolders(): Promise<void> {
-		this.baseDir = path.join(this.options.install.configRoot, 'instances', `${this.utils.generateUuid()}`);
+		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${this.utils.generateUuid()}`);
 		this.instanceConfigRoot = path.join(this.baseDir, 'config');
 		this.instanceDataRoot = path.join(this.baseDir, 'data');
 		await this.utils.mkDir(this.baseDir, this.options.install.outputChannel);
@@ -202,25 +202,24 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
-		this._systemJupyterDir = this.getSystemJupyterKernelDir();
+		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
 		if (!this.utils.existsSync(this._systemJupyterDir)) {
 			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);
 	}
 
-	private getSystemJupyterKernelDir(): string {
+	private getSystemJupyterHomeDir(): string {
 		switch (process.platform) {
 			case 'win32':
 				let appDataWindows = process.env['APPDATA'];
-				return appDataWindows + '\\jupyter\\kernels';
+				return appDataWindows + '\\jupyter';
 			case 'darwin':
-				return path.resolve(os.homedir(), 'Library/Jupyter/kernels');
+				return path.resolve(os.homedir(), 'Library/Jupyter');
 			default:
-				return path.resolve(os.homedir(), '.local/share/jupyter/kernels');
+				return path.resolve(os.homedir(), '.local/share/jupyter');
 		}
 	}
-
 
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
