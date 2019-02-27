@@ -13,8 +13,8 @@ import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDisposable {
 	return registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
-		let lightBoxShadow = '0px 4px 6px 0px rgba(0,0,0,0.14)';
-		let darkBoxShadow = '0 4px 6px 0px rgba(0, 0, 0, 1)';
+		let lightBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 0.14)';
+		let darkBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 1)';
 		let addBorderToInactiveCodeCells = true;
 
 		// Active border
@@ -99,7 +99,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 			collector.addRule(`
 				.notebookEditor .notebook-cell {
 					border-color: ${inactiveBorder};
-					border-width: 0px;
+					border-width: 1px;
 				}
 				.notebookEditor .notebook-cell.active {
 					border-width: 1px;

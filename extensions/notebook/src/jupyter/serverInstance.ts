@@ -178,7 +178,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private async createInstanceFolders(): Promise<void> {
-		this.baseDir = path.join(this.options.install.configRoot, 'instances', `${this.utils.generateUuid()}`);
+		this.baseDir = path.join(this.getSystemJupyterHomeDir(), 'instances', `${this.utils.generateUuid()}`);
 		this.instanceConfigRoot = path.join(this.baseDir, 'config');
 		this.instanceDataRoot = path.join(this.baseDir, 'data');
 		await this.utils.mkDir(this.baseDir, this.options.install.outputChannel);
@@ -202,25 +202,24 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
-		this._systemJupyterDir = this.getSystemJupyterKernelDir();
+		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
 		if (!this.utils.existsSync(this._systemJupyterDir)) {
 			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);
 	}
 
-	private getSystemJupyterKernelDir(): string {
+	private getSystemJupyterHomeDir(): string {
 		switch (process.platform) {
 			case 'win32':
 				let appDataWindows = process.env['APPDATA'];
-				return appDataWindows + '\\jupyter\\kernels';
+				return appDataWindows + '\\jupyter';
 			case 'darwin':
-				return path.resolve(os.homedir(), 'Library/Jupyter/kernels');
+				return path.resolve(os.homedir(), 'Library/Jupyter');
 			default:
-				return path.resolve(os.homedir(), '.local/share/jupyter/kernels');
+				return path.resolve(os.homedir(), '.local/share/jupyter');
 		}
 	}
-
 
 	/**
 	 * Starts a Jupyter instance using the provided a start command. Server is determined to have
@@ -248,12 +247,12 @@ export class PerNotebookServerInstance implements IServerInstance {
 		return new Promise<void>((resolve, reject) => {
 			let install = this.options.install;
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
-
+			let stdErrLog: string = '';
 			// Add listeners for the process exiting prematurely
 			let onErrorBeforeStartup = (err) => reject(err);
 			let onExitBeforeStart = (err) => {
 				if (!this.isStarted) {
-					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}', err));
+					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
 				}
 			};
 			this.childProcess.on('error', onErrorBeforeStartup);
@@ -276,6 +275,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 					this.updateListeners(handleStdout, handleStdErr, onErrorBeforeStartup, onExitBeforeStart);
 					resolve();
+				} else {
+					stdErrLog += data.toString();
 				}
 			};
 			this.childProcess.stdout.on('data', handleStdout);
@@ -350,12 +351,9 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private spawnJupyterProcess(install: JupyterServerInstallation, startCommand: string): ChildProcess {
-		// Specify the global environment variables
-		let env = this.getEnvWithConfigPaths();
-		// Setting the PATH variable here for the jupyter command. Apparently setting it above will cause the
-		// notebook process to die even though we don't override it with the for loop logic above.
-		let pathVariableSeparator = process.platform === 'win32' ? ';' : ':';
-		env['PATH'] = install.pythonEnvVarPath + pathVariableSeparator + env['PATH'];
+		// Specify the global environment variables.
+		// Note: Get env from the install since it gets used elsewhere
+		let env = this.getEnvWithConfigPaths(install.execOptions.env);
 
 		// 'MSHOST_TELEMETRY_ENABLED' and 'MSHOST_ENVIRONMENT' environment variables are set
 		// for telemetry purposes used by PROSE in the process where the Jupyter kernel runs
@@ -376,11 +374,11 @@ export class PerNotebookServerInstance implements IServerInstance {
 		return childProcess;
 	}
 
-	private getEnvWithConfigPaths(): any {
-		let env = Object.assign({}, process.env);
-		env['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
-		env['JUPYTER_PATH'] = this.instanceDataRoot;
-		return env;
+	private getEnvWithConfigPaths(env: {}): any {
+		let newEnv = Object.assign({}, env);
+		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
+		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
+		return newEnv;
 	}
 }
 

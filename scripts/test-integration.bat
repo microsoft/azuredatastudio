@@ -25,14 +25,10 @@ if %errorlevel% neq 0 exit /b %errorlevel%
 :: call .\scripts\code.bat $%~dp0\..\extensions\emmet\test-fixtures --extensionDevelopmentPath=%~dp0\..\extensions\emmet --extensionTestsPath=%~dp0\..\extensions\emmet\out\test --disableExtensions --user-data-dir=%VSCODEUSERDATADIR% .
 :: if %errorlevel% neq 0 exit /b %errorlevel%
 
-<<<<<<< HEAD
 :: Integration & performance tests in AMD
 call .\scripts\test.bat --runGlob **\*.integrationTest.js %*
 
 :: Tests in commonJS (HTML, CSS, JSON language server tests...)
-=======
-# Tests in commonJS (HTML, CSS, JSON language server tests...)
->>>>>>> vscode/release/1.30
 call .\scripts\node-electron.bat .\node_modules\mocha\bin\_mocha .\extensions\*\server\out\test\**\*.test.js
 if %errorlevel% neq 0 exit /b %errorlevel%
 

@@ -1,0 +1,5 @@
+{
+    perform: false,
+    whenCreatedByTeam: true,
+    comment: "Thanks for submitting this issue. Please also check if it is already covered by an existing one, like:\n${potentialDuplicates}"
+}
