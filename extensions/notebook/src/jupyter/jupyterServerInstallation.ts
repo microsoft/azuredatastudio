@@ -227,6 +227,7 @@ export default class JupyterServerInstallation {
 
 		// Store the executable options to run child processes with env var without interfering parent env var.
 		let env = Object.assign({}, process.env);
+		delete env['Path']; // Delete extra 'Path' variable for Windows, just in case.
 		env['PATH'] = this.pythonEnvVarPath;
 		this.execOptions = {
 			env: env
