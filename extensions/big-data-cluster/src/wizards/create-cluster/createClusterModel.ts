@@ -6,7 +6,7 @@
 
 
 import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo } from '../../interfaces';
-import { getContexts, KubectlContext }  from '../../kubectl/kubectlUtils';
+import { getContexts, KubectlContext, setContext }  from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import {  Scriptable, ScriptingDictionary } from '../../scripting/scripting';
 import * as nls from 'vscode-nls';
@@ -22,6 +22,10 @@ export class CreateClusterModel implements Scriptable {
 
 	public async loadClusters(): Promise<KubectlContext[]> {
 		return await getContexts(this._kubectl);
+	}
+
+	public async changeKubernetesContext(targetContext: string): Promise<void> {
+		await setContext(this._kubectl, targetContext)
 	}
 
 	public getDefaultPorts(): Thenable<ClusterPorts> {
@@ -171,7 +175,7 @@ export class CreateClusterModel implements Scriptable {
 		return this.scriptingProperties;
 	}
 
-	public getScriptTargetClusterName() : string {
-		return this.selectedCluster.clusterName;
+	public getTargetKubectlContext() : KubectlContext {
+		return this.selectedCluster;
 	}
 }

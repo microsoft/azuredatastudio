@@ -7,12 +7,13 @@ import { Shell } from '../utility/shell';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import mkdirp = require('mkdirp');
-import { Kubectl } from '../kubectl/kubectl';
+import { Kubectl, baseKubectlPath } from '../kubectl/kubectl';
+import { KubectlContext } from '../kubectl/kubectlUtils';
 
 
  export interface Scriptable {
 		getScriptProperties(): ScriptingDictionary<string>;
-		getScriptTargetClusterName() : string;
+		getTargetKubectlContext() : KubectlContext;
  }
 
  export interface ScriptingDictionary<V> {
@@ -25,17 +26,21 @@ export class ScriptGenerator {
 	private _shell: Shell;
 	private _kubectl: Kubectl;
 
+	private _kubectlPath: string;
 	constructor(_kubectl: Kubectl) {
 		this._kubectl = _kubectl;
 		this._shell = this._kubectl.getContext().shell;
+		this._kubectlPath = baseKubectlPath(this._kubectl.getContext());
 	}
 
 	public async generateDeploymentScript(scriptable: Scriptable) : Promise<void> {
-		let clusterName = scriptable.getScriptTargetClusterName();
+		let targetClusterName = scriptable.getTargetKubectlContext().clusterName;
+		let targetContextName = scriptable.getTargetKubectlContext().contextName;
+
 		let timestamp = new Date().getTime();
 		let deployFolder = this.getDeploymentFolder(this._shell);
 		let deployFileSuffix = this._shell.isWindows() ? `.bat` : `.sh`;
-		let deployFileName = `${deployFilePrefix}-${clusterName}-${timestamp}${deployFileSuffix}`;
+		let deployFileName = `${deployFilePrefix}-${targetClusterName}-${timestamp}${deployFileSuffix}`;
 		let deployFilePath = path.join(deployFolder, deployFileName);
 
 		let envVars = "";
@@ -46,8 +51,11 @@ export class ScriptGenerator {
 		}
 		envVars += '\n';
 
-		let deployCommand = `mssqlctl create cluster ${clusterName}\n`;
-		await fs.writeFile(deployFilePath, envVars + deployCommand, handleError);
+		let kubeContextcommand = `${this._kubectlPath} config use-context ${targetContextName}\n`;
+		let deployCommand = `mssqlctl create cluster ${targetClusterName}\n`;
+
+		let deployContent = envVars + kubeContextcommand + deployCommand;
+		await fs.writeFile(deployFilePath, deployContent, handleError);
 	}
 
 	public getDeploymentFolder(shell: Shell): string {

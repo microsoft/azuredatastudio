@@ -14,7 +14,7 @@ import { getToolPath } from '../config/config';
 export interface Kubectl {
     checkPresent(errorMessageMode: CheckPresentMessageMode): Promise<boolean>;
     asJson<T>(command: string): Promise<Errorable<T>>;
-
+    invokeAsync(command: string, stdin?: string): Promise<ShellResult | undefined>;
     getContext(): Context;
 }
 
@@ -39,6 +39,9 @@ class KubectlImpl implements Kubectl {
     }
     asJson<T>(command: string): Promise<Errorable<T>> {
         return asJson(this.context, command);
+    }
+    invokeAsync(command: string, stdin?: string): Promise<ShellResult | undefined> {
+        return invokeAsync(this.context, command, stdin);
     }
 
     getContext(): Context {
@@ -114,7 +117,7 @@ async function checkPossibleIncompatibility(context: Context): Promise<void> {
 }
 
 
-function baseKubectlPath(context: Context): string {
+export function baseKubectlPath(context: Context): string {
     let bin = getToolPath(context.host, context.shell, 'kubectl');
     if (!bin) {
         bin = 'kubectl';

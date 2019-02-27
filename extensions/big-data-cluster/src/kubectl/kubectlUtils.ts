@@ -84,3 +84,11 @@ export async function getContexts(kubectl: Kubectl): Promise<KubectlContext[]> {
         };
     });
 }
+
+export async function setContext(kubectl: Kubectl, targetContext: string): Promise<void> {
+    const shellResult = await kubectl.invokeAsync(`config use-context ${targetContext}`);
+    if (!shellResult || shellResult.code != 0) {
+        // TODO: Update error handling for now.
+        vscode.window.showErrorMessage(`Failed to set '${targetContext}' as current cluster: ${shellResult ? shellResult.stderr : "Unable to run kubectl"}`);
+    }
+}
