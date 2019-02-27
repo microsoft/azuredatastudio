@@ -4,18 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { IKubeConfigParser } from '../../data/kubeConfigParser';
-import { ClusterInfo, TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo } from '../../interfaces';
+
+import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo } from '../../interfaces';
 import { getContexts, KubectlContext }  from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
+import {  Scriptable, ScriptingDictionary } from '../../scripting/scripting';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-export class CreateClusterModel {
+export class CreateClusterModel implements Scriptable {
 
 	private _tmp_tools_installed: boolean = false;
-
+	private scriptingProperties : ScriptingDictionary<string> = {};
 	constructor(private _kubectl : Kubectl) {
 	}
 
@@ -136,4 +137,23 @@ export class CreateClusterModel {
 	public containerRegistryUserName: string;
 
 	public containerRegistryPassword: string;
+
+	public getScriptProperties() : ScriptingDictionary<String> {
+
+		this.scriptingProperties['MSSQL_SA_PASSWORD'] = this.adminPassword;
+		this.scriptingProperties['CONTROLLER_USERNAME'] = this.adminUserName;
+		this.scriptingProperties['KNOX_PASSWORD'] = this.adminPassword;
+		this.scriptingProperties['CONTROLLER_PASSWORD'] =  this.adminPassword;
+		this.scriptingProperties['DOCKER_REPOSITORY'] = this.containerRepository;
+		this.scriptingProperties['DOCKER_REGISTRY' ] = this.containerRegistry;
+		this.scriptingProperties['DOCKER_PASSWORD'] = this.containerRegistryPassword;
+		this.scriptingProperties['DOCKER_USERNAME'] = this.containerRegistryUserName;
+		this.scriptingProperties['DOCKER_IMAGE_TAG'] = this.containerImageTag;
+
+		return this.scriptingProperties;
+	}
+
+	public getScriptTargetClusterName() : String {
+		return this.selectedCluster.clusterName;
+	}
 }

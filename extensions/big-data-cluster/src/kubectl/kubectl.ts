@@ -14,6 +14,8 @@ import { getToolPath } from '../config/config';
 export interface Kubectl {
     checkPresent(errorMessageMode: CheckPresentMessageMode): Promise<boolean>;
     asJson<T>(command: string): Promise<Errorable<T>>;
+
+    getContext(): Context;
 }
 
 interface Context {
@@ -30,13 +32,17 @@ class KubectlImpl implements Kubectl {
         this.context = { host : host, fs : fs, shell : shell, installDependenciesCallback : installDependenciesCallback, binFound : kubectlFound, binPath : 'kubectl' };
     }
 
-    private readonly context: Context;
+    readonly context: Context;
 
     checkPresent(errorMessageMode: CheckPresentMessageMode): Promise<boolean> {
         return checkPresent(this.context, errorMessageMode);
     }
     asJson<T>(command: string): Promise<Errorable<T>> {
         return asJson(this.context, command);
+    }
+
+    getContext(): Context {
+        return this.context;
     }
 }
 
