@@ -5,7 +5,6 @@
 
 'use strict';
 import * as fspath from 'path';
-import * as webhdfs from 'webhdfs';
 import * as fs from 'fs';
 import * as meter from 'stream-meter';
 import * as bytes from 'bytes';
@@ -15,6 +14,7 @@ import * as os from 'os';
 
 import * as constants from '../constants';
 import * as utils from '../utils';
+import { WebHDFS } from './webhdfs';
 
 export function joinHdfsPath(parent: string, child: string): string {
 	if (parent === constants.hdfsRootPath) {
@@ -94,94 +94,56 @@ export interface IHdfsFileStatus {
 }
 
 export interface IHdfsClient {
-	readdir(path: string, callback: (err: Error, files: any[]) => void): void;
+	/**
+	 * Read directory contents
+	 * @param {string} path
+	 * @param {(err: any, files: any[]) => void} callback
+	 * @returns void
+	 */
+	readdir(path: string, callback: (err: any, files: any[]) => void): void;
 
 	/**
 	 * Create readable stream for given path
-	 *
-	 * @method createReadStream
-	 * @fires Request#data
-	 * @fires WebHDFS#finish
-	 *
-	 * @param {String} path
-	 * @param {Object} [opts]
-	 *
-	 * @returns {Object}
+	 * @param {string} path
+	 * @param {object} [opts]
+	 * @returns {fs.ReadStream}
 	 */
-	createReadStream (path: string, opts?: object): fs.ReadStream;
+	createReadStream(path: string, opts?: object): fs.ReadStream;
 
 	/**
 	 * Create writable stream for given path
-	 *
-	 * @example
-	 *
-	 * var WebHDFS = require('webhdfs');
-	 * var hdfs = WebHDFS.createClient();
-	 *
-	 * var localFileStream = fs.createReadStream('/path/to/local/file');
-	 * var remoteFileStream = hdfs.createWriteStream('/path/to/remote/file');
-	 *
-	 * localFileStream.pipe(remoteFileStream);
-	 *
-	 * remoteFileStream.on('error', function onError (err) {
-	 *   // Do something with the error
-	 * });
-	 *
-	 * remoteFileStream.on('finish', function onFinish () {
-	 *  // Upload is done
-	 * });
-	 *
-	 * @method createWriteStream
-	 * @fires WebHDFS#finish
-	 *
-	 * @param {String} path
-	 * @param {Boolean} [append] If set to true then append data to the file
-	 * @param {Object} [opts]
-	 *
-	 * @returns {Object}
+	 * @param {string} path
+	 * @param {boolean} [append] If set to true then append data to the file
+	 * @param {object} [opts]
+	 * @returns {fs.WriteStream}
 	 */
 	createWriteStream(path: string, append?: boolean, opts?: object): fs.WriteStream;
 
 	/**
 	 * Make new directory
-	 *
-	 * @method mkdir
-	 *
-	 * @param {String} path
-	 * @param {String} [mode=0777]
-	 * @param {Function} callback
-	 *
-	 * @returns {Object}
+	 * @param {string} path
+	 * @param {string} [permission=0755]
+	 * @param {(error: any) => void} callback
+	 * @returns void
 	 */
-	mkdir (path: string, callback: Function): void;
-	mkdir (path: string, mode: string, callback: Function): void;
+	mkdir(path: string, permission: string, callback: (error: any) => void): void;
 
 	/**
 	 * Delete directory or file path
-	 *
-	 * @method unlink
-	 *
-	 * @param {String} path
-	 * @param {Boolean} [recursive=false]
-	 * @param {Function} callback
-	 *
-	 * @returns {Object}
+	 * @param {string} path
+	 * @param {boolean} [recursive=false]
+	 * @param {(error: any) => void} callback
+	 * @returns void
 	 */
-	rmdir (path: string, recursive: boolean, callback: Function): void;
+	rmdir(path: string, recursive: boolean, callback: (error: any) => void): void;
 
 	/**
 	 * Check file existence
-	 * Wraps stat method
-	 *
-	 * @method stat
-	 * @see WebHDFS.stat
-	 *
-	 * @param {String} path
-	 * @param {Function} callback
-	 *
-	 * @returns {Object}
+	 * @param {string} path
+	 * @param {(error: any, exists: boolean) => void} callback
+	 * @returns void
 	 */
-	exists (path: string, callback: Function): boolean;
+	exists(path: string, callback: (error: any, exists: boolean) => void): void;
 }
 
 export class FileSourceFactory {
@@ -208,7 +170,7 @@ export class FileSourceFactory {
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
 		}
-		return new HdfsFileSource(webhdfs.createClient(options, requestParams));
+		return new HdfsFileSource(WebHDFS.createClient(options, requestParams));
 	}
 
 	// remove port from host when port is specified after a comma or colon
@@ -253,7 +215,7 @@ export class HdfsFileSource implements IFileSource {
 	public mkdir(dirName: string, remoteBasePath: string): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let remotePath = joinHdfsPath(remoteBasePath, dirName);
-			this.client.mkdir(remotePath, (err) => {
+			this.client.mkdir(remotePath, undefined, (err) => {
 				if (err) {
 					reject(err);
 				} else {
@@ -363,8 +325,12 @@ export class HdfsFileSource implements IFileSource {
 
 	public exists(path: string): Promise<boolean> {
 		return new Promise((resolve, reject) => {
-			this.client.exists(path, (result) => {
-				resolve(result);
+			this.client.exists(path, (error, exists) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(exists);
+				}
 			});
 		});
 	}
