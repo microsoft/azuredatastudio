@@ -165,6 +165,7 @@ export class CreateClusterModel implements Scriptable {
 		this.scriptingProperties['DOCKER_PASSWORD'] = this.containerRegistryPassword;
 		this.scriptingProperties['DOCKER_USERNAME'] = this.containerRegistryUserName;
 		this.scriptingProperties['DOCKER_IMAGE_TAG'] = this.containerImageTag;
+		this.scriptingProperties['DOCKER_EMAIL'] = "test@gmail.com"; //TODO: input from settings page.
 
 		// port settings
 		this.scriptingProperties['MASTER_SQL_PORT'] = this.sqlPort;
