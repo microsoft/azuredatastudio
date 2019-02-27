@@ -247,12 +247,12 @@ export class PerNotebookServerInstance implements IServerInstance {
 		return new Promise<void>((resolve, reject) => {
 			let install = this.options.install;
 			this.childProcess = this.spawnJupyterProcess(install, startCommand);
-
+			let stdErrLog: string = '';
 			// Add listeners for the process exiting prematurely
 			let onErrorBeforeStartup = (err) => reject(err);
 			let onExitBeforeStart = (err) => {
 				if (!this.isStarted) {
-					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}', err));
+					reject(localize('notebookStartProcessExitPremature', 'Notebook process exited prematurely with error: {0}, StdErr Output: {1}', err, stdErrLog));
 				}
 			};
 			this.childProcess.on('error', onErrorBeforeStartup);
@@ -275,6 +275,8 @@ export class PerNotebookServerInstance implements IServerInstance {
 
 					this.updateListeners(handleStdout, handleStdErr, onErrorBeforeStartup, onExitBeforeStart);
 					resolve();
+				} else {
+					stdErrLog += data.toString();
 				}
 			};
 			this.childProcess.stdout.on('data', handleStdout);
@@ -349,12 +351,9 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private spawnJupyterProcess(install: JupyterServerInstallation, startCommand: string): ChildProcess {
-		// Specify the global environment variables
-		let env = this.getEnvWithConfigPaths();
-		// Setting the PATH variable here for the jupyter command. Apparently setting it above will cause the
-		// notebook process to die even though we don't override it with the for loop logic above.
-		let pathVariableSeparator = process.platform === 'win32' ? ';' : ':';
-		env['PATH'] = install.pythonEnvVarPath + pathVariableSeparator + env['PATH'];
+		// Specify the global environment variables.
+		// Note: Get env from the install since it gets used elsewhere
+		let env = this.getEnvWithConfigPaths(install.execOptions.env);
 
 		// 'MSHOST_TELEMETRY_ENABLED' and 'MSHOST_ENVIRONMENT' environment variables are set
 		// for telemetry purposes used by PROSE in the process where the Jupyter kernel runs
@@ -375,11 +374,11 @@ export class PerNotebookServerInstance implements IServerInstance {
 		return childProcess;
 	}
 
-	private getEnvWithConfigPaths(): any {
-		let env = Object.assign({}, process.env);
-		env['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
-		env['JUPYTER_PATH'] = this.instanceDataRoot;
-		return env;
+	private getEnvWithConfigPaths(env: {}): any {
+		let newEnv = Object.assign({}, env);
+		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
+		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
+		return newEnv;
 	}
 }
 
