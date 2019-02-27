@@ -214,7 +214,7 @@ export default class JupyterServerInstallation {
 		this.pythonBinPath = path.join(pythonSourcePath, pythonBinPathSuffix);
 
 		// Store paths to python libraries required to run jupyter.
-		this.pythonEnvVarPath = process.env.Path;
+		this.pythonEnvVarPath = process.env['PATH'];
 
 		let delimiter = path.delimiter;
 		if (process.platform === constants.winPlatform) {
