@@ -29,7 +29,7 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel, CreateCl
 		let selectTargetClusterPage = new SelectExistingClusterPage(this);
 		let summaryPage = new SummaryPage(this);
 		let targetClusterTypePage = new SelectTargetClusterTypePage(this);
-		this.setPages([targetClusterTypePage, settingsPage, clusterProfilePage, selectTargetClusterPage, summaryPage]);
+		this.setPages([targetClusterTypePage, selectTargetClusterPage, clusterProfilePage, settingsPage, summaryPage]);
 
 		this.wizardObject.generateScriptButton.label = localize('bdc-create.generateScriptsButtonText', 'Generate Scripts');
 		this.wizardObject.generateScriptButton.hidden = true;

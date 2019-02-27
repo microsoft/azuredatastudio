@@ -96,9 +96,10 @@ export class CreateClusterModel {
 		return promise;
 	}
 
-	public installTools(): Thenable<void> {
+	public installTool(tool: ToolInfo): Thenable<void> {
 		let promise = new Promise<void>(resolve => {
 			setTimeout(() => {
+				tool.status = ToolInstallationStatus.Installed;
 				this._tmp_tools_installed = true;
 				resolve();
 			}, 2000);

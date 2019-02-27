@@ -19,6 +19,12 @@ export class ClusterProfilePage extends WizardPageBase<CreateClusterWizard> {
 			wizard);
 	}
 
+	public onEnter() {
+		this.wizard.wizardObject.registerNavigationValidator(() => {
+			return true;
+		});
+	}
+
 	protected initialize(view: sqlops.ModelView): Thenable<void> {
 		let formBuilder = view.modelBuilder.formContainer();
 		let form = formBuilder.component();
