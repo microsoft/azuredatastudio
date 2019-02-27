@@ -28,6 +28,9 @@ import { ConnectionManagementService } from 'sql/platform/connection/common/conn
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { ViewsRegistry } from 'vs/workbench/common/views';
+import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 
 export class RefreshAction extends Action {
 
@@ -383,32 +386,28 @@ export class DeleteConnectionAction extends Action {
 	}
 }
 
-
 class DisconnectProfileAction extends Action {
 
 	constructor(
-		@IConnectionManagementService private connectionManagementService: ConnectionManagementService
+		@IOEShimService private objectExplorerService: IOEShimService
 	) {
 		super(DisconnectConnectionAction.ID);
 	}
-	run(profile: IConnectionProfile): Promise<boolean> {
-		if (!profile) {
-			return Promise.resolve(true);
-		}
-		if (this.connectionManagementService.isProfileConnected(profile)) {
-			return this.connectionManagementService.disconnect(profile).then(() => {
-				return true;
+	run(args: TreeViewItemHandleArg): Promise<boolean> {
+		if (args.$treeItem) {
+			return this.objectExplorerService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
+				const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
+				return treeView.collapse(args.$treeItem).then(() => true);
 			});
-		} else {
-			return Promise.resolve(true);
 		}
+		return Promise.resolve(true);
 	}
 }
 
 CommandsRegistry.registerCommand({
 	id: DisconnectConnectionAction.ID,
-	handler: (accessor, profile: IConnectionProfile) => {
-		accessor.get(IInstantiationService).createInstance(DisconnectProfileAction).run(profile);
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		return accessor.get(IInstantiationService).createInstance(DisconnectProfileAction).run(args);
 	}
 });
 

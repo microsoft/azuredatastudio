@@ -18,25 +18,24 @@ import { IConnectionProfile } from 'sqlops';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TPromise } from 'vs/base/common/winjs.base';
-import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { hash } from 'vs/base/common/hash';
 import { generateUuid } from 'vs/base/common/uuid';
-import { URI } from 'vs/base/common/uri';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
 	_serviceBrand: any;
-	getChildren(node: ITreeItem, identifier: any): Promise<ITreeItem[]>;
+	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
+	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 }
 
 export class OEShimService implements IOEShimService {
 	_serviceBrand: any;
 
-	// maps a datasource to a provider handle to a session
-	private sessionMap = new Map<any, Map<number, string>>();
+	// maps a view id -> provider -> payload -> session
+	private sessionMap = new Map<string, Map<string, Map<number, string>>>();
 	private nodeIdMap = new Map<string, string>();
 
 	constructor(
@@ -69,18 +68,30 @@ export class OEShimService implements IOEShimService {
 		return TPromise.wrap(deferred.promise);
 	}
 
-	public async getChildren(node: ITreeItem, identifier: any): Promise<ITreeItem[]> {
+	public async disconnectNode(viewId: string, node: ITreeItem): Promise<boolean> {
+		return (await this.oe.closeSession(node.childProvider, this.oe.getSession(this.sessionMap.get(viewId).get(node.childProvider).get(hash(node.payload))))).success;
+	}
+
+	private async getSession(viewId: string, node: ITreeItem): Promise<string> {
+		// verify the map is correct
+		if (!this.sessionMap.has(viewId)) {
+			this.sessionMap.set(viewId, new Map<string, Map<number, string>>());
+		}
+		if (!this.sessionMap.get(viewId).has(node.childProvider)) {
+			this.sessionMap.get(viewId).set(node.childProvider, new Map<number, string>());
+		}
+		if (!this.sessionMap.get(viewId).get(node.childProvider).has(hash(node.payload))) {
+			this.sessionMap.get(viewId).get(node.childProvider).set(hash(node.payload), await this.createSession(node.childProvider, node));
+		}
+		if (this.nodeIdMap.has(node.handle)) {
+			node.handle = this.nodeIdMap.get(node.handle);
+		}
+		return this.sessionMap.get(viewId).get(node.childProvider).get(hash(node.payload));
+	}
+
+	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		try {
-			if (!this.sessionMap.has(identifier)) {
-				this.sessionMap.set(identifier, new Map<number, string>());
-			}
-			if (!this.sessionMap.get(identifier).has(hash(node.payload || node.childProvider))) {
-				this.sessionMap.get(identifier).set(hash(node.payload || node.childProvider), await this.createSession(node.childProvider, node));
-			}
-			if (this.nodeIdMap.has(node.handle)) {
-				node.handle = this.nodeIdMap.get(node.handle);
-			}
-			let sessionId = this.sessionMap.get(identifier).get(hash(node.payload || node.childProvider));
+			let sessionId = await this.getSession(viewId, node);
 			let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
 			let profile: IConnectionProfile = node.payload || {
 				providerName: node.childProvider,

@@ -12,7 +12,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ContextAwareMenuItemActionItem, fillInActionBarActions, fillInContextMenuActions } from 'vs/platform/actions/browser/menuItemActionItem';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ITreeView, TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ViewContainer, ITreeItemLabel } from 'vs/workbench/common/views';
+import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ViewContainer, ITreeItemLabel } from 'vs/workbench/common/views';
 import { FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IProgressService2 } from 'vs/platform/progress/common/progress';
@@ -42,7 +42,7 @@ import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRender
 import { ILabelService } from 'vs/platform/label/common/label';
 import { dirname } from 'vs/base/common/resources';
 
-import { ITreeItem } from 'sql/workbench/common/views';
+import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 
@@ -316,7 +316,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private createTree() {
 		const actionItemProvider = (action: IAction) => action instanceof MenuItemAction ? this.instantiationService.createInstance(ContextAwareMenuItemActionItem, action) : undefined;
 		const menus = this.instantiationService.createInstance(TreeMenus, this.id);
-		const dataSource = this.instantiationService.createInstance(TreeDataSource, this, this.container);
+		const dataSource = this.instantiationService.createInstance(TreeDataSource, this, this.container, this.id);
 		const renderer = this.instantiationService.createInstance(TreeRenderer, this.id, menus, actionItemProvider);
 		const controller = this.instantiationService.createInstance(TreeController, this.id, menus);
 		this.tree = this.instantiationService.createInstance(FileIconThemableWorkbenchTree, this.treeContainer, { dataSource, renderer, controller }, {});
@@ -413,6 +413,14 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		return Promise.arguments(null);
 	}
 
+	collapse(itemOrItems: ITreeItem | ITreeItem[]): Thenable<void> {
+		if(this.tree) {
+			itemOrItems = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems];
+			return this.tree.collapseAll(itemOrItems);
+		}
+		return Promise.arguments(null);
+	}
+
 	setSelection(items: ITreeItem[]): void {
 		if (this.tree) {
 			this.tree.setSelection(items, { source: 'api' });
@@ -497,6 +505,7 @@ class TreeDataSource implements IDataSource {
 	constructor(
 		private treeView: ITreeView,
 		private container: ViewContainer,
+		private id: string,
 		@IProgressService2 private progressService: IProgressService2,
 		@IOEShimService private objectExplorerService: IOEShimService
 	) {
@@ -515,7 +524,7 @@ class TreeDataSource implements IDataSource {
 
 	getChildren(tree: ITree, node: ITreeItem): Promise<any[]> {
 		if (node.childProvider) {
-			return this.progressService.withProgress({ location: this.container.id }, () => this.objectExplorerService.getChildren(node, this));
+			return this.progressService.withProgress({ location: this.container.id }, () => this.objectExplorerService.getChildren(node, this.id));
 		}
 		if (this.treeView.dataProvider) {
 			return this.progressService.withProgress({ location: this.container.id }, () => this.treeView.dataProvider.getChildren(node));
@@ -753,7 +762,7 @@ class TreeController extends WorkbenchTreeController {
 				}
 			},
 
-			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle }),
+			getActionsContext: () => (<TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle, $treeItem: node }),
 
 			actionRunner: new MultipleSelectionActionRunner(() => tree.getSelection())
 		});
@@ -810,7 +819,7 @@ class TreeMenus extends Disposable implements IDisposable {
 	}
 
 	private mergeActions(actions: IAction[][]): IAction[] {
-		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) > -1)), [] as IAction[]);
+		return actions.reduce((p, c) => p.concat(...c.filter(a => p.findIndex(x => x.id === a.id) === -1)), [] as IAction[]);
 	}
 
 	private getActions(menuId: MenuId, context?: { key: string, value: string }): { primary: IAction[]; secondary: IAction[]; } {
