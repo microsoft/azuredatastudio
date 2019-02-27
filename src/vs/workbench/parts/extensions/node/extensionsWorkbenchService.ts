@@ -699,7 +699,11 @@ export class ExtensionsWorkbenchService implements IExtensionsWorkbenchService, 
 		// {{SQL CARBON EDIT}}
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (typeof extension === 'string') {
-			return this.installWithProgress(() => this.extensionService.install(URI.file(extension)).then(extensionIdentifier => this.checkAndEnableDisabledDependencies(extensionIdentifier)));
+			return this.installWithProgress(() => this.extensionService.install(URI.file(extension)).then(extensionIdentifier => {
+				if (extensionIdentifier) {
+					this.checkAndEnableDisabledDependencies(extensionIdentifier);
+				}
+			}));
 		}
 
 		if (!(extension instanceof Extension)) {

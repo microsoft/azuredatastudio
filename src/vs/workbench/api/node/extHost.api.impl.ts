@@ -651,8 +651,53 @@ export function createApiFactory(
 			}
 		};
 
-		// {{SQL CARBON EDIT}}
-		// delete namespace: debug
+		// {{SQL CARBON EDIT}} -- no-op debug extensibility API
+		// namespace: debug
+		const debug: typeof vscode.debug = {
+			get activeDebugSession() {
+				return undefined;
+			},
+			get activeDebugConsole() {
+				return undefined;
+			},
+			get breakpoints() {
+				return undefined;
+			},
+			onDidStartDebugSession(listener, thisArg?, disposables?) {
+				return undefined;
+			},
+			onDidTerminateDebugSession(listener, thisArg?, disposables?) {
+				return undefined;
+			},
+			onDidChangeActiveDebugSession(listener, thisArg?, disposables?) {
+				return undefined;
+			},
+			onDidReceiveDebugSessionCustomEvent(listener, thisArg?, disposables?) {
+				return undefined;
+			},
+			onDidChangeBreakpoints(listener, thisArgs?, disposables?) {
+				return undefined;
+			},
+			registerDebugConfigurationProvider(debugType: string, provider: vscode.DebugConfigurationProvider) {
+				return undefined;
+			},
+			registerDebugAdapterDescriptorFactory(debugType: string, factory: vscode.DebugAdapterDescriptorFactory) {
+				return undefined;
+			},
+			registerDebugAdapterTrackerFactory(debugType: string, factory: vscode.DebugAdapterTrackerFactory) {
+				return undefined;
+			},
+			startDebugging(folder: vscode.WorkspaceFolder | undefined, nameOrConfig: string | vscode.DebugConfiguration) {
+				return undefined;
+			},
+			addBreakpoints(breakpoints: vscode.Breakpoint[]) {
+				return undefined;
+			},
+			removeBreakpoints(breakpoints: vscode.Breakpoint[]) {
+				return undefined;
+			}
+		};
+
 		const tasks: typeof vscode.tasks = {
 			registerTaskProvider: (type: string, provider: vscode.TaskProvider) => {
 				return extHostTask.registerTaskProvider(extension, provider);
@@ -685,8 +730,7 @@ export function createApiFactory(
 			version: product.vscodeVersion,
 			// namespaces
 			commands,
-			// {{SQL CARBON EDIT}}
-			// debug,
+			debug,
 			env,
 			extensions,
 			languages,
@@ -710,9 +754,8 @@ export function createApiFactory(
 			CompletionList: extHostTypes.CompletionList,
 			CompletionTriggerKind: extHostTypes.CompletionTriggerKind,
 			ConfigurationTarget: extHostTypes.ConfigurationTarget,
-			// {{SQL CARBON EDIT}}
-			// DebugAdapterExecutable: extHostTypes.DebugAdapterExecutable,
-			// DebugAdapterServer: extHostTypes.DebugAdapterServer,
+			DebugAdapterExecutable: extHostTypes.DebugAdapterExecutable,
+			DebugAdapterServer: extHostTypes.DebugAdapterServer,
 			DecorationRangeBehavior: extHostTypes.DecorationRangeBehavior,
 			Diagnostic: extHostTypes.Diagnostic,
 			DiagnosticRelatedInformation: extHostTypes.DiagnosticRelatedInformation,

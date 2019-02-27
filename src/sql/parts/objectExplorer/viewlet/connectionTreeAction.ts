@@ -131,7 +131,6 @@ export class DisconnectConnectionAction extends Action {
 	}
 }
 
-
 /**
  * Actions to add a server to the group
  */

@@ -6,7 +6,7 @@
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
-        "vscode": "^1.17.0",
+        "vscode": "^1.26.0",
         "sqlops": "*"
     },
     "icon": "images/sqlserver.png",
