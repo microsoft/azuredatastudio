@@ -10,13 +10,6 @@ import * as vscode from 'vscode';
 
 const localize = nls.loadMessageBundle();
 
-enum TableRowIndex {
-	Type,
-	SourceName,
-	Action,
-	TargetName
-}
-
 export class SchemaCompareResult {
 	private differencesTable: sqlops.TableComponent;
 	private loader: sqlops.LoadingComponent;
@@ -24,20 +17,17 @@ export class SchemaCompareResult {
 	private diffEditor: sqlops.DiffEditorComponent;
 	private flexModel: sqlops.FlexContainer;
 	private noDifferencesLabel: sqlops.TextComponent;
-	private webViewComponent: sqlops.WebViewComponent;
 	private sourceDropdown: sqlops.DropDownComponent;
 	private targetDropdown: sqlops.DropDownComponent;
 	private sourceTargetFlexLayout: sqlops.FlexContainer;
 	private switchButton: sqlops.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
-	private switched: boolean;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, private targetEndpointInfo: sqlops.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
 		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
 		this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
-		this.switched = false;
 
 		this.editor = sqlops.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
 
@@ -50,13 +40,6 @@ export class SchemaCompareResult {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
 				height: 700
-			}).component();
-
-			this.webViewComponent = view.modelBuilder.webView().withProperties({
-				html: '<html> <div style="border:3px; border-style:solid; padding: 1em;">Source</div><div style="border:3px; border-style:solid; padding: 1em;">Target</div></html>',
-				options: {
-					enableScripts: true
-				}
 			}).component();
 
 			this.sourceDropdown = view.modelBuilder.dropDown().withProperties({
@@ -88,7 +71,6 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
-			// this.flexModel.addItem(this.webViewComponent);
 			this.flexModel.addItem(this.sourceTargetFlexLayout);
 			this.flexModel.addItem(this.loader);
 			this.flexModel.setLayout({
@@ -145,7 +127,7 @@ export class SchemaCompareResult {
 			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
 			// this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
 		} else {
-			this.flexModel.addItem(this.noDifferencesLabel);
+			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
 		}
 
 		this.differencesTable.onRowSelected(e => {
@@ -153,9 +135,7 @@ export class SchemaCompareResult {
 			if (difference !== undefined) {
 				sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
 				targetText = difference.targetScript === null ? '\n' : difference.targetScript;
-				// if (this.switched) {
-				// 	[sourceText, targetText] = [targetText, sourceText];
-				// }
+
 				this.diffEditor.contentLeft = sourceText;
 				this.diffEditor.contentRight = targetText;
 
@@ -193,25 +173,6 @@ export class SchemaCompareResult {
 		return data;
 	}
 
-	private switchSourceAndTarget() {
-		let differences = this.differencesTable.data;
-		differences.forEach(difference => {
-			this.switched = !this.switched;
-			// switch source and target names
-			[difference[TableRowIndex.SourceName], difference[TableRowIndex.TargetName]] = [difference[TableRowIndex.TargetName], difference[TableRowIndex.SourceName]];
-
-			// swap delete and add actions
-			if (difference[TableRowIndex.Action] === this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete]) {
-				difference[TableRowIndex.Action] = this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add];
-			} else if (difference[TableRowIndex.Action] === this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Add]) {
-				difference[TableRowIndex.Action] = this.SchemaCompareActionMap[sqlops.SchemaUpdateAction.Delete];
-			}
-		});
-
-		this.differencesTable.updateProperties({ data: differences });
-	}
-
-
 	private createSwitchButton(view: sqlops.ModelView, ): sqlops.ButtonComponent {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: '⇄',
@@ -221,7 +182,6 @@ export class SchemaCompareResult {
 		this.switchButton.onDidClick(async (click) => {
 			// switch source and target
 			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
-			// this.switchSourceAndTarget();
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
 			this.flexModel.removeItem(this.differencesTable);
 			this.flexModel.removeItem(this.noDifferencesLabel);
