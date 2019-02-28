@@ -397,7 +397,8 @@ class DisconnectProfileAction extends Action {
 		if (args.$treeItem) {
 			return this.objectExplorerService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
 				const { treeView } = (<ICustomViewDescriptor>ViewsRegistry.getView(args.$treeViewId));
-				return treeView.collapse(args.$treeItem).then(() => true);
+				// we need to collapse it then refresh it so that the tree doesn't try and use it's cache next time the user expands the node
+				return treeView.collapse(args.$treeItem).then(() => treeView.refresh([args.$treeItem]).then(() => true));
 			});
 		}
 		return Promise.resolve(true);

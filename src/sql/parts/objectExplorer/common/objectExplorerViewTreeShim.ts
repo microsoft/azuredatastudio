@@ -34,9 +34,10 @@ export interface IOEShimService {
 export class OEShimService implements IOEShimService {
 	_serviceBrand: any;
 
-	// maps a view id -> provider -> payload -> session
+	// maps a view id -> provider -> payload -> sessionId
 	private sessionMap = new Map<string, Map<string, Map<number, string>>>();
-	private nodeIdMap = new Map<string, string>();
+	// map view id -> tree node id -> provider node id
+	private nodeIdMap = new Map<string, Map<string, string>>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -46,7 +47,7 @@ export class OEShimService implements IOEShimService {
 	) {
 	}
 
-	private async createSession(providerId: string, node: ITreeItem): TPromise<string> {
+	private async createSession(viewId: string, providerId: string, node: ITreeItem): TPromise<string> {
 		let deferred = new Deferred<string>();
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		connProfile.saveProfile = false;
@@ -59,7 +60,10 @@ export class OEShimService implements IOEShimService {
 				let rootNode = this.oe.getSession(sessionResp.sessionId).rootNode;
 				// this is how we know it was shimmed
 				if (rootNode.nodePath) {
-					node.handle = this.oe.getSession(sessionResp.sessionId).rootNode.nodePath;
+					if (!this.nodeIdMap.get(viewId)) {
+						this.nodeIdMap.set(viewId, new Map<string, string>());
+					}
+					this.nodeIdMap.get(viewId).set(node.handle, rootNode.nodePath);
 				}
 			}
 			disp.dispose();
@@ -81,10 +85,7 @@ export class OEShimService implements IOEShimService {
 			this.sessionMap.get(viewId).set(node.childProvider, new Map<number, string>());
 		}
 		if (!this.sessionMap.get(viewId).get(node.childProvider).has(hash(node.payload))) {
-			this.sessionMap.get(viewId).get(node.childProvider).set(hash(node.payload), await this.createSession(node.childProvider, node));
-		}
-		if (this.nodeIdMap.has(node.handle)) {
-			node.handle = this.nodeIdMap.get(node.handle);
+			this.sessionMap.get(viewId).get(node.childProvider).set(hash(node.payload), await this.createSession(viewId, node.childProvider, node));
 		}
 		return this.sessionMap.get(viewId).get(node.childProvider).get(hash(node.payload));
 	}
@@ -92,7 +93,11 @@ export class OEShimService implements IOEShimService {
 	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		try {
 			let sessionId = await this.getSession(viewId, node);
-			let treeNode = new TreeNode(undefined, undefined, undefined, node.handle, undefined, undefined, undefined, undefined, undefined, undefined);
+			let requestHandle = node.handle;
+			if (this.nodeIdMap.has(viewId) && this.nodeIdMap.get(viewId).has(node.handle)) {
+				requestHandle = this.nodeIdMap.get(viewId).get(node.handle);
+			}
+			let treeNode = new TreeNode(undefined, undefined, undefined, requestHandle, undefined, undefined, undefined, undefined, undefined, undefined);
 			let profile: IConnectionProfile = node.payload || {
 				providerName: node.childProvider,
 				authenticationType: undefined,
@@ -115,15 +120,18 @@ export class OEShimService implements IOEShimService {
 				sessionId,
 				rootNode: undefined,
 				errorMessage: undefined
-			}, treeNode).then(e => e.map(n => this.mapNodeToITreeItem(n, node))));
+			}, treeNode).then(e => e.map(n => this.mapNodeToITreeItem(viewId, n, node))));
 		} catch (e) {
 			return TPromise.as([]);
 		}
 	}
 
-	private mapNodeToITreeItem(node: TreeNode, parentNode: ITreeItem): ITreeItem {
+	private mapNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let handle = generateUuid();
-		this.nodeIdMap.set(handle, node.nodePath);
+		if (!this.nodeIdMap.has(viewId)) {
+			this.nodeIdMap.set(viewId, new Map<string, string>());
+		}
+		this.nodeIdMap.get(viewId).set(handle, node.nodePath);
 		return {
 			parentHandle: node.parent.id,
 			handle,
