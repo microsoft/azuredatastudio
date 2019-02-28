@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import { nb, IConnectionProfile } from 'sqlops';
 import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
 import { ShellQuotingOptions } from 'vscode';
 
@@ -167,7 +168,7 @@ export enum ModelComponentTypes {
 	Editor,
 	DiffEditor,
 	Dom,
-	Hyperlink
+	Hyperlink,
 }
 
 export interface IComponentShape {
