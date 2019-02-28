@@ -7,7 +7,7 @@
 import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
 import { getContexts, KubectlContext, setContext, inferCurrentClusterType }  from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
-import {  Scriptable, ScriptingDictionary } from '../../scripting/scripting';
+import { Scriptable, ScriptingDictionary } from '../../scripting/scripting';
 import { ClusterType} from '../../interfaces';
 import * as nls from 'vscode-nls';
 

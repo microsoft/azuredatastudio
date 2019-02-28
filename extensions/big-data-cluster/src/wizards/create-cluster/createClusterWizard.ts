@@ -41,6 +41,7 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel, CreateCl
 															this.wizardObject.generateScriptButton.enabled = false;
 															this.scripter.generateDeploymentScript(this.model).then( () => {
 																this.wizardObject.generateScriptButton.enabled = true;
+																//TODO: Add error handling.
 															});
 														});
 		this.wizardObject.doneButton.onClick(() => { });
