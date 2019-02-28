@@ -7,7 +7,9 @@
 import * as nls from 'vscode-nls';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-
+import * as os from 'os';
+import * as path from 'path';
+import * as fs from 'fs';
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareResult {
@@ -17,11 +19,15 @@ export class SchemaCompareResult {
 	private diffEditor: sqlops.DiffEditorComponent;
 	private flexModel: sqlops.FlexContainer;
 	private noDifferencesLabel: sqlops.TextComponent;
+	private webViewComponent: sqlops.WebViewComponent;
 	private sourceDropdown: sqlops.DropDownComponent;
 	private targetDropdown: sqlops.DropDownComponent;
 	private sourceTargetFlexLayout: sqlops.FlexContainer;
 	private switchButton: sqlops.ButtonComponent;
+	private compareButton: sqlops.ButtonComponent;
+	private generateScriptButton: sqlops.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
+	private comparisonResult: sqlops.SchemaCompareResult;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, private targetEndpointInfo: sqlops.SchemaCompareEndpointInfo) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
@@ -42,6 +48,15 @@ export class SchemaCompareResult {
 				height: 700
 			}).component();
 
+			// let html = fs.readFileSync('../../extensions/import/out/dialogs/table.html');
+
+			// this.webViewComponent = view.modelBuilder.webView().withProperties({
+			// 	html: html.toString(),
+			// 	options: {
+			// 		enableScripts: true
+			// 	}
+			// }).component();
+
 			this.sourceDropdown = view.modelBuilder.dropDown().withProperties({
 				values: [sourceName],
 				enabled: false
@@ -54,16 +69,35 @@ export class SchemaCompareResult {
 
 			this.sourceTargetFlexLayout = view.modelBuilder.flexContainer()
 				.withProperties({
-					flexFlow: 'column',
 					alignItems: 'stretch',
 					horizontal: true
 				}).component();
 
-			this.switchButton = this.createSwitchButton(view);
+			this.createSwitchButton(view);
+			this.createCompareButton(view);
+			this.createGenerateScriptButton(view);
 
-			this.sourceTargetFlexLayout.addItem(this.sourceDropdown, { CSSStyles: { 'width': '45%', 'margin': '1em' } });
+			let buttonsFlexLayout = view.modelBuilder.flexContainer()
+				.withProperties({
+					horizontal: true
+				}).component();
+
+			buttonsFlexLayout.addItem(this.compareButton, { CSSStyles: { 'width': '100px', 'margin': '20px 20px 0px' } });
+			buttonsFlexLayout.addItem(this.generateScriptButton, { CSSStyles: { 'width': '120px', 'margin': '20px 0px 0px' } });
+
+			let sourceLabel = view.modelBuilder.text().withProperties({
+				value: localize('schemaCompare.sourceLabel', 'Source:')
+			}).component();
+
+			let targetLabel = view.modelBuilder.text().withProperties({
+				value: localize('schemaCompare.targetLabel', 'Target:')
+			}).component();
+
+			this.sourceTargetFlexLayout.addItem(sourceLabel, { CSSStyles: { 'width': '5%', 'margin-left': '1em' } });
+			this.sourceTargetFlexLayout.addItem(this.sourceDropdown, { CSSStyles: { 'width': '40%', 'margin': '1em' } });
 			this.sourceTargetFlexLayout.addItem(this.switchButton, { CSSStyles: { 'width': '3em', 'margin': '1em' } });
-			this.sourceTargetFlexLayout.addItem(this.targetDropdown, { CSSStyles: { 'width': '45%', 'margin': '1em' } });
+			this.sourceTargetFlexLayout.addItem(targetLabel, { CSSStyles: { 'width': '5%', 'margin-left': '1em' } });
+			this.sourceTargetFlexLayout.addItem(this.targetDropdown, { CSSStyles: { 'width': '40%', 'margin': '1em' } });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -71,8 +105,10 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
+			this.flexModel.addItem(buttonsFlexLayout);
 			this.flexModel.addItem(this.sourceTargetFlexLayout);
 			this.flexModel.addItem(this.loader);
+			// this.flexModel.addItem(this.webViewComponent);
 			this.flexModel.setLayout({
 				flexFlow: 'column',
 				// alignItems: 'stretch',
@@ -90,13 +126,13 @@ export class SchemaCompareResult {
 
 	private async execute() {
 		let service = await SchemaCompareResult.getService('MSSQL');
-		let result = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, sqlops.TaskExecutionMode.execute);
-		if (!result || !result.success) {
+		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, sqlops.TaskExecutionMode.execute);
+		if (!this.comparisonResult || !this.comparisonResult.success) {
 			vscode.window.showErrorMessage(
-				localize('schemaCompare.compareErrorMessage', "Schema Compare failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+				localize('schemaCompare.compareErrorMessage', "Schema Compare failed '{0}'", this.comparisonResult.errorMessage ? this.comparisonResult.errorMessage : 'Unknown'));
 		}
 
-		let data = this.getAllDifferences(result.differences);
+		let data = this.getAllDifferences(this.comparisonResult.differences);
 
 		this.differencesTable.updateProperties({
 			data: data,
@@ -123,7 +159,14 @@ export class SchemaCompareResult {
 
 		this.flexModel.removeItem(this.loader);
 		this.switchButton.enabled = true;
-		if (result.differences.length > 0) {
+		this.compareButton.enabled = true;
+
+		// only enable generate script button if the target is a db
+		if (this.targetEndpointInfo.endpointType === sqlops.SchemaCompareEndpointType.database) {
+			this.generateScriptButton.enabled = true;
+		}
+
+		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.differencesTable, { flex: '1 1' });
 			// this.flexModel.addItem(this.diffEditor, { flex: '1 1' });
 		} else {
@@ -131,7 +174,7 @@ export class SchemaCompareResult {
 		}
 
 		this.differencesTable.onRowSelected(e => {
-			let difference = result.differences[this.differencesTable.selectedRows[0]];
+			let difference = this.comparisonResult.differences[this.differencesTable.selectedRows[0]];
 			if (difference !== undefined) {
 				sourceText = difference.sourceScript === null ? '\n' : difference.sourceScript;
 				targetText = difference.targetScript === null ? '\n' : difference.targetScript;
@@ -173,7 +216,7 @@ export class SchemaCompareResult {
 		return data;
 	}
 
-	private createSwitchButton(view: sqlops.ModelView, ): sqlops.ButtonComponent {
+	private createSwitchButton(view: sqlops.ModelView) {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: '⇄',
 			enabled: false
@@ -183,15 +226,62 @@ export class SchemaCompareResult {
 			// switch source and target
 			[this.sourceDropdown.values, this.targetDropdown.values] = [this.targetDropdown.values, this.sourceDropdown.values];
 			[this.sourceEndpointInfo, this.targetEndpointInfo] = [this.targetEndpointInfo, this.sourceEndpointInfo];
-			this.flexModel.removeItem(this.differencesTable);
-			this.flexModel.removeItem(this.noDifferencesLabel);
-			this.flexModel.addItem(this.loader);
-			this.switchButton.enabled = false;
-			this.execute();
+			[this.sourceName, this.targetName] = [this.targetName, this.sourceName];
+			this.reExecute();
 		});
-
-		return this.switchButton;
 	}
+
+	private createCompareButton(view: sqlops.ModelView) {
+		this.compareButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.compareButton', 'Compare'),
+			enabled: false
+		}).component();
+
+		this.compareButton.onDidClick(async (click) => {
+			this.reExecute();
+		});
+	}
+
+	private reExecute() {
+		this.flexModel.removeItem(this.differencesTable);
+		this.flexModel.removeItem(this.noDifferencesLabel);
+		this.flexModel.addItem(this.loader);
+		this.compareButton.enabled = false;
+		this.switchButton.enabled = false;
+		this.generateScriptButton.enabled = false;
+		this.execute();
+	}
+
+	private createGenerateScriptButton(view: sqlops.ModelView) {
+		this.generateScriptButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.generateScriptButton', 'Generate Script'),
+			enabled: false
+		}).component();
+
+		this.generateScriptButton.onDidClick(async (click) => {
+			console.error('clicked generate script button');
+			// get file path
+			let defaultFilePath = path.join(os.homedir(), this.targetName + '-' + 'Upgrade' + '.sql');
+			let fileUri = await vscode.window.showSaveDialog(
+				{
+					defaultUri: vscode.Uri.file(defaultFilePath),
+					saveLabel: localize('schemaCompare.saveFile', 'Save'),
+					filters: {
+						'SQL Files': ['sql'],
+					}
+				}
+			);
+
+			if (!fileUri) {
+				return;
+			}
+
+			let service = await SchemaCompareResult.getService('MSSQL');
+			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, sqlops.TaskExecutionMode.execute);
+		});
+	}
+
+
 
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
 		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);

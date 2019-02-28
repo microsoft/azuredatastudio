@@ -25,6 +25,7 @@ export interface IDacFxService {
 	generateDeployScript(packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
 export class DacFxService implements IDacFxService {
@@ -81,6 +82,11 @@ export class DacFxService implements IDacFxService {
 			return runner.schemaCompare(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
 		});
 	}
+
+	schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareGenerateScript(operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
+		});	}
 
 	private _runAction<T>(uri: string, action: (handler: azdata.DacFxServicesProvider) => Thenable<T>): Thenable<T> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);

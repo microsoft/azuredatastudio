@@ -1724,7 +1724,6 @@ declare module 'sqlops' {
 		database = 0,
 		dacpac = 1
 	}
-
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
@@ -1738,6 +1737,13 @@ declare module 'sqlops' {
 		taskExecutionMode: TaskExecutionMode;
 	}
 
+	export interface SchemaCompareGenerateScriptParams {
+		operationId: string;
+		targetDatabaseName: string;
+		scriptFilePath: string;
+		taskExecutionMode: TaskExecutionMode;
+	}
+
 	export interface DacFxServicesProvider extends DataProvider {
 		exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
@@ -1746,6 +1752,7 @@ declare module 'sqlops' {
 		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode): Thenable<SchemaCompareResult>;
+		schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

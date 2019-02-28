@@ -451,6 +451,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			schemaCompare(sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, targetEndpointInfo: sqlops.SchemaCompareEndpointInfo, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.SchemaCompareResult> {
 				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode);
+			},
+			schemaCompareGenerateScript(operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.DacFxResult> {
+				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetDatabaseName, scriptFilePath, taskExecutionMode);
 			}
 		});
 

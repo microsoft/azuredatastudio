@@ -352,6 +352,13 @@ export interface SchemaCompareParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaCompareGenerateScriptParams {
+	operationId: string;
+	targetDatabaseName: string;
+	scriptFilePath: string;
+	taskExecutionMode: TaskExecutionMode;
+}
+
 export namespace ExportRequest {
 	export const type = new RequestType<ExportParams, azdata.DacFxResult, void, void>('dacfx/export');
 }
@@ -378,5 +385,9 @@ export namespace GenerateDeployPlanRequest {
 
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, sqlops.SchemaCompareResult, void, void>('dacfx/schemaCompare');
+}
+
+export namespace SchemaCompareGenerateScriptRequest {
+	export const type = new RequestType<SchemaCompareGenerateScriptParams, sqlops.DacFxResult, void, void>('dacfx/schemaCompareGenerateScript');
 }
 // ------------------------------- < DacFx > ------------------------------------

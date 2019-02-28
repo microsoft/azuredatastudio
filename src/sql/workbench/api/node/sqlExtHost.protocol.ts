@@ -461,6 +461,11 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$schemaCompare(handle: number, sourceEndpointInfo: sqlops.SchemaCompareEndpointInfo, targetEndpointInfo: sqlops.SchemaCompareEndpointInfo, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.SchemaCompareResult> { throw ni(); }
 
+	/**
+	 * DacFx schema compare generate script
+	 */
+	$schemaCompareGenerateScript(handle: number, operationId: string, targetDatabaseName: string, scriptFilePath: string, taskExecutionMode: sqlops.TaskExecutionMode): Thenable<sqlops.SchemaCompareResult> { throw ni(); }
+
 }
 
 /**
