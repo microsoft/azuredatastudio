@@ -845,7 +845,7 @@ declare module 'sqlops' {
 	}
 
 	export namespace adsWindowsSupport {
-			// ADS Windows Support service interfaces -----------------------------------------------------------------
+		// ADS Windows Support service interfaces -----------------------------------------------------------------
 
 		// Params to pass to SsmsMin.exe, only an action and server are required - the rest are optional based on the
 		// action used.
