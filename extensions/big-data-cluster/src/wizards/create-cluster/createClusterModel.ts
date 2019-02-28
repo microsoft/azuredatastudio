@@ -5,9 +5,10 @@
 'use strict';
 
 import { TargetClusterType, ClusterPorts, ContainerRegistryInfo, TargetClusterTypeInfo, ToolInfo, ToolInstallationStatus } from '../../interfaces';
-import { getContexts, KubectlContext, setContext }  from '../../kubectl/kubectlUtils';
+import { getContexts, KubectlContext, setContext, inferCurrentClusterType }  from '../../kubectl/kubectlUtils';
 import { Kubectl } from '../../kubectl/kubectl';
 import {  Scriptable, ScriptingDictionary } from '../../scripting/scripting';
+import { ClusterType} from '../../interfaces';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -141,11 +142,26 @@ export class CreateClusterModel implements Scriptable {
 
 	public containerRegistryPassword: string;
 
-	public getScriptProperties() : ScriptingDictionary<string> {
+	public async getTargetClusterPlatform(targetContextName : string) : Promise<string> {
+		await setContext(this._kubectl, targetContextName);
+		let clusterType = await inferCurrentClusterType(this._kubectl);
+
+		switch (clusterType) {
+			case ClusterType.AKS:
+				return 'aks';
+			case ClusterType.Minikube:
+				return 'minikube';
+			case ClusterType.Other:
+			default:
+				return 'kubernetes';
+		}
+	}
+
+	public async getScriptProperties() : Promise<ScriptingDictionary<string>> {
 
 		// Cluster settings
 		this.scriptingProperties['CLUSTER_NAME'] = this.selectedCluster.clusterName;
-		this.scriptingProperties['CLUSTER_PLATFORM'] = 'AKS'; // TODO this needs to be detected
+		this.scriptingProperties['CLUSTER_PLATFORM'] = await this.getTargetClusterPlatform(this.selectedCluster.contextName);
 
 		// Default pool count for now. TODO: Update from user input
 		this.scriptingProperties['CLUSTER_DATA_POOL_REPLICAS'] = '1';
@@ -164,7 +180,6 @@ export class CreateClusterModel implements Scriptable {
 		this.scriptingProperties['DOCKER_PASSWORD'] = this.containerRegistryPassword;
 		this.scriptingProperties['DOCKER_USERNAME'] = this.containerRegistryUserName;
 		this.scriptingProperties['DOCKER_IMAGE_TAG'] = this.containerImageTag;
-		this.scriptingProperties['DOCKER_EMAIL'] = "test@gmail.com"; //TODO: input from settings page.
 
 		// port settings
 		this.scriptingProperties['MASTER_SQL_PORT'] = this.sqlPort;

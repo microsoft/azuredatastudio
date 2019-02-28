@@ -69,3 +69,11 @@ export enum ToolInstallationStatus {
 	NotInstalled,
 	Installing
 }
+
+export enum ClusterType {
+    Unknown = 0,
+    AKS,
+	Minikube,
+	Kubernetes,
+    Other
+}

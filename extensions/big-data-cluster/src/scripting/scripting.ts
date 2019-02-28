@@ -10,9 +10,8 @@ import mkdirp = require('mkdirp');
 import { Kubectl, baseKubectlPath } from '../kubectl/kubectl';
 import { KubectlContext } from '../kubectl/kubectlUtils';
 
-
  export interface Scriptable {
-		getScriptProperties(): ScriptingDictionary<string>;
+		getScriptProperties(): Promise<ScriptingDictionary<string>>;
 		getTargetKubectlContext() : KubectlContext;
  }
 
@@ -44,7 +43,7 @@ export class ScriptGenerator {
 		let deployFilePath = path.join(deployFolder, deployFileName);
 
 		let envVars = "";
-		let propertiesDict = scriptable.getScriptProperties();
+		let propertiesDict = await scriptable.getScriptProperties();
 		for (let key in propertiesDict) {
 			let value = propertiesDict[key];
 			envVars += this._shell.isWindows() ? `Set ${key} = ${value}\n` : `export ${key} = ${value}\n`;
@@ -52,9 +51,12 @@ export class ScriptGenerator {
 		envVars += '\n';
 
 		let kubeContextcommand = `${this._kubectlPath} config use-context ${targetContextName}\n`;
+		// Todo: The API for mssqlctl may change per version, so need a version check to use proper syntax.
 		let deployCommand = `mssqlctl create cluster ${targetClusterName}\n`;
 
 		let deployContent = envVars + kubeContextcommand + deployCommand;
+
+		mkdirp.sync(deployFolder);
 		await fs.writeFile(deployFilePath, deployContent, handleError);
 	}
 

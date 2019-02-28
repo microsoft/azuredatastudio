@@ -37,7 +37,12 @@ export class CreateClusterWizard extends WizardBase<CreateClusterModel, CreateCl
 		this.wizardObject.generateScriptButton.hidden = false;
 		this.wizardObject.doneButton.label = localize('bdc-create.createClusterButtonText', 'Create');
 
-		this.wizardObject.generateScriptButton.onClick(async () => await this.scripter.generateDeploymentScript(this.model));
+		this.wizardObject.generateScriptButton.onClick(async () => {
+															this.wizardObject.generateScriptButton.enabled = false;
+															this.scripter.generateDeploymentScript(this.model).then( () => {
+																this.wizardObject.generateScriptButton.enabled = true;
+															});
+														});
 		this.wizardObject.doneButton.onClick(() => { });
 	}
 }
