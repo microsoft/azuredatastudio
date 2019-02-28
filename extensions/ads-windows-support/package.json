@@ -1,0 +1,55 @@
+{
+  "name": "ads-windows-support",
+  "displayName": "ADS Windows Support",
+  "description": "Additional functionality for ADS on Windows Platforms",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "engines": {
+    "vscode": "*",
+    "sqlops": "*"
+  },
+  "activationEvents": [
+    "onCommand:adsWindowsSupport.launchSsmsDialog"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "adsWindowsSupport.launchSsmsDialog",
+        "title": "Launch SSMS Dialog",
+        "category": "AdsWindowsSupport"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "adsWindowsSupport.launchSsmsDialog",
+          "when": "false"
+        }
+      ]
+    },
+    "outputChannels": [
+      "ads-windows-support"
+    ]
+  },
+  "dependencies": {
+    "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
+    "shelljs": "^0.7.5",
+    "vscode-extension-telemetry": "^0.0.15",
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "vscode": "1.0.1"
+  }
+}
