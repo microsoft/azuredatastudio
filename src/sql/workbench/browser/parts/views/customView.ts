@@ -524,7 +524,15 @@ class TreeDataSource implements IDataSource {
 
 	getChildren(tree: ITree, node: ITreeItem): Promise<any[]> {
 		if (node.childProvider) {
-			return this.progressService.withProgress({ location: this.container.id }, () => this.objectExplorerService.getChildren(node, this.id));
+			return this.progressService.withProgress({ location: this.container.id }, () => this.objectExplorerService.getChildren(node, this.id)).catch(e => {
+				// if some error is caused we assume something tangently happened
+				// i.e the user could retry if they wanted.
+				// So in order to enable this we need to tell the tree to refresh this node so it will ask us for the data again
+				setTimeout(() => {
+					tree.collapse(node).then(() => tree.refresh(node));
+				});
+				return [];
+			});
 		}
 		if (this.treeView.dataProvider) {
 			return this.progressService.withProgress({ location: this.container.id }, () => this.treeView.dataProvider.getChildren(node));
