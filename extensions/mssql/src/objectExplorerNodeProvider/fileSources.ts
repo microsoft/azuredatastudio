@@ -14,7 +14,7 @@ import * as os from 'os';
 
 import * as constants from '../constants';
 import * as utils from '../utils';
-import { WebHDFS } from './webhdfs';
+import { WebHDFS, HdfsError } from './webhdfs';
 
 export function joinHdfsPath(parent: string, child: string): string {
 	if (parent === constants.hdfsRootPath) {
@@ -100,7 +100,7 @@ export interface IHdfsClient {
 	 * @param {(err: any, files: any[]) => void} callback
 	 * @returns void
 	 */
-	readdir(path: string, callback: (err: any, files: any[]) => void): void;
+	readdir(path: string, callback: (error: HdfsError, files: any[]) => void): void;
 
 	/**
 	 * Create readable stream for given path
@@ -123,27 +123,27 @@ export interface IHdfsClient {
 	 * Make new directory
 	 * @param {string} path
 	 * @param {string} [permission=0755]
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	mkdir(path: string, permission: string, callback: (error: any) => void): void;
+	mkdir(path: string, permission: string, callback: (error: HdfsError) => void): void;
 
 	/**
 	 * Delete directory or file path
 	 * @param {string} path
 	 * @param {boolean} [recursive=false]
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	rmdir(path: string, recursive: boolean, callback: (error: any) => void): void;
+	rmdir(path: string, recursive: boolean, callback: (error: HdfsError) => void): void;
 
 	/**
 	 * Check file existence
 	 * @param {string} path
-	 * @param {(error: any, exists: boolean) => void} callback
+	 * @param {(error: HdfsError, exists: boolean) => void} callback
 	 * @returns void
 	 */
-	exists(path: string, callback: (error: any, exists: boolean) => void): void;
+	exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void;
 }
 
 export class FileSourceFactory {
@@ -166,7 +166,7 @@ export class FileSourceFactory {
 				port: options.port,
 				path: constants.hdfsRootPath,
 				rejectUnauthorized: false
-			  };
+			};
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
 		}

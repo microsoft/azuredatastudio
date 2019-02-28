@@ -1,11 +1,8 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
+// This code is originally from https://github.com/harrisiirak/webhdfs
+// License: https://github.com/harrisiirak/webhdfs/blob/master/LICENSE
 
 'use strict';
 
-import * as util from 'util';
 import * as url from 'url';
 import * as fs from 'fs';
 import * as querystring from 'querystring';
@@ -15,14 +12,13 @@ import * as nls from 'vscode-nls';
 import { IHdfsOptions, IRequestParams } from './fileSources';
 
 const localize = nls.loadMessageBundle();
+const ErrorMessageInvalidDataStructure =
+	localize('webhdfs.invalidDataStructure', 'Invalid Data Structure');
 
 export class WebHDFS {
 	private _requestParams: IRequestParams;
 	private _opts: IHdfsOptions;
 	private _url: any;
-
-	private static ErrorMessageInvalidDataStructure =
-		localize('webhdfs.invalidDataStructure', 'Invalid Data Structure');
 
 	constructor(opts: IHdfsOptions, requestParams: IRequestParams) {
 		if (!(this instanceof WebHDFS)) {
@@ -30,35 +26,27 @@ export class WebHDFS {
 		}
 
 		let missingProps = ['host', 'port', 'path']
-			.filter(p => !opts.hasOwnProperty(p));
+			.filter(p => !opts.hasOwnProperty(p) || !opts[p]);
 		if (missingProps && missingProps.length > 0) {
-			throw new Error(
-				util.format(
-					localize('webhdfs.missingProperties',
-						'Unable to create WebHDFS client: missing options: %s'),
-					missingProps.join(', ')
-				)
-			);
+			throw new Error(localize('webhdfs.missingProperties',
+				'Unable to create WebHDFS client due to missing options: ${0}', missingProps.join(', ')));
 		}
 
-		this._requestParams = requestParams;
+		this._requestParams = requestParams || {};
+		this._requestParams.timeout = this._requestParams.timeout || 10000;
+
 		this._opts = opts;
 		this._url = {
 			protocol: opts.protocol || 'http',
-			hostname: opts.host,
+			hostname: opts.host.trim(),
 			port: opts.port || 80,
 			pathname: opts.path
 		};
 	}
 
-	private checkArgUndefined(argName: string, argValue: any): void {
+	private checkArgDefined(argName: string, argValue: any): void {
 		if (!argValue) {
-			throw new Error(
-				util.format(
-					localize('webhdfs.undefinedArgument', '\'%s\' is undefined.'),
-					argName
-				)
-			);
+			throw new Error(localize('webhdfs.undefinedArgument', '\'${0}\' is undefined.', argName));
 		}
 	}
 
@@ -103,46 +91,57 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Retrieve error message from response
+	 * Interprets error message by status code in response object
 	 *
 	 * @param {request.Response} response Response
 	 * @param {boolean} strict If set true then RemoteException must be present in the body
-	 * @returns {string} Error message
+	 * @returns {string} Error message interpreted by status code
 	 */
-	private retrieveErrorMessage(response: request.Response, strict: boolean = false): string {
-		let errorMessage: string = undefined;
-		if (!strict) {
-			errorMessage = this.toStatusMessage(response.statusCode);
-		} else {
-			let responseBody = response.body;
-			if (typeof responseBody === 'string') {
-				try {
-					responseBody = JSON.parse(responseBody);
-				} catch { }
-			}
-
-			if (responseBody && responseBody.hasOwnProperty('RemoteException')) {
-				errorMessage = responseBody.RemoteException.message;
-			}
-		}
-
+	private getErrorMessage(response: request.Response): string {
+		if (!response) { return undefined; }
+		let errorMessage: string = this.toStatusMessage(response.statusCode)
+			|| (response && response.statusMessage);
 		if (!errorMessage) {
 			errorMessage = localize('webhdfs.unknownError', 'Unknown Error');
 		}
-
 		return errorMessage;
+	}
+
+	/**
+	 * Gets remote exception message from response body
+	 *
+	 * @param {any} responseBody response body
+	 * @returns {string} Error message interpreted by status code
+	 */
+	private getRemoteExceptionMessage(responseBody: any): string {
+		if (!responseBody) { return undefined; }
+		if (typeof responseBody === 'string') {
+			try {
+				responseBody = JSON.parse(responseBody);
+			} catch { }
+		}
+		let remoteExceptionMessage: string = undefined;
+		if (responseBody.hasOwnProperty('RemoteException')
+			&& responseBody.RemoteException.hasOwnProperty('message')) {
+			remoteExceptionMessage = responseBody.RemoteException.message;
+		}
+		return remoteExceptionMessage;
 	}
 
 	/**
 	 * Parse error state from response and return valid Error object
 	 *
 	 * @param {request.Response} response Response
-	 * @param {boolean} strict If set true then RemoteException must be present in the body
-	 * @returns {Error} Error object
+	 * @param {any} [responseBody] response body
+	 * @param {any} [error] error
+	 * @returns {HdfsError} HdfsError object
 	 */
-	private parseError(response: request.Response, strict: boolean = false): Error {
-		let errorMessage: string = this.retrieveErrorMessage(response, strict);
-		return new Error(errorMessage);
+	private parseError(response: request.Response, responseBody?: any, error?: any): HdfsError {
+		if (!response) { return undefined; }
+		let errorMessage: string = this.getErrorMessage(response);
+		let remoteExceptionMessage: string = this.getRemoteExceptionMessage(responseBody || response.body);
+		return new HdfsError(errorMessage, response.statusCode,
+			response.statusMessage, remoteExceptionMessage, error);
 	}
 
 	/**
@@ -182,11 +181,11 @@ export class WebHDFS {
 	 * @param {string} method HTTP method
 	 * @param {string} url
 	 * @param {object} opts Options for request
-	 * @param {(error: any, response: request.Response, body: any) => void} callback
+	 * @param {(error: HdfsError, response: request.Response) => void} callback
 	 * @returns void
 	 */
 	private sendRequest(method: string, url: string, opts: object,
-		callback: (error: any, response: request.Response, body: any) => void): void {
+		callback: (error: HdfsError, response: request.Response) => void): void {
 
 		let requestParams = Object.assign(
 			{ method: method, url: url, json: true },
@@ -196,15 +195,20 @@ export class WebHDFS {
 
 		request(requestParams, (error, response, body) => {
 			if (!callback) { return; }
-			if (error) {
-				callback(error, undefined, undefined);
-			} else if (this.isError(response)) {
-				callback(this.parseError(response), undefined, undefined);
-			} else if (this.isSuccess(response)) {
-				callback(error, response, body);
+			if (this.isSuccess(response)) {
+				callback(undefined, response);
+			} else if (error || this.isError(response)) {
+				let hdfsError = this.parseError(response, body, error);
+				callback(hdfsError, response);
 			} else {
-				let errorMessage = localize('webhdfs.unexpectedRedirect', 'Unexpected Redirect');
-				callback(new Error(errorMessage), response, body);
+				let hdfsError = new HdfsError(
+					localize('webhdfs.unexpectedRedirect', 'Unexpected Redirect'),
+					response && response.statusCode,
+					response && response.statusMessage,
+					this.getRemoteExceptionMessage(body || response.body),
+					error
+				);
+				callback(hdfsError, response);
 			}
 		});
 	}
@@ -214,12 +218,12 @@ export class WebHDFS {
 	 *
 	 * @param {string} path
 	 * @param {string} mode
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	public chmod(path: string, mode: string, callback: (error: any) => void): void {
-		this.checkArgUndefined('path', path);
-		this.checkArgUndefined('mode', mode);
+	public chmod(path: string, mode: string, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
+		this.checkArgDefined('mode', mode);
 
 		let endpoint = this.getOperationEndpoint('setpermission', path, { permission: mode });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
@@ -233,13 +237,13 @@ export class WebHDFS {
 	 * @param {string} path
 	 * @param {string} userId User name
 	 * @param {string} groupId Group name
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	public chown(path: string, userId: string, groupId: string, callback: (error: any) => void): void {
-		this.checkArgUndefined('path', path);
-		this.checkArgUndefined('userId', userId);
-		this.checkArgUndefined('groupId', groupId);
+	public chown(path: string, userId: string, groupId: string, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
+		this.checkArgDefined('userId', userId);
+		this.checkArgDefined('groupId', groupId);
 
 		let endpoint = this.getOperationEndpoint('setowner', path, {
 			owner: userId,
@@ -257,11 +261,11 @@ export class WebHDFS {
 	 * Read directory contents
 	 *
 	 * @param {string} path
-	 * @param {(error: any, files: any[]) => void)} callback
+	 * @param {(error: HdfsError, files: any[]) => void)} callback
 	 * @returns void
 	 */
-	public readdir(path: string, callback: (error: any, files: any[]) => void): void {
-		this.checkArgUndefined('path', path);
+	public readdir(path: string, callback: (error: HdfsError, files: any[]) => void): void {
+		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('liststatus', path);
 		this.sendRequest('GET', endpoint, undefined, (error, response) => {
@@ -275,7 +279,7 @@ export class WebHDFS {
 				files = response.body.FileStatuses.FileStatus;
 				callback(undefined, files);
 			} else {
-				callback(new Error(WebHDFS.ErrorMessageInvalidDataStructure), undefined);
+				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
 			}
 		});
 	}
@@ -285,11 +289,11 @@ export class WebHDFS {
 	 *
 	 * @param {string} path
 	 * @param {string} [permission=0755]
-	 * @param {Function} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	public mkdir(path: string, permission: string = '0755', callback: (error: any) => void): void {
-		this.checkArgUndefined('path', path);
+	public mkdir(path: string, permission: string = '0755', callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('mkdirs', path, {
 			permission: permission
@@ -307,12 +311,12 @@ export class WebHDFS {
 	 *
 	 * @param {string} path
 	 * @param {string} destination
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	public rename(path: string, destination: string, callback: (error: any) => void): void {
-		this.checkArgUndefined('path', path);
-		this.checkArgUndefined('destination', destination);
+	public rename(path: string, destination: string, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
+		this.checkArgDefined('destination', destination);
 
 		let endpoint = this.getOperationEndpoint('rename', path, {
 			destination: destination
@@ -329,11 +333,11 @@ export class WebHDFS {
 	 * Get file status for given path
 	 *
 	 * @param {string} path
-	 * @param {(error: any, fileStatus: any) => void} callback
+	 * @param {(error: HdfsError, fileStatus: any) => void} callback
 	 * @returns void
 	 */
-	public stat(path: string, callback: (error: any, fileStatus: any) => void): void {
-		this.checkArgUndefined('path', path);
+	public stat(path: string, callback: (error: HdfsError, fileStatus: any) => void): void {
+		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('getfilestatus', path);
 		this.sendRequest('GET', endpoint, undefined, (error, response) => {
@@ -343,7 +347,7 @@ export class WebHDFS {
 			} else if (response.body.hasOwnProperty('FileStatus')) {
 				callback(undefined, response.body.FileStatus);
 			} else {
-				callback(new Error(WebHDFS.ErrorMessageInvalidDataStructure), undefined);
+				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
 			}
 		});
 	}
@@ -354,11 +358,11 @@ export class WebHDFS {
 	 *
 	 * @see WebHDFS.stat
 	 * @param {string} path
-	 * @param {(error: any, exists: boolean) => void} callback
+	 * @param {(error: HdfsError, exists: boolean) => void} callback
 	 * @returns void
 	 */
-	public exists(path: string, callback: (error: any, exists: boolean) => void): void {
-		this.checkArgUndefined('path', path);
+	public exists(path: string, callback: (error: HdfsError, exists: boolean) => void): void {
+		this.checkArgDefined('path', path);
 
 		this.stat(path, (error, fileStatus) => {
 			let exists = !fileStatus ? false : true;
@@ -373,26 +377,27 @@ export class WebHDFS {
 	 * @param {string | Buffer} data
 	 * @param {boolean} append If set to true then append data to the file
 	 * @param {object} opts
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns {fs.WriteStream}
 	 */
 	public writeFile(path: string, data: string | Buffer, append: boolean, opts: object,
-		callback: (error: any) => void): fs.WriteStream {
-		this.checkArgUndefined('path', path);
-		this.checkArgUndefined('data', data);
+		callback: (error: HdfsError) => void): fs.WriteStream {
+		this.checkArgDefined('path', path);
+		this.checkArgDefined('data', data);
 
-		let error: any = null;
+		let hdfsError: HdfsError = null;
 		let localStream = new BufferStreamReader(data);
 		let remoteStream: fs.WriteStream = this.createWriteStream(path, !!append, opts || {});
 
 		// Handle events
 		remoteStream.once('error', (err) => {
-			error = err;
+			hdfsError = new HdfsError();
+			hdfsError.internalError = err;
 		});
 
 		remoteStream.once('finish', () => {
-			if (callback && error) {
-				callback(error);
+			if (callback && hdfsError) {
+				callback(hdfsError);
 			}
 		});
 
@@ -407,10 +412,10 @@ export class WebHDFS {
 	 * @param {string} path
 	 * @param {string | Buffer} data
 	 * @param {object} opts
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns {fs.WriteStream}
 	 */
-	public appendFile(path: string, data: string | Buffer, opts: object, callback: (error: any) => void): fs.WriteStream {
+	public appendFile(path: string, data: string | Buffer, opts: object, callback: (error: HdfsError) => void): fs.WriteStream {
 		return this.writeFile(path, data, true, opts, callback);
 	}
 
@@ -420,18 +425,19 @@ export class WebHDFS {
 	 * @fires Request#data
 	 * @fires WebHDFS#finish
 	 * @param {path} path
-	 * @param {(error: any, buffer: Buffer) => void} callback
+	 * @param {(error: HdfsError, buffer: Buffer) => void} callback
 	 * @returns void
 	 */
-	public readFile(path: string, callback: (error: any, buffer: Buffer) => void): void {
-		this.checkArgUndefined('path', path);
+	public readFile(path: string, callback: (error: HdfsError, buffer: Buffer) => void): void {
+		this.checkArgDefined('path', path);
 
 		let remoteFileStream = this.createReadStream(path);
 		let data: any[] = [];
-		let error: any = undefined;
+		let hdfsError: HdfsError = undefined;
 
 		remoteFileStream.once('error', (err) => {
-			error = err;
+			hdfsError = new HdfsError();
+			hdfsError.internalError = err;
 		});
 
 		remoteFileStream.on('data', (dataChunk) => {
@@ -440,10 +446,10 @@ export class WebHDFS {
 
 		remoteFileStream.once('finish', function () {
 			if (!callback) { return; }
-			if (!error) {
+			if (!hdfsError) {
 				callback(undefined, Buffer.concat(data));
 			} else {
-				callback(error, undefined);
+				callback(hdfsError, undefined);
 			}
 		});
 	}
@@ -466,15 +472,15 @@ export class WebHDFS {
 	 * localFileStream.pipe(remoteFileStream);
 	 *
 	 * remoteFileStream.on('error', function onError (err) {
-	 *   // Do something with the error
+	 *	// Do something with the error
 	 * });
 	 *
 	 * remoteFileStream.on('finish', function onFinish () {
-	 *  // Upload is done
+	 *	// Upload is done
 	 * });
 	 */
 	public createWriteStream(path: string, append?: boolean, opts?: object): fs.WriteStream {
-		this.checkArgUndefined('path', path);
+		this.checkArgDefined('path', path);
 
 		let emitError = (instance, err) => {
 			const isErrorEmitted = instance.errorEmitted;
@@ -518,8 +524,7 @@ export class WebHDFS {
 					Object.assign(params, { url: response.headers.location }),
 					(err, res, bo) => {
 						if (err || this.isError(res)) {
-							err = err || this.parseError(res);
-							emitError(req, err);
+							emitError(req, this.parseError(res, bo, err));
 							req.end();
 						} else if (res.headers.hasOwnProperty('location')) {
 							req.emit('finish', res.headers.location);
@@ -534,7 +539,7 @@ export class WebHDFS {
 			}
 
 			if (error || this.isError(response)) {
-				emitError(req, error || this.parseError(response));
+				emitError(req, this.parseError(response, body, error));
 			}
 		});
 
@@ -588,7 +593,7 @@ export class WebHDFS {
 	 * });
 	 */
 	public createReadStream(path: string, opts?: object): fs.ReadStream {
-		this.checkArgUndefined('path', path);
+		this.checkArgDefined('path', path);
 
 		let endpoint = this.getOperationEndpoint('open', path, opts);
 		let params = Object.assign(
@@ -597,7 +602,8 @@ export class WebHDFS {
 				url: endpoint,
 				json: true
 			},
-			this._requestParams);
+			this._requestParams
+		);
 
 		let req: request.Request = request(params);
 
@@ -610,8 +616,8 @@ export class WebHDFS {
 			// Remove all data handlers and parse error data
 			if (this.isError(response)) {
 				req.removeAllListeners('data');
-				req.on('data', function onData(data) {
-					req.emit('error', this.parseError(data.toString(), false, response.statusCode));
+				req.on('data', (data) => {
+					req.emit('error', this.parseError(response, data.toString()));
 					req.end();
 				});
 			} else if (this.isRedirect(response)) {
@@ -628,11 +634,11 @@ export class WebHDFS {
 				});
 
 				// Handle subrequest
-				download.on('response', function onResponse(response) {
+				download.on('response', (response) => {
 					if (this.isError(response)) {
 						download.removeAllListeners('data');
-						download.on('data', function onData(data) {
-							req.emit('error', this._parseError(data.toString()));
+						download.on('data', (data) => {
+							req.emit('error', this.parseError(response, data.toString()));
 							req.end();
 						});
 					}
@@ -652,15 +658,15 @@ export class WebHDFS {
 	 * @param {string} src
 	 * @param {string} destination
 	 * @param {boolean} [createParent=false]
-	 * @param {(error: any) => void} callback
+	 * @param {(error: HdfsError) => void} callback
 	 * @returns void
 	 */
-	public symlink(src: string, destination: string, createParent: boolean, callback: (error: any) => void): void {
-		this.checkArgUndefined('src', src);
-		this.checkArgUndefined('destination', destination);
+	public symlink(src: string, destination: string, createParent: boolean = false, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('src', src);
+		this.checkArgDefined('destination', destination);
 
 		let endpoint = this.getOperationEndpoint('createsymlink', src, {
-			createParent: !!createParent,
+			createParent: createParent,
 			destination: destination
 		});
 
@@ -679,10 +685,10 @@ export class WebHDFS {
 	 * @param {(error: any) => void} callback
 	 * @returns void
 	 */
-	public unlink(path: string, recursive: boolean = false, callback: (error: any) => void): void {
-		this.checkArgUndefined('path', path);
+	public unlink(path: string, recursive: boolean = false, callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
 
-		let endpoint = this.getOperationEndpoint('delete', path, { recursive: !!recursive });
+		let endpoint = this.getOperationEndpoint('delete', path, { recursive: recursive });
 		this.sendRequest('DELETE', endpoint, undefined, (error) => {
 			if (callback) {
 				callback(error);
@@ -697,7 +703,7 @@ export class WebHDFS {
 	 * @param {(error: any) => void} callback
 	 * @returns void
 	 */
-	public rmdir(path: string, recursive: boolean = false, callback: (error: any) => void): void {
+	public rmdir(path: string, recursive: boolean = false, callback: (error: HdfsError) => void): void {
 		this.unlink(path, recursive, callback);
 	}
 
@@ -709,9 +715,24 @@ export class WebHDFS {
 					port: '50070',
 					path: '/webhdfs/v1'
 				},
-				opts
+				opts || {}
 			),
 			requestParams
 		);
+	}
+}
+
+export class HdfsError extends Error {
+	public statusCode: number;
+	public statusMessage: string;
+	public remoteExceptionMessage: string;
+	public internalError: any;
+	constructor(errorMessage?: string, statusCode?: number, statusMessage?: string,
+		remoteExceptionMessage?: string, internalError?: any) {
+		super(errorMessage);
+		this.statusCode = statusCode;
+		this.statusMessage = statusMessage;
+		this.remoteExceptionMessage = remoteExceptionMessage;
+		this.internalError = internalError;
 	}
 }
