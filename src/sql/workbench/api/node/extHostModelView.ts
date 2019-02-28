@@ -52,6 +52,13 @@ class ModelBuilderImpl implements sqlops.ModelBuilder {
 		return container;
 	}
 
+	splitViewContainer(): sqlops.SplitViewBuilder {
+		let id = this.getNextComponentId();
+		let container: GenericContainerBuilder<sqlops.SplitViewContainer, any, any> = new GenericContainerBuilder<sqlops.SplitViewContainer, sqlops.FlexLayout, sqlops.FlexItemLayout>(this._proxy, this._handle, ModelComponentTypes.SplitViewContainer, id);
+		this._componentBuilders.set(id, container);
+		return container;
+	}
+
 	formContainer(): sqlops.FormBuilder {
 		let id = this.getNextComponentId();
 		let container = new FormContainerBuilder(this._proxy, this._handle, ModelComponentTypes.Form, id, this);

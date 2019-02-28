@@ -19,6 +19,7 @@ declare module 'sqlops' {
 		navContainer(): ContainerBuilder<NavContainer, any, any>;
 		divContainer(): DivBuilder;
 		flexContainer(): FlexBuilder;
+		splitViewContainer(): SplitViewBuilder;
 		dom(): ComponentBuilder<DomComponent>;
 		card(): ComponentBuilder<CardComponent>;
 		inputBox(): ComponentBuilder<InputBoxComponent>;
@@ -76,6 +77,10 @@ declare module 'sqlops' {
 
 	export interface FlexBuilder extends ContainerBuilder<FlexContainer, FlexLayout, FlexItemLayout> {
 
+	}
+
+	// Building on top of flex controls for now
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, FlexLayout, FlexItemLayout> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
@@ -318,6 +323,51 @@ declare module 'sqlops' {
 		position?: string;
 	}
 
+	export interface SplitViewLayout {
+		/**
+		 * Matches the flex-flow CSS property and its available values.
+		 * To layout as a vertical view use "column", and for horizontal
+		 * use "row".
+		 */
+		splitFlow?: string;
+		/**
+		 * Matches the justify-content CSS property.
+		 */
+		justifyContent?: string;
+		/**
+		 * Matches the align-items CSS property.
+		 */
+		alignItems?: string;
+		/**
+		 * Matches the align-content CSS property.
+		 */
+		alignContent?: string;
+
+		/**
+		 * Container Height
+		 */
+		height?: number | string;
+
+		/**
+		 * Container Width
+		 */
+		width?: number | string;
+
+		/**
+		 *
+		 */
+		textAlign?: string;
+
+		/**
+		 * The position CSS property. Empty by default.
+		 * This is particularly useful if laying out components inside a FlexContainer and
+		 * the size of the component is meant to be a fixed size. In this case the position must be
+		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
+		 * Without this the component will fail to correctly size itself.
+		 */
+		position?: string;
+	}
+
 	export interface FlexItemLayout {
 		/**
 		 * Matches the order CSS property and its available values.
@@ -332,6 +382,23 @@ declare module 'sqlops' {
 		 * Matches the CSS style key and its available values.
 		 */
 		CSSStyles?: { [key: string]: string };
+	}
+
+
+	export interface SplitViewItemLayout {
+		/**
+		 * Matches the order CSS property and its available values.
+		 */
+		order?: number;
+		/**
+		 * Matches the flex CSS property and its available values.
+		 * Default is "1 1 auto".
+		 */
+		splitView?: string;
+		/**
+		* Matches the CSS style key and its available values.
+		*/
+	   CSSStyles?: { [key: string]: string };
 	}
 
 	export interface FormItemLayout {
@@ -386,6 +453,9 @@ declare module 'sqlops' {
 	}
 
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
+	}
+
+	export interface SplitViewContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
 
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {

@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { nb, IConnectionProfile } from 'sqlops';
 import * as vsExtTypes from 'vs/workbench/api/node/extHostTypes';
+import { ShellQuotingOptions } from 'vscode';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -144,6 +144,7 @@ export enum ModelComponentTypes {
 	NavContainer,
 	DivContainer,
 	FlexContainer,
+	SplitViewContainer,
 	Card,
 	InputBox,
 	DropDown,
