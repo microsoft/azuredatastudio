@@ -8,7 +8,7 @@
 import { nb, connection } from 'sqlops';
 
 import { localize } from 'vs/nls';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event, Emitter, forEach } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
 
 import { CellModel } from './cell';
@@ -48,6 +48,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _inErrorState: boolean = false;
 	private _clientSessions: IClientSession[] = [];
 	private _activeClientSession: IClientSession;
+	private _oldClientSession: IClientSession;
 	private _sessionLoadFinished: Promise<void>;
 	private _onClientSessionReady = new Emitter<IClientSession>();
 	private _onProviderIdChanged = new Emitter<string>();
@@ -62,6 +63,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private readonly _nbformat: number = nbversion.MAJOR_VERSION;
 	private readonly _nbformatMinor: number = nbversion.MINOR_VERSION;
 	private _activeConnection: ConnectionProfile;
+	private _otherConnections: ConnectionProfile[] = [];
 	private _activeCell: ICellModel;
 	private _providerId: string;
 	private _defaultKernel: nb.IKernelSpec;
@@ -478,7 +480,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			kernelSpec = kernelSpecs.find(spec => spec.name === this.notebookManager.sessionManager.specs.defaultKernel);
 		}
 		if (this._activeClientSession && this._activeClientSession.isReady) {
-			return this._activeClientSession.changeKernel(kernelSpec)
+			let oldKernel = this._oldClientSession ? this._oldClientSession.kernel : null;
+			return this._activeClientSession.changeKernel(kernelSpec, oldKernel)
 				.then((kernel) => {
 					this.updateKernelInfo(kernel);
 					kernel.ready.then(() => {
@@ -503,6 +506,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				newConnection = this._activeContexts.defaultConnection;
 			}
 			let newConnectionProfile = new ConnectionProfile(this._notebookOptions.capabilitiesService, newConnection);
+			if (this._activeConnection) {
+				this._otherConnections.push(this._activeConnection);
+			}
 			this._activeConnection = newConnectionProfile;
 			this.refreshConnections(newConnectionProfile);
 			this._activeClientSession.updateConnection(this._activeConnection.toIConnectionProfile()).then(
@@ -620,6 +626,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	public async handleClosed(): Promise<void> {
 		try {
+			if (this.notebookOptions && this.notebookOptions.connectionService) {
+				let connectionService = this.notebookOptions.connectionService;
+				if (this._otherConnections) {
+					this._otherConnections.forEach(conn => connectionService.disconnect(conn).catch(e => console.log(e)));
+				}
+				if (this._activeConnection) {
+					this.notebookOptions.connectionService.disconnect(this._activeConnection).catch(e => console.log(e));
+				}
+			}
 			if (this._activeClientSession) {
 				try {
 					await this._activeClientSession.ready;
@@ -711,6 +726,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				if (this.notebookManagers[i].sessionManager && this.notebookManagers[i].sessionManager.specs && this.notebookManagers[i].sessionManager.specs.kernels) {
 					let index = this.notebookManagers[i].sessionManager.specs.kernels.findIndex(kernel => kernel.name === kernelSpec.name);
 					if (index >= 0) {
+						if (this._activeClientSession) {
+							this._oldClientSession = this._activeClientSession;
+						}
 						this._activeClientSession = this._clientSessions[i];
 						if (this.notebookManagers[i].providerId !== this._providerId) {
 							this._providerId = this.notebookManagers[i].providerId;
