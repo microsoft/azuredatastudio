@@ -630,9 +630,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				let connectionService = this.notebookOptions.connectionService;
 				if (this._otherConnections) {
 					this._otherConnections.forEach(conn => connectionService.disconnect(conn).catch(e => console.log(e)));
+					this._otherConnections = [];
 				}
 				if (this._activeConnection) {
 					this.notebookOptions.connectionService.disconnect(this._activeConnection).catch(e => console.log(e));
+					this._activeConnection = undefined;
 				}
 			}
 			if (this._activeClientSession) {
@@ -644,6 +646,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this._activeClientSession.shutdown();
 				this._clientSessions = undefined;
 				this._activeClientSession = undefined;
+
 			}
 		} catch (err) {
 			this.notifyError(localize('shutdownError', 'An error occurred when closing the notebook: {0}', err));
