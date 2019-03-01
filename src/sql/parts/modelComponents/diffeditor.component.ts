@@ -79,33 +79,19 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		let uri2 = this.createUri('2');
 		let cancell = new CancellationTokenSource();
 
-		let editorinput1 =	this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', 'somethfdgfdgfding', '');
-		let editorinput2 =	this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', 'somethigfdgdfgfdng else', '');
+		let editorinput1 =	this._instantiationService.createInstance(UntitledEditorInput, uri1, false, 'plaintext', '', '');
+		let editorinput2 =	this._instantiationService.createInstance(UntitledEditorInput, uri2, false, 'plaintext', '', '');
 		this._editorInput = this._instantiationService.createInstance(DiffEditorInput, 'MyEditor', 'My description', editorinput1, editorinput2, true);
 		this._editor.setInput(this._editorInput, undefined, cancell.token);
 
 
 		this._editorInput.resolve().then(model => {
 			this._editorModel = model as TextDiffEditorModel;
-			//this.updateModel()
+			this.updateModel();
+			this.layout();
+			this.validate();
 		});
 
-/*
-		this._editorInput.originalInput.resolve().then(model => {
-			this._editorModelLeft = (model as ITextEditorModel).textEditorModel;
-			this.fireEvent({
-				eventType: ComponentEventType.onComponentCreated,
-				args: this._uri
-			});
-		});
-		this._editorInput.modifiedInput.resolve().then(model => {
-			this._editorModelRight = (model as ITextEditorModel).textEditorModel;
-			this.fireEvent({
-				eventType: ComponentEventType.onComponentCreated,
-				args: this._uri
-			});
-		});
-*/
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel);
@@ -140,38 +126,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 				args: e
 			});
 		}));
-/*
-		this._register(this._editorModelLeft.onDidChangeContent(e => {
-			this.contentLeft = this._editorModelLeft.getValue();
-			if (this._isAutoResizable) {
-				if (this._minimumHeight) {
-					//this._editor.setMinimumHeight(this._minimumHeight);
-				}
-				//this._editor.setHeightToScrollHeight();
-			}
-
-			// Notify via an event so that extensions can detect and propagate changes
-			this.fireEvent({
-				eventType: ComponentEventType.onDidChange,
-				args: e
-			});
-		}));
-		this._register(this._editorModelRight.onDidChangeContent(e => {
-			this.contentRight = this._editorModelRight.getValue();
-			if (this._isAutoResizable) {
-				if (this._minimumHeight) {
-					//this._editor.setMinimumHeight(this._minimumHeight);
-				}
-				//this._editor.setHeightToScrollHeight();
-			}
-
-			// Notify via an event so that extensions can detect and propagate changes
-			this.fireEvent({
-				eventType: ComponentEventType.onDidChange,
-				args: e
-			});
-		}));
-*/
 	}
 
 	private createUri(input:string): URI {
@@ -187,7 +141,6 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 
 	public layout(): void {
 		let width: number = this.convertSizeToNumber(this.width);
-
 		let height: number = this.convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
 			height = Math.max(this._editor.maximumHeight, this._minimumHeight ? this._minimumHeight : 0);
@@ -197,6 +150,8 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 			height && height > 0 ? height : DOM.getContentHeight(this._el.nativeElement)));
 		let element = <HTMLElement>this._el.nativeElement;
 		element.style.position = this.position;
+
+		super.layout();
 	}
 
 	/// Editor Functions
@@ -205,16 +160,14 @@ export default class DiffEditorComponent extends ComponentBase implements ICompo
 		if (this._editorModel) {
 			this._renderedContentLeft = this.contentLeft;
 			this._renderedContentRight = this.contentRight;
-			this._modelService.updateModel(this._editorModel.textDiffEditorModel.original, this._renderedContentLeft);
-			this._modelService.updateModel(this._editorModel.textDiffEditorModel.modified, this._renderedContentRight);
-
+			this._modelService.updateModel(this._editorModel.originalModel.textEditorModel, this._renderedContentLeft);
+			this._modelService.updateModel(this._editorModel.modifiedModel.textEditorModel, this._renderedContentRight);
 		}
 	}
 
 	/// IComponent implementation
 	public setLayout(layout: any): void {
 		// TODO allow configuring the look and feel
-		this.layout();
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {

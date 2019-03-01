@@ -80,7 +80,7 @@ declare module 'sqlops' {
 	}
 
 	// Building on top of flex controls for now
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, FlexLayout, FlexItemLayout> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout> {
@@ -323,49 +323,17 @@ declare module 'sqlops' {
 		position?: string;
 	}
 
-	export interface SplitViewLayout {
-		/**
-		 * Matches the flex-flow CSS property and its available values.
-		 * To layout as a vertical view use "column", and for horizontal
-		 * use "row".
-		 */
-		splitFlow?: string;
-		/**
-		 * Matches the justify-content CSS property.
-		 */
-		justifyContent?: string;
-		/**
-		 * Matches the align-items CSS property.
-		 */
-		alignItems?: string;
-		/**
-		 * Matches the align-content CSS property.
-		 */
-		alignContent?: string;
+	export interface SplitViewLayout extends FlexLayout {
 
 		/**
-		 * Container Height
+		 * Orientation of the views inside split
 		 */
-		height?: number | string;
+		orientation: string;
 
 		/**
-		 * Container Width
+		 * SplitView height
 		 */
-		width?: number | string;
-
-		/**
-		 *
-		 */
-		textAlign?: string;
-
-		/**
-		 * The position CSS property. Empty by default.
-		 * This is particularly useful if laying out components inside a FlexContainer and
-		 * the size of the component is meant to be a fixed size. In this case the position must be
-		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
-		 * Without this the component will fail to correctly size itself.
-		 */
-		position?: string;
+		splitViewHeight: number | string;
 	}
 
 	export interface FlexItemLayout {
@@ -455,7 +423,7 @@ declare module 'sqlops' {
 	export interface FlexContainer extends Container<FlexLayout, FlexItemLayout> {
 	}
 
-	export interface SplitViewContainer extends Container<FlexLayout, FlexItemLayout> {
+	export interface SplitViewContainer extends Container<SplitViewLayout, FlexItemLayout> {
 	}
 
 	export interface FormContainer extends Container<FormLayout, FormItemLayout> {
