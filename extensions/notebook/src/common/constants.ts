@@ -2,7 +2,7 @@
 
 // CONFIG VALUES ///////////////////////////////////////////////////////////
 export const extensionConfigSectionName = 'dataManagement';
-export const extensionOutputChannel = 'SQL Server 2019 Preview';
+export const extensionOutputChannel = 'Jupyter Notebooks';
 export const configLogDebugInfo = 'logDebugInfo';
 
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
