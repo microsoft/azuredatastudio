@@ -384,10 +384,10 @@ export namespace GenerateDeployPlanRequest {
 }
 
 export namespace SchemaCompareRequest {
-	export const type = new RequestType<SchemaCompareParams, sqlops.SchemaCompareResult, void, void>('dacfx/schemaCompare');
+	export const type = new RequestType<SchemaCompareParams, sqlops.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
 
 export namespace SchemaCompareGenerateScriptRequest {
-	export const type = new RequestType<SchemaCompareGenerateScriptParams, sqlops.DacFxResult, void, void>('dacfx/schemaCompareGenerateScript');
+	export const type = new RequestType<SchemaCompareGenerateScriptParams, sqlops.DacFxResult, void, void>('schemaCompare/generateScript');
 }
 // ------------------------------- < DacFx > ------------------------------------

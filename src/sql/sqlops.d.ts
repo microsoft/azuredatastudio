@@ -1646,7 +1646,8 @@ declare module 'sqlops' {
 		report: string;
 	}
 
-	export interface SchemaCompareResult extends DacFxResult {
+	export interface SchemaCompareResult extends ResultStatus {
+		operationId: string;
 		areEqual: boolean;
 		differences: DiffEntry[];
 	}

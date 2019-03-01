@@ -105,7 +105,7 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.flexModel = view.modelBuilder.flexContainer().component();
-			this.flexModel.addItem(buttonsFlexLayout);
+			// this.flexModel.addItem(buttonsFlexLayout);
 			this.flexModel.addItem(this.sourceTargetFlexLayout);
 			this.flexModel.addItem(this.loader);
 			// this.flexModel.addItem(this.webViewComponent);
@@ -255,13 +255,15 @@ export class SchemaCompareResult {
 	private createGenerateScriptButton(view: sqlops.ModelView) {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate Script'),
+			title: 'Script can only be generated when the target is a database',
 			enabled: false
 		}).component();
 
 		this.generateScriptButton.onDidClick(async (click) => {
-			console.error('clicked generate script button');
 			// get file path
-			let defaultFilePath = path.join(os.homedir(), this.targetName + '-' + 'Upgrade' + '.sql');
+			let now = new Date();
+			let datetime = now.getFullYear() + '-' + (now.getMonth() + 1) + '-' + now.getDate() + '-' + now.getHours() + '-' + now.getMinutes();
+			let defaultFilePath = path.join(os.homedir(), this.targetName + '_Update_'+ datetime + '.sql');
 			let fileUri = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(defaultFilePath),
@@ -278,10 +280,12 @@ export class SchemaCompareResult {
 
 			let service = await SchemaCompareResult.getService('MSSQL');
 			let result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.databaseName, fileUri.fsPath, sqlops.TaskExecutionMode.execute);
+			if (!result || !result.success) {
+				vscode.window.showErrorMessage(
+					localize('schemaCompare.generateScriptErrorMessage', "Generate Script failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+			}
 		});
 	}
-
-
 
 	private static async getService(providerName: string): Promise<sqlops.DacFxServicesProvider> {
 		let service = sqlops.dataprotocol.getProvider<sqlops.DacFxServicesProvider>(providerName, sqlops.DataProviderType.DacFxServicesProvider);
