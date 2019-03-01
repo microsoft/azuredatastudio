@@ -8,14 +8,14 @@ import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { AdvancedPropertiesController } from 'sql/parts/connection/connectionDialog/advancedPropertiesController';
 import { Builder, $ } from 'sql/base/browser/builder';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 suite('Advanced properties dialog tests', () => {
 	var advancedController: AdvancedPropertiesController;
-	var providerOptions: sqlops.ConnectionOption[];
+	var providerOptions: azdata.ConnectionOption[];
 
 	setup(() => {
 		advancedController = new AdvancedPropertiesController(() => { }, null);

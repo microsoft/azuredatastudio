@@ -6,7 +6,7 @@
 'use strict';
 
 import * as assert from 'assert';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import AccountStore from 'sql/platform/accountManagement/common/accountStore';
 import { AccountDialogController } from 'sql/parts/accountManagement/accountDialog/accountDialogController';
@@ -18,16 +18,16 @@ import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 
 // SUITE CONSTANTS /////////////////////////////////////////////////////////
-const hasAccountProvider: sqlops.AccountProviderMetadata = {
+const hasAccountProvider: azdata.AccountProviderMetadata = {
 	id: 'hasAccounts',
 	displayName: 'Provider with Accounts'
 };
-const noAccountProvider: sqlops.AccountProviderMetadata = {
+const noAccountProvider: azdata.AccountProviderMetadata = {
 	id: 'noAccounts',
 	displayName: 'Provider without Accounts'
 };
 
-const account: sqlops.Account = {
+const account: azdata.Account = {
 	key: {
 		providerId: hasAccountProvider.id,
 		accountId: 'testAccount1'
@@ -40,7 +40,7 @@ const account: sqlops.Account = {
 	isStale: false,
 	properties: {}
 };
-const accountList: sqlops.Account[] = [account];
+const accountList: azdata.Account[] = [account];
 
 suite('Account Management Service Tests:', () => {
 	test('Constructor', () => {
@@ -69,7 +69,7 @@ suite('Account Management Service Tests:', () => {
 			.returns(() => Promise.resolve(true));
 
 		// ... Register a account provider with the management service
-		let mockProvider = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
+		let mockProvider = TypeMoq.Mock.ofType<azdata.AccountProvider>(AccountProviderStub);
 		mockProvider.setup(x => x.clear(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		state.accountManagementService._providers[hasAccountProvider.id] = {
 			accounts: [account],
@@ -102,7 +102,7 @@ suite('Account Management Service Tests:', () => {
 			}));
 
 		// ... Register a account provider with the management service
-		let mockProvider = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
+		let mockProvider = TypeMoq.Mock.ofType<azdata.AccountProvider>(AccountProviderStub);
 		mockProvider.setup(x => x.clear(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		state.accountManagementService._providers[hasAccountProvider.id] = {
 			accounts: [account],
@@ -364,7 +364,7 @@ suite('Account Management Service Tests:', () => {
 			.returns(() => Promise.resolve(true));
 
 		// ... Register a account provider with the management service
-		let mockProvider = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
+		let mockProvider = TypeMoq.Mock.ofType<azdata.AccountProvider>(AccountProviderStub);
 		mockProvider.setup(x => x.clear(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		state.accountManagementService._providers[hasAccountProvider.id] = {
 			accounts: [account],
@@ -571,7 +571,7 @@ function getTestState(): AccountManagementState {
 	// Wire up event handlers
 	let evUpdate = new EventVerifierSingle<UpdateAccountListEventParams>();
 	let evAddProvider = new EventVerifierSingle<AccountProviderAddedEventParams>();
-	let evRemoveProvider = new EventVerifierSingle<sqlops.AccountProviderMetadata>();
+	let evRemoveProvider = new EventVerifierSingle<azdata.AccountProviderMetadata>();
 	ams.updateAccountListEvent(evUpdate.eventHandler);
 	ams.addAccountProviderEvent(evAddProvider.eventHandler);
 	ams.removeAccountProviderEvent(evRemoveProvider.eventHandler);
@@ -587,8 +587,8 @@ function getTestState(): AccountManagementState {
 	};
 }
 
-function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
-	let mockProvider = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
+function getMockAccountProvider(): TypeMoq.Mock<azdata.AccountProvider> {
+	let mockProvider = TypeMoq.Mock.ofType<azdata.AccountProvider>(AccountProviderStub);
 	mockProvider.setup(x => x.clear(TypeMoq.It.isAny())).returns(() => Promise.resolve());
 	mockProvider.setup(x => x.initialize(TypeMoq.It.isAny())).returns(param => Promise.resolve(param));
 	mockProvider.setup(x => x.prompt()).returns(() => Promise.resolve(account));
@@ -596,8 +596,8 @@ function getMockAccountProvider(): TypeMoq.Mock<sqlops.AccountProvider> {
 	return mockProvider;
 }
 
-function getFailingMockAccountProvider(cancel: boolean): TypeMoq.Mock<sqlops.AccountProvider> {
-	let mockProvider = TypeMoq.Mock.ofType<sqlops.AccountProvider>(AccountProviderStub);
+function getFailingMockAccountProvider(cancel: boolean): TypeMoq.Mock<azdata.AccountProvider> {
+	let mockProvider = TypeMoq.Mock.ofType<azdata.AccountProvider>(AccountProviderStub);
 	mockProvider.setup(x => x.clear(TypeMoq.It.isAny()))
 		.returns(() => Promise.resolve());
 	mockProvider.setup(x => x.initialize(TypeMoq.It.isAny()))
@@ -605,13 +605,13 @@ function getFailingMockAccountProvider(cancel: boolean): TypeMoq.Mock<sqlops.Acc
 	mockProvider.setup(x => x.prompt())
 		.returns(() => {
 			return cancel
-				? Promise.reject(<sqlops.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
+				? Promise.reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	mockProvider.setup(x => x.refresh(TypeMoq.It.isAny()))
 		.returns(() => {
 			return cancel
-				? Promise.reject(<sqlops.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
+				? Promise.reject(<azdata.UserCancelledSignInError>{ userCancelledSignIn: true }).then()
 				: Promise.reject(new Error()).then();
 		});
 	return mockProvider;
@@ -623,5 +623,5 @@ interface AccountManagementState {
 	mockAccountStore: TypeMoq.Mock<IAccountStore>;
 	eventVerifierUpdate: EventVerifierSingle<UpdateAccountListEventParams>;
 	eventVerifierProviderAdded: EventVerifierSingle<AccountProviderAddedEventParams>;
-	eventVerifierProviderRemoved: EventVerifierSingle<sqlops.AccountProviderMetadata>;
+	eventVerifierProviderRemoved: EventVerifierSingle<azdata.AccountProviderMetadata>;
 }

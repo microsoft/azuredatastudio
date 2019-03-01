@@ -24,7 +24,7 @@ export class ApiWrapper {
 		return vscode.window.createTerminal(options);
 	}
 
-	public getCurrentConnection(): Thenable<azdata.connection.Connection> {
+	public getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
 		return azdata.connection.getCurrentConnection();
 	}
 

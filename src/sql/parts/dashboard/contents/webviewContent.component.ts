@@ -21,7 +21,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 @Component({
@@ -68,9 +68,9 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	@memoize
-	public get connection(): sqlops.connection.Connection {
+	public get connection(): azdata.connection.Connection {
 		let currentConnection = this._dashboardService.connectionManagementService.connectionInfo.connectionProfile;
-		let connection: sqlops.connection.Connection = {
+		let connection: azdata.connection.Connection = {
 			providerName: currentConnection.providerName,
 			connectionId: currentConnection.id,
 			options: currentConnection.options
@@ -79,7 +79,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	}
 
 	@memoize
-	public get serverInfo(): sqlops.ServerInfo {
+	public get serverInfo(): azdata.ServerInfo {
 		return this._dashboardService.connectionManagementService.connectionInfo.serverInfo;
 	}
 

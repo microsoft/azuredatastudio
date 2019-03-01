@@ -5,7 +5,7 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 /**
  * Result from calling add/update on the account store
@@ -24,7 +24,7 @@ export interface AccountAdditionResult {
 	/**
 	 * The account that was added/updated (with any updates applied)
 	 */
-	changedAccount: sqlops.Account;
+	changedAccount: azdata.Account;
 }
 
 /**
@@ -34,12 +34,12 @@ export interface AccountProviderAddedEventParams {
 	/**
 	 * The provider that was registered
 	 */
-	addedProvider: sqlops.AccountProviderMetadata;
+	addedProvider: azdata.AccountProviderMetadata;
 
 	/**
 	 * The accounts that were rehydrated with the provider
 	 */
-	initialAccounts: sqlops.Account[];
+	initialAccounts: azdata.Account[];
 }
 
 /**
@@ -54,5 +54,5 @@ export interface UpdateAccountListEventParams {
 	/**
 	 * Updated list of accounts, sorted appropriately
 	 */
-	accountList: sqlops.Account[];
+	accountList: azdata.Account[];
 }

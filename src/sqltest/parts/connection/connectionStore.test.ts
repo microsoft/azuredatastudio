@@ -15,7 +15,7 @@ import { CredentialsService } from 'sql/platform/credentials/common/credentialsS
 import * as assert from 'assert';
 import { Memento } from 'vs/workbench/common/memento';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { Emitter } from 'vs/base/common/event';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -119,7 +119,7 @@ suite('SQL ConnectionStore tests', () => {
 		};
 
 		capabilitiesService = new CapabilitiesTestService();
-		let connectionProvider: sqlops.ConnectionOption[] = [
+		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
 				displayName: undefined,

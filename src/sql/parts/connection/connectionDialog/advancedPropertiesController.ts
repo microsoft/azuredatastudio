@@ -8,7 +8,7 @@
 // // import { AdvancedPropertiesDialog } from 'sql/parts/connection/connectionDialog/advancedPropertiesDialog';
 import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
 import * as TelemetryKeys from 'sql/common/telemetryKeys';
 
@@ -26,7 +26,7 @@ export class AdvancedPropertiesController {
 		this._options = this._advancedDialog.optionValues;
 	}
 
-	public showDialog(providerOptions: sqlops.ConnectionOption[], container: HTMLElement, options: { [name: string]: any }): void {
+	public showDialog(providerOptions: azdata.ConnectionOption[], container: HTMLElement, options: { [name: string]: any }): void {
 		this._options = options;
 		var serviceOptions = providerOptions.map(option => AdvancedPropertiesController.connectionOptionToServiceOption(option));
 		this.advancedDialog.open(serviceOptions, this._options);
@@ -47,7 +47,7 @@ export class AdvancedPropertiesController {
 		this._advancedDialog = dialog;
 	}
 
-	public static connectionOptionToServiceOption(connectionOption: sqlops.ConnectionOption): sqlops.ServiceOption {
+	public static connectionOptionToServiceOption(connectionOption: azdata.ConnectionOption): azdata.ServiceOption {
 		return {
 			name: connectionOption.name,
 			displayName: connectionOption.displayName,

@@ -70,7 +70,7 @@ export enum ExportOperationPath {
 
 export class DataTierApplicationWizard {
 	public wizard: azdata.window.Wizard;
-	private connection: azdata.connection.Connection;
+	private connection: azdata.connection.ConnectionProfile;
 	private model: DacFxDataModel;
 	public pages: Map<string, Page> = new Map<string, Page>();
 	public selectedOperation: Operation;
@@ -89,7 +89,8 @@ export class DataTierApplicationWizard {
 
 		this.connection = await azdata.connection.getCurrentConnection();
 		if (!this.connection) {
-			this.connection = await azdata.connection.openConnectionDialog();
+			// @TODO: remove cast once azdata update complete - karlb 3/1/2019
+			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
 		}
 
 		this.wizard = azdata.window.createWizard('Data-tier Application Wizard');

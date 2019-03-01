@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import { TPromise } from 'vs/base/common/winjs.base';
@@ -258,7 +258,7 @@ export class KernelsDropdown extends SelectBox {
 			this.updateKernel(defaultKernel);
 		});
 		if (model.clientSession) {
-			model.clientSession.kernelChanged((changedArgs: sqlops.nb.IKernelChangedArgs) => {
+			model.clientSession.kernelChanged((changedArgs: azdata.nb.IKernelChangedArgs) => {
 				if (changedArgs.newValue) {
 					this.updateKernel(changedArgs.newValue);
 				}
@@ -267,7 +267,7 @@ export class KernelsDropdown extends SelectBox {
 	}
 
 	// Update SelectBox values
-	private updateKernel(defaultKernel: sqlops.nb.IKernelSpec) {
+	private updateKernel(defaultKernel: azdata.nb.IKernelSpec) {
 		let specs = this.model.specs;
 		if (specs && specs.kernels) {
 			let index = specs.kernels.findIndex((kernel => kernel.name === defaultKernel.name));

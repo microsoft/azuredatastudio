@@ -71,7 +71,7 @@ export class ApiWrapper {
 		return azdata.connection.getActiveConnections();
 	}
 
-	public getCurrentConnection(): Thenable<azdata.connection.Connection> {
+	public getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
 		return azdata.connection.getCurrentConnection();
 	}
 

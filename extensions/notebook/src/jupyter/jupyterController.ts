@@ -131,7 +131,7 @@ export class JupyterController implements vscode.Disposable {
 	}
 
 	// EVENT HANDLERS //////////////////////////////////////////////////////
-	public async getDefaultConnection(): Promise<azdata.ConnectionInfo> {
+	public async getDefaultConnection(): Promise<azdata.connection.ConnectionProfile> {
 		return await this.apiWrapper.getCurrentConnection();
 	}
 

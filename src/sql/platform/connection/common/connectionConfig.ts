@@ -14,7 +14,7 @@ import { IWorkspaceConfigurationService } from 'vs/workbench/services/configurat
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ConnectionProfile } from './connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
 import { generateUuid } from 'vs/base/common/uuid';
@@ -451,7 +451,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 */
 	private getConfiguration(key: string): any {
 		let configs: any;
-		configs = this._workspaceConfigurationService.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[]>(key);
+		configs = this._workspaceConfigurationService.inspect<IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[]>(key);
 		return configs;
 	}
 
@@ -462,7 +462,7 @@ export class ConnectionConfig implements IConnectionConfig {
 	 */
 	private writeConfiguration(
 		key: string,
-		profiles: IConnectionProfileStore[] | IConnectionProfileGroup[] | sqlops.DataProtocolServerCapabilities[],
+		profiles: IConnectionProfileStore[] | IConnectionProfileGroup[] | azdata.DataProtocolServerCapabilities[],
 		target: ConfigurationTarget = ConfigurationTarget.USER): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			let configValue: IConfigurationValue = {
