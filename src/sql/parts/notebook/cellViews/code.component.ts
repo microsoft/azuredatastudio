@@ -188,33 +188,27 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
 		let uri = this.cellModel.cellUri;
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, '', '');
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, this.cellModel.source, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
-		if (untitledEditorModel) {
-			this._editorModel = untitledEditorModel.textEditorModel;
-			this._modelService.updateModel(this._editorModel, this.cellModel.source);
-		}
+		this._editorModel = untitledEditorModel.textEditorModel;
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
-
 		// For markdown cells, don't show line numbers unless we're using editor defaults
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
 
 		this._register(this._editor);
 		this._register(this._editorInput);
-		if (this._editorModel) {
-			this._register(this._editorModel.onDidChangeContent(e => {
-				this._editor.setHeightToScrollHeight();
-				this.cellModel.source = this._editorModel.getValue();
-				this.onContentChanged.emit();
-				this.checkForLanguageMagics();
-				// TODO see if there's a better way to handle reassessing size.
-				setTimeout(() => this._layoutEmitter.fire(), 250);
-			}));
-		}
+		this._register(this._editorModel.onDidChangeContent(e => {
+			this._editor.setHeightToScrollHeight();
+			this.cellModel.source = this._editorModel.getValue();
+			this.onContentChanged.emit();
+			this.checkForLanguageMagics();
+			// TODO see if there's a better way to handle reassessing size.
+			setTimeout(() => this._layoutEmitter.fire(), 250);
+		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap')) {
 				this._editor.setHeightToScrollHeight(true);
