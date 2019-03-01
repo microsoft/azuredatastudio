@@ -95,7 +95,7 @@ export function createApiFactory(
 				ConnectionProfile: sqlExtHostTypes.ConnectionProfile,
 
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
-					return <any>extHostConnectionManagement.$getCurrentConnection();
+					return extHostConnectionManagement.$getCurrentConnection();
 				},
 
 				// "sqlops" back-compat APIs
@@ -593,7 +593,7 @@ export function createApiFactory(
 					return extHostConnectionManagement.$getActiveConnections();
 				},
 				getCurrentConnection(): Thenable<sqlops.connection.Connection> {
-					return extHostConnectionManagement.$getCurrentConnection();
+					return extHostConnectionManagement.$getSqlOpsCurrentConnection();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 					return extHostConnectionManagement.$getCredentials(connectionId);

@@ -8,6 +8,7 @@ import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionM
 import { IMainContext } from 'vs/workbench/api/node/extHost.protocol';
 import { generateUuid } from 'vs/base/common/uuid';
 import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
@@ -20,11 +21,20 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
 	}
 
+	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
+		let connection: any = this._proxy.$getCurrentConnection();
+		connection.then((conn) => {
+			conn.providerId = conn.providerName;
+		});
+		return connection;
+	}
+
+	// "sqlops" back-compat connection APIs
 	public $getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
 		return this._proxy.$getActiveConnections();
 	}
 
-	public $getCurrentConnection(): Thenable<sqlops.connection.Connection> {
+	public $getSqlOpsCurrentConnection(): Thenable<sqlops.connection.Connection> {
 		return this._proxy.$getCurrentConnection();
 	}
 
