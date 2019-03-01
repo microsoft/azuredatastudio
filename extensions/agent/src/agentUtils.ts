@@ -1,6 +1,7 @@
 'use strict';
 
 import * as sqlops from 'sqlops';
+import * as azdata from 'azdata';
 
 export class AgentUtils {
 
@@ -10,8 +11,8 @@ export class AgentUtils {
 
 	public static async getAgentService(): Promise<sqlops.AgentServicesProvider> {
 		if (!AgentUtils._agentService) {
-			let currentConnection = await sqlops.connection.getCurrentConnection();
-			this._agentService = sqlops.dataprotocol.getProvider<sqlops.AgentServicesProvider>(currentConnection.providerName, sqlops.DataProviderType.AgentServicesProvider);
+			let currentConnection = await azdata.connection.getCurrentConnection();
+			this._agentService = sqlops.dataprotocol.getProvider<sqlops.AgentServicesProvider>(currentConnection.providerId, sqlops.DataProviderType.AgentServicesProvider);
 		}
 		return AgentUtils._agentService;
 	}
