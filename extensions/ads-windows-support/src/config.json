@@ -1,9 +1,9 @@
 {
-    "downloadUrl": "https://sqltoolsblobstore.blob.core.windows.net/ssmsmin/{#fileName#}",
-    "version": "0.0.1",
+    "downloadUrl": "https://sqlopsextensions.blob.core.windows.net/tools/ssmsmin/{#version#}/{#fileName#}",
+    "version": "15.0.16171.27",
     "downloadFileNames": {
-        "Windows_64": "win-x64.zip",
-        "Windows_86": "win-x86.zip"
+        "Windows_64": "SsmsMin-15.0.16171.27-win-x64.zip",
+        "Windows_86": "SsmsMin-15.0.16171.27-win-x86.zip"
     },
     "installDirectory": "ssmsmin/{#platform#}/{#version#}",
     "executableFiles": [
