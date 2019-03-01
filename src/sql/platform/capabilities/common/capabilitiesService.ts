@@ -132,11 +132,16 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 		});
 
 		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
+			const connectionProvider = 'connectionProvider';
 			let extensionid = getIdFromLocalExtensionId(identifier.id);
 			extensionService.getExtensions().then(i => {
 				let extension = i.find(c => c.id === extensionid);
-				let id = extension.contributes['connectionProvider'].providerId;
-				delete this.capabilities.connectionProviderCache[id];
+				if (extension && extension.contributes
+					&& extension.contributes[connectionProvider]
+					&& extension.contributes[connectionProvider].providerId) {
+					let id = extension.contributes[connectionProvider].providerId;
+					delete this.capabilities.connectionProviderCache[id];
+				}
 			});
 		}));
 	}
