@@ -121,12 +121,12 @@ export class OEShimService implements IOEShimService {
 			userName: undefined,
 		};
 		treeNode.connection = new ConnectionProfile(this.capabilities, profile);
-		return TPromise.wrap(this.oe.resolveTreeNodeChildren({
+		return this.oe.resolveTreeNodeChildren({
 			success: undefined,
 			sessionId,
 			rootNode: undefined,
 			errorMessage: undefined
-		}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node))));
+		}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node)));
 	}
 
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
